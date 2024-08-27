@@ -3,7 +3,6 @@
 #include <string>
 
 #include "../../build.Linux/output/include/EngineXX.h"
-#include "../../external/curl/include/curl/curl.h"
 
 int main()
 {
