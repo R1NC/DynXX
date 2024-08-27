@@ -1,0 +1,61 @@
+cmake_minimum_required(VERSION 3.5.0)
+project(enginexx)
+
+set(NATIVERENDER_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
+if(DEFINED PACKAGE_FIND_FILE)
+    include(${PACKAGE_FIND_FILE})
+endif()
+
+include_directories(${NATIVERENDER_ROOT_PATH}
+                    ${NATIVERENDER_ROOT_PATH}/include)
+
+add_library(${CMAKE_PROJECT_NAME} SHARED napi_init.cpp)
+
+set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.HarmonyOS/output/Release/arm64-v8a)
+
+#Find crypto
+set(cryptoPath ${libDir}/libcrypto.a)
+add_library(libcrypto STATIC IMPORTED)
+set_property(TARGET libcrypto PROPERTY IMPORTED_LOCATION ${cryptoPath})
+
+#Find ssl
+set(sslPath ${libDir}/libssl.a)
+add_library(libssl STATIC IMPORTED)
+set_property(TARGET libssl PROPERTY IMPORTED_LOCATION ${sslPath})
+
+#Find wolfssl
+#set(wolfsslPath ${libDir}/libwolfssl.a)
+#add_library(libwolfssl STATIC IMPORTED)
+#set_property(TARGET libwolfssl PROPERTY IMPORTED_LOCATION ${wolfsslPath})
+
+#Find curl
+set(curlPath ${libDir}/libcurl.a)
+add_library(libcurl STATIC IMPORTED)
+set_property(TARGET libcurl PROPERTY IMPORTED_LOCATION ${curlPath})
+
+#Find lua
+set(luaPath ${libDir}/liblua.a)
+add_library(liblua STATIC IMPORTED)
+set_property(TARGET liblua PROPERTY IMPORTED_LOCATION ${luaPath})
+
+#Find cjson
+set(cjsonPath ${libDir}/libcjson.a)
+add_library(libcjson STATIC IMPORTED)
+set_property(TARGET libcjson PROPERTY IMPORTED_LOCATION ${cjsonPath})
+
+#Find EngineXX
+set(EngineXXPath ${libDir}/libEngineXX.a)
+add_library(libEngineXX STATIC IMPORTED)
+set_property(TARGET libEngineXX PROPERTY IMPORTED_LOCATION ${EngineXXPath})
+
+target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
+    libcrypto
+    libssl
+    #libwolfssl
+    libcurl
+    liblua
+    libcjson
+    libEngineXX
+    z
+libace_napi.z.so)

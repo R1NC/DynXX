@@ -1,0 +1,13 @@
+.vscode
+build.Android
+build.iOS
+build.macOS
+build.HarmonyOS
+build.Linux
+build.Windows
+*.DS_Store
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Makefile
+cmake_install.cmake

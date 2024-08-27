@@ -1,0 +1,18 @@
+[submodule "external/cjson"]
+	path = external/cjson
+	url = git@github.com:R1NC/cJSON.git
+[submodule "external/curl"]
+	path = external/curl
+	url = git@github.com:R1NC/curl.git
+[submodule "external/wolfssl"]
+	path = external/wolfssl
+	url = git@github.com:R1NC/wolfssl.git
+[submodule "external/lua"]
+	path = external/lua
+	url = git@github.com:R1NC/lua.git
+[submodule "build-tools/toolchains/Apple"]
+	path = build-tools/toolchains/Apple
+	url = git@github.com:R1NC/apple.cmake.git
+[submodule "external/openssl"]
+	path = external/openssl
+	url = git@github.com:R1NC/openssl.git

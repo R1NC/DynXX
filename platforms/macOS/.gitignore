@@ -1,0 +1,4 @@
+xcuserdata/
+*.xccheckout
+*.lock
+.DS_Store

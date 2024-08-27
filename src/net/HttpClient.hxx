@@ -1,0 +1,24 @@
+#ifndef ENGINEXX_HTTP_CLIENT_H_
+#define ENGINEXX_HTTP_CLIENT_H_
+
+#ifdef __cplusplus
+
+#include <string>
+
+namespace EngineXX
+{
+    namespace HttpClient
+    {
+        /**
+         * @brief http request
+         * @param url URL
+         * @param params params(transfer multiple params like `v1=a&v2=b`)
+         * @return response
+         */
+        const std::string Request(const std::string &url, const std::string &params);
+    }
+}
+
+#endif
+
+#endif // ENGINEXX_HTTP_CLIENT_H_

@@ -1,0 +1,11 @@
+{
+  "name": "enginexx",
+  "version": "1.0.0",
+  "description": "EngineXX HarmonyOS Demo.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "libenginexx.so": "file:./src/main/cpp/types/libenginexx"
+  }
+}
