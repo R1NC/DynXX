@@ -3,6 +3,15 @@
 #include <string.h>
 #include "../../../external/cjson/cJSON.h"
 
+#define JSON_READ_STR(j, k, v)                                                 \
+    do                                                                         \
+    {                                                                          \
+        if (j->string && strcmp(j->string, k) == 0 && j->type == cJSON_String) \
+        {                                                                      \
+            v = j->valuestring;                                                \
+        }                                                                      \
+    } while (0)
+
 extern "C"
 {
 #include "../../../external/lua/lauxlib.h"
@@ -62,14 +71,8 @@ int enginexx_http_reqL(lua_State *L)
         cJSON *cj = json->child;
         while (cj)
         {
-            if (cj->string && strcmp(cj->string, "url") == 0 && cj->type == cJSON_String)
-            {
-                url = cj->valuestring;
-            }
-            if (cj->string && strcmp(cj->string, "params") == 0 && cj->type == cJSON_String)
-            {
-                params = cj->valuestring;
-            }
+            JSON_READ_STR(cj, "url", url);
+            JSON_READ_STR(cj, "params", params);
             cj = cj->next;
         }
         cJSON_free(json);
