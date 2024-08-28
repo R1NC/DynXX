@@ -1,13 +1,36 @@
 #include "napi/native_api.h"
 #include "../../../../../../build.HarmonyOS/output/include/EngineXX.h"
+#include <cstdio>
 #include <string.h>
 #include <stdlib.h>
 
-#define CHECK_NAPI_STATUS(env, status, errMsg)                                                                         \
+#define PRINT_NAPI_STATUS_ERR(env, status, errMsg)                                                                     \
+    do {                                                                                                               \
+        char msg[128];                                                                                                 \
+        sprintf(msg, "napi_status=%d errMsg='%s'", status, errMsg);                                                           \
+        napi_throw_error(env, NULL, msg);                                                                            \
+    } while (0);
+
+#define CHECK_NAPI_STATUS_RETURN_ANY(env, status, errMsg)                                                              \
     do {                                                                                                               \
         if (status != napi_ok) {                                                                                       \
-            napi_throw_error(env, NULL, errMsg);                                                                       \
+            PRINT_NAPI_STATUS_ERR(env, status, errMsg);                                                                \
             return NULL;                                                                                               \
+        }                                                                                                              \
+    } while (0);
+
+#define CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, errMsg)                                                       \
+    do {                                                                                                               \
+        if (status != napi_ok) {                                                                                       \
+            PRINT_NAPI_STATUS_ERR(env, status, errMsg);                                                                \
+            return int2NapiValue(env, napi_cancelled);                                                                 \
+        }                                                                                                              \
+    } while (0);
+
+#define CHECK_NAPI_STATUS_RETURN_VOID(env, status, errMsg)                                                             \
+    do {                                                                                                               \
+        if (status != napi_ok) {                                                                                       \
+            PRINT_NAPI_STATUS_ERR(env, status, errMsg);                                                                \
         }                                                                                                              \
     } while (0);
 
@@ -33,7 +56,7 @@ static napi_value NetHttpReq(napi_env env, napi_callback_info info)
     napi_value args[2] = {nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
-    CHECK_NAPI_STATUS(env, status, "napi_get_cb_info() failed");
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
     const char *cUrl = napiValue2char(env, args[0]);
     const char *cParams = napiValue2char(env, args[1]);
@@ -66,7 +89,7 @@ static napi_value LLoadF(napi_env env, napi_callback_info info)
     napi_value args[2] = {nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
-    CHECK_NAPI_STATUS(env, status, "napi_get_cb_info() failed");
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
     long lstate = napiValue2long(env, args[0]);
     const char *file = napiValue2char(env, args[1]);
@@ -87,7 +110,7 @@ static napi_value LLoadS(napi_env env, napi_callback_info info)
     napi_value args[2] = {nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
-    CHECK_NAPI_STATUS(env, status, "napi_get_cb_info() failed");
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
     long lstate = napiValue2long(env, args[0]);
     const char *script = napiValue2char(env, args[1]);
@@ -108,7 +131,7 @@ static napi_value LCall(napi_env env, napi_callback_info info)
     napi_value args[3] = {nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
-    CHECK_NAPI_STATUS(env, status, "napi_get_cb_info() failed");
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
     long lstate = napiValue2long(env, args[0]);
     const char *func = napiValue2char(env, args[1]);
@@ -129,7 +152,7 @@ static napi_value LDestroy(napi_env env, napi_callback_info info)
     napi_value args[1] = {nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
-    CHECK_NAPI_STATUS(env, status, "napi_get_cb_info() failed");
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
     long lstate = napiValue2long(env, args[0]);
     
@@ -137,6 +160,8 @@ static napi_value LDestroy(napi_env env, napi_callback_info info)
 
     return int2NapiValue(env, napi_ok);
 }
+
+#pragma mark Register Module
 
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports) 
@@ -172,17 +197,17 @@ void RegisterEnginexxModule(void)
     napi_module_register(&enginexxModule); 
 }
 
-
+#pragma mark NAPI Utils
 
 static const char *napiValue2char(napi_env env, napi_value nv) 
 {
     napi_status status;
     size_t len;
     status = napi_get_value_string_utf8(env, nv, NULL, 0, &len);
-    CHECK_NAPI_STATUS(env, status, "napi_get_value_string_utf8() get length failed");
+    CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() get length failed");
     char *cStr = (char *)malloc(len + 1);
     status = napi_get_value_string_utf8(env, nv, cStr, len + 1, &len);
-    CHECK_NAPI_STATUS(env, status, "napi_get_value_string_utf8() get content failed");
+    CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() get content failed");
     return cStr;
 }
 
@@ -190,7 +215,7 @@ static const long napiValue2long(napi_env env, napi_value nv)
 {
     long l;
     napi_status status = napi_get_value_int64(env, nv, &l);
-    CHECK_NAPI_STATUS(env, status, "napi_get_value_int64() get content failed");
+    CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_int64() get content failed");
     return l;
 }
 
@@ -198,7 +223,7 @@ static napi_value char2NapiValue(napi_env env, const char *c)
 {
     napi_value v;
     napi_status status = napi_create_string_utf8(env, c, strlen(c), &v);
-    CHECK_NAPI_STATUS(env, status, "napi_create_string_utf8() failed");
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_string_utf8() failed");
     return v;
 }
 
@@ -206,7 +231,7 @@ static napi_value long2NapiValue(napi_env env, long l)
 {
     napi_value v;
     napi_status status = napi_create_int64(env, l, &v);
-    CHECK_NAPI_STATUS(env, status, "napi_create_int64() failed");
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_int64() failed");
     return v;
 }
 
@@ -214,6 +239,6 @@ static napi_value int2NapiValue(napi_env env, int i)
 {
     napi_value v;
     napi_status status = napi_create_int32(env, i, &v);
-    CHECK_NAPI_STATUS(env, status, "napi_create_int32() failed");
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_int32() failed");
     return v;
 }
