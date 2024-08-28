@@ -7,7 +7,7 @@
 #define PRINT_NAPI_STATUS_ERR(env, status, errMsg)                                                                     \
     do {                                                                                                               \
         char msg[128];                                                                                                 \
-        sprintf(msg, "napi_status=%d errMsg='%s'", status, errMsg);                                                           \
+        sprintf(msg, "status=%d desc='%s'", status, errMsg);                                                           \
         napi_throw_error(env, NULL, msg);                                                                            \
     } while (0);
 
@@ -31,6 +31,7 @@
     do {                                                                                                               \
         if (status != napi_ok) {                                                                                       \
             PRINT_NAPI_STATUS_ERR(env, status, errMsg);                                                                \
+            return;                                                                                                    \
         }                                                                                                              \
     } while (0);
 
