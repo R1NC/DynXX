@@ -17,11 +17,8 @@ int main()
 
     int ret = enginexx_L_loadF(lstate, "../Android/app/src/main/assets/biz.lua");
     if (ret == 0) {
-        const char* cVersion = enginexx_L_call(lstate, "lTestGetVersion", NULL);
-        std::cout << cVersion << std::endl;
-
         static const char* cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-        const char* cRsp = enginexx_L_call(lstate, "lTestHttpReq", cParams);
+        const char* cRsp = enginexx_L_call(lstate, "lNetHttpReq", cParams);
         std::cout << cRsp << std::endl;
     }
 

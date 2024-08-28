@@ -25,7 +25,9 @@ static napi_value GetVersion(napi_env env, napi_callback_info info)
     return v;
 }
 
-static napi_value HttpReq(napi_env env, napi_callback_info info) 
+#pragma mark Net
+
+static napi_value NetHttpReq(napi_env env, napi_callback_info info) 
 {
     size_t argc = 2;
     napi_value args[2] = {nullptr};
@@ -36,7 +38,7 @@ static napi_value HttpReq(napi_env env, napi_callback_info info)
     const char *cUrl = napiValue2char(env, args[0]);
     const char *cParams = napiValue2char(env, args[1]);
     
-    const char *cRsp = enginexx_http_req(cUrl, cParams);
+    const char *cRsp = enginexx_net_http_req(cUrl, cParams);
     free((void *)cUrl);
     free((void *)cParams);
 
@@ -44,6 +46,12 @@ static napi_value HttpReq(napi_env env, napi_callback_info info)
     free((void *)cRsp);
     return vRsp;
 }
+
+#pragma mark Log
+
+
+
+#pragma mark Lua
 
 static napi_value LCreate(napi_env env, napi_callback_info info)
 {
@@ -135,7 +143,7 @@ static napi_value Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor desc[] = {
         {"getVersion", nullptr, GetVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"httpReq", nullptr, HttpReq, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"netHttpReq", nullptr, NetHttpReq, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lCreate", nullptr, LCreate, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lLoadF", nullptr, LLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lLoadS", nullptr, LLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},

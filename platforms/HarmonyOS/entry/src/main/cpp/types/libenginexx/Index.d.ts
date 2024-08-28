@@ -1,6 +1,6 @@
 export const getVersion: () => string;
 
-export const httpReq: (url: string, params: string) => string;
+export const netHttpReq: (url: string, params: string) => string;
 
 export const lCreate: () => number;
 

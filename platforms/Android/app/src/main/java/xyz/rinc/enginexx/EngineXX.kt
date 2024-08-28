@@ -8,7 +8,13 @@ class EngineXX {
 
         external fun getVersion(): String
 
-        external fun httpRequest(url: String, params: String?): String?
+        external fun logSetLevel(level: Int)
+
+        external fun logSetCallback(callback: ((level: Int, content: String) -> Unit)?)
+
+        external fun logPrint(level: Int, content: String)
+
+        external fun netHttpReq(url: String, params: String?): String?
 
         external fun lCreate(): Long
 

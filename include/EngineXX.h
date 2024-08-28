@@ -1,6 +1,7 @@
 #ifndef ENGINEXX_H_
 #define ENGINEXX_H_
 
+#include "EngineXXLog.h"
 #include "EngineXXNet.h"
 #include "EngineXXLua.h"
 

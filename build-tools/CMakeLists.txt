@@ -8,6 +8,7 @@ set (CMAKE_CXX_STANDARD 11)
 project(EngineXX)
 
 set(ENGINE_FILES
+    ../src/log/Log.cxx
     ../src/net/HttpClient.cxx
     ../src/lua/LuaBridge.cxx
     ../src/EngineXX.cxx

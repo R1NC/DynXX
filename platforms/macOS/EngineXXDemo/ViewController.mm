@@ -22,11 +22,8 @@
     const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
     int ret = enginexx_L_loadF(lstate, cLuaPath);
     if (ret == 0) {
-        const char * cV = enginexx_L_call(lstate, "lTestGetVersion", NULL);
-        if (cV) s = [s stringByAppendingFormat:@"%@\n\n", CharP2NSString(cV)];
-        
         static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-        const char * cRsp = enginexx_L_call(lstate, "lTestHttpReq", cParams);
+        const char * cRsp = enginexx_L_call(lstate, "lNetHttpReq", cParams);
         if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
     }
     enginexx_L_destroy(lstate);

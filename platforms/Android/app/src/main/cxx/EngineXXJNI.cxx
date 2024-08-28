@@ -10,18 +10,70 @@ Java_xyz_rinc_enginexx_EngineXX_00024Companion_getVersion(JNIEnv *env,
     return env->NewStringUTF(cV);
 }
 
+#pragma mark Log
+
+static JNIEnv *sEnv;
+static jobject sLogCallback;
+static jmethodID sLogCallbackMethodId;
+
+static void enginexx_jni_log_callback(int level, const char *content) {
+    if (sEnv && sLogCallback && sLogCallbackMethodId) {
+        jstring jContent = sEnv->NewStringUTF(content);
+        sEnv->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_xyz_rinc_enginexx_EngineXX_00024Companion_logSetLevel(JNIEnv *env, jobject thiz,
+                                                                     jint level) {
+    enginexx_log_set_level(level);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_xyz_rinc_enginexx_EngineXX_00024Companion_logSetCallback(JNIEnv *env, jobject thiz,
+                                                                        jobject callback) {
+    if (callback) {
+        enginexx_log_set_callback(enginexx_jni_log_callback);
+        sEnv = env;
+        sLogCallback = env->NewWeakGlobalRef(callback);
+        jclass jcallback_class = env->GetObjectClass(callback);
+        if (jcallback_class) {
+            sLogCallbackMethodId = env->GetMethodID(jcallback_class, "invoke", "(ILjava/lang/String;)V");
+        }
+    } else {
+        enginexx_log_set_callback(nullptr);
+        sEnv = nullptr;
+        env->DeleteWeakGlobalRef(sLogCallback);
+        sLogCallback = nullptr;
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_xyz_rinc_enginexx_EngineXX_00024Companion_logPrint(JNIEnv *env, jobject thiz,
+                                                                  jint level, jstring content) {
+    const char* cContent = env->GetStringUTFChars(content, JNI_FALSE);
+    enginexx_log_print(level, cContent);
+}
+
+#pragma mark Net
+
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_xyz_rinc_enginexx_EngineXX_00024Companion_httpRequest(JNIEnv *env,
+Java_xyz_rinc_enginexx_EngineXX_00024Companion_netHttpReq(JNIEnv *env,
                                                           jobject thiz,
                                                           jstring url,
                                                           jstring params)
 {
     const char *cUrl = env->GetStringUTFChars(url, JNI_FALSE);
     const char *cParams = env->GetStringUTFChars(params, JNI_FALSE);
-    const char *cRsp = enginexx_http_req(cUrl, cParams);
+    const char *cRsp = enginexx_net_http_req(cUrl, cParams);
     return env->NewStringUTF(cRsp);
 }
+
+#pragma mark Lua
 
 extern "C"
 JNIEXPORT jlong JNICALL

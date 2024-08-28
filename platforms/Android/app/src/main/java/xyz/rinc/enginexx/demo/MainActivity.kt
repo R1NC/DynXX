@@ -20,16 +20,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        EngineXX.logSetCallback {level, content ->
+            android.util.Log.d("EngineXX", "$level | $content")
+        }
+
         val lState = EngineXX.lCreate()
         val luaScript = application.assets.open("biz.lua").bufferedReader().use {
             it.readText()
         }
         EngineXX.lLoadS(lState, luaScript)
 
-        val v = EngineXX.lCall(lState, "lTestGetVersion", null)
-
         val params = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}"
-        val rsp = EngineXX.lCall(lState, "lTestHttpReq", params)
+        val rsp = EngineXX.lCall(lState, "lNetHttpReq", params)
 
         EngineXX.lDestroy(lState)
 
@@ -37,7 +39,7 @@ class MainActivity : ComponentActivity() {
             EngineXXDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        txt = "$v\n\n$rsp",
+                        txt = "$rsp",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

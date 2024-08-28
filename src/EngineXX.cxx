@@ -12,6 +12,24 @@
         }                                                                      \
     } while (0)
 
+#define JSON_READ_INT(j, k, v)                                                 \
+    do                                                                         \
+    {                                                                          \
+        if (j->string && strcmp(j->string, k) == 0 && j->type == cJSON_Number) \
+        {                                                                      \
+            v = j->valueint;                                                   \
+        }                                                                      \
+    } while (0)
+
+#define JSON_READ_DOUBLE(j, k, v)                                              \
+    do                                                                         \
+    {                                                                          \
+        if (j->string && strcmp(j->string, k) == 0 && j->type == cJSON_Number) \
+        {                                                                      \
+            v = j->valuedouble;                                                \
+        }                                                                      \
+    } while (0)
+
 extern "C"
 {
 #include "../../../external/lua/lauxlib.h"
@@ -20,6 +38,7 @@ extern "C"
 #ifdef __cplusplus
 
 #include <string>
+#include "log/Log.hxx"
 #include "net/HttpClient.hxx"
 #include "lua/LuaBridge.hxx"
 
@@ -51,17 +70,59 @@ int enginexx_get_versionL(lua_State *L)
     return 1;
 }
 
-const char *enginexx_http_req(const char *url, const char *params)
+#pragma mark Log
+
+void enginexx_log_set_level(int level)
+{
+    EngineXX::Log::setLevel(level);
+}
+
+void enginexx_log_set_callback(void (*callback)(int level, const char *log))
+{
+    EngineXX::Log::setCallback(callback);
+}
+
+void enginexx_log_print(int level, const char *content)
+{
+    EngineXX::Log::print(level, content);
+}
+
+int enginexx_log_printL(lua_State *L)
+{
+    const char *s = luaL_checkstring(L, 1);
+    int level;
+    char *content;
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        cJSON *cj = json->child;
+        while (cj)
+        {
+            JSON_READ_INT(cj, "level", level);
+            JSON_READ_STR(cj, "content", content);
+            cj = cj->next;
+        }
+        cJSON_free(json);
+    }
+    enginexx_log_print(level, content);
+    return 0;
+}
+
+#pragma mark Net
+
+const char *enginexx_net_http_req(const char *url, const char *params)
 {
     const std::string sUrl(url);
     const std::string sParams(params);
-    auto s = EngineXX::HttpClient::Request(sUrl, sParams);
+    auto s = EngineXX::Net::HttpClient::Request(sUrl, sParams);
     char *c = (char *)malloc(s.size());
     strcpy(c, s.c_str());
     return c;
 }
 
-int enginexx_http_reqL(lua_State *L)
+#pragma mark Lua
+
+int enginexx_net_http_reqL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
     char *url, *params;
@@ -77,7 +138,7 @@ int enginexx_http_reqL(lua_State *L)
         }
         cJSON_free(json);
     }
-    const char *res = enginexx_http_req(url, params);
+    const char *res = enginexx_net_http_req(url, params);
     lua_pushstring(L, res);
     return 1;
 }
@@ -87,7 +148,8 @@ void *enginexx_L_create(void)
     lua_State *lstate = EngineXX::LuaBridge::create();
 
     EngineXX::LuaBridge::bindFunc(lstate, "enginexx_get_versionL", enginexx_get_versionL);
-    EngineXX::LuaBridge::bindFunc(lstate, "enginexx_http_reqL", enginexx_http_reqL);
+    EngineXX::LuaBridge::bindFunc(lstate, "enginexx_log_printL", enginexx_log_printL);
+    EngineXX::LuaBridge::bindFunc(lstate, "enginexx_net_http_reqL", enginexx_net_http_reqL);
 
     return lstate;
 }

@@ -1,5 +1,5 @@
-#ifndef ENGINEXX_HTTP_CLIENT_H_
-#define ENGINEXX_HTTP_CLIENT_H_
+#ifndef ENGINEXX_NET_HTTP_CLIENT_H_
+#define ENGINEXX_NET_HTTP_CLIENT_H_
 
 #ifdef __cplusplus
 
@@ -7,18 +7,21 @@
 
 namespace EngineXX
 {
-    namespace HttpClient
+    namespace Net
     {
-        /**
-         * @brief http request
-         * @param url URL
-         * @param params params(transfer multiple params like `v1=a&v2=b`)
-         * @return response
-         */
-        const std::string Request(const std::string &url, const std::string &params);
+        namespace HttpClient
+        {
+            /**
+             * @brief http request
+             * @param url URL
+             * @param params params(transfer multiple params like `v1=a&v2=b`)
+             * @return response
+             */
+            const std::string Request(const std::string &url, const std::string &params);
+        }
     }
 }
 
 #endif
 
-#endif // ENGINEXX_HTTP_CLIENT_H_
+#endif // ENGINEXX_NET_HTTP_CLIENT_H_
