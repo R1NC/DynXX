@@ -20,4 +20,4 @@ A cross-platform C/C++ framework.
 * CMake;
 * [Emscripten][1](For WebAssembly);
 
-[1]: [https://emscripten.org/]
+[1]: https://emscripten.org/
