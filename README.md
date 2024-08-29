@@ -18,6 +18,9 @@ A cross-platform C/C++ framework.
 
 * Clang;
 * CMake;
-* [Emscripten][1](For WebAssembly);
+* Xcode, for iOS & macOS;
+* Android Studio with NDK;
+* DevEco Studio NEXT with Native SDK，for HarmonyOS;
+* [Emscripten][1], for WebAssembly;
 
 [1]: https://emscripten.org/
