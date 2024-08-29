@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
+set (CMAKE_C_STANDARD 99)
 set (CMAKE_CXX_STANDARD 11)
 #add_compile_options("-stdlib=libc++" "-lc++abi" "-v")
 
@@ -15,7 +16,13 @@ set(ENGINE_FILES
 )
 
 set(LIB_TYPE STATIC)
-add_library(${PROJECT_NAME} ${LIB_TYPE} ${ENGINE_FILES})
+if(EMSCRIPTEN)
+    add_executable(${PROJECT_NAME} ${ENGINE_FILES})
+    set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s EXTRA_EXPORTED_RUNTIME_METHODS=['ccall','cwrap']")
+else()
+    add_library(${PROJECT_NAME} ${LIB_TYPE} ${ENGINE_FILES})
+endif()
 
 add_subdirectory(../external/lua lua.output)
 add_subdirectory(../external/cjson cjson.output)

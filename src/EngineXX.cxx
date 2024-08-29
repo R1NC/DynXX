@@ -42,6 +42,11 @@ extern "C"
 #include "net/HttpClient.hxx"
 #include "lua/LuaBridge.hxx"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#define EXPORT_WASM extern "C" EMSCRIPTEN_KEEPALIVE
+#endif
+
 namespace EngineXX
 {
 
@@ -55,6 +60,9 @@ namespace EngineXX
 
 #endif
 
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 const char *enginexx_get_version(void)
 {
     auto s = EngineXX::GetVersion();
@@ -72,16 +80,25 @@ int enginexx_get_versionL(lua_State *L)
 
 #pragma mark Log
 
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 void enginexx_log_set_level(int level)
 {
     EngineXX::Log::setLevel(level);
 }
 
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 void enginexx_log_set_callback(void (*callback)(int level, const char *log))
 {
     EngineXX::Log::setCallback(callback);
 }
 
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 void enginexx_log_print(int level, const char *content)
 {
     EngineXX::Log::print(level, content);
@@ -110,6 +127,9 @@ int enginexx_log_printL(lua_State *L)
 
 #pragma mark Net
 
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 const char *enginexx_net_http_req(const char *url, const char *params)
 {
     const std::string sUrl(url);
@@ -119,8 +139,6 @@ const char *enginexx_net_http_req(const char *url, const char *params)
     strcpy(c, s.c_str());
     return c;
 }
-
-#pragma mark Lua
 
 int enginexx_net_http_reqL(lua_State *L)
 {
@@ -143,6 +161,11 @@ int enginexx_net_http_reqL(lua_State *L)
     return 1;
 }
 
+#pragma mark Lua
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 void *enginexx_L_create(void)
 {
     lua_State *lstate = EngineXX::LuaBridge::create();
@@ -154,21 +177,33 @@ void *enginexx_L_create(void)
     return lstate;
 }
 
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 void enginexx_L_destroy(void *lstate)
 {
     EngineXX::LuaBridge::destroy((lua_State *)lstate);
 }
 
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 int enginexx_L_loadF(void *lstate, const char *file)
 {
     return EngineXX::LuaBridge::loadFile((lua_State *)lstate, file);
 }
 
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 int enginexx_L_loadS(void *lstate, const char *file)
 {
     return EngineXX::LuaBridge::loadScript((lua_State *)lstate, file);
 }
 
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 const char *enginexx_L_call(void *lstate, const char *func, const char *params)
 {
     return EngineXX::LuaBridge::callFunc((lua_State *)lstate, func, params);

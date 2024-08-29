@@ -4,6 +4,7 @@ build.iOS
 build.macOS
 build.HarmonyOS
 build.Linux
+build.WebAssembly
 build.Windows
 *.DS_Store
 CMakeCache.txt

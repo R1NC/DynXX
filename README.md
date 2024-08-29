@@ -6,13 +6,15 @@ A cross-platform C/C++ framework.
 
 **Supported Platform**:
 
-* [x] Android;
-* [x] iOS;
-* [x] Windows;
-* [x] macOS;
-* [x] HarmonyOS;
-* [x] Linux;
-* [ ] WebAssembly;
+| Platform        | Build | Demo  |
+| :-------------- | :---: | :---: |
+| Android         |  [x]  |  [x]  |
+| iOS             |  [x]  |  [x]  |
+| HarmonyOS(NEXT) |  [x]  |  [x]  |
+| Windows         |  [x]  |  [x]  |
+| macOS           |  [x]  |  [x]  |
+| Linux           |  [x]  |  [x]  |
+| WebAssembly     |  [x]  |  [ ]  |
 
 **Requirements**:
 
