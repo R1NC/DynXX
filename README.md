@@ -4,7 +4,7 @@ A cross-platform C/C++ framework.
 
 ![Arch](/res/arch.png)
 
-**Supported Platform**:
+### Supported Platforms:
 
 | Platform        | Build | Demo  |
 | :-------------- | :---: | :---: |
@@ -16,7 +16,7 @@ A cross-platform C/C++ framework.
 | Linux           |  :heavy_check_mark:  |  :heavy_check_mark:  |
 | WebAssembly     |  :heavy_check_mark:  |  :heavy_check_mark:  |
 
-**Requirements**:
+### Requirements:
 
 * C99, C++ 11;
 * Clang;
