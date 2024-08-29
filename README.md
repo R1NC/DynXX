@@ -8,16 +8,17 @@ A cross-platform C/C++ framework.
 
 | Platform        | Build | Demo  |
 | :-------------- | :---: | :---: |
-| Android         |  [x]  |  [x]  |
-| iOS             |  [x]  |  [x]  |
-| HarmonyOS(NEXT) |  [x]  |  [x]  |
-| Windows         |  [x]  |  [x]  |
-| macOS           |  [x]  |  [x]  |
-| Linux           |  [x]  |  [x]  |
-| WebAssembly     |  [x]  |  [ ]  |
+| Android         |  :heavy_check_mark:  |  :heavy_check_mark:  |
+| iOS             |  :heavy_check_mark:  |  :heavy_check_mark:  |
+| HarmonyOS(NEXT) |  :heavy_check_mark:  |  :heavy_check_mark:  |
+| Windows         |  :heavy_check_mark:  |  :heavy_check_mark:  |
+| macOS           |  :heavy_check_mark:  |  :heavy_check_mark:  |
+| Linux           |  :heavy_check_mark:  |  :heavy_check_mark:  |
+| WebAssembly     |  :heavy_check_mark:  |  :heavy_check_mark:  |
 
 **Requirements**:
 
+* C99, C++ 11;
 * Clang;
 * CMake;
 * Xcode, for iOS & macOS;
