@@ -52,95 +52,85 @@ static napi_value GetVersion(napi_env env, napi_callback_info info) {
 #pragma mark Log Callback
 
 typedef struct {
-    int level;
-    const char *content;
-} LogData;
-
-typedef struct {
-    napi_async_work work;
-    napi_threadsafe_function func;
-    LogData *data;
-} LogWork;
+    napi_async_work tsWork;
+    napi_threadsafe_function tsWorkFunc;
+    int logLevel;
+    const char *logContent;
+} TSLogWorkData;
 
 static napi_env sNapiEnv;
-static napi_value sTsLogCallback;
 static napi_ref sTsLogCallbackRef;
-
-static void callTsLogFunc(napi_env env, napi_value ts_callback, LogData *logData) {
-    size_t argc = 2;
-    napi_value argv[2];
-    argv[0] = int2NapiValue(env, logData->level);
-    argv[1] = char2NapiValue(env, logData->content);
-
-    napi_value vGlobal;
-    napi_status status = napi_get_global(env, &vGlobal);
-    CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_get_global() failed");
-
-    status = napi_call_function(env, vGlobal, ts_callback, argc, argv, NULL);
-    CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_call_function() failed");
-}
 
 static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context, void *data) {
     if (env == NULL || ts_callback == NULL || data == NULL)
         return;
 
-    LogData *logData = (LogData *)data;
+    TSLogWorkData *tSLogWorkData = (TSLogWorkData *)data;
+
+    size_t argc = 2;
+    napi_value argv[2];
+    argv[0] = int2NapiValue(env, tSLogWorkData->logLevel);
+    argv[1] = char2NapiValue(env, tSLogWorkData->logContent);
+
+    napi_value vGlobal;
+    napi_status status = napi_get_global(env, &vGlobal);
+    CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_get_global() failed");
 
     napi_get_reference_value(sNapiEnv, sTsLogCallbackRef, &ts_callback);
+    CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_get_reference_value() failed");
 
-    callTsLogFunc(env, ts_callback, logData);
+    status = napi_call_function(env, vGlobal, ts_callback, argc, argv, NULL);
+    CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_call_function() failed");
 
-    free(data);
+    free((void *)tSLogWorkData->logContent);
+    free((void *)tSLogWorkData);
 }
 
 static void OnLogWorkExecute(napi_env env, void *data) {
-    LogWork *logWork = (LogWork *)data;
+    TSLogWorkData *tSLogWorkData = (TSLogWorkData *)data;
 
-    napi_status status = napi_acquire_threadsafe_function(logWork->func);
+    napi_status status = napi_acquire_threadsafe_function(tSLogWorkData->tsWorkFunc);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_acquire_threadsafe_function() failed");
 
-    status = napi_call_threadsafe_function(logWork->func, logWork->data, napi_tsfn_blocking);
+    status = napi_call_threadsafe_function(tSLogWorkData->tsWorkFunc, tSLogWorkData, napi_tsfn_blocking);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_call_threadsafe_function() failed");
 }
 
 static void OnLogWorkComplete(napi_env env, napi_status status, void *data) {
-    LogWork *logWork = (LogWork *)data;
+    TSLogWorkData *tSLogWorkData = (TSLogWorkData *)data;
 
-    status = napi_release_threadsafe_function(logWork->func, napi_tsfn_release);
+    status = napi_release_threadsafe_function(tSLogWorkData->tsWorkFunc, napi_tsfn_release);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_release_threadsafe_function() failed");
 
-    status = napi_delete_async_work(env, logWork->work);
+    status = napi_delete_async_work(env, tSLogWorkData->tsWork);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_delete_async_work() failed");
-
-    logWork->work = NULL;
-    logWork->func = NULL;
-
-    // free(data);
 }
 
-static void InnerLogCallback(int level, const char *content) {
-    if (sNapiEnv == NULL || sTsLogCallback == NULL || content == NULL)
+static void engineLogCallback(int level, const char *content) {
+    if (sNapiEnv == NULL || content == NULL)
         return;
 
-    LogData *logData = (LogData *)malloc(sizeof(LogData *));
-    logData->level = level;
-    logData->content = content;
+    TSLogWorkData *tSLogWorkData = (TSLogWorkData *)malloc(sizeof(TSLogWorkData));
+    tSLogWorkData->tsWork = NULL;
+    tSLogWorkData->tsWorkFunc = NULL;
+    tSLogWorkData->logLevel = level;
+    tSLogWorkData->logContent = content;
 
-    LogWork *logWork = (LogWork *)malloc(sizeof(LogWork *));
-    logWork->func = NULL;
-    logWork->work = NULL;
-    logWork->data = logData;
     napi_value vWorkName = char2NapiValue(sNapiEnv, "NAPI_LOG_CALLBACK_WORK");
 
-    napi_status status = napi_create_threadsafe_function(sNapiEnv, sTsLogCallback, NULL, vWorkName, 0, 1, NULL, NULL,
-                                                         NULL, OnLogWorkCallTS, &(logWork->func));
+    napi_value vTsCallback;
+    napi_status status = napi_get_reference_value(sNapiEnv, sTsLogCallbackRef, &vTsCallback);
+    CHECK_NAPI_STATUS_RETURN_VOID(sNapiEnv, status, "napi_get_reference_value() failed");
+
+    status = napi_create_threadsafe_function(sNapiEnv, vTsCallback, NULL, vWorkName, 0, 1, NULL, NULL, NULL,
+                                             OnLogWorkCallTS, &(tSLogWorkData->tsWorkFunc));
     CHECK_NAPI_STATUS_RETURN_VOID(sNapiEnv, status, "napi_create_threadsafe_function() failed");
 
-    status = napi_create_async_work(sNapiEnv, NULL, vWorkName, OnLogWorkExecute, OnLogWorkComplete, logWork,
-                                    &(logWork->work));
+    status = napi_create_async_work(sNapiEnv, NULL, vWorkName, OnLogWorkExecute, OnLogWorkComplete, tSLogWorkData,
+                                    &(tSLogWorkData->tsWork));
     CHECK_NAPI_STATUS_RETURN_VOID(sNapiEnv, status, "napi_create_async_work() failed");
 
-    status = napi_queue_async_work(sNapiEnv, logWork->work);
+    status = napi_queue_async_work(sNapiEnv, tSLogWorkData->tsWork);
     CHECK_NAPI_STATUS_RETURN_VOID(sNapiEnv, status, "napi_queue_async_work() failed");
 }
 
@@ -148,12 +138,12 @@ static void InnerLogCallback(int level, const char *content) {
 
 static napi_value LogSetLevel(napi_env env, napi_callback_info info) {
     size_t argc = 1;
-    napi_value argv_[1] = {nullptr};
+    napi_value args[1] = {nullptr};
 
-    napi_status status = napi_get_cb_info(env, info, &argc, argv_, nullptr, nullptr);
+    napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    int level = napiValue2int(env, argv_[0]);
+    int level = napiValue2int(env, args[0]);
 
     enginexx_log_set_level(level);
 
@@ -166,22 +156,22 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info) {
 
     napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
-    
-    sTsLogCallback = argv[0];
-    if (sTsLogCallback == NULL) {
+
+    napi_value vLogCallback = argv[0];
+    if (vLogCallback == NULL) {
         sNapiEnv = NULL;
-        
+
         napi_delete_reference(env, sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_delete_reference() failed");
-        
+
         enginexx_log_set_callback(NULL);
     } else {
         sNapiEnv = env;
-        
-        napi_create_reference(env, sTsLogCallback, 1, &sTsLogCallbackRef);
+
+        napi_create_reference(env, vLogCallback, 1, &sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_reference() failed");
-        
-        enginexx_log_set_callback(InnerLogCallback);
+
+        enginexx_log_set_callback(engineLogCallback);
     }
 
     return int2NapiValue(env, napi_ok);
@@ -189,13 +179,13 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info) {
 
 static napi_value LogPrint(napi_env env, napi_callback_info info) {
     size_t argc = 2;
-    napi_value argv_[2] = {nullptr};
+    napi_value args[2] = {nullptr};
 
-    napi_status status = napi_get_cb_info(env, info, &argc, argv_, nullptr, nullptr);
+    napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    int level = napiValue2int(env, argv_[0]);
-    const char *content = napiValue2char(env, argv_[1]);
+    int level = napiValue2int(env, args[0]);
+    const char *content = napiValue2char(env, args[1]);
 
     enginexx_log_print(level, content);
     free((void *)content);
