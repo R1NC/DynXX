@@ -23,7 +23,7 @@ A cross-platform C/C++ framework.
 * CMake;
 * Xcode, for iOS & macOS;
 * Android Studio(or IntelliJ IDEA) with NDK;
-* DevEco Studio NEXT with Native SDK，for HarmonyOS;
+* DevEco Studio NEXT with Native SDK, for HarmonyOS;
 * [Emscripten][1], for WebAssembly;
 
 [1]: https://emscripten.org/
