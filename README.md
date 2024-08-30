@@ -18,7 +18,7 @@ A cross-platform C/C++ framework.
 
 ### Requirements:
 
-* C99, C++ 11;
+* C99, C++11;
 * Clang;
 * CMake;
 * Xcode, for iOS & macOS;
