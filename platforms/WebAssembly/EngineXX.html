@@ -11,7 +11,10 @@
     <script type="text/javascript" src="../../build.WebAssembly/output/arm/EngineXX.js"></script>
 
     <script>
-        //Test Callback:
+        /**
+         * WARNING: C/C++ callback JS function in async thread is not supported:
+         * https://github.com/emscripten-core/emscripten/issues/16567
+         */
         Module['onRuntimeInitialized'] = function () {
             var _func = Module.addFunction(function (level, content) {
                 sContent = Module.UTF8ToString(content);

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #TODO
-EMSCRIPTEN_ROOT_PATH="~/dev/emsdk/upstream/emscripten"
+EMSCRIPTEN_ROOT_PATH="~/dev/emscripten/upstream/emscripten"
 declare -i DEBUG=0
 
 BUILD_DIR=../build.WebAssembly
