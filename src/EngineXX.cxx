@@ -44,7 +44,7 @@ extern "C"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
-#define EXPORT_WASM extern "C" EMSCRIPTEN_KEEPALIVE
+#define EXPORT_WASM extern "C"
 #endif
 
 namespace EngineXX

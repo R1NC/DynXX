@@ -11,13 +11,13 @@
     <script type="text/javascript" src="../../build.WebAssembly/output/arm/EngineXX.js"></script>
 
     <script>
-        const getVersion = Module.cwrap("enginexx_get_version", "string", []);
-        const netHttpReq = Module.cwrap("enginexx_net_http_req", "string", ["string", "string"]);
-
         function test() {
-            const v = getVersion();
-            window.alert("version:\n" + v);
-            const rsp = netHttpReq("https://rinc.xyz", "");
+            const _version = Module._enginexx_get_version();
+            const version = Module.UTF8ToString(_version);
+            window.alert("version:\n" + version);
+
+            const _rsp = Module._enginexx_net_http_req("https://rinc.xyz", "");
+            const rsp = Module.UTF8ToString(_rsp);
             window.alert("http rsp:\n" + rsp);
         }
     </script>
