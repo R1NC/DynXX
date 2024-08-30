@@ -11,6 +11,15 @@
     <script type="text/javascript" src="../../build.WebAssembly/output/arm/EngineXX.js"></script>
 
     <script>
+        //Test Callback:
+        Module['onRuntimeInitialized'] = function () {
+            var _func = Module.addFunction(function (level, content) {
+                sContent = Module.UTF8ToString(content);
+                console.log('EngineXX<' + level + '>' + sContent);
+            }, 'vii');//wasm type signature just support number
+            Module._enginexx_log_set_callback(_func);
+        }
+
         function jstr2wasm(jstr) {
             var len = jstr.length + 1;
             var ptr = Module._malloc(len);

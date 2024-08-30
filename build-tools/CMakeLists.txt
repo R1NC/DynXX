@@ -20,7 +20,7 @@ if(EMSCRIPTEN)
     add_executable(${PROJECT_NAME} ${ENGINE_FILES})
     set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
     # WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_enginexx_L_create','_enginexx_L_destroy','_enginexx_L_loadS','_enginexx_L_call']")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_enginexx_L_create','_enginexx_L_destroy','_enginexx_L_loadS','_enginexx_L_call']")
 else()
     add_library(${PROJECT_NAME} ${LIB_TYPE} ${ENGINE_FILES})
 endif()
