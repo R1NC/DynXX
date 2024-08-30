@@ -1,4 +1,4 @@
-# EngineXX
+# NGenXX
 
 A cross-platform C/C++ framework.
 
