@@ -11,41 +11,66 @@
     <script type="text/javascript" src="../../build.WebAssembly/output/arm/EngineXX.js"></script>
 
     <script>
+        function jstr2wasm(jstr) {
+            var len = jstr.length + 1;
+            var ptr = Module._malloc(len);
+            stringToUTF8(jstr, ptr, len);
+            return ptr;
+        }
+
         function testGetVersion() {
             _version = Module._enginexx_get_version();
 
             version = Module.UTF8ToString(_version);
             window.alert("version:\n" + version);
+
+            Module._free(_version);
         }
 
         function testHttpReq() {
-            _rsp = Module._enginexx_net_http_req("https://rinc.xyz", "");
+            _url = jstr2wasm("https://rinc.xyz");
+            _params = jstr2wasm("");
+            _rsp = Module._enginexx_net_http_req(_url, _params);
 
             rsp = Module.UTF8ToString(_rsp);
             window.alert("http rsp:\n" + rsp);
+
+            Module._free(_rsp);
+            Module._free(_params);
+            Module._free(_url);
         }
 
         function testCallLua() {
             _lstate = Module._enginexx_L_create();
-            _loadRet = Module._enginexx_L_loadS(_lstate, "function lNetHttpReq(pReq)\n" +
+
+            _luaScript = jstr2wasm("function lNetHttpReq(pReq)\n" +
                 "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
                 "enginexx_log_printL(pLog);\n" +
                 "rsp = enginexx_net_http_reqL(pReq);\n" +
                 "return rsp;\n" +
                 "end");
-            _callRes = Module._enginexx_L_call(_lstate, "lNetHttpReq", '{"url":"https://rinc.xyz","params":""}');
+            _loadRet = Module._enginexx_L_loadS(_lstate, _luaScript);
+
+            _funcName = jstr2wasm("lNetHttpReq");
+            _funcParams = jstr2wasm('{"url":"https://rinc.xyz","params":""}');
+            _callRes = Module._enginexx_L_call(_lstate, _funcName, _funcParams);
 
             callRes = Module.UTF8ToString(_callRes);
             window.alert("Lua running result:\n" + callRes);
 
             Module._enginexx_L_destroy(_lstate);
+
+            Module._free(_callRes);
+            Module._free(_funcParams);
+            Module._free(_funcName);
+            Module._free(_loadRet);
+            Module._free(_luaScript);
+            Module._free(_lstate);
         }
     </script>
 
     <button onclick="testGetVersion()">testGetVersion</button>
-
     <button onclick="testHttpReq()">testHttpReq</button>
-
     <button onclick="testCallLua()">testCallLua</button>
 
 </body>

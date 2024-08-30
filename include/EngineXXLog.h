@@ -1,5 +1,15 @@
-#ifndef ENGINEXX_LOG_H_
-#define ENGINEXX_LOG_H_
+#ifndef ENGINEXX_LOG_LOG_H_
+#define ENGINEXX_LOG_LOG_H_
+
+/**
+ * 
+ */
+enum EngineXXLogLevel {
+    Info,
+    Debug,
+    Warn,
+    Error
+};
 
 /**
  * @brief Set log level
@@ -22,4 +32,4 @@ void enginexx_log_set_callback(void (*callback)(int level, const char *log));
  */
 void enginexx_log_print(int level, const char *content);
 
-#endif // ENGINEXX_LOG_H_
+#endif // ENGINEXX_LOG_LOG_H_

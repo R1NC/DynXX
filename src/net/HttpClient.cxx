@@ -1,6 +1,8 @@
 #ifdef __cplusplus
 
 #include "../../../external/curl/include/curl/curl.h"
+#include "../../include/EngineXXLog.h"
+#include "../log/Log.hxx"
 #include <iostream>
 #include <algorithm>
 
@@ -24,6 +26,7 @@ namespace EngineXX
                 CURL *curl = curl_easy_init();
                 if (curl)
                 {
+                    Log::print(Debug, ("HttpClient.Request url:" + url + " params:" + params).c_str());
                     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
                     curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
                     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
