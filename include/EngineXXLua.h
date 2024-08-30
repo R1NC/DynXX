@@ -17,7 +17,7 @@ void enginexx_L_destroy(void *lstate);
 
 /**
  * @brief Load Lua file
- * @warning Not accessible in Lua!
+ * @warning Not accessible in Lua! Not accessible in WebAssembly!(Will alert a prompt window.)
  * @param lstate `lua_State*`
  * @param file Lua file path
  * @return success or not

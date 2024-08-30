@@ -42,9 +42,11 @@ extern "C"
 #include "net/HttpClient.hxx"
 #include "lua/LuaBridge.hxx"
 
+// WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
-#define EXPORT_WASM extern "C"
+#define EXPORT_WASM extern "C" EMSCRIPTEN_KEEPALIVE
+#define EXPORT_WASM_LUA extern "C"
 #endif
 
 namespace EngineXX
@@ -164,7 +166,7 @@ int enginexx_net_http_reqL(lua_State *L)
 #pragma mark Lua
 
 #ifdef __EMSCRIPTEN__
-EXPORT_WASM
+EXPORT_WASM_LUA
 #endif
 void *enginexx_L_create(void)
 {
@@ -178,23 +180,22 @@ void *enginexx_L_create(void)
 }
 
 #ifdef __EMSCRIPTEN__
-EXPORT_WASM
+EXPORT_WASM_LUA
 #endif
 void enginexx_L_destroy(void *lstate)
 {
     EngineXX::LuaBridge::destroy((lua_State *)lstate);
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+#ifndef __EMSCRIPTEN__
 int enginexx_L_loadF(void *lstate, const char *file)
 {
     return EngineXX::LuaBridge::loadFile((lua_State *)lstate, file);
 }
+#endif
 
 #ifdef __EMSCRIPTEN__
-EXPORT_WASM
+EXPORT_WASM_LUA
 #endif
 int enginexx_L_loadS(void *lstate, const char *file)
 {
@@ -202,7 +203,7 @@ int enginexx_L_loadS(void *lstate, const char *file)
 }
 
 #ifdef __EMSCRIPTEN__
-EXPORT_WASM
+EXPORT_WASM_LUA
 #endif
 const char *enginexx_L_call(void *lstate, const char *func, const char *params)
 {

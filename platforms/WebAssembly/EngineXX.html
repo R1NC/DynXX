@@ -11,18 +11,42 @@
     <script type="text/javascript" src="../../build.WebAssembly/output/arm/EngineXX.js"></script>
 
     <script>
-        function test() {
-            const _version = Module._enginexx_get_version();
-            const version = Module.UTF8ToString(_version);
-            window.alert("version:\n" + version);
+        function testGetVersion() {
+            _version = Module._enginexx_get_version();
 
-            const _rsp = Module._enginexx_net_http_req("https://rinc.xyz", "");
-            const rsp = Module.UTF8ToString(_rsp);
+            version = Module.UTF8ToString(_version);
+            window.alert("version:\n" + version);
+        }
+
+        function testHttpReq() {
+            _rsp = Module._enginexx_net_http_req("https://rinc.xyz", "");
+
+            rsp = Module.UTF8ToString(_rsp);
             window.alert("http rsp:\n" + rsp);
+        }
+
+        function testCallLua() {
+            _lstate = Module._enginexx_L_create();
+            _loadRet = Module._enginexx_L_loadS(_lstate, "function lNetHttpReq(pReq)\n" +
+                "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
+                "enginexx_log_printL(pLog);\n" +
+                "rsp = enginexx_net_http_reqL(pReq);\n" +
+                "return rsp;\n" +
+                "end");
+            _callRes = Module._enginexx_L_call(_lstate, "lNetHttpReq", '{"url":"https://rinc.xyz","params":""}');
+
+            callRes = Module.UTF8ToString(_callRes);
+            window.alert("Lua running result:\n" + callRes);
+
+            Module._enginexx_L_destroy(_lstate);
         }
     </script>
 
-    <button onclick="test()">test</button>
+    <button onclick="testGetVersion()">testGetVersion</button>
+
+    <button onclick="testHttpReq()">testHttpReq</button>
+
+    <button onclick="testCallLua()">testCallLua</button>
 
 </body>
 

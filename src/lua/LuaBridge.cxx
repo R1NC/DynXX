@@ -31,6 +31,7 @@ namespace EngineXX
             lua_setglobal(lstate, funcName);
         }
 
+#ifndef __EMSCRIPTEN__
         int loadFile(lua_State *lstate, const char *file)
         {
             int ret = luaL_dofile(lstate, file);
@@ -40,6 +41,7 @@ namespace EngineXX
             }
             return ret;
         }
+#endif
 
         int loadScript(lua_State *lstate, const char *script)
         {

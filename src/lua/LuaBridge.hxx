@@ -19,6 +19,7 @@ namespace EngineXX
 
         /**
          * @brief Load Lua file
+         * @warning Will alert a prompt window in WebAssembly!
          * @param lstate `lua_State*`
          * @param file Lua file path
          * @return success or not
