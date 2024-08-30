@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #TODO
-EMSCRIPTEN_ROOT_PATH="~/dev/emscripten/upstream/emscripten"
+EMSCRIPTEN_ROOT_PATH="~/dev/emsdk/upstream/emscripten"
 declare -i DEBUG=0
 
 BUILD_DIR=../build.WebAssembly
@@ -23,8 +23,8 @@ function build4wasm {
 
     OUTPUT_DIR=output/${ABI}
     mkdir -p ${OUTPUT_DIR}
-    cp EngineXX.wasm ${OUTPUT_DIR}
-    cp EngineXX.js ${OUTPUT_DIR}
+    cp NGenXX.wasm ${OUTPUT_DIR}
+    cp NGenXX.js ${OUTPUT_DIR}
 }
 
 LIB_TYPE="Release"

@@ -43,7 +43,7 @@ build4harmony arm64-v8a 12 Release
 
 HEADER_OUTPUT_DIR=output/include
 mkdir -p ${HEADER_OUTPUT_DIR}
-cp ../include/EngineXX.h ${HEADER_OUTPUT_DIR}
-cp ../include/EngineXXLog.h ${HEADER_OUTPUT_DIR}
-cp ../include/EngineXXLua.h ${HEADER_OUTPUT_DIR}
-cp ../include/EngineXXNet.h ${HEADER_OUTPUT_DIR}
+cp ../include/NGenXX.h ${HEADER_OUTPUT_DIR}
+cp ../include/NGenXXLog.h ${HEADER_OUTPUT_DIR}
+cp ../include/NGenXXLua.h ${HEADER_OUTPUT_DIR}
+cp ../include/NGenXXNet.h ${HEADER_OUTPUT_DIR}

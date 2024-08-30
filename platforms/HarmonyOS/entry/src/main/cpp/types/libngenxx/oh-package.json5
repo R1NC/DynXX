@@ -1,0 +1,6 @@
+{
+  "name": "libngenxx.so",
+  "types": "./Index.d.ts",
+  "version": "1.0.0",
+  "description": "NGenXX NAPI demo."
+}

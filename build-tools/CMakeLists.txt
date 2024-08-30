@@ -6,13 +6,13 @@ set (CMAKE_C_STANDARD 99)
 set (CMAKE_CXX_STANDARD 11)
 #add_compile_options("-stdlib=libc++" "-lc++abi" "-v")
 
-project(EngineXX)
+project(NGenXX)
 
 set(ENGINE_FILES
     ../src/log/Log.cxx
     ../src/net/HttpClient.cxx
     ../src/lua/LuaBridge.cxx
-    ../src/EngineXX.cxx
+    ../src/NGenXX.cxx
 )
 
 set(LIB_TYPE STATIC)
@@ -20,7 +20,7 @@ if(EMSCRIPTEN)
     add_executable(${PROJECT_NAME} ${ENGINE_FILES})
     set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
     # WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_enginexx_L_create','_enginexx_L_destroy','_enginexx_L_loadS','_enginexx_L_call']")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_ngenxx_L_create','_ngenxx_L_destroy','_ngenxx_L_loadS','_ngenxx_L_call']")
 else()
     add_library(${PROJECT_NAME} ${LIB_TYPE} ${ENGINE_FILES})
 endif()

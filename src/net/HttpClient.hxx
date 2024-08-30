@@ -1,11 +1,11 @@
-#ifndef ENGINEXX_NET_HTTP_CLIENT_H_
-#define ENGINEXX_NET_HTTP_CLIENT_H_
+#ifndef NGENXX_NET_HTTP_CLIENT_H_
+#define NGENXX_NET_HTTP_CLIENT_H_
 
 #ifdef __cplusplus
 
 #include <string>
 
-namespace EngineXX
+namespace NGenXX
 {
     namespace Net
     {
@@ -24,4 +24,4 @@ namespace EngineXX
 
 #endif
 
-#endif // ENGINEXX_NET_HTTP_CLIENT_H_
+#endif // NGENXX_NET_HTTP_CLIENT_H_

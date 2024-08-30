@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.22.1)
 
-project("EngineXXJNI")
+project("NGenXXJNI")
 
-add_library(${CMAKE_PROJECT_NAME} SHARED EngineXXJNI.cxx)
+add_library(${CMAKE_PROJECT_NAME} SHARED NGenXXJNI.cxx)
 
 set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.Android/output/Release/${ANDROID_ABI})
 
@@ -36,10 +36,10 @@ set(libcjsonPath ${libDir}/libcjson.a)
 add_library(libcjson STATIC IMPORTED)
 set_property(TARGET libcjson PROPERTY IMPORTED_LOCATION ${libcjsonPath})
 
-#Find libEngineXX
-set(libEngineXXPath ${libDir}/libEngineXX.a)
-add_library(libEngineXX STATIC IMPORTED)
-set_property(TARGET libEngineXX PROPERTY IMPORTED_LOCATION ${libEngineXXPath})
+#Find libNGenXX
+set(libNGenXXPath ${libDir}/libNGenXX.a)
+add_library(libNGenXX STATIC IMPORTED)
+set_property(TARGET libNGenXX PROPERTY IMPORTED_LOCATION ${libNGenXXPath})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         #libcrypto
@@ -48,7 +48,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         libcurl
         liblua
         libcjson
-        libEngineXX
+        libNGenXX
         z
         android
         log

@@ -1,5 +1,5 @@
-#ifndef ENGINEXX_LUA_BRIDGE_H_
-#define ENGINEXX_LUA_BRIDGE_H_
+#ifndef NGENXX_LUA_BRIDGE_H_
+#define NGENXX_LUA_BRIDGE_H_
 
 #ifdef __cplusplus
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace EngineXX
+namespace NGenXX
 {
     namespace LuaBridge
     {
@@ -61,4 +61,4 @@ namespace EngineXX
 
 #endif
 
-#endif // ENGINEXX_LUA_BRIDGE_H_
+#endif // NGENXX_LUA_BRIDGE_H_

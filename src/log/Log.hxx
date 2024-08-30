@@ -1,9 +1,9 @@
-#ifndef ENGINEXX_LOG_H_
-#define ENGINEXX_LOG_H_
+#ifndef NGENXX_LOG_H_
+#define NGENXX_LOG_H_
 
 #ifdef __cplusplus
 
-namespace EngineXX
+namespace NGenXX
 {
     namespace Log
     {
@@ -25,4 +25,4 @@ namespace EngineXX
 }
 
 #endif
-#endif // ENGINEXX_LOG_H_
+#endif // NGENXX_LOG_H_

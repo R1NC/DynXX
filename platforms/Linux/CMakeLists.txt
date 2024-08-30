@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(demo.linux VERSION 0.1)
+project(NGenXX VERSION 0.1)
 
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER g++)
@@ -12,7 +12,7 @@ get_filename_component(CURRENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 set(STATIC_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../build.Linux/output/Release")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${STATIC_LIB_PATH}/EngineXX.a
+    ${STATIC_LIB_PATH}/NGenXX.a
     ${STATIC_LIB_PATH}/curl.a
     ${STATIC_LIB_PATH}/cjson.a
     ${STATIC_LIB_PATH}/lua.a

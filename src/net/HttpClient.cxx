@@ -1,12 +1,12 @@
 #ifdef __cplusplus
 
 #include "../../../external/curl/include/curl/curl.h"
-#include "../../include/EngineXXLog.h"
+#include "../../include/NGenXXLog.h"
 #include "../log/Log.hxx"
 #include <iostream>
 #include <algorithm>
 
-namespace EngineXX
+namespace NGenXX
 {
     namespace Net
     {

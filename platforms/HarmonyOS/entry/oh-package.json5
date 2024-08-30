@@ -1,11 +1,11 @@
 {
-  "name": "enginexx",
+  "name": "ngenxx",
   "version": "1.0.0",
-  "description": "EngineXX HarmonyOS Demo.",
+  "description": "NGenXX HarmonyOS Demo.",
   "main": "",
   "author": "",
   "license": "",
   "dependencies": {
-    "libenginexx.so": "file:./src/main/cpp/types/libenginexx"
+    "libngenxx.so": "file:./src/main/cpp/types/libngenxx"
   }
 }

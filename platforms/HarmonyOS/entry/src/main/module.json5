@@ -1,9 +1,9 @@
 {
   "module": {
-    "name": "enginexx",
+    "name": "ngenxx",
     "type": "entry",
     "description": "$string:module_desc",
-    "mainElement": "EngineXXdAbility",
+    "mainElement": "NGenXXdAbility",
     "deviceTypes": [
       "phone"
     ],

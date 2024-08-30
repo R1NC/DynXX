@@ -9,7 +9,7 @@ extern "C"
 
 #define PRINT_L_ERROR(L, prefix) fprintf(stderr, "%s %s\n", prefix, lua_tostring(L, -1))
 
-namespace EngineXX
+namespace NGenXX
 {
     namespace LuaBridge
     {

@@ -4,7 +4,7 @@ A cross-platform C/C++ framework.
 
 ![Arch](/res/arch.png)
 
-### Supported Platforms:
+### :iphone: Supported Platforms:
 
 | Platform        | Build              | Demo               |
 | :-------------- | :----------------: | :----------------: |
@@ -16,13 +16,12 @@ A cross-platform C/C++ framework.
 | Linux           | :heavy_check_mark: | :heavy_check_mark: |
 | WebAssembly     | :heavy_check_mark: | :heavy_check_mark: |
 
-### Unsupported Features in WebAssembly:
+### :warning: Unsupported Features in WebAssembly:
 
 * Load Lua script with file;(Will trigger a prompt window.)
-* Network request with cURL;(Domain can not be resolved, WebSocket timeout.)
 * [C/C++ callback JS function in async thread][2];
 
-### Requirements:
+### :hammer_and_pick: Requirements:
 
 * C99, C++11;
 * Clang;
@@ -32,5 +31,5 @@ A cross-platform C/C++ framework.
 * DevEco Studio NEXT with Native SDK, for HarmonyOS;
 * [Emscripten][1], for WebAssembly;
 
-[1]: https://emscripten.org/
+[1]: https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install
 [2]: https://github.com/emscripten-core/emscripten/issues/16567

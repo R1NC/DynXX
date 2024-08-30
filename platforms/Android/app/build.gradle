@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'xyz.rinc.enginexx.demo'
+    namespace 'xyz.rinc.ngenxx.demo'
     compileSdk 34
 
     defaultConfig {
-        applicationId "xyz.rinc.enginexx.demo"
+        applicationId "xyz.rinc.ngenxx.demo"
         minSdk 24
         targetSdk 34
         versionCode 1

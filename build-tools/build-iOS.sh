@@ -61,7 +61,7 @@ then
 fi
 LIB_OUTPUT_DIR=output/${LIB_TYPE}
 mkdir -p ${LIB_OUTPUT_DIR}
-${COMMAND} ${LIB_DIR}libEngineXX.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/EngineXX.a
+${COMMAND} ${LIB_DIR}libNGenXX.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/NGenXX.a
 ${COMMAND} curl.output/lib/${LIB_DIR}libcurl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/curl.a
 #${COMMAND} openssl.output/ssl/${LIB_DIR}libssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ssl.a
 #${COMMAND} openssl.output/crypto/${LIB_DIR}libcrypto.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/crypto.a
@@ -72,7 +72,7 @@ ${COMMAND} cjson.output/${LIB_DIR}libcjson.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/cj
 #Copy headers
 HEADER_OUTPUT_DIR=output/include
 mkdir -p ${HEADER_OUTPUT_DIR}
-cp ../include/EngineXX.h ${HEADER_OUTPUT_DIR}
-cp ../include/EngineXXLog.h ${HEADER_OUTPUT_DIR}
-cp ../include/EngineXXLua.h ${HEADER_OUTPUT_DIR}
-cp ../include/EngineXXNet.h ${HEADER_OUTPUT_DIR}
+cp ../include/NGenXX.h ${HEADER_OUTPUT_DIR}
+cp ../include/NGenXXLog.h ${HEADER_OUTPUT_DIR}
+cp ../include/NGenXXLua.h ${HEADER_OUTPUT_DIR}
+cp ../include/NGenXXNet.h ${HEADER_OUTPUT_DIR}

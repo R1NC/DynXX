@@ -20,7 +20,7 @@ REM -G %VISUAL_STUDIO%
 cmake --build . --config %BUILD_TYPE%
 
 mkdir %HEADER_OUTPUT_DIR%
-copy %BUILD_DIR%\..\include\EngineXX.h %HEADER_OUTPUT_DIR%
-copy %BUILD_DIR%\..\include\EngineXXLog.h %HEADER_OUTPUT_DIR%
-copy %BUILD_DIR%\..\include\EngineXXLua.h %HEADER_OUTPUT_DIR%
-copy %BUILD_DIR%\..\include\EngineXXNet.h %HEADER_OUTPUT_DIR%
+copy %BUILD_DIR%\..\include\NGenXX.h %HEADER_OUTPUT_DIR%
+copy %BUILD_DIR%\..\include\NGenXXLog.h %HEADER_OUTPUT_DIR%
+copy %BUILD_DIR%\..\include\NGenXXLua.h %HEADER_OUTPUT_DIR%
+copy %BUILD_DIR%\..\include\NGenXXNet.h %HEADER_OUTPUT_DIR%

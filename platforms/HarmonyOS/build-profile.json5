@@ -20,7 +20,7 @@
   },
   "modules": [
     {
-      "name": "enginexx",
+      "name": "ngenxx",
       "srcPath": "./entry",
       "targets": [
         {

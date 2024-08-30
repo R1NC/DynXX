@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(enginexx)
+project(ngenxx)
 
 set(NATIVERENDER_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -44,10 +44,10 @@ set(cjsonPath ${libDir}/libcjson.a)
 add_library(libcjson STATIC IMPORTED)
 set_property(TARGET libcjson PROPERTY IMPORTED_LOCATION ${cjsonPath})
 
-#Find EngineXX
-set(EngineXXPath ${libDir}/libEngineXX.a)
-add_library(libEngineXX STATIC IMPORTED)
-set_property(TARGET libEngineXX PROPERTY IMPORTED_LOCATION ${EngineXXPath})
+#Find NGenXX
+set(NGenXXPath ${libDir}/libNGenXX.a)
+add_library(libNGenXX STATIC IMPORTED)
+set_property(TARGET libNGenXX PROPERTY IMPORTED_LOCATION ${NGenXXPath})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     libcrypto
@@ -56,6 +56,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     libcurl
     liblua
     libcjson
-    libEngineXX
+    libNGenXX
     z
 libace_napi.z.so)

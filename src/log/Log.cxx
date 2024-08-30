@@ -1,6 +1,6 @@
 #include <iostream>
 
-namespace EngineXX
+namespace NGenXX
 {
     namespace Log
     {

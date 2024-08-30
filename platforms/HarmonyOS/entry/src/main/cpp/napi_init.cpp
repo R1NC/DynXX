@@ -1,5 +1,5 @@
 #include "napi/native_api.h"
-#include "../../../../../../build.HarmonyOS/output/include/EngineXX.h"
+#include "../../../../../../build.HarmonyOS/output/include/NGenXX.h"
 #include <cstdio>
 #include <string.h>
 #include <stdlib.h>
@@ -43,7 +43,7 @@ static napi_value long2NapiValue(napi_env env, long l);
 static napi_value int2NapiValue(napi_env env, int i);
 
 static napi_value GetVersion(napi_env env, napi_callback_info info) {
-    const char *c = enginexx_get_version();
+    const char *c = ngenxx_get_version();
     napi_value v = char2NapiValue(env, c);
     free((void *)c);
     return v;
@@ -145,7 +145,7 @@ static napi_value LogSetLevel(napi_env env, napi_callback_info info) {
 
     int level = napiValue2int(env, args[0]);
 
-    enginexx_log_set_level(level);
+    ngenxx_log_set_level(level);
 
     return int2NapiValue(env, napi_ok);
 }
@@ -164,14 +164,14 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info) {
         napi_delete_reference(env, sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_delete_reference() failed");
 
-        enginexx_log_set_callback(NULL);
+        ngenxx_log_set_callback(NULL);
     } else {
         sNapiEnv = env;
 
         napi_create_reference(env, vLogCallback, 1, &sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_reference() failed");
 
-        enginexx_log_set_callback(engineLogCallback);
+        ngenxx_log_set_callback(engineLogCallback);
     }
 
     return int2NapiValue(env, napi_ok);
@@ -187,7 +187,7 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
     int level = napiValue2int(env, args[0]);
     const char *content = napiValue2char(env, args[1]);
 
-    enginexx_log_print(level, content);
+    ngenxx_log_print(level, content);
     free((void *)content);
 
     return int2NapiValue(env, napi_ok);
@@ -205,7 +205,7 @@ static napi_value NetHttpReq(napi_env env, napi_callback_info info) {
     const char *cUrl = napiValue2char(env, argv_[0]);
     const char *cParams = napiValue2char(env, argv_[1]);
 
-    const char *cRsp = enginexx_net_http_req(cUrl, cParams);
+    const char *cRsp = ngenxx_net_http_req(cUrl, cParams);
     free((void *)cUrl);
     free((void *)cParams);
 
@@ -220,7 +220,7 @@ static napi_value NetHttpReq(napi_env env, napi_callback_info info) {
 #pragma mark Lua
 
 static napi_value LCreate(napi_env env, napi_callback_info info) {
-    long l = (long)enginexx_L_create();
+    long l = (long)ngenxx_L_create();
     napi_value v = long2NapiValue(env, l);
     return v;
 }
@@ -235,9 +235,9 @@ static napi_value LLoadF(napi_env env, napi_callback_info info) {
     long lstate = napiValue2long(env, argv_[0]);
     const char *file = napiValue2char(env, argv_[1]);
 
-    long ret = enginexx_L_loadF((void *)lstate, file);
+    long ret = ngenxx_L_loadF((void *)lstate, file);
     if (ret != 0) {
-        napi_throw_error(env, NULL, "enginexx_L_loadF() failed");
+        napi_throw_error(env, NULL, "ngenxx_L_loadF() failed");
         return NULL;
     }
     free((void *)file);
@@ -255,9 +255,9 @@ static napi_value LLoadS(napi_env env, napi_callback_info info) {
     long lstate = napiValue2long(env, argv_[0]);
     const char *script = napiValue2char(env, argv_[1]);
 
-    long ret = enginexx_L_loadS((void *)lstate, script);
+    long ret = ngenxx_L_loadS((void *)lstate, script);
     if (ret != 0) {
-        napi_throw_error(env, NULL, "enginexx_L_loadS() failed");
+        napi_throw_error(env, NULL, "ngenxx_L_loadS() failed");
         return NULL;
     }
     free((void *)script);
@@ -276,7 +276,7 @@ static napi_value LCall(napi_env env, napi_callback_info info) {
     const char *func = napiValue2char(env, argv_[1]);
     const char *params = napiValue2char(env, argv_[2]);
 
-    const char *cRes = enginexx_L_call((void *)lstate, func, params);
+    const char *cRes = ngenxx_L_call((void *)lstate, func, params);
     free((void *)func);
     free((void *)params);
 
@@ -294,7 +294,7 @@ static napi_value LDestroy(napi_env env, napi_callback_info info) {
 
     long lstate = napiValue2long(env, argv_[0]);
 
-    enginexx_L_destroy((void *)lstate);
+    ngenxx_L_destroy((void *)lstate);
 
     return int2NapiValue(env, napi_ok);
 }
@@ -319,17 +319,17 @@ static napi_value Init(napi_env env, napi_value exports) {
 }
 EXTERN_C_END
 
-static napi_module enginexxModule = {
+static napi_module ngenxxModule = {
     .nm_version = 1,
     .nm_flags = 0,
     .nm_filename = nullptr,
     .nm_register_func = Init,
-    .nm_modname = "enginexx",
+    .nm_modname = "ngenxx",
     .nm_priv = ((void *)0),
     .reserved = {0},
 };
 
-extern "C" __attribute__((constructor)) void RegisterEnginexxModule(void) { napi_module_register(&enginexxModule); }
+extern "C" __attribute__((constructor)) void RegisterNGenXXModule(void) { napi_module_register(&ngenxxModule); }
 
 #pragma mark NAPI Utils
 
