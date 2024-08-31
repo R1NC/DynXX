@@ -6,9 +6,9 @@ namespace NGenXX
     {
         static void (*__callback)(int, const char *);
 
-        void setLevel(int level) 
+        void setLevel(int level)
         {
-            //TODO
+            // TODO
         }
 
         void setCallback(void (*callback)(int level, const char *content))
@@ -18,10 +18,17 @@ namespace NGenXX
 
         void print(int level, const char *content)
         {
-            //TODO
-            if (__callback) {
-                __callback(level, content);
-            } else {
+            if (content == NULL)
+                return;
+            // TODO
+            if (__callback)
+            {
+                char *c = (char *)malloc(strlen(content) + 1);
+                strcpy(c, content);
+                __callback(level, c);
+            }
+            else
+            {
                 std::cout << level << " | " << content << std::endl;
             }
         }

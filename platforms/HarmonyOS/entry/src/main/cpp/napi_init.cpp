@@ -114,7 +114,9 @@ static void engineLogCallback(int level, const char *content) {
     tSLogWorkData->tsWork = NULL;
     tSLogWorkData->tsWorkFunc = NULL;
     tSLogWorkData->logLevel = level;
-    tSLogWorkData->logContent = content;
+    tSLogWorkData->logContent = (char *)malloc(strlen(content) + 1);
+    strcpy((char *)tSLogWorkData->logContent, content);
+    free((void *)content);
 
     napi_value vWorkName = char2NapiValue(sNapiEnv, "NAPI_LOG_CALLBACK_WORK");
 
