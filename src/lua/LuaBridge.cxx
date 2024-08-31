@@ -69,9 +69,13 @@ namespace NGenXX
             const char *res = lua_tostring(lstate, -1);
 
             // Or memory issues will occur while Lua VM freed but the pointer is referenced outside.
-            char *cRes = (char *)malloc(strlen(res) + 1);
-            strcpy(cRes, res);
-            free((void *)res);
+            char *cRes;
+            if (res != NULL)
+            {
+                cRes = (char *)malloc(strlen(res) + 1);
+                strcpy(cRes, res);
+                free((void *)res);
+            }
 
             lua_pop(lstate, 1);
             return cRes;
