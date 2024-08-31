@@ -5,6 +5,7 @@ import ngenxxNapi from 'libngenxx.so';
 @Component
 struct Index {
   @State message: string = 'Click to test NAPI..';
+  @State lstate: number = -1;
 
   build() {
     Row() {
@@ -16,8 +17,8 @@ struct Index {
             ngenxxNapi.logSetCallback((level, log) => {
               hilog.debug(0x0000, 'NGenXX', `${level} | ${log}`);
             });
-            let lstate: number = ngenxxNapi.lCreate();
-            let ret: number = ngenxxNapi.lLoadS(lstate,
+            if (this.lstate == -1) this.lstate = ngenxxNapi.lCreate();
+            let ret: number = ngenxxNapi.lLoadS(this.lstate,
               "function lNetHttpReq(pReq)\n" +
                 "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
                 "ngenxx_log_printL(pLog);\n" +
@@ -27,10 +28,10 @@ struct Index {
             );
             if (ret == 0) {
               let params: string = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-              let rsp: number = ngenxxNapi.lCall(lstate, "lNetHttpReq", params);
+              let rsp: number = ngenxxNapi.lCall(this.lstate, "lNetHttpReq", params);
               hilog.info(0x0000, 'NGenXX', `${rsp}`);
             }
-            ngenxxNapi.lDestroy(lstate);
+            //ngenxxNapi.lDestroy(lstate);
           })
       }
       .width('100%')
