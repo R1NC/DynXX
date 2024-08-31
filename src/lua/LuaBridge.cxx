@@ -74,7 +74,7 @@ namespace NGenXX
             {
                 cRes = (char *)malloc(strlen(res) + 1);
                 strcpy(cRes, res);
-                free((void *)res);
+                //free((void *)res);
             }
 
             lua_pop(lstate, 1);
