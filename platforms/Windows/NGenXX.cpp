@@ -13,6 +13,7 @@
 
 int main()
 {
+    ngenxx_init();
     void* lstate = ngenxx_L_create();
 
     int ret = ngenxx_L_loadF(lstate, "../Android/app/src/main/assets/biz.lua");
@@ -23,5 +24,6 @@ int main()
     }
 
     ngenxx_L_destroy(lstate);
+    ngenxx_release();
 }
 

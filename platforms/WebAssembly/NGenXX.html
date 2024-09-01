@@ -21,6 +21,7 @@
                 console.log('NGenXX<' + level + '>' + sContent);
             }, 'vii');//wasm type signature just support number
             Module._ngenxx_log_set_callback(_func);
+            Module._ngenxx_init();
         }
 
         function jstr2wasm(jstr) {
@@ -42,7 +43,7 @@
         function testHttpReq() {
             _url = jstr2wasm("https://rinc.xyz");
             _params = jstr2wasm("");
-            _rsp = Module._ngenxx_net_http_req(_url, _params);
+            _rsp = Module._ngenxx_net_http_request(_url, _params);
 
             rsp = Module.UTF8ToString(_rsp);
             window.alert("http rsp:\n" + rsp);
@@ -58,7 +59,7 @@
             _luaScript = jstr2wasm("function lNetHttpReq(pReq)\n" +
                 "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
                 "ngenxx_log_printL(pLog);\n" +
-                "rsp = ngenxx_net_http_reqL(pReq);\n" +
+                "rsp = ngenxx_net_http_requestL(pReq);\n" +
                 "return rsp;\n" +
                 "end");
             _loadRet = Module._ngenxx_L_loadS(_lstate, _luaScript);

@@ -65,6 +65,22 @@ namespace NGenXX
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
+void ngenxx_init(void)
+{
+    NGenXX::Net::HttpClient::create();
+}
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
+void ngenxx_release(void)
+{
+    NGenXX::Net::HttpClient::destroy();
+}
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
 const char *ngenxx_get_version(void)
 {
     auto s = NGenXX::GetVersion();
@@ -132,17 +148,17 @@ int ngenxx_log_printL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-const char *ngenxx_net_http_req(const char *url, const char *params)
+const char *ngenxx_net_http_request(const char *url, const char *params)
 {
     const std::string sUrl(url);
     const std::string sParams(params);
-    auto s = NGenXX::Net::HttpClient::Request(sUrl, sParams);
+    auto s = NGenXX::Net::HttpClient::request(sUrl, sParams);
     char *c = (char *)malloc(s.size());
     strcpy(c, s.c_str());
     return c;
 }
 
-int ngenxx_net_http_reqL(lua_State *L)
+int ngenxx_net_http_requestL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
     char *url, *params;
@@ -158,7 +174,7 @@ int ngenxx_net_http_reqL(lua_State *L)
         }
         cJSON_free(json);
     }
-    const char *res = ngenxx_net_http_req(url, params);
+    const char *res = ngenxx_net_http_request(url, params);
     lua_pushstring(L, res);
     return 1;
 }
@@ -171,10 +187,12 @@ EXPORT_WASM_LUA
 void *ngenxx_L_create(void)
 {
     lua_State *lstate = NGenXX::LuaBridge::create();
-
+    
     NGenXX::LuaBridge::bindFunc(lstate, "ngenxx_get_versionL", ngenxx_get_versionL);
+
     NGenXX::LuaBridge::bindFunc(lstate, "ngenxx_log_printL", ngenxx_log_printL);
-    NGenXX::LuaBridge::bindFunc(lstate, "ngenxx_net_http_reqL", ngenxx_net_http_reqL);
+
+    NGenXX::LuaBridge::bindFunc(lstate, "ngenxx_net_http_requestL", ngenxx_net_http_requestL);
 
     return lstate;
 }

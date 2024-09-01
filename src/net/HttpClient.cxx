@@ -18,11 +18,20 @@ namespace NGenXX
                 return size * nmemb;
             }
 
-            const std::string Request(const std::string &url, const std::string &params)
+            void create(void)
+            {
+                curl_global_init(CURL_GLOBAL_DEFAULT);
+            }
+
+            void destroy(void)
+            {
+                curl_global_cleanup();
+            }
+
+            const std::string request(const std::string &url, const std::string &params)
             {
                 std::string rsp;
 
-                curl_global_init(CURL_GLOBAL_DEFAULT);
                 CURL *curl = curl_easy_init();
                 if (curl)
                 {
@@ -50,7 +59,6 @@ namespace NGenXX
 
                     curl_easy_cleanup(curl);
                 }
-                curl_global_cleanup();
 
                 return rsp;
             }

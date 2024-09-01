@@ -2,6 +2,22 @@
 #include "../../../../../../build.Android/output/include/NGenXX.h"
 
 extern "C"
+JNIEXPORT void JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env,
+                                                         jobject thiz)
+{
+    ngenxx_init();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_release(JNIEnv *env,
+                                                         jobject thiz)
+{
+    ngenxx_release();
+}
+
+extern "C"
 JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
                                                          jobject thiz)
@@ -69,7 +85,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpReq(JNIEnv *env,
 {
     const char *cUrl = env->GetStringUTFChars(url, JNI_FALSE);
     const char *cParams = env->GetStringUTFChars(params, JNI_FALSE);
-    const char *cRsp = ngenxx_net_http_req(cUrl, cParams);
+    const char *cRsp = ngenxx_net_http_request(cUrl, cParams);
     return env->NewStringUTF(cRsp);
 }
 

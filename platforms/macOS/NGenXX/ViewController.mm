@@ -16,9 +16,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
     NSString *s = @"";
+
+    ngenxx_init();
     void* lstate = ngenxx_L_create();
+
     const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
     int ret = ngenxx_L_loadF(lstate, cLuaPath);
     if (ret == 0) {
@@ -26,7 +28,9 @@
         const char * cRsp = ngenxx_L_call(lstate, "lNetHttpReq", cParams);
         if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
     }
+
     ngenxx_L_destroy(lstate);
+    ngenxx_release();
     
     NSLog(@"%@", s);
 }

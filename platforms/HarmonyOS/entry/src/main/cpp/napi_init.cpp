@@ -42,6 +42,16 @@ static napi_value char2NapiValue(napi_env env, const char *c);
 static napi_value long2NapiValue(napi_env env, long l);
 static napi_value int2NapiValue(napi_env env, int i);
 
+static napi_value Init(napi_env env, napi_callback_info info) {
+    ngenxx_init();
+    return int2NapiValue(env, napi_ok);
+}
+
+static napi_value Release(napi_env env, napi_callback_info info) {
+    ngenxx_release();
+    return int2NapiValue(env, napi_ok);
+}
+
 static napi_value GetVersion(napi_env env, napi_callback_info info) {
     const char *c = ngenxx_get_version();
     napi_value v = char2NapiValue(env, c);
@@ -207,7 +217,7 @@ static napi_value NetHttpReq(napi_env env, napi_callback_info info) {
     const char *cUrl = napiValue2char(env, argv_[0]);
     const char *cParams = napiValue2char(env, argv_[1]);
 
-    const char *cRsp = ngenxx_net_http_req(cUrl, cParams);
+    const char *cRsp = ngenxx_net_http_request(cUrl, cParams);
     free((void *)cUrl);
     free((void *)cParams);
 
@@ -306,11 +316,16 @@ static napi_value LDestroy(napi_env env, napi_callback_info info) {
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports) {
     napi_property_descriptor desc[] = {
+        {"init", nullptr, Init, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"release", nullptr, Release, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"getVersion", nullptr, GetVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
+
         {"logSetLevel", nullptr, LogSetLevel, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"logSetCallback", nullptr, LogSetCallback, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"logPrint", nullptr, LogPrint, nullptr, nullptr, nullptr, napi_default, nullptr},
+
         {"netHttpReq", nullptr, NetHttpReq, nullptr, nullptr, nullptr, napi_default, nullptr},
+
         {"lCreate", nullptr, LCreate, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lLoadF", nullptr, LLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lLoadS", nullptr, LLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},

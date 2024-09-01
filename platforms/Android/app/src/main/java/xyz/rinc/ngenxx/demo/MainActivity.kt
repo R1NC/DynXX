@@ -20,6 +20,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        NGenXX.init();
+
         NGenXX.logSetCallback {level, content ->
             android.util.Log.d("NGenXX", "$level | $content")
         }
@@ -34,6 +36,7 @@ class MainActivity : ComponentActivity() {
         val rsp = NGenXX.lCall(lState, "lNetHttpReq", params)
 
         NGenXX.lDestroy(lState)
+        NGenXX.release();
 
         setContent {
             NGenXXTheme {

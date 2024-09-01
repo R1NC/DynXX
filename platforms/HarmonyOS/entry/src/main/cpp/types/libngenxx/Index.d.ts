@@ -1,3 +1,7 @@
+export const init: () => void;
+
+export const release: () => void;
+
 export const getVersion: () => string;
 
 export const logSetLevel: (level: number) => void;

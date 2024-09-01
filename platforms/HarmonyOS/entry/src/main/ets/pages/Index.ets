@@ -14,24 +14,32 @@ struct Index {
           .fontSize(23)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
+            if (this.lstate == -1) {
+              ngenxxNapi.init();
+              this.lstate = ngenxxNapi.lCreate();
+            }
+
             ngenxxNapi.logSetCallback((level, log) => {
               hilog.debug(0x0000, 'NGenXX', `${level} | ${log}`);
             });
-            if (this.lstate == -1) this.lstate = ngenxxNapi.lCreate();
+            
             let ret: number = ngenxxNapi.lLoadS(this.lstate,
               "function lNetHttpReq(pReq)\n" +
                 "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
                 "ngenxx_log_printL(pLog);\n" +
-                "rsp = ngenxx_net_http_reqL(pReq);\n" +
+                "rsp = ngenxx_net_http_requestL(pReq);\n" +
                 "return rsp;\n" +
                 "end"
             );
+
             if (ret == 0) {
               let params: string = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
               let rsp: number = ngenxxNapi.lCall(this.lstate, "lNetHttpReq", params);
               hilog.info(0x0000, 'NGenXX', `${rsp}`);
             }
+
             //ngenxxNapi.lDestroy(lstate);
+            //ngenxxNapi.release();
           })
       }
       .width('100%')

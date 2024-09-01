@@ -6,7 +6,11 @@ class NGenXX {
             System.loadLibrary("NGenXXJNI")
         }
 
-        external fun getVersion(): String
+        external fun init()
+
+        external fun release()
+
+        external fun getVersion()
 
         external fun logSetLevel(level: Int)
 
