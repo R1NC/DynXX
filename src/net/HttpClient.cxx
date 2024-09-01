@@ -35,7 +35,7 @@ namespace NGenXX
                 CURL *curl = curl_easy_init();
                 if (curl)
                 {
-                    Log::print(Debug, ("HttpClient.Request url:" + url + " params:" + params).c_str());
+                    Log::print(Debug, ("HttpClient.request url:" + url + " params:" + params).c_str());
                     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
                     curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
                     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
@@ -54,7 +54,7 @@ namespace NGenXX
                     CURLcode curlCode = curl_easy_perform(curl);
                     if (curlCode != CURLE_OK)
                     {
-                        std::cout << stderr << "curl_easy_perform() error:" << curl_easy_strerror(curlCode) << std::endl;
+                        Log::print(Error, ("HttpClient.request error:" + std::string(curl_easy_strerror(curlCode))).c_str());
                     }
 
                     curl_easy_cleanup(curl);

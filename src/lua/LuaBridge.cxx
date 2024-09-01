@@ -2,6 +2,9 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <string>
+#include "../../include/NGenXXLog.h"
+#include "../log/Log.hxx"
 
 extern "C"
 {
@@ -10,7 +13,15 @@ extern "C"
 #include "../../../external/lua/lauxlib.h"
 }
 
-#define PRINT_L_ERROR(L, prefix) fprintf(stderr, "%s %s\n", prefix, lua_tostring(L, -1))
+#define PRINT_L_ERROR(L, prefix)                                                       \
+    do                                                                                 \
+    {                                                                                  \
+        const char *luaErrMsg = lua_tostring(L, -1);                                   \
+        if (luaErrMsg != NULL)                                                         \
+        {                                                                              \
+            Log::print(Error, (std::string(prefix) + std::string(luaErrMsg)).c_str()); \
+        }                                                                              \
+    } while (0);
 
 namespace NGenXX
 {
@@ -74,7 +85,7 @@ namespace NGenXX
             {
                 cRes = (char *)malloc(strlen(res) + 1);
                 strcpy(cRes, res);
-                //free((void *)res);
+                // free((void *)res);
             }
 
             lua_pop(lstate, 1);
