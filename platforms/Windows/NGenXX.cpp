@@ -16,7 +16,7 @@ int main()
 {
     void *handle = ngenxx_init(true);
 
-    bool loadSuccess = ngenxx_L_loadF(handle, "../android/app/src/main/assets/biz.lua");
+    bool loadSuccess = ngenxx_L_loadF(handle, "../Android/app/src/main/assets/biz.lua");
     if (loadSuccess)
     {
         static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
