@@ -12,8 +12,9 @@
 #define CharP2NSString(cp) [NSString stringWithCString:cp encoding:NSUTF8StringEncoding]
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
 
-@interface ViewController ()
-
+@interface ViewController () {
+    void *_handle;
+}
 @end
 
 @implementation ViewController
@@ -36,26 +37,24 @@
     tv.font = [UIFont systemFontOfSize:16.f];
     tv.editable = NO;
     [self.view addSubview:tv];
+
+    _handle = ngenxx_init(true);
+    const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
+    ngenxx_L_loadF(_handle, cLuaPath);
     
     tv.text = self.output;
+}
+
+- (void)dealloc {
+    ngenxx_release(_handle);
 }
 
 - (NSString*)output {
     NSString *s = @"";
 
-    ngenxx_init();
-    void* lstate = ngenxx_L_create();
-
-    const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
-    int ret = ngenxx_L_loadF(lstate, cLuaPath);
-    if (ret == 0) {
-        static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-        const char * cRsp = ngenxx_L_call(lstate, "lNetHttpReq", cParams);
-        if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
-    }
-
-    ngenxx_L_destroy(lstate);
-    ngenxx_release();
+    static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
+    const char * cRsp = ngenxx_L_call(_handle, "lNetHttpReq", cParams);
+    if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
 
     return s;
 }

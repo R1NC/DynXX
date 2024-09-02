@@ -33,6 +33,11 @@
 extern "C"
 {
 #include "../../../external/lua/lauxlib.h"
+
+    typedef struct NGenXXHandle
+    {
+        lua_State *lua_state;
+    } NGenXXHandle;
 }
 
 #ifdef __cplusplus
@@ -65,22 +70,6 @@ namespace NGenXX
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-void ngenxx_init(void)
-{
-    NGenXX::Net::HttpClient::create();
-}
-
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
-void ngenxx_release(void)
-{
-    NGenXX::Net::HttpClient::destroy();
-}
-
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
 const char *ngenxx_get_version(void)
 {
     auto s = NGenXX::GetVersion();
@@ -94,6 +83,38 @@ int ngenxx_get_versionL(lua_State *L)
     const char *res = ngenxx_get_version();
     lua_pushstring(L, res);
     return 1;
+}
+
+void export_funcs_for_lua(void *handle);
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM_LUA
+#endif
+void *ngenxx_init(bool use_lua)
+{
+    NGenXXHandle *handle = (NGenXXHandle *)malloc(sizeof(NGenXXHandle));
+    if (use_lua)
+    {
+        handle->lua_state = NGenXX::LuaBridge::create();
+        export_funcs_for_lua(handle);
+    }
+    NGenXX::Net::HttpClient::create();
+    return handle;
+}
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM_LUA
+#endif
+void ngenxx_release(void *handle)
+{
+    if (handle == NULL)
+        return;
+    NGenXXHandle *h = (NGenXXHandle *)handle;
+    if (h->lua_state)
+    {
+        NGenXX::LuaBridge::destroy(h->lua_state);
+    }
+    NGenXX::Net::HttpClient::destroy();
 }
 
 #pragma mark Log
@@ -181,49 +202,36 @@ int ngenxx_net_http_requestL(lua_State *L)
 
 #pragma mark Lua
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM_LUA
-#endif
-void *ngenxx_L_create(void)
-{
-    lua_State *lstate = NGenXX::LuaBridge::create();
-    
-    NGenXX::LuaBridge::bindFunc(lstate, "ngenxx_get_versionL", ngenxx_get_versionL);
-
-    NGenXX::LuaBridge::bindFunc(lstate, "ngenxx_log_printL", ngenxx_log_printL);
-
-    NGenXX::LuaBridge::bindFunc(lstate, "ngenxx_net_http_requestL", ngenxx_net_http_requestL);
-
-    return lstate;
-}
-
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM_LUA
-#endif
-void ngenxx_L_destroy(void *lstate)
-{
-    NGenXX::LuaBridge::destroy((lua_State *)lstate);
-}
-
 #ifndef __EMSCRIPTEN__
-int ngenxx_L_loadF(void *lstate, const char *file)
+bool ngenxx_L_loadF(void *handle, const char *file)
 {
-    return NGenXX::LuaBridge::loadFile((lua_State *)lstate, file);
+    NGenXXHandle *h = (NGenXXHandle *)handle;
+    return NGenXX::LuaBridge::loadFile(h->lua_state, file) == LUA_OK;
 }
 #endif
 
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM_LUA
 #endif
-int ngenxx_L_loadS(void *lstate, const char *file)
+bool ngenxx_L_loadS(void *handle, const char *file)
 {
-    return NGenXX::LuaBridge::loadScript((lua_State *)lstate, file);
+    NGenXXHandle *h = (NGenXXHandle *)handle;
+    return NGenXX::LuaBridge::loadScript(h->lua_state, file) == LUA_OK;
 }
 
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM_LUA
 #endif
-const char *ngenxx_L_call(void *lstate, const char *func, const char *params)
+const char *ngenxx_L_call(void *handle, const char *func, const char *params)
 {
-    return NGenXX::LuaBridge::callFunc((lua_State *)lstate, func, params);
+    NGenXXHandle *h = (NGenXXHandle *)handle;
+    return NGenXX::LuaBridge::callFunc(h->lua_state, func, params);
+}
+
+void export_funcs_for_lua(void *handle)
+{
+    NGenXXHandle *h = (NGenXXHandle *)handle;
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_get_versionL", ngenxx_get_versionL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_log_printL", ngenxx_log_printL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_net_http_requestL", ngenxx_net_http_requestL);
 }

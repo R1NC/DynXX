@@ -36,11 +36,21 @@ namespace NGenXX
 
         void destroy(lua_State *lstate)
         {
+            if (lstate == NULL)
+            {
+                Log::print(Error, "LuaBridge.destroy: lstate is NULL");
+                return;
+            }
             lua_close(lstate);
         }
 
         void bindFunc(lua_State *lstate, const char *funcName, int (*funcPointer)(lua_State *))
         {
+            if (lstate == NULL)
+            {
+                Log::print(Error, "LuaBridge.bindFunc: lstate is NULL");
+                return;
+            }
             lua_pushcfunction(lstate, funcPointer);
             lua_setglobal(lstate, funcName);
         }
@@ -48,6 +58,16 @@ namespace NGenXX
 #ifndef __EMSCRIPTEN__
         int loadFile(lua_State *lstate, const char *file)
         {
+            if (lstate == NULL)
+            {
+                Log::print(Error, "LuaBridge.loadFile: lstate is NULL");
+                return LUA_ERRERR;
+            }
+            if (file == NULL)
+            {
+                Log::print(Error, "LuaBridge.loadFile: file is NULL");
+                return LUA_ERRERR;
+            }
             int ret = luaL_dofile(lstate, file);
             if (ret != LUA_OK)
             {
@@ -59,6 +79,16 @@ namespace NGenXX
 
         int loadScript(lua_State *lstate, const char *script)
         {
+            if (lstate == NULL)
+            {
+                Log::print(Error, "LuaBridge.loadScript: lstate is NULL");
+                return LUA_ERRERR;
+            }
+            if (script == NULL)
+            {
+                Log::print(Error, "LuaBridge.loadScript: script is NULL");
+                return LUA_ERRERR;
+            }
             int ret = luaL_dostring(lstate, script);
             if (ret != LUA_OK)
             {
@@ -69,6 +99,16 @@ namespace NGenXX
 
         const char *callFunc(lua_State *lstate, const char *func, const char *params)
         {
+            if (lstate == NULL)
+            {
+                Log::print(Error, "LuaBridge.callFunc: lstate is NULL");
+                return NULL;
+            }
+            if (func == NULL)
+            {
+                Log::print(Error, "LuaBridge.callFunc: func is NULL");
+                return NULL;
+            }
             lua_getglobal(lstate, func);
             lua_pushstring(lstate, params);
             int ret = lua_pcall(lstate, 1, 1, 0);

@@ -6,16 +6,15 @@
 
 int main()
 {
-    ngenxx_init();
-    void* lstate = ngenxx_L_create();
+    void *handle = ngenxx_init(true);
 
-    int ret = ngenxx_L_loadF(lstate, "../Android/app/src/main/assets/biz.lua");
-    if (ret == 0) {
-        static const char* cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-        const char* cRsp = ngenxx_L_call(lstate, "lNetHttpReq", cParams);
+    bool loadSuccess = ngenxx_L_loadF(handle, "../../android/app/src/main/assets/biz.lua");
+    if (loadSuccess)
+    {
+        static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
+        const char *cRsp = ngenxx_L_call(handle, "lNetHttpReq", cParams);
         std::cout << cRsp << std::endl;
     }
-    
-    ngenxx_L_destroy(lstate);
-    ngenxx_release();
+
+    ngenxx_release(handle);
 }

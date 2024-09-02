@@ -16,27 +16,27 @@ import xyz.rinc.ngenxx.demo.ui.theme.NGenXXTheme
 
 class MainActivity : ComponentActivity() {
 
+    private var handle = -1L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        NGenXX.init();
+        if (handle == -1L) {
+            handle = NGenXX.init(true)
 
-        NGenXX.logSetCallback {level, content ->
-            android.util.Log.d("NGenXX", "$level | $content")
-        }
+            NGenXX.logSetCallback {level, content ->
+                android.util.Log.d("NGenXX", "$level | $content")
+            }
 
-        val lState = NGenXX.lCreate()
-        val luaScript = application.assets.open("biz.lua").bufferedReader().use {
-            it.readText()
+            val luaScript = application.assets.open("biz.lua").bufferedReader().use {
+                it.readText()
+            }
+            NGenXX.lLoadS(handle, luaScript)
         }
-        NGenXX.lLoadS(lState, luaScript)
 
         val params = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}"
-        val rsp = NGenXX.lCall(lState, "lNetHttpReq", params)
-
-        NGenXX.lDestroy(lState)
-        NGenXX.release();
+        val rsp = NGenXX.lCall(handle, "lNetHttpReq", params)
 
         setContent {
             NGenXXTheme {
@@ -48,6 +48,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        NGenXX.release(handle)
     }
 }
 

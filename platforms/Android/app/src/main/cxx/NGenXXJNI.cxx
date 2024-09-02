@@ -2,28 +2,25 @@
 #include "../../../../../../build.Android/output/include/NGenXX.h"
 
 extern "C"
-JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env,
-                                                         jobject thiz)
-{
-    ngenxx_init();
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_release(JNIEnv *env,
-                                                         jobject thiz)
-{
-    ngenxx_release();
-}
-
-extern "C"
 JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
                                                          jobject thiz)
 {
     const char *cV = ngenxx_get_version();
     return env->NewStringUTF(cV);
+}
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz, jboolean useLua) {
+    return (jlong)ngenxx_init(useLua);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_release(JNIEnv *env, jobject thiz,
+                                                                 jlong handle) {
+    ngenxx_release((void*)handle);
 }
 
 #pragma mark Log
@@ -92,46 +89,31 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpReq(JNIEnv *env,
 #pragma mark Lua
 
 extern "C"
-JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCreate(JNIEnv *env, jobject thiz)
-{
-    return (jlong)ngenxx_L_create();
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lDestroy(JNIEnv *env, jobject thiz,
-                                                       jlong lState)
-{
-    ngenxx_L_destroy((void *)lState);
-}
-
-extern "C"
-JNIEXPORT jint JNICALL
+JNIEXPORT jboolean JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadF(JNIEnv *env, jobject thiz,
-                                                     jlong lState, jstring file)
+                                                     jlong handle, jstring file)
 {
     const char *cFile = env->GetStringUTFChars(file, JNI_FALSE);
-    return ngenxx_L_loadF((void *)lState, cFile);
+    return ngenxx_L_loadF((void *)handle, cFile);
 }
 
 extern "C"
-JNIEXPORT jint JNICALL
+JNIEXPORT jboolean JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadS(JNIEnv *env, jobject thiz,
-                                                     jlong lState, jstring script)
+                                                     jlong handle, jstring script)
 {
     const char *cScript = env->GetStringUTFChars(script, JNI_FALSE);
-    return ngenxx_L_loadS((void *)lState, cScript);
+    return ngenxx_L_loadS((void *)handle, cScript);
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCall(JNIEnv *env, jobject thiz,
-                                                    jlong lState, jstring func,
+                                                    jlong handle, jstring func,
                                                     jstring params)
 {
     const char *cFunc = env->GetStringUTFChars(func, JNI_FALSE);
     const char *cParams = params ? env->GetStringUTFChars(params, JNI_FALSE) : nullptr;
-    const char *res = ngenxx_L_call((void *)lState, cFunc, cParams);
+    const char *res = ngenxx_L_call((void *)handle, cFunc, cParams);
     return env->NewStringUTF(res);
 }

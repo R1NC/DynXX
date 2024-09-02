@@ -6,21 +6,24 @@
 #include "NGenXXLua.h"
 
 /**
- * Initialize SDK
- * @warning Not accessible in Lua!
- */
-void* ngenxx_init(void);
-
-/**
  * @brief Read version
  * @return version name
  */
 const char *ngenxx_get_version(void);
 
 /**
- * Release SDK
+ * @brief Initialize SDK
  * @warning Not accessible in Lua!
+ * @param use_lua Use Lua or not
+ * @return SDK handle
  */
-void ngenxx_release(void);
+void *ngenxx_init(bool use_lua);
+
+/**
+ * @brief Release SDK
+ * @warning Not accessible in Lua!
+ * @param handle SDK handle
+ */
+void ngenxx_release(void *handle);
 
 #endif // NGENXX_H_

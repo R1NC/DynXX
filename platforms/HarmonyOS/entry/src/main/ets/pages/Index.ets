@@ -5,7 +5,7 @@ import ngenxxNapi from 'libngenxx.so';
 @Component
 struct Index {
   @State message: string = 'Click to test NAPI..';
-  @State lstate: number = -1;
+  @State handle: number = -1;
 
   build() {
     Row() {
@@ -14,15 +14,14 @@ struct Index {
           .fontSize(23)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            if (this.lstate == -1) {
-              ngenxxNapi.init();
-              this.lstate = ngenxxNapi.lCreate();
+            if (this.handle == -1) {
+              this.handle = ngenxxNapi.init(true);
 
               ngenxxNapi.logSetCallback((level, log) => {
                 hilog.debug(0x0000, 'NGenXX', `${level} | ${log}`);
               });
 
-              ngenxxNapi.lLoadS(this.lstate,
+              ngenxxNapi.lLoadS(this.handle,
                 "function lNetHttpReq(pReq)\n" +
                 "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
                 "ngenxx_log_printL(pLog);\n" +
@@ -33,11 +32,10 @@ struct Index {
             }
 
             let params: string = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-            let rsp: number = ngenxxNapi.lCall(this.lstate, "lNetHttpReq", params);
-            hilog.info(0x0000, 'NGenXX', `${rsp}`);
+            let rsp: number = ngenxxNapi.lCall(this.handle, "lNetHttpReq", params);
+            ngenxxNapi.logPrint(1, `${rsp}`);
 
-            //ngenxxNapi.lDestroy(this.lstate);
-            //ngenxxNapi.release();
+            //ngenxxNapi.release(this.handle);
           })
       }
       .width('100%')

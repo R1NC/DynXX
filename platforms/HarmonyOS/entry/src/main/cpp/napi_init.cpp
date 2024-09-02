@@ -36,27 +36,47 @@
     } while (0);
 
 static const char *napiValue2char(napi_env env, napi_value nv);
+static const int napiValue2bool(napi_env env, napi_value nv);
 static const int napiValue2int(napi_env env, napi_value nv);
 static const long napiValue2long(napi_env env, napi_value nv);
 static napi_value char2NapiValue(napi_env env, const char *c);
 static napi_value long2NapiValue(napi_env env, long l);
 static napi_value int2NapiValue(napi_env env, int i);
-
-static napi_value Init(napi_env env, napi_callback_info info) {
-    ngenxx_init();
-    return int2NapiValue(env, napi_ok);
-}
-
-static napi_value Release(napi_env env, napi_callback_info info) {
-    ngenxx_release();
-    return int2NapiValue(env, napi_ok);
-}
+static napi_value bool2NapiValue(napi_env env, bool b);
 
 static napi_value GetVersion(napi_env env, napi_callback_info info) {
     const char *c = ngenxx_get_version();
     napi_value v = char2NapiValue(env, c);
     free((void *)c);
     return v;
+}
+
+static napi_value Init(napi_env env, napi_callback_info info) {
+    size_t argc = 1;
+    napi_value argv[1] = {nullptr};
+
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+
+    int useLua = napiValue2bool(env, argv[0]);
+
+    long l = (long)ngenxx_init(useLua);
+    napi_value v = long2NapiValue(env, l);
+    return v;
+}
+
+static napi_value Release(napi_env env, napi_callback_info info) {
+    size_t argc = 1;
+    napi_value argv[1] = {nullptr};
+
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+
+    long handle = napiValue2long(env, argv[0]);
+
+    ngenxx_release((void *)handle);
+
+    return int2NapiValue(env, napi_ok);
 }
 
 #pragma mark Log Callback
@@ -150,12 +170,12 @@ static void engineLogCallback(int level, const char *content) {
 
 static napi_value LogSetLevel(napi_env env, napi_callback_info info) {
     size_t argc = 1;
-    napi_value args[1] = {nullptr};
+    napi_value argv[1] = {nullptr};
 
-    napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    int level = napiValue2int(env, args[0]);
+    int level = napiValue2int(env, argv[0]);
 
     ngenxx_log_set_level(level);
 
@@ -191,13 +211,13 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info) {
 
 static napi_value LogPrint(napi_env env, napi_callback_info info) {
     size_t argc = 2;
-    napi_value args[2] = {nullptr};
+    napi_value argv[2] = {nullptr};
 
-    napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    int level = napiValue2int(env, args[0]);
-    const char *content = napiValue2char(env, args[1]);
+    int level = napiValue2int(env, argv[0]);
+    const char *content = napiValue2char(env, argv[1]);
 
     ngenxx_log_print(level, content);
     free((void *)content);
@@ -209,13 +229,13 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
 
 static napi_value NetHttpReq(napi_env env, napi_callback_info info) {
     size_t argc = 2;
-    napi_value argv_[2] = {nullptr};
+    napi_value argv[2] = {nullptr};
 
-    napi_status status = napi_get_cb_info(env, info, &argc, argv_, nullptr, nullptr);
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    const char *cUrl = napiValue2char(env, argv_[0]);
-    const char *cParams = napiValue2char(env, argv_[1]);
+    const char *cUrl = napiValue2char(env, argv[0]);
+    const char *cParams = napiValue2char(env, argv[1]);
 
     const char *cRsp = ngenxx_net_http_request(cUrl, cParams);
     free((void *)cUrl);
@@ -231,64 +251,50 @@ static napi_value NetHttpReq(napi_env env, napi_callback_info info) {
 
 #pragma mark Lua
 
-static napi_value LCreate(napi_env env, napi_callback_info info) {
-    long l = (long)ngenxx_L_create();
-    napi_value v = long2NapiValue(env, l);
-    return v;
-}
-
 static napi_value LLoadF(napi_env env, napi_callback_info info) {
     size_t argc = 2;
-    napi_value argv_[2] = {nullptr};
+    napi_value argv[2] = {nullptr};
 
-    napi_status status = napi_get_cb_info(env, info, &argc, argv_, nullptr, nullptr);
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    long lstate = napiValue2long(env, argv_[0]);
-    const char *file = napiValue2char(env, argv_[1]);
+    long handle = napiValue2long(env, argv[0]);
+    const char *file = napiValue2char(env, argv[1]);
 
-    long ret = ngenxx_L_loadF((void *)lstate, file);
-    if (ret != 0) {
-        napi_throw_error(env, NULL, "ngenxx_L_loadF() failed");
-        return NULL;
-    }
+    bool ret = ngenxx_L_loadF((void *)handle, file);
     free((void *)file);
 
-    return long2NapiValue(env, ret);
+    return bool2NapiValue(env, ret);
 }
 
 static napi_value LLoadS(napi_env env, napi_callback_info info) {
     size_t argc = 2;
-    napi_value argv_[2] = {nullptr};
+    napi_value argv[2] = {nullptr};
 
-    napi_status status = napi_get_cb_info(env, info, &argc, argv_, nullptr, nullptr);
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    long lstate = napiValue2long(env, argv_[0]);
-    const char *script = napiValue2char(env, argv_[1]);
+    long handle = napiValue2long(env, argv[0]);
+    const char *script = napiValue2char(env, argv[1]);
 
-    long ret = ngenxx_L_loadS((void *)lstate, script);
-    if (ret != 0) {
-        napi_throw_error(env, NULL, "ngenxx_L_loadS() failed");
-        return NULL;
-    }
+    bool ret = ngenxx_L_loadS((void *)handle, script);
     free((void *)script);
 
-    return long2NapiValue(env, ret);
+    return bool2NapiValue(env, ret);
 }
 
 static napi_value LCall(napi_env env, napi_callback_info info) {
     size_t argc = 3;
-    napi_value argv_[3] = {nullptr};
+    napi_value argv[3] = {nullptr};
 
-    napi_status status = napi_get_cb_info(env, info, &argc, argv_, nullptr, nullptr);
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    long lstate = napiValue2long(env, argv_[0]);
-    const char *func = napiValue2char(env, argv_[1]);
-    const char *params = napiValue2char(env, argv_[2]);
+    long handle = napiValue2long(env, argv[0]);
+    const char *func = napiValue2char(env, argv[1]);
+    const char *params = napiValue2char(env, argv[2]);
 
-    const char *cRes = ngenxx_L_call((void *)lstate, func, params);
+    const char *cRes = ngenxx_L_call((void *)handle, func, params);
     free((void *)func);
     free((void *)params);
 
@@ -297,40 +303,25 @@ static napi_value LCall(napi_env env, napi_callback_info info) {
     return vRes;
 }
 
-static napi_value LDestroy(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv_[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv_, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
-
-    long lstate = napiValue2long(env, argv_[0]);
-
-    ngenxx_L_destroy((void *)lstate);
-
-    return int2NapiValue(env, napi_ok);
-}
-
 #pragma mark Register Module
 
 EXTERN_C_START
-static napi_value Init(napi_env env, napi_value exports) {
+static napi_value RegisterFuncs(napi_env env, napi_value exports) {
     napi_property_descriptor desc[] = {
+        {"getVersion", nullptr, GetVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"init", nullptr, Init, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"release", nullptr, Release, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"getVersion", nullptr, GetVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
 
         {"logSetLevel", nullptr, LogSetLevel, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"logSetCallback", nullptr, LogSetCallback, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"logPrint", nullptr, LogPrint, nullptr, nullptr, nullptr, napi_default, nullptr},
 
         {"netHttpReq", nullptr, NetHttpReq, nullptr, nullptr, nullptr, napi_default, nullptr},
-
-        {"lCreate", nullptr, LCreate, nullptr, nullptr, nullptr, napi_default, nullptr},
+        
         {"lLoadF", nullptr, LLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lLoadS", nullptr, LLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lCall", nullptr, LCall, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"lDestroy", nullptr, LDestroy, nullptr, nullptr, nullptr, napi_default, nullptr}};
+    };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
 }
@@ -340,7 +331,7 @@ static napi_module ngenxxModule = {
     .nm_version = 1,
     .nm_flags = 0,
     .nm_filename = nullptr,
-    .nm_register_func = Init,
+    .nm_register_func = RegisterFuncs,
     .nm_modname = "ngenxx",
     .nm_priv = ((void *)0),
     .reserved = {0},
@@ -359,6 +350,13 @@ static const char *napiValue2char(napi_env env, napi_value nv) {
     status = napi_get_value_string_utf8(env, nv, cStr, len + 1, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() get content failed");
     return cStr;
+}
+
+static const int napiValue2bool(napi_env env, napi_value nv) {
+    bool i;
+    napi_status status = napi_get_value_bool(env, nv, &i);
+    CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_bool() get content failed");
+    return i;
 }
 
 static const int napiValue2int(napi_env env, napi_value nv) {
@@ -394,5 +392,11 @@ static napi_value int2NapiValue(napi_env env, int i) {
     napi_value v;
     napi_status status = napi_create_int32(env, i, &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_int32() failed");
+    return v;
+}
+
+static napi_value bool2NapiValue(napi_env env, bool b) {
+    napi_value v;
+    napi_get_boolean(env, b, &v);
     return v;
 }

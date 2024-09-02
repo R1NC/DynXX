@@ -12,29 +12,32 @@
 #define CharP2NSString(cp) [NSString stringWithCString:cp encoding:NSUTF8StringEncoding]
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
 
+@interface ViewController () {
+    void *_handle;
+}
+@end
+
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     NSString *s = @"";
 
-    ngenxx_init();
-    void* lstate = ngenxx_L_create();
+    _handle = ngenxx_init(true);
 
     const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
-    int ret = ngenxx_L_loadF(lstate, cLuaPath);
-    if (ret == 0) {
-        static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-        const char * cRsp = ngenxx_L_call(lstate, "lNetHttpReq", cParams);
-        if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
-    }
-
-    ngenxx_L_destroy(lstate);
-    ngenxx_release();
+    ngenxx_L_loadF(_handle, cLuaPath);
+    
+    static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
+    const char * cRsp = ngenxx_L_call(_handle, "lNetHttpReq", cParams);
+    if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
     
     NSLog(@"%@", s);
 }
 
+- (void)dealloc {
+    ngenxx_release(_handle);
+}
 
 - (void)setRepresentedObject:(id)representedObject {
     [super setRepresentedObject:representedObject];
