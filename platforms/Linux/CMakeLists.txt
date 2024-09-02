@@ -14,6 +14,7 @@ set(STATIC_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../build.Linux/output/Releas
 target_link_libraries(${PROJECT_NAME} PRIVATE
     ${STATIC_LIB_PATH}/NGenXX.a
     ${STATIC_LIB_PATH}/curl.a
+    ${STATIC_LIB_PATH}/sqlite3.a
     ${STATIC_LIB_PATH}/cjson.a
     ${STATIC_LIB_PATH}/lua.a
     ${STATIC_LIB_PATH}/wolfssl.a

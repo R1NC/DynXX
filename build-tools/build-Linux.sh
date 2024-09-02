@@ -30,6 +30,7 @@ mv curl.output/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
 mv wolfssl.output/libwolfssl.a ${LIB_OUTPUT_DIR}/wolfssl.a
 mv lua.output/liblua.a ${LIB_OUTPUT_DIR}/lua.a
 mv cjson.output/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
+mv sqlite.output/libsqlite3.a ${LIB_OUTPUT_DIR}/sqlite3.a
 
 #Copy headers
 HEADER_OUTPUT_DIR=output/include

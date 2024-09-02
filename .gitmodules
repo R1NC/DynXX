@@ -16,3 +16,6 @@
 [submodule "external/openssl"]
 	path = external/openssl
 	url = git@github.com:R1NC/openssl.git
+[submodule "external/sqlite"]
+	path = external/sqlite
+	url = git@github.com:R1NC/sqlite.git

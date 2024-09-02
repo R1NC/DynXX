@@ -36,6 +36,11 @@ set(libcjsonPath ${libDir}/libcjson.a)
 add_library(libcjson STATIC IMPORTED)
 set_property(TARGET libcjson PROPERTY IMPORTED_LOCATION ${libcjsonPath})
 
+#Find libsqlite
+set(libsqlitePath ${libDir}/libsqlite3.a)
+add_library(libsqlite STATIC IMPORTED)
+set_property(TARGET libsqlite PROPERTY IMPORTED_LOCATION ${libsqlitePath})
+
 #Find libNGenXX
 set(libNGenXXPath ${libDir}/libNGenXX.a)
 add_library(libNGenXX STATIC IMPORTED)
@@ -48,6 +53,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         libcurl
         liblua
         libcjson
+        libsqlite
         libNGenXX
         z
         android
