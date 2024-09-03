@@ -3,32 +3,8 @@
 #include <string.h>
 #include "../../../external/cjson/cJSON.h"
 
-#define JSON_READ_STR(j, k, v)                                                 \
-    do                                                                         \
-    {                                                                          \
-        if (j->string && strcmp(j->string, k) == 0 && j->type == cJSON_String) \
-        {                                                                      \
-            v = j->valuestring;                                                \
-        }                                                                      \
-    } while (0)
-
-#define JSON_READ_INT(j, k, v)                                                 \
-    do                                                                         \
-    {                                                                          \
-        if (j->string && strcmp(j->string, k) == 0 && j->type == cJSON_Number) \
-        {                                                                      \
-            v = j->valueint;                                                   \
-        }                                                                      \
-    } while (0)
-
-#define JSON_READ_DOUBLE(j, k, v)                                              \
-    do                                                                         \
-    {                                                                          \
-        if (j->string && strcmp(j->string, k) == 0 && j->type == cJSON_Number) \
-        {                                                                      \
-            v = j->valuedouble;                                                \
-        }                                                                      \
-    } while (0)
+#define HTTP_HEADERS_MAX_COUNT 100
+#define HTTP_HEADER_MAX_LENGTH 8190
 
 extern "C"
 {
@@ -46,6 +22,9 @@ extern "C"
 #include "log/Log.hxx"
 #include "net/HttpClient.hxx"
 #include "lua/LuaBridge.hxx"
+#include "util/JsonUtil.hxx"
+#include <vector>
+#include <string>
 
 // WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
 #ifdef __EMSCRIPTEN__
@@ -154,8 +133,8 @@ int ngenxx_log_printL(lua_State *L)
         cJSON *cj = json->child;
         while (cj)
         {
-            JSON_READ_INT(cj, "level", level);
-            JSON_READ_STR(cj, "content", content);
+            JSON_READ_NUM(cj, level);
+            JSON_READ_STR(cj, content);
             cj = cj->next;
         }
         cJSON_free(json);
@@ -169,11 +148,17 @@ int ngenxx_log_printL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-const char *ngenxx_net_http_request(const char *url, const char *params)
+const char *ngenxx_net_http_request(const char *url, const char *params, int method, char **headers_v, int headers_c, long timeout)
 {
     const std::string sUrl(url);
     const std::string sParams(params);
-    auto s = NGenXX::Net::HttpClient::request(sUrl, sParams);
+    std::vector<std::string> vHeaders;
+    if (headers_v != NULL && headers_c > 0)
+    {
+        vHeaders = std::vector<std::string>(headers_v, headers_v + headers_c);
+    }
+
+    auto s = NGenXX::Net::HttpClient::request(sUrl, sParams, method, vHeaders, timeout);
     char *c = (char *)malloc(s.size());
     strcpy(c, s.c_str());
     return c;
@@ -183,19 +168,29 @@ int ngenxx_net_http_requestL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
     char *url, *params;
+    int method;
+    char **headers;
+    int headers_c;
+    long timeout;
     cJSON *json = cJSON_Parse(s);
     if (json)
     {
-        cJSON *cj = json->child;
-        while (cj)
+        if (json->type == cJSON_Object)
         {
-            JSON_READ_STR(cj, "url", url);
-            JSON_READ_STR(cj, "params", params);
-            cj = cj->next;
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_STR(oj, url);
+                JSON_READ_STR(oj, params);
+                JSON_READ_NUM(oj, method);
+                JSON_READ_NUM(oj, timeout);
+                JSON_READ_STR_ARRAY(oj, headers, headers_c, HTTP_HEADERS_MAX_COUNT, HTTP_HEADER_MAX_LENGTH);
+                oj = oj->next;
+            }
         }
         cJSON_free(json);
     }
-    const char *res = ngenxx_net_http_request(url, params);
+    const char *res = ngenxx_net_http_request(url, params, method, headers, headers_c, timeout);
     lua_pushstring(L, res);
     return 1;
 }
