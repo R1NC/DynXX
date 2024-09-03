@@ -22,7 +22,7 @@ struct Index {
               });
 
               ngenxxNapi.lLoadS(this.handle,
-                "function lNetHttpReq(pReq)\n" +
+                "function lNetHttpRequest(pReq)\n" +
                 "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
                 "ngenxx_log_printL(pLog);\n" +
                 "rsp = ngenxx_net_http_requestL(pReq);\n" +

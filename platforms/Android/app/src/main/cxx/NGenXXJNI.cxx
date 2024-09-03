@@ -77,7 +77,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logPrint(JNIEnv *env, jobject thiz,
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpReq(JNIEnv *env,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env,
                                                           jobject thiz,
                                                           jstring url,
                                                           jstring params，

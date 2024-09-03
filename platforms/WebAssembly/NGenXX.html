@@ -25,7 +25,7 @@
             }, 'vii');//wasm type signature just support number
             Module._ngenxx_log_set_callback(_func);
 
-            _luaScript = jstr2wasm("function lNetHttpReq(pReq)\n" +
+            _luaScript = jstr2wasm("function lNetHttpRequest(pReq)\n" +
                 "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
                 "ngenxx_log_printL(pLog);\n" +
                 "rsp = ngenxx_net_http_requestL(pReq);\n" +

@@ -227,7 +227,7 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
 
 #pragma mark Net
 
-static napi_value NetHttpReq(napi_env env, napi_callback_info info) {
+static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
     size_t argc = 5;
     napi_value args[5] = {nullptr};
 
@@ -335,7 +335,7 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports) {
         {"logSetCallback", nullptr, LogSetCallback, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"logPrint", nullptr, LogPrint, nullptr, nullptr, nullptr, napi_default, nullptr},
 
-        {"netHttpReq", nullptr, NetHttpReq, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"netHttpRequest", nullptr, NetHttpRequest, nullptr, nullptr, nullptr, napi_default, nullptr},
         
         {"lLoadF", nullptr, LLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lLoadS", nullptr, LLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
