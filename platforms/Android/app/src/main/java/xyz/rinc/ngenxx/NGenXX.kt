@@ -14,7 +14,7 @@ class NGenXX {
         external fun logSetCallback(callback: ((level: Int, content: String) -> Unit)?)
         external fun logPrint(level: Int, content: String)
 
-        external fun netHttpReq(url: String, params: String?): String?
+        external fun netHttpRequest(url: String, params: String?, method: Int, headers: Array<String>?, timeout: Long): String?
 
         external fun lLoadF(handle: Long, file: String): Boolean
         external fun lLoadS(handle: Long, script: String): Boolean

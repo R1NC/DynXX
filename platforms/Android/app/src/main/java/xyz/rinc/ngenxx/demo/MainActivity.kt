@@ -35,8 +35,14 @@ class MainActivity : ComponentActivity() {
             NGenXX.lLoadS(handle, luaScript)
         }
 
-        val params = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}"
-        val rsp = NGenXX.lCall(handle, "lNetHttpReq", params)
+        //val params = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}"
+        //val rsp = NGenXX.lCall(handle, "lNetHttpReq", params)
+        val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
+            "p0=1&p1=2&p2=3",
+            1,
+            arrayOf("Accept-Encoding: gzip, deflate", "Cache-Control: no-cache"),
+            5555
+        )
 
         setContent {
             NGenXXTheme {

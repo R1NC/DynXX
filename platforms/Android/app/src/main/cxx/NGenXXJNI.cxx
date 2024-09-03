@@ -1,4 +1,6 @@
 #include <jni.h>
+#include <cstdlib>
+#include <string>
 #include "../../../../../../build.Android/output/include/NGenXX.h"
 
 extern "C"
@@ -78,11 +80,25 @@ JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpReq(JNIEnv *env,
                                                           jobject thiz,
                                                           jstring url,
-                                                          jstring params)
+                                                          jstring params，
+                                                          jobjectArray headers,
+                                                          jlong timeout)
 {
     const char *cUrl = env->GetStringUTFChars(url, JNI_FALSE);
     const char *cParams = env->GetStringUTFChars(params, JNI_FALSE);
-    const char *cRsp = ngenxx_net_http_request(cUrl, cParams);
+    
+    int headersCount = env->GetArrayLength(headers);
+    char **headersV = (char **)malloc(headersCount * sizeof(char *));
+    for (int i = 0; i< headersCount; i++) {
+        auto jstr = (jstring) (env->GetObjectArrayElement(headers, i));
+        jboolean copy = JNI_TRUE;
+        headersV[i] = (char *)env->GetStringUTFChars(jstr, &copy);
+    }
+
+    const char *cRsp = ngenxx_net_http_request(cUrl, cParams, method, headersV, headersCount, timeout);
+
+    free((void *)headersV);
+
     return env->NewStringUTF(cRsp);
 }
 
