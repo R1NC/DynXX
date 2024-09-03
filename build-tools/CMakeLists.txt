@@ -45,16 +45,24 @@ if(OHOS)
     set(LINK_LIBS
         lua
         cjson
-        sqlite3
+        sqlite3-static
         CURL::libcurl 
         OpenSSL::SSL 
         OpenSSL::Crypto
+    )
+elseif(APPLE)
+    set(LINK_LIBS
+        lua
+        cjson
+        sqlite3
+        CURL::libcurl
+        wolfssl::wolfssl
     )
 else()
     set(LINK_LIBS
         lua
         cjson
-        sqlite3
+        sqlite3-static
         CURL::libcurl
         wolfssl::wolfssl
     )
