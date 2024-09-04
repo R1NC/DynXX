@@ -1,5 +1,5 @@
-#ifndef NGENXX_NET_H_
-#define NGENXX_NET_H_
+#ifndef NGENXX_NET_HTTP_H_
+#define NGENXX_NET_HTTP_H_
 
 /**
  *
@@ -22,4 +22,4 @@ enum NGenXXNetHttpMethod
  */
 const char *ngenxx_net_http_request(const char *url, const char *params, int method, char **headers_v, int headers_c, long timeout);
 
-#endif // NGENXX_NET_H_
+#endif // NGENXX_NET_HTTP_H_

@@ -2,8 +2,11 @@
 #define NGENXX_H_
 
 #include "NGenXXLog.h"
-#include "NGenXXNet.h"
+#include "NGenXXNetHttp.h"
+#include "NGenxxStoreDB.h"
+#ifdef USE_LUA
 #include "NGenXXLua.h"
+#endif
 
 /**
  * @brief Read version

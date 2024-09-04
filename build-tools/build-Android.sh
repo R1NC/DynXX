@@ -46,7 +46,4 @@ build4android arm64-v8a android-21 Release
 
 HEADER_OUTPUT_DIR=output/include
 mkdir -p ${HEADER_OUTPUT_DIR}
-cp ../include/NGenXX.h ${HEADER_OUTPUT_DIR}
-cp ../include/NGenXXLog.h ${HEADER_OUTPUT_DIR}
-cp ../include/NGenXXLua.h ${HEADER_OUTPUT_DIR}
-cp ../include/NGenXXNet.h ${HEADER_OUTPUT_DIR}
+cp -R ../include/ ${HEADER_OUTPUT_DIR}/

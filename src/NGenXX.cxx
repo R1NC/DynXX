@@ -21,11 +21,11 @@ extern "C"
 #ifdef __cplusplus
 
 #include <string>
+#include <vector>
 #include "log/Log.hxx"
 #include "net/HttpClient.hxx"
+#include "store/DB.hxx"
 #include "util/JsonUtil.hxx"
-#include <vector>
-#include <string>
 #ifdef USE_LUA
 #include "lua/LuaBridge.hxx"
 #endif
@@ -66,7 +66,7 @@ int ngenxx_get_versionL(lua_State *L)
 {
     const char *res = ngenxx_get_version();
     lua_pushstring(L, res);
-    return 1;
+    return LUA_OK;
 }
 #endif
 
@@ -137,25 +137,28 @@ int ngenxx_log_printL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
     int level;
-    char *content;
+    char *content = NULL;
     cJSON *json = cJSON_Parse(s);
     if (json)
     {
-        cJSON *cj = json->child;
-        while (cj)
+        if (json->type == cJSON_Object)
         {
-            JSON_READ_NUM(cj, level);
-            JSON_READ_STR(cj, content);
-            cj = cj->next;
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_NUM(oj, level);
+                JSON_READ_STR(oj, content);
+                oj = oj->next;
+            }
         }
         cJSON_free(json);
     }
     ngenxx_log_print(level, content);
-    return 0;
+    return LUA_OK;
 }
 #endif
 
-#pragma mark Net
+#pragma mark Net.Http
 
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
@@ -207,7 +210,290 @@ int ngenxx_net_http_requestL(lua_State *L)
     }
     const char *res = ngenxx_net_http_request(url, params, method, headers, headers_c, timeout);
     lua_pushstring(L, res);
-    return 1;
+    return LUA_OK;
+}
+#endif
+
+#pragma mark Store.DB
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
+void *ngenxx_store_db_open(const char *file)
+{
+    if (file == NULL)
+        return NULL;
+    return NGenXX::Store::DB::open(file);
+}
+
+#ifdef USE_LUA
+int ngenxx_store_db_openL(lua_State *L)
+{
+    const char *s = luaL_checkstring(L, 1);
+    char *file = NULL;
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        if (json->type == cJSON_Object)
+        {
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_STR(oj, file);
+                oj = oj->next;
+            }
+        }
+        cJSON_free(json);
+    }
+    void *db = ngenxx_store_db_open(file);
+    lua_pushinteger(L, (long)db);
+    return LUA_OK;
+}
+#endif
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
+void *ngenxx_store_db_query_exe(void *db, const char *sql)
+{
+    if (db == NULL || sql == NULL)
+        return NULL;
+    return NGenXX::Store::DB::queryExe(db, sql);
+}
+
+#ifdef USE_LUA
+int ngenxx_store_db_query_exeL(lua_State *L)
+{
+    const char *s = luaL_checkstring(L, 1);
+    long db;
+    char *sql = NULL;
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        if (json->type == cJSON_Object)
+        {
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_NUM(oj, db);
+                JSON_READ_STR(oj, sql);
+                oj = oj->next;
+            }
+        }
+        cJSON_free(json);
+    }
+    void *res = ngenxx_store_db_query_exe((void *)db, sql);
+    lua_pushinteger(L, (long)res);
+    return LUA_OK;
+}
+#endif
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
+bool ngenxx_store_db_query_read_row(void *query_result)
+{
+    if (query_result == NULL)
+        return false;
+    return NGenXX::Store::DB::queryReadRow(query_result);
+}
+
+#ifdef USE_LUA
+int ngenxx_store_db_query_read_rowL(lua_State *L)
+{
+    const char *s = luaL_checkstring(L, 1);
+    long query_result;
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        if (json->type == cJSON_Object)
+        {
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_NUM(oj, query_result);
+                oj = oj->next;
+            }
+        }
+        cJSON_free(json);
+    }
+    bool res = ngenxx_store_db_query_read_row((void *)query_result);
+    lua_pushboolean(L, res);
+    return LUA_OK;
+}
+#endif
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
+const char *ngenxx_store_db_query_read_column_text(void *query_result, const char *column)
+{
+    if (query_result == NULL || column == NULL)
+        return NULL;
+    return NGenXX::Store::DB::queryReadColumnText(query_result, column);
+}
+
+#ifdef USE_LUA
+int ngenxx_store_db_query_read_column_textL(lua_State *L)
+{
+    const char *s = luaL_checkstring(L, 1);
+    long query_result;
+    char *column = NULL;
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        if (json->type == cJSON_Object)
+        {
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_NUM(oj, query_result);
+                JSON_READ_STR(oj, column);
+                oj = oj->next;
+            }
+        }
+        cJSON_free(json);
+    }
+    const char *res = ngenxx_store_db_query_read_column_text((void *)query_result, column);
+    lua_pushstring(L, res);
+}
+#endif
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
+long long ngenxx_store_db_query_read_column_integer(void *query_result, const char *column)
+{
+    if (query_result == NULL || column == NULL)
+        return NULL;
+    return NGenXX::Store::DB::queryReadColumnInteger(query_result, column);
+}
+
+int ngenxx_store_db_query_read_column_integerL(lua_State *L)
+{
+    const char *s = luaL_checkstring(L, 1);
+    long query_result;
+    char *column = NULL;
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        if (json->type == cJSON_Object)
+        {
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_NUM(oj, query_result);
+                JSON_READ_STR(oj, column);
+                oj = oj->next;
+            }
+        }
+        cJSON_free(json);
+    }
+    long long res = ngenxx_store_db_query_read_column_integer((void *)query_result, column);
+    lua_pushinteger(L, res);
+}
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
+double ngenxx_store_db_query_read_column_float(void *query_result, const char *column)
+{
+    if (query_result == NULL || column == NULL)
+        return NULL;
+    return NGenXX::Store::DB::queryReadColumnFloat(query_result, column);
+}
+
+#ifdef USE_LUA
+int ngenxx_store_db_query_read_column_floatL(lua_State *L)
+{
+    const char *s = luaL_checkstring(L, 1);
+    long query_result;
+    char *column = NULL;
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        if (json->type == cJSON_Object)
+        {
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_NUM(oj, query_result);
+                JSON_READ_STR(oj, column);
+                oj = oj->next;
+            }
+        }
+        cJSON_free(json);
+    }
+    double res = ngenxx_store_db_query_read_column_float((void *)query_result, column);
+    lua_pushnumber(L, res);
+}
+#endif
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
+void ngenxx_store_db_query_drop(void *query_result)
+{
+    if (query_result == NULL)
+        return;
+    NGenXX::Store::DB::queryDrop(query_result);
+}
+
+#ifdef USE_LUA
+int ngenxx_store_db_query_dropL(lua_State *L)
+{
+    const char *s = luaL_checkstring(L, 1);
+    long query_result;
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        if (json->type == cJSON_Object)
+        {
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_NUM(oj, query_result);
+                oj = oj->next;
+            }
+        }
+        cJSON_free(json);
+    }
+    ngenxx_store_db_query_drop((void *)query_result);
+    return LUA_OK;
+}
+#endif
+
+#ifdef __EMSCRIPTEN__
+EXPORT_WASM
+#endif
+void ngenxx_store_db_close(void *db)
+{
+    if (db == NULL)
+        return;
+    NGenXX::Store::DB::close(db);
+}
+
+#ifdef USE_LUA
+int ngenxx_store_db_closeL(lua_State *L)
+{
+    const char *s = luaL_checkstring(L, 1);
+    long db;
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        if (json->type == cJSON_Object)
+        {
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                JSON_READ_NUM(oj, db);
+                oj = oj->next;
+            }
+        }
+        cJSON_free(json);
+    }
+    ngenxx_store_db_close((void *)db);
+    return LUA_OK;
 }
 #endif
 
@@ -247,6 +533,14 @@ void export_funcs_for_lua(void *handle)
     NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_get_versionL", ngenxx_get_versionL);
     NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_log_printL", ngenxx_log_printL);
     NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_net_http_requestL", ngenxx_net_http_requestL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_openL", ngenxx_store_db_openL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_exeL", ngenxx_store_db_query_exeL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_read_rowL", ngenxx_store_db_query_read_rowL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_read_column_textL", ngenxx_store_db_query_read_column_textL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_read_column_integerL", ngenxx_store_db_query_read_column_integerL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_read_column_floatL", ngenxx_store_db_query_read_column_floatL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_dropL", ngenxx_store_db_query_dropL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_closeL", ngenxx_store_db_closeL);
 }
 
 #endif

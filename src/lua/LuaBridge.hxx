@@ -1,5 +1,5 @@
-#ifndef NGENXX_LUA_BRIDGE_H_
-#define NGENXX_LUA_BRIDGE_H_
+#ifndef NGENXX_LUA_BRIDGE_HXX_
+#define NGENXX_LUA_BRIDGE_HXX_
 
 #ifdef __cplusplus
 
@@ -61,4 +61,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_LUA_BRIDGE_H_
+#endif // NGENXX_LUA_BRIDGE_HXX_

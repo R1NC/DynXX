@@ -2,9 +2,8 @@
 
 #include "../../../external/curl/include/curl/curl.h"
 #include "../../include/NGenXXLog.h"
-#include "../../include/NGenXXNet.h"
+#include "../../include/NGenXXNetHttp.h"
 #include "../log/Log.hxx"
-#include <iostream>
 #include <algorithm>
 #include <vector>
 #include <string>

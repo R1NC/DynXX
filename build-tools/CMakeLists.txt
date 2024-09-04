@@ -17,6 +17,7 @@ project(NGenXX)
 set(ENGINE_FILES
     ../src/log/Log.cxx
     ../src/net/HttpClient.cxx
+    ../src/store/DB.cxx
     ../src/NGenXX.cxx
 )
 if(USE_LUA)
