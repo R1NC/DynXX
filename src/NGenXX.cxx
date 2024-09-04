@@ -12,7 +12,9 @@ extern "C"
 
     typedef struct NGenXXHandle
     {
+#ifdef USE_LUA
         lua_State *lua_state;
+#endif
     } NGenXXHandle;
 }
 
@@ -21,10 +23,12 @@ extern "C"
 #include <string>
 #include "log/Log.hxx"
 #include "net/HttpClient.hxx"
-#include "lua/LuaBridge.hxx"
 #include "util/JsonUtil.hxx"
 #include <vector>
 #include <string>
+#ifdef USE_LUA
+#include "lua/LuaBridge.hxx"
+#endif
 
 // WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
 #ifdef __EMSCRIPTEN__
@@ -57,14 +61,18 @@ const char *ngenxx_get_version(void)
     return c;
 }
 
+#ifdef USE_LUA
 int ngenxx_get_versionL(lua_State *L)
 {
     const char *res = ngenxx_get_version();
     lua_pushstring(L, res);
     return 1;
 }
+#endif
 
+#ifdef USE_LUA
 void export_funcs_for_lua(void *handle);
+#endif
 
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM_LUA
@@ -72,11 +80,10 @@ EXPORT_WASM_LUA
 void *ngenxx_init(bool use_lua)
 {
     NGenXXHandle *handle = (NGenXXHandle *)malloc(sizeof(NGenXXHandle));
-    if (use_lua)
-    {
-        handle->lua_state = NGenXX::LuaBridge::create();
-        export_funcs_for_lua(handle);
-    }
+#ifdef USE_LUA
+    handle->lua_state = NGenXX::LuaBridge::create();
+    export_funcs_for_lua(handle);
+#endif
     NGenXX::Net::HttpClient::create();
     return handle;
 }
@@ -89,11 +96,14 @@ void ngenxx_release(void *handle)
     if (handle == NULL)
         return;
     NGenXXHandle *h = (NGenXXHandle *)handle;
+#ifdef USE_LUA
     if (h->lua_state)
     {
         NGenXX::LuaBridge::destroy(h->lua_state);
     }
+#endif
     NGenXX::Net::HttpClient::destroy();
+    free(h);
 }
 
 #pragma mark Log
@@ -122,6 +132,7 @@ void ngenxx_log_print(int level, const char *content)
     NGenXX::Log::print(level, content);
 }
 
+#ifdef USE_LUA
 int ngenxx_log_printL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
@@ -142,6 +153,7 @@ int ngenxx_log_printL(lua_State *L)
     ngenxx_log_print(level, content);
     return 0;
 }
+#endif
 
 #pragma mark Net
 
@@ -150,6 +162,8 @@ EXPORT_WASM
 #endif
 const char *ngenxx_net_http_request(const char *url, const char *params, int method, char **headers_v, int headers_c, long timeout)
 {
+    if (url == NULL)
+        return NULL;
     const std::string sUrl(url);
     const std::string sParams(params);
     std::vector<std::string> vHeaders;
@@ -164,12 +178,13 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
     return c;
 }
 
+#ifdef USE_LUA
 int ngenxx_net_http_requestL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
-    char *url, *params;
+    char *url = NULL, *params = NULL;
     int method;
-    char **headers;
+    char **headers = NULL;
     int headers_c;
     long timeout;
     cJSON *json = cJSON_Parse(s);
@@ -194,6 +209,9 @@ int ngenxx_net_http_requestL(lua_State *L)
     lua_pushstring(L, res);
     return 1;
 }
+#endif
+
+#ifdef USE_LUA
 
 #pragma mark Lua
 
@@ -230,3 +248,5 @@ void export_funcs_for_lua(void *handle)
     NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_log_printL", ngenxx_log_printL);
     NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_net_http_requestL", ngenxx_net_http_requestL);
 }
+
+#endif

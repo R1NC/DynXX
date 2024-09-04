@@ -6,21 +6,35 @@ set (CMAKE_C_STANDARD 99)
 set (CMAKE_CXX_STANDARD 11)
 #add_compile_options("-stdlib=libc++" "-lc++abi" "-v")
 
+option(USE_LUA "Use Lua or not" ON)
+
+if(USE_LUA)
+    add_definitions(-DUSE_LUA)
+endif()
+
 project(NGenXX)
 
 set(ENGINE_FILES
     ../src/log/Log.cxx
     ../src/net/HttpClient.cxx
-    ../src/lua/LuaBridge.cxx
     ../src/NGenXX.cxx
 )
+if(USE_LUA)
+    set(ENGINE_FILES ${ENGINE_FILES}
+        ../src/lua/LuaBridge.cxx
+    )
+endif()
 
 set(LIB_TYPE STATIC)
 if(EMSCRIPTEN)
     add_executable(${PROJECT_NAME} ${ENGINE_FILES})
     set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
     # WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_ngenxx_init','_ngenxx_release','_ngenxx_L_loadS','_ngenxx_L_call']")
+    if(USE_LUA)
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_ngenxx_init','_ngenxx_release','_ngenxx_L_loadS','_ngenxx_L_call']")
+    else()
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_ngenxx_init','_ngenxx_release']")
+    endif()
 else()
     add_library(${PROJECT_NAME} ${LIB_TYPE} ${ENGINE_FILES})
 endif()
@@ -29,8 +43,10 @@ endif()
 # 1). WolfSSL is not available in HarmonyOS，use OpenSSL instead;
 # 2). The buillt-in sqlite in iOS/macOS is available，no need to compile；
 # 3). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
-add_subdirectory(../external/lua lua.output)
 add_subdirectory(../external/cjson cjson.output)
+if(USE_LUA)
+    add_subdirectory(../external/lua lua.output)
+endif()
 if(NOT APPLE)
     add_subdirectory(../external/sqlite sqlite.output)
 endif()
@@ -41,30 +57,32 @@ else()
 endif()
 add_subdirectory(../external/curl curl.output)
 
-if(OHOS)
-    set(LINK_LIBS
+set(LINK_LIBS
+    cjson
+    CURL::libcurl
+)
+if(USE_LUA)
+    set(LINK_LIBS ${LINK_LIBS}
         lua
-        cjson
-        sqlite3-static
-        CURL::libcurl 
+    )
+endif()
+if(OHOS)
+    set(LINK_LIBS ${LINK_LIBS}
         OpenSSL::SSL 
         OpenSSL::Crypto
     )
-elseif(APPLE)
-    set(LINK_LIBS
-        lua
-        cjson
-        sqlite3
-        CURL::libcurl
+else()
+    set(LINK_LIBS ${LINK_LIBS}
         wolfssl::wolfssl
     )
+endif()
+if(APPLE)
+    set(LINK_LIBS ${LINK_LIBS}
+        sqlite3
+    )
 else()
-    set(LINK_LIBS
-        lua
-        cjson
+    set(LINK_LIBS ${LINK_LIBS}
         sqlite3-static
-        CURL::libcurl
-        wolfssl::wolfssl
     )
 endif()
 

@@ -38,7 +38,7 @@
     tv.editable = NO;
     [self.view addSubview:tv];
 
-    _handle = ngenxx_init(true);
+    _handle = ngenxx_init();
     const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
     ngenxx_L_loadF(_handle, cLuaPath);
     

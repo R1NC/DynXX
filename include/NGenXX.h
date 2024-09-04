@@ -14,10 +14,9 @@ const char *ngenxx_get_version(void);
 /**
  * @brief Initialize SDK
  * @warning Not accessible in Lua!
- * @param use_lua Use Lua or not
  * @return SDK handle
  */
-void *ngenxx_init(bool use_lua);
+void *ngenxx_init(void);
 
 /**
  * @brief Release SDK

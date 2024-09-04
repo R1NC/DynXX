@@ -9,13 +9,13 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
                                                          jobject thiz)
 {
     const char *cV = ngenxx_get_version();
-    return env->NewStringUTF(cV);
+    return env->NewStringUTF(cV ?: "");
 }
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz, jboolean useLua) {
-    return (jlong)ngenxx_init(useLua);
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz) {
+    return (jlong)ngenxx_init();
 }
 
 extern "C"
@@ -32,7 +32,7 @@ static jobject sLogCallback;
 static jmethodID sLogCallbackMethodId;
 
 static void ngenxx_jni_log_callback(int level, const char *content) {
-    if (sEnv && sLogCallback && sLogCallbackMethodId) {
+    if (sEnv && sLogCallback && sLogCallbackMethodId && content) {
         jstring jContent = sEnv->NewStringUTF(content);
         sEnv->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
     }
@@ -99,7 +99,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env,
 
     free((void *)headersV);
 
-    return env->NewStringUTF(cRsp);
+    return env->NewStringUTF(cRsp ?: "");
 }
 
 #pragma mark Lua
@@ -131,5 +131,5 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCall(JNIEnv *env, jobject thiz,
     const char *cFunc = env->GetStringUTFChars(func, JNI_FALSE);
     const char *cParams = params ? env->GetStringUTFChars(params, JNI_FALSE) : nullptr;
     const char *res = ngenxx_L_call((void *)handle, cFunc, cParams);
-    return env->NewStringUTF(res);
+    return env->NewStringUTF(res ?: "");
 }

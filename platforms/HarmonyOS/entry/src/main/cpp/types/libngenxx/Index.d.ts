@@ -1,5 +1,5 @@
 export const getVersion: () => string;
-export const init: (useLua: boolean) => number;
+export const init: () => number;
 export const release: (handle: number) => void;
 
 export const logSetLevel: (level: number) => void;

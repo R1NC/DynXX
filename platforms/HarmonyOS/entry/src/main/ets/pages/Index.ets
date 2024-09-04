@@ -15,7 +15,7 @@ struct Index {
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
             if (this.handle == -1) {
-              this.handle = ngenxxNapi.init(true);
+              this.handle = ngenxxNapi.init();
 
               ngenxxNapi.logSetCallback((level, log) => {
                 hilog.debug(0x0000, 'NGenXX', `${level} | ${log}`);

@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         if (handle == -1L) {
-            handle = NGenXX.init(true)
+            handle = NGenXX.init()
 
             NGenXX.logSetCallback {level, content ->
                 android.util.Log.d("NGenXX", "$level | $content")
