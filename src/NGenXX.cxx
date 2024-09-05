@@ -37,15 +37,14 @@ extern "C"
 #define EXPORT_WASM_LUA extern "C"
 #endif
 
-namespace NGenXX
+#define VERSION "0.0.1"
+
+static inline const char *str2charp(std::string s)
 {
-
-    static inline const std::string GetVersion(void)
-    {
-        static const std::string s("0.0.1");
-        return s;
-    }
-
+    const char *c = s.c_str();
+    char *nc = (char *)malloc(strlen(c) + 1);
+    strcpy(nc, c);
+    return nc;
 }
 
 #endif
@@ -55,10 +54,8 @@ EXPORT_WASM
 #endif
 const char *ngenxx_get_version(void)
 {
-    auto s = NGenXX::GetVersion();
-    char *c = (char *)malloc(s.size());
-    strcpy(c, s.c_str());
-    return c;
+    auto s = std::string(VERSION);
+    return str2charp(s);
 }
 
 #ifdef USE_LUA
@@ -77,14 +74,14 @@ void export_funcs_for_lua(void *handle);
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM_LUA
 #endif
-void *ngenxx_init(bool use_lua)
+void *ngenxx_init(void)
 {
+    NGenXX::Net::HttpClient::create();
     NGenXXHandle *handle = (NGenXXHandle *)malloc(sizeof(NGenXXHandle));
 #ifdef USE_LUA
     handle->lua_state = NGenXX::LuaBridge::create();
     export_funcs_for_lua(handle);
 #endif
-    NGenXX::Net::HttpClient::create();
     return handle;
 }
 
@@ -93,6 +90,7 @@ EXPORT_WASM_LUA
 #endif
 void ngenxx_release(void *handle)
 {
+    NGenXX::Net::HttpClient::destroy();
     if (handle == NULL)
         return;
     NGenXXHandle *h = (NGenXXHandle *)handle;
@@ -102,7 +100,6 @@ void ngenxx_release(void *handle)
         NGenXX::LuaBridge::destroy(h->lua_state);
     }
 #endif
-    NGenXX::Net::HttpClient::destroy();
     free(h);
 }
 
@@ -176,9 +173,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
     }
 
     auto s = NGenXX::Net::HttpClient::request(sUrl, sParams, method, vHeaders, timeout);
-    char *c = (char *)malloc(s.size());
-    strcpy(c, s.c_str());
-    return c;
+    return str2charp(s);
 }
 
 #ifdef USE_LUA
@@ -223,7 +218,7 @@ void *ngenxx_store_db_open(const char *file)
 {
     if (file == NULL)
         return NULL;
-    return NGenXX::Store::DB::open(file);
+    return new NGenXX::Store::DB(std::string(file));
 }
 
 #ifdef USE_LUA
@@ -258,7 +253,8 @@ void *ngenxx_store_db_query_exe(void *db, const char *sql)
 {
     if (db == NULL || sql == NULL)
         return NULL;
-    return NGenXX::Store::DB::queryExe(db, sql);
+    NGenXX::Store::DB *xdb = (NGenXX::Store::DB *)db;
+    return xdb->execute(std::string(sql));
 }
 
 #ifdef USE_LUA
@@ -295,7 +291,8 @@ bool ngenxx_store_db_query_read_row(void *query_result)
 {
     if (query_result == NULL)
         return false;
-    return NGenXX::Store::DB::queryReadRow(query_result);
+    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
+    return xqr->readRow();
 }
 
 #ifdef USE_LUA
@@ -330,7 +327,9 @@ const char *ngenxx_store_db_query_read_column_text(void *query_result, const cha
 {
     if (query_result == NULL || column == NULL)
         return NULL;
-    return NGenXX::Store::DB::queryReadColumnText(query_result, column);
+    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
+    auto s = xqr->readColumnText(std::string(column));
+    return str2charp(s);
 }
 
 #ifdef USE_LUA
@@ -356,6 +355,7 @@ int ngenxx_store_db_query_read_column_textL(lua_State *L)
     }
     const char *res = ngenxx_store_db_query_read_column_text((void *)query_result, column);
     lua_pushstring(L, res);
+    return LUA_OK;
 }
 #endif
 
@@ -365,8 +365,9 @@ EXPORT_WASM
 long long ngenxx_store_db_query_read_column_integer(void *query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
-        return NULL;
-    return NGenXX::Store::DB::queryReadColumnInteger(query_result, column);
+        return 0;
+    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
+    return xqr->readColumnInteger(std::string(column));
 }
 
 int ngenxx_store_db_query_read_column_integerL(lua_State *L)
@@ -391,6 +392,7 @@ int ngenxx_store_db_query_read_column_integerL(lua_State *L)
     }
     long long res = ngenxx_store_db_query_read_column_integer((void *)query_result, column);
     lua_pushinteger(L, res);
+    return LUA_OK;
 }
 
 #ifdef __EMSCRIPTEN__
@@ -399,8 +401,9 @@ EXPORT_WASM
 double ngenxx_store_db_query_read_column_float(void *query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
-        return NULL;
-    return NGenXX::Store::DB::queryReadColumnFloat(query_result, column);
+        return 0.f;
+    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
+    return xqr->readColumnFloat(std::string(column));
 }
 
 #ifdef USE_LUA
@@ -426,6 +429,7 @@ int ngenxx_store_db_query_read_column_floatL(lua_State *L)
     }
     double res = ngenxx_store_db_query_read_column_float((void *)query_result, column);
     lua_pushnumber(L, res);
+    return LUA_OK;
 }
 #endif
 
@@ -436,7 +440,8 @@ void ngenxx_store_db_query_drop(void *query_result)
 {
     if (query_result == NULL)
         return;
-    NGenXX::Store::DB::queryDrop(query_result);
+    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
+    delete xqr;
 }
 
 #ifdef USE_LUA
@@ -470,7 +475,8 @@ void ngenxx_store_db_close(void *db)
 {
     if (db == NULL)
         return;
-    NGenXX::Store::DB::close(db);
+    NGenXX::Store::DB *xdb = (NGenXX::Store::DB *)db;
+    delete xdb;
 }
 
 #ifdef USE_LUA
@@ -512,10 +518,10 @@ bool ngenxx_L_loadF(void *handle, const char *file)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM_LUA
 #endif
-bool ngenxx_L_loadS(void *handle, const char *file)
+bool ngenxx_L_loadS(void *handle, const char *script)
 {
     NGenXXHandle *h = (NGenXXHandle *)handle;
-    return NGenXX::LuaBridge::loadScript(h->lua_state, file) == LUA_OK;
+    return NGenXX::LuaBridge::loadScript(h->lua_state, script) == LUA_OK;
 }
 
 #ifdef __EMSCRIPTEN__

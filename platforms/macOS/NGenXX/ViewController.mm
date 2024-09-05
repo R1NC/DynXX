@@ -29,7 +29,7 @@
     ngenxx_L_loadF(_handle, cLuaPath);
     
     static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-    const char * cRsp = ngenxx_L_call(_handle, "lNetHttpReq", cParams);
+    const char * cRsp = ngenxx_L_call(_handle, "lNetHttpRequest", cParams);
     if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
     
     NSLog(@"%@", s);

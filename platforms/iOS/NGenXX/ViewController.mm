@@ -14,6 +14,7 @@
 
 @interface ViewController () {
     void *_handle;
+    void *_db;
 }
 @end
 
@@ -47,16 +48,51 @@
 
 - (void)dealloc {
     ngenxx_release(_handle);
+    ngenxx_store_db_close(_db);
 }
 
 - (NSString*)output {
     NSString *s = @"";
 
     static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":1, \"headers\":[\"Accept-Encoding: gzip, deflate\", \"Cache-Control: no-cache\"], \"timeout\":6666}";
-    const char * cRsp = ngenxx_L_call(_handle, "lNetHttpReq", cParams);
+    const char * cRsp = ngenxx_L_call(_handle, "lNetHttpRequest", cParams);
     if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
+    
+    [self testDB];
 
     return s;
+}
+
+- (void)testDB {
+    NSString *dbDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
+    NSString *dbFile = [dbDir stringByAppendingPathComponent:@"xxx.db"];
+    _db = ngenxx_store_db_open(NSString2CharP(dbFile));
+    if (_db) {
+        NSString *sqlPathPrepareTable = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_table.sql"];
+        NSString *sqlPrepareTable = [NSString stringWithContentsOfFile:sqlPathPrepareTable encoding:NSUTF8StringEncoding error:NULL];
+        void *qrPrepareTable = ngenxx_store_db_query_exe(_db, NSString2CharP(sqlPrepareTable));
+        if (!qrPrepareTable) return;
+        ngenxx_store_db_query_drop(qrPrepareTable);
+        
+        NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
+        NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];
+        void *qrPrepareData = ngenxx_store_db_query_exe(_db, NSString2CharP(sqlPrepareData));
+        if (!qrPrepareData) return;
+        ngenxx_store_db_query_drop(qrPrepareData);
+        
+        NSString *sqlPathQuery = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"query.sql"];
+        NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:NULL];
+        void *qrQuery = ngenxx_store_db_query_exe(_db, NSString2CharP(sqlQuery));
+        if (!qrQuery) return;
+        if (qrQuery) {
+            while (ngenxx_store_db_query_read_row(qrQuery)) {
+                const char* platform = ngenxx_store_db_query_read_column_text(qrQuery, "platform");
+                const char* vendor = ngenxx_store_db_query_read_column_text(qrQuery, "vendor");
+                NSLog(@"platform:%@ vendor:%@", CharP2NSString(platform), CharP2NSString(vendor));
+            }
+        }
+        ngenxx_store_db_query_drop(qrQuery);
+    }
 }
 
 @end

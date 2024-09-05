@@ -1,89 +1,92 @@
-#ifdef __cplusplus
+#include "DB.hxx"
+#include "../../include/NGenXXLog.h"
+#include "../log/Log.hxx"
 
-#include <string>
-#ifdef __APPLE__
-#include <sqlite3.h>
-#else
-#include "../../../external/sqlite/sqlite3.h"
-#endif
-
-namespace NGenXX
+NGenXX::Store::DB::DB(const std::string &file)
 {
-    namespace Store
+    int rc = sqlite3_open(file.c_str(), &this->db);
+    if (rc != SQLITE_OK)
     {
-        namespace DB
-        {
-
-            void *open(const char *file)
-            {
-                sqlite3 *db = NULL;
-                sqlite3_open(file, &db);
-                return db ?: NULL;
-            }
-
-            void *queryExe(void *db, const char *sql)
-            {
-                sqlite3_stmt *stmt;
-                sqlite3_prepare_v2((sqlite3 *)db, sql, -1, &stmt, NULL);
-                return stmt;
-            }
-
-            bool queryReadRow(void *query_result)
-            {
-                sqlite3_stmt *stmt = (sqlite3_stmt *)query_result;
-                return sqlite3_step(stmt) == SQLITE_ROW;
-            }
-
-            const char *queryReadColumnText(void *query_result, const char *column)
-            {
-                sqlite3_stmt *stmt = (sqlite3_stmt *)query_result;
-                for (int i = 0; i < sqlite3_column_count(stmt); i++)
-                {
-                    if (strcmp(sqlite3_column_name(stmt, i), column) == 0 && sqlite3_column_type(stmt, i) == SQLITE_TEXT)
-                    {
-                        return (const char *)sqlite3_column_text(stmt, i);
-                    }
-                }
-                return NULL;
-            }
-
-            long long queryReadColumnInteger(void *query_result, const char *column)
-            {
-                sqlite3_stmt *stmt = (sqlite3_stmt *)query_result;
-                for (int i = 0; i < sqlite3_column_count(stmt); i++)
-                {
-                    if (strcmp(sqlite3_column_name(stmt, i), column) == 0 && sqlite3_column_type(stmt, i) == SQLITE_INTEGER)
-                    {
-                        return sqlite3_column_int64(stmt, i);
-                    }
-                }
-                return NULL;
-            }
-
-            double queryReadColumnFloat(void *query_result, const char *column)
-            {
-                sqlite3_stmt *stmt = (sqlite3_stmt *)query_result;
-                for (int i = 0; i < sqlite3_column_count(stmt); i++)
-                {
-                    if (strcmp(sqlite3_column_name(stmt, i), column) == 0 && sqlite3_column_type(stmt, i) == SQLITE_FLOAT)
-                    {
-                        return sqlite3_column_double(stmt, i);
-                    }
-                }
-                return NULL;
-            }
-
-            void queryDrop(void *query_result)
-            {
-                sqlite3_finalize((sqlite3_stmt *)query_result);
-            }
-
-            void close(void *db)
-            {
-                sqlite3_close((sqlite3 *)db);
-            }
-        }
+        NGenXX::Log::print(Error, sqlite3_errstr(rc));
     }
 }
 
-#endif
+NGenXX::Store::DB::QueryResult *NGenXX::Store::DB::execute(const std::string &sql)
+{
+    if (this->db == NULL)
+        return NULL;
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, NULL);
+    if (rc != SQLITE_OK)
+    {
+        NGenXX::Log::print(Error, sqlite3_errstr(rc));
+        return nullptr;
+    }
+    return new NGenXX::Store::DB::QueryResult(stmt);
+}
+
+NGenXX::Store::DB::~DB()
+{
+    if (this->db != NULL)
+        sqlite3_close(this->db);
+}
+
+NGenXX::Store::DB::QueryResult::QueryResult(sqlite3_stmt *stmt)
+{
+    this->stmt = stmt;
+}
+
+bool NGenXX::Store::DB::QueryResult::readRow()
+{
+    if (this->stmt == NULL)
+        return false;
+    return sqlite3_step(this->stmt) == SQLITE_ROW;
+}
+
+std::string NGenXX::Store::DB::QueryResult::readColumnText(const std::string &column)
+{
+    if (this->stmt == NULL)
+        return NULL;
+    for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
+    {
+        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0 && sqlite3_column_type(this->stmt, i) == SQLITE_TEXT)
+        {
+            return (const char *)sqlite3_column_text(this->stmt, i);
+        }
+    }
+    return NULL;
+}
+
+long long NGenXX::Store::DB::QueryResult::readColumnInteger(const std::string &column)
+{
+    if (this->stmt == NULL)
+        return NULL;
+    for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
+    {
+        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0 && sqlite3_column_type(this->stmt, i) == SQLITE_INTEGER)
+        {
+            return sqlite3_column_int64(this->stmt, i);
+        }
+    }
+    return 0;
+}
+
+double NGenXX::Store::DB::QueryResult::readColumnFloat(const std::string &column)
+{
+    if (this->stmt == NULL)
+        return NULL;
+    for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
+    {
+        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0 && sqlite3_column_type(this->stmt, i) == SQLITE_FLOAT)
+        {
+            return sqlite3_column_double(this->stmt, i);
+        }
+    }
+    return 0;
+}
+
+NGenXX::Store::DB::QueryResult::~QueryResult()
+{
+    if (this->stmt != NULL)
+        sqlite3_finalize(this->stmt);
+}

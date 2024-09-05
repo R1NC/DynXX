@@ -71,7 +71,7 @@
         }
 
         function testCallLua() {
-            _funcName = jstr2wasm("lNetHttpReq");
+            _funcName = jstr2wasm("lNetHttpRequest");
             _funcParams = jstr2wasm('{"url":"https://rinc.xyz","params":""}');
             _callRes = Module._ngenxx_L_call(_handle, _funcName, _funcParams);
 

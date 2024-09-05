@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS TestTable (platform TEXT PRIMARY KEY, vendor TEXT);

@@ -3,10 +3,8 @@
 
 #include "NGenXXLog.h"
 #include "NGenXXNetHttp.h"
-#include "NGenxxStoreDB.h"
-#ifdef USE_LUA
+#include "NGenXXStoreDB.h"
 #include "NGenXXLua.h"
-#endif
 
 /**
  * @brief Read version

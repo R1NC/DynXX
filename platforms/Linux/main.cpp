@@ -12,7 +12,7 @@ int main()
     if (loadSuccess)
     {
         static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-        const char *cRsp = ngenxx_L_call(handle, "lNetHttpReq", cParams);
+        const char *cRsp = ngenxx_L_call(handle, "lNetHttpRequest", cParams);
         std::cout << cRsp << std::endl;
     }
 

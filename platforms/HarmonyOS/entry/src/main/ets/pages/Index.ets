@@ -32,7 +32,7 @@ struct Index {
             }
 
             //let params: string = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-            //let rsp: number = ngenxxNapi.lCall(this.handle, "lNetHttpReq", params);
+            //let rsp: number = ngenxxNapi.lCall(this.handle, "lNetHttpRequest", params);
             let rsp = ngenxxNapi.netHttpRequest("https://rinc.xyz",
               "p0=1&p1=2&p2=3",
               1,

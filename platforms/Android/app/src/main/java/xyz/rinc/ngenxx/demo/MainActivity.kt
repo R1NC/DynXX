@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
         }
 
         //val params = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}"
-        //val rsp = NGenXX.lCall(handle, "lNetHttpReq", params)
+        //val rsp = NGenXX.lCall(handle, "lNetHttpRequest", params)
         val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
             "p0=1&p1=2&p2=3",
             1,
