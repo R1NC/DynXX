@@ -1,13 +1,16 @@
 #include "DB.hxx"
 #include "../../include/NGenXXLog.h"
 #include "../log/Log.hxx"
+#include <stdexcept>
 
 NGenXX::Store::DB::DB(const std::string &file)
 {
     int rc = sqlite3_open(file.c_str(), &this->db);
     if (rc != SQLITE_OK)
     {
-        NGenXX::Log::print(Error, sqlite3_errstr(rc));
+        const char *errMsg = sqlite3_errstr(rc);
+        NGenXX::Log::print(Error, errMsg);
+        throw std::invalid_argument(errMsg);
     }
 }
 

@@ -218,7 +218,15 @@ void *ngenxx_store_db_open(const char *file)
 {
     if (file == NULL)
         return NULL;
-    return new NGenXX::Store::DB(std::string(file));
+    NGenXX::Store::DB *db = nullptr;
+    try
+    {
+        db = new NGenXX::Store::DB(std::string(file));
+    }
+    catch (const std::invalid_argument &e)
+    {
+    }
+    return db;
 }
 
 #ifdef USE_LUA
