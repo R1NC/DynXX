@@ -43,7 +43,12 @@ bool NGenXX::Store::DB::QueryResult::readRow()
 {
     if (this->stmt == NULL)
         return false;
-    return sqlite3_step(this->stmt) == SQLITE_ROW;
+    int rc = sqlite3_step(this->stmt);
+    if (rc != SQLITE_OK)
+    {
+        NGenXX::Log::print(Warn, sqlite3_errstr(rc));
+    }
+    return rc == SQLITE_ROW;
 }
 
 std::string NGenXX::Store::DB::QueryResult::readColumnText(const std::string &column)
