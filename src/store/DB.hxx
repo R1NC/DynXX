@@ -29,13 +29,14 @@ namespace NGenXX
             class QueryResult
             {
             private:
+                struct sqlite3 *db;
                 sqlite3_stmt *stmt;
 
             public:
                 /**
                  * @warning `QueryResult` can only be constructed with `DB::execute()`
                  */
-                QueryResult(sqlite3_stmt *stmt);
+                QueryResult(struct sqlite3 *db, sqlite3_stmt *stmt);
 
                 /**
                  * @brief Read a row from query result

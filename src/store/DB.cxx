@@ -3,14 +3,15 @@
 #include "../log/Log.hxx"
 #include <stdexcept>
 
+#define PRINT_ERR(rc, db) NGenXX::Log::print(Error, db ? sqlite3_errmsg(db) : sqlite3_errstr(rc))
+
 NGenXX::Store::DB::DB(const std::string &file)
 {
-    int rc = sqlite3_open(file.c_str(), &this->db);
+    int rc = sqlite3_open_v2(file.c_str(), &this->db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
     if (rc != SQLITE_OK)
     {
-        const char *errMsg = sqlite3_errstr(rc);
-        NGenXX::Log::print(Error, errMsg);
-        throw std::invalid_argument(errMsg);
+        PRINT_ERR(rc, this->db);
+        throw std::invalid_argument(sqlite3_errstr(rc));
     }
 }
 
@@ -22,20 +23,21 @@ NGenXX::Store::DB::QueryResult *NGenXX::Store::DB::execute(const std::string &sq
     int rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, NULL);
     if (rc != SQLITE_OK)
     {
-        NGenXX::Log::print(Error, sqlite3_errstr(rc));
+        PRINT_ERR(rc, this->db);
         return nullptr;
     }
-    return new NGenXX::Store::DB::QueryResult(stmt);
+    return new NGenXX::Store::DB::QueryResult(db, stmt);
 }
 
 NGenXX::Store::DB::~DB()
 {
     if (this->db != NULL)
-        sqlite3_close(this->db);
+        sqlite3_close_v2(this->db);
 }
 
-NGenXX::Store::DB::QueryResult::QueryResult(sqlite3_stmt *stmt)
+NGenXX::Store::DB::QueryResult::QueryResult(struct sqlite3 *db, sqlite3_stmt *stmt)
 {
+    this->db = db;
     this->stmt = stmt;
 }
 
@@ -44,9 +46,9 @@ bool NGenXX::Store::DB::QueryResult::readRow()
     if (this->stmt == NULL)
         return false;
     int rc = sqlite3_step(this->stmt);
-    if (rc != SQLITE_OK)
+    if (rc != SQLITE_ROW)
     {
-        NGenXX::Log::print(Warn, sqlite3_errstr(rc));
+        PRINT_ERR(rc, this->db);
     }
     return rc == SQLITE_ROW;
 }
