@@ -60,7 +60,7 @@ std::string NGenXX::Store::DB::QueryResult::readColumnText(const std::string &co
 long long NGenXX::Store::DB::QueryResult::readColumnInteger(const std::string &column)
 {
     if (this->stmt == NULL)
-        return NULL;
+        return 0;
     for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
     {
         if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0 && sqlite3_column_type(this->stmt, i) == SQLITE_INTEGER)
@@ -74,7 +74,7 @@ long long NGenXX::Store::DB::QueryResult::readColumnInteger(const std::string &c
 double NGenXX::Store::DB::QueryResult::readColumnFloat(const std::string &column)
 {
     if (this->stmt == NULL)
-        return NULL;
+        return 0.f;
     for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
     {
         if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0 && sqlite3_column_type(this->stmt, i) == SQLITE_FLOAT)
