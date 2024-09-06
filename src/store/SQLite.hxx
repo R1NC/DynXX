@@ -33,7 +33,7 @@ namespace NGenXX
                  */
                 Connection(sqlite3 *db);
 
-                class ExecuteResult
+                class QueryResult
                 {
                 private:
                     struct sqlite3 *db;
@@ -41,9 +41,9 @@ namespace NGenXX
 
                 public:
                     /**
-                     * @warning `ExcuteResult` can only be constructed with `SQLite::Connection::execute()`
+                     * @warning `QueryResult` can only be constructed with `SQLite::Connection::query()`
                      */
-                    ExecuteResult(struct sqlite3 *db, sqlite3_stmt *stmt);
+                    QueryResult(struct sqlite3 *db, sqlite3_stmt *stmt);
 
                     /**
                      * @brief Read a row from query result
@@ -52,38 +52,45 @@ namespace NGenXX
                     bool readRow();
 
                     /**
-                     * @brief Read text column data from Exexcute result
+                     * @brief Read text column data from QueryResult
                      * @param column Column name
                      * @return Text column data
                      */
                     std::string readColumnText(const std::string &column);
 
                     /**
-                     * @brief Read integer column data from Exexcute result
+                     * @brief Read integer column data from QueryResult
                      * @param column Column name
                      * @return Integer column data
                      */
                     long long readColumnInteger(const std::string &column);
 
                     /**
-                     * @brief Read float column data from Exexcute result
+                     * @brief Read float column data from QueryResult
                      * @param column Column name
                      * @return Float column data
                      */
                     double readColumnFloat(const std::string &column);
 
                     /**
-                     * @brief Release Exexcute result
+                     * @brief Release QueryResult
                      */
-                    ~ExecuteResult();
+                    ~QueryResult();
                 };
 
                 /**
-                 * @brief Execute a SQL
+                 * @brief Execute SQL(s)
                  * @param sql SQL
-                 * @return A Exexcute result, or NULL if execute failed.
+                 * @return Successfull or not.
                  */
-                ExecuteResult *execute(const std::string &sql);
+                bool execute(const std::string &sql);
+
+                /**
+                 * @brief Query with a SQL
+                 * @param sql SQL
+                 * @return A QueryResult, or NULL if execute failed.
+                 */
+                QueryResult *query(const std::string &sql);
 
                 /**
                  * @brief Release DB resource

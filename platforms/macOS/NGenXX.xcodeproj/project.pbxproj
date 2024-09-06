@@ -20,6 +20,9 @@
 		40348F7A2C783F070039639C /* wolfssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F752C783F070039639C /* wolfssl.a */; };
 		40348F7B2C783F070039639C /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F762C783F070039639C /* NGenXX.a */; };
 		40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F7C2C783F540039639C /* libz.1.tbd */; };
+		407D2B4D2C8AC125008A138C /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B4A2C8AC125008A138C /* query.sql */; };
+		407D2B4E2C8AC125008A138C /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B4B2C8AC125008A138C /* prepare_data.sql */; };
+		407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B502C8AC12C008A138C /* libsqlite3.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +43,9 @@
 		40348F752C783F070039639C /* wolfssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = wolfssl.a; path = ../../build.macOS/output/Release/wolfssl.a; sourceTree = "<group>"; };
 		40348F762C783F070039639C /* NGenXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXX.a; path = ../../build.macOS/output/Release/NGenXX.a; sourceTree = "<group>"; };
 		40348F7C2C783F540039639C /* libz.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.tbd; path = usr/lib/libz.1.tbd; sourceTree = SDKROOT; };
+		407D2B4A2C8AC125008A138C /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
+		407D2B4B2C8AC125008A138C /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
+		407D2B502C8AC12C008A138C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */,
 				256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */,
 				40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */,
 				40348F772C783F070039639C /* curl.a in Frameworks */,
@@ -63,6 +70,8 @@
 		40348F4E2C783CA70039639C = {
 			isa = PBXGroup;
 			children = (
+				407D2B4B2C8AC125008A138C /* prepare_data.sql */,
+				407D2B4A2C8AC125008A138C /* query.sql */,
 				40348F6F2C783D7B0039639C /* biz.lua */,
 				40348F592C783CA70039639C /* NGenXX */,
 				40348F582C783CA70039639C /* Products */,
@@ -96,6 +105,7 @@
 		40348F712C783F070039639C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				407D2B502C8AC12C008A138C /* libsqlite3.tbd */,
 				256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */,
 				40348F7C2C783F540039639C /* libz.1.tbd */,
 				40348F732C783F070039639C /* cjson.a */,
@@ -164,6 +174,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				407D2B4D2C8AC125008A138C /* query.sql in Resources */,
+				407D2B4E2C8AC125008A138C /* prepare_data.sql in Resources */,
 				40348F702C783D7B0039639C /* biz.lua in Resources */,
 				40348F612C783CA80039639C /* Assets.xcassets in Resources */,
 				40348F642C783CA80039639C /* Base in Resources */,

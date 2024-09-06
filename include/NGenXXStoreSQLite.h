@@ -10,12 +10,20 @@
 void *ngenxx_store_sqlite_open(void* sdk, const char *file);
 
 /**
- * @brief Execute SQL
+ * @brief Execute a SQL(s)
+ * @param conn DB connection handle
+ * @param sql SQL
+ * @return Successfull or not
+ */
+bool ngenxx_store_sqlite_execute(void *conn, const char *sql);
+
+/**
+ * @brief Query with a SQL
  * @param conn DB connection handle
  * @param sql SQL
  * @return Handle of query result
  */
-void *ngenxx_store_sqlite_query_exe(void *conn, const char *sql);
+void *ngenxx_store_sqlite_query_do(void *conn, const char *sql);
 
 /**
  * @brief Read a row from query result

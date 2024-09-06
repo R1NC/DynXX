@@ -1,7 +1,6 @@
 #include "SQLite.hxx"
 #include "../../include/NGenXXLog.h"
 #include "../log/Log.hxx"
-#include <stdexcept>
 
 #define PRINT_ERR(rc, db) NGenXX::Log::print(Error, db ? sqlite3_errmsg(db) : sqlite3_errstr(rc))
 
@@ -32,7 +31,20 @@ NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db)
     this->db = db;
 }
 
-NGenXX::Store::SQLite::Connection::ExecuteResult *NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
+bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
+{
+    if (this->db == NULL)
+        return NULL;
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_exec(this->db, sql.c_str(), NULL, NULL, NULL);
+    if (rc != SQLITE_OK)
+    {
+        PRINT_ERR(rc, this->db);
+    }
+    return rc == SQLITE_OK;
+}
+
+NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connection::query(const std::string &sql)
 {
     if (this->db == NULL)
         return NULL;
@@ -43,7 +55,7 @@ NGenXX::Store::SQLite::Connection::ExecuteResult *NGenXX::Store::SQLite::Connect
         PRINT_ERR(rc, this->db);
         return nullptr;
     }
-    return new NGenXX::Store::SQLite::Connection::ExecuteResult(db, stmt);
+    return new NGenXX::Store::SQLite::Connection::QueryResult(db, stmt);
 }
 
 NGenXX::Store::SQLite::Connection::~Connection()
@@ -52,13 +64,13 @@ NGenXX::Store::SQLite::Connection::~Connection()
         sqlite3_close_v2(this->db);
 }
 
-NGenXX::Store::SQLite::Connection::ExecuteResult::ExecuteResult(struct sqlite3 *db, sqlite3_stmt *stmt)
+NGenXX::Store::SQLite::Connection::QueryResult::QueryResult(struct sqlite3 *db, sqlite3_stmt *stmt)
 {
     this->db = db;
     this->stmt = stmt;
 }
 
-bool NGenXX::Store::SQLite::Connection::ExecuteResult::readRow()
+bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
 {
     if (this->stmt == NULL)
         return false;
@@ -70,7 +82,7 @@ bool NGenXX::Store::SQLite::Connection::ExecuteResult::readRow()
     return rc == SQLITE_ROW;
 }
 
-std::string NGenXX::Store::SQLite::Connection::ExecuteResult::readColumnText(const std::string &column)
+std::string NGenXX::Store::SQLite::Connection::QueryResult::readColumnText(const std::string &column)
 {
     if (this->stmt == NULL)
         return NULL;
@@ -84,7 +96,7 @@ std::string NGenXX::Store::SQLite::Connection::ExecuteResult::readColumnText(con
     return NULL;
 }
 
-long long NGenXX::Store::SQLite::Connection::ExecuteResult::readColumnInteger(const std::string &column)
+long long NGenXX::Store::SQLite::Connection::QueryResult::readColumnInteger(const std::string &column)
 {
     if (this->stmt == NULL)
         return 0;
@@ -98,7 +110,7 @@ long long NGenXX::Store::SQLite::Connection::ExecuteResult::readColumnInteger(co
     return 0;
 }
 
-double NGenXX::Store::SQLite::Connection::ExecuteResult::readColumnFloat(const std::string &column)
+double NGenXX::Store::SQLite::Connection::QueryResult::readColumnFloat(const std::string &column)
 {
     if (this->stmt == NULL)
         return 0.f;
@@ -112,7 +124,7 @@ double NGenXX::Store::SQLite::Connection::ExecuteResult::readColumnFloat(const s
     return 0;
 }
 
-NGenXX::Store::SQLite::Connection::ExecuteResult::~ExecuteResult()
+NGenXX::Store::SQLite::Connection::QueryResult::~QueryResult()
 {
     if (this->stmt != NULL)
         sqlite3_finalize(this->stmt);
