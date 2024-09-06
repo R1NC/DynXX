@@ -13,8 +13,8 @@
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
 
 @interface ViewController () {
-    void *_handle;
-    void *_db;
+    void *_sdk;
+    void *_conn;
 }
 @end
 
@@ -39,23 +39,23 @@
     tv.editable = NO;
     [self.view addSubview:tv];
 
-    _handle = ngenxx_init();
+    _sdk = ngenxx_init();
     const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
-    ngenxx_L_loadF(_handle, cLuaPath);
+    ngenxx_L_loadF(_sdk, cLuaPath);
     
     tv.text = self.output;
 }
 
 - (void)dealloc {
-    ngenxx_release(_handle);
-    ngenxx_store_db_close(_db);
+    ngenxx_release(_sdk);
+    ngenxx_store_sqlite_close(_conn);
 }
 
 - (NSString*)output {
     NSString *s = @"";
 
     static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":1, \"headers\":[\"Accept-Encoding: gzip, deflate\", \"Cache-Control: no-cache\"], \"timeout\":6666}";
-    const char * cRsp = ngenxx_L_call(_handle, "lNetHttpRequest", cParams);
+    const char * cRsp = ngenxx_L_call(_sdk, "lNetHttpRequest", cParams);
     if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
     
     [self testDB];
@@ -66,32 +66,32 @@
 - (void)testDB {
     NSString *dbDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
     NSString *dbFile = [dbDir stringByAppendingPathComponent:@"xxx.db"];
-    _db = ngenxx_store_db_open(NSString2CharP(dbFile));
-    if (_db) {
+    _conn = ngenxx_store_sqlite_open(_sdk, NSString2CharP(dbFile));
+    if (_conn) {
         NSString *sqlPathPrepareTable = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_table.sql"];
         NSString *sqlPrepareTable = [NSString stringWithContentsOfFile:sqlPathPrepareTable encoding:NSUTF8StringEncoding error:NULL];
-        void *qrPrepareTable = ngenxx_store_db_query_exe(_db, NSString2CharP(sqlPrepareTable));
+        void *qrPrepareTable = ngenxx_store_sqlite_query_exe(_conn, NSString2CharP(sqlPrepareTable));
         if (!qrPrepareTable) return;
-        ngenxx_store_db_query_drop(qrPrepareTable);
+        ngenxx_store_sqlite_query_drop(qrPrepareTable);
         
         NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
         NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];
-        void *qrPrepareData = ngenxx_store_db_query_exe(_db, NSString2CharP(sqlPrepareData));
+        void *qrPrepareData = ngenxx_store_sqlite_query_exe(_conn, NSString2CharP(sqlPrepareData));
         if (!qrPrepareData) return;
-        ngenxx_store_db_query_drop(qrPrepareData);
+        ngenxx_store_sqlite_query_drop(qrPrepareData);
         
         NSString *sqlPathQuery = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"query.sql"];
         NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:NULL];
-        void *qrQuery = ngenxx_store_db_query_exe(_db, NSString2CharP(sqlQuery));
+        void *qrQuery = ngenxx_store_sqlite_query_exe(_conn, NSString2CharP(sqlQuery));
         if (!qrQuery) return;
         if (qrQuery) {
-            while (ngenxx_store_db_query_read_row(qrQuery)) {
-                const char* platform = ngenxx_store_db_query_read_column_text(qrQuery, "platform");
-                const char* vendor = ngenxx_store_db_query_read_column_text(qrQuery, "vendor");
+            while (ngenxx_store_sqlite_query_read_row(qrQuery)) {
+                const char* platform = ngenxx_store_sqlite_query_read_column_text(qrQuery, "platform");
+                const char* vendor = ngenxx_store_sqlite_query_read_column_text(qrQuery, "vendor");
                 NSLog(@"platform:%@ vendor:%@", CharP2NSString(platform), CharP2NSString(vendor));
             }
         }
-        ngenxx_store_db_query_drop(qrQuery);
+        ngenxx_store_sqlite_query_drop(qrQuery);
     }
 }
 

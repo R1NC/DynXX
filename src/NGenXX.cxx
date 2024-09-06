@@ -15,6 +15,7 @@ extern "C"
 #ifdef USE_LUA
         lua_State *lua_state;
 #endif
+        void *sqlite;
     } NGenXXHandle;
 }
 
@@ -24,7 +25,7 @@ extern "C"
 #include <vector>
 #include "log/Log.hxx"
 #include "net/HttpClient.hxx"
-#include "store/DB.hxx"
+#include "store/SQLite.hxx"
 #include "util/JsonUtil.hxx"
 #ifdef USE_LUA
 #include "lua/LuaBridge.hxx"
@@ -78,6 +79,7 @@ void *ngenxx_init(void)
 {
     NGenXX::Net::HttpClient::create();
     NGenXXHandle *handle = (NGenXXHandle *)malloc(sizeof(NGenXXHandle));
+    handle->sqlite = new NGenXX::Store::SQLite();
 #ifdef USE_LUA
     handle->lua_state = NGenXX::LuaBridge::create();
     export_funcs_for_lua(handle);
@@ -88,12 +90,13 @@ void *ngenxx_init(void)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM_LUA
 #endif
-void ngenxx_release(void *handle)
+void ngenxx_release(void *sdk)
 {
     NGenXX::Net::HttpClient::destroy();
-    if (handle == NULL)
+    if (sdk == NULL)
         return;
-    NGenXXHandle *h = (NGenXXHandle *)handle;
+    NGenXXHandle *h = (NGenXXHandle *)sdk;
+    delete ((NGenXX::Store::SQLite *)h->sqlite);
 #ifdef USE_LUA
     if (h->lua_state)
     {
@@ -214,25 +217,19 @@ int ngenxx_net_http_requestL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-void *ngenxx_store_db_open(const char *file)
+void *ngenxx_store_sqlite_open(void *sdk, const char *file)
 {
     if (file == NULL)
         return NULL;
-    NGenXX::Store::DB *db = nullptr;
-    try
-    {
-        db = new NGenXX::Store::DB(std::string(file));
-    }
-    catch (const std::invalid_argument &e)
-    {
-    }
-    return db;
+    NGenXX::Store::SQLite *sqlite = (NGenXX::Store::SQLite *)(((NGenXXHandle *)sdk)->sqlite);
+    return sqlite->connect(std::string(file));
 }
 
 #ifdef USE_LUA
-int ngenxx_store_db_openL(lua_State *L)
+int ngenxx_store_sqlite_openL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
+    long sdk;
     char *file = NULL;
     cJSON *json = cJSON_Parse(s);
     if (json)
@@ -242,13 +239,14 @@ int ngenxx_store_db_openL(lua_State *L)
             cJSON *oj = json->child;
             while (oj)
             {
+                JSON_READ_NUM(oj, sdk);
                 JSON_READ_STR(oj, file);
                 oj = oj->next;
             }
         }
         cJSON_free(json);
     }
-    void *db = ngenxx_store_db_open(file);
+    void *db = ngenxx_store_sqlite_open((void *)sdk, file);
     lua_pushinteger(L, (long)db);
     return LUA_OK;
 }
@@ -257,19 +255,19 @@ int ngenxx_store_db_openL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-void *ngenxx_store_db_query_exe(void *db, const char *sql)
+void *ngenxx_store_sqlite_query_exe(void *conn, const char *sql)
 {
-    if (db == NULL || sql == NULL)
+    if (conn == NULL || sql == NULL)
         return NULL;
-    NGenXX::Store::DB *xdb = (NGenXX::Store::DB *)db;
-    return xdb->execute(std::string(sql));
+    NGenXX::Store::SQLite::Connection *xconn = (NGenXX::Store::SQLite::Connection *)conn;
+    return xconn->execute(std::string(sql));
 }
 
 #ifdef USE_LUA
-int ngenxx_store_db_query_exeL(lua_State *L)
+int ngenxx_store_sqlite_query_exeL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
-    long db;
+    long conn;
     char *sql = NULL;
     cJSON *json = cJSON_Parse(s);
     if (json)
@@ -279,14 +277,14 @@ int ngenxx_store_db_query_exeL(lua_State *L)
             cJSON *oj = json->child;
             while (oj)
             {
-                JSON_READ_NUM(oj, db);
+                JSON_READ_NUM(oj, conn);
                 JSON_READ_STR(oj, sql);
                 oj = oj->next;
             }
         }
         cJSON_free(json);
     }
-    void *res = ngenxx_store_db_query_exe((void *)db, sql);
+    void *res = ngenxx_store_sqlite_query_exe((void *)conn, sql);
     lua_pushinteger(L, (long)res);
     return LUA_OK;
 }
@@ -295,16 +293,16 @@ int ngenxx_store_db_query_exeL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-bool ngenxx_store_db_query_read_row(void *query_result)
+bool ngenxx_store_sqlite_query_read_row(void *query_result)
 {
     if (query_result == NULL)
         return false;
-    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
+    NGenXX::Store::SQLite::Connection::ExecuteResult *xqr = (NGenXX::Store::SQLite::Connection::ExecuteResult *)query_result;
     return xqr->readRow();
 }
 
 #ifdef USE_LUA
-int ngenxx_store_db_query_read_rowL(lua_State *L)
+int ngenxx_store_sqlite_query_read_rowL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
     long query_result;
@@ -322,7 +320,7 @@ int ngenxx_store_db_query_read_rowL(lua_State *L)
         }
         cJSON_free(json);
     }
-    bool res = ngenxx_store_db_query_read_row((void *)query_result);
+    bool res = ngenxx_store_sqlite_query_read_row((void *)query_result);
     lua_pushboolean(L, res);
     return LUA_OK;
 }
@@ -331,17 +329,17 @@ int ngenxx_store_db_query_read_rowL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-const char *ngenxx_store_db_query_read_column_text(void *query_result, const char *column)
+const char *ngenxx_store_sqlite_query_read_column_text(void *query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
         return NULL;
-    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
+    NGenXX::Store::SQLite::Connection::ExecuteResult *xqr = (NGenXX::Store::SQLite::Connection::ExecuteResult *)query_result;
     auto s = xqr->readColumnText(std::string(column));
     return str2charp(s);
 }
 
 #ifdef USE_LUA
-int ngenxx_store_db_query_read_column_textL(lua_State *L)
+int ngenxx_store_sqlite_query_read_column_textL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
     long query_result;
@@ -361,7 +359,7 @@ int ngenxx_store_db_query_read_column_textL(lua_State *L)
         }
         cJSON_free(json);
     }
-    const char *res = ngenxx_store_db_query_read_column_text((void *)query_result, column);
+    const char *res = ngenxx_store_sqlite_query_read_column_text((void *)query_result, column);
     lua_pushstring(L, res);
     return LUA_OK;
 }
@@ -370,15 +368,15 @@ int ngenxx_store_db_query_read_column_textL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-long long ngenxx_store_db_query_read_column_integer(void *query_result, const char *column)
+long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
         return 0;
-    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
+    NGenXX::Store::SQLite::Connection::ExecuteResult *xqr = (NGenXX::Store::SQLite::Connection::ExecuteResult *)query_result;
     return xqr->readColumnInteger(std::string(column));
 }
 
-int ngenxx_store_db_query_read_column_integerL(lua_State *L)
+int ngenxx_store_sqlite_query_read_column_integerL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
     long query_result;
@@ -398,7 +396,7 @@ int ngenxx_store_db_query_read_column_integerL(lua_State *L)
         }
         cJSON_free(json);
     }
-    long long res = ngenxx_store_db_query_read_column_integer((void *)query_result, column);
+    long long res = ngenxx_store_sqlite_query_read_column_integer((void *)query_result, column);
     lua_pushinteger(L, res);
     return LUA_OK;
 }
@@ -406,16 +404,16 @@ int ngenxx_store_db_query_read_column_integerL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-double ngenxx_store_db_query_read_column_float(void *query_result, const char *column)
+double ngenxx_store_sqlite_query_read_column_float(void *query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
         return 0.f;
-    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
+    NGenXX::Store::SQLite::Connection::ExecuteResult *xqr = (NGenXX::Store::SQLite::Connection::ExecuteResult *)query_result;
     return xqr->readColumnFloat(std::string(column));
 }
 
 #ifdef USE_LUA
-int ngenxx_store_db_query_read_column_floatL(lua_State *L)
+int ngenxx_store_sqlite_query_read_column_floatL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
     long query_result;
@@ -435,7 +433,7 @@ int ngenxx_store_db_query_read_column_floatL(lua_State *L)
         }
         cJSON_free(json);
     }
-    double res = ngenxx_store_db_query_read_column_float((void *)query_result, column);
+    double res = ngenxx_store_sqlite_query_read_column_float((void *)query_result, column);
     lua_pushnumber(L, res);
     return LUA_OK;
 }
@@ -444,16 +442,15 @@ int ngenxx_store_db_query_read_column_floatL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-void ngenxx_store_db_query_drop(void *query_result)
+void ngenxx_store_sqlite_query_drop(void *query_result)
 {
     if (query_result == NULL)
         return;
-    NGenXX::Store::DB::QueryResult *xqr = (NGenXX::Store::DB::QueryResult *)query_result;
-    delete xqr;
+    delete (NGenXX::Store::SQLite::Connection::ExecuteResult *)query_result;
 }
 
 #ifdef USE_LUA
-int ngenxx_store_db_query_dropL(lua_State *L)
+int ngenxx_store_sqlite_query_dropL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
     long query_result;
@@ -471,7 +468,7 @@ int ngenxx_store_db_query_dropL(lua_State *L)
         }
         cJSON_free(json);
     }
-    ngenxx_store_db_query_drop((void *)query_result);
+    ngenxx_store_sqlite_query_drop((void *)query_result);
     return LUA_OK;
 }
 #endif
@@ -479,19 +476,18 @@ int ngenxx_store_db_query_dropL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-void ngenxx_store_db_close(void *db)
+void ngenxx_store_sqlite_close(void *conn)
 {
-    if (db == NULL)
+    if (conn == NULL)
         return;
-    NGenXX::Store::DB *xdb = (NGenXX::Store::DB *)db;
-    delete xdb;
+    delete (NGenXX::Store::SQLite::Connection *)conn;
 }
 
 #ifdef USE_LUA
-int ngenxx_store_db_closeL(lua_State *L)
+int ngenxx_store_sqlite_closeL(lua_State *L)
 {
     const char *s = luaL_checkstring(L, 1);
-    long db;
+    long conn;
     cJSON *json = cJSON_Parse(s);
     if (json)
     {
@@ -500,13 +496,13 @@ int ngenxx_store_db_closeL(lua_State *L)
             cJSON *oj = json->child;
             while (oj)
             {
-                JSON_READ_NUM(oj, db);
+                JSON_READ_NUM(oj, conn);
                 oj = oj->next;
             }
         }
         cJSON_free(json);
     }
-    ngenxx_store_db_close((void *)db);
+    ngenxx_store_sqlite_close((void *)conn);
     return LUA_OK;
 }
 #endif
@@ -516,29 +512,26 @@ int ngenxx_store_db_closeL(lua_State *L)
 #pragma mark Lua
 
 #ifndef __EMSCRIPTEN__
-bool ngenxx_L_loadF(void *handle, const char *file)
+bool ngenxx_L_loadF(void *sdk, const char *file)
 {
-    NGenXXHandle *h = (NGenXXHandle *)handle;
-    return NGenXX::LuaBridge::loadFile(h->lua_state, file) == LUA_OK;
+    return NGenXX::LuaBridge::loadFile(((NGenXXHandle *)sdk)->lua_state, file) == LUA_OK;
 }
 #endif
 
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM_LUA
 #endif
-bool ngenxx_L_loadS(void *handle, const char *script)
+bool ngenxx_L_loadS(void *sdk, const char *script)
 {
-    NGenXXHandle *h = (NGenXXHandle *)handle;
-    return NGenXX::LuaBridge::loadScript(h->lua_state, script) == LUA_OK;
+    return NGenXX::LuaBridge::loadScript(((NGenXXHandle *)sdk)->lua_state, script) == LUA_OK;
 }
 
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM_LUA
 #endif
-const char *ngenxx_L_call(void *handle, const char *func, const char *params)
+const char *ngenxx_L_call(void *sdk, const char *func, const char *params)
 {
-    NGenXXHandle *h = (NGenXXHandle *)handle;
-    return NGenXX::LuaBridge::callFunc(h->lua_state, func, params);
+    return NGenXX::LuaBridge::callFunc(((NGenXXHandle *)sdk)->lua_state, func, params);
 }
 
 void export_funcs_for_lua(void *handle)
@@ -547,14 +540,14 @@ void export_funcs_for_lua(void *handle)
     NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_get_versionL", ngenxx_get_versionL);
     NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_log_printL", ngenxx_log_printL);
     NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_net_http_requestL", ngenxx_net_http_requestL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_openL", ngenxx_store_db_openL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_exeL", ngenxx_store_db_query_exeL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_read_rowL", ngenxx_store_db_query_read_rowL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_read_column_textL", ngenxx_store_db_query_read_column_textL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_read_column_integerL", ngenxx_store_db_query_read_column_integerL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_read_column_floatL", ngenxx_store_db_query_read_column_floatL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_query_dropL", ngenxx_store_db_query_dropL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_db_closeL", ngenxx_store_db_closeL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_openL", ngenxx_store_sqlite_openL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_exeL", ngenxx_store_sqlite_query_exeL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_read_rowL", ngenxx_store_sqlite_query_read_rowL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_read_column_textL", ngenxx_store_sqlite_query_read_column_textL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_read_column_integerL", ngenxx_store_sqlite_query_read_column_integerL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_read_column_floatL", ngenxx_store_sqlite_query_read_column_floatL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_dropL", ngenxx_store_sqlite_query_dropL);
+    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_closeL", ngenxx_store_sqlite_closeL);
 }
 
 #endif

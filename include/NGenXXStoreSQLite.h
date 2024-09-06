@@ -3,25 +3,26 @@
 
 /**
  * @brief Open DB
+ * @param sdk SDK handle
  * @param file DB file
- * @return Handle of DB
+ * @return DB connection handle
  */
-void *ngenxx_store_db_open(const char *file);
+void *ngenxx_store_sqlite_open(void* sdk, const char *file);
 
 /**
  * @brief Execute SQL
- * @param db DB handle
+ * @param conn DB connection handle
  * @param sql SQL
  * @return Handle of query result
  */
-void *ngenxx_store_db_query_exe(void *db, const char *sql);
+void *ngenxx_store_sqlite_query_exe(void *conn, const char *sql);
 
 /**
  * @brief Read a row from query result
  * @param query_result Handle of query result
  * @return Successful or not
  */
-bool ngenxx_store_db_query_read_row(void *query_result);
+bool ngenxx_store_sqlite_query_read_row(void *query_result);
 
 /**
  * @brief Read text column data from query result
@@ -29,7 +30,7 @@ bool ngenxx_store_db_query_read_row(void *query_result);
  * @param column Column name
  * @return Text column data
  */
-const char *ngenxx_store_db_query_read_column_text(void *query_result, const char *column);
+const char *ngenxx_store_sqlite_query_read_column_text(void *query_result, const char *column);
 
 /**
  * @brief Read integer column data from query result
@@ -37,7 +38,7 @@ const char *ngenxx_store_db_query_read_column_text(void *query_result, const cha
  * @param column Column name
  * @return Integer column data
  */
-long long ngenxx_store_db_query_read_column_integer(void *query_result, const char *column);
+long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, const char *column);
 
 /**
  * @brief Read float column data from query result
@@ -45,18 +46,18 @@ long long ngenxx_store_db_query_read_column_integer(void *query_result, const ch
  * @param column Column name
  * @return Float column data
  */
-double ngenxx_store_db_query_read_column_float(void *query_result, const char *column);
+double ngenxx_store_sqlite_query_read_column_float(void *query_result, const char *column);
 
 /**
  * @brief Release query result
  * @param query_result Handle of query result
  */
-void ngenxx_store_db_query_drop(void *query_result);
+void ngenxx_store_sqlite_query_drop(void *query_result);
 
 /**
  * @brief Close DB
- * @param db Handle of DB
+ * @param conn DB connection handle
  */
-void ngenxx_store_db_close(void *db);
+void ngenxx_store_sqlite_close(void *conn);
 
 #endif // NGENXX_STORE_DB_H_

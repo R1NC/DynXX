@@ -3,7 +3,7 @@
 
 #include "NGenXXLog.h"
 #include "NGenXXNetHttp.h"
-#include "NGenXXStoreDB.h"
+#include "NGenXXStoreSQLite.h"
 #include "NGenXXLua.h"
 
 /**
@@ -22,8 +22,8 @@ void *ngenxx_init(void);
 /**
  * @brief Release SDK
  * @warning Not accessible in Lua!
- * @param handle SDK handle
+ * @param sdk SDK handle
  */
-void ngenxx_release(void *handle);
+void ngenxx_release(void *sdk);
 
 #endif // NGENXX_H_
