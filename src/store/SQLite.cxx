@@ -34,7 +34,7 @@ NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db)
 bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
 {
     if (this->db == NULL)
-        return NULL;
+        return false;
     sqlite3_stmt *stmt;
     int rc = sqlite3_exec(this->db, sql.c_str(), NULL, NULL, NULL);
     if (rc != SQLITE_OK)

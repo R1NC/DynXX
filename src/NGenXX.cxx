@@ -23,6 +23,7 @@ extern "C"
 
 #include <string>
 #include <vector>
+#include <functional>
 #include "log/Log.hxx"
 #include "net/HttpClient.hxx"
 #include "store/SQLite.hxx"
@@ -47,6 +48,31 @@ static inline const char *str2charp(std::string s)
     strcpy(nc, c);
     return nc;
 }
+
+#ifdef USE_LUA
+
+static inline void parse_lua_func_params(lua_State *L, std::function<void(cJSON *)> callback)
+{
+    const char *s = luaL_checkstring(L, 1);
+    cJSON *json = cJSON_Parse(s);
+    if (json)
+    {
+        if (json->type == cJSON_Object)
+        {
+            cJSON *oj = json->child;
+            while (oj)
+            {
+                callback(oj);
+                oj = oj->next;
+            }
+        }
+        cJSON_free(json);
+    }
+}
+
+#define BIND_LUA_FUNC(h, f) NGenXX::LuaBridge::bindFunc(((NGenXXHandle *)h)->lua_state, #f, f);
+
+#endif
 
 #endif
 
@@ -138,21 +164,10 @@ int ngenxx_log_printL(lua_State *L)
     const char *s = luaL_checkstring(L, 1);
     int level;
     char *content = NULL;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, level);
-                JSON_READ_STR(oj, content);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void {
+        JSON_READ_NUM(j, level);
+        JSON_READ_STR(j, content); 
+    });
     ngenxx_log_print(level, content);
     return LUA_OK;
 }
@@ -182,37 +197,25 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
 #ifdef USE_LUA
 int ngenxx_net_http_requestL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     char *url = NULL, *params = NULL;
     int method;
     char **headers = NULL;
     int headers_c;
     long timeout;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_STR(oj, url);
-                JSON_READ_STR(oj, params);
-                JSON_READ_NUM(oj, method);
-                JSON_READ_NUM(oj, timeout);
-                JSON_READ_STR_ARRAY(oj, headers, headers_c, HTTP_HEADERS_MAX_COUNT, HTTP_HEADER_MAX_LENGTH);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void {
+        JSON_READ_STR(j, url);
+        JSON_READ_STR(j, params);
+        JSON_READ_NUM(j, method);
+        JSON_READ_NUM(j, timeout);
+        JSON_READ_STR_ARRAY(j, headers, headers_c, HTTP_HEADERS_MAX_COUNT, HTTP_HEADER_MAX_LENGTH); 
+    });
     const char *res = ngenxx_net_http_request(url, params, method, headers, headers_c, timeout);
     lua_pushstring(L, res);
     return LUA_OK;
 }
 #endif
 
-#pragma mark Store.DB
+#pragma mark Store.SQLite
 
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
@@ -228,24 +231,12 @@ void *ngenxx_store_sqlite_open(void *sdk, const char *file)
 #ifdef USE_LUA
 int ngenxx_store_sqlite_openL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     long sdk;
     char *file = NULL;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, sdk);
-                JSON_READ_STR(oj, file);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void {
+        JSON_READ_NUM(j, sdk);
+        JSON_READ_STR(j, file); 
+    });
     void *db = ngenxx_store_sqlite_open((void *)sdk, file);
     lua_pushinteger(L, (long)db);
     return LUA_OK;
@@ -258,7 +249,7 @@ EXPORT_WASM
 bool ngenxx_store_sqlite_execute(void *conn, const char *sql)
 {
     if (conn == NULL || sql == NULL)
-        return NULL;
+        return false;
     NGenXX::Store::SQLite::Connection *xconn = (NGenXX::Store::SQLite::Connection *)conn;
     return xconn->execute(std::string(sql));
 }
@@ -266,24 +257,12 @@ bool ngenxx_store_sqlite_execute(void *conn, const char *sql)
 #ifdef USE_LUA
 int ngenxx_store_sqlite_executeL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     long conn;
     char *sql = NULL;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, conn);
-                JSON_READ_STR(oj, sql);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void {
+        JSON_READ_NUM(j, conn);
+        JSON_READ_STR(j, sql); 
+    });
     bool res = ngenxx_store_sqlite_execute((void *)conn, sql);
     lua_pushboolean(L, res);
     return LUA_OK;
@@ -304,24 +283,12 @@ void *ngenxx_store_sqlite_query_do(void *conn, const char *sql)
 #ifdef USE_LUA
 int ngenxx_store_sqlite_query_doL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     long conn;
     char *sql = NULL;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, conn);
-                JSON_READ_STR(oj, sql);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void {
+        JSON_READ_NUM(j, conn);
+        JSON_READ_STR(j, sql); 
+    });
     void *res = ngenxx_store_sqlite_query_do((void *)conn, sql);
     lua_pushinteger(L, (long)res);
     return LUA_OK;
@@ -342,22 +309,10 @@ bool ngenxx_store_sqlite_query_read_row(void *query_result)
 #ifdef USE_LUA
 int ngenxx_store_sqlite_query_read_rowL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     long query_result;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, query_result);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void { 
+        JSON_READ_NUM(j, query_result); 
+    });
     bool res = ngenxx_store_sqlite_query_read_row((void *)query_result);
     lua_pushboolean(L, res);
     return LUA_OK;
@@ -379,24 +334,12 @@ const char *ngenxx_store_sqlite_query_read_column_text(void *query_result, const
 #ifdef USE_LUA
 int ngenxx_store_sqlite_query_read_column_textL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     long query_result;
     char *column = NULL;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, query_result);
-                JSON_READ_STR(oj, column);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void {
+        JSON_READ_NUM(j, query_result);
+        JSON_READ_STR(j, column); 
+    });
     const char *res = ngenxx_store_sqlite_query_read_column_text((void *)query_result, column);
     lua_pushstring(L, res);
     return LUA_OK;
@@ -414,30 +357,20 @@ long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, cons
     return xqr->readColumnInteger(std::string(column));
 }
 
+#ifdef USE_LUA
 int ngenxx_store_sqlite_query_read_column_integerL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     long query_result;
     char *column = NULL;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, query_result);
-                JSON_READ_STR(oj, column);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void {
+        JSON_READ_NUM(j, query_result);
+        JSON_READ_STR(j, column); 
+    });
     long long res = ngenxx_store_sqlite_query_read_column_integer((void *)query_result, column);
     lua_pushinteger(L, res);
     return LUA_OK;
 }
+#endif
 
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
@@ -453,24 +386,12 @@ double ngenxx_store_sqlite_query_read_column_float(void *query_result, const cha
 #ifdef USE_LUA
 int ngenxx_store_sqlite_query_read_column_floatL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     long query_result;
     char *column = NULL;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, query_result);
-                JSON_READ_STR(oj, column);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void {
+        JSON_READ_NUM(j, query_result);
+        JSON_READ_STR(j, column); 
+    });
     double res = ngenxx_store_sqlite_query_read_column_float((void *)query_result, column);
     lua_pushnumber(L, res);
     return LUA_OK;
@@ -490,22 +411,10 @@ void ngenxx_store_sqlite_query_drop(void *query_result)
 #ifdef USE_LUA
 int ngenxx_store_sqlite_query_dropL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     long query_result;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, query_result);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void { 
+        JSON_READ_NUM(j, query_result); 
+    });
     ngenxx_store_sqlite_query_drop((void *)query_result);
     return LUA_OK;
 }
@@ -524,22 +433,10 @@ void ngenxx_store_sqlite_close(void *conn)
 #ifdef USE_LUA
 int ngenxx_store_sqlite_closeL(lua_State *L)
 {
-    const char *s = luaL_checkstring(L, 1);
     long conn;
-    cJSON *json = cJSON_Parse(s);
-    if (json)
-    {
-        if (json->type == cJSON_Object)
-        {
-            cJSON *oj = json->child;
-            while (oj)
-            {
-                JSON_READ_NUM(oj, conn);
-                oj = oj->next;
-            }
-        }
-        cJSON_free(json);
-    }
+    parse_lua_func_params(L, [&](cJSON *j) -> void { 
+        JSON_READ_NUM(j, conn); 
+    });
     ngenxx_store_sqlite_close((void *)conn);
     return LUA_OK;
 }
@@ -574,19 +471,21 @@ const char *ngenxx_L_call(void *sdk, const char *func, const char *params)
 
 void export_funcs_for_lua(void *handle)
 {
-    NGenXXHandle *h = (NGenXXHandle *)handle;
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_get_versionL", ngenxx_get_versionL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_log_printL", ngenxx_log_printL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_net_http_requestL", ngenxx_net_http_requestL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_openL", ngenxx_store_sqlite_openL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_executeL", ngenxx_store_sqlite_executeL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_doL", ngenxx_store_sqlite_query_doL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_read_rowL", ngenxx_store_sqlite_query_read_rowL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_read_column_textL", ngenxx_store_sqlite_query_read_column_textL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_read_column_integerL", ngenxx_store_sqlite_query_read_column_integerL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_read_column_floatL", ngenxx_store_sqlite_query_read_column_floatL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_query_dropL", ngenxx_store_sqlite_query_dropL);
-    NGenXX::LuaBridge::bindFunc(h->lua_state, "ngenxx_store_sqlite_closeL", ngenxx_store_sqlite_closeL);
+    BIND_LUA_FUNC(handle, ngenxx_get_versionL);
+
+    BIND_LUA_FUNC(handle, ngenxx_log_printL);
+
+    BIND_LUA_FUNC(handle, ngenxx_net_http_requestL);
+
+    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_openL);
+    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_executeL);
+    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_doL);
+    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_read_rowL);
+    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_read_column_textL);
+    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_read_column_integerL);
+    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_read_column_floatL);
+    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_dropL);
+    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_closeL);
 }
 
 #endif

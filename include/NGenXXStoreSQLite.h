@@ -1,5 +1,5 @@
-#ifndef NGENXX_STORE_DB_H_
-#define NGENXX_STORE_DB_H_
+#ifndef NGENXX_STORE_SQLITE_H_
+#define NGENXX_STORE_SQLITE_H_
 
 /**
  * @brief Open DB
@@ -68,4 +68,4 @@ void ngenxx_store_sqlite_query_drop(void *query_result);
  */
 void ngenxx_store_sqlite_close(void *conn);
 
-#endif // NGENXX_STORE_DB_H_
+#endif // NGENXX_STORE_SQLITE_H_
