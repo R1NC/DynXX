@@ -19,3 +19,6 @@
 [submodule "external/sqlite"]
 	path = external/sqlite
 	url = git@github.com:R1NC/sqlite.git
+[submodule "external/mmkv"]
+	path = external/mmkv
+	url = git@github.com:R1NC/MMKV.git

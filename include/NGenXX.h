@@ -3,6 +3,7 @@
 
 #include "NGenXXLog.h"
 #include "NGenXXNetHttp.h"
+#include "NGenXXStoreKV.h"
 #include "NGenXXStoreSQLite.h"
 #include "NGenXXLua.h"
 

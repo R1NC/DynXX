@@ -18,6 +18,7 @@ set(ENGINE_FILES
     ../src/log/Log.cxx
     ../src/net/HttpClient.cxx
     ../src/store/SQLite.cxx
+    ../src/store/KV.cxx
     ../src/NGenXX.cxx
 )
 if(USE_LUA)
@@ -45,6 +46,7 @@ endif()
 # 2). The buillt-in sqlite in iOS/macOS is available，no need to compile；
 # 3). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
 add_subdirectory(../external/cjson cjson.output)
+add_subdirectory(../external/mmkv/POSIX/src mmkv.output)
 if(USE_LUA)
     add_subdirectory(../external/lua lua.output)
 endif()
@@ -59,6 +61,7 @@ endif()
 add_subdirectory(../external/curl curl.output)
 
 set(LINK_LIBS
+    mmkv
     cjson
     CURL::libcurl
 )

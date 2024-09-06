@@ -48,6 +48,7 @@ mv curl.output/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
 mv wolfssl.output/libwolfssl.a ${LIB_OUTPUT_DIR}/wolfssl.a
 mv lua.output/liblua.a ${LIB_OUTPUT_DIR}/lua.a
 mv cjson.output/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
+mv mmkv.output/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
 
 #Copy headers
 HEADER_OUTPUT_DIR=output/include
