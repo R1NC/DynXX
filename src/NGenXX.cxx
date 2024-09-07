@@ -7,10 +7,12 @@
 #include <functional>
 
 #include "../../../external/cjson/cJSON.h"
+#ifdef USE_LUA
 extern "C"
 {
 #include "../../../external/lua/lauxlib.h"
 }
+#endif
 
 #include "log/Log.hxx"
 #include "net/HttpClient.hxx"
