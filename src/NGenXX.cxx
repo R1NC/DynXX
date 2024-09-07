@@ -247,7 +247,7 @@ EXPORT_WASM
 bool ngenxx_store_kv_write_string(void *conn, const char *k, const char *v)
 {
     if (conn == NULL || k == NULL) return false;
-    return ((NGenXX::Store::KV::Connection *)conn)->writeString(std::string(k), v);
+    return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
 }
 
 #ifdef __EMSCRIPTEN__
@@ -265,7 +265,7 @@ EXPORT_WASM
 bool ngenxx_store_kv_write_integer(void *conn, const char *k, long long v)
 {
     if (conn == NULL || k == NULL) return false;
-    return ((NGenXX::Store::KV::Connection *)conn)->writeInteger(std::string(k), v);
+    return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
 }
 
 #ifdef __EMSCRIPTEN__
@@ -283,7 +283,7 @@ EXPORT_WASM
 bool ngenxx_store_kv_write_float(void *conn, const char *k, double v)
 {
     if (conn == NULL || k == NULL) return false;
-    return ((NGenXX::Store::KV::Connection *)conn)->writeFloat(std::string(k), v);
+    return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
 }
 
 #ifdef __EMSCRIPTEN__

@@ -27,19 +27,9 @@ const std::string NGenXX::Store::KV::Connection::readString(const std::string &k
     return v;
 }
 
-bool NGenXX::Store::KV::Connection::writeString(const std::string &k, const std::string &v)
-{
-    return this->kv->set(v, k);
-}
-
 long long NGenXX::Store::KV::Connection::readInteger(const std::string &k)
 {
     return this->kv->getInt32(k.c_str());
-}
-
-bool NGenXX::Store::KV::Connection::writeInteger(const std::string &k, long long v)
-{
-    return this->kv->set(v, k);
 }
 
 double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
@@ -47,7 +37,8 @@ double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
     return this->kv->getDouble(k.c_str());
 }
 
-bool NGenXX::Store::KV::Connection::writeFloat(const std::string &k, double v)
+template<typename T>
+bool NGenXX::Store::KV::Connection::write(const std::string &k, T v)
 {
     return this->kv->set(v, k);
 }
