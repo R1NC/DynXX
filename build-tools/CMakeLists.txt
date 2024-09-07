@@ -24,6 +24,7 @@ set(ENGINE_FILES
 if(USE_LUA)
     set(ENGINE_FILES ${ENGINE_FILES}
         ../src/lua/LuaBridge.cxx
+        ../src/NGenXX-Lua.cxx
     )
 endif()
 
