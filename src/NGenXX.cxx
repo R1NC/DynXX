@@ -40,11 +40,9 @@ typedef struct NGenXXHandle
     void *sqlite;
     void *kv;
 #ifdef USE_LUA
-    void *lua_state;
+    void *lua;
 #endif
 } NGenXXHandle;
-
-#define BIND_LUA_FUNC(h, f) NGenXX::LuaBridge::bindFunc((lua_State *)(((NGenXXHandle *)h)->lua_state), #f, f);
 
 static inline const char *str2charp(std::string s)
 {
@@ -74,6 +72,8 @@ static inline void parse_lua_func_params(lua_State *L, std::function<void(cJSON 
         cJSON_free(json);
     }
 }
+
+#define BIND_LUA_FUNC(h, f) NGenXX::LuaBridge::bindFunc((lua_State *)(((NGenXXHandle *)h)->lua), #f, f);
 
 #endif
 
@@ -110,7 +110,7 @@ void *ngenxx_init(const char *root)
     handle->sqlite = new NGenXX::Store::SQLite();
     handle->kv = new NGenXX::Store::KV(std::string(root));
 #ifdef USE_LUA
-    handle->lua_state = NGenXX::LuaBridge::create();
+    handle->lua = NGenXX::LuaBridge::create();
     export_funcs_for_lua(handle);
 #endif
     return handle;
@@ -128,9 +128,9 @@ void ngenxx_release(void *sdk)
     delete ((NGenXX::Store::SQLite *)h->sqlite);
     delete ((NGenXX::Store::KV *)h->kv);
 #ifdef USE_LUA
-    if (h->lua_state)
+    if (h->lua)
     {
-        NGenXX::LuaBridge::destroy((lua_State *)(h->lua_state));
+        NGenXX::LuaBridge::destroy((lua_State *)(h->lua));
     }
 #endif
     free(sdk);
@@ -715,7 +715,7 @@ int ngenxx_store_kv_closeL(lua_State *L)
 #ifndef __EMSCRIPTEN__
 bool ngenxx_L_loadF(void *sdk, const char *file)
 {
-    return NGenXX::LuaBridge::loadFile((lua_State *)(((NGenXXHandle *)sdk)->lua_state), file) == LUA_OK;
+    return NGenXX::LuaBridge::loadFile((lua_State *)(((NGenXXHandle *)sdk)->lua), file) == LUA_OK;
 }
 #endif
 
@@ -724,7 +724,7 @@ EXPORT_WASM_LUA
 #endif
 bool ngenxx_L_loadS(void *sdk, const char *script)
 {
-    return NGenXX::LuaBridge::loadScript((lua_State *)(((NGenXXHandle *)sdk)->lua_state), script) == LUA_OK;
+    return NGenXX::LuaBridge::loadScript((lua_State *)(((NGenXXHandle *)sdk)->lua), script) == LUA_OK;
 }
 
 #ifdef __EMSCRIPTEN__
@@ -732,7 +732,7 @@ EXPORT_WASM_LUA
 #endif
 const char *ngenxx_L_call(void *sdk, const char *func, const char *params)
 {
-    return NGenXX::LuaBridge::callFunc((lua_State *)(((NGenXXHandle *)sdk)->lua_state), func, params);
+    return NGenXX::LuaBridge::callFunc((lua_State *)(((NGenXXHandle *)sdk)->lua), func, params);
 }
 
 void export_funcs_for_lua(void *handle)
