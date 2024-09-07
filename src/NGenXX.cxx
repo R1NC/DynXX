@@ -1,30 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../../../external/cjson/cJSON.h"
-
-#define HTTP_HEADERS_MAX_COUNT 100
-#define HTTP_HEADER_MAX_LENGTH 8190
-
-extern "C"
-{
-#include "../../../external/lua/lauxlib.h"
-
-    typedef struct NGenXXHandle
-    {
-#ifdef USE_LUA
-        lua_State *lua_state;
-#endif
-        void *sqlite;
-        void *kv;
-    } NGenXXHandle;
-}
-
-#ifdef __cplusplus
 
 #include <string>
 #include <vector>
 #include <functional>
+
+#include "../../../external/cjson/cJSON.h"
+extern "C"
+{
+#include "../../../external/lua/lauxlib.h"
+}
+
 #include "log/Log.hxx"
 #include "net/HttpClient.hxx"
 #include "store/SQLite.hxx"
@@ -34,6 +21,11 @@ extern "C"
 #include "lua/LuaBridge.hxx"
 #endif
 
+#define VERSION "0.0.1"
+
+#define HTTP_HEADERS_MAX_COUNT 100
+#define HTTP_HEADER_MAX_LENGTH 8190
+
 // WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
@@ -41,7 +33,16 @@ extern "C"
 #define EXPORT_WASM_LUA extern "C"
 #endif
 
-#define VERSION "0.0.1"
+typedef struct NGenXXHandle
+{
+    void *sqlite;
+    void *kv;
+#ifdef USE_LUA
+    void *lua_state;
+#endif
+} NGenXXHandle;
+
+#define BIND_LUA_FUNC(h, f) NGenXX::LuaBridge::bindFunc((lua_State *)(((NGenXXHandle *)h)->lua_state), #f, f);
 
 static inline const char *str2charp(std::string s)
 {
@@ -71,10 +72,6 @@ static inline void parse_lua_func_params(lua_State *L, std::function<void(cJSON 
         cJSON_free(json);
     }
 }
-
-#define BIND_LUA_FUNC(h, f) NGenXX::LuaBridge::bindFunc(((NGenXXHandle *)h)->lua_state, #f, f);
-
-#endif
 
 #endif
 
@@ -131,7 +128,7 @@ void ngenxx_release(void *sdk)
 #ifdef USE_LUA
     if (h->lua_state)
     {
-        NGenXX::LuaBridge::destroy(h->lua_state);
+        NGenXX::LuaBridge::destroy((lua_State *)(h->lua_state));
     }
 #endif
     free(sdk);
@@ -716,7 +713,7 @@ int ngenxx_store_kv_closeL(lua_State *L)
 #ifndef __EMSCRIPTEN__
 bool ngenxx_L_loadF(void *sdk, const char *file)
 {
-    return NGenXX::LuaBridge::loadFile(((NGenXXHandle *)sdk)->lua_state, file) == LUA_OK;
+    return NGenXX::LuaBridge::loadFile((lua_State *)(((NGenXXHandle *)sdk)->lua_state), file) == LUA_OK;
 }
 #endif
 
@@ -725,7 +722,7 @@ EXPORT_WASM_LUA
 #endif
 bool ngenxx_L_loadS(void *sdk, const char *script)
 {
-    return NGenXX::LuaBridge::loadScript(((NGenXXHandle *)sdk)->lua_state, script) == LUA_OK;
+    return NGenXX::LuaBridge::loadScript((lua_State *)(((NGenXXHandle *)sdk)->lua_state), script) == LUA_OK;
 }
 
 #ifdef __EMSCRIPTEN__
@@ -733,7 +730,7 @@ EXPORT_WASM_LUA
 #endif
 const char *ngenxx_L_call(void *sdk, const char *func, const char *params)
 {
-    return NGenXX::LuaBridge::callFunc(((NGenXXHandle *)sdk)->lua_state, func, params);
+    return NGenXX::LuaBridge::callFunc((lua_State *)(((NGenXXHandle *)sdk)->lua_state), func, params);
 }
 
 void export_funcs_for_lua(void *handle)

@@ -9,7 +9,7 @@ A cross-platform C/C++ framework.
 | Platform        | Build              | Demo               |
 | :-------------- | :----------------: | :----------------: |
 | Android         | :heavy_check_mark: | :heavy_check_mark: |
-| iOS/macOS             | :heavy_check_mark: | :heavy_check_mark: |
+| iOS/macOS       | :heavy_check_mark: | :heavy_check_mark: |
 | HarmonyOS(NEXT) | :heavy_check_mark: | :heavy_check_mark: |
 | Windows         | :heavy_check_mark: | :heavy_check_mark: |
 | Linux           | :heavy_check_mark: | :heavy_check_mark: |
