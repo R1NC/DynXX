@@ -4,7 +4,7 @@ A cross-platform C/C++ framework.
 
 ![Arch](/res/arch.png)
 
-### :iphone: Supported Platforms:
+### Supported Platforms:
 
 | Platform        | Build              | Demo               |
 | :-------------- | :----------------: | :----------------: |
@@ -15,12 +15,17 @@ A cross-platform C/C++ framework.
 | Linux           | :heavy_check_mark: | :heavy_check_mark: |
 | WebAssembly     | :heavy_check_mark: | :heavy_check_mark: |
 
-### :warning: Unsupported Features in WebAssembly:
+### Supported Script Languages
+
+[x] Lua;
+[ ] JavaScript;
+
+### Unsupported Features in WebAssembly:
 
 * Load Lua script with file;(Will trigger a prompt window.)
 * [C/C++ callback JS function in async thread][2];
 
-### :hammer_and_pick: Requirements:
+### Requirements:
 
 * C99, C++11;
 * Clang;
