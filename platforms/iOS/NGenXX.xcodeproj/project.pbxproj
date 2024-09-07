@@ -14,6 +14,7 @@
 		253FF04C2C778034006CD672 /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0472C778034006CD672 /* lua.a */; };
 		253FF04E2C778053006CD672 /* biz.lua in Resources */ = {isa = PBXBuildFile; fileRef = 253FF04D2C778053006CD672 /* biz.lua */; };
 		2569810E2C763BD2008E8472 /* libapple_nghttp2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2569810D2C763BD2008E8472 /* libapple_nghttp2.tbd */; };
+		25B6A2B92C8BE1AA00F6BBD2 /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */; };
 		40596B7D2C75AAD700AC552D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7C2C75AAD700AC552D /* AppDelegate.m */; };
 		40596B802C75AAD700AC552D /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7F2C75AAD700AC552D /* SceneDelegate.m */; };
 		40596B862C75AAD700AC552D /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 40596B852C75AAD700AC552D /* Base */; };
@@ -35,6 +36,7 @@
 		253FF0472C778034006CD672 /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../build.iOS/output/Release/lua.a; sourceTree = "<group>"; };
 		253FF04D2C778053006CD672 /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../Android/app/src/main/assets/biz.lua; sourceTree = "<group>"; };
 		2569810D2C763BD2008E8472 /* libapple_nghttp2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libapple_nghttp2.tbd; path = usr/lib/libapple_nghttp2.tbd; sourceTree = SDKROOT; };
+		25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.iOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
 		40596B782C75AAD700AC552D /* NGenXX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NGenXX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40596B7B2C75AAD700AC552D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		40596B7C2C75AAD700AC552D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25B6A2B92C8BE1AA00F6BBD2 /* mmkvcore.a in Frameworks */,
 				407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */,
 				253FF0482C778034006CD672 /* curl.a in Frameworks */,
 				253FF0492C778034006CD672 /* cjson.a in Frameworks */,
@@ -130,6 +133,7 @@
 		40596B982C75BC5A00AC552D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */,
 				407D2B3A2C897F48008A138C /* libsqlite3.tbd */,
 				253FF0442C778034006CD672 /* cjson.a */,
 				253FF0432C778034006CD672 /* curl.a */,

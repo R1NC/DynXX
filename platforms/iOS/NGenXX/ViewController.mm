@@ -14,7 +14,8 @@
 
 @interface ViewController () {
     void *_sdk;
-    void *_conn;
+    void *_db_conn;
+    void *_kv_conn;
 }
 @end
 
@@ -39,15 +40,19 @@
     tv.editable = NO;
     [self.view addSubview:tv];
 
-    _sdk = ngenxx_init();
+    _sdk = ngenxx_init(NSString2CharP(self.rootPath));
     const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
     ngenxx_L_loadF(_sdk, cLuaPath);
     
     tv.text = self.output;
+    
+    [self testDB];
+    [self testKV];
 }
 
 - (void)dealloc {
-    ngenxx_store_sqlite_close(_conn);
+    ngenxx_store_sqlite_close(_db_conn);
+    ngenxx_store_kv_close(_kv_conn);
     ngenxx_release(_sdk);
 }
 
@@ -57,25 +62,26 @@
     static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":1, \"headers\":[\"Accept-Encoding: gzip, deflate\", \"Cache-Control: no-cache\"], \"timeout\":6666}";
     const char * cRsp = ngenxx_L_call(_sdk, "lNetHttpRequest", cParams);
     if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
-    
-    [self testDB];
 
     return s;
 }
 
+- (NSString*)rootPath {
+    return NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
+}
+
 - (void)testDB {
-    NSString *dbDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
-    NSString *dbFile = [dbDir stringByAppendingPathComponent:@"test.db"];
-    _conn = ngenxx_store_sqlite_open(_sdk, NSString2CharP(dbFile));
-    if (_conn) {
+    NSString *dbFile = [self.rootPath stringByAppendingPathComponent:@"test.db"];
+    _db_conn = ngenxx_store_sqlite_open(_sdk, NSString2CharP(dbFile));
+    if (_db_conn) {
         NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
         NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];
-        bool bPrepareData = ngenxx_store_sqlite_execute(_conn, NSString2CharP(sqlPrepareData));
+        bool bPrepareData = ngenxx_store_sqlite_execute(_db_conn, NSString2CharP(sqlPrepareData));
         if (!bPrepareData) return;
         
         NSString *sqlPathQuery = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"query.sql"];
         NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:NULL];
-        void *qrQuery = ngenxx_store_sqlite_query_do(_conn, NSString2CharP(sqlQuery));
+        void *qrQuery = ngenxx_store_sqlite_query_do(_db_conn, NSString2CharP(sqlQuery));
         if (!qrQuery) return;
         while (ngenxx_store_sqlite_query_read_row(qrQuery)) {
             const char* platform = ngenxx_store_sqlite_query_read_column_text(qrQuery, "platform");
@@ -84,6 +90,16 @@
         }
         ngenxx_store_sqlite_query_drop(qrQuery);
     }
+}
+
+- (void)testKV {
+    _kv_conn = ngenxx_store_kv_open(_sdk, "test");
+    ngenxx_store_kv_write_string(_kv_conn, "s", "NGenXX");
+    NSLog(@"%s", ngenxx_store_kv_read_string(_kv_conn, "s"));
+    ngenxx_store_kv_write_integer(_kv_conn, "i", 1234567890);
+    NSLog(@"%lld", ngenxx_store_kv_read_integer(_kv_conn, "i"));
+    ngenxx_store_kv_write_float(_kv_conn, "f", 3.1415926535);
+    NSLog(@"%f", ngenxx_store_kv_read_float(_kv_conn, "f"));
 }
 
 @end

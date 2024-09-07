@@ -1,56 +1,69 @@
 #include "KV.hxx"
 
-using namespace mmkv;
-
-NGenXX::Store::KV::KV(const std::string &uid)
+NGenXX::Store::KV::KV(const std::string &root)
 {
-    this->kv = MMKV::mmkvWithID(uid, MMKV_MULTI_PROCESS);
+    MMKV::initializeMMKV(root);
 }
 
-const std::string NGenXX::Store::KV::readString(const std::string &k)
+NGenXX::Store::KV::Connection *NGenXX::Store::KV::open(const std::string &_id)
+{
+    return new NGenXX::Store::KV::Connection(_id);
+}
+
+NGenXX::Store::KV::~KV()
+{
+    MMKV::onExit();
+}
+
+NGenXX::Store::KV::Connection::Connection(const std::string &_id)
+{
+    this->kv = MMKV::mmkvWithID(_id, MMKV_MULTI_PROCESS);
+}
+
+const std::string NGenXX::Store::KV::Connection::readString(const std::string &k)
 {
     std::string v;
     this->kv->getString(k.c_str(), v);
     return v;
 }
 
-bool NGenXX::Store::KV::writeString(const std::string &k, const std::string &v)
+bool NGenXX::Store::KV::Connection::writeString(const std::string &k, const std::string &v)
 {
     return this->kv->set(v, k);
 }
 
-long long NGenXX::Store::KV::readInteger(const std::string &k)
+long long NGenXX::Store::KV::Connection::readInteger(const std::string &k)
 {
     return this->kv->getInt32(k.c_str());
 }
 
-bool NGenXX::Store::KV::writeInteger(const std::string &k, long long v)
+bool NGenXX::Store::KV::Connection::writeInteger(const std::string &k, long long v)
 {
     return this->kv->set(v, k);
 }
 
-double NGenXX::Store::KV::readFloat(const std::string &k)
+double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
 {
     return this->kv->getDouble(k.c_str());
 }
 
-bool NGenXX::Store::KV::writeFloat(const std::string &k, double v)
+bool NGenXX::Store::KV::Connection::writeFloat(const std::string &k, double v)
 {
     return this->kv->set(v, k);
 }
 
-bool NGenXX::Store::KV::contains(const std::string &k)
+bool NGenXX::Store::KV::Connection::contains(const std::string &k)
 {
     return this->kv->containsKey(k.c_str());
 }
 
-void NGenXX::Store::KV::clear()
+void NGenXX::Store::KV::Connection::clear()
 {
     this->kv->clearAll();
     this->kv->clearMemoryCache();
 }
 
-NGenXX::Store::KV::~KV()
+NGenXX::Store::KV::Connection::~Connection()
 {
     this->kv->close();
 }

@@ -16,6 +16,7 @@ extern "C"
         lua_State *lua_state;
 #endif
         void *sqlite;
+        void *kv;
     } NGenXXHandle;
 }
 
@@ -102,11 +103,13 @@ void export_funcs_for_lua(void *handle);
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM_LUA
 #endif
-void *ngenxx_init(void)
+void *ngenxx_init(const char *root)
 {
+    if (root == NULL) return NULL;
     NGenXX::Net::HttpClient::create();
     NGenXXHandle *handle = (NGenXXHandle *)malloc(sizeof(NGenXXHandle));
     handle->sqlite = new NGenXX::Store::SQLite();
+    handle->kv = new NGenXX::Store::KV(std::string(root));
 #ifdef USE_LUA
     handle->lua_state = NGenXX::LuaBridge::create();
     export_funcs_for_lua(handle);
@@ -124,6 +127,7 @@ void ngenxx_release(void *sdk)
         return;
     NGenXXHandle *h = (NGenXXHandle *)sdk;
     delete ((NGenXX::Store::SQLite *)h->sqlite);
+    delete ((NGenXX::Store::KV *)h->kv);
 #ifdef USE_LUA
     if (h->lua_state)
     {
@@ -162,13 +166,13 @@ void ngenxx_log_print(int level, const char *content)
 #ifdef USE_LUA
 int ngenxx_log_printL(lua_State *L)
 {
-    int level;
+    int level = -1;
     char *content = NULL;
     parse_lua_func_params(L, [&](cJSON *j) -> void {
         JSON_READ_NUM(j, level);
         JSON_READ_STR(j, content); 
     });
-    if (content == NULL) return LUA_ERRRUN;
+    if (level == -1 || content == NULL) return LUA_ERRRUN;
     ngenxx_log_print(level, content);
     return LUA_OK;
 }
@@ -199,7 +203,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
 int ngenxx_net_http_requestL(lua_State *L)
 {
     char *url = NULL, *params = NULL;
-    int method;
+    int method = -1;
     char **headers = NULL;
     int headers_c;
     long timeout;
@@ -210,7 +214,7 @@ int ngenxx_net_http_requestL(lua_State *L)
         JSON_READ_NUM(j, timeout);
         JSON_READ_STR_ARRAY(j, headers, headers_c, HTTP_HEADERS_MAX_COUNT, HTTP_HEADER_MAX_LENGTH); 
     });
-    if (url == NULL) return LUA_ERRRUN;
+    if (method == -1 || url == NULL) return LUA_ERRRUN;
     const char *res = ngenxx_net_http_request(url, params, method, headers, headers_c, timeout);
     lua_pushstring(L, res);
     return LUA_OK;
@@ -224,7 +228,7 @@ EXPORT_WASM
 #endif
 void *ngenxx_store_sqlite_open(void *sdk, const char *file)
 {
-    if (file == NULL)
+    if (sdk == NULL || file == NULL)
         return NULL;
     NGenXX::Store::SQLite *sqlite = (NGenXX::Store::SQLite *)(((NGenXXHandle *)sdk)->sqlite);
     return sqlite->connect(std::string(file));
@@ -458,20 +462,23 @@ int ngenxx_store_sqlite_closeL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-void *ngenxx_store_kv_open(const char *uid)
+void *ngenxx_store_kv_open(void *sdk, const char *_id)
 {
-    if (uid == NULL) return NULL;
-    return new NGenXX::Store::KV(std::string(uid));
+    if (sdk == NULL || _id == NULL) return NULL;
+    return ((NGenXX::Store::KV*)(((NGenXXHandle*)sdk)->kv))->open(std::string(_id));
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_openL(lua_State *L)
 {
-    char *uid = NULL;
+    long sdk;
+    char *_id = NULL;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_STR(j, uid); 
+        JSON_READ_NUM(j, sdk);
+        JSON_READ_STR(j, _id);
     });
-    void *res = ngenxx_store_kv_open(uid);
+    if (sdk <= 0 || _id == NULL) return LUA_ERRRUN;
+    void *res = ngenxx_store_kv_open((void *)sdk, _id);
     lua_pushinteger(L, (long)res);
     return LUA_OK;
 }
@@ -481,22 +488,23 @@ int ngenxx_store_kv_openL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-const char *ngenxx_store_kv_read_string(void *kv, const char *k)
+const char *ngenxx_store_kv_read_string(void *conn, const char *k)
 {
-    if (kv == NULL || k == NULL) return NULL;
-    return str2charp(((NGenXX::Store::KV *)kv)->readString(std::string(k)));
+    if (conn == NULL || k == NULL) return NULL;
+    return str2charp(((NGenXX::Store::KV::Connection *)conn)->readString(std::string(k)));
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_read_stringL(lua_State *L)
 {
-    long kv;
+    long conn;
     char *k = NULL;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, kv);
+        JSON_READ_NUM(j, conn);
         JSON_READ_STR(j, k); 
     });
-    const char *res = ngenxx_store_kv_read_string((void *)kv, k);
+    if (conn <= 0 || k == NULL) return LUA_ERRRUN;
+    const char *res = ngenxx_store_kv_read_string((void *)conn, k);
     lua_pushstring(L, res);
     return LUA_OK;
 }
@@ -505,24 +513,25 @@ int ngenxx_store_kv_read_stringL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-bool ngenxx_store_kv_write_string(void *kv, const char *k, const char *v)
+bool ngenxx_store_kv_write_string(void *conn, const char *k, const char *v)
 {
-    if (kv == NULL || k == NULL) return false;
-    return ((NGenXX::Store::KV *)kv)->writeString(std::string(k), v);
+    if (conn == NULL || k == NULL) return false;
+    return ((NGenXX::Store::KV::Connection *)conn)->writeString(std::string(k), v);
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_write_stringL(lua_State *L)
 {
-    long kv;
+    long conn;
     char *k = NULL;
     char *v = NULL;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, kv);
+        JSON_READ_NUM(j, conn);
         JSON_READ_STR(j, k);
         JSON_READ_STR(j, v); 
     });
-    bool res = ngenxx_store_kv_write_string((void *)kv, k, v);
+    if (conn <= 0 || k == NULL) return LUA_ERRRUN;
+    bool res = ngenxx_store_kv_write_string((void *)conn, k, v);
     lua_pushboolean(L, res);
     return LUA_OK;
 }
@@ -531,22 +540,23 @@ int ngenxx_store_kv_write_stringL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-long long ngenxx_store_kv_read_integer(void *kv, const char *k)
+long long ngenxx_store_kv_read_integer(void *conn, const char *k)
 {
-    if (kv == NULL || k == NULL) return 0;
-    return ((NGenXX::Store::KV *)kv)->readInteger(std::string(k));
+    if (conn == NULL || k == NULL) return 0;
+    return ((NGenXX::Store::KV::Connection *)conn)->readInteger(std::string(k));
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_read_integerL(lua_State *L)
 {
-    long kv;
+    long conn;
     char *k = NULL;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, kv);
+        JSON_READ_NUM(j, conn);
         JSON_READ_STR(j, k); 
     });
-    long long res = ngenxx_store_kv_read_integer((void *)kv, k);
+    if (conn <= 0 || k == NULL) return LUA_ERRRUN;
+    long long res = ngenxx_store_kv_read_integer((void *)conn, k);
     lua_pushinteger(L, res);
     return LUA_OK;
 }
@@ -555,24 +565,25 @@ int ngenxx_store_kv_read_integerL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-bool ngenxx_store_kv_write_integer(void *kv, const char *k, long long v)
+bool ngenxx_store_kv_write_integer(void *conn, const char *k, long long v)
 {
-    if (kv == NULL || k == NULL) return false;
-    return ((NGenXX::Store::KV *)kv)->writeInteger(std::string(k), v);
+    if (conn == NULL || k == NULL) return false;
+    return ((NGenXX::Store::KV::Connection *)conn)->writeInteger(std::string(k), v);
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_write_integerL(lua_State *L)
 {
-    long kv;
+    long conn;
     char *k = NULL;
     long long v;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, kv);
+        JSON_READ_NUM(j, conn);
         JSON_READ_STR(j, k);
         JSON_READ_NUM(j, v);
     });
-    bool res = ngenxx_store_kv_write_integer((void *)kv, k, v);
+    if (conn <= 0 || k == NULL) return LUA_ERRRUN;
+    bool res = ngenxx_store_kv_write_integer((void *)conn, k, v);
     lua_pushboolean(L, res);
     return LUA_OK;
 }
@@ -581,22 +592,23 @@ int ngenxx_store_kv_write_integerL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-double ngenxx_store_kv_read_float(void *kv, const char *k)
+double ngenxx_store_kv_read_float(void *conn, const char *k)
 {
-    if (kv == NULL || k == NULL) return 0;
-    return ((NGenXX::Store::KV *)kv)->readFloat(std::string(k));
+    if (conn == NULL || k == NULL) return 0;
+    return ((NGenXX::Store::KV::Connection *)conn)->readFloat(std::string(k));
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_read_floatL(lua_State *L)
 {
-    long kv;
+    long conn;
     char *k = NULL;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, kv);
+        JSON_READ_NUM(j, conn);
         JSON_READ_STR(j, k); 
     });
-    double res = ngenxx_store_kv_read_float((void *)kv, k);
+    if (conn <= 0 || k == NULL) return LUA_ERRRUN;
+    double res = ngenxx_store_kv_read_float((void *)conn, k);
     lua_pushnumber(L, res);
     return LUA_OK;
 }
@@ -605,24 +617,25 @@ int ngenxx_store_kv_read_floatL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-bool ngenxx_store_kv_write_float(void *kv, const char *k, double v)
+bool ngenxx_store_kv_write_float(void *conn, const char *k, double v)
 {
-    if (kv == NULL || k == NULL) return false;
-    return ((NGenXX::Store::KV *)kv)->writeFloat(std::string(k), v);
+    if (conn == NULL || k == NULL) return false;
+    return ((NGenXX::Store::KV::Connection *)conn)->writeFloat(std::string(k), v);
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_write_floatL(lua_State *L)
 {
-    long kv;
+    long conn;
     char *k = NULL;
     double v;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, kv);
+        JSON_READ_NUM(j, conn);
         JSON_READ_STR(j, k);
         JSON_READ_NUM(j, v); 
     });
-    bool res = ngenxx_store_kv_write_float((void *)kv, k, v);
+    if (conn <= 0 || k == NULL) return LUA_ERRRUN;
+    bool res = ngenxx_store_kv_write_float((void *)conn, k, v);
     lua_pushboolean(L, res);
     return LUA_OK;
 }
@@ -631,22 +644,23 @@ int ngenxx_store_kv_write_floatL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-bool ngenxx_store_kv_contains(void *kv, const char *k)
+bool ngenxx_store_kv_contains(void *conn, const char *k)
 {
-    if (kv == NULL || k == NULL) return false;
-    return ((NGenXX::Store::KV *)kv)->contains(std::string(k));
+    if (conn == NULL || k == NULL) return false;
+    return ((NGenXX::Store::KV::Connection *)conn)->contains(std::string(k));
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_containsL(lua_State *L)
 {
-    long kv;
+    long conn;
     char *k = NULL;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, kv);
+        JSON_READ_NUM(j, conn);
         JSON_READ_STR(j, k); 
     });
-    bool res = ngenxx_store_kv_contains((void *)kv, k);
+    if (conn <= 0 || k == NULL) return LUA_ERRRUN;
+    bool res = ngenxx_store_kv_contains((void *)conn, k);
     return LUA_OK;
 }
 #endif
@@ -654,20 +668,21 @@ int ngenxx_store_kv_containsL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-void ngenxx_store_kv_clear(void *kv)
+void ngenxx_store_kv_clear(void *conn)
 {
-    if (kv == NULL) return;
-    ((NGenXX::Store::KV *)kv)->clear();
+    if (conn == NULL) return;
+    ((NGenXX::Store::KV::Connection *)conn)->clear();
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_clearL(lua_State *L)
 {
-    long kv;
+    long conn;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, kv); 
+        JSON_READ_NUM(j, conn); 
     });
-    ngenxx_store_kv_clear((void *)kv);
+    if (conn <= 0) return LUA_ERRRUN;
+    ngenxx_store_kv_clear((void *)conn);
     return LUA_OK;
 }
 #endif
@@ -675,20 +690,21 @@ int ngenxx_store_kv_clearL(lua_State *L)
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
-void ngenxx_store_kv_close(void *kv)
+void ngenxx_store_kv_close(void *conn)
 {
-    if (kv == NULL) return;
-    delete (NGenXX::Store::KV *)kv;
+    if (conn == NULL) return;
+    delete (NGenXX::Store::KV *)conn;
 }
 
 #ifdef USE_LUA
 int ngenxx_store_kv_closeL(lua_State *L)
 {
-    long kv;
+    long conn;
     parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, kv); 
+        JSON_READ_NUM(j, conn); 
     });
-    ngenxx_store_kv_close((void *)kv);
+    if (conn <= 0) return LUA_ERRRUN;
+    ngenxx_store_kv_close((void *)conn);
     return LUA_OK;
 }
 #endif

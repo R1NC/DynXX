@@ -12,27 +12,38 @@ namespace NGenXX
     {
         class KV
         {
-        private:
-            MMKV *kv;
 
         public:
-            KV(const std::string &uid);
+            KV(const std::string &root);
 
-            const std::string readString(const std::string &k);
+            class Connection
+            {
+            private:
+                MMKV *kv;
 
-            bool writeString(const std::string &k, const std::string &v);
+            public:
+                Connection(const std::string &_id);
 
-            long long readInteger(const std::string &k);
+                const std::string readString(const std::string &k);
 
-            bool writeInteger(const std::string &k, long long v);
+                bool writeString(const std::string &k, const std::string &v);
 
-            double readFloat(const std::string &k);
+                long long readInteger(const std::string &k);
 
-            bool writeFloat(const std::string &k, double v);
+                bool writeInteger(const std::string &k, long long v);
 
-            bool contains(const std::string &k);
+                double readFloat(const std::string &k);
 
-            void clear();
+                bool writeFloat(const std::string &k, double v);
+
+                bool contains(const std::string &k);
+
+                void clear();
+
+                ~Connection();
+            };
+
+            Connection *open(const std::string &_id);
 
             ~KV();
         };
