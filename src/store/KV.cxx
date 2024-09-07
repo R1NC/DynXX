@@ -37,7 +37,7 @@ double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
     return this->kv->getDouble(k.c_str());
 }
 
-template<typename T>
+template <typename T>
 bool NGenXX::Store::KV::Connection::write(const std::string &k, T v)
 {
     return this->kv->set(v, k);

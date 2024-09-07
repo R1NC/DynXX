@@ -46,7 +46,8 @@ EXPORT_WASM_LUA
 #endif
 void *ngenxx_init(const char *root)
 {
-    if (root == NULL) return NULL;
+    if (root == NULL)
+        return NULL;
     NGenXX::Net::HttpClient::create();
     NGenXXHandle *h = (NGenXXHandle *)malloc(sizeof(NGenXXHandle));
     h->sqlite = new NGenXX::Store::SQLite();
@@ -228,8 +229,9 @@ EXPORT_WASM
 #endif
 void *ngenxx_store_kv_open(void *sdk, const char *_id)
 {
-    if (sdk == NULL || _id == NULL) return NULL;
-    return ((NGenXX::Store::KV*)(((NGenXXHandle*)sdk)->kv))->open(std::string(_id));
+    if (sdk == NULL || _id == NULL)
+        return NULL;
+    return ((NGenXX::Store::KV *)(((NGenXXHandle *)sdk)->kv))->open(std::string(_id));
 }
 
 #ifdef __EMSCRIPTEN__
@@ -237,7 +239,8 @@ EXPORT_WASM
 #endif
 const char *ngenxx_store_kv_read_string(void *conn, const char *k)
 {
-    if (conn == NULL || k == NULL) return NULL;
+    if (conn == NULL || k == NULL)
+        return NULL;
     return str2charp(((NGenXX::Store::KV::Connection *)conn)->readString(std::string(k)));
 }
 
@@ -246,7 +249,8 @@ EXPORT_WASM
 #endif
 bool ngenxx_store_kv_write_string(void *conn, const char *k, const char *v)
 {
-    if (conn == NULL || k == NULL) return false;
+    if (conn == NULL || k == NULL)
+        return false;
     return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
 }
 
@@ -255,7 +259,8 @@ EXPORT_WASM
 #endif
 long long ngenxx_store_kv_read_integer(void *conn, const char *k)
 {
-    if (conn == NULL || k == NULL) return 0;
+    if (conn == NULL || k == NULL)
+        return 0;
     return ((NGenXX::Store::KV::Connection *)conn)->readInteger(std::string(k));
 }
 
@@ -264,7 +269,8 @@ EXPORT_WASM
 #endif
 bool ngenxx_store_kv_write_integer(void *conn, const char *k, long long v)
 {
-    if (conn == NULL || k == NULL) return false;
+    if (conn == NULL || k == NULL)
+        return false;
     return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
 }
 
@@ -273,7 +279,8 @@ EXPORT_WASM
 #endif
 double ngenxx_store_kv_read_float(void *conn, const char *k)
 {
-    if (conn == NULL || k == NULL) return 0;
+    if (conn == NULL || k == NULL)
+        return 0;
     return ((NGenXX::Store::KV::Connection *)conn)->readFloat(std::string(k));
 }
 
@@ -282,7 +289,8 @@ EXPORT_WASM
 #endif
 bool ngenxx_store_kv_write_float(void *conn, const char *k, double v)
 {
-    if (conn == NULL || k == NULL) return false;
+    if (conn == NULL || k == NULL)
+        return false;
     return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
 }
 
@@ -291,7 +299,8 @@ EXPORT_WASM
 #endif
 bool ngenxx_store_kv_contains(void *conn, const char *k)
 {
-    if (conn == NULL || k == NULL) return false;
+    if (conn == NULL || k == NULL)
+        return false;
     return ((NGenXX::Store::KV::Connection *)conn)->contains(std::string(k));
 }
 
@@ -300,7 +309,8 @@ EXPORT_WASM
 #endif
 void ngenxx_store_kv_clear(void *conn)
 {
-    if (conn == NULL) return;
+    if (conn == NULL)
+        return;
     ((NGenXX::Store::KV::Connection *)conn)->clear();
 }
 
@@ -309,6 +319,7 @@ EXPORT_WASM
 #endif
 void ngenxx_store_kv_close(void *conn)
 {
-    if (conn == NULL) return;
+    if (conn == NULL)
+        return;
     delete (NGenXX::Store::KV *)conn;
 }

@@ -30,7 +30,7 @@ namespace NGenXX
 
                 double readFloat(const std::string &k);
 
-                template<typename T>
+                template <typename T>
                 bool write(const std::string &k, T v);
 
                 bool contains(const std::string &k);
