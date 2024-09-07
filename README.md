@@ -17,8 +17,8 @@ A cross-platform C/C++ framework.
 
 ### Supported Script Languages
 
-[x] Lua;
-[ ] JavaScript;
+- [x] Lua;
+- [ ] JavaScript;
 
 ### Unsupported Features in WebAssembly:
 
