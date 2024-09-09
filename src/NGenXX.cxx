@@ -271,7 +271,7 @@ bool ngenxx_store_kv_write_integer(void *conn, const char *k, long long v)
 {
     if (conn == NULL || k == NULL)
         return false;
-    return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
+    return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), (int64_t)v);
 }
 
 #ifdef __EMSCRIPTEN__
