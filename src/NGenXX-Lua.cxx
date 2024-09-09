@@ -426,8 +426,6 @@ void _ngenxx_lua_init(NGenXXHandle *handle)
 
 void _ngenxx_lua_release(NGenXXHandle *handle)
 {
-    if (handle->lua)
-    {
-        NGenXX::LuaBridge::destroy((lua_State *)(handle->lua));
-    }
+    if (handle == NULL || handle->lua == NULL) return;
+    NGenXX::LuaBridge::destroy((lua_State *)(handle->lua));
 }

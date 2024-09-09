@@ -31,6 +31,12 @@ if(USE_LUA)
         ../src/NGenXX-Lua.cxx
     )
 endif()
+if(USE_QJS)
+    set(ENGINE_FILES ${ENGINE_FILES}
+        ../src/js/JsBridge.cxx
+        ../src/NGenXX-JS.cxx
+    )
+endif()
 
 set(LIB_TYPE STATIC)
 if(EMSCRIPTEN)

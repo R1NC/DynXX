@@ -8,6 +8,7 @@ typedef struct NGenXXHandle
     void *sqlite;
     void *kv;
     void *lua;
+    void *qjs;
 } NGenXXHandle;
 
 #define HTTP_HEADERS_MAX_COUNT 100
@@ -19,6 +20,14 @@ typedef struct NGenXXHandle
 #define EXPORT_WASM extern "C" EMSCRIPTEN_KEEPALIVE
 #define EXPORT_WASM_LUA extern "C"
 #endif
+
+static inline const char *str2charp(std::string s)
+{
+    const char *c = s.c_str();
+    char *nc = (char *)malloc(strlen(c) + 1);
+    strcpy(nc, c);
+    return nc;
+}
 
 #endif
 

@@ -6,6 +6,7 @@
 #include "NGenXXStoreKV.h"
 #include "NGenXXStoreSQLite.h"
 #include "NGenXXLua.h"
+#include "NGenXXJs.h"
 
 /**
  * @brief Read version

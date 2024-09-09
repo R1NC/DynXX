@@ -23,6 +23,7 @@
 		407D2B4D2C8AC125008A138C /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B4A2C8AC125008A138C /* query.sql */; };
 		407D2B4E2C8AC125008A138C /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B4B2C8AC125008A138C /* prepare_data.sql */; };
 		407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B502C8AC12C008A138C /* libsqlite3.tbd */; };
+		407D2B612C8F1C15008A138C /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B602C8F1C15008A138C /* biz.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		407D2B4A2C8AC125008A138C /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
 		407D2B4B2C8AC125008A138C /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
 		407D2B502C8AC12C008A138C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		407D2B602C8F1C15008A138C /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../Android/app/src/main/assets/biz.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 		40348F4E2C783CA70039639C = {
 			isa = PBXGroup;
 			children = (
+				407D2B602C8F1C15008A138C /* biz.js */,
 				407D2B4B2C8AC125008A138C /* prepare_data.sql */,
 				407D2B4A2C8AC125008A138C /* query.sql */,
 				40348F6F2C783D7B0039639C /* biz.lua */,
@@ -174,6 +177,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				407D2B612C8F1C15008A138C /* biz.js in Resources */,
 				407D2B4D2C8AC125008A138C /* query.sql in Resources */,
 				407D2B4E2C8AC125008A138C /* prepare_data.sql in Resources */,
 				40348F702C783D7B0039639C /* biz.lua in Resources */,

@@ -14,16 +14,11 @@
 #ifdef USE_LUA
 #include "NGenXX-Lua.hxx"
 #endif
+#ifdef USE_QJS
+#include "NGenXX-JS.hxx"
+#endif
 
 #define VERSION "0.0.1"
-
-static inline const char *str2charp(std::string s)
-{
-    const char *c = s.c_str();
-    char *nc = (char *)malloc(strlen(c) + 1);
-    strcpy(nc, c);
-    return nc;
-}
 
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
@@ -48,6 +43,9 @@ void *ngenxx_init(const char *root)
 #ifdef USE_LUA
     _ngenxx_lua_init(h);
 #endif
+#ifdef USE_QJS
+    _ngenxx_js_init(h);
+#endif
     return h;
 }
 
@@ -64,6 +62,9 @@ void ngenxx_release(void *sdk)
     delete ((NGenXX::Store::KV *)h->kv);
 #ifdef USE_LUA
     _ngenxx_lua_release(h);
+#endif
+#ifdef USE_QJS
+    _ngenxx_js_release(h);
 #endif
     free(sdk);
 }
