@@ -16,13 +16,6 @@ extern "C"
 #include "../include/NGenXX.h"
 #include "NGenXX-Lua.hxx"
 
-// WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
-#ifdef __EMSCRIPTEN__
-#include <emscripten/emscripten.h>
-#define EXPORT_WASM extern "C" EMSCRIPTEN_KEEPALIVE
-#define EXPORT_WASM_LUA extern "C"
-#endif
-
 static inline void parse_lua_func_params(lua_State *L, std::function<void(cJSON *)> callback)
 {
     const char *s = luaL_checkstring(L, 1);

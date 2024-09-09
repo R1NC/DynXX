@@ -67,6 +67,7 @@ ${COMMAND} curl.output/lib/${LIB_DIR}libcurl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/
 #${COMMAND} openssl.output/crypto/${LIB_DIR}libcrypto.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/crypto.a
 ${COMMAND} wolfssl.output/${LIB_DIR}libwolfssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/wolfssl.a
 ${COMMAND} lua.output/${LIB_DIR}liblua.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/lua.a
+${COMMAND} quickjs.output/${LIB_DIR}libquickjs.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/quickjs.a
 ${COMMAND} cjson.output/${LIB_DIR}libcjson.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/cjson.a
 ${COMMAND} mmkv.output/Core/${LIB_DIR}/libmmkvcore.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkvcore.a
 ${COMMAND} mmkv.output/${LIB_DIR}libmmkv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkv.a
