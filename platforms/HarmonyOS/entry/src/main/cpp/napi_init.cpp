@@ -229,27 +229,27 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
 
 static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
     size_t argc = 5;
-    napi_value args[5] = {nullptr};
+    napi_value argv[5] = {nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
     const char *cUrl = napiValue2char(env, argv[0]);
     const char *cParams = napiValue2char(env, argv[1]);
-    int iMethod = napiValue2int(env, args[2]);
+    int iMethod = napiValue2int(env, argv[2]);
     
     uint32_t headers_c;
-    status = napi_get_array_length(env, args[3], &headers_c);
+    status = napi_get_array_length(env, argv[3], &headers_c);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_array_length() failed");
     char **headers_v = (char **)malloc(headers_c * sizeof(char*));
     for (int i = 0; i < headers_c; i++) {
         napi_value vHeader;
-        status = napi_get_element(env, args[3], i, &vHeader);
+        status = napi_get_element(env, argv[3], i, &vHeader);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_element() failed");
         headers_v[i] = (char *)napiValue2char(env, vHeader);
     }
     
-    long lTimeout = napiValue2long(env, args[4]);
+    long lTimeout = napiValue2long(env, argv[4]);
 
     const char *cRsp = ngenxx_net_http_request(cUrl, cParams, iMethod, headers_v, headers_c, lTimeout);
 
