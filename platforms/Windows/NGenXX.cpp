@@ -8,13 +8,15 @@
 #pragma comment(lib, "../../build.Windows/output/Release/wolfssl.lib")
 #pragma comment(lib, "../../build.Windows/output/Release/libcurl.lib")
 #pragma comment(lib, "../../build.Windows/output/Release/libsqlite3.lib")
+#pragma comment(lib, "../../build.Windows/output/Release/libmmkvcore.lib")
+#pragma comment(lib, "../../build.Windows/output/Release/libmmkv.lib")
 #pragma comment(lib, "../../build.Windows/output/Release/NGenXX.lib")
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "Wldap32.lib")
 
 int main()
 {
-    void *handle = ngenxx_init();
+    void *handle = ngenxx_init("D://NGenXX/");
 
     bool loadSuccess = ngenxx_L_loadF(handle, "../Android/app/src/main/assets/biz.lua");
     if (loadSuccess)

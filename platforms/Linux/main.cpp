@@ -6,7 +6,7 @@
 
 int main()
 {
-    void *handle = ngenxx_init();
+    void *handle = ngenxx_init("/var/www/NGenXX/");
 
     bool loadSuccess = ngenxx_L_loadF(handle, "../Android/app/src/main/assets/biz.lua");
     if (loadSuccess)

@@ -49,6 +49,16 @@ set(sqlitePath ${libDir}/libsqlite3.a)
 add_library(libsqlite STATIC IMPORTED)
 set_property(TARGET libsqlite PROPERTY IMPORTED_LOCATION ${sqlitePath})
 
+#Find libmmkvcore
+set(libmmkvcorePath ${libDir}/libmmkvcore.a)
+add_library(libmmkvcore STATIC IMPORTED)
+set_property(TARGET libmmkvcore PROPERTY IMPORTED_LOCATION ${libmmkvcorePath})
+
+#Find libmmkv
+set(libmmkvPath ${libDir}/libmmkv.a)
+add_library(libmmkv STATIC IMPORTED)
+set_property(TARGET libmmkv PROPERTY IMPORTED_LOCATION ${libmmkvPath})
+
 #Find NGenXX
 set(NGenXXPath ${libDir}/libNGenXX.a)
 add_library(libNGenXX STATIC IMPORTED)
@@ -62,6 +72,8 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     liblua
     libcjson
     libsqlite
+    libmmkvcore
+    libmmkv
     libNGenXX
     z
 libace_napi.z.so)
