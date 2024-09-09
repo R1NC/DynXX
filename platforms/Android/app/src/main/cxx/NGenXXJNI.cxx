@@ -16,8 +16,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz) {
-    return (jlong)ngenxx_init();
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz, jstring root) {
+    const char *cRoot = env->GetStringUTFChars(script, JNI_FALSE);
+    return (jlong)ngenxx_init(cRoot);
 }
 
 extern "C"

@@ -52,7 +52,15 @@ static napi_value GetVersion(napi_env env, napi_callback_info info) {
 }
 
 static napi_value Init(napi_env env, napi_callback_info info) {
-    long l = (long)ngenxx_init();
+    size_t argc = 1;
+    napi_value argv[1] = {nullptr};
+
+    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+
+    const char *root = napiValue2char(env, argv[0]);
+    long l = (long)ngenxx_init(root);
+    free((void *)root);
     napi_value v = long2NapiValue(env, l);
     return v;
 }

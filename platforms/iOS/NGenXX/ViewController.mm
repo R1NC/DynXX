@@ -40,7 +40,7 @@
     tv.editable = NO;
     [self.view addSubview:tv];
 
-    _sdk = ngenxx_init(NSString2CharP(self.rootPath));
+    _sdk = ngenxx_init(NSString2CharP(self.root));
     const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
     ngenxx_L_loadF(_sdk, cLuaPath);
     
@@ -66,12 +66,12 @@
     return s;
 }
 
-- (NSString*)rootPath {
+- (NSString*)root {
     return NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
 }
 
 - (void)testDB {
-    NSString *dbFile = [self.rootPath stringByAppendingPathComponent:@"test.db"];
+    NSString *dbFile = [self.root stringByAppendingPathComponent:@"test.db"];
     _db_conn = ngenxx_store_sqlite_open(_sdk, NSString2CharP(dbFile));
     if (_db_conn) {
         NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];

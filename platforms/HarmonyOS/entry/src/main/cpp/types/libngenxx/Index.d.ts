@@ -1,5 +1,5 @@
 export const getVersion: () => string;
-export const init: () => number;
+export const init: (root: string) => number;
 export const release: (handle: number) => void;
 
 export const logSetLevel: (level: number) => void;

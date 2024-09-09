@@ -14,7 +14,7 @@
 
 @interface ViewController () {
     void *_sdk;
-    void *_conn;
+    void *_db_conn;
 }
 @end
 
@@ -23,15 +23,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    _sdk = ngenxx_init();
+    _sdk = ngenxx_init(NSString2CharP(self.root));
     
     [self testLua];
     [self testDB];
 }
 
 - (void)dealloc {
-    ngenxx_store_sqlite_close(_conn);
+    ngenxx_store_sqlite_close(_db_conn);
     ngenxx_release(_sdk);
+}
+
+- (NSString*)root {
+    return NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
 }
 
 - (void)testLua {
@@ -47,18 +51,17 @@
 }
 
 - (void)testDB {
-    NSString *dbDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
-    NSString *dbFile = [dbDir stringByAppendingPathComponent:@"test.db"];
-    _conn = ngenxx_store_sqlite_open(_sdk, NSString2CharP(dbFile));
-    if (_conn) {
+    NSString *dbFile = [self.root stringByAppendingPathComponent:@"test.db"];
+    _db_conn = ngenxx_store_sqlite_open(_sdk, NSString2CharP(dbFile));
+    if (_db_conn) {
         NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
         NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];
-        bool bPrepareData = ngenxx_store_sqlite_execute(_conn, NSString2CharP(sqlPrepareData));
+        bool bPrepareData = ngenxx_store_sqlite_execute(_db_conn, NSString2CharP(sqlPrepareData));
         if (!bPrepareData) return;
     
         NSString *sqlPathQuery = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"query.sql"];
         NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:NULL];
-        void *qrQuery = ngenxx_store_sqlite_query_do(_conn, NSString2CharP(sqlQuery));
+        void *qrQuery = ngenxx_store_sqlite_query_do(_db_conn, NSString2CharP(sqlQuery));
         if (!qrQuery) return;
         while (ngenxx_store_sqlite_query_read_row(qrQuery)) {
             const char* platform = ngenxx_store_sqlite_query_read_column_text(qrQuery, "platform");

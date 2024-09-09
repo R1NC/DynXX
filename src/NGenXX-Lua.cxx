@@ -219,6 +219,8 @@ int ngenxx_store_sqlite_closeL(lua_State *L)
     return LUA_OK;
 }
 
+#pragma mark Store.KV
+
 int ngenxx_store_kv_openL(lua_State *L)
 {
     long sdk;

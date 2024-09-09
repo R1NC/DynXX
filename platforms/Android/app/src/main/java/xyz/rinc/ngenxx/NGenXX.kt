@@ -7,7 +7,7 @@ class NGenXX {
         }
 
         external fun getVersion(): String
-        external fun init(): Long
+        external fun init(root: String): Long
         external fun release(handle: Long)
 
         external fun logSetLevel(level: Int)

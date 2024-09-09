@@ -30,7 +30,7 @@ bool ngenxx_store_kv_write_string(void *conn, const char *k, const char *v);
  * @brief Read integer from KV Store
  * @param conn A KV connection handle
  * @param k key
- * @return int value
+ * @return integer value
  */
 long long ngenxx_store_kv_read_integer(void *conn, const char *k);
 
@@ -75,7 +75,7 @@ bool ngenxx_store_kv_contains(void *conn, const char *k);
 void ngenxx_store_kv_clear(void *conn);
 
 /**
- * @brief Search key from KV Store
+ * @brief Close a KV Store connection
  * @param conn A KV connection handle
  */
 void ngenxx_store_kv_close(void *conn);
