@@ -17,21 +17,6 @@
 
 #define VERSION "0.0.1"
 
-// WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
-#ifdef __EMSCRIPTEN__
-#include <emscripten/emscripten.h>
-#define EXPORT_WASM extern "C" EMSCRIPTEN_KEEPALIVE
-#define EXPORT_WASM_LUA extern "C"
-#endif
-
-static inline const char *str2charp(std::string s)
-{
-    const char *c = s.c_str();
-    char *nc = (char *)malloc(strlen(c) + 1);
-    strcpy(nc, c);
-    return nc;
-}
-
 #ifdef __EMSCRIPTEN__
 EXPORT_WASM
 #endif
