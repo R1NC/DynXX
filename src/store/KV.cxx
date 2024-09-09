@@ -29,7 +29,7 @@ const std::string NGenXX::Store::KV::Connection::readString(const std::string &k
 
 long long NGenXX::Store::KV::Connection::readInteger(const std::string &k)
 {
-    return this->kv->getInt32(k.c_str());
+    return this->kv->getInt64(k.c_str());
 }
 
 double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
