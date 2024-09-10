@@ -55,7 +55,7 @@ const char *ngenxx_J_call(void *sdk, const char *func, const char *params)
 {
     if (sdk == NULL || func == NULL)
         return NULL;
-    str2charp(((NGenXX::JsBridge *)(((NGenXXHandle *)sdk)->qjs))->callFunc(std::string(func), std::string(params)));
+    return str2charp(((NGenXX::JsBridge *)(((NGenXXHandle *)sdk)->qjs))->callFunc(std::string(func), std::string(params)));
 }
 
 #pragma mark JS Module Register

@@ -21,15 +21,18 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
         js_std_dump_error(this->context);
         res = false;
     }
-    JSValue jGlobal = JS_GetGlobalObject(this->context);
-    if (JS_DefinePropertyValueStr(this->context, jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE) < 0)
+    else
     {
-        Log::print(Error, "JS_DefinePropertyValueStr failed");
-        js_std_dump_error(this->context);
-        res = false;
+        JSValue jGlobal = JS_GetGlobalObject(this->context);
+        if (JS_DefinePropertyValueStr(this->context, jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE) < 0)
+        {
+            Log::print(Error, "JS_DefinePropertyValueStr failed");
+            js_std_dump_error(this->context);
+            res = false;
+        }
+        JS_FreeValue(this->context, jGlobal);
+        JS_FreeValue(this->context, jFunc);
     }
-    JS_FreeValue(this->context, jGlobal);
-    JS_FreeValue(this->context, jFunc);
     return res;
 }
 
