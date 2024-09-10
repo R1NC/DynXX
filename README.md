@@ -6,19 +6,13 @@ A cross-platform C/C++ framework.
 
 ### Supported Platforms:
 
-| Platform        | Build              | Demo               |
-| :-------------- | :----------------: | :----------------: |
-| Android         | :heavy_check_mark: | :heavy_check_mark: |
-| iOS/macOS       | :heavy_check_mark: | :heavy_check_mark: |
-| HarmonyOS(NEXT) | :heavy_check_mark: | :heavy_check_mark: |
-| Windows         | :heavy_check_mark: | :heavy_check_mark: |
-| Linux           | :heavy_check_mark: | :heavy_check_mark: |
-| WebAssembly     | :heavy_check_mark: | :heavy_check_mark: |
-
-### Supported Script Languages
-
-- [x] Lua;
-- [ ] JavaScript;
+|  | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
+| :-- | :--: | :--: | :--: |:--: | :--: | :--: |:--: |
+| Network |✔️|✔️|✔️|✔️|✔️|✔️|  |
+| SQLite |  |✔️|  |  |  |  |  |
+|Key-Value Store|  |✔️|  |  |  |  |  |
+| Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
+| JS Runtime|  |  |  |  |  |  |  |
 
 ### Unsupported Features in WebAssembly:
 
