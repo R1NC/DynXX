@@ -13,6 +13,7 @@ A cross-platform C/C++ framework.
 |Key-Value Store|🛠️|✔️|⚒️|❓|‼️|❓|❓|
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
 | JS Runtime|🛠️|🛠️|🛠️|❓|❓|❓|❓|
+| JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
 
 - ❓: Unknown.
 - ‼️: With compile error.
