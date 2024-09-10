@@ -26,6 +26,8 @@
 		407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B3A2C897F48008A138C /* libsqlite3.tbd */; };
 		407D2B3F2C899337008A138C /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B3C2C899337008A138C /* query.sql */; };
 		407D2B402C899337008A138C /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B3D2C899337008A138C /* prepare_data.sql */; };
+		407D2B8B2C906B0C008A138C /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B8A2C906B0B008A138C /* biz.js */; };
+		407D2B8D2C906B5E008A138C /* quickjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B8C2C906B5E008A138C /* quickjs.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +72,8 @@
 		407D2B3A2C897F48008A138C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		407D2B3C2C899337008A138C /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
 		407D2B3D2C899337008A138C /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
+		407D2B8A2C906B0B008A138C /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../Android/app/src/main/assets/biz.js; sourceTree = "<group>"; };
+		407D2B8C2C906B5E008A138C /* quickjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = quickjs.a; path = ../../build.iOS/output/Release/quickjs.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				407D2B8D2C906B5E008A138C /* quickjs.a in Frameworks */,
 				25B6A2B92C8BE1AA00F6BBD2 /* mmkvcore.a in Frameworks */,
 				407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */,
 				253FF0482C778034006CD672 /* curl.a in Frameworks */,
@@ -95,6 +100,7 @@
 		40596B6F2C75AAD700AC552D = {
 			isa = PBXGroup;
 			children = (
+				407D2B8A2C906B0B008A138C /* biz.js */,
 				407D2B3D2C899337008A138C /* prepare_data.sql */,
 				407D2B3C2C899337008A138C /* query.sql */,
 				253FF04D2C778053006CD672 /* biz.lua */,
@@ -133,6 +139,7 @@
 		40596B982C75BC5A00AC552D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				407D2B8C2C906B5E008A138C /* quickjs.a */,
 				25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */,
 				407D2B3A2C897F48008A138C /* libsqlite3.tbd */,
 				253FF0442C778034006CD672 /* cjson.a */,
@@ -220,6 +227,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				407D2B8B2C906B0C008A138C /* biz.js in Resources */,
 				407D2B3F2C899337008A138C /* query.sql in Resources */,
 				407D2B402C899337008A138C /* prepare_data.sql in Resources */,
 				253FF04E2C778053006CD672 /* biz.lua in Resources */,

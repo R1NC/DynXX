@@ -48,6 +48,7 @@
     
     [self testDB];
     [self testKV];
+    [self testJS];
 }
 
 - (void)dealloc {
@@ -100,6 +101,14 @@
     NSLog(@"%lld", ngenxx_store_kv_read_integer(_kv_conn, "i"));
     ngenxx_store_kv_write_float(_kv_conn, "f", 3.1415926535);
     NSLog(@"%f", ngenxx_store_kv_read_float(_kv_conn, "f"));
+}
+
+- (void)testJS {
+    NSString *jsPath = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
+    if (ngenxx_J_loadF(_sdk, NSString2CharP(jsPath))) {
+        const char * res = ngenxx_J_call(_sdk, "jHttpReq", "https://rinc.xyz");
+        NSLog(@"rsp from js: %s", res);
+    }
 }
 
 @end
