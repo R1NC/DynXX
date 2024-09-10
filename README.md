@@ -8,17 +8,18 @@ A cross-platform C/C++ framework.
 
 |  | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
 | :-- | :--: | :--: | :--: |:--: | :--: | :--: |:--: |
-| Network |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
-| SQLite |⚒️|✔️|🛠️|❓|✔️|❓|❓|
-|Key-Value Store|🛠️|✔️|⚒️|❓|‼️|❓|❓|
+| Network |✔️|✔️|✔️|✔️|✔️|✔️|⁉️|
+| SQLite |⚒️|✔️|🛠️|❔|✔️|❔|❔|
+|Key-Value Store|🛠️|✔️|⚒️|❔|❗|❔|❔|
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime|🛠️|🛠️|🛠️|❓|❓|❓|❓|
+| JS Runtime|🛠️|🛠️|🛠️|❔|❔|❔|❔|
 | JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
 
-- ❓: Unknown.
-- ‼️: With compile error.
-- 🛠️: Under developing.
-- ✔️: Running well.
+- ❔ : Unknown.
+- ❗ : With compiling error.
+- 🛠️ : Under developing.
+- ⁉️ : With running error.
+- ✔️ : Running well.
 
 ### Unsupported Features in WebAssembly:
 
@@ -32,7 +33,7 @@ A cross-platform C/C++ framework.
 * CMake;
 * Xcode, for iOS & macOS;
 * Android Studio(or IntelliJ IDEA) with NDK;
-* DevEco Studio NEXT with Native SDK, for HarmonyOS;
+* DevEco Studio with Native SDK, for HarmonyOS;
 * [Emscripten][1], for WebAssembly;
 
 [1]: https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install
