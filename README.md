@@ -8,11 +8,16 @@ A cross-platform C/C++ framework.
 
 |  | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
 | :-- | :--: | :--: | :--: |:--: | :--: | :--: |:--: |
-| Network |✔️|✔️|✔️|✔️|✔️|✔️|  |
-| SQLite |  |✔️|  |  |✔️|  |  |
-|Key-Value Store|  |✔️|  |  |  |  |  |
+| Network |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
+| SQLite |⚒️|✔️|🛠️|❓|✔️|❓|❓|
+|Key-Value Store|🛠️|✔️|⚒️|❓|‼️|❓|❓|
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime|  |  |  |  |  |  |  |
+| JS Runtime|🛠️|🛠️|🛠️|❓|❓|❓|❓|
+
+- ❓: Unknown.
+- ‼️: With compile error.
+- 🛠️: Under developing.
+- ✔️: Running well.
 
 ### Unsupported Features in WebAssembly:
 
