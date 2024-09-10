@@ -16,12 +16,18 @@ namespace NGenXX
         JSContext *context;
 
     public:
+        /**
+         * Create JS VM
+         */
         JsBridge();
 
         /**
-         *
+         * @brief Export C func for JS
+         * @param funcJ func name
+         * @param funcC func implemention
+         * @return success or not
          */
-        bool addModule(const std::string &module, JSModuleInitFunc *callback, const JSCFunctionListEntry* funcList);
+        bool bindFunc(const std::string &funcJ, JSCFunction *funcC);
 
         /**
          * @brief Load JS file
@@ -31,12 +37,14 @@ namespace NGenXX
         bool loadFile(const std::string &file);
 
         /**
-         *
+         * @brief call JS func
+         * @param func func name
+         * @param params parameters(json)
          */
         std::string callFunc(const std::string &func, const std::string &params);
 
         /**
-         *
+         * Relase JS VM
          */
         ~JsBridge();
     };

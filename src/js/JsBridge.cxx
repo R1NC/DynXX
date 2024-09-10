@@ -11,18 +11,46 @@ NGenXX::JsBridge::JsBridge()
     this->context = JS_NewContext(this->runtime);
 }
 
+bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
+{
+    bool res = true;
+    JSValue jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
+    if (JS_IsException(jFunc))
+    {
+        Log::print(Error, "JS_NewCFunction failed");
+        js_std_dump_error(this->context);
+        res = false;
+    }
+    JSValue jGlobal = JS_GetGlobalObject(this->context);
+    if (JS_DefinePropertyValueStr(this->context, jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE) < 0)
+    {
+        Log::print(Error, "JS_DefinePropertyValueStr failed");
+        js_std_dump_error(this->context);
+        res = false;
+    }
+    JS_FreeValue(this->context, jGlobal);
+    JS_FreeValue(this->context, jFunc);
+    return res;
+}
+
 bool NGenXX::JsBridge::loadFile(const std::string &file)
 {
+    bool res = true;
     std::ifstream ifs(file.c_str());
     std::stringstream ss;
     ss << ifs.rdbuf();
     std::string script_text = ss.str();
 
-    JSValue res = JS_Eval(this->context, script_text.c_str(), script_text.length(), file.c_str(), JS_EVAL_TYPE_GLOBAL);
-    bool success = !JS_IsException(res);
+    JSValue jRes = JS_Eval(this->context, script_text.c_str(), script_text.length(), file.c_str(), JS_EVAL_TYPE_GLOBAL);
+    if (JS_IsException(jRes))
+    {
+        Log::print(Error, "JS_Eval failed");
+        js_std_dump_error(this->context);
+        res = false;
+    }
 
-    JS_FreeValue(this->context, res);
-    return success;
+    JS_FreeValue(this->context, jRes);
+    return res;
 }
 
 std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params)
@@ -36,15 +64,15 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         JSValue jParams = JS_NewString(this->context, params.c_str());
         JSValue argv[] = {jParams};
 
-        JSValue jRes = JS_Call(this->context, jFunc, JS_UNDEFINED, sizeof(argv), argv);
-        if (!JS_IsException(jRes))
-        {
-            s = std::string(JS_ToCString(this->context, jRes));
-        }
-        else
+        JSValue jRes = JS_Call(this->context, jFunc, jGlobal, sizeof(argv), argv);
+        if (JS_IsException(jRes))
         {
             Log::print(Error, "JS_Call failed");
             js_std_dump_error(this->context);
+        }
+        else
+        {
+            s = std::string(JS_ToCString(this->context, jRes));
         }
         JS_FreeValue(this->context, jRes);
         JS_FreeValue(this->context, jParams);
@@ -64,18 +92,4 @@ NGenXX::JsBridge::~JsBridge()
 {
     JS_FreeContext(this->context);
     JS_FreeRuntime(this->runtime);
-}
-
-static const int _ngenxx_js_func_count(const JSCFunctionListEntry *ngenxx_js_func_list)
-{
-    return sizeof(ngenxx_js_func_list) / sizeof((ngenxx_js_func_list)[0]);
-}
-
-bool NGenXX::JsBridge::addModule(const std::string &module, JSModuleInitFunc *callback, const JSCFunctionListEntry *funcList)
-{
-    JSModuleDef *m;
-    m = JS_NewCModule(this->context, module.c_str(), callback);
-    if (!m)
-        return false;
-    JS_AddModuleExportList(this->context, m, funcList, _ngenxx_js_func_count(funcList));
 }

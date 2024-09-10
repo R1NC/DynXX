@@ -9,11 +9,15 @@
 #include "../external/quickjs/quickjs.h"
 #include "js/JsBridge.hxx"
 
+void registerJsModule(NGenXXHandle *handle);
+#define BIND_JS_FUNC(h, f) ((NGenXX::JsBridge *)(handle->qjs))->bindFunc(#f, f);
+
 void _ngenxx_js_init(NGenXXHandle *handle)
 {
     if (handle == NULL)
         return;
     handle->qjs = new NGenXX::JsBridge();
+    registerJsModule(handle);
 }
 
 void _ngenxx_js_release(NGenXXHandle *handle)
@@ -25,8 +29,7 @@ void _ngenxx_js_release(NGenXXHandle *handle)
 
 #pragma mark Net.Http
 
-static JSValue ngenxx_net_http_requestJ(JSContext *ctx, JSValueConst this_val,
-                                        int argc, JSValueConst *argv)
+JSValue ngenxx_net_http_requestJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv)
 {
     const char *url = JS_ToCString(ctx, argv[0]);
     if (url == NULL)
@@ -57,21 +60,7 @@ const char *ngenxx_J_call(void *sdk, const char *func, const char *params)
 
 #pragma mark JS Module Register
 
-static const JSCFunctionListEntry _ngenxx_js_func_list[] = {
-    JS_CFUNC_DEF("ngenxx_net_http_requestJ", 1, ngenxx_net_http_requestJ),
-};
-
-static const int _ngenxx_js_func_count(const JSCFunctionListEntry *ngenxx_js_func_list)
-{
-    return sizeof(ngenxx_js_func_list) / sizeof((ngenxx_js_func_list)[0]);
-}
-
-static int _ngenxx_js_module_init(JSContext *ctx, JSModuleDef *m)
-{
-    return JS_SetModuleExportList(ctx, m, _ngenxx_js_func_list, _ngenxx_js_func_count(_ngenxx_js_func_list));
-}
-
 void registerJsModule(NGenXXHandle *handle)
 {
-    ((NGenXX::JsBridge *)(handle->qjs))->addModule("NGenXX", _ngenxx_js_module_init, _ngenxx_js_func_list);
+    BIND_JS_FUNC(handle, ngenxx_net_http_requestJ);
 }
