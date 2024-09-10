@@ -1,4 +1,9 @@
 #include "JsBridge.hxx"
+#include <fstream>
+#include <sstream>
+#include <streambuf>
+#include "../../include/NGenXXLog.h"
+#include "../log/Log.hxx"
 
 NGenXX::JsBridge::JsBridge()
 {
@@ -8,16 +13,51 @@ NGenXX::JsBridge::JsBridge()
 
 bool NGenXX::JsBridge::loadFile(const std::string &file)
 {
-    js_load_file(this->context, 0, file.c_str());
+    std::ifstream ifs(file.c_str());
+    std::stringstream ss;
+    ss << ifs.rdbuf();
+    std::string script_text = ss.str();
+
+    JSValue res = JS_Eval(this->context, script_text.c_str(), script_text.length(), file.c_str(), JS_EVAL_TYPE_GLOBAL);
+    bool success = !JS_IsException(res);
+
+    JS_FreeValue(this->context, res);
+    return success;
 }
 
 std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params)
 {
-    JSValue jFunc = JS_NewString(this->context, func.c_str());
-    JSValue jParams = JS_NewString(this->context, func.c_str());
-    JSValue global = JS_GetGlobalObject(this->context);
-    JSValue argv[] = {jParams};
-    JS_Call(this->context, jFunc, global, sizeof(argv), argv);
+    std::string s;
+
+    JSValue jGlobal = JS_GetGlobalObject(this->context);
+    JSValue jFunc = JS_GetPropertyStr(this->context, jGlobal, func.c_str());
+    if (JS_IsFunction(this->context, jFunc))
+    {
+        JSValue jParams = JS_NewString(this->context, params.c_str());
+        JSValue argv[] = {jParams};
+
+        JSValue jRes = JS_Call(this->context, jFunc, JS_UNDEFINED, sizeof(argv), argv);
+        if (!JS_IsException(jRes))
+        {
+            s = std::string(JS_ToCString(this->context, jRes));
+        }
+        else
+        {
+            Log::print(Error, "JS_Call failed");
+            js_std_dump_error(this->context);
+        }
+        JS_FreeValue(this->context, jRes);
+        JS_FreeValue(this->context, jParams);
+    }
+    else
+    {
+        Log::print(Error, ("Can not find JS func:" + func).c_str());
+    }
+
+    JS_FreeValue(this->context, jFunc);
+    JS_FreeValue(this->context, jGlobal);
+
+    return s;
 }
 
 NGenXX::JsBridge::~JsBridge()
