@@ -4,7 +4,7 @@ A cross-platform C/C++ framework.
 
 ![Arch](/res/arch.png)
 
-### Supported Platforms:
+### Progress:
 
 | | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
 | :-- | :--: | :--: | :--: |:--: | :--: | :--: |:--: |
