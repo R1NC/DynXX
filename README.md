@@ -23,18 +23,18 @@ A cross-platform C/C++ framework.
 
 ### Unsupported Features in WebAssembly:
 
-* Load Lua script with file;(Will trigger a prompt window.)
-* [C/C++ callback JS function in async thread][2];
+- Load Lua script with file;(Will trigger a prompt window.)
+- [C/C++ callback JS function in async thread][2];
 
 ### Requirements:
 
-* C99, C++17;
-* Clang;
-* CMake;
-* Xcode, for iOS & macOS;
-* Android Studio(or IntelliJ IDEA) with NDK;
-* DevEco Studio with Native SDK, for HarmonyOS;
-* [Emscripten][1], for WebAssembly;
+- C99, C++17;
+- Clang;
+- CMake;
+- Xcode, for iOS & macOS;
+- Android Studio(or IntelliJ IDEA) with NDK;
+- DevEco Studio with Native SDK, for HarmonyOS;
+- [Emscripten][1], for WebAssembly;
 
 [1]: https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install
 [2]: https://github.com/emscripten-core/emscripten/issues/16567
