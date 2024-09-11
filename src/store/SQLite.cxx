@@ -1,6 +1,7 @@
 #include "SQLite.hxx"
 #include "../../include/NGenXXLog.h"
 #include "../log/Log.hxx"
+#include <string.h>
 
 #define PRINT_ERR(rc, db) NGenXX::Log::print(Error, db ? sqlite3_errmsg(db) : sqlite3_errstr(rc))
 

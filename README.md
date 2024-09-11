@@ -4,21 +4,22 @@ A cross-platform C/C++ framework.
 
 ![Arch](/res/arch.png)
 
-### Supported Platforms:
+### Progress:
 
-| Platform        | Build              | Demo               |
-| :-------------- | :----------------: | :----------------: |
-| Android         | :heavy_check_mark: | :heavy_check_mark: |
-| iOS/macOS       | :heavy_check_mark: | :heavy_check_mark: |
-| HarmonyOS(NEXT) | :heavy_check_mark: | :heavy_check_mark: |
-| Windows         | :heavy_check_mark: | :heavy_check_mark: |
-| Linux           | :heavy_check_mark: | :heavy_check_mark: |
-| WebAssembly     | :heavy_check_mark: | :heavy_check_mark: |
+| | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
+| :-- | :--: | :--: | :--: |:--: | :--: | :--: |:--: |
+| Network |✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
+| SQLite |🛠️|✔️|🛠️|🛠️|✔️|🛠️|🛠️|
+|Key-Value Store|🛠️|✔️|🛠️|🛠️|❌|🛠️|🛠️|
+| Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
+| JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|
+| JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
 
-### Supported Script Languages
-
-- [x] Lua;
-- [ ] JavaScript;
+- ❔ : Unknown.
+- ❌ : With compiling error.
+- 🛠️ : Under developing.
+- ⚠️ : With running error.
+- ✔️ : Running well.
 
 ### Unsupported Features in WebAssembly:
 
@@ -27,12 +28,12 @@ A cross-platform C/C++ framework.
 
 ### Requirements:
 
-* C99, C++11;
+* C99, C++17;
 * Clang;
 * CMake;
 * Xcode, for iOS & macOS;
 * Android Studio(or IntelliJ IDEA) with NDK;
-* DevEco Studio NEXT with Native SDK, for HarmonyOS;
+* DevEco Studio with Native SDK, for HarmonyOS;
 * [Emscripten][1], for WebAssembly;
 
 [1]: https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install
