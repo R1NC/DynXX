@@ -11,6 +11,7 @@ cd ${BUILD_DIR}
 function build4macos {
     PLATFORM=$1
     BUILD_TYPE=$2
+    ARCHS=$3
 
     #Generate xcode project for debug
     GEN_XCODE_PROJ=""
@@ -36,7 +37,8 @@ then
     LIB_TYPE="Debug"
 fi
 
-build4macos MAC_UNIVERSAL $LIB_TYPE
+build4macos MAC_UNIVERSAL $LIB_TYPE arm64
+#build4macos MAC_UNIVERSAL $LIB_TYPE x86_64
 
 #Copy libs
 LIB_OUTPUT_DIR=output/${LIB_TYPE}

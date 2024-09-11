@@ -20,6 +20,12 @@ project(NGenXX)
 
 set(ENGINE_FILES
     ../src/log/Log.cxx
+    ../src/device/DeviceInfo-android.cxx
+    ../src/device/DeviceInfo-harmony.cxx
+    ../src/device/DeviceInfo-ios.mm
+    ../src/device/DeviceInfo-mac.mm
+    ../src/device/DeviceInfo-wasm.cxx
+    ../src/device/DeviceInfo-windows.cxx
     ../src/net/HttpClient.cxx
     ../src/store/SQLite.cxx
     ../src/store/KV.cxx

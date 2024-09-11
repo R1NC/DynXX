@@ -3,7 +3,7 @@
 #include "../log/Log.hxx"
 #include <string.h>
 
-#define PRINT_ERR(rc, db) NGenXX::Log::print(Error, db ? sqlite3_errmsg(db) : sqlite3_errstr(rc))
+#define PRINT_ERR(rc, db) NGenXX::Log::print(NGenXXLogLevelError, db ? sqlite3_errmsg(db) : sqlite3_errstr(rc))
 
 NGenXX::Store::SQLite::SQLite()
 {

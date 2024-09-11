@@ -44,6 +44,36 @@ int ngenxx_get_versionL(lua_State *L)
     return LUA_OK;
 }
 
+#pragma mark Device.DeviceInfo
+
+int ngenxx_device_typeL(lua_State *L)
+{
+    int res = ngenxx_device_type();
+    lua_pushinteger(L, res);
+    return LUA_OK;
+}
+
+int ngenxx_device_nameL(lua_State *L)
+{
+    const char *res = ngenxx_device_name();
+    lua_pushstring(L, res);
+    return LUA_OK;
+}
+
+int ngenxx_device_os_versionL(lua_State *L)
+{
+    const char *res = ngenxx_device_os_version();
+    lua_pushstring(L, res);
+    return LUA_OK;
+}
+
+int ngenxx_device_cpu_archL(lua_State *L)
+{
+    int res = ngenxx_device_cpu_arch();
+    lua_pushinteger(L, res);
+    return LUA_OK;
+}
+
 #pragma mark Log
 
 int ngenxx_log_printL(lua_State *L)
@@ -393,6 +423,11 @@ void _ngenxx_export_funcs_for_lua(NGenXXHandle *handle)
     BIND_LUA_FUNC(handle, ngenxx_get_versionL);
 
     BIND_LUA_FUNC(handle, ngenxx_log_printL);
+
+    BIND_LUA_FUNC(handle, ngenxx_device_typeL);
+    BIND_LUA_FUNC(handle, ngenxx_device_nameL);
+    BIND_LUA_FUNC(handle, ngenxx_device_os_versionL);
+    BIND_LUA_FUNC(handle, ngenxx_device_cpu_archL);
 
     BIND_LUA_FUNC(handle, ngenxx_net_http_requestL);
 

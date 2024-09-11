@@ -43,7 +43,7 @@ namespace NGenXX
                 CURL *curl = curl_easy_init();
                 if (curl)
                 {
-                    Log::print(Debug, ("HttpClient.request url: " + url + " params: " + params).c_str());
+                    Log::print(NGenXXLogLevelDebug, ("HttpClient.request url: " + url + " params: " + params).c_str());
 
                     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
                     curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, timeout);
@@ -69,7 +69,7 @@ namespace NGenXX
                     struct curl_slist *headerList = NULL;
                     for (auto it = headers.begin(); it != headers.end(); ++it)
                     {
-                        Log::print(Debug, ("HttpClient.request header: " + (*it)).c_str());
+                        Log::print(NGenXXLogLevelDebug, ("HttpClient.request header: " + (*it)).c_str());
                         headerList = curl_slist_append(headerList, (*it).c_str());
                     }
                     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
@@ -88,7 +88,7 @@ namespace NGenXX
                     CURLcode curlCode = curl_easy_perform(curl);
                     if (curlCode != CURLE_OK)
                     {
-                        Log::print(Error, ("HttpClient.request error:" + std::string(curl_easy_strerror(curlCode))).c_str());
+                        Log::print(NGenXXLogLevelError, ("HttpClient.request error:" + std::string(curl_easy_strerror(curlCode))).c_str());
                     }
 
                     curl_easy_cleanup(curl);
