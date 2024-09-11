@@ -6,14 +6,14 @@ A cross-platform C/C++ framework.
 
 ### Progress:
 
-| | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
-| :-- | :--: | :--: | :--: |:--: | :--: | :--: |:--: |
-| Network |✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
-| SQLite |🛠️|✔️|🛠️|🛠️|✔️|🛠️|🛠️|
-|Key-Value Store|🛠️|✔️|🛠️|🛠️|❌|🛠️|🛠️|
-| Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|
-| JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
+| | Android | iOS | HarmonyOS(NEXT)  | Windows | macOS(x86) | macOS(arm64) | Linux | WebAssembly |
+| :-- | :--: | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
+| Network |✔️|✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
+| SQLite |🛠️|✔️|🛠️|🛠️|✔️|✔️|🛠️|🛠️|
+|Key-Value Store|🛠️|✔️|🛠️|🛠️|✔️|❌|🛠️|🛠️|
+| Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|✔️|
+| JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|🛠️|
+| JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
 
 - ❔ : Unknown.
 - ❌ : With compiling error.
