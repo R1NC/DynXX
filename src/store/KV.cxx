@@ -18,6 +18,7 @@ NGenXX::Store::KV::~KV()
 NGenXX::Store::KV::Connection::Connection(const std::string &_id)
 {
     this->kv = MMKV::mmkvWithID(_id, MMKV_MULTI_PROCESS);
+    this->kv->setLogLevel(MMKVLogNone);
 }
 
 const std::string NGenXX::Store::KV::Connection::readString(const std::string &k)

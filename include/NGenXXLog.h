@@ -8,7 +8,8 @@ enum NGenXXLogLevel {
     Info,
     Debug,
     Warn,
-    Error
+    Error,
+    None
 };
 
 /**
