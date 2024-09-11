@@ -6,7 +6,7 @@ A cross-platform C/C++ framework.
 
 ### Progress:
 
-| | Android | iOS | HarmonyOS(NEXT)  | Windows | macOS(x86) | macOS(arm64) | Linux | WebAssembly |
+| | Android | iOS | HarmonyOS  | Windows | Mac(Intel) | Mac(ARM) | Linux | WASM |
 | :-- | :--: | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
 | Network |✔️|✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
 | SQLite |🛠️|✔️|🛠️|🛠️|✔️|✔️|🛠️|🛠️|
