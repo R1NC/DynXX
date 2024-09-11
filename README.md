@@ -10,13 +10,14 @@ A cross-platform C/C++ framework.
 | :-- | :--: | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
 | Network |✔️|✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
 | SQLite |🛠️|✔️|🛠️|🛠️|✔️|✔️|🛠️|🛠️|
-|Key-Value Store|🛠️|✔️|🛠️|🛠️|✔️|❌|🛠️|🛠️|
+|Key-Value Store|🛠️|✔️|🛠️|🛠️|✔️|✔️|🛠️|🛠️|
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|✔️|
 | JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|🛠️|
 | JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
-| Device Info |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
+| Device Info |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|❔|
 
 - ❔ : Unknown.
+- ⭕ : Not supported.
 - ❌ : With compiling error.
 - 🛠️ : Under developing.
 - ⚠️ : With running error.

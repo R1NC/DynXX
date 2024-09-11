@@ -19,7 +19,7 @@ extern "C"
         const char *luaErrMsg = lua_tostring(L, -1);                                   \
         if (luaErrMsg != NULL)                                                         \
         {                                                                              \
-            Log::print(Error, (std::string(prefix) + std::string(luaErrMsg)).c_str()); \
+            Log::print(NGenXXLogLevelError, (std::string(prefix) + std::string(luaErrMsg)).c_str()); \
         }                                                                              \
     } while (0);
 
@@ -38,7 +38,7 @@ namespace NGenXX
         {
             if (lstate == NULL)
             {
-                Log::print(Error, "LuaBridge.destroy: lstate is NULL");
+                Log::print(NGenXXLogLevelError, "LuaBridge.destroy: lstate is NULL");
                 return;
             }
             lua_close(lstate);
@@ -48,7 +48,7 @@ namespace NGenXX
         {
             if (lstate == NULL)
             {
-                Log::print(Error, "LuaBridge.bindFunc: lstate is NULL");
+                Log::print(NGenXXLogLevelError, "LuaBridge.bindFunc: lstate is NULL");
                 return;
             }
             lua_pushcfunction(lstate, funcPointer);
@@ -60,12 +60,12 @@ namespace NGenXX
         {
             if (lstate == NULL)
             {
-                Log::print(Error, "LuaBridge.loadFile: lstate is NULL");
+                Log::print(NGenXXLogLevelError, "LuaBridge.loadFile: lstate is NULL");
                 return LUA_ERRERR;
             }
             if (file == NULL)
             {
-                Log::print(Error, "LuaBridge.loadFile: file is NULL");
+                Log::print(NGenXXLogLevelError, "LuaBridge.loadFile: file is NULL");
                 return LUA_ERRERR;
             }
             int ret = luaL_dofile(lstate, file);
@@ -81,12 +81,12 @@ namespace NGenXX
         {
             if (lstate == NULL)
             {
-                Log::print(Error, "LuaBridge.loadScript: lstate is NULL");
+                Log::print(NGenXXLogLevelError, "LuaBridge.loadScript: lstate is NULL");
                 return LUA_ERRERR;
             }
             if (script == NULL)
             {
-                Log::print(Error, "LuaBridge.loadScript: script is NULL");
+                Log::print(NGenXXLogLevelError, "LuaBridge.loadScript: script is NULL");
                 return LUA_ERRERR;
             }
             int ret = luaL_dostring(lstate, script);
@@ -101,12 +101,12 @@ namespace NGenXX
         {
             if (lstate == NULL)
             {
-                Log::print(Error, "LuaBridge.callFunc: lstate is NULL");
+                Log::print(NGenXXLogLevelError, "LuaBridge.callFunc: lstate is NULL");
                 return NULL;
             }
             if (func == NULL)
             {
-                Log::print(Error, "LuaBridge.callFunc: func is NULL");
+                Log::print(NGenXXLogLevelError, "LuaBridge.callFunc: func is NULL");
                 return NULL;
             }
             lua_getglobal(lstate, func);
