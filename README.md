@@ -12,7 +12,7 @@ A cross-platform C/C++ framework.
 | SQLite |🛠️|✔️|🛠️|🛠️|✔️|🛠️|🛠️|
 |Key-Value Store|🛠️|✔️|🛠️|🛠️|❌|🛠️|🛠️|
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime|🛠️|🛠️|🛠️|❔|🛠️|❔|🛠️|
+| JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|
 | JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
 
 - ❔ : Unknown.
