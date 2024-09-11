@@ -5,11 +5,11 @@
  * 
  */
 enum NGenXXLogLevel {
-    Info,
-    Debug,
-    Warn,
-    Error,
-    None
+    NGenXXLogLevelInfo,
+    NGenXXLogLevelDebug,
+    NGenXXLogLevelWarn,
+    NGenXXLogLevelError,
+    NGenXXLogLevelNone
 };
 
 /**

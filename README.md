@@ -14,6 +14,7 @@ A cross-platform C/C++ framework.
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|✔️|
 | JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|🛠️|
 | JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
+| Device Info |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
 
 - ❔ : Unknown.
 - ❌ : With compiling error.

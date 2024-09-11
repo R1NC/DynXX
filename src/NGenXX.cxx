@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "log/Log.hxx"
+#include "device/DeviceInfo.hxx"
 #include "net/HttpClient.hxx"
 #include "store/SQLite.hxx"
 #include "store/KV.hxx"
@@ -58,6 +59,28 @@ void ngenxx_release(void *sdk)
     _ngenxx_lua_release(h);
 #endif
     free(sdk);
+}
+
+#pragma mark Device.DeviceInfo
+
+int ngenxx_device_type()
+{
+    return NGenXX::Device::DeviceInfo::deviceType();
+}
+
+const char *ngenxx_device_name()
+{
+    return str2charp(NGenXX::Device::DeviceInfo::deviceName());
+}
+
+const char *ngenxx_device_os_version()
+{
+    return str2charp(NGenXX::Device::DeviceInfo::osVersion());
+}
+
+int ngenxx_device_cpu_arch()
+{
+    return NGenXX::Device::DeviceInfo::cpuArch();
 }
 
 #pragma mark Log
