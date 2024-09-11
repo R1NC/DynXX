@@ -6,21 +6,21 @@ A cross-platform C/C++ framework.
 
 ### Progress:
 
-| | Android | iOS | HarmonyOS  | Windows | Mac(Intel) | Mac(ARM) | Linux | WASM |
-| :-- | :--: | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
-| Network |✔️|✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
-| SQLite |🛠️|✔️|🛠️|🛠️|✔️|✔️|🛠️|🛠️|
-|Key-Value Store|🛠️|✔️|🛠️|🛠️|✔️|✔️|🛠️|🛠️|
-| Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|🛠️|
-| JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
-| Device Info |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|❔|
+| | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
+| :-- | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
+| Network |✔️|✔️|✔️|✔️|✔️|✔️|⁉️|
+| SQLite |🛠️|✔️|🛠️|🛠️|✔️|🛠️|🛠️|
+|Key-Value Store|🛠️|✔️|🛠️|🛠️|✔️|🛠️|🛠️|
+| Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
+| JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|
+| JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
+| Device Info |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|❔|
 
 - ❔ : Unknown.
 - ⭕ : Not supported.
 - ❌ : With compiling error.
 - 🛠️ : Under developing.
-- ⚠️ : With running error.
+- ⁉️ : With running error.
 - ✔️ : Running well.
 
 ### Unsupported Features in WebAssembly:
