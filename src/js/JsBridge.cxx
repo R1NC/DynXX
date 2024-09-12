@@ -17,7 +17,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
     JSValue jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
     if (JS_IsException(jFunc))
     {
-        Log::print(Error, "JS_NewCFunction failed");
+        Log::print(NGenXXLogLevelError, "JS_NewCFunction failed");
         js_std_dump_error(this->context);
         res = false;
     }
@@ -26,7 +26,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
         JSValue jGlobal = JS_GetGlobalObject(this->context);
         if (!JS_DefinePropertyValueStr(this->context, jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE))
         {
-            Log::print(Error, "JS_DefinePropertyValueStr failed");
+            Log::print(NGenXXLogLevelError, "JS_DefinePropertyValueStr failed");
             js_std_dump_error(this->context);
             res = false;
         }
@@ -47,7 +47,7 @@ bool NGenXX::JsBridge::loadFile(const std::string &file)
     JSValue jRes = JS_Eval(this->context, script_text.c_str(), script_text.length(), file.c_str(), JS_EVAL_TYPE_GLOBAL);
     if (JS_IsException(jRes))
     {
-        Log::print(Error, "JS_Eval failed");
+        Log::print(NGenXXLogLevelError, "JS_Eval failed");
         js_std_dump_error(this->context);
         res = false;
     }
@@ -70,7 +70,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         JSValue jRes = JS_Call(this->context, jFunc, jGlobal, sizeof(argv), argv);
         if (JS_IsException(jRes))
         {
-            Log::print(Error, "JS_Call failed");
+            Log::print(NGenXXLogLevelError, "JS_Call failed");
             js_std_dump_error(this->context);
         }
         else
@@ -82,7 +82,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     }
     else
     {
-        Log::print(Error, ("Can not find JS func:" + func).c_str());
+        Log::print(NGenXXLogLevelError, ("Can not find JS func:" + func).c_str());
     }
 
     JS_FreeValue(this->context, jFunc);

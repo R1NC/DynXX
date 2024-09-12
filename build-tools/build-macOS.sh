@@ -49,6 +49,7 @@ mv curl.output/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
 #mv openssl.output/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
 mv wolfssl.output/libwolfssl.a ${LIB_OUTPUT_DIR}/wolfssl.a
 mv lua.output/liblua.a ${LIB_OUTPUT_DIR}/lua.a
+mv quickjs.output/libquickjs.a ${LIB_OUTPUT_DIR}/quickjs.a
 mv cjson.output/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
 mv mmkv.output/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
 mv mmkv.output/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a

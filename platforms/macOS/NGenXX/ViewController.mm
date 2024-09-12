@@ -72,6 +72,13 @@
     }
 }
 
+- (void)testJS {
+    NSString *jsPath = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
+    if (ngenxx_J_loadF(_sdk, NSString2CharP(jsPath))) {
+        const char * res = ngenxx_J_call(_sdk, "jHttpReq", "https://rinc.xyz");
+        NSLog(@"rsp from js: %s", res);
+    }
+}
 
 - (void)setRepresentedObject:(id)representedObject {
     [super setRepresentedObject:representedObject];

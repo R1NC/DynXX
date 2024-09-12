@@ -24,6 +24,9 @@
 		407D2B4E2C8AC125008A138C /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B4B2C8AC125008A138C /* prepare_data.sql */; };
 		407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B502C8AC12C008A138C /* libsqlite3.tbd */; };
 		407D2B612C8F1C15008A138C /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B602C8F1C15008A138C /* biz.js */; };
+		407D2B912C92937A008A138C /* quickjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B902C92937A008A138C /* quickjs.a */; };
+		407D2B942C92939B008A138C /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B922C92939B008A138C /* mmkvcore.a */; };
+		407D2B952C92939B008A138C /* mmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B932C92939B008A138C /* mmkv.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +51,9 @@
 		407D2B4B2C8AC125008A138C /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
 		407D2B502C8AC12C008A138C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		407D2B602C8F1C15008A138C /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../Android/app/src/main/assets/biz.js; sourceTree = "<group>"; };
+		407D2B902C92937A008A138C /* quickjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = quickjs.a; path = ../../build.macOS/output/Release/quickjs.a; sourceTree = "<group>"; };
+		407D2B922C92939B008A138C /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.macOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
+		407D2B932C92939B008A138C /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../build.macOS/output/Release/mmkv.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +61,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				407D2B942C92939B008A138C /* mmkvcore.a in Frameworks */,
+				407D2B952C92939B008A138C /* mmkv.a in Frameworks */,
+				407D2B912C92937A008A138C /* quickjs.a in Frameworks */,
 				407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */,
 				256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */,
 				40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */,
@@ -108,6 +117,9 @@
 		40348F712C783F070039639C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				407D2B932C92939B008A138C /* mmkv.a */,
+				407D2B922C92939B008A138C /* mmkvcore.a */,
+				407D2B902C92937A008A138C /* quickjs.a */,
 				407D2B502C8AC12C008A138C /* libsqlite3.tbd */,
 				256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */,
 				40348F7C2C783F540039639C /* libz.1.tbd */,
