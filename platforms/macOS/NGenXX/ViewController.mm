@@ -43,7 +43,7 @@
 
     const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
     ngenxx_L_loadF(_sdk, cLuaPath);
-    static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":1, \"headers\":[\"Accept-Encoding: gzip, deflate\", \"Cache-Control: no-cache\"], \"timeout\":6666}";
+    static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_v\":1, \"timeout\":6666}";
     const char * cRsp = ngenxx_L_call(_sdk, "lNetHttpRequest", cParams);
     if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
 

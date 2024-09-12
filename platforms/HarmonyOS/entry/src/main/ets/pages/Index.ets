@@ -35,8 +35,9 @@ struct Index {
             //let rsp: number = ngenxxNapi.lCall(this.handle, "lNetHttpRequest", params);
             let rsp = ngenxxNapi.netHttpRequest("https://rinc.xyz",
               "p0=1&p1=2&p2=3",
+              0,
+              ["Cache-Control: no-cache"],
               1,
-              ["Accept-Encoding: gzip, deflate", "Cache-Control: no-cache"],
               5555
             )
 
