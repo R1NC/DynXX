@@ -12,6 +12,8 @@
 #define EXPORT_AUTO EXPORT
 #endif
 
+#include <string>
+
 typedef struct NGenXXHandle
 {
     void *sqlite;
