@@ -15,6 +15,8 @@ namespace NGenXX
 
             std::string deviceName();
 
+            std::string deviceManufacturer();
+
             std::string osVersion();
 
             int cpuArch();

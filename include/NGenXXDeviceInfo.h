@@ -43,6 +43,12 @@ int ngenxx_device_type();
 const char *ngenxx_device_name();
 
 /**
+ * @brief Read device manufacturer
+ * @return device manufacturer
+ */
+const char *ngenxx_device_manufacturer();
+
+/**
  * @brief Read OS version
  * @return OS VERSION
  */

@@ -21,6 +21,11 @@ std::string NGenXX::Device::DeviceInfo::deviceName()
     return std::string(systemInfo.machine);
 }
 
+std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
+{
+    return "Apple";
+}
+
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
     static dispatch_once_t get_system_version_once;
@@ -37,8 +42,10 @@ int NGenXX::Device::DeviceInfo::cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
     return NGenXXDeviceCpuArchARM_64;
-#endif
+#elif defined(__arm__)
     return NGenXXDeviceCpuArchARM;
+#endif
+    return NGenXXDeviceCpuArchUnknown;
 }
 
 #endif

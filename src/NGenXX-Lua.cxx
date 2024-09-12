@@ -60,6 +60,13 @@ int ngenxx_device_nameL(lua_State *L)
     return 1;
 }
 
+int ngenxx_device_manufacturerL(lua_State *L)
+{
+    const char *res = ngenxx_device_manufacturer();
+    lua_pushstring(L, res);
+    return 1;
+}
+
 int ngenxx_device_os_versionL(lua_State *L)
 {
     const char *res = ngenxx_device_os_version();
@@ -428,6 +435,7 @@ void _ngenxx_export_funcs_for_lua(NGenXXHandle *handle)
 
     BIND_LUA_FUNC(handle, ngenxx_device_typeL);
     BIND_LUA_FUNC(handle, ngenxx_device_nameL);
+    BIND_LUA_FUNC(handle, ngenxx_device_manufacturerL);
     BIND_LUA_FUNC(handle, ngenxx_device_os_versionL);
     BIND_LUA_FUNC(handle, ngenxx_device_cpu_archL);
 

@@ -19,6 +19,13 @@ std::string NGenXX::Device::DeviceInfo::deviceName()
     return std::string(model);
 }
 
+std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
+{
+    char manufacturer[PROP_VALUE_MAX];
+    __system_property_get("ro.product.manufacturer", manufacturer);
+    return std::string(manufacturer);
+}
+
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
     char osv[PROP_VALUE_MAX];

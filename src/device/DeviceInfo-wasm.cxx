@@ -13,6 +13,11 @@ std::string NGenXX::Device::DeviceInfo::deviceName()
     //TODO
 }
 
+std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
+{
+    //TODO
+}
+
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
     //TODO
