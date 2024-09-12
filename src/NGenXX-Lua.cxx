@@ -48,7 +48,7 @@ int ngenxx_get_versionL(lua_State *L)
 {
     const char *res = ngenxx_get_version();
     lua_pushstring(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 #pragma mark Device.DeviceInfo
@@ -57,28 +57,28 @@ int ngenxx_device_typeL(lua_State *L)
 {
     int res = ngenxx_device_type();
     lua_pushinteger(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_device_nameL(lua_State *L)
 {
     const char *res = ngenxx_device_name();
     lua_pushstring(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_device_os_versionL(lua_State *L)
 {
     const char *res = ngenxx_device_os_version();
     lua_pushstring(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_device_cpu_archL(lua_State *L)
 {
     int res = ngenxx_device_cpu_arch();
     lua_pushinteger(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 #pragma mark Log
@@ -94,7 +94,7 @@ int ngenxx_log_printL(lua_State *L)
     if (level == -1 || content == NULL)
         return LUA_ERRRUN;
     ngenxx_log_print(level, content);
-    return LUA_OK;
+    return 1;
 }
 
 #pragma mark Net.Http
@@ -103,21 +103,22 @@ int ngenxx_net_http_requestL(lua_State *L)
 {
     char *url = NULL, *params = NULL;
     int method = -1;
-    char **headers = NULL;
+    char **headers_v = NULL;
     int headers_c;
     long timeout;
     parse_lua_func_params(L, [&](cJSON *j) -> void {
         JSON_READ_STR(j, url);
         JSON_READ_STR(j, params);
         JSON_READ_NUM(j, method);
+        JSON_READ_NUM(j, headers_c);
         JSON_READ_NUM(j, timeout);
-        JSON_READ_STR_ARRAY(j, headers, headers_c, HTTP_HEADERS_MAX_COUNT, HTTP_HEADER_MAX_LENGTH);
+        JSON_READ_STR_ARRAY(j, headers_v, HTTP_HEADERS_MAX_COUNT, HTTP_HEADER_MAX_LENGTH);
     });
     if (method == -1 || url == NULL)
         return LUA_ERRRUN;
-    const char *res = ngenxx_net_http_request(url, params, method, headers, headers_c, timeout);
+    const char *res = ngenxx_net_http_request(url, params, method, headers_v, headers_c, timeout);
     lua_pushstring(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 #pragma mark Store.SQLite
@@ -134,7 +135,7 @@ int ngenxx_store_sqlite_openL(lua_State *L)
         return LUA_ERRRUN;
     void *db = ngenxx_store_sqlite_open((void *)sdk, file);
     lua_pushinteger(L, (long)db);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_sqlite_executeL(lua_State *L)
@@ -149,7 +150,7 @@ int ngenxx_store_sqlite_executeL(lua_State *L)
         return LUA_ERRRUN;
     bool res = ngenxx_store_sqlite_execute((void *)conn, sql);
     lua_pushboolean(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_sqlite_query_doL(lua_State *L)
@@ -164,7 +165,7 @@ int ngenxx_store_sqlite_query_doL(lua_State *L)
         return LUA_ERRRUN;
     void *res = ngenxx_store_sqlite_query_do((void *)conn, sql);
     lua_pushinteger(L, (long)res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_sqlite_query_read_rowL(lua_State *L)
@@ -177,7 +178,7 @@ int ngenxx_store_sqlite_query_read_rowL(lua_State *L)
         return LUA_ERRRUN;
     bool res = ngenxx_store_sqlite_query_read_row((void *)query_result);
     lua_pushboolean(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_sqlite_query_read_column_textL(lua_State *L)
@@ -192,7 +193,7 @@ int ngenxx_store_sqlite_query_read_column_textL(lua_State *L)
         return LUA_ERRRUN;
     const char *res = ngenxx_store_sqlite_query_read_column_text((void *)query_result, column);
     lua_pushstring(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_sqlite_query_read_column_integerL(lua_State *L)
@@ -207,7 +208,7 @@ int ngenxx_store_sqlite_query_read_column_integerL(lua_State *L)
         return LUA_ERRRUN;
     long long res = ngenxx_store_sqlite_query_read_column_integer((void *)query_result, column);
     lua_pushinteger(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_sqlite_query_read_column_floatL(lua_State *L)
@@ -222,7 +223,7 @@ int ngenxx_store_sqlite_query_read_column_floatL(lua_State *L)
         return LUA_ERRRUN;
     double res = ngenxx_store_sqlite_query_read_column_float((void *)query_result, column);
     lua_pushnumber(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_sqlite_query_dropL(lua_State *L)
@@ -234,7 +235,7 @@ int ngenxx_store_sqlite_query_dropL(lua_State *L)
     if (query_result <= 0)
         return LUA_ERRRUN;
     ngenxx_store_sqlite_query_drop((void *)query_result);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_sqlite_closeL(lua_State *L)
@@ -246,7 +247,7 @@ int ngenxx_store_sqlite_closeL(lua_State *L)
     if (conn <= 0)
         return LUA_ERRRUN;
     ngenxx_store_sqlite_close((void *)conn);
-    return LUA_OK;
+    return 1;
 }
 
 #pragma mark Store.KV
@@ -263,7 +264,7 @@ int ngenxx_store_kv_openL(lua_State *L)
         return LUA_ERRRUN;
     void *res = ngenxx_store_kv_open((void *)sdk, _id);
     lua_pushinteger(L, (long)res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_kv_read_stringL(lua_State *L)
@@ -278,7 +279,7 @@ int ngenxx_store_kv_read_stringL(lua_State *L)
         return LUA_ERRRUN;
     const char *res = ngenxx_store_kv_read_string((void *)conn, k);
     lua_pushstring(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_kv_write_stringL(lua_State *L)
@@ -295,7 +296,7 @@ int ngenxx_store_kv_write_stringL(lua_State *L)
         return LUA_ERRRUN;
     bool res = ngenxx_store_kv_write_string((void *)conn, k, v);
     lua_pushboolean(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_kv_read_integerL(lua_State *L)
@@ -310,7 +311,7 @@ int ngenxx_store_kv_read_integerL(lua_State *L)
         return LUA_ERRRUN;
     long long res = ngenxx_store_kv_read_integer((void *)conn, k);
     lua_pushinteger(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_kv_write_integerL(lua_State *L)
@@ -327,7 +328,7 @@ int ngenxx_store_kv_write_integerL(lua_State *L)
         return LUA_ERRRUN;
     bool res = ngenxx_store_kv_write_integer((void *)conn, k, v);
     lua_pushboolean(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_kv_read_floatL(lua_State *L)
@@ -342,7 +343,7 @@ int ngenxx_store_kv_read_floatL(lua_State *L)
         return LUA_ERRRUN;
     double res = ngenxx_store_kv_read_float((void *)conn, k);
     lua_pushnumber(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_kv_write_floatL(lua_State *L)
@@ -359,7 +360,7 @@ int ngenxx_store_kv_write_floatL(lua_State *L)
         return LUA_ERRRUN;
     bool res = ngenxx_store_kv_write_float((void *)conn, k, v);
     lua_pushboolean(L, res);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_kv_containsL(lua_State *L)
@@ -373,7 +374,8 @@ int ngenxx_store_kv_containsL(lua_State *L)
     if (conn <= 0 || k == NULL)
         return LUA_ERRRUN;
     bool res = ngenxx_store_kv_contains((void *)conn, k);
-    return LUA_OK;
+    lua_pushboolean(L, res);
+    return 1;
 }
 
 int ngenxx_store_kv_clearL(lua_State *L)
@@ -385,7 +387,7 @@ int ngenxx_store_kv_clearL(lua_State *L)
     if (conn <= 0)
         return LUA_ERRRUN;
     ngenxx_store_kv_clear((void *)conn);
-    return LUA_OK;
+    return 1;
 }
 
 int ngenxx_store_kv_closeL(lua_State *L)
@@ -397,7 +399,7 @@ int ngenxx_store_kv_closeL(lua_State *L)
     if (conn <= 0)
         return LUA_ERRRUN;
     ngenxx_store_kv_close((void *)conn);
-    return LUA_OK;
+    return 1;
 }
 
 #pragma mark Lua

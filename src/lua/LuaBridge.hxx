@@ -1,9 +1,14 @@
 #ifndef NGENXX_LUA_BRIDGE_HXX_
 #define NGENXX_LUA_BRIDGE_HXX_
 
-#ifdef __cplusplus
-
+extern "C"
+{
 #include "../../../external/lua/lua.h"
+#include "../../../external/lua/lualib.h"
+#include "../../../external/lua/lauxlib.h"
+}
+
+#ifdef __cplusplus
 
 #include <string>
 
