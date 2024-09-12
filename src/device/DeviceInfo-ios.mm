@@ -42,8 +42,10 @@ int NGenXX::Device::DeviceInfo::cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
     return NGenXXDeviceCpuArchARM_64;
-#endif
+#elif defined(__arm__)
     return NGenXXDeviceCpuArchARM;
+#endif
+    return NGenXXDeviceCpuArchUnknown;
 }
 
 #endif
