@@ -73,6 +73,11 @@ const char *ngenxx_device_name()
     return str2charp(NGenXX::Device::DeviceInfo::deviceName());
 }
 
+const char *ngenxx_device_manufacturer()
+{
+    return str2charp(NGenXX::Device::DeviceInfo::deviceManufacturer());
+}
+
 const char *ngenxx_device_os_version()
 {
     return str2charp(NGenXX::Device::DeviceInfo::osVersion());

@@ -21,6 +21,11 @@ std::string NGenXX::Device::DeviceInfo::deviceName()
     return std::string(systemInfo.machine);
 }
 
+std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
+{
+    return "Apple";
+}
+
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
     static dispatch_once_t get_system_version_once;
