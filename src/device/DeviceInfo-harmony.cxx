@@ -11,6 +11,7 @@ int NGenXX::Device::DeviceInfo::deviceType()
 std::string NGenXX::Device::DeviceInfo::deviceName()
 {
     //TODO
+    return "";
 }
 
 std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
@@ -21,6 +22,7 @@ std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
     //TODO
+    return "";
 }
 
 int NGenXX::Device::DeviceInfo::cpuArch()

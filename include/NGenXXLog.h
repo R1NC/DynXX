@@ -1,6 +1,10 @@
 #ifndef NGENXX_LOG_LOG_H_
 #define NGENXX_LOG_LOG_H_
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 /**
  * 
  */
@@ -32,5 +36,9 @@ void ngenxx_log_set_callback(void (*callback)(int level, const char *log));
  * @param content Log content
  */
 void ngenxx_log_print(int level, const char *content);
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif // NGENXX_LOG_LOG_H_

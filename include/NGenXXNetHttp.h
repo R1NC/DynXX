@@ -1,6 +1,10 @@
 #ifndef NGENXX_NET_HTTP_H_
 #define NGENXX_NET_HTTP_H_
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 /**
  * HTTP method
  */
@@ -21,5 +25,9 @@ enum NGenXXNetHttpMethod
  * @return response
  */
 const char *ngenxx_net_http_request(const char *url, const char *params, int method, char **headers_v, int headers_c, long timeout);
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif // NGENXX_NET_HTTP_H_

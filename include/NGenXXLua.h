@@ -1,6 +1,10 @@
 #ifndef NGENXX_LUA_H_
 #define NGENXX_LUA_H_
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Load Lua file
  * @warning Not accessible in Lua! Not accessible in WebAssembly!(Will alert a prompt window.)
@@ -28,5 +32,9 @@ bool ngenxx_L_loadS(void *sdk, const char *script);
  * @return return value of Lua function
  */
 const char *ngenxx_L_call(void *sdk, const char *func, const char *params);
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif // NGENXX_LUA_H_

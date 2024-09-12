@@ -1,6 +1,10 @@
 #ifndef NGENXX_DEVICE_INFO_H_
 #define NGENXX_DEVICE_INFO_H_
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 /**
  * Device Type
  */
@@ -59,5 +63,9 @@ const char *ngenxx_device_os_version();
  * @return CPU arch
  */
 int ngenxx_device_cpu_arch();
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif // NGENXX_DEVICE_INFO_H_

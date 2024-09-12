@@ -33,7 +33,7 @@ void NGenXX::LuaBridge::destroy(lua_State *lstate)
     lua_close(lstate);
 }
 
-void NGenXX::LuaBridge::bindFunc(lua_State *lstate, const char *funcName, int (*funcPointer)(lua_State *))
+void NGenXX::LuaBridge::bindFunc(lua_State *lstate, const std::string &funcName, int (*funcPointer)(lua_State *))
 {
     if (lstate == NULL)
     {
@@ -41,23 +41,18 @@ void NGenXX::LuaBridge::bindFunc(lua_State *lstate, const char *funcName, int (*
         return;
     }
     lua_pushcfunction(lstate, funcPointer);
-    lua_setglobal(lstate, funcName);
+    lua_setglobal(lstate, funcName.c_str());
 }
 
 #ifndef __EMSCRIPTEN__
-int NGenXX::LuaBridge::loadFile(lua_State *lstate, const char *file)
+int NGenXX::LuaBridge::loadFile(lua_State *lstate, const std::string &file)
 {
     if (lstate == NULL)
     {
         Log::print(NGenXXLogLevelError, "LuaBridge.loadFile: lstate is NULL");
         return LUA_ERRERR;
     }
-    if (file == NULL)
-    {
-        Log::print(NGenXXLogLevelError, "LuaBridge.loadFile: file is NULL");
-        return LUA_ERRERR;
-    }
-    int ret = luaL_dofile(lstate, file);
+    int ret = luaL_dofile(lstate, file.c_str());
     if (ret != LUA_OK)
     {
         PRINT_L_ERROR(lstate, "`luaL_dofile` error:");
@@ -66,19 +61,14 @@ int NGenXX::LuaBridge::loadFile(lua_State *lstate, const char *file)
 }
 #endif
 
-int NGenXX::LuaBridge::loadScript(lua_State *lstate, const char *script)
+int NGenXX::LuaBridge::loadScript(lua_State *lstate, const std::string &script)
 {
     if (lstate == NULL)
     {
         Log::print(NGenXXLogLevelError, "LuaBridge.loadScript: lstate is NULL");
         return LUA_ERRERR;
     }
-    if (script == NULL)
-    {
-        Log::print(NGenXXLogLevelError, "LuaBridge.loadScript: script is NULL");
-        return LUA_ERRERR;
-    }
-    int ret = luaL_dostring(lstate, script);
+    int ret = luaL_dostring(lstate, script.c_str());
     if (ret != LUA_OK)
     {
         PRINT_L_ERROR(lstate, "`luaL_dostring` error:");
@@ -86,20 +76,15 @@ int NGenXX::LuaBridge::loadScript(lua_State *lstate, const char *script)
     return ret;
 }
 
-const char *NGenXX::LuaBridge::callFunc(lua_State *lstate, const char *func, const char *params)
+const std::string NGenXX::LuaBridge::callFunc(lua_State *lstate, const std::string &func, const std::string &params)
 {
     if (lstate == NULL)
     {
         Log::print(NGenXXLogLevelError, "LuaBridge.callFunc: lstate is NULL");
         return NULL;
     }
-    if (func == NULL)
-    {
-        Log::print(NGenXXLogLevelError, "LuaBridge.callFunc: func is NULL");
-        return NULL;
-    }
-    lua_getglobal(lstate, func);
-    lua_pushstring(lstate, params);
+    lua_getglobal(lstate, func.c_str());
+    lua_pushstring(lstate, params.c_str());
     int ret = lua_pcall(lstate, 1, 1, 0);
     if (ret != LUA_OK)
     {
@@ -108,15 +93,6 @@ const char *NGenXX::LuaBridge::callFunc(lua_State *lstate, const char *func, con
     }
     const char *res = lua_tostring(lstate, -1);
 
-    // Or memory issues will occur while Lua VM freed but the pointer is referenced outside.
-    char *cRes;
-    if (res != NULL)
-    {
-        cRes = (char *)malloc(strlen(res) + 1);
-        strcpy(cRes, res);
-        // free((void *)res);
-    }
-
     lua_pop(lstate, 1);
-    return cRes;
+    return std::string(res);
 }
