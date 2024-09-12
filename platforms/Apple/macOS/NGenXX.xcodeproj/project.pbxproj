@@ -12,17 +12,20 @@
 		40348F612C783CA80039639C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40348F602C783CA80039639C /* Assets.xcassets */; };
 		40348F642C783CA80039639C /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 40348F632C783CA80039639C /* Base */; };
 		40348F662C783CA80039639C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 40348F652C783CA80039639C /* main.m */; };
-		40348F6E2C783D1C0039639C /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40348F6D2C783D1C0039639C /* ViewController.mm */; };
-		40348F702C783D7B0039639C /* biz.lua in Resources */ = {isa = PBXBuildFile; fileRef = 40348F6F2C783D7B0039639C /* biz.lua */; };
-		40348F772C783F070039639C /* curl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F722C783F070039639C /* curl.a */; };
-		40348F782C783F070039639C /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F732C783F070039639C /* cjson.a */; };
-		40348F792C783F070039639C /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F742C783F070039639C /* lua.a */; };
-		40348F7A2C783F070039639C /* wolfssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F752C783F070039639C /* wolfssl.a */; };
-		40348F7B2C783F070039639C /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F762C783F070039639C /* NGenXX.a */; };
 		40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F7C2C783F540039639C /* libz.1.tbd */; };
-		407D2B4D2C8AC125008A138C /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B4A2C8AC125008A138C /* query.sql */; };
-		407D2B4E2C8AC125008A138C /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B4B2C8AC125008A138C /* prepare_data.sql */; };
 		407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B502C8AC12C008A138C /* libsqlite3.tbd */; };
+		407D2BB62C929CB4008A138C /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2BB32C929CB4008A138C /* query.sql */; };
+		407D2BB72C929CB4008A138C /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2BB42C929CB4008A138C /* prepare_data.sql */; };
+		407D2BB82C929CB4008A138C /* biz.lua in Resources */ = {isa = PBXBuildFile; fileRef = 407D2BB52C929CB4008A138C /* biz.lua */; };
+		407D2BBA2C929CC0008A138C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 407D2BB92C929CC0008A138C /* ViewController.m */; };
+		407D2BBD2C929CCF008A138C /* NGenXXApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 407D2BBC2C929CCF008A138C /* NGenXXApple.mm */; };
+		407D2BC52C929D00008A138C /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BBE2C929D00008A138C /* cjson.a */; };
+		407D2BC62C929D00008A138C /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BBF2C929D00008A138C /* mmkvcore.a */; };
+		407D2BC72C929D00008A138C /* curl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BC02C929D00008A138C /* curl.a */; };
+		407D2BC82C929D00008A138C /* mmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BC12C929D00008A138C /* mmkv.a */; };
+		407D2BC92C929D00008A138C /* wolfssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BC22C929D00008A138C /* wolfssl.a */; };
+		407D2BCA2C929D00008A138C /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BC32C929D00008A138C /* NGenXX.a */; };
+		407D2BCB2C929D00008A138C /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BC42C929D00008A138C /* lua.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,17 +38,26 @@
 		40348F632C783CA80039639C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		40348F652C783CA80039639C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		40348F672C783CA80039639C /* NGenXX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NGenXX.entitlements; sourceTree = "<group>"; };
-		40348F6D2C783D1C0039639C /* ViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
-		40348F6F2C783D7B0039639C /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../Android/app/src/main/assets/biz.lua; sourceTree = "<group>"; };
 		40348F722C783F070039639C /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../build.macOS/output/Release/curl.a; sourceTree = "<group>"; };
 		40348F732C783F070039639C /* cjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = cjson.a; path = ../../build.macOS/output/Release/cjson.a; sourceTree = "<group>"; };
 		40348F742C783F070039639C /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../build.macOS/output/Release/lua.a; sourceTree = "<group>"; };
 		40348F752C783F070039639C /* wolfssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = wolfssl.a; path = ../../build.macOS/output/Release/wolfssl.a; sourceTree = "<group>"; };
 		40348F762C783F070039639C /* NGenXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXX.a; path = ../../build.macOS/output/Release/NGenXX.a; sourceTree = "<group>"; };
 		40348F7C2C783F540039639C /* libz.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.tbd; path = usr/lib/libz.1.tbd; sourceTree = SDKROOT; };
-		407D2B4A2C8AC125008A138C /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
-		407D2B4B2C8AC125008A138C /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
 		407D2B502C8AC12C008A138C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		407D2BB32C929CB4008A138C /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
+		407D2BB42C929CB4008A138C /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
+		407D2BB52C929CB4008A138C /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../../Android/app/src/main/assets/biz.lua; sourceTree = "<group>"; };
+		407D2BB92C929CC0008A138C /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		407D2BBB2C929CCF008A138C /* NGenXXApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NGenXXApple.h; path = ../../common/NGenXXApple.h; sourceTree = "<group>"; };
+		407D2BBC2C929CCF008A138C /* NGenXXApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NGenXXApple.mm; path = ../../common/NGenXXApple.mm; sourceTree = "<group>"; };
+		407D2BBE2C929D00008A138C /* cjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = cjson.a; path = ../../../build.macOS/output/Release/cjson.a; sourceTree = "<group>"; };
+		407D2BBF2C929D00008A138C /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../../build.macOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
+		407D2BC02C929D00008A138C /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../../build.macOS/output/Release/curl.a; sourceTree = "<group>"; };
+		407D2BC12C929D00008A138C /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../../build.macOS/output/Release/mmkv.a; sourceTree = "<group>"; };
+		407D2BC22C929D00008A138C /* wolfssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = wolfssl.a; path = ../../../build.macOS/output/Release/wolfssl.a; sourceTree = "<group>"; };
+		407D2BC32C929D00008A138C /* NGenXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXX.a; path = ../../../build.macOS/output/Release/NGenXX.a; sourceTree = "<group>"; };
+		407D2BC42C929D00008A138C /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../../build.macOS/output/Release/lua.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,14 +65,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				407D2BC52C929D00008A138C /* cjson.a in Frameworks */,
+				407D2BC62C929D00008A138C /* mmkvcore.a in Frameworks */,
+				407D2BC72C929D00008A138C /* curl.a in Frameworks */,
+				407D2BC82C929D00008A138C /* mmkv.a in Frameworks */,
+				407D2BC92C929D00008A138C /* wolfssl.a in Frameworks */,
+				407D2BCA2C929D00008A138C /* NGenXX.a in Frameworks */,
+				407D2BCB2C929D00008A138C /* lua.a in Frameworks */,
 				407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */,
 				256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */,
 				40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */,
-				40348F772C783F070039639C /* curl.a in Frameworks */,
-				40348F782C783F070039639C /* cjson.a in Frameworks */,
-				40348F792C783F070039639C /* lua.a in Frameworks */,
-				40348F7A2C783F070039639C /* wolfssl.a in Frameworks */,
-				40348F7B2C783F070039639C /* NGenXX.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,9 +84,9 @@
 		40348F4E2C783CA70039639C = {
 			isa = PBXGroup;
 			children = (
-				407D2B4B2C8AC125008A138C /* prepare_data.sql */,
-				407D2B4A2C8AC125008A138C /* query.sql */,
-				40348F6F2C783D7B0039639C /* biz.lua */,
+				407D2BB52C929CB4008A138C /* biz.lua */,
+				407D2BB42C929CB4008A138C /* prepare_data.sql */,
+				407D2BB32C929CB4008A138C /* query.sql */,
 				40348F592C783CA70039639C /* NGenXX */,
 				40348F582C783CA70039639C /* Products */,
 				40348F712C783F070039639C /* Frameworks */,
@@ -90,10 +104,12 @@
 		40348F592C783CA70039639C /* NGenXX */ = {
 			isa = PBXGroup;
 			children = (
+				407D2BBB2C929CCF008A138C /* NGenXXApple.h */,
+				407D2BBC2C929CCF008A138C /* NGenXXApple.mm */,
 				40348F5A2C783CA70039639C /* AppDelegate.h */,
 				40348F5B2C783CA70039639C /* AppDelegate.m */,
 				40348F5D2C783CA70039639C /* ViewController.h */,
-				40348F6D2C783D1C0039639C /* ViewController.mm */,
+				407D2BB92C929CC0008A138C /* ViewController.m */,
 				40348F602C783CA80039639C /* Assets.xcassets */,
 				40348F622C783CA80039639C /* Main.storyboard */,
 				40348F652C783CA80039639C /* main.m */,
@@ -105,6 +121,13 @@
 		40348F712C783F070039639C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				407D2BBE2C929D00008A138C /* cjson.a */,
+				407D2BC02C929D00008A138C /* curl.a */,
+				407D2BC42C929D00008A138C /* lua.a */,
+				407D2BC12C929D00008A138C /* mmkv.a */,
+				407D2BBF2C929D00008A138C /* mmkvcore.a */,
+				407D2BC32C929D00008A138C /* NGenXX.a */,
+				407D2BC22C929D00008A138C /* wolfssl.a */,
 				407D2B502C8AC12C008A138C /* libsqlite3.tbd */,
 				256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */,
 				40348F7C2C783F540039639C /* libz.1.tbd */,
@@ -174,9 +197,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				407D2B4D2C8AC125008A138C /* query.sql in Resources */,
-				407D2B4E2C8AC125008A138C /* prepare_data.sql in Resources */,
-				40348F702C783D7B0039639C /* biz.lua in Resources */,
+				407D2BB62C929CB4008A138C /* query.sql in Resources */,
+				407D2BB72C929CB4008A138C /* prepare_data.sql in Resources */,
+				407D2BB82C929CB4008A138C /* biz.lua in Resources */,
 				40348F612C783CA80039639C /* Assets.xcassets in Resources */,
 				40348F642C783CA80039639C /* Base in Resources */,
 			);
@@ -189,9 +212,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				407D2BBD2C929CCF008A138C /* NGenXXApple.mm in Sources */,
+				407D2BBA2C929CC0008A138C /* ViewController.m in Sources */,
 				40348F662C783CA80039639C /* main.m in Sources */,
 				40348F5C2C783CA70039639C /* AppDelegate.m in Sources */,
-				40348F6E2C783D1C0039639C /* ViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,7 +360,7 @@
 				DEVELOPMENT_TEAM = 5TNCWX532Z;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = ../../build.macOS/output/include;
+				HEADER_SEARCH_PATHS = ../../../build.macOS/output/include;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -363,7 +387,7 @@
 				DEVELOPMENT_TEAM = 5TNCWX532Z;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = ../../build.macOS/output/include;
+				HEADER_SEARCH_PATHS = ../../../build.macOS/output/include;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
