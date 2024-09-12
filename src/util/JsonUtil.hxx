@@ -20,19 +20,19 @@
         }                                                                       \
     } while (0)
 
-#define JSON_READ_STR_ARRAY(j, v, c, vc, ic)                                   \
+#define JSON_READ_STR_ARRAY(j, v, vc, ic)                                      \
     do                                                                         \
     {                                                                          \
         if (j->string && strcmp(j->string, #v) == 0 && j->type == cJSON_Array) \
         {                                                                      \
             v = (char **)malloc(vc * sizeof(char *));                          \
             cJSON *vj = j->child;                                              \
-            c = 0;                                                             \
+            int i = 0;                                                             \
             while (vj)                                                         \
             {                                                                  \
-                v[c] = (char *)malloc(ic * sizeof(char));                      \
-                strcpy(v[c], vj->valuestring);                                 \
-                c++;                                                           \
+                v[i] = (char *)malloc(ic * sizeof(char));                      \
+                strcpy(v[i], vj->valuestring);                                 \
+                i++;                                                           \
                 vj = vj->next;                                                 \
             }                                                                  \
         }                                                                      \

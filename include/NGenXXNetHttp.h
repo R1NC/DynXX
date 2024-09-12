@@ -2,12 +2,12 @@
 #define NGENXX_NET_HTTP_H_
 
 /**
- *
+ * HTTP method
  */
 enum NGenXXNetHttpMethod
 {
-    Get,
-    Post,
+    NGenXXNetHttpMethodGet,
+    NGenXXNetHttpMethodPost,
 };
 
 /**
