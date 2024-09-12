@@ -1,6 +1,10 @@
 #ifndef NGENXX_STORE_SQLITE_H_
 #define NGENXX_STORE_SQLITE_H_
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Open DB
  * @param sdk SDK handle
@@ -67,5 +71,9 @@ void ngenxx_store_sqlite_query_drop(void *query_result);
  * @param conn DB connection handle
  */
 void ngenxx_store_sqlite_close(void *conn);
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif // NGENXX_STORE_SQLITE_H_

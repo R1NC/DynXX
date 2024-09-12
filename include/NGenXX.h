@@ -9,6 +9,10 @@
 #include "NGenXXLua.h"
 #include "NGenXXJs.h"
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Read version
  * @return version name
@@ -29,5 +33,9 @@ void *ngenxx_init(const char *root);
  * @param sdk SDK handle
  */
 void ngenxx_release(void *sdk);
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif // NGENXX_H_

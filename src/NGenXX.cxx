@@ -21,18 +21,14 @@
 
 #define VERSION "0.0.1"
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 const char *ngenxx_get_version(void)
 {
     auto s = std::string(VERSION);
     return str2charp(s);
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM_LUA
-#endif
+EXPORT
 void *ngenxx_init(const char *root)
 {
     if (root == NULL)
@@ -50,9 +46,7 @@ void *ngenxx_init(const char *root)
     return h;
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM_LUA
-#endif
+EXPORT
 void ngenxx_release(void *sdk)
 {
     NGenXX::Net::HttpClient::destroy();
@@ -72,26 +66,31 @@ void ngenxx_release(void *sdk)
 
 #pragma mark Device.DeviceInfo
 
+EXPORT_AUTO
 int ngenxx_device_type()
 {
     return NGenXX::Device::DeviceInfo::deviceType();
 }
 
+EXPORT_AUTO
 const char *ngenxx_device_name()
 {
     return str2charp(NGenXX::Device::DeviceInfo::deviceName());
 }
 
+EXPORT_AUTO
 const char *ngenxx_device_manufacturer()
 {
     return str2charp(NGenXX::Device::DeviceInfo::deviceManufacturer());
 }
 
+EXPORT_AUTO
 const char *ngenxx_device_os_version()
 {
     return str2charp(NGenXX::Device::DeviceInfo::osVersion());
 }
 
+EXPORT_AUTO
 int ngenxx_device_cpu_arch()
 {
     return NGenXX::Device::DeviceInfo::cpuArch();
@@ -99,25 +98,19 @@ int ngenxx_device_cpu_arch()
 
 #pragma mark Log
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void ngenxx_log_set_level(int level)
 {
     NGenXX::Log::setLevel(level);
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void ngenxx_log_set_callback(void (*callback)(int level, const char *log))
 {
     NGenXX::Log::setCallback(callback);
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void ngenxx_log_print(int level, const char *content)
 {
     NGenXX::Log::print(level, content);
@@ -125,9 +118,7 @@ void ngenxx_log_print(int level, const char *content)
 
 #pragma mark Net.Http
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 const char *ngenxx_net_http_request(const char *url, const char *params, int method, char **headers_v, int headers_c, long timeout)
 {
     if (url == NULL)
@@ -146,9 +137,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
 
 #pragma mark Store.SQLite
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void *ngenxx_store_sqlite_open(void *sdk, const char *file)
 {
     if (sdk == NULL || file == NULL)
@@ -157,9 +146,7 @@ void *ngenxx_store_sqlite_open(void *sdk, const char *file)
     return sqlite->connect(std::string(file));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 bool ngenxx_store_sqlite_execute(void *conn, const char *sql)
 {
     if (conn == NULL || sql == NULL)
@@ -168,9 +155,7 @@ bool ngenxx_store_sqlite_execute(void *conn, const char *sql)
     return xconn->execute(std::string(sql));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void *ngenxx_store_sqlite_query_do(void *conn, const char *sql)
 {
     if (conn == NULL || sql == NULL)
@@ -179,9 +164,7 @@ void *ngenxx_store_sqlite_query_do(void *conn, const char *sql)
     return xconn->query(std::string(sql));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 bool ngenxx_store_sqlite_query_read_row(void *query_result)
 {
     if (query_result == NULL)
@@ -190,9 +173,7 @@ bool ngenxx_store_sqlite_query_read_row(void *query_result)
     return xqr->readRow();
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 const char *ngenxx_store_sqlite_query_read_column_text(void *query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
@@ -202,9 +183,7 @@ const char *ngenxx_store_sqlite_query_read_column_text(void *query_result, const
     return str2charp(s);
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
@@ -213,9 +192,7 @@ long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, cons
     return xqr->readColumnInteger(std::string(column));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 double ngenxx_store_sqlite_query_read_column_float(void *query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
@@ -224,9 +201,7 @@ double ngenxx_store_sqlite_query_read_column_float(void *query_result, const cha
     return xqr->readColumnFloat(std::string(column));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void ngenxx_store_sqlite_query_drop(void *query_result)
 {
     if (query_result == NULL)
@@ -234,9 +209,7 @@ void ngenxx_store_sqlite_query_drop(void *query_result)
     delete (NGenXX::Store::SQLite::Connection::QueryResult *)query_result;
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void ngenxx_store_sqlite_close(void *conn)
 {
     if (conn == NULL)
@@ -246,9 +219,7 @@ void ngenxx_store_sqlite_close(void *conn)
 
 #pragma mark Store.KV
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void *ngenxx_store_kv_open(void *sdk, const char *_id)
 {
     if (sdk == NULL || _id == NULL)
@@ -256,9 +227,7 @@ void *ngenxx_store_kv_open(void *sdk, const char *_id)
     return ((NGenXX::Store::KV *)(((NGenXXHandle *)sdk)->kv))->open(std::string(_id));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 const char *ngenxx_store_kv_read_string(void *conn, const char *k)
 {
     if (conn == NULL || k == NULL)
@@ -266,9 +235,7 @@ const char *ngenxx_store_kv_read_string(void *conn, const char *k)
     return str2charp(((NGenXX::Store::KV::Connection *)conn)->readString(std::string(k)));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 bool ngenxx_store_kv_write_string(void *conn, const char *k, const char *v)
 {
     if (conn == NULL || k == NULL)
@@ -276,9 +243,7 @@ bool ngenxx_store_kv_write_string(void *conn, const char *k, const char *v)
     return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 long long ngenxx_store_kv_read_integer(void *conn, const char *k)
 {
     if (conn == NULL || k == NULL)
@@ -286,9 +251,7 @@ long long ngenxx_store_kv_read_integer(void *conn, const char *k)
     return ((NGenXX::Store::KV::Connection *)conn)->readInteger(std::string(k));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 bool ngenxx_store_kv_write_integer(void *conn, const char *k, long long v)
 {
     if (conn == NULL || k == NULL)
@@ -296,9 +259,7 @@ bool ngenxx_store_kv_write_integer(void *conn, const char *k, long long v)
     return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), (int64_t)v);
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 double ngenxx_store_kv_read_float(void *conn, const char *k)
 {
     if (conn == NULL || k == NULL)
@@ -306,9 +267,7 @@ double ngenxx_store_kv_read_float(void *conn, const char *k)
     return ((NGenXX::Store::KV::Connection *)conn)->readFloat(std::string(k));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 bool ngenxx_store_kv_write_float(void *conn, const char *k, double v)
 {
     if (conn == NULL || k == NULL)
@@ -316,9 +275,7 @@ bool ngenxx_store_kv_write_float(void *conn, const char *k, double v)
     return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 bool ngenxx_store_kv_contains(void *conn, const char *k)
 {
     if (conn == NULL || k == NULL)
@@ -326,9 +283,7 @@ bool ngenxx_store_kv_contains(void *conn, const char *k)
     return ((NGenXX::Store::KV::Connection *)conn)->contains(std::string(k));
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void ngenxx_store_kv_clear(void *conn)
 {
     if (conn == NULL)
@@ -336,9 +291,7 @@ void ngenxx_store_kv_clear(void *conn)
     ((NGenXX::Store::KV::Connection *)conn)->clear();
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM
-#endif
+EXPORT_AUTO
 void ngenxx_store_kv_close(void *conn)
 {
     if (conn == NULL)

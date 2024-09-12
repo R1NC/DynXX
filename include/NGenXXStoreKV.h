@@ -1,6 +1,10 @@
 #ifndef NGENXX_STORE_KV_H_
 #define NGENXX_STORE_KV_H_
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief open KV Store, support to access from multiple processes
  * @param sdk Handle of SDK
@@ -79,5 +83,9 @@ void ngenxx_store_kv_clear(void *conn);
  * @param conn A KV connection handle
  */
 void ngenxx_store_kv_close(void *conn);
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif // NGENXX_STORE_KV_H_

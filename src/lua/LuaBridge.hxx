@@ -29,7 +29,7 @@ namespace NGenXX
          * @param file Lua file path
          * @return success or not
          */
-        int loadFile(lua_State *lstate, const char *file);
+        int loadFile(lua_State *lstate, const std::string &file);
 
         /**
          * @brief Load Lua script content
@@ -37,7 +37,7 @@ namespace NGenXX
          * @param script Lua script content
          * @return success or not
          */
-        int loadScript(lua_State *lstate, const char *script);
+        int loadScript(lua_State *lstate, const std::string &script);
 
         /**
          * @brief export C function to Lua environment
@@ -45,7 +45,7 @@ namespace NGenXX
          * @param funcName the exported function name
          * @param funcPointer the C function pointer
          */
-        void bindFunc(lua_State *lstate, const char *funcName, int (*funcPointer)(lua_State *));
+        void bindFunc(lua_State *lstate, const std::string &funcName, int (*funcPointer)(lua_State *));
 
         /**
          * @brief Call Lua function
@@ -54,7 +54,7 @@ namespace NGenXX
          * @param params Lua function params（wrap multiple params with json）
          * @return return value of Lua function
          */
-        const char *callFunc(lua_State *lstate, const char *func, const char *params);
+        const std::string callFunc(lua_State *lstate, const std::string &func, const std::string &params);
 
         /**
          * @brief Release Lua environment

@@ -35,7 +35,7 @@ static inline void parse_lua_func_params(lua_State *L, std::function<void(cJSON 
     }
 }
 
-#define BIND_LUA_FUNC(h, f) NGenXX::LuaBridge::bindFunc((lua_State *)(h->lua), #f, f);
+#define BIND_LUA_FUNC(h, f) NGenXX::LuaBridge::bindFunc((lua_State *)(h->lua), std::string(#f), f);
 
 int ngenxx_get_versionL(lua_State *L)
 {
@@ -407,24 +407,20 @@ int ngenxx_store_kv_closeL(lua_State *L)
 #ifndef __EMSCRIPTEN__
 bool ngenxx_L_loadF(void *sdk, const char *file)
 {
-    return NGenXX::LuaBridge::loadFile((lua_State *)(((NGenXXHandle *)sdk)->lua), file) == LUA_OK;
+    return NGenXX::LuaBridge::loadFile((lua_State *)(((NGenXXHandle *)sdk)->lua), std::string(file)) == LUA_OK;
 }
 #endif
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM_LUA
-#endif
+EXPORT
 bool ngenxx_L_loadS(void *sdk, const char *script)
 {
-    return NGenXX::LuaBridge::loadScript((lua_State *)(((NGenXXHandle *)sdk)->lua), script) == LUA_OK;
+    return NGenXX::LuaBridge::loadScript((lua_State *)(((NGenXXHandle *)sdk)->lua), std::string(script)) == LUA_OK;
 }
 
-#ifdef __EMSCRIPTEN__
-EXPORT_WASM_LUA
-#endif
+EXPORT
 const char *ngenxx_L_call(void *sdk, const char *func, const char *params)
 {
-    return NGenXX::LuaBridge::callFunc((lua_State *)(((NGenXXHandle *)sdk)->lua), func, params);
+    return str2charp(NGenXX::LuaBridge::callFunc((lua_State *)(((NGenXXHandle *)sdk)->lua), std::string(func), std::string(params)));
 }
 
 void _ngenxx_export_funcs_for_lua(NGenXXHandle *handle)
