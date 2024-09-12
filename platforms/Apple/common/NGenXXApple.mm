@@ -1,54 +1,31 @@
-//
-//  ViewController.mm
-//  NGenXX
-//
-//  Created by Rinc on 2024/8/21.
-//
+#import "NGenXXApple.h"
 
-#import "ViewController.h"
 #import "NGenXX.h"
 
 #define NSString2CharP(nsstr) [nsstr cStringUsingEncoding:NSUTF8StringEncoding]
 #define CharP2NSString(cp) [NSString stringWithCString:cp encoding:NSUTF8StringEncoding]
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
 
-@interface ViewController () {
+@interface NGenXXApple () {
     void *_sdk;
     void *_db_conn;
     void *_kv_conn;
 }
 @end
 
-@implementation ViewController
+@implementation NGenXXApple
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    CGFloat topPadding = 0;
-    CGFloat bottomPadding = 0;
-    for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
-        if ([scene isKindOfClass:UIWindowScene.class]) {
-            UIWindowScene *winScene = (UIWindowScene*)scene;
-            id<UIWindowSceneDelegate> winSceneDelegate = (id<UIWindowSceneDelegate>)winScene.delegate;
-            topPadding = winSceneDelegate.window.safeAreaInsets.top;
-            bottomPadding = winScene.keyWindow.safeAreaInsets.bottom;
-        }
+- (instancetype)init {
+    if (self = [super init]) {
+        _sdk = ngenxx_init(NSString2CharP(self.root));
+        const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
+        ngenxx_L_loadF(_sdk, cLuaPath);
     }
-    
-    UITextView *tv = [[UITextView alloc] initWithFrame:CGRectMake(0, topPadding, self.view.frame.size.width, self.view.frame.size.height - topPadding - bottomPadding)];
-    tv.font = [UIFont systemFontOfSize:16.f];
-    tv.editable = NO;
-    [self.view addSubview:tv];
+    return self;
+}
 
-    _sdk = ngenxx_init(NSString2CharP(self.root));
-    const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
-    ngenxx_L_loadF(_sdk, cLuaPath);
-    
-    tv.text = self.output;
-    
-    [self testDB];
-    [self testKV];
-    [self testJS];
+- (NSString*)root {
+    return NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
 }
 
 - (void)dealloc {
@@ -57,18 +34,10 @@
     ngenxx_release(_sdk);
 }
 
-- (NSString*)output {
-    NSString *s = @"";
-
+- (void)testHttpL {
     static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\": 1, \"timeout\":6666}";
     const char * cRsp = ngenxx_L_call(_sdk, "lNetHttpRequest", cParams);
-    if (cRsp) s = [s stringByAppendingFormat:@"%@", CharP2NSString(cRsp)];
-
-    return s;
-}
-
-- (NSString*)root {
-    return NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true).firstObject;
+    NSLog(@"%s", cRsp);
 }
 
 - (void)testDB {
@@ -103,12 +72,12 @@
     NSLog(@"%f", ngenxx_store_kv_read_float(_kv_conn, "f"));
 }
 
-- (void)testJS {
-    NSString *jsPath = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
-    if (ngenxx_J_loadF(_sdk, NSString2CharP(jsPath))) {
-        const char * res = ngenxx_J_call(_sdk, "jHttpReq", "https://rinc.xyz");
-        NSLog(@"rsp from js: %s", res);
-    }
+- (void)testDeviceInfo {
+    int deviceType = ngenxx_device_type();
+    const char *deviceName = ngenxx_device_name();
+    const char *osv = ngenxx_device_os_version();
+    int arch = ngenxx_device_cpu_arch();
+    NSLog(@"deviceType:%d deviceName:%s OS:%s arch:%d", deviceType, deviceName, osv, arch);
 }
 
 @end

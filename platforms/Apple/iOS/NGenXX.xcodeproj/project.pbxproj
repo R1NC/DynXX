@@ -7,27 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		253FF0482C778034006CD672 /* curl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0432C778034006CD672 /* curl.a */; };
-		253FF0492C778034006CD672 /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0442C778034006CD672 /* cjson.a */; };
-		253FF04A2C778034006CD672 /* wolfssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0452C778034006CD672 /* wolfssl.a */; };
-		253FF04B2C778034006CD672 /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0462C778034006CD672 /* NGenXX.a */; };
-		253FF04C2C778034006CD672 /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0472C778034006CD672 /* lua.a */; };
-		253FF04E2C778053006CD672 /* biz.lua in Resources */ = {isa = PBXBuildFile; fileRef = 253FF04D2C778053006CD672 /* biz.lua */; };
 		2569810E2C763BD2008E8472 /* libapple_nghttp2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2569810D2C763BD2008E8472 /* libapple_nghttp2.tbd */; };
-		25B6A2B92C8BE1AA00F6BBD2 /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */; };
 		40596B7D2C75AAD700AC552D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7C2C75AAD700AC552D /* AppDelegate.m */; };
 		40596B802C75AAD700AC552D /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7F2C75AAD700AC552D /* SceneDelegate.m */; };
 		40596B862C75AAD700AC552D /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 40596B852C75AAD700AC552D /* Base */; };
 		40596B882C75AAD800AC552D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40596B872C75AAD800AC552D /* Assets.xcassets */; };
 		40596B8B2C75AAD800AC552D /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 40596B8A2C75AAD800AC552D /* Base */; };
 		40596B8E2C75AAD800AC552D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B8D2C75AAD800AC552D /* main.m */; };
-		40596B952C75BBB500AC552D /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40596B942C75BBB500AC552D /* ViewController.mm */; };
 		40596BA02C75BECB00AC552D /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 40596B9F2C75BECB00AC552D /* libz.1.tbd */; };
 		407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B3A2C897F48008A138C /* libsqlite3.tbd */; };
-		407D2B3F2C899337008A138C /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B3C2C899337008A138C /* query.sql */; };
-		407D2B402C899337008A138C /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B3D2C899337008A138C /* prepare_data.sql */; };
-		407D2B8B2C906B0C008A138C /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B8A2C906B0B008A138C /* biz.js */; };
-		407D2B8D2C906B5E008A138C /* quickjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B8C2C906B5E008A138C /* quickjs.a */; };
+		407D2B9C2C929A39008A138C /* NGenXXApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 407D2B9B2C929A38008A138C /* NGenXXApple.mm */; };
+		407D2B9E2C929A7C008A138C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 407D2B9D2C929A7C008A138C /* ViewController.m */; };
+		407D2BA22C929B77008A138C /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2B9F2C929B77008A138C /* query.sql */; };
+		407D2BA32C929B77008A138C /* biz.lua in Resources */ = {isa = PBXBuildFile; fileRef = 407D2BA02C929B77008A138C /* biz.lua */; };
+		407D2BA42C929B77008A138C /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 407D2BA12C929B77008A138C /* prepare_data.sql */; };
+		407D2BAC2C929C2E008A138C /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BA52C929C2E008A138C /* cjson.a */; };
+		407D2BAD2C929C2E008A138C /* wolfssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BA62C929C2E008A138C /* wolfssl.a */; };
+		407D2BAE2C929C2E008A138C /* mmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BA72C929C2E008A138C /* mmkv.a */; };
+		407D2BAF2C929C2E008A138C /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BA82C929C2E008A138C /* mmkvcore.a */; };
+		407D2BB02C929C2E008A138C /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BA92C929C2E008A138C /* NGenXX.a */; };
+		407D2BB12C929C2E008A138C /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BAA2C929C2E008A138C /* lua.a */; };
+		407D2BB22C929C2E008A138C /* curl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2BAB2C929C2E008A138C /* curl.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,7 +36,6 @@
 		253FF0452C778034006CD672 /* wolfssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = wolfssl.a; path = ../../build.iOS/output/Release/wolfssl.a; sourceTree = "<group>"; };
 		253FF0462C778034006CD672 /* NGenXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXX.a; path = ../../build.iOS/output/Release/NGenXX.a; sourceTree = "<group>"; };
 		253FF0472C778034006CD672 /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../build.iOS/output/Release/lua.a; sourceTree = "<group>"; };
-		253FF04D2C778053006CD672 /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../Android/app/src/main/assets/biz.lua; sourceTree = "<group>"; };
 		2569810D2C763BD2008E8472 /* libapple_nghttp2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libapple_nghttp2.tbd; path = usr/lib/libapple_nghttp2.tbd; sourceTree = SDKROOT; };
 		25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.iOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
 		40596B782C75AAD700AC552D /* NGenXX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NGenXX.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,7 +49,6 @@
 		40596B8A2C75AAD800AC552D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		40596B8C2C75AAD800AC552D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		40596B8D2C75AAD800AC552D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		40596B942C75BBB500AC552D /* ViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 		40596B992C75BC5A00AC552D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		40596B9B2C75BEB800AC552D /* libz.1.1.3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.1.3.tbd; path = usr/lib/libz.1.1.3.tbd; sourceTree = SDKROOT; };
 		40596B9D2C75BEC400AC552D /* libz.1.2.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.2.8.tbd; path = usr/lib/libz.1.2.8.tbd; sourceTree = SDKROOT; };
@@ -70,10 +68,19 @@
 		40596BB62C75EB7B00AC552D /* NGenXXlua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXXlua.a; path = ../build.iOS/output/Release/NGenXXlua.a; sourceTree = "<group>"; };
 		40596BB72C75EB7B00AC552D /* NGenXXwolfssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXXwolfssl.a; path = ../build.iOS/output/Release/NGenXXwolfssl.a; sourceTree = "<group>"; };
 		407D2B3A2C897F48008A138C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		407D2B3C2C899337008A138C /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
-		407D2B3D2C899337008A138C /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
-		407D2B8A2C906B0B008A138C /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../Android/app/src/main/assets/biz.js; sourceTree = "<group>"; };
-		407D2B8C2C906B5E008A138C /* quickjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = quickjs.a; path = ../../build.iOS/output/Release/quickjs.a; sourceTree = "<group>"; };
+		407D2B9A2C929A38008A138C /* NGenXXApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NGenXXApple.h; path = ../../common/NGenXXApple.h; sourceTree = "<group>"; };
+		407D2B9B2C929A38008A138C /* NGenXXApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NGenXXApple.mm; path = ../../common/NGenXXApple.mm; sourceTree = "<group>"; };
+		407D2B9D2C929A7C008A138C /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		407D2B9F2C929B77008A138C /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
+		407D2BA02C929B77008A138C /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../../Android/app/src/main/assets/biz.lua; sourceTree = "<group>"; };
+		407D2BA12C929B77008A138C /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
+		407D2BA52C929C2E008A138C /* cjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = cjson.a; path = ../../../build.iOS/output/Release/cjson.a; sourceTree = "<group>"; };
+		407D2BA62C929C2E008A138C /* wolfssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = wolfssl.a; path = ../../../build.iOS/output/Release/wolfssl.a; sourceTree = "<group>"; };
+		407D2BA72C929C2E008A138C /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../../build.iOS/output/Release/mmkv.a; sourceTree = "<group>"; };
+		407D2BA82C929C2E008A138C /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../../build.iOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
+		407D2BA92C929C2E008A138C /* NGenXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXX.a; path = ../../../build.iOS/output/Release/NGenXX.a; sourceTree = "<group>"; };
+		407D2BAA2C929C2E008A138C /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../../build.iOS/output/Release/lua.a; sourceTree = "<group>"; };
+		407D2BAB2C929C2E008A138C /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../../build.iOS/output/Release/curl.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,14 +88,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				407D2B8D2C906B5E008A138C /* quickjs.a in Frameworks */,
-				25B6A2B92C8BE1AA00F6BBD2 /* mmkvcore.a in Frameworks */,
+				407D2BAC2C929C2E008A138C /* cjson.a in Frameworks */,
+				407D2BAD2C929C2E008A138C /* wolfssl.a in Frameworks */,
+				407D2BAE2C929C2E008A138C /* mmkv.a in Frameworks */,
+				407D2BAF2C929C2E008A138C /* mmkvcore.a in Frameworks */,
+				407D2BB02C929C2E008A138C /* NGenXX.a in Frameworks */,
+				407D2BB12C929C2E008A138C /* lua.a in Frameworks */,
+				407D2BB22C929C2E008A138C /* curl.a in Frameworks */,
 				407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */,
-				253FF0482C778034006CD672 /* curl.a in Frameworks */,
-				253FF0492C778034006CD672 /* cjson.a in Frameworks */,
-				253FF04A2C778034006CD672 /* wolfssl.a in Frameworks */,
-				253FF04B2C778034006CD672 /* NGenXX.a in Frameworks */,
-				253FF04C2C778034006CD672 /* lua.a in Frameworks */,
 				2569810E2C763BD2008E8472 /* libapple_nghttp2.tbd in Frameworks */,
 				40596BA02C75BECB00AC552D /* libz.1.tbd in Frameworks */,
 			);
@@ -100,10 +107,9 @@
 		40596B6F2C75AAD700AC552D = {
 			isa = PBXGroup;
 			children = (
-				407D2B8A2C906B0B008A138C /* biz.js */,
-				407D2B3D2C899337008A138C /* prepare_data.sql */,
-				407D2B3C2C899337008A138C /* query.sql */,
-				253FF04D2C778053006CD672 /* biz.lua */,
+				407D2BA02C929B77008A138C /* biz.lua */,
+				407D2BA12C929B77008A138C /* prepare_data.sql */,
+				407D2B9F2C929B77008A138C /* query.sql */,
 				40596B7A2C75AAD700AC552D /* NGenXX */,
 				40596B792C75AAD700AC552D /* Products */,
 				40596B982C75BC5A00AC552D /* Frameworks */,
@@ -121,12 +127,14 @@
 		40596B7A2C75AAD700AC552D /* NGenXX */ = {
 			isa = PBXGroup;
 			children = (
+				407D2B9A2C929A38008A138C /* NGenXXApple.h */,
+				407D2B9B2C929A38008A138C /* NGenXXApple.mm */,
 				40596B7B2C75AAD700AC552D /* AppDelegate.h */,
 				40596B7C2C75AAD700AC552D /* AppDelegate.m */,
 				40596B7E2C75AAD700AC552D /* SceneDelegate.h */,
 				40596B7F2C75AAD700AC552D /* SceneDelegate.m */,
 				40596B812C75AAD700AC552D /* ViewController.h */,
-				40596B942C75BBB500AC552D /* ViewController.mm */,
+				407D2B9D2C929A7C008A138C /* ViewController.m */,
 				40596B842C75AAD700AC552D /* Main.storyboard */,
 				40596B872C75AAD800AC552D /* Assets.xcassets */,
 				40596B892C75AAD800AC552D /* LaunchScreen.storyboard */,
@@ -139,8 +147,14 @@
 		40596B982C75BC5A00AC552D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				407D2B8C2C906B5E008A138C /* quickjs.a */,
 				25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */,
+				407D2BA52C929C2E008A138C /* cjson.a */,
+				407D2BAB2C929C2E008A138C /* curl.a */,
+				407D2BAA2C929C2E008A138C /* lua.a */,
+				407D2BA72C929C2E008A138C /* mmkv.a */,
+				407D2BA82C929C2E008A138C /* mmkvcore.a */,
+				407D2BA92C929C2E008A138C /* NGenXX.a */,
+				407D2BA62C929C2E008A138C /* wolfssl.a */,
 				407D2B3A2C897F48008A138C /* libsqlite3.tbd */,
 				253FF0442C778034006CD672 /* cjson.a */,
 				253FF0432C778034006CD672 /* curl.a */,
@@ -227,10 +241,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				407D2B8B2C906B0C008A138C /* biz.js in Resources */,
-				407D2B3F2C899337008A138C /* query.sql in Resources */,
-				407D2B402C899337008A138C /* prepare_data.sql in Resources */,
-				253FF04E2C778053006CD672 /* biz.lua in Resources */,
+				407D2BA22C929B77008A138C /* query.sql in Resources */,
+				407D2BA32C929B77008A138C /* biz.lua in Resources */,
+				407D2BA42C929B77008A138C /* prepare_data.sql in Resources */,
 				40596B882C75AAD800AC552D /* Assets.xcassets in Resources */,
 				40596B8B2C75AAD800AC552D /* Base in Resources */,
 				40596B862C75AAD700AC552D /* Base in Resources */,
@@ -244,10 +257,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40596B952C75BBB500AC552D /* ViewController.mm in Sources */,
 				40596B7D2C75AAD700AC552D /* AppDelegate.m in Sources */,
 				40596B8E2C75AAD800AC552D /* main.m in Sources */,
+				407D2B9C2C929A39008A138C /* NGenXXApple.mm in Sources */,
 				40596B802C75AAD700AC552D /* SceneDelegate.m in Sources */,
+				407D2B9E2C929A7C008A138C /* ViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,7 +412,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5TNCWX532Z;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = ../../build.iOS/output/include;
+				HEADER_SEARCH_PATHS = ../../../build.iOS/output/include;
 				INFOPLIST_FILE = NGenXX/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -426,7 +440,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5TNCWX532Z;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = ../../build.iOS/output/include;
+				HEADER_SEARCH_PATHS = ../../../build.iOS/output/include;
 				INFOPLIST_FILE = NGenXX/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
