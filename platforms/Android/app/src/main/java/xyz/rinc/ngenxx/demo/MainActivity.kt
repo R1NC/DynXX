@@ -39,8 +39,9 @@ class MainActivity : ComponentActivity() {
         //val rsp = NGenXX.lCall(handle, "lNetHttpRequest", params)
         val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
             "p0=1&p1=2&p2=3",
+            0,
+            arrayOf("Cache-Control: no-cache"),
             1,
-            arrayOf("Accept-Encoding: gzip, deflate", "Cache-Control: no-cache"),
             5555
         )
 
