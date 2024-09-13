@@ -16,12 +16,12 @@ size_t _NGenXX_Net_HttpClient_WriteCallback(char *contents, size_t size, size_t 
     return size * nmemb;
 }
 
-void NGenXX::Net::HttpClient::create(void)
+NGenXX::Net::HttpClient::HttpClient()
 {
     curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
-void NGenXX::Net::HttpClient::destroy(void)
+NGenXX::Net::HttpClient::~HttpClient()
 {
     curl_global_cleanup();
 }

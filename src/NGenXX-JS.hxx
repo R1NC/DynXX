@@ -3,11 +3,9 @@
 
 #ifdef __cplusplus
 
-#include "NGenXX-inner.hxx"
+bool _ngenxx_js_init(void);
 
-void _ngenxx_js_init(NGenXXHandle *handle);
-
-void _ngenxx_js_release(NGenXXHandle *handle);
+void _ngenxx_js_release(void);
 
 #endif
 

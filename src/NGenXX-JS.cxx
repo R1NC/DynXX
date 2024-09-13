@@ -7,24 +7,27 @@
 #include "NGenXX-JS.hxx"
 #include "../include/NGenXX.h"
 #include "../external/quickjs/quickjs.h"
+#include "NGenXX-inner.hxx"
 #include "js/JsBridge.hxx"
 
-void registerJsModule(NGenXXHandle *handle);
-#define BIND_JS_FUNC(h, f) ((NGenXX::JsBridge *)(handle->qjs))->bindFunc(#f, f);
+void registerJsModule();
+#define BIND_JS_FUNC(f) ((NGenXX::JsBridge *)(_ngenxx_handle->qjs))->bindFunc(#f, f);
 
-void _ngenxx_js_init(NGenXXHandle *handle)
+bool _ngenxx_js_init(void)
 {
-    if (handle == NULL)
-        return;
-    handle->qjs = new NGenXX::JsBridge();
-    registerJsModule(handle);
+    if (_ngenxx_handle == NULL) return false;
+    if (_ngenxx_handle->qjs != NULL) return true;
+    _ngenxx_handle->qjs = new NGenXX::JsBridge();
+    registerJsModule();
+    return true;
 }
 
-void _ngenxx_js_release(NGenXXHandle *handle)
+void _ngenxx_js_release(void)
 {
-    if (handle == NULL || handle->qjs == NULL)
+    if (_ngenxx_handle == NULL || _ngenxx_handle->qjs == NULL)
         return;
-    delete handle->qjs;
+    delete _ngenxx_handle->qjs;
+    _ngenxx_handle->qjs = NULL;
 }
 
 #pragma mark Net.Http
@@ -60,7 +63,7 @@ const char *ngenxx_J_call(void *sdk, const char *func, const char *params)
 
 #pragma mark JS Module Register
 
-void registerJsModule(NGenXXHandle *handle)
+void registerJsModule()
 {
-    BIND_JS_FUNC(handle, ngenxx_net_http_requestJ);
+    BIND_JS_FUNC(ngenxx_net_http_requestJ);
 }

@@ -7,11 +7,10 @@ extern "C" {
 
 /**
  * @brief open KV Store, support to access from multiple processes
- * @param sdk Handle of SDK
  * @param _id kv id
  * @return A KV connection handle
  */
-void *ngenxx_store_kv_open(void *sdk, const char *_id);
+void *ngenxx_store_kv_open(const char *_id);
 
 /**
  * @brief Read string from KV Store

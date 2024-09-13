@@ -13,7 +13,7 @@
     <script>
         
         Module['onRuntimeInitialized'] = function () {
-            _handle = Module._ngenxx_init();
+            Module._ngenxx_init();
 
             /**
              * WARNING: C/C++ callback JS function in async thread is not supported:
@@ -31,14 +31,13 @@
                 "rsp = ngenxx_net_http_requestL(pReq);\n" +
                 "return rsp;\n" +
                 "end");
-            _loadRet = Module._ngenxx_L_loadS(_handle, _luaScript);
+            _loadRet = Module._ngenxx_L_loadS(_luaScript);
         }
 
         Module['destroy'] = function() {
-            Module._ngenxx_release(_handle);
+            Module._ngenxx_release();
             Module._free(_loadRet);
             Module._free(_luaScript);
-            Module._free(_handle);
         }
 
         function jstr2wasm(jstr) {
@@ -73,7 +72,7 @@
         function testCallLua() {
             _funcName = jstr2wasm("lNetHttpRequest");
             _funcParams = jstr2wasm('{"url":"https://rinc.xyz","params":""}');
-            _callRes = Module._ngenxx_L_call(_handle, _funcName, _funcParams);
+            _callRes = Module._ngenxx_L_call(_funcName, _funcParams);
 
             callRes = Module.UTF8ToString(_callRes);
             window.alert("Lua running result:\n" + callRes);

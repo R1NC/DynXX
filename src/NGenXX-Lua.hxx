@@ -3,11 +3,9 @@
 
 #ifdef __cplusplus
 
-#include "NGenXX-inner.hxx"
+bool _ngenxx_lua_init(void);
 
-void _ngenxx_lua_init(NGenXXHandle *handle);
-
-void _ngenxx_lua_release(NGenXXHandle *handle);
+void _ngenxx_lua_release(void);
 
 #endif
 

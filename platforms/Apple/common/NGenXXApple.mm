@@ -7,7 +7,6 @@
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
 
 @interface NGenXXApple () {
-    void *_sdk;
     void *_db_conn;
     void *_kv_conn;
 }
@@ -17,9 +16,9 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _sdk = ngenxx_init(NSString2CharP(self.root));
-        const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
-        ngenxx_L_loadF(_sdk, cLuaPath);
+        if (!ngenxx_init(NSString2CharP(self.root))) {
+            NSLog(@"!!! SDK INIT FAILED !!!");
+        }
     }
     return self;
 }
@@ -31,18 +30,23 @@
 - (void)dealloc {
     ngenxx_store_sqlite_close(_db_conn);
     ngenxx_store_kv_close(_kv_conn);
-    ngenxx_release(_sdk);
+    ngenxx_release();
 }
 
 - (void)testHttpL {
+    //const char * cRsp = ngenxx_net_http_request("https://rinc.xyz", "", 0, NULL, 0, 5555);
+    const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
+    if (!ngenxx_L_loadF(cLuaPath)) {
+        NSLog(@"!!! LOAD LUA FAILED !!!");
+    }
     static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\": 1, \"timeout\":6666}";
-    const char * cRsp = ngenxx_L_call(_sdk, "lNetHttpRequest", cParams);
+    const char * cRsp = ngenxx_L_call("lNetHttpRequest", cParams);
     NSLog(@"%s", cRsp);
 }
 
 - (void)testDB {
     NSString *dbFile = [self.root stringByAppendingPathComponent:@"test.db"];
-    _db_conn = ngenxx_store_sqlite_open(_sdk, NSString2CharP(dbFile));
+    _db_conn = ngenxx_store_sqlite_open(NSString2CharP(dbFile));
     if (_db_conn) {
         NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
         NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];
@@ -63,7 +67,7 @@
 }
 
 - (void)testKV {
-    _kv_conn = ngenxx_store_kv_open(_sdk, "test");
+    _kv_conn = ngenxx_store_kv_open("test");
     ngenxx_store_kv_write_string(_kv_conn, "s", "NGenXX");
     NSLog(@"%s", ngenxx_store_kv_read_string(_kv_conn, "s"));
     ngenxx_store_kv_write_integer(_kv_conn, "i", 1234567890);

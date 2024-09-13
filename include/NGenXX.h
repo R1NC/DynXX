@@ -23,16 +23,15 @@ const char *ngenxx_get_version(void);
  * @brief Initialize SDK
  * @warning Not accessible in Lua!
  * @param root Root path to store SDK inner files
- * @return SDK handle
+ * @return Success or not
  */
-void *ngenxx_init(const char *root);
+bool ngenxx_init(const char *root);
 
 /**
  * @brief Release SDK
  * @warning Not accessible in Lua!
- * @param sdk SDK handle
  */
-void ngenxx_release(void *sdk);
+void ngenxx_release(void);
 
 #ifdef  __cplusplus
 }

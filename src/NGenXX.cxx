@@ -21,6 +21,8 @@
 
 #define VERSION "0.0.1"
 
+NGenXXHandle *_ngenxx_handle;
+
 EXPORT_AUTO
 const char *ngenxx_get_version(void)
 {
@@ -29,39 +31,43 @@ const char *ngenxx_get_version(void)
 }
 
 EXPORT
-void *ngenxx_init(const char *root)
+bool ngenxx_init(const char *root)
 {
+    if (_ngenxx_handle != NULL) return true;
     if (root == NULL)
-        return NULL;
-    NGenXX::Net::HttpClient::create();
-    NGenXXHandle *h = (NGenXXHandle *)malloc(sizeof(NGenXXHandle));
-    h->sqlite = new NGenXX::Store::SQLite();
-    h->kv = new NGenXX::Store::KV(std::string(root));
+        return false;
+    _ngenxx_handle = (NGenXXHandle *)malloc(sizeof(NGenXXHandle));
+    _ngenxx_handle->sqlite = new NGenXX::Store::SQLite();
+    _ngenxx_handle->kv = new NGenXX::Store::KV(std::string(root));
+    _ngenxx_handle->http_client = new NGenXX::Net::HttpClient();
 #ifdef USE_LUA
-    _ngenxx_lua_init(h);
+    _ngenxx_lua_init();
 #endif
 #ifdef USE_QJS
-    _ngenxx_js_init(h);
+    _ngenxx_js_init();
 #endif
-    return h;
+    return true;
 }
 
 EXPORT
-void ngenxx_release(void *sdk)
+void ngenxx_release()
 {
-    NGenXX::Net::HttpClient::destroy();
-    if (sdk == NULL)
+    if (_ngenxx_handle == NULL)
         return;
-    NGenXXHandle *h = (NGenXXHandle *)sdk;
-    delete ((NGenXX::Store::SQLite *)h->sqlite);
-    delete ((NGenXX::Store::KV *)h->kv);
+    delete (NGenXX::Net::HttpClient*)(_ngenxx_handle->http_client);
+    _ngenxx_handle->http_client = NULL;
+    delete ((NGenXX::Store::SQLite *)_ngenxx_handle->sqlite);
+    _ngenxx_handle->sqlite = NULL;
+    delete ((NGenXX::Store::KV *)_ngenxx_handle->kv);
+    _ngenxx_handle->kv = NULL;
 #ifdef USE_LUA
-    _ngenxx_lua_release(h);
+    _ngenxx_lua_release();
 #endif
 #ifdef USE_QJS
-    _ngenxx_js_release(h);
+    _ngenxx_js_release();
 #endif
-    free(sdk);
+    free(_ngenxx_handle);
+    _ngenxx_handle = NULL;
 }
 
 #pragma mark Device.DeviceInfo
@@ -131,18 +137,18 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
         vHeaders = std::vector<std::string>(headers_v, headers_v + headers_c);
     }
 
-    auto s = NGenXX::Net::HttpClient::request(sUrl, sParams, method, vHeaders, timeout);
+    auto s = ((NGenXX::Net::HttpClient *)(_ngenxx_handle->http_client))->request(sUrl, sParams, method, vHeaders, timeout);
     return str2charp(s);
 }
 
 #pragma mark Store.SQLite
 
 EXPORT_AUTO
-void *ngenxx_store_sqlite_open(void *sdk, const char *file)
+void *ngenxx_store_sqlite_open(const char *file)
 {
-    if (sdk == NULL || file == NULL)
+    if (_ngenxx_handle == NULL || file == NULL)
         return NULL;
-    NGenXX::Store::SQLite *sqlite = (NGenXX::Store::SQLite *)(((NGenXXHandle *)sdk)->sqlite);
+    NGenXX::Store::SQLite *sqlite = (NGenXX::Store::SQLite *)(((NGenXXHandle *)_ngenxx_handle)->sqlite);
     return sqlite->connect(std::string(file));
 }
 
@@ -220,11 +226,11 @@ void ngenxx_store_sqlite_close(void *conn)
 #pragma mark Store.KV
 
 EXPORT_AUTO
-void *ngenxx_store_kv_open(void *sdk, const char *_id)
+void *ngenxx_store_kv_open(const char *_id)
 {
-    if (sdk == NULL || _id == NULL)
+    if (_ngenxx_handle == NULL || _id == NULL)
         return NULL;
-    return ((NGenXX::Store::KV *)(((NGenXXHandle *)sdk)->kv))->open(std::string(_id));
+    return ((NGenXX::Store::KV *)(((NGenXXHandle *)_ngenxx_handle)->kv))->open(std::string(_id));
 }
 
 EXPORT_AUTO

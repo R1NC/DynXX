@@ -10,12 +10,13 @@ namespace NGenXX
 {
     namespace Net
     {
-        namespace HttpClient
+        class HttpClient
         {
+        public:
             /**
-             * 
+             *
              */
-            void create(void);
+            HttpClient();
 
             /**
              * @brief http request
@@ -26,10 +27,10 @@ namespace NGenXX
             const std::string request(const std::string &url, const std::string &params, int method, std::vector<std::string> &headers, long timeout);
 
             /**
-             * 
+             *
              */
-            void destroy(void);
-        }
+            ~HttpClient();
+        };
     }
 }
 
