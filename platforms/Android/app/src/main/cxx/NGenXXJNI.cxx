@@ -3,10 +3,9 @@
 #include <string>
 #include "../../../../../../build.Android/output/include/NGenXX.h"
 
-extern "C"
-JNIEXPORT jstring JNICALL
+extern "C" JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
-                                                         jobject thiz)
+                                                      jobject thiz)
 {
     const char *cV = ngenxx_get_version();
     jstring jstr = env->NewStringUTF(cV ?: "");
@@ -14,16 +13,18 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
     return jstr;
 }
 
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz, jstring root) {
-    const char *cRoot = env->GetStringUTFChars(root, JNI_FALSE);
-    return ngenxx_init(cRoot);
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz, jstring root)
+{
+    const char *cRoot = env->GetStringUTFChars(root, nullptr);
+    jboolean res = ngenxx_init(cRoot);
+    env->ReleaseStringUTFChars(root, cRoot);
+    return res;
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_release(JNIEnv *env, jobject thiz) {
+extern "C" JNIEXPORT void JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_release(JNIEnv *env, jobject thiz)
+{
     ngenxx_release();
 }
 
@@ -33,34 +34,40 @@ static JNIEnv *sEnv;
 static jobject sLogCallback;
 static jmethodID sLogCallbackMethodId;
 
-static void ngenxx_jni_log_callback(int level, const char *content) {
-    if (sEnv && sLogCallback && sLogCallbackMethodId && content) {
+static void ngenxx_jni_log_callback(int level, const char *content)
+{
+    if (sEnv && sLogCallback && sLogCallbackMethodId && content)
+    {
         jstring jContent = sEnv->NewStringUTF(content);
         free((void *)content);
         sEnv->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
     }
 }
 
-extern "C"
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logSetLevel(JNIEnv *env, jobject thiz,
-                                                                     jint level) {
+                                                       jint level)
+{
     ngenxx_log_set_level(level);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logSetCallback(JNIEnv *env, jobject thiz,
-                                                                        jobject callback) {
-    if (callback) {
+                                                          jobject callback)
+{
+    if (callback)
+    {
         ngenxx_log_set_callback(ngenxx_jni_log_callback);
         sEnv = env;
         sLogCallback = env->NewWeakGlobalRef(callback);
         jclass jcallback_class = env->GetObjectClass(callback);
-        if (jcallback_class) {
+        if (jcallback_class)
+        {
             sLogCallbackMethodId = env->GetMethodID(jcallback_class, "invoke", "(ILjava/lang/String;)V");
         }
-    } else {
+    }
+    else
+    {
         ngenxx_log_set_callback(nullptr);
         sEnv = nullptr;
         env->DeleteWeakGlobalRef(sLogCallback);
@@ -68,75 +75,288 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logSetCallback(JNIEnv *env, jobject t
     }
 }
 
-extern "C"
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logPrint(JNIEnv *env, jobject thiz,
-                                                                  jint level, jstring content) {
-    const char* cContent = env->GetStringUTFChars(content, JNI_FALSE);
+                                                    jint level, jstring content)
+{
+    const char *cContent = env->GetStringUTFChars(content, nullptr);
     ngenxx_log_print(level, cContent);
+    env->ReleaseStringUTFChars(content, cContent);
 }
 
 #pragma mark Net
 
-extern "C"
-JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env,
-                                                          jobject thiz,
-                                                          jstring url,
-                                                          jstring params，
+extern "C" JNIEXPORT jstring JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env, jobject thiz,
+                                                          jstring url, jstring params,
+                                                          jint method,
                                                           jobjectArray headers,
                                                           jlong timeout)
 {
-    const char *cUrl = env->GetStringUTFChars(url, JNI_FALSE);
-    const char *cParams = env->GetStringUTFChars(params, JNI_FALSE);
-    
+    const char *cUrl = env->GetStringUTFChars(url, nullptr);
+    const char *cParams = env->GetStringUTFChars(params, nullptr);
+
     int headersCount = env->GetArrayLength(headers);
-    char **headersV = (char **)malloc(headersCount * sizeof(char *));
-    for (int i = 0; i< headersCount; i++) {
-        auto jstr = (jstring) (env->GetObjectArrayElement(headers, i));
+    char **cHeadersV = (char **)malloc(headersCount * sizeof(char *));
+    auto *jstrV = (jstring *)malloc(sizeof(jstring));
+    for (int i = 0; i < headersCount; i++)
+    {
+        jstrV[i] = (jstring)(env->GetObjectArrayElement(headers, i));
         jboolean copy = JNI_TRUE;
-        headersV[i] = (char *)env->GetStringUTFChars(jstr, &copy);
+        cHeadersV[i] = (char *)env->GetStringUTFChars(jstrV[i], nullptr);
     }
 
-    const char *cRsp = ngenxx_net_http_request(cUrl, cParams, method, headersV, headersCount, timeout);
-
-    free((void *)headersV);
-
+    const char *cRsp = ngenxx_net_http_request(cUrl, cParams, method, cHeadersV, headersCount, timeout);
     jstring jstr = env->NewStringUTF(cRsp ?: "");
     free((void *)cRsp);
+
+    for (int i = 0; i < headersCount; i++)
+    {
+        env->ReleaseStringUTFChars(jstrV[i], cHeadersV[i]);
+    }
+    free((void *)jstrV);
+    free((void *)cHeadersV);
+
+    env->ReleaseStringUTFChars(params, cParams);
+    env->ReleaseStringUTFChars(url, cUrl);
+
     return jstr;
 }
 
 #pragma mark Lua
 
-extern "C"
-JNIEXPORT jboolean JNICALL
+extern "C" JNIEXPORT jboolean JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadF(JNIEnv *env, jobject thiz,
-                                                     jstring file)
+                                                  jstring file)
 {
-    const char *cFile = env->GetStringUTFChars(file, JNI_FALSE);
-    return ngenxx_L_loadF(cFile);
+    const char *cFile = env->GetStringUTFChars(file, nullptr);
+    jboolean res = ngenxx_L_loadF(cFile);
+    env->ReleaseStringUTFChars(file, cFile);
+    return res;
 }
 
-extern "C"
-JNIEXPORT jboolean JNICALL
+extern "C" JNIEXPORT jboolean JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadS(JNIEnv *env, jobject thiz,
-                                                     jstring script)
+                                                  jstring script)
 {
-    const char *cScript = env->GetStringUTFChars(script, JNI_FALSE);
-    return ngenxx_L_loadS(cScript);
+    const char *cScript = env->GetStringUTFChars(script, nullptr);
+    jboolean res = ngenxx_L_loadS(cScript);
+    env->ReleaseStringUTFChars(script, cScript);
+    return res;
 }
 
-extern "C"
-JNIEXPORT jstring JNICALL
+extern "C" JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCall(JNIEnv *env, jobject thiz,
-                                                    jstring func,
-                                                    jstring params)
+                                                 jstring func,
+                                                 jstring params)
 {
-    const char *cFunc = env->GetStringUTFChars(func, JNI_FALSE);
+    const char *cFunc = env->GetStringUTFChars(func, nullptr);
     const char *cParams = params ? env->GetStringUTFChars(params, JNI_FALSE) : nullptr;
-    const char *res = ngenxx_L_call(cFunc, cParams);
-    jstr = env->NewStringUTF(res ?: "");
-    free((void *)res);
+    const char *cRes = ngenxx_L_call(cFunc, cParams);
+    jstring jstr = env->NewStringUTF(cRes ?: "");
+    free((void *)cRes);
+    env->ReleaseStringUTFChars(params, cParams);
+    env->ReleaseStringUTFChars(func, cFunc);
     return jstr;
+}
+
+#pragma mark Store.SQLite
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteOpen(JNIEnv *env, jobject thiz,
+                                                           jstring file)
+{
+    const char *cFile = env->GetStringUTFChars(file, nullptr);
+    auto res = (jlong)ngenxx_store_sqlite_open(cFile);
+    env->ReleaseStringUTFChars(file, cFile);
+    return res;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteExecute(JNIEnv *env,
+                                                              jobject thiz,
+                                                              jlong conn,
+                                                              jstring sql)
+{
+    const char *cSql = env->GetStringUTFChars(sql, nullptr);
+    jboolean res = ngenxx_store_sqlite_execute((void *)conn, cSql);
+    env->ReleaseStringUTFChars(sql, cSql);
+    return res;
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDo(JNIEnv *env,
+                                                              jobject thiz,
+                                                              jlong conn,
+                                                              jstring sql)
+{
+    const char *cSql = env->GetStringUTFChars(sql, nullptr);
+    auto res = (jlong)ngenxx_store_sqlite_query_do((void *)conn, cSql);
+    env->ReleaseStringUTFChars(sql, cSql);
+    return res;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadRow(JNIEnv *env,
+                                                                   jobject thiz,
+                                                                   jlong query_result)
+{
+    jboolean res = ngenxx_store_sqlite_query_read_row((void *)query_result);
+    return res;
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnText(JNIEnv *env,
+                                                                          jobject thiz,
+                                                                          jlong query_result,
+                                                                          jstring column)
+{
+    const char *cColumn = env->GetStringUTFChars(column, nullptr);
+    const char *cRes = ngenxx_store_sqlite_query_read_column_text((void *)query_result, cColumn);
+    jstring jstr = env->NewStringUTF(cRes ?: "");
+    free((void *)cRes);
+    env->ReleaseStringUTFChars(column, cColumn);
+    return jstr;
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnInteger(
+    JNIEnv *env, jobject thiz, jlong query_result, jstring column)
+{
+    const char *cColumn = env->GetStringUTFChars(column, nullptr);
+    jlong res = ngenxx_store_sqlite_query_read_column_integer((void *)query_result, cColumn);
+    env->ReleaseStringUTFChars(column, cColumn);
+    return res;
+}
+
+extern "C" JNIEXPORT jdouble JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnFloat(
+    JNIEnv *env, jobject thiz, jlong query_result, jstring column)
+{
+    const char *cColumn = env->GetStringUTFChars(column, nullptr);
+    jdouble res = ngenxx_store_sqlite_query_read_column_float((void *)query_result, cColumn);
+    env->ReleaseStringUTFChars(column, cColumn);
+    return res;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDrop(JNIEnv *env,
+                                                                jobject thiz,
+                                                                jlong query_result)
+{
+    ngenxx_store_sqlite_query_drop((void *)query_result);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteClose(JNIEnv *env, jobject thiz,
+                                                            jlong conn)
+{
+    ngenxx_store_sqlite_close((void *)conn);
+}
+
+#pragma mark Srore.KV
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVOpen(JNIEnv *env, jobject thiz,
+                                                       jstring id)
+{
+    const char *cId = env->GetStringUTFChars(id, nullptr);
+    auto res = (jlong)ngenxx_store_kv_open(cId);
+    env->ReleaseStringUTFChars(id, cId);
+    return res;
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadString(JNIEnv *env,
+                                                             jobject thiz,
+                                                             jlong conn, jstring k)
+{
+    const char *cK = env->GetStringUTFChars(k, nullptr);
+    const char *cRes = ngenxx_store_kv_read_string((void *)conn, cK);
+    jstring jstr = env->NewStringUTF(cRes ?: "");
+    free((void *)cRes);
+    env->ReleaseStringUTFChars(k, cK);
+    return jstr;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteString(JNIEnv *env,
+                                                              jobject thiz,
+                                                              jlong conn, jstring k,
+                                                              jstring v)
+{
+    const char *cK = env->GetStringUTFChars(k, nullptr);
+    const char *cV = env->GetStringUTFChars(v, nullptr);
+    jboolean res = ngenxx_store_kv_write_string((void *)conn, cK, cV);
+    env->ReleaseStringUTFChars(v, cV);
+    env->ReleaseStringUTFChars(k, cK);
+    return res;
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadInteger(JNIEnv *env,
+                                                              jobject thiz,
+                                                              jlong conn, jstring k)
+{
+    const char *cK = env->GetStringUTFChars(k, nullptr);
+    jlong res = ngenxx_store_kv_read_integer((void *)conn, cK);
+    env->ReleaseStringUTFChars(k, cK);
+    return res;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteInteger(JNIEnv *env,
+                                                               jobject thiz,
+                                                               jlong conn, jstring k,
+                                                               jlong v)
+{
+    const char *cK = env->GetStringUTFChars(k, nullptr);
+    jboolean res = ngenxx_store_kv_write_integer((void *)conn, cK, v);
+    env->ReleaseStringUTFChars(k, cK);
+    return res;
+}
+
+extern "C" JNIEXPORT jdouble JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadFloat(JNIEnv *env, jobject thiz,
+                                                            jlong conn, jstring k)
+{
+    const char *cK = env->GetStringUTFChars(k, nullptr);
+    jdouble res = ngenxx_store_kv_read_float((void *)conn, cK);
+    env->ReleaseStringUTFChars(k, cK);
+    return res;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteFloat(JNIEnv *env,
+                                                             jobject thiz, jlong conn,
+                                                             jstring k, jdouble v)
+{
+    const char *cK = env->GetStringUTFChars(k, nullptr);
+    jboolean res = ngenxx_store_kv_write_float((void *)conn, cK, v);
+    env->ReleaseStringUTFChars(k, cK);
+    return res;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVContains(JNIEnv *env, jobject thiz,
+                                                           jlong conn, jstring k)
+{
+    const char *cK = env->GetStringUTFChars(k, nullptr);
+    jboolean res = ngenxx_store_kv_contains((void *)conn, cK);
+    env->ReleaseStringUTFChars(k, cK);
+    return res;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVClear(JNIEnv *env, jobject thiz,
+                                                        jlong conn)
+{
+    ngenxx_store_kv_clear((void *)conn);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVClose(JNIEnv *env, jobject thiz,
+                                                        jlong conn)
+{
+    ngenxx_store_kv_close((void *)conn);
 }
