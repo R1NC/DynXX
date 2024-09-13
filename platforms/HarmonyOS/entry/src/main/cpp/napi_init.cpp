@@ -59,22 +59,14 @@ static napi_value Init(napi_env env, napi_callback_info info) {
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
     const char *root = napiValue2char(env, argv[0]);
-    long l = (long)ngenxx_init(root);
+    bool b = ngenxx_init(root);
     free((void *)root);
-    napi_value v = long2NapiValue(env, l);
+    napi_value v = bool2NapiValue(env, b);
     return v;
 }
 
 static napi_value Release(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
-
-    long handle = napiValue2long(env, argv[0]);
-
-    ngenxx_release((void *)handle);
+    ngenxx_release();
 
     return int2NapiValue(env, napi_ok);
 }
@@ -211,7 +203,7 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info) {
 
 static napi_value LogPrint(napi_env env, napi_callback_info info) {
     size_t argc = 2;
-    napi_value argv[2] = {nullptr};
+    napi_value argv[2] = {nullptr, nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
@@ -229,7 +221,7 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
 
 static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
     size_t argc = 5;
-    napi_value argv[5] = {nullptr};
+    napi_value argv[5] = {nullptr, nullptr, nullptr, nullptr, nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
@@ -271,49 +263,46 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
 #pragma mark Lua
 
 static napi_value LLoadF(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr};
+    size_t argc = 1;
+    napi_value argv[1] = {nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    long handle = napiValue2long(env, argv[0]);
-    const char *file = napiValue2char(env, argv[1]);
+    const char *file = napiValue2char(env, argv[0]);
 
-    bool ret = ngenxx_L_loadF((void *)handle, file);
+    bool ret = ngenxx_L_loadF(file);
     free((void *)file);
 
     return bool2NapiValue(env, ret);
 }
 
 static napi_value LLoadS(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr};
+    size_t argc = 1;
+    napi_value argv[1] = {nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    long handle = napiValue2long(env, argv[0]);
-    const char *script = napiValue2char(env, argv[1]);
+    const char *script = napiValue2char(env, argv[0]);
 
-    bool ret = ngenxx_L_loadS((void *)handle, script);
+    bool ret = ngenxx_L_loadS(script);
     free((void *)script);
 
     return bool2NapiValue(env, ret);
 }
 
 static napi_value LCall(napi_env env, napi_callback_info info) {
-    size_t argc = 3;
-    napi_value argv[3] = {nullptr};
+    size_t argc = 2;
+    napi_value argv[2] = {nullptr, nullptr};
 
     napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
 
-    long handle = napiValue2long(env, argv[0]);
-    const char *func = napiValue2char(env, argv[1]);
-    const char *params = napiValue2char(env, argv[2]);
+    const char *func = napiValue2char(env, argv[0]);
+    const char *params = napiValue2char(env, argv[1]);
 
-    const char *cRes = ngenxx_L_call((void *)handle, func, params);
+    const char *cRes = ngenxx_L_call(func, params);
     free((void *)func);
     free((void *)params);
 

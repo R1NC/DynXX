@@ -15,17 +15,16 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
 }
 
 extern "C"
-JNIEXPORT jlong JNICALL
+JNIEXPORT jboolean JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz, jstring root) {
     const char *cRoot = env->GetStringUTFChars(root, JNI_FALSE);
-    return (jlong)ngenxx_init(cRoot);
+    return ngenxx_init(cRoot);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_release(JNIEnv *env, jobject thiz,
-                                                                 jlong handle) {
-    ngenxx_release((void*)handle);
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_release(JNIEnv *env, jobject thiz) {
+    ngenxx_release();
 }
 
 #pragma mark Log
@@ -113,30 +112,30 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env,
 extern "C"
 JNIEXPORT jboolean JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadF(JNIEnv *env, jobject thiz,
-                                                     jlong handle, jstring file)
+                                                     jstring file)
 {
     const char *cFile = env->GetStringUTFChars(file, JNI_FALSE);
-    return ngenxx_L_loadF((void *)handle, cFile);
+    return ngenxx_L_loadF(cFile);
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadS(JNIEnv *env, jobject thiz,
-                                                     jlong handle, jstring script)
+                                                     jstring script)
 {
     const char *cScript = env->GetStringUTFChars(script, JNI_FALSE);
-    return ngenxx_L_loadS((void *)handle, cScript);
+    return ngenxx_L_loadS(cScript);
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCall(JNIEnv *env, jobject thiz,
-                                                    jlong handle, jstring func,
+                                                    jstring func,
                                                     jstring params)
 {
     const char *cFunc = env->GetStringUTFChars(func, JNI_FALSE);
     const char *cParams = params ? env->GetStringUTFChars(params, JNI_FALSE) : nullptr;
-    const char *res = ngenxx_L_call((void *)handle, cFunc, cParams);
+    const char *res = ngenxx_L_call(cFunc, cParams);
     jstr = env->NewStringUTF(res ?: "");
     free((void *)res);
     return jstr;

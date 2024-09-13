@@ -14,54 +14,52 @@ extern "C"
 
 namespace NGenXX
 {
-    namespace LuaBridge
+    class LuaBridge
     {
+    private:
+        lua_State *lstate;
+
+    public:
         /**
          * @brief Create Lua environment
-         * @return `lua_State*`
          */
-        lua_State *create(void);
+        LuaBridge();
 
         /**
          * @brief Load Lua file
          * @warning Will alert a prompt window in WebAssembly!
-         * @param lstate `lua_State*`
          * @param file Lua file path
          * @return success or not
          */
-        int loadFile(lua_State *lstate, const std::string &file);
+        int loadFile(const std::string &file);
 
         /**
          * @brief Load Lua script content
-         * @param lstate `lua_State*`
          * @param script Lua script content
          * @return success or not
          */
-        int loadScript(lua_State *lstate, const std::string &script);
+        int loadScript(const std::string &script);
 
         /**
          * @brief export C function to Lua environment
-         * @param lstate `lua_State*`
          * @param funcName the exported function name
          * @param funcPointer the C function pointer
          */
-        void bindFunc(lua_State *lstate, const std::string &funcName, int (*funcPointer)(lua_State *));
+        void bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *));
 
         /**
          * @brief Call Lua function
-         * @param lstate `lua_State*`
          * @param func Lua function name
          * @param params Lua function params（wrap multiple params with json）
          * @return return value of Lua function
          */
-        const std::string callFunc(lua_State *lstate, const std::string &func, const std::string &params);
+        const std::string callFunc(const std::string &func, const std::string &params);
 
         /**
          * @brief Release Lua environment
-         * @param lstate `lua_State*`
          */
-        void destroy(lua_State *lstate);
-    }
+        ~LuaBridge();
+    };
 }
 
 #endif

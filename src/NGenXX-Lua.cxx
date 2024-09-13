@@ -14,6 +14,7 @@ extern "C"
 #include "util/JsonUtil.hxx"
 #include "lua/LuaBridge.hxx"
 #include "../include/NGenXX.h"
+#include "NGenXX-inner.hxx"
 #include "NGenXX-Lua.hxx"
 
 static inline void parse_lua_func_params(lua_State *L, std::function<void(cJSON *)> callback)
@@ -35,7 +36,7 @@ static inline void parse_lua_func_params(lua_State *L, std::function<void(cJSON 
     }
 }
 
-#define BIND_LUA_FUNC(h, f) NGenXX::LuaBridge::bindFunc((lua_State *)(h->lua), std::string(#f), f);
+#define BIND_LUA_FUNC(f) ((NGenXX::LuaBridge *)(_ngenxx_handle->lua))->bindFunc(std::string(#f), f);
 
 int ngenxx_get_versionL(lua_State *L)
 {
@@ -125,15 +126,13 @@ int ngenxx_net_http_requestL(lua_State *L)
 
 int ngenxx_store_sqlite_openL(lua_State *L)
 {
-    long sdk;
     char *file = NULL;
     parse_lua_func_params(L, [&](cJSON *j) -> void {
-        JSON_READ_NUM(j, sdk);
         JSON_READ_STR(j, file);
     });
-    if (sdk <= 0 || file == NULL)
+    if (file == NULL)
         return LUA_ERRRUN;
-    void *db = ngenxx_store_sqlite_open((void *)sdk, file);
+    void *db = ngenxx_store_sqlite_open(file);
     lua_pushinteger(L, (long)db);
     return 1;
 }
@@ -254,15 +253,13 @@ int ngenxx_store_sqlite_closeL(lua_State *L)
 
 int ngenxx_store_kv_openL(lua_State *L)
 {
-    long sdk;
     char *_id = NULL;
-    parse_lua_func_params(L, [&](cJSON *j) -> void { 
-        JSON_READ_NUM(j, sdk);
+    parse_lua_func_params(L, [&](cJSON *j) -> void {
         JSON_READ_STR(j, _id);
     });
-    if (sdk <= 0 || _id == NULL)
+    if (_id == NULL)
         return LUA_ERRRUN;
-    void *res = ngenxx_store_kv_open((void *)sdk, _id);
+    void *res = ngenxx_store_kv_open(_id);
     lua_pushinteger(L, (long)res);
     return 1;
 }
@@ -405,70 +402,75 @@ int ngenxx_store_kv_closeL(lua_State *L)
 #pragma mark Lua
 
 #ifndef __EMSCRIPTEN__
-bool ngenxx_L_loadF(void *sdk, const char *file)
+bool ngenxx_L_loadF(const char *file)
 {
-    return NGenXX::LuaBridge::loadFile((lua_State *)(((NGenXXHandle *)sdk)->lua), std::string(file)) == LUA_OK;
+    if (_ngenxx_handle == NULL || _ngenxx_handle->lua == NULL) return false;
+    return ((NGenXX::LuaBridge *)(_ngenxx_handle->lua))->loadFile(std::string(file)) == LUA_OK;
 }
 #endif
 
 EXPORT
-bool ngenxx_L_loadS(void *sdk, const char *script)
+bool ngenxx_L_loadS(const char *script)
 {
-    return NGenXX::LuaBridge::loadScript((lua_State *)(((NGenXXHandle *)sdk)->lua), std::string(script)) == LUA_OK;
+    if (_ngenxx_handle == NULL || _ngenxx_handle->lua == NULL) return false;
+    return ((NGenXX::LuaBridge *)(_ngenxx_handle->lua))->loadScript(std::string(script)) == LUA_OK;
 }
 
 EXPORT
-const char *ngenxx_L_call(void *sdk, const char *func, const char *params)
+const char *ngenxx_L_call(const char *func, const char *params)
 {
-    return str2charp(NGenXX::LuaBridge::callFunc((lua_State *)(((NGenXXHandle *)sdk)->lua), std::string(func), std::string(params)));
+    if (_ngenxx_handle == NULL || _ngenxx_handle->lua == NULL) return NULL;
+    return str2charp(((NGenXX::LuaBridge *)(_ngenxx_handle->lua))->callFunc(std::string(func), std::string(params)));
 }
 
-void _ngenxx_export_funcs_for_lua(NGenXXHandle *handle)
+void _ngenxx_export_funcs_for_lua()
 {
-    BIND_LUA_FUNC(handle, ngenxx_get_versionL);
+    BIND_LUA_FUNC(ngenxx_get_versionL);
 
-    BIND_LUA_FUNC(handle, ngenxx_log_printL);
+    BIND_LUA_FUNC(ngenxx_log_printL);
 
-    BIND_LUA_FUNC(handle, ngenxx_device_typeL);
-    BIND_LUA_FUNC(handle, ngenxx_device_nameL);
-    BIND_LUA_FUNC(handle, ngenxx_device_manufacturerL);
-    BIND_LUA_FUNC(handle, ngenxx_device_os_versionL);
-    BIND_LUA_FUNC(handle, ngenxx_device_cpu_archL);
+    BIND_LUA_FUNC(ngenxx_device_typeL);
+    BIND_LUA_FUNC(ngenxx_device_nameL);
+    BIND_LUA_FUNC(ngenxx_device_manufacturerL);
+    BIND_LUA_FUNC(ngenxx_device_os_versionL);
+    BIND_LUA_FUNC(ngenxx_device_cpu_archL);
 
-    BIND_LUA_FUNC(handle, ngenxx_net_http_requestL);
+    BIND_LUA_FUNC(ngenxx_net_http_requestL);
 
-    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_openL);
-    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_executeL);
-    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_doL);
-    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_read_rowL);
-    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_read_column_textL);
-    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_read_column_integerL);
-    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_read_column_floatL);
-    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_query_dropL);
-    BIND_LUA_FUNC(handle, ngenxx_store_sqlite_closeL);
+    BIND_LUA_FUNC(ngenxx_store_sqlite_openL);
+    BIND_LUA_FUNC(ngenxx_store_sqlite_executeL);
+    BIND_LUA_FUNC(ngenxx_store_sqlite_query_doL);
+    BIND_LUA_FUNC(ngenxx_store_sqlite_query_read_rowL);
+    BIND_LUA_FUNC(ngenxx_store_sqlite_query_read_column_textL);
+    BIND_LUA_FUNC(ngenxx_store_sqlite_query_read_column_integerL);
+    BIND_LUA_FUNC(ngenxx_store_sqlite_query_read_column_floatL);
+    BIND_LUA_FUNC(ngenxx_store_sqlite_query_dropL);
+    BIND_LUA_FUNC(ngenxx_store_sqlite_closeL);
 
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_openL);
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_read_stringL);
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_write_stringL);
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_read_integerL);
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_write_integerL);
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_read_floatL);
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_write_floatL);
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_containsL);
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_clearL);
-    BIND_LUA_FUNC(handle, ngenxx_store_kv_closeL);
+    BIND_LUA_FUNC(ngenxx_store_kv_openL);
+    BIND_LUA_FUNC(ngenxx_store_kv_read_stringL);
+    BIND_LUA_FUNC(ngenxx_store_kv_write_stringL);
+    BIND_LUA_FUNC(ngenxx_store_kv_read_integerL);
+    BIND_LUA_FUNC(ngenxx_store_kv_write_integerL);
+    BIND_LUA_FUNC(ngenxx_store_kv_read_floatL);
+    BIND_LUA_FUNC(ngenxx_store_kv_write_floatL);
+    BIND_LUA_FUNC(ngenxx_store_kv_containsL);
+    BIND_LUA_FUNC(ngenxx_store_kv_clearL);
+    BIND_LUA_FUNC(ngenxx_store_kv_closeL);
 }
 
-void _ngenxx_lua_init(NGenXXHandle *handle)
+bool _ngenxx_lua_init(void)
 {
-    handle->lua = NGenXX::LuaBridge::create();
-    _ngenxx_export_funcs_for_lua(handle);
+    if (_ngenxx_handle == NULL) return false;
+    if (_ngenxx_handle->lua != NULL) return true;
+    _ngenxx_handle->lua = new NGenXX::LuaBridge();
+    _ngenxx_export_funcs_for_lua();
+    return true;
 }
 
-void _ngenxx_lua_release(NGenXXHandle *handle)
+void _ngenxx_lua_release(void)
 {
-    if (handle->lua)
-    {
-        NGenXX::LuaBridge::destroy((lua_State *)(handle->lua));
-    }
+    if (_ngenxx_handle == NULL || _ngenxx_handle->lua == NULL) return;
+    delete (NGenXX::LuaBridge *)(_ngenxx_handle->lua);
+    _ngenxx_handle->lua = NULL;
 }

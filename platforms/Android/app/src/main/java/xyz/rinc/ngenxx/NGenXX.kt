@@ -7,8 +7,8 @@ class NGenXX {
         }
 
         external fun getVersion(): String
-        external fun init(root: String): Long
-        external fun release(handle: Long)
+        external fun init(root: String): Boolean
+        external fun release()
 
         external fun logSetLevel(level: Int)
         external fun logSetCallback(callback: ((level: Int, content: String) -> Unit)?)
@@ -16,8 +16,8 @@ class NGenXX {
 
         external fun netHttpRequest(url: String, params: String?, method: Int, headers: Array<String>?, timeout: Long): String?
 
-        external fun lLoadF(handle: Long, file: String): Boolean
-        external fun lLoadS(handle: Long, script: String): Boolean
-        external fun lCall(handle: Long, func : String, params :String?): String?
+        external fun lLoadF(file: String): Boolean
+        external fun lLoadS(script: String): Boolean
+        external fun lCall(func : String, params :String?): String?
     }
 }
