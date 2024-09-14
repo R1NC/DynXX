@@ -22,7 +22,6 @@ static NGenXX::Net::HttpClient *_ngenxx_http_client;
 static NGenXX::Store::SQLite *_ngenxx_sqlite;
 static NGenXX::Store::KV *_ngenxx_kv;
 static const std::string *_ngenxx_root;
-static bool _ngenxx_initialized;
 
 EXPORT_AUTO
 const char *ngenxx_get_version(void)
@@ -34,11 +33,11 @@ const char *ngenxx_get_version(void)
 EXPORT
 bool ngenxx_init(const char *root)
 {
-    if (_ngenxx_initialized || root == NULL)
+    if (_ngenxx_root != NULL || root == NULL)
         return false;
     _ngenxx_root = new std::string(root);
     _ngenxx_sqlite = new NGenXX::Store::SQLite();
-    _ngenxx_kv = new NGenXX::Store::KV(root);
+    _ngenxx_kv = new NGenXX::Store::KV(*_ngenxx_root);
     _ngenxx_http_client = new NGenXX::Net::HttpClient();
 #ifdef USE_LUA
     _ngenxx_lua_init();
@@ -49,7 +48,7 @@ bool ngenxx_init(const char *root)
 EXPORT
 void ngenxx_release()
 {
-    if (_ngenxx_initialized == false)
+    if (_ngenxx_root == NULL)
         return;
     delete _ngenxx_root;
     _ngenxx_root = NULL;
@@ -121,7 +120,7 @@ void ngenxx_log_print(int level, const char *content)
 EXPORT_AUTO
 const char *ngenxx_net_http_request(const char *url, const char *params, int method, char **headers_v, int headers_c, long timeout)
 {
-    if (url == NULL)
+    if (_ngenxx_http_client == NULL || url == NULL)
         return NULL;
     const std::string sUrl(url);
     const std::string sParams(params);
@@ -131,7 +130,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
         vHeaders = std::vector<std::string>(headers_v, headers_v + headers_c);
     }
 
-    auto s = ((NGenXX::Net::HttpClient *)(_ngenxx_http_client))->request(sUrl, sParams, method, vHeaders, timeout);
+    auto s = _ngenxx_http_client->request(sUrl, sParams, method, vHeaders, timeout);
     return str2charp(s);
 }
 

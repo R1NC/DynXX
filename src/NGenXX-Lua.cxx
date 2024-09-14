@@ -406,7 +406,7 @@ int ngenxx_store_kv_closeL(lua_State *L)
 #ifndef __EMSCRIPTEN__
 bool ngenxx_L_loadF(const char *file)
 {
-    if (_ngenxx_lua == NULL) return false;
+    if (_ngenxx_lua == NULL || file == NULL) return false;
     return _ngenxx_lua->loadFile(std::string(file)) == LUA_OK;
 }
 #endif
@@ -414,14 +414,14 @@ bool ngenxx_L_loadF(const char *file)
 EXPORT
 bool ngenxx_L_loadS(const char *script)
 {
-    if (_ngenxx_lua == NULL) return false;
+    if (_ngenxx_lua == NULL || script == NULL) return false;
     return _ngenxx_lua->loadScript(std::string(script)) == LUA_OK;
 }
 
 EXPORT
 const char *ngenxx_L_call(const char *func, const char *params)
 {
-    if (_ngenxx_lua == NULL) return NULL;
+    if (_ngenxx_lua == NULL || func == NULL) return NULL;
     return str2charp(_ngenxx_lua->callFunc(std::string(func), std::string(params)));
 }
 
