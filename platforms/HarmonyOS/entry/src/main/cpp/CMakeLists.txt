@@ -10,7 +10,10 @@ endif()
 include_directories(${NATIVERENDER_ROOT_PATH}
                     ${NATIVERENDER_ROOT_PATH}/include)
 
-add_library(${CMAKE_PROJECT_NAME} SHARED napi_init.cpp)
+add_library(${CMAKE_PROJECT_NAME} SHARED
+    napi_util.cpp
+    napi_init.cpp
+)
 
 set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.HarmonyOS/output/Release/arm64-v8a)
 
