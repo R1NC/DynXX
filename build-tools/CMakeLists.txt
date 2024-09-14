@@ -22,6 +22,7 @@ set(ENGINE_FILES
     ../src/device/DeviceInfo-mac.mm
     ../src/device/DeviceInfo-wasm.cxx
     ../src/device/DeviceInfo-windows.cxx
+    ../src/device/DeviceInfo-linux.cxx
     ../src/net/HttpClient.cxx
     ../src/store/SQLite.cxx
     ../src/store/KV.cxx
