@@ -95,7 +95,7 @@ int ngenxx_log_printL(lua_State *L)
         JSON_READ_STR(j, content); 
     });
     if (level == -1 || content == NULL)
-        return LUA_ERRRUN;
+        return 1;
     ngenxx_log_print(level, content);
     return 1;
 }
@@ -118,7 +118,7 @@ int ngenxx_net_http_requestL(lua_State *L)
         JSON_READ_STR_ARRAY(j, headers_v, HTTP_HEADERS_MAX_COUNT, HTTP_HEADER_MAX_LENGTH);
     });
     if (method == -1 || url == NULL)
-        return LUA_ERRRUN;
+        return 1;
     const char *res = ngenxx_net_http_request(url, params, method, headers_v, headers_c, timeout);
     lua_pushstring(L, res);
     return 1;
@@ -133,7 +133,7 @@ int ngenxx_store_sqlite_openL(lua_State *L)
         JSON_READ_STR(j, _id);
     });
     if (_id == NULL)
-        return LUA_ERRRUN;
+        return 1;
     void *db = ngenxx_store_sqlite_open(_id);
     lua_pushinteger(L, (long)db);
     return 1;
@@ -148,7 +148,7 @@ int ngenxx_store_sqlite_executeL(lua_State *L)
         JSON_READ_STR(j, sql);
     });
     if (conn <= 0 || sql == NULL)
-        return LUA_ERRRUN;
+        return 1;
     bool res = ngenxx_store_sqlite_execute((void *)conn, sql);
     lua_pushboolean(L, res);
     return 1;
@@ -163,7 +163,7 @@ int ngenxx_store_sqlite_query_doL(lua_State *L)
         JSON_READ_STR(j, sql);
     });
     if (conn <= 0 || sql == NULL)
-        return LUA_ERRRUN;
+        return 1;
     void *res = ngenxx_store_sqlite_query_do((void *)conn, sql);
     lua_pushinteger(L, (long)res);
     return 1;
@@ -176,7 +176,7 @@ int ngenxx_store_sqlite_query_read_rowL(lua_State *L)
         JSON_READ_NUM(j, query_result); 
     });
     if (query_result <= 0)
-        return LUA_ERRRUN;
+        return 1;
     bool res = ngenxx_store_sqlite_query_read_row((void *)query_result);
     lua_pushboolean(L, res);
     return 1;
@@ -191,7 +191,7 @@ int ngenxx_store_sqlite_query_read_column_textL(lua_State *L)
         JSON_READ_STR(j, column);
     });
     if (query_result <= 0 || column == NULL)
-        return LUA_ERRRUN;
+        return 1;
     const char *res = ngenxx_store_sqlite_query_read_column_text((void *)query_result, column);
     lua_pushstring(L, res);
     return 1;
@@ -206,7 +206,7 @@ int ngenxx_store_sqlite_query_read_column_integerL(lua_State *L)
         JSON_READ_STR(j, column);
     });
     if (query_result <= 0 || column == NULL)
-        return LUA_ERRRUN;
+        return 1;
     long long res = ngenxx_store_sqlite_query_read_column_integer((void *)query_result, column);
     lua_pushinteger(L, res);
     return 1;
@@ -221,7 +221,7 @@ int ngenxx_store_sqlite_query_read_column_floatL(lua_State *L)
         JSON_READ_STR(j, column);
     });
     if (query_result <= 0 || column == NULL)
-        return LUA_ERRRUN;
+        return 1;
     double res = ngenxx_store_sqlite_query_read_column_float((void *)query_result, column);
     lua_pushnumber(L, res);
     return 1;
@@ -234,7 +234,7 @@ int ngenxx_store_sqlite_query_dropL(lua_State *L)
         JSON_READ_NUM(j, query_result);
     });
     if (query_result <= 0)
-        return LUA_ERRRUN;
+        return 1;
     ngenxx_store_sqlite_query_drop((void *)query_result);
     return 1;
 }
@@ -246,7 +246,7 @@ int ngenxx_store_sqlite_closeL(lua_State *L)
         JSON_READ_NUM(j, conn);
     });
     if (conn <= 0)
-        return LUA_ERRRUN;
+        return 1;
     ngenxx_store_sqlite_close((void *)conn);
     return 1;
 }
@@ -260,7 +260,7 @@ int ngenxx_store_kv_openL(lua_State *L)
         JSON_READ_STR(j, _id);
     });
     if (_id == NULL)
-        return LUA_ERRRUN;
+        return 1;
     void *res = ngenxx_store_kv_open(_id);
     lua_pushinteger(L, (long)res);
     return 1;
@@ -275,7 +275,7 @@ int ngenxx_store_kv_read_stringL(lua_State *L)
         JSON_READ_STR(j, k);
     });
     if (conn <= 0 || k == NULL)
-        return LUA_ERRRUN;
+        return 1;
     const char *res = ngenxx_store_kv_read_string((void *)conn, k);
     lua_pushstring(L, res);
     return 1;
@@ -292,7 +292,7 @@ int ngenxx_store_kv_write_stringL(lua_State *L)
         JSON_READ_STR(j, v);
     });
     if (conn <= 0 || k == NULL)
-        return LUA_ERRRUN;
+        return 1;
     bool res = ngenxx_store_kv_write_string((void *)conn, k, v);
     lua_pushboolean(L, res);
     return 1;
@@ -307,7 +307,7 @@ int ngenxx_store_kv_read_integerL(lua_State *L)
         JSON_READ_STR(j, k);
     });
     if (conn <= 0 || k == NULL)
-        return LUA_ERRRUN;
+        return 1;
     long long res = ngenxx_store_kv_read_integer((void *)conn, k);
     lua_pushinteger(L, res);
     return 1;
@@ -324,7 +324,7 @@ int ngenxx_store_kv_write_integerL(lua_State *L)
         JSON_READ_NUM(j, v);
     });
     if (conn <= 0 || k == NULL)
-        return LUA_ERRRUN;
+        return 1;
     bool res = ngenxx_store_kv_write_integer((void *)conn, k, v);
     lua_pushboolean(L, res);
     return 1;
@@ -339,7 +339,7 @@ int ngenxx_store_kv_read_floatL(lua_State *L)
         JSON_READ_STR(j, k);
     });
     if (conn <= 0 || k == NULL)
-        return LUA_ERRRUN;
+        return 1;
     double res = ngenxx_store_kv_read_float((void *)conn, k);
     lua_pushnumber(L, res);
     return 1;
@@ -356,7 +356,7 @@ int ngenxx_store_kv_write_floatL(lua_State *L)
         JSON_READ_NUM(j, v);
     });
     if (conn <= 0 || k == NULL)
-        return LUA_ERRRUN;
+        return 1;
     bool res = ngenxx_store_kv_write_float((void *)conn, k, v);
     lua_pushboolean(L, res);
     return 1;
@@ -371,7 +371,7 @@ int ngenxx_store_kv_containsL(lua_State *L)
         JSON_READ_STR(j, k);
     });
     if (conn <= 0 || k == NULL)
-        return LUA_ERRRUN;
+        return 1;
     bool res = ngenxx_store_kv_contains((void *)conn, k);
     lua_pushboolean(L, res);
     return 1;
@@ -384,7 +384,7 @@ int ngenxx_store_kv_clearL(lua_State *L)
         JSON_READ_NUM(j, conn);
     });
     if (conn <= 0)
-        return LUA_ERRRUN;
+        return 1;
     ngenxx_store_kv_clear((void *)conn);
     return 1;
 }
@@ -396,7 +396,7 @@ int ngenxx_store_kv_closeL(lua_State *L)
         JSON_READ_NUM(j, conn);
     });
     if (conn <= 0)
-        return LUA_ERRRUN;
+        return 1;
     ngenxx_store_kv_close((void *)conn);
     return 1;
 }
