@@ -10,24 +10,25 @@
 #include "NGenXX-inner.hxx"
 #include "js/JsBridge.hxx"
 
+static NGenXX::JsBridge *_ngenxx_js;
+
 void registerJsModule();
-#define BIND_JS_FUNC(f) ((NGenXX::JsBridge *)(_ngenxx_handle->qjs))->bindFunc(#f, f);
+#define BIND_JS_FUNC(f) _ngenxx_js->bindFunc(#f, f);
 
 bool _ngenxx_js_init(void)
 {
-    if (_ngenxx_handle == NULL) return false;
-    if (_ngenxx_handle->qjs != NULL) return true;
-    _ngenxx_handle->qjs = new NGenXX::JsBridge();
+    if (_ngenxx_js != NULL) return true;
+    _ngenxx_js = new NGenXX::JsBridge();
     registerJsModule();
     return true;
 }
 
 void _ngenxx_js_release(void)
 {
-    if (_ngenxx_handle == NULL || _ngenxx_handle->qjs == NULL)
+    if (_ngenxx_js == NULL)
         return;
-    delete _ngenxx_handle->qjs;
-    _ngenxx_handle->qjs = NULL;
+    delete _ngenxx_js;
+    _ngenxx_js = NULL;
 }
 
 #pragma mark Net.Http
@@ -47,18 +48,18 @@ JSValue ngenxx_net_http_requestJ(JSContext *ctx, JSValueConst this_val, int argc
 
 #pragma mark JS
 
-bool ngenxx_J_loadF(void *sdk, const char *file)
+bool ngenxx_J_loadF(const char *file)
 {
-    if (sdk == NULL || file == NULL)
+    if (_ngenxx_js == NULL || file == NULL)
         return false;
-    return ((NGenXX::JsBridge *)(((NGenXXHandle *)sdk)->qjs))->loadFile(std::string(file));
+    return _ngenxx_js->loadFile(std::string(file));
 }
 
-const char *ngenxx_J_call(void *sdk, const char *func, const char *params)
+const char *ngenxx_J_call(const char *func, const char *params)
 {
-    if (sdk == NULL || func == NULL)
+    if (_ngenxx_js == NULL || func == NULL)
         return NULL;
-    return str2charp(((NGenXX::JsBridge *)(((NGenXXHandle *)sdk)->qjs))->callFunc(std::string(func), std::string(params)));
+    return str2charp(_ngenxx_js->callFunc(std::string(func), std::string(params)));
 }
 
 #pragma mark JS Module Register

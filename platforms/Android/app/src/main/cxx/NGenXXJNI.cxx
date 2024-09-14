@@ -164,11 +164,11 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCall(JNIEnv *env, jobject thiz,
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteOpen(JNIEnv *env, jobject thiz,
-                                                           jstring file)
+                                                           jstring id)
 {
-    const char *cFile = env->GetStringUTFChars(file, nullptr);
-    auto res = (jlong)ngenxx_store_sqlite_open(cFile);
-    env->ReleaseStringUTFChars(file, cFile);
+    const char *cId = env->GetStringUTFChars(id, nullptr);
+    auto res = (jlong)ngenxx_store_sqlite_open(cId);
+    env->ReleaseStringUTFChars(id, cId);
     return res;
 }
 

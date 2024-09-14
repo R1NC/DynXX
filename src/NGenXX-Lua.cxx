@@ -17,6 +17,8 @@ extern "C"
 #include "NGenXX-inner.hxx"
 #include "NGenXX-Lua.hxx"
 
+static NGenXX::LuaBridge *_ngenxx_lua;
+
 static inline void parse_lua_func_params(lua_State *L, std::function<void(cJSON *)> callback)
 {
     const char *s = luaL_checkstring(L, 1);
@@ -36,7 +38,7 @@ static inline void parse_lua_func_params(lua_State *L, std::function<void(cJSON 
     }
 }
 
-#define BIND_LUA_FUNC(f) ((NGenXX::LuaBridge *)(_ngenxx_handle->lua))->bindFunc(std::string(#f), f);
+#define BIND_LUA_FUNC(f) _ngenxx_lua->bindFunc(std::string(#f), f);
 
 int ngenxx_get_versionL(lua_State *L)
 {
@@ -126,13 +128,13 @@ int ngenxx_net_http_requestL(lua_State *L)
 
 int ngenxx_store_sqlite_openL(lua_State *L)
 {
-    char *file = NULL;
+    char *_id = NULL;
     parse_lua_func_params(L, [&](cJSON *j) -> void {
-        JSON_READ_STR(j, file);
+        JSON_READ_STR(j, _id);
     });
-    if (file == NULL)
+    if (_id == NULL)
         return LUA_ERRRUN;
-    void *db = ngenxx_store_sqlite_open(file);
+    void *db = ngenxx_store_sqlite_open(_id);
     lua_pushinteger(L, (long)db);
     return 1;
 }
@@ -404,23 +406,23 @@ int ngenxx_store_kv_closeL(lua_State *L)
 #ifndef __EMSCRIPTEN__
 bool ngenxx_L_loadF(const char *file)
 {
-    if (_ngenxx_handle == NULL || _ngenxx_handle->lua == NULL) return false;
-    return ((NGenXX::LuaBridge *)(_ngenxx_handle->lua))->loadFile(std::string(file)) == LUA_OK;
+    if (_ngenxx_lua == NULL) return false;
+    return _ngenxx_lua->loadFile(std::string(file)) == LUA_OK;
 }
 #endif
 
 EXPORT
 bool ngenxx_L_loadS(const char *script)
 {
-    if (_ngenxx_handle == NULL || _ngenxx_handle->lua == NULL) return false;
-    return ((NGenXX::LuaBridge *)(_ngenxx_handle->lua))->loadScript(std::string(script)) == LUA_OK;
+    if (_ngenxx_lua == NULL) return false;
+    return _ngenxx_lua->loadScript(std::string(script)) == LUA_OK;
 }
 
 EXPORT
 const char *ngenxx_L_call(const char *func, const char *params)
 {
-    if (_ngenxx_handle == NULL || _ngenxx_handle->lua == NULL) return NULL;
-    return str2charp(((NGenXX::LuaBridge *)(_ngenxx_handle->lua))->callFunc(std::string(func), std::string(params)));
+    if (_ngenxx_lua == NULL) return NULL;
+    return str2charp(_ngenxx_lua->callFunc(std::string(func), std::string(params)));
 }
 
 void _ngenxx_export_funcs_for_lua()
@@ -461,16 +463,15 @@ void _ngenxx_export_funcs_for_lua()
 
 bool _ngenxx_lua_init(void)
 {
-    if (_ngenxx_handle == NULL) return false;
-    if (_ngenxx_handle->lua != NULL) return true;
-    _ngenxx_handle->lua = new NGenXX::LuaBridge();
+    if (_ngenxx_lua != NULL) return true;
+    _ngenxx_lua = new NGenXX::LuaBridge();
     _ngenxx_export_funcs_for_lua();
     return true;
 }
 
 void _ngenxx_lua_release(void)
 {
-    if (_ngenxx_handle == NULL || _ngenxx_handle->lua == NULL) return;
-    delete (NGenXX::LuaBridge *)(_ngenxx_handle->lua);
-    _ngenxx_handle->lua = NULL;
+    if (_ngenxx_lua == NULL) return;
+    delete _ngenxx_lua;
+    _ngenxx_lua = NULL;
 }

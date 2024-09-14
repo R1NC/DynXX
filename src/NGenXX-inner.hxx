@@ -14,17 +14,6 @@
 
 #include <string>
 
-typedef struct NGenXXHandle
-{
-    void *http_client;
-    void *sqlite;
-    void *kv;
-    void *lua;
-    void *qjs;
-} NGenXXHandle;
-
-extern NGenXXHandle *_ngenxx_handle;
-
 #define HTTP_HEADERS_MAX_COUNT 100
 #define HTTP_HEADER_MAX_LENGTH 8190
 
