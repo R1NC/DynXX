@@ -1,20 +1,14 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-
-#include "../../build.Linux/output/include/NGenXX.h"
+#include "../POSIX/NGenXXPOSIX.h"
 
 int main()
 {
-    ngenxx_init("/var/www/NGenXX/");
+    ngenxx_posix_init("/var/www/");
 
-    bool loadSuccess = ngenxx_L_loadF("../Android/app/src/main/assets/biz.lua");
-    if (loadSuccess)
-    {
-        static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}";
-        const char *cRsp = ngenxx_L_call("lNetHttpRequest", cParams);
-        std::cout << cRsp << std::endl;
-    }
+    ngenxx_posix_testHttpL();
 
-    ngenxx_release();
+    ngenxx_posix_testDB();
+
+    ngenxx_posix_testKV();
+
+    ngenxx_posix_release();
 }

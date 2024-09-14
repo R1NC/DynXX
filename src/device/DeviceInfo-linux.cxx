@@ -1,11 +1,7 @@
-#if (defined(_WIN32) || defined(_WIN64))
+#if (!defined(__ANDROID__) && !defined(__APPLE__) && !defined(__OHOS__) && !defined(_WIN32) && !defined(__EMSCRIPTEN__))
 
 #include "DeviceInfo.hxx"
 #include "../../include/NGenXXDeviceInfo.h"
-
-#include <windows.h>
-#include <stddef.h>
-#include <stdint.h>
 
 int NGenXX::Device::DeviceInfo::deviceType()
 {
@@ -20,7 +16,7 @@ std::string NGenXX::Device::DeviceInfo::deviceName()
 
 std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
 {
-    return "Microsoft";
+    return "";
 }
 
 std::string NGenXX::Device::DeviceInfo::osVersion()
