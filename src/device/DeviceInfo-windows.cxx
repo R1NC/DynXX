@@ -20,8 +20,7 @@ std::string NGenXX::Device::DeviceInfo::deviceName()
 
 std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
 {
-    //TODO
-    return "";
+    return "Microsoft";
 }
 
 std::string NGenXX::Device::DeviceInfo::osVersion()
@@ -32,20 +31,8 @@ std::string NGenXX::Device::DeviceInfo::osVersion()
 
 int NGenXX::Device::DeviceInfo::cpuArch()
 {
-    win::OSInfo::WindowsArchitecture arch = win::OSInfo::GetArchitecture();
-    switch (arch)
-    {
-    case win::OSInfo::X86_ARCHITECTURE:
-        return NGenXXDeviceCpuArchX86;
-    case win::OSInfo::X64_ARCHITECTURE:
-        return NGenXXDeviceCpuArchX86_64;
-    case win::OSInfo::IA64_ARCHITECTURE:
-        return NGenXXDeviceCpuArchIA64;
-    case win::OSInfo::ARM64_ARCHITECTURE:
-        return NGenXXDeviceCpuArchARM_64;
-    default:
-        return NGenXXDeviceCpuArchUnknown;
-    }
+    //TODO
+    return NGenXXDeviceCpuArchUnknown;
 }
 
 #endif
