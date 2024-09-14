@@ -2,7 +2,12 @@
 
 NGenXX::Store::KV::KV(const std::string &root)
 {
-    MMKV::initializeMMKV(root);
+    std::string sRoot(root);
+#ifdef _WIN32
+    MMKV::initializeMMKV(string2MMKVPath_t(sRoot));
+#else
+    MMKV::initializeMMKV(sRoot);
+#endif
 }
 
 NGenXX::Store::KV::Connection *NGenXX::Store::KV::open(const std::string &_id)

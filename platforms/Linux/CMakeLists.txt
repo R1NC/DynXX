@@ -6,7 +6,10 @@ set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} 
+    main.cpp
+    ../POSIX/NGenXXPOSIX.cxx
+)
 
 get_filename_component(CURRENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 set(STATIC_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../build.Linux/output/Release")
