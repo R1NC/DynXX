@@ -20,7 +20,7 @@ class NGenXX {
         external fun lLoadS(script: String): Boolean
         external fun lCall(func : String, params :String?): String?
 
-        external fun storeSQLiteOpen(file: String): Long
+        external fun storeSQLiteOpen(id: String): Long
         external fun storeSQLiteExecute(conn: Long, sql: String): Boolean
         external fun storeSQLiteQueryDo(conn: Long, sql: String): Long
         external fun storeSQLiteQueryReadRow(queryResult: Long): Boolean

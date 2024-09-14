@@ -32,14 +32,14 @@ class MainActivity : ComponentActivity() {
         }
         NGenXX.lLoadS(luaScript)
 
-        //val params = "{\"url\":\"https://rinc.xyz\", \"params\":\"\"}"
-        //val rsp = NGenXX.lCall("lNetHttpRequest", params)
-        val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
+        val params = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\":1, \"timeout\":6666}"
+        val rsp = NGenXX.lCall("lNetHttpRequest", params)
+        /*val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
             "p0=1&p1=2&p2=3",
             0,
             arrayOf("Cache-Control: no-cache"),
             5555
-        )
+        )*/
 
         val kvConn = NGenXX.storeKVOpen("test")
         NGenXX.storeKVWriteString(kvConn,"s", "NGenXX")
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
         NGenXX.logPrint(1, "f->$f")
         NGenXX.storeKVClose(kvConn)
 
-        val dbConn = NGenXX.storeSQLiteOpen("$dir/test.db")
+        val dbConn = NGenXX.storeSQLiteOpen("test")
         val prepareSQL = application.assets.open("prepare_data.sql").bufferedReader().use {
             it.readText()
         }

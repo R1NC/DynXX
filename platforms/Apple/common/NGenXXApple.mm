@@ -45,8 +45,7 @@
 }
 
 - (void)testDB {
-    NSString *dbFile = [self.root stringByAppendingPathComponent:@"test.db"];
-    _db_conn = ngenxx_store_sqlite_open(NSString2CharP(dbFile));
+    _db_conn = ngenxx_store_sqlite_open("test");
     if (_db_conn) {
         NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
         NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];

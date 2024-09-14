@@ -7,10 +7,10 @@ extern "C" {
 
 /**
  * @brief Open DB
- * @param file DB file
+ * @param _id DB id
  * @return DB connection handle
  */
-void *ngenxx_store_sqlite_open(const char *file);
+void *ngenxx_store_sqlite_open(const char *_id);
 
 /**
  * @brief Execute a SQL(s)
