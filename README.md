@@ -8,11 +8,11 @@ A cross-platform C/C++ framework.
 
 | | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
 | :-- | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
+| Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
+| JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|
 | Network |✔️|✔️|✔️|✔️|✔️|✔️|⁉️|
 | SQLite |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
 |Key-Value Store|✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
-| Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|
 | JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
 | Device Info |🛠️|✔️|🛠️|🛠️|✔️|🛠️|❔|
 
