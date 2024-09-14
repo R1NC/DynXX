@@ -18,7 +18,7 @@
     <ClCompile Include="NGenXX.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="../POSIX/NGenXXPOSIX.cxx">
+    <ClCompile Include="..\POSIX\NGenXXPOSIX.cxx">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
