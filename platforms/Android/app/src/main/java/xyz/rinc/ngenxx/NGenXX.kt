@@ -40,5 +40,11 @@ class NGenXX {
         external fun storeKVContains(conn: Long, k: String): Boolean
         external fun storeKVClear(conn: Long)
         external fun storeKVClose(conn: Long)
+
+        external fun deviceType(): Int
+        external fun deviceName(): String?
+        external fun deviceManufacturer(): String?
+        external fun deviceOsVersion(): String?
+        external fun deviceCpuArch(): Int
     }
 }

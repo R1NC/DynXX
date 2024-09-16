@@ -360,3 +360,49 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVClose(JNIEnv *env, jobject thi
 {
     ngenxx_store_kv_close((void *)conn);
 }
+
+#pragma mark Device
+
+extern "C" JNIEXPORT jint JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceType(JNIEnv *env,
+                                                      jobject thiz)
+{
+    return ngenxx_device_type();
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceName(JNIEnv *env,
+                                                      jobject thiz)
+{
+    const char *cDN = ngenxx_device_name();
+    jstring jstr = env->NewStringUTF(cDN ?: "");
+    free((void *)cDN);
+    return jstr;
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceManufacturer(JNIEnv *env,
+                                                              jobject thiz)
+{
+    const char *cDM = ngenxx_device_manufacturer();
+    jstring jstr = env->NewStringUTF(cDM ?: "");
+    free((void *)cDM);
+    return jstr;
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceOsVersion(JNIEnv *env,
+                                                           jobject thiz)
+{
+    const char *cDOV = ngenxx_device_os_version();
+    jstring jstr = env->NewStringUTF(cDOV ?: "");
+    free((void *)cDOV);
+    return jstr;
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceCpuArch(JNIEnv *env,
+                                                         jobject thiz)
+{
+    return ngenxx_device_cpu_arch();
+}
