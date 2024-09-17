@@ -21,11 +21,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         
         val dir = filesDir?.absolutePath ?: return
-        NGenXX.init(dir)
+        if (!NGenXX.init(dir)) return
 
         NGenXX.logSetCallback {level, content ->
             android.util.Log.d("NGenXX", "$level | $content")
         }
+
+        NGenXX.logPrint(1, "deviceType:${NGenXX.deviceType()}")
+        NGenXX.logPrint(1, "deviceName:${NGenXX.deviceName()}")
+        NGenXX.logPrint(1, "deviceManufacturer:${NGenXX.deviceManufacturer()}")
+        NGenXX.logPrint(1, "deviceOsVersion:${NGenXX.deviceOsVersion()}")
+        NGenXX.logPrint(1, "deviceCpuArch:${NGenXX.deviceCpuArch()}")
 
         val luaScript = application.assets.open("biz.lua").bufferedReader().use {
             it.readText()
@@ -42,33 +48,39 @@ class MainActivity : ComponentActivity() {
         )*/
 
         val kvConn = NGenXX.storeKVOpen("test")
-        NGenXX.storeKVWriteString(kvConn,"s", "NGenXX")
-        val s = NGenXX.storeKVReadString(kvConn,"s")
-        NGenXX.logPrint(1, "s->$s")
-        NGenXX.storeKVWriteInteger(kvConn,"i", 1234567890)
-        val i = NGenXX.storeKVReadInteger(kvConn,"i")
-        NGenXX.logPrint(1, "i->$i")
-        NGenXX.storeKVWriteFloat(kvConn,"f", 0.123456789)
-        val f = NGenXX.storeKVReadFloat(kvConn,"f")
-        NGenXX.logPrint(1, "f->$f")
-        NGenXX.storeKVClose(kvConn)
+        if (kvConn > 0) {
+            NGenXX.storeKVWriteString(kvConn,"s", "NGenXX")
+            val s = NGenXX.storeKVReadString(kvConn,"s")
+            NGenXX.logPrint(1, "s->$s")
+            NGenXX.storeKVWriteInteger(kvConn,"i", 1234567890)
+            val i = NGenXX.storeKVReadInteger(kvConn,"i")
+            NGenXX.logPrint(1, "i->$i")
+            NGenXX.storeKVWriteFloat(kvConn,"f", 0.123456789)
+            val f = NGenXX.storeKVReadFloat(kvConn,"f")
+            NGenXX.logPrint(1, "f->$f")
+            NGenXX.storeKVClose(kvConn)
+        }
 
         val dbConn = NGenXX.storeSQLiteOpen("test")
-        val prepareSQL = application.assets.open("prepare_data.sql").bufferedReader().use {
-            it.readText()
+        if (dbConn > 0) {
+            val prepareSQL = application.assets.open("prepare_data.sql").bufferedReader().use {
+                it.readText()
+            }
+            NGenXX.storeSQLiteExecute(dbConn, prepareSQL)
+            val querySQL = application.assets.open("query.sql").bufferedReader().use {
+                it.readText()
+            }
+            val queryResult = NGenXX.storeSQLiteQueryDo(dbConn, querySQL)
+            if (queryResult > 0) {
+                while (NGenXX.storeSQLiteQueryReadRow(queryResult)) {
+                    val platform = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
+                    val vendor = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "vendor");
+                    NGenXX.logPrint(1,"$platform->$vendor")
+                }
+                NGenXX.storeSQLiteQueryDrop(queryResult)
+            }
+            NGenXX.storeSQLiteClose(dbConn)
         }
-        NGenXX.storeSQLiteExecute(dbConn, prepareSQL)
-        val querySQL = application.assets.open("query.sql").bufferedReader().use {
-            it.readText()
-        }
-        val queryResult = NGenXX.storeSQLiteQueryDo(dbConn, querySQL)
-        while (NGenXX.storeSQLiteQueryReadRow(queryResult)) {
-            val platform = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
-            val vendor = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "vendor");
-            NGenXX.logPrint(1,"$platform->$vendor")
-        }
-        NGenXX.storeSQLiteQueryDrop(queryResult)
-        NGenXX.storeSQLiteClose(dbConn)
 
         setContent {
             NGenXXTheme {

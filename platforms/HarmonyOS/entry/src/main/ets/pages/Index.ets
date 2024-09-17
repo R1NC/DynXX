@@ -20,6 +20,12 @@ struct Index {
               hilog.debug(0x0000, 'NGenXX', `${level} | ${log}`);
             });
 
+            ngenxxNapi.logPrint(1, `DeviceType: ${ngenxxNapi.deviceType()}`);
+            ngenxxNapi.logPrint(1, `DeviceName: ${ngenxxNapi.deviceName()}`);
+            ngenxxNapi.logPrint(1, `DeviceManufacturer: ${ngenxxNapi.deviceManufacturer()}`);
+            ngenxxNapi.logPrint(1, `DeviceOsVersion: ${ngenxxNapi.deviceOsVersion()}`);
+            ngenxxNapi.logPrint(1, `DeviceCpuArch: ${ngenxxNapi.deviceCpuArch()}`);
+
             let dbConn = ngenxxNapi.storeSQLiteOpen("test");
             if (dbConn > 0) {
               let insertSql = "CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, vendor TEXT);\n" +

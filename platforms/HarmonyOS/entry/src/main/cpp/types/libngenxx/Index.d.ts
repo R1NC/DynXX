@@ -33,3 +33,9 @@ export const storeKVWriteFloat: (conn: number, k: string, v: number) => boolean;
 export const storeKVContains: (conn: number, k: string) => boolean;
 export const storeKVClear: (conn: number) => void;
 export const storeKVClose: (conn: number) => void;
+
+export const deviceType:() => number;
+export const deviceName:() => string;
+export const deviceManufacturer:() => string;
+export const deviceOsVersion:() => string;
+export const deviceCpuArch:() => number;

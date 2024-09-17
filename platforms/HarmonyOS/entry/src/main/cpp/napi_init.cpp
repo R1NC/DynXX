@@ -529,6 +529,41 @@ static napi_value StoreKVClose(napi_env env, napi_callback_info info) {
     return int2NapiValue(env, napi_ok);
 }
 
+#pragma mark DeviceInfo
+
+static napi_value DeviceType(napi_env env, napi_callback_info info) {
+    int dt = ngenxx_device_type();
+    napi_value v = int2NapiValue(env, dt);
+    return v;
+}
+
+static napi_value DeviceName(napi_env env, napi_callback_info info) {
+    const char *cDN = ngenxx_device_name();
+    napi_value v = char2NapiValue(env, cDN);
+    free((void *)cDN);
+    return v;
+}
+
+static napi_value DeviceManufacturer(napi_env env, napi_callback_info info) {
+    const char *cDM = ngenxx_device_manufacturer();
+    napi_value v = char2NapiValue(env, cDM);
+    free((void *)cDM);
+    return v;
+}
+
+static napi_value DeviceOsVersion(napi_env env, napi_callback_info info) {
+    const char *cOV = ngenxx_device_name();
+    napi_value v = char2NapiValue(env, cOV);
+    free((void *)cOV);
+    return v;
+}
+
+static napi_value DeviceCpuArch(napi_env env, napi_callback_info info) {
+    int dca = ngenxx_device_cpu_arch();
+    napi_value v = int2NapiValue(env, dca);
+    return v;
+}
+
 #pragma mark Lua
 
 static napi_value LLoadF(napi_env env, napi_callback_info info) {
@@ -624,6 +659,13 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports) {
         {"storeKVContains", nullptr, StoreKVContains, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"storeKVClear", nullptr, StoreKVClear, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"storeKVClose", nullptr, StoreKVClose, nullptr, nullptr, nullptr, napi_default, nullptr},
+
+        {"deviceType", nullptr, DeviceType, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"deviceName", nullptr, DeviceName, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"deviceManufacturer", nullptr, DeviceManufacturer, nullptr, nullptr, nullptr, napi_default,
+         nullptr},
+        {"deviceOsVersion", nullptr, DeviceOsVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"deviceCpuArch", nullptr, DeviceCpuArch, nullptr, nullptr, nullptr, napi_default, nullptr},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;

@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'xyz.rinc.ngenxx.demo'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "xyz.rinc.ngenxx.demo"
@@ -58,6 +58,8 @@ android {
             version '3.22.1'
         }
     }
+    ndkVersion '27.1.12297006'
+    buildToolsVersion '35.0.0'
 }
 
 dependencies {
