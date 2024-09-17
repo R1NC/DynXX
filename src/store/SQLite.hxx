@@ -36,14 +36,13 @@ namespace NGenXX
                 class QueryResult
                 {
                 private:
-                    struct sqlite3 *db;
                     sqlite3_stmt *stmt;
 
                 public:
                     /**
                      * @warning `QueryResult` can only be constructed with `SQLite::Connection::query()`
                      */
-                    QueryResult(struct sqlite3 *db, sqlite3_stmt *stmt);
+                    QueryResult(sqlite3_stmt *stmt);
 
                     /**
                      * @brief Read a row from query result

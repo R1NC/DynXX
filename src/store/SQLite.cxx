@@ -56,7 +56,7 @@ NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connectio
         PRINT_ERR(rc, this->db);
         return nullptr;
     }
-    return new NGenXX::Store::SQLite::Connection::QueryResult(db, stmt);
+    return new NGenXX::Store::SQLite::Connection::QueryResult(stmt);
 }
 
 NGenXX::Store::SQLite::Connection::~Connection()
@@ -65,9 +65,8 @@ NGenXX::Store::SQLite::Connection::~Connection()
         sqlite3_close_v2(this->db);
 }
 
-NGenXX::Store::SQLite::Connection::QueryResult::QueryResult(struct sqlite3 *db, sqlite3_stmt *stmt)
+NGenXX::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt)
 {
-    this->db = db;
     this->stmt = stmt;
 }
 
@@ -78,7 +77,7 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
     int rc = sqlite3_step(this->stmt);
     if (rc != SQLITE_ROW)
     {
-        PRINT_ERR(rc, this->db);
+        PRINT_ERR(rc, NULL);
     }
     return rc == SQLITE_ROW;
 }
