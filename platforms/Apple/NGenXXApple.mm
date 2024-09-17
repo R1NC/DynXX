@@ -46,27 +46,30 @@
 
 - (void)testDB {
     _db_conn = ngenxx_store_sqlite_open("test");
-    if (_db_conn) {
-        NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
-        NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];
-        bool bPrepareData = ngenxx_store_sqlite_execute(_db_conn, NSString2CharP(sqlPrepareData));
-        if (!bPrepareData) return;
-        
-        NSString *sqlPathQuery = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"query.sql"];
-        NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:NULL];
-        void *qrQuery = ngenxx_store_sqlite_query_do(_db_conn, NSString2CharP(sqlQuery));
-        if (!qrQuery) return;
-        while (ngenxx_store_sqlite_query_read_row(qrQuery)) {
-            const char* platform = ngenxx_store_sqlite_query_read_column_text(qrQuery, "platform");
-            const char* vendor = ngenxx_store_sqlite_query_read_column_text(qrQuery, "vendor");
-            NSLog(@"platform:%@ vendor:%@", CharP2NSString(platform), CharP2NSString(vendor));
-        }
-        ngenxx_store_sqlite_query_drop(qrQuery);
+    if (!_db_conn) return;
+    
+    NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
+    NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];
+    bool bPrepareData = ngenxx_store_sqlite_execute(_db_conn, NSString2CharP(sqlPrepareData));
+    if (!bPrepareData) return;
+    
+    NSString *sqlPathQuery = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"query.sql"];
+    NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:NULL];
+    void *qrQuery = ngenxx_store_sqlite_query_do(_db_conn, NSString2CharP(sqlQuery));
+    if (!qrQuery) return;
+    
+    while (ngenxx_store_sqlite_query_read_row(qrQuery)) {
+        const char* platform = ngenxx_store_sqlite_query_read_column_text(qrQuery, "platform");
+        const char* vendor = ngenxx_store_sqlite_query_read_column_text(qrQuery, "vendor");
+        NSLog(@"platform:%@ vendor:%@", CharP2NSString(platform), CharP2NSString(vendor));
     }
+    ngenxx_store_sqlite_query_drop(qrQuery);
 }
 
 - (void)testKV {
     _kv_conn = ngenxx_store_kv_open("test");
+    if (!_kv_conn) return;
+    
     ngenxx_store_kv_write_string(_kv_conn, "s", "NGenXX");
     NSLog(@"%s", ngenxx_store_kv_read_string(_kv_conn, "s"));
     ngenxx_store_kv_write_integer(_kv_conn, "i", 1234567890);
