@@ -13,25 +13,29 @@
     <script>
         
         Module['onRuntimeInitialized'] = function () {
-            Module._ngenxx_init();
+            FS.mkdir('/data');
+		    //FS.mount(IDBFS, {}, '/data');
+		    var _initRet = Module._ngenxx_init('/data');
 
-            /**
-             * WARNING: C/C++ callback JS function in async thread is not supported:
-             * https://github.com/emscripten-core/emscripten/issues/16567
-             */
-            var _func = Module.addFunction(function (level, content) {
-                sContent = Module.UTF8ToString(content);
-                console.log('NGenXX<' + level + '>' + sContent);
-            }, 'vii');//wasm type signature just support number
-            Module._ngenxx_log_set_callback(_func);
+            if (_initRet > 0) {
+                /**
+                * WARNING: C/C++ callback JS function in async thread is not supported:
+                * https://github.com/emscripten-core/emscripten/issues/16567
+                */
+                var _func = Module.addFunction(function (level, content) {
+                    sContent = Module.UTF8ToString(content);
+                    console.log('NGenXX<' + level + '>' + sContent);
+                }, 'vii');//wasm type signature just support number
+                Module._ngenxx_log_set_callback(_func);
 
-            _luaScript = jstr2wasm("function lNetHttpRequest(pReq)\n" +
-                "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
-                "ngenxx_log_printL(pLog);\n" +
-                "rsp = ngenxx_net_http_requestL(pReq);\n" +
-                "return rsp;\n" +
-                "end");
-            _loadRet = Module._ngenxx_L_loadS(_luaScript);
+                _luaScript = jstr2wasm("function lNetHttpRequest(pReq)\n" +
+                    "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
+                    "ngenxx_log_printL(pLog);\n" +
+                    "rsp = ngenxx_net_http_requestL(pReq);\n" +
+                    "return rsp;\n" +
+                    "end");
+                _loadRet = Module._ngenxx_L_loadS(_luaScript);
+            }  
         }
 
         Module['destroy'] = function() {
@@ -59,7 +63,7 @@
         function testHttpReq() {
             _url = jstr2wasm("https://rinc.xyz");
             _params = jstr2wasm("");
-            _rsp = Module._ngenxx_net_http_request(_url, _params);
+            _rsp = Module._ngenxx_net_http_request(_url, _params, 0, 0, 0, 0);
 
             rsp = Module.UTF8ToString(_rsp);
             window.alert("http rsp:\n" + rsp);
