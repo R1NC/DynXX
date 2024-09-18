@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # TODO
-NDK_ROOT="~/Library/Android/sdk/ndk/27.0.12077973/"
+NDK_ROOT="~/Library/Android/sdk/ndk/27.1.12297006/"
 
 BUILD_DIR=../build.Android
 rm -rf ${BUILD_DIR}

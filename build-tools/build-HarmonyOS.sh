@@ -10,8 +10,7 @@ cd ${BUILD_DIR}
 
 function build4harmony {
   ABI=$1
-  API_LEVEL=$2
-  BUILD_TYPE=$3
+  BUILD_TYPE=$2
 
   ROOT_DIR=$(pwd)
   ABI_BUILD_DIR=${ROOT_DIR}/${ABI}
@@ -21,7 +20,6 @@ function build4harmony {
 
   cmake ../build-tools \
     -DOHOS_PLATFORM=OHOS \
-    -DOHOS_PLATFORM_LEVEL=${API_LEVEL} \
     -DOHOS_ARCH=${ABI} \
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${OUTPUT_DIR} \
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${OUTPUT_DIR} \
@@ -38,8 +36,8 @@ function build4harmony {
   rm -rf ${ABI_BUILD_DIR}
 }
 
-#build4harmony armeabi-v7a 12 Release
-build4harmony arm64-v8a 12 Release
+#build4harmony armeabi-v7a Release
+build4harmony arm64-v8a Release
 
 HEADER_OUTPUT_DIR=output/include
 mkdir -p ${HEADER_OUTPUT_DIR}
