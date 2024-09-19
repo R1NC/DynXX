@@ -6,11 +6,13 @@
 #include <vector>
 
 #include "log/Log.hxx"
+#include "crypto/Crypto.hxx"
 #include "device/DeviceInfo.hxx"
 #include "net/HttpClient.hxx"
 #include "store/SQLite.hxx"
 #include "store/KV.hxx"
 #include "util/JsonUtil.hxx"
+#include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
 #ifdef USE_LUA
 #include "NGenXX-Lua.hxx"
@@ -296,4 +298,40 @@ void ngenxx_store_kv_close(void *conn)
     if (conn == NULL)
         return;
     delete (NGenXX::Store::KV *)conn;
+}
+
+#pragma mark Crypto
+
+EXPORT_AUTO
+const unsigned char *ngenxx_crypto_aes_encrypt(const unsigned char *in, const unsigned int inLen,
+                                                              const unsigned char *key, const unsigned int keyLen, unsigned int *outLen)
+{
+    auto t = NGenXX::Crypto::AES::aesEncrypt({in, inLen}, {key, keyLen});
+    if (outLen) *outLen = std::get<1>(t);
+    return copyBytes(t);
+}
+
+EXPORT_AUTO
+const unsigned char *ngenxx_crypto_aes_decrypt(const unsigned char *in, const unsigned int inLen,
+                                                              const unsigned char *key, const unsigned int keyLen, unsigned int *outLen)
+{
+    auto t = NGenXX::Crypto::AES::aesDecrypt({in, inLen}, {key, keyLen});
+    if (outLen) *outLen = std::get<1>(t);
+    return copyBytes(t);
+}
+
+EXPORT_AUTO
+const unsigned char *ngenxx_crypto_hash_md5(const unsigned char *in, const unsigned int inLen, unsigned int *outLen)
+{
+    auto t = NGenXX::Crypto::Hash::md5({in, inLen});
+    if (outLen) *outLen = std::get<1>(t);
+    return copyBytes(t);
+}
+
+EXPORT_AUTO
+const unsigned char *ngenxx_crypto_hash_sha256(const unsigned char *in, const unsigned int inLen, unsigned int *outLen)
+{
+    auto t = NGenXX::Crypto::Hash::sha256({in, inLen});
+    if (outLen) *outLen = std::get<1>(t);
+    return copyBytes(t);
 }

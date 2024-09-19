@@ -46,5 +46,10 @@ class NGenXX {
         external fun deviceManufacturer(): String?
         external fun deviceOsVersion(): String?
         external fun deviceCpuArch(): Int
+
+        external fun cryptoAesEncrypt(input: ByteArray, key: ByteArray): ByteArray
+        external fun cryptoAesDecrypt(input: ByteArray, key: ByteArray): ByteArray
+        external fun cryptoHashMd5(input: ByteArray): ByteArray
+        external fun cryptoHashSha256(input: ByteArray): ByteArray
     }
 }

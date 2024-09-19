@@ -12,6 +12,7 @@ extern "C"
 }
 
 #include "util/JsonUtil.hxx"
+#include "util/TypeUtil.hxx"
 #include "lua/LuaBridge.hxx"
 #include "../include/NGenXX.h"
 #include "NGenXX-inner.hxx"

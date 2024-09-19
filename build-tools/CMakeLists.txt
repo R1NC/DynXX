@@ -7,15 +7,22 @@ set (CMAKE_CXX_STANDARD 17) # mmkv use `std::string_view` in C++17;
 #add_compile_options("-stdlib=libc++" "-lc++abi" "-v")
 
 option(USE_LUA "Use Lua or not" ON)
+if (NOT OHOS)
+    option(USE_WOLFSSL_AES "Use WOLFSSL AES" ON)
+endif()
 
 if(USE_LUA)
     add_definitions(-DUSE_LUA)
+endif()
+if (USE_WOLFSSL_AES)
+    add_definitions(-DWOLFSSL_AES_DIRECT)
 endif()
 
 project(NGenXX)
 
 set(ENGINE_FILES
     ../src/log/Log.cxx
+    ../src/crypto/Crypto.cxx
     ../src/device/DeviceInfo-android.cxx
     ../src/device/DeviceInfo-harmony.cxx
     ../src/device/DeviceInfo-ios.mm

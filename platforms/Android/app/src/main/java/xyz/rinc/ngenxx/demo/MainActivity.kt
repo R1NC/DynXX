@@ -16,6 +16,7 @@ import xyz.rinc.ngenxx.demo.ui.theme.NGenXXTheme
 
 class MainActivity : ComponentActivity() {
 
+    @OptIn(ExperimentalStdlibApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,6 +33,19 @@ class MainActivity : ComponentActivity() {
         NGenXX.logPrint(1, "deviceManufacturer:${NGenXX.deviceManufacturer()}")
         NGenXX.logPrint(1, "deviceOsVersion:${NGenXX.deviceOsVersion()}")
         NGenXX.logPrint(1, "deviceCpuArch:${NGenXX.deviceCpuArch()}")
+
+        val inputStr = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM<>()[]{}@#$%^&*-=+~!/|_,;:'`"
+        val inputBytes = inputStr.toByteArray(Charsets.UTF_8)
+        val keyStr = "MNBVCXZLKJHGFDSA"
+        val keyBytes = keyStr.toByteArray(Charsets.UTF_8)
+        val aesEncodedBytes = NGenXX.cryptoAesEncrypt(inputBytes, keyBytes)
+        val aesDecodedBytes = NGenXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
+        val aesDecodedStr = aesDecodedBytes.toString(Charsets.UTF_8)
+        NGenXX.logPrint(1,"AES->$aesDecodedStr")
+        val md5 = NGenXX.cryptoHashMd5(inputBytes).toHexString()
+        NGenXX.logPrint(1,"md5->$md5")
+        val sha256 = NGenXX.cryptoHashSha256(inputBytes).toHexString()
+        NGenXX.logPrint(1,"sha256->$sha256")
 
         val luaScript = application.assets.open("biz.lua").bufferedReader().use {
             it.readText()
