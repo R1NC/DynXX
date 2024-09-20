@@ -7,6 +7,7 @@
 #include "NGenXXNetHttp.h"
 #include "NGenXXStoreKV.h"
 #include "NGenXXStoreSQLite.h"
+#include "NGenXXJsonDecoder.h"
 #include "NGenXXLua.h"
 
 #ifdef  __cplusplus

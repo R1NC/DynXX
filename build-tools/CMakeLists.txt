@@ -32,6 +32,7 @@ set(ENGINE_FILES
     ../src/net/HttpClient.cxx
     ../src/store/SQLite.cxx
     ../src/store/KV.cxx
+    ../src/json/JsonDecoder.cxx
     ../src/NGenXX.cxx
 )
 if(OHOS)

@@ -11,6 +11,7 @@
 #include "net/HttpClient.hxx"
 #include "store/SQLite.hxx"
 #include "store/KV.hxx"
+#include "json/JsonDecoder.hxx"
 #include "util/JsonUtil.hxx"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
@@ -335,4 +336,53 @@ const unsigned char *ngenxx_crypto_hash_sha256(const unsigned char *in, const un
     auto t = NGenXX::Crypto::Hash::sha256({in, inLen});
     if (outLen) *outLen = std::get<1>(t);
     return copyBytes(t);
+}
+
+#pragma mark Json.Decoder
+
+void *ngenxx_json_decoder_init(const char *json)
+{
+    return json ? new NGenXX::Json::Decoder(std::string(json)) : NULL;
+}
+
+bool ngenxx_json_decoder_is_array(void *decoder, void *obj)
+{
+    if (decoder == NULL) return false;
+    return ((NGenXX::Json::Decoder *)decoder)->isArray(obj);
+}
+
+void *ngenxx_json_decoder_read_item(void *decoder, void *obj, const char *k)
+{
+    if (decoder == NULL || k == NULL) return NULL;
+    return ((NGenXX::Json::Decoder *)decoder)->readItem(obj, std::string(k));
+}
+
+const char *ngenxx_json_decoder_read_string(void *decoder, void *obj)
+{
+    if (decoder == NULL) return NULL;
+    return str2charp(((NGenXX::Json::Decoder *)decoder)->readString(obj));
+}
+
+double ngenxx_json_decoder_read_number(void *decoder, void *obj)
+{
+    if (decoder == NULL) return 0;
+    return ((NGenXX::Json::Decoder *)decoder)->readNumber(obj);
+}
+
+void *ngenxx_json_decoder_read_array(void *decoder, void *obj)
+{
+    if (decoder == NULL) return NULL;
+    return ((NGenXX::Json::Decoder *)decoder)->readArray(obj);
+}
+
+void *ngenxx_json_decoder_read_array_next(void *decoder, void *obj)
+{
+    if (decoder == NULL) return NULL;
+    return ((NGenXX::Json::Decoder *)decoder)->readArrayNext(obj);
+}
+
+void ngenxx_json_decoder_release(void *decoder)
+{
+    if (decoder == NULL) return;
+    delete (NGenXX::Json::Decoder *)decoder;
 }
