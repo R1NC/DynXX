@@ -6,14 +6,14 @@
 #include "../../include/NGenXXLog.h"
 #include "../log/Log.hxx"
 
-#define PRINT_L_ERROR(L, prefix)                                                                     \
-    do                                                                                               \
-    {                                                                                                \
-        const char *luaErrMsg = lua_tostring(L, -1);                                                 \
-        if (luaErrMsg != NULL)                                                                       \
-        {                                                                                            \
-            Log::print(NGenXXLogLevelError, (std::string(prefix) + std::string(luaErrMsg)).c_str()); \
-        }                                                                                            \
+#define PRINT_L_ERROR(L, prefix)                                                           \
+    do                                                                                     \
+    {                                                                                      \
+        const char *luaErrMsg = lua_tostring(L, -1);                                       \
+        if (luaErrMsg != NULL)                                                             \
+        {                                                                                  \
+            Log::print(NGenXXLogLevelError, std::string(prefix) + std::string(luaErrMsg)); \
+        }                                                                                  \
     } while (0);
 
 NGenXX::LuaBridge::LuaBridge()

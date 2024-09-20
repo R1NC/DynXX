@@ -9,6 +9,8 @@ namespace NGenXX
 {
     namespace Crypto
     {
+#define EMPTY_RESULT {NULL, 0}
+
         typedef std::tuple<const unsigned char *, const unsigned int> Bytes;
 
         namespace AES

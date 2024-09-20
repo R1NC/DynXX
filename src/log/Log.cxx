@@ -21,14 +21,14 @@ void NGenXX::Log::setCallback(void (*callback)(int level, const char *content))
     _NGenXX_Log_callback = callback;
 }
 
-void NGenXX::Log::print(int level, const char *content)
+void NGenXX::Log::print(int level, const std::string &content)
 {
-    if (content == NULL || level < _NGenXX_Log_level)
+    if (level < _NGenXX_Log_level)
         return;
     if (_NGenXX_Log_callback)
     {
-        char *c = (char *)malloc(strlen(content) + 1);
-        strcpy(c, content);
+        char *c = (char *)malloc(strlen(content.c_str()) + 1);
+        strcpy(c, content.c_str());
         _NGenXX_Log_callback(level, c);
     }
     else

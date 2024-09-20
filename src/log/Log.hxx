@@ -3,6 +3,8 @@
 
 #ifdef __cplusplus
 
+#include <string>
+
 namespace NGenXX
 {
     namespace Log
@@ -20,7 +22,7 @@ namespace NGenXX
         /**
          *
          */
-        void print(int level, const char *content);
+        void print(int level, const std::string &content);
     }
 }
 

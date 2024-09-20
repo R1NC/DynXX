@@ -22,7 +22,6 @@ project(NGenXX)
 
 set(ENGINE_FILES
     ../src/log/Log.cxx
-    ../src/crypto/Crypto.cxx
     ../src/device/DeviceInfo-android.cxx
     ../src/device/DeviceInfo-harmony.cxx
     ../src/device/DeviceInfo-ios.mm
@@ -35,6 +34,15 @@ set(ENGINE_FILES
     ../src/store/KV.cxx
     ../src/NGenXX.cxx
 )
+if(OHOS)
+    set(ENGINE_FILES ${ENGINE_FILES}
+        ../src/crypto/Crypto-OpenSSL.cxx
+    )
+else()
+    set(ENGINE_FILES ${ENGINE_FILES}
+        ../src/crypto/Crypto-WolfSSL.cxx
+    )
+endif()
 if(USE_LUA)
     set(ENGINE_FILES ${ENGINE_FILES}
         ../src/lua/LuaBridge.cxx

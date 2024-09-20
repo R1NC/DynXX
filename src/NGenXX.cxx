@@ -114,7 +114,8 @@ void ngenxx_log_set_callback(void (*callback)(int level, const char *log))
 EXPORT_AUTO
 void ngenxx_log_print(int level, const char *content)
 {
-    NGenXX::Log::print(level, content);
+    if (!content) return;
+    NGenXX::Log::print(level, std::string(content));
 }
 
 #pragma mark Net.Http
