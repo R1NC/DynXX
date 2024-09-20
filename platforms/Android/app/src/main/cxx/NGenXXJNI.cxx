@@ -406,3 +406,117 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceCpuArch(JNIEnv *env,
 {
     return ngenxx_device_cpu_arch();
 }
+
+#pragma mark Crypto
+
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
+                                                            jbyteArray input,
+                                                            jbyteArray key)
+{
+    jbyte *cIn = env->GetByteArrayElements(input, nullptr);
+    int inLen = env->GetArrayLength(input);
+    jbyte *cKey = env->GetByteArrayElements(key, nullptr);
+    int keyLen = env->GetArrayLength(key);
+
+    jbyteArray jba = nullptr;
+    unsigned int outLen;
+
+    auto cRes = ngenxx_crypto_aes_encrypt((const unsigned char *)cIn, inLen, (const unsigned char *)cKey, keyLen, &outLen);
+    if (cRes)
+    {
+        jba = env->NewByteArray(outLen);
+        env->SetByteArrayRegion(jba, 0, outLen, (jbyte *)cRes);
+        free((void *)cRes);
+    }
+    else
+    {
+        jba = env->NewByteArray(0);
+    }
+
+    env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+    env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
+    return jba;
+}
+
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
+                                                            jbyteArray input,
+                                                            jbyteArray key)
+{
+    jbyte *cIn = env->GetByteArrayElements(input, nullptr);
+    int inLen = env->GetArrayLength(input);
+    jbyte *cKey = env->GetByteArrayElements(key, nullptr);
+    int keyLen = env->GetArrayLength(key);
+
+    jbyteArray jba = nullptr;
+    unsigned int outLen;
+
+    auto cRes = ngenxx_crypto_aes_decrypt((const unsigned char *)cIn, inLen, (const unsigned char *)cKey, keyLen, &outLen);
+    if (cRes)
+    {
+        jba = env->NewByteArray(outLen);
+        env->SetByteArrayRegion(jba, 0, outLen, (jbyte *)cRes);
+        free((void *)cRes);
+    }
+    else
+    {
+        jba = env->NewByteArray(0);
+    }
+
+    env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+    env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
+    return jba;
+}
+
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashMd5(JNIEnv *env, jobject thiz,
+                                                         jbyteArray input)
+{
+    jbyte *cIn = env->GetByteArrayElements(input, nullptr);
+    int inLen = env->GetArrayLength(input);
+
+    jbyteArray jba = nullptr;
+    unsigned int outLen;
+
+    auto cRes = ngenxx_crypto_hash_md5((const unsigned char *)cIn, inLen, &outLen);
+    if (cRes)
+    {
+        jba = env->NewByteArray(outLen);
+        env->SetByteArrayRegion(jba, 0, outLen, (jbyte *)cRes);
+        free((void *)cRes);
+    }
+    else
+    {
+        jba = env->NewByteArray(0);
+    }
+
+    env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+    return jba;
+}
+
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashSha256(JNIEnv *env, jobject thiz,
+                                                            jbyteArray input)
+{
+    jbyte *cIn = env->GetByteArrayElements(input, nullptr);
+    int inLen = env->GetArrayLength(input);
+
+    jbyteArray jba = nullptr;
+    unsigned int outLen;
+
+    auto cRes = ngenxx_crypto_hash_sha256((const unsigned char *)cIn, inLen, &outLen);
+    if (cRes)
+    {
+        jba = env->NewByteArray(outLen);
+        env->SetByteArrayRegion(jba, 0, outLen, (jbyte *)cRes);
+        free((void *)cRes);
+    }
+    else
+    {
+        jba = env->NewByteArray(0);
+    }
+
+    env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+    return jba;
+}

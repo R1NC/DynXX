@@ -8,12 +8,17 @@ set (CMAKE_CXX_STANDARD 17) # mmkv use `std::string_view` in C++17;
 
 option(USE_LUA "Use Lua or not" ON)
 option(USE_QJS "Use QuickJS or not" ON)
+if (NOT OHOS)
+    option(USE_WOLFSSL_AES "Use WOLFSSL AES" ON)
+endif()
 
 if(USE_LUA)
     add_definitions(-DUSE_LUA)
 endif()
 if(USE_QJS)
     add_definitions(-DUSE_QJS)
+if (USE_WOLFSSL_AES)
+    add_definitions(-DWOLFSSL_AES_DIRECT)
 endif()
 
 project(NGenXX)
@@ -32,6 +37,15 @@ set(ENGINE_FILES
     ../src/store/KV.cxx
     ../src/NGenXX.cxx
 )
+if(OHOS)
+    set(ENGINE_FILES ${ENGINE_FILES}
+        ../src/crypto/Crypto-OpenSSL.cxx
+    )
+else()
+    set(ENGINE_FILES ${ENGINE_FILES}
+        ../src/crypto/Crypto-WolfSSL.cxx
+    )
+endif()
 if(USE_LUA)
     set(ENGINE_FILES ${ENGINE_FILES}
         ../src/lua/LuaBridge.cxx

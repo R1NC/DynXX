@@ -2,6 +2,7 @@
 #define NGENXX_H_
 
 #include "NGenXXLog.h"
+#include "NGenXXCrypto.h"
 #include "NGenXXDeviceInfo.h"
 #include "NGenXXNetHttp.h"
 #include "NGenXXStoreKV.h"
