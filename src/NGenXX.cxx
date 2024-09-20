@@ -340,47 +340,55 @@ const unsigned char *ngenxx_crypto_hash_sha256(const unsigned char *in, const un
 
 #pragma mark Json.Decoder
 
+EXPORT_AUTO
 void *ngenxx_json_decoder_init(const char *json)
 {
     return json ? new NGenXX::Json::Decoder(std::string(json)) : NULL;
 }
 
+EXPORT_AUTO
 bool ngenxx_json_decoder_is_array(void *decoder, void *obj)
 {
     if (decoder == NULL) return false;
     return ((NGenXX::Json::Decoder *)decoder)->isArray(obj);
 }
 
+EXPORT_AUTO
 void *ngenxx_json_decoder_read_item(void *decoder, void *obj, const char *k)
 {
     if (decoder == NULL || k == NULL) return NULL;
     return ((NGenXX::Json::Decoder *)decoder)->readItem(obj, std::string(k));
 }
 
+EXPORT_AUTO
 const char *ngenxx_json_decoder_read_string(void *decoder, void *obj)
 {
     if (decoder == NULL) return NULL;
     return str2charp(((NGenXX::Json::Decoder *)decoder)->readString(obj));
 }
 
+EXPORT_AUTO
 double ngenxx_json_decoder_read_number(void *decoder, void *obj)
 {
     if (decoder == NULL) return 0;
     return ((NGenXX::Json::Decoder *)decoder)->readNumber(obj);
 }
 
+EXPORT_AUTO
 void *ngenxx_json_decoder_read_array(void *decoder, void *obj)
 {
     if (decoder == NULL) return NULL;
     return ((NGenXX::Json::Decoder *)decoder)->readArray(obj);
 }
 
+EXPORT_AUTO
 void *ngenxx_json_decoder_read_array_next(void *decoder, void *obj)
 {
     if (decoder == NULL) return NULL;
     return ((NGenXX::Json::Decoder *)decoder)->readArrayNext(obj);
 }
 
+EXPORT_AUTO
 void ngenxx_json_decoder_release(void *decoder)
 {
     if (decoder == NULL) return;
