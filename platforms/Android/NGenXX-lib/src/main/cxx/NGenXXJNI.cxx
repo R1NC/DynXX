@@ -102,7 +102,6 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env, jobject t
     for (int i = 0; i < headersCount; i++)
     {
         jstrV[i] = (jstring)(env->GetObjectArrayElement(headers, i));
-        jboolean copy = JNI_TRUE;
         cHeadersV[i] = (char *)env->GetStringUTFChars(jstrV[i], nullptr);
     }
 
@@ -173,8 +172,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteOpen(JNIEnv *env, jobject 
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteExecute(JNIEnv *env,
-                                                              jobject thiz,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteExecute(JNIEnv *env, jobject thiz,
                                                               jlong conn,
                                                               jstring sql)
 {
@@ -185,8 +183,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteExecute(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDo(JNIEnv *env,
-                                                              jobject thiz,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDo(JNIEnv *env, jobject thiz,
                                                               jlong conn,
                                                               jstring sql)
 {
@@ -197,8 +194,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDo(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadRow(JNIEnv *env,
-                                                                   jobject thiz,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadRow(JNIEnv *env, jobject thiz,
                                                                    jlong query_result)
 {
     jboolean res = ngenxx_store_sqlite_query_read_row((void *)query_result);
@@ -206,8 +202,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadRow(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnText(JNIEnv *env,
-                                                                          jobject thiz,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
                                                                           jlong query_result,
                                                                           jstring column)
 {
@@ -220,8 +215,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnText(JNIEnv
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnInteger(
-    JNIEnv *env, jobject thiz, jlong query_result, jstring column)
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
+                                                                             jlong query_result, jstring column)
 {
     const char *cColumn = env->GetStringUTFChars(column, nullptr);
     jlong res = ngenxx_store_sqlite_query_read_column_integer((void *)query_result, cColumn);
@@ -230,8 +225,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnInteger(
 }
 
 extern "C" JNIEXPORT jdouble JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnFloat(
-    JNIEnv *env, jobject thiz, jlong query_result, jstring column)
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
+                                                                           jlong query_result, jstring column)
 {
     const char *cColumn = env->GetStringUTFChars(column, nullptr);
     jdouble res = ngenxx_store_sqlite_query_read_column_float((void *)query_result, cColumn);
@@ -240,8 +235,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnFloat(
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDrop(JNIEnv *env,
-                                                                jobject thiz,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDrop(JNIEnv *env, jobject thiz,
                                                                 jlong query_result)
 {
     ngenxx_store_sqlite_query_drop((void *)query_result);
@@ -267,8 +261,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVOpen(JNIEnv *env, jobject thiz
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadString(JNIEnv *env,
-                                                             jobject thiz,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadString(JNIEnv *env, jobject thiz,
                                                              jlong conn, jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
@@ -280,8 +273,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadString(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteString(JNIEnv *env,
-                                                              jobject thiz,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteString(JNIEnv *env, jobject thiz,
                                                               jlong conn, jstring k,
                                                               jstring v)
 {
@@ -294,8 +286,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteString(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadInteger(JNIEnv *env,
-                                                              jobject thiz,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadInteger(JNIEnv *env, jobject thiz,
                                                               jlong conn, jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
@@ -305,8 +296,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadInteger(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteInteger(JNIEnv *env,
-                                                               jobject thiz,
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteInteger(JNIEnv *env, jobject thiz,
                                                                jlong conn, jstring k,
                                                                jlong v)
 {
@@ -327,9 +317,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadFloat(JNIEnv *env, jobject
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteFloat(JNIEnv *env,
-                                                             jobject thiz, jlong conn,
-                                                             jstring k, jdouble v)
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteFloat(JNIEnv *env, jobject thiz,
+                                                             jlong conn, jstring k, jdouble v)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jboolean res = ngenxx_store_kv_write_float((void *)conn, cK, v);
@@ -364,15 +353,13 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVClose(JNIEnv *env, jobject thi
 #pragma mark Device
 
 extern "C" JNIEXPORT jint JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceType(JNIEnv *env,
-                                                      jobject thiz)
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceType(JNIEnv *env, jobject thiz)
 {
     return ngenxx_device_type();
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceName(JNIEnv *env,
-                                                      jobject thiz)
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceName(JNIEnv *env, jobject thiz)
 {
     const char *cDN = ngenxx_device_name();
     jstring jstr = env->NewStringUTF(cDN ?: "");
@@ -381,8 +368,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceName(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceManufacturer(JNIEnv *env,
-                                                              jobject thiz)
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceManufacturer(JNIEnv *env, jobject thiz)
 {
     const char *cDM = ngenxx_device_manufacturer();
     jstring jstr = env->NewStringUTF(cDM ?: "");
@@ -391,8 +377,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceManufacturer(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceOsVersion(JNIEnv *env,
-                                                           jobject thiz)
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceOsVersion(JNIEnv *env, jobject thiz)
 {
     const char *cDOV = ngenxx_device_os_version();
     jstring jstr = env->NewStringUTF(cDOV ?: "");
@@ -401,8 +386,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceOsVersion(JNIEnv *env,
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceCpuArch(JNIEnv *env,
-                                                         jobject thiz)
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceCpuArch(JNIEnv *env, jobject thiz)
 {
     return ngenxx_device_cpu_arch();
 }
@@ -415,14 +399,14 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesEncrypt(JNIEnv *env, jobject
                                                             jbyteArray key)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    int inLen = env->GetArrayLength(input);
+    size inLen = env->GetArrayLength(input);
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
-    int keyLen = env->GetArrayLength(key);
+    size keyLen = env->GetArrayLength(key);
 
-    jbyteArray jba = nullptr;
-    unsigned int outLen;
+    jbyteArray jba;
+    size outLen;
 
-    auto cRes = ngenxx_crypto_aes_encrypt((const unsigned char *)cIn, inLen, (const unsigned char *)cKey, keyLen, &outLen);
+    auto cRes = ngenxx_crypto_aes_encrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
     if (cRes)
     {
         jba = env->NewByteArray(outLen);
@@ -445,14 +429,14 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesDecrypt(JNIEnv *env, jobject
                                                             jbyteArray key)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    int inLen = env->GetArrayLength(input);
+    size inLen = env->GetArrayLength(input);
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
-    int keyLen = env->GetArrayLength(key);
+    size keyLen = env->GetArrayLength(key);
 
-    jbyteArray jba = nullptr;
-    unsigned int outLen;
+    jbyteArray jba;
+    size outLen;
 
-    auto cRes = ngenxx_crypto_aes_decrypt((const unsigned char *)cIn, inLen, (const unsigned char *)cKey, keyLen, &outLen);
+    auto cRes = ngenxx_crypto_aes_decrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
     if (cRes)
     {
         jba = env->NewByteArray(outLen);
@@ -474,12 +458,12 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashMd5(JNIEnv *env, jobject th
                                                          jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    int inLen = env->GetArrayLength(input);
+    size inLen = env->GetArrayLength(input);
 
-    jbyteArray jba = nullptr;
-    unsigned int outLen;
+    jbyteArray jba;
+    size outLen;
 
-    auto cRes = ngenxx_crypto_hash_md5((const unsigned char *)cIn, inLen, &outLen);
+    auto cRes = ngenxx_crypto_hash_md5((const byte *)cIn, inLen, &outLen);
     if (cRes)
     {
         jba = env->NewByteArray(outLen);
@@ -500,12 +484,12 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashSha256(JNIEnv *env, jobject
                                                             jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    int inLen = env->GetArrayLength(input);
+    size inLen = env->GetArrayLength(input);
 
-    jbyteArray jba = nullptr;
-    unsigned int outLen;
+    jbyteArray jba;
+    size outLen;
 
-    auto cRes = ngenxx_crypto_hash_sha256((const unsigned char *)cIn, inLen, &outLen);
+    auto cRes = ngenxx_crypto_hash_sha256((const byte *)cIn, inLen, &outLen);
     if (cRes)
     {
         jba = env->NewByteArray(outLen);

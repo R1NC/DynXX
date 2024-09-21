@@ -10,12 +10,12 @@
 #include "../../../external/openssl/include/openssl/md5.h"
 
 /*
-void NGenXX::Crypto::AES::aesgcmEncrypt(unsigned char *out,
-                                                    const unsigned char *key, unsigned int keyLen,
-                                                    const unsigned char *in, unsigned int inLen,
-                                                    const unsigned char *initVector, unsigned int initVectorLen,
-                                                    unsigned char *authTag, unsigned int authTagLen,
-                                                    const unsigned char *authVector, unsigned int authVectorLen)
+void NGenXX::Crypto::AES::aesgcmEncrypt(byte *out,
+                                                    const byte *key, size keyLen,
+                                                    const byte *in, size inLen,
+                                                    const byte *initVector, size initVectorLen,
+                                                    byte *authTag, size authTagLen,
+                                                    const byte *authVector, size authVectorLen)
 {
     EVP_CIPHER_CTX *ctx;
     int outLen, tmpLen;
@@ -33,12 +33,12 @@ void NGenXX::Crypto::AES::aesgcmEncrypt(unsigned char *out,
     EVP_CIPHER_CTX_free(ctx);
 }
 
-void NGenXX::Crypto::AES::aesgcmDecrypt(unsigned char *out,
-                                                    const unsigned char *key, unsigned int keyLen,
-                                                    const unsigned char *in, unsigned int inLen,
-                                                    const unsigned char *initVector, unsigned int initVectorLen,
-                                                    unsigned char *authTag, unsigned int authTagLen,
-                                                    const unsigned char *authVector, unsigned int authVectorLen)
+void NGenXX::Crypto::AES::aesgcmDecrypt(byte *out,
+                                                    const byte *key, size keyLen,
+                                                    const byte *in, size inLen,
+                                                    const byte *initVector, size initVectorLen,
+                                                    byte *authTag, size authTagLen,
+                                                    const byte *authVector, size authVectorLen)
 {
     EVP_CIPHER_CTX *ctx;
     int outLen, tmpLen, rv;
@@ -57,10 +57,10 @@ void NGenXX::Crypto::AES::aesgcmDecrypt(unsigned char *out,
 
 NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBytes, NGenXX::Crypto::Bytes keyBytes)
 {
-    const unsigned char *in = std::get<0>(inBytes);
-    const unsigned int inLen = std::get<1>(inBytes);
-    const unsigned char *key = std::get<0>(keyBytes);
-    const unsigned int keyLen = std::get<1>(keyBytes);
+    const byte *in = std::get<0>(inBytes);
+    const size inLen = std::get<1>(inBytes);
+    const byte *key = std::get<0>(keyBytes);
+    const size keyLen = std::get<1>(keyBytes);
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
         return EMPTY_RESULT;
     // keyLen = AES_BLOCK_SIZE * 8;
@@ -69,10 +69,10 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
     }
-    unsigned char fixedIn[outLen];
+    byte fixedIn[outLen];
     memset(fixedIn, 0, outLen);
     memcpy(fixedIn, in, inLen);
-    unsigned char out[outLen];
+    byte out[outLen];
     memset(out, 0, outLen);
     int offset = 0;
 
@@ -91,15 +91,15 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
         offset += AES_BLOCK_SIZE;
     }
 
-    return {out, (const unsigned int)outLen};
+    return {out, (const size)outLen};
 }
 
 NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBytes, NGenXX::Crypto::Bytes keyBytes)
 {
-    const unsigned char *in = std::get<0>(inBytes);
-    const unsigned int inLen = std::get<1>(inBytes);
-    const unsigned char *key = std::get<0>(keyBytes);
-    const unsigned int keyLen = std::get<1>(keyBytes);
+    const byte *in = std::get<0>(inBytes);
+    const size inLen = std::get<1>(inBytes);
+    const byte *key = std::get<0>(keyBytes);
+    const size keyLen = std::get<1>(keyBytes);
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
         return EMPTY_RESULT;
     // keyLen = AES_BLOCK_SIZE * 8;
@@ -108,10 +108,10 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
     }
-    unsigned char fixedIn[outLen];
+    byte fixedIn[outLen];
     memset(fixedIn, 0, outLen);
     memcpy(fixedIn, in, inLen);
-    unsigned char out[outLen];
+    byte out[outLen];
     memset(out, 0, outLen);
     int offset = 0;
 
@@ -130,17 +130,17 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
         offset += AES_BLOCK_SIZE;
     }
 
-    return {out, (const unsigned int)outLen};
+    return {out, (const size)outLen};
 }
 
 NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::md5(NGenXX::Crypto::Bytes inBytes)
 {
-    const unsigned char *in = std::get<0>(inBytes);
-    const unsigned int inLen = std::get<1>(inBytes);
+    const byte *in = std::get<0>(inBytes);
+    const size inLen = std::get<1>(inBytes);
     if (in == NULL || inLen == 0)
         return EMPTY_RESULT;
     int outLen = 16;
-    unsigned char out[outLen];
+    byte out[outLen];
     memset(out, 0, outLen);
 
     MD5_CTX md5;
@@ -166,17 +166,17 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::md5(NGenXX::Crypto::Bytes inBytes)
         return EMPTY_RESULT;
     }
 
-    return {out, (const unsigned int)outLen};
+    return {out, (const size)outLen};
 }
 
 NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::sha256(NGenXX::Crypto::Bytes inBytes)
 {
-    const unsigned char *in = std::get<0>(inBytes);
-    const unsigned int inLen = std::get<1>(inBytes);
+    const byte *in = std::get<0>(inBytes);
+    const size inLen = std::get<1>(inBytes);
     if (in == NULL || inLen == 0)
         return EMPTY_RESULT;
     int outLen = 32;
-    unsigned char out[outLen];
+    byte out[outLen];
     memset(out, 0, outLen);
 
     SHA256_CTX sha256;
@@ -202,5 +202,5 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::sha256(NGenXX::Crypto::Bytes inBytes
         return EMPTY_RESULT;
     }
 
-    return {out, (const unsigned int)outLen};
+    return {out, (const size)outLen};
 }

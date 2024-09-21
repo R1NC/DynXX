@@ -1,6 +1,8 @@
 #ifndef NGENXX_CRYPTO_HXX_
 #define NGENXX_CRYPTO_HXX_
 
+#include "../../include/NGenXXTypes.h"
+
 #ifdef __cplusplus
 
 #include <tuple>
@@ -11,7 +13,7 @@ namespace NGenXX
     {
 #define EMPTY_RESULT {NULL, 0}
 
-        typedef std::tuple<const unsigned char *, const unsigned int> Bytes;
+        typedef std::tuple<const byte *, const size> Bytes;
 
         namespace AES
         {
