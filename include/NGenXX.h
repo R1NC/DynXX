@@ -1,6 +1,7 @@
 #ifndef NGENXX_H_
 #define NGENXX_H_
 
+#include "NGenXXTypes.h"
 #include "NGenXXLog.h"
 #include "NGenXXCrypto.h"
 #include "NGenXXDeviceInfo.h"

@@ -28,7 +28,7 @@ void ngenxx_log_set_level(int level);
  * @warning Not accessible in Lua!
  * @param callback log callback
  */
-void ngenxx_log_set_callback(void (*callback)(int level, const char *log));
+void ngenxx_log_set_callback(void (*callback)(int level, const char *content));
 
 /**
  * @brief Print log

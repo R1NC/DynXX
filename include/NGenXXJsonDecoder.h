@@ -16,51 +16,59 @@ extern "C"
     /**
      * @brief Check if the node is an array
      * @param decoder JSON decoder
-     * @param obj JSON node, `NULL` represents the root
+     * @param node JSON node, `NULL` represents the root
      * @return true if the node is an array
      */
-    bool ngenxx_json_decoder_is_array(void *decoder, void *obj);
+    bool ngenxx_json_decoder_is_array(void *decoder, void *node);
 
     /**
-     * @brief Read JSON node
+     * @brief Check if the node is an object
      * @param decoder JSON decoder
-     * @param obj JSON node, `NULL` represents the root
+     * @param node JSON node, `NULL` represents the root
+     * @return true if the node is an array
+     */
+    bool ngenxx_json_decoder_is_object(void *decoder, void *node);
+
+    /**
+     * @brief Read JSON node wihh name
+     * @param decoder JSON decoder
+     * @param node JSON node, `NULL` represents the root
      * @param k JSON node name
      * @return JSON node
      */
-    void *ngenxx_json_decoder_read_item(void *decoder, void *obj, const char *k);
+    void *ngenxx_json_decoder_read_node(void *decoder, void *node, const char *k);
 
     /**
      * @brief Read string from the JSON node
      * @param decoder JSON decoder
-     * @param obj JSON node, `NULL` represents the root
+     * @param node JSON node, `NULL` represents the root
      * @return String
      */
-    const char *ngenxx_json_decoder_read_string(void *decoder, void *obj);
+    const char *ngenxx_json_decoder_read_string(void *decoder, void *node);
 
     /**
      * @brief Read number from the JOSON node
      * @param decoder JSON decoder
-     * @param obj JSON node, `NULL` represents the root
+     * @param node JSON node, `NULL` represents the root
      * @return Number
      */
-    double ngenxx_json_decoder_read_number(void *decoder, void *obj);
+    double ngenxx_json_decoder_read_number(void *decoder, void *node);
 
     /**
-     * @brief Read first node in the array
+     * @brief Read first child node of the Object/Array node
      * @param decoder JSON decoder
-     * @param obj JSON node, `NULL` represents the root
-     * @return First node of the array
+     * @param node JSON node, `NULL` represents the root
+     * @return First child node
      */
-    void *ngenxx_json_decoder_read_array(void *decoder, void *obj);
+    void *ngenxx_json_decoder_read_child(void *decoder, void *node);
 
     /**
-     * @brief Read next node in the array
+     * @brief Read next node
      * @param decoder JSON decoder
-     * @param obj JSON node, `NULL` represents the root
-     * @return Next node in the array
+     * @param node JSON node, `NULL` represents the root
+     * @return Next node
      */
-    void *ngenxx_json_decoder_read_array_next(void *decoder, void *obj);
+    void *ngenxx_json_decoder_read_next(void *decoder, void *node);
 
     /**
      * @brief Release JSON decoder

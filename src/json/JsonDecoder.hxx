@@ -16,22 +16,26 @@ namespace NGenXX
         private:
             cJSON *cjson;
 
-            cJSON *parseObj(void *obj);
+            cJSON *parseNode(void *node);
 
         public:
+            Decoder() = delete;
+
             Decoder(const std::string &json);
 
-            bool isArray(void *obj);
+            bool isArray(void *node);
 
-            void *readArray(void *obj);
+            bool isObject(void *node);
 
-            void *readArrayNext(void *obj);
+            void *readChild(void *node);
 
-            void *readItem(void *obj, const std::string &k);
+            void *readNext(void *node);
 
-            std::string readString(void *obj);
+            void *readNode(void *node, const std::string &k);
 
-            double readNumber(void *obj);
+            std::string readString(void *node);
+
+            double readNumber(void *node);
 
             ~Decoder();
         };

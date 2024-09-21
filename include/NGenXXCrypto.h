@@ -1,6 +1,8 @@
 #ifndef NGENXX_CRYPTO_H_
 #define NGENXX_CRYPTO_H_
 
+#include "NGenXXTypes.h"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -15,8 +17,7 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
      */
-    const unsigned char *ngenxx_crypto_aes_encrypt(const unsigned char *in, const unsigned int inLen,
-                                                              const unsigned char *key, const unsigned int keyLen, unsigned int *outLen);
+    const byte *ngenxx_crypto_aes_encrypt(const byte *in, const size inLen, const byte *key, const size keyLen, size *outLen);
 
     /**
      * @brief AES Decrypt
@@ -27,8 +28,7 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
      */
-    const unsigned char *ngenxx_crypto_aes_decrypt(const unsigned char *in, const unsigned int inLen,
-                                                              const unsigned char *key, const unsigned int keyLen, unsigned int *outLen);
+    const byte *ngenxx_crypto_aes_decrypt(const byte *in, const size inLen, const byte *key, const size keyLen, size *outLen);
 
     /**
      * @brief MD5 hash
@@ -37,7 +37,7 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data
      */
-    const unsigned char *ngenxx_crypto_hash_md5(const unsigned char *in, const unsigned int inLen, unsigned int *outLen);
+    const byte *ngenxx_crypto_hash_md5(const byte *in, const size inLen, size *outLen);
 
     /**
      * @brief SHA256
@@ -46,7 +46,7 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data
      */
-    const unsigned char *ngenxx_crypto_hash_sha256(const unsigned char *in, const unsigned int inLen, unsigned int *outLen);
+    const byte *ngenxx_crypto_hash_sha256(const byte *in, const size inLen, size *outLen);
 
 #ifdef __cplusplus
 }

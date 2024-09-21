@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "../include/NGenXXTypes.h"
 #include "log/Log.hxx"
 #include "crypto/Crypto.hxx"
 #include "device/DeviceInfo.hxx"
@@ -12,7 +13,6 @@
 #include "store/SQLite.hxx"
 #include "store/KV.hxx"
 #include "json/JsonDecoder.hxx"
-#include "util/JsonUtil.hxx"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
 #ifdef USE_LUA
@@ -107,7 +107,7 @@ void ngenxx_log_set_level(int level)
 }
 
 EXPORT_AUTO
-void ngenxx_log_set_callback(void (*callback)(int level, const char *log))
+void ngenxx_log_set_callback(void (*callback)(int level, const char *content))
 {
     NGenXX::Log::setCallback(callback);
 }
@@ -305,8 +305,7 @@ void ngenxx_store_kv_close(void *conn)
 #pragma mark Crypto
 
 EXPORT_AUTO
-const unsigned char *ngenxx_crypto_aes_encrypt(const unsigned char *in, const unsigned int inLen,
-                                                              const unsigned char *key, const unsigned int keyLen, unsigned int *outLen)
+const byte *ngenxx_crypto_aes_encrypt(const byte *in, const size inLen, const byte *key, const size keyLen, size *outLen)
 {
     auto t = NGenXX::Crypto::AES::aesEncrypt({in, inLen}, {key, keyLen});
     if (outLen) *outLen = std::get<1>(t);
@@ -314,8 +313,7 @@ const unsigned char *ngenxx_crypto_aes_encrypt(const unsigned char *in, const un
 }
 
 EXPORT_AUTO
-const unsigned char *ngenxx_crypto_aes_decrypt(const unsigned char *in, const unsigned int inLen,
-                                                              const unsigned char *key, const unsigned int keyLen, unsigned int *outLen)
+const byte *ngenxx_crypto_aes_decrypt(const byte *in, const size inLen, const byte *key, const size keyLen, size *outLen)
 {
     auto t = NGenXX::Crypto::AES::aesDecrypt({in, inLen}, {key, keyLen});
     if (outLen) *outLen = std::get<1>(t);
@@ -323,7 +321,7 @@ const unsigned char *ngenxx_crypto_aes_decrypt(const unsigned char *in, const un
 }
 
 EXPORT_AUTO
-const unsigned char *ngenxx_crypto_hash_md5(const unsigned char *in, const unsigned int inLen, unsigned int *outLen)
+const byte *ngenxx_crypto_hash_md5(const byte *in, const size inLen, size *outLen)
 {
     auto t = NGenXX::Crypto::Hash::md5({in, inLen});
     if (outLen) *outLen = std::get<1>(t);
@@ -331,7 +329,7 @@ const unsigned char *ngenxx_crypto_hash_md5(const unsigned char *in, const unsig
 }
 
 EXPORT_AUTO
-const unsigned char *ngenxx_crypto_hash_sha256(const unsigned char *in, const unsigned int inLen, unsigned int *outLen)
+const byte *ngenxx_crypto_hash_sha256(const byte *in, const size inLen, size *outLen)
 {
     auto t = NGenXX::Crypto::Hash::sha256({in, inLen});
     if (outLen) *outLen = std::get<1>(t);
@@ -347,45 +345,52 @@ void *ngenxx_json_decoder_init(const char *json)
 }
 
 EXPORT_AUTO
-bool ngenxx_json_decoder_is_array(void *decoder, void *obj)
+bool ngenxx_json_decoder_is_array(void *decoder, void *node)
 {
     if (decoder == NULL) return false;
-    return ((NGenXX::Json::Decoder *)decoder)->isArray(obj);
+    return ((NGenXX::Json::Decoder *)decoder)->isArray(node);
 }
 
 EXPORT_AUTO
-void *ngenxx_json_decoder_read_item(void *decoder, void *obj, const char *k)
+bool ngenxx_json_decoder_is_object(void *decoder, void *node)
+{
+    if (decoder == NULL) return false;
+    return ((NGenXX::Json::Decoder *)decoder)->isObject(node);
+}
+
+EXPORT_AUTO
+void *ngenxx_json_decoder_read_node(void *decoder, void *node, const char *k)
 {
     if (decoder == NULL || k == NULL) return NULL;
-    return ((NGenXX::Json::Decoder *)decoder)->readItem(obj, std::string(k));
+    return ((NGenXX::Json::Decoder *)decoder)->readNode(node, std::string(k));
 }
 
 EXPORT_AUTO
-const char *ngenxx_json_decoder_read_string(void *decoder, void *obj)
+const char *ngenxx_json_decoder_read_string(void *decoder, void *node)
 {
     if (decoder == NULL) return NULL;
-    return str2charp(((NGenXX::Json::Decoder *)decoder)->readString(obj));
+    return str2charp(((NGenXX::Json::Decoder *)decoder)->readString(node));
 }
 
 EXPORT_AUTO
-double ngenxx_json_decoder_read_number(void *decoder, void *obj)
+double ngenxx_json_decoder_read_number(void *decoder, void *node)
 {
     if (decoder == NULL) return 0;
-    return ((NGenXX::Json::Decoder *)decoder)->readNumber(obj);
+    return ((NGenXX::Json::Decoder *)decoder)->readNumber(node);
 }
 
 EXPORT_AUTO
-void *ngenxx_json_decoder_read_array(void *decoder, void *obj)
+void *ngenxx_json_decoder_read_child(void *decoder, void *node)
 {
     if (decoder == NULL) return NULL;
-    return ((NGenXX::Json::Decoder *)decoder)->readArray(obj);
+    return ((NGenXX::Json::Decoder *)decoder)->readChild(node);
 }
 
 EXPORT_AUTO
-void *ngenxx_json_decoder_read_array_next(void *decoder, void *obj)
+void *ngenxx_json_decoder_read_next(void *decoder, void *node)
 {
     if (decoder == NULL) return NULL;
-    return ((NGenXX::Json::Decoder *)decoder)->readArrayNext(obj);
+    return ((NGenXX::Json::Decoder *)decoder)->readNext(node);
 }
 
 EXPORT_AUTO
