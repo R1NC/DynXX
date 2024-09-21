@@ -2,7 +2,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <string>
 #include "../../include/NGenXXLog.h"
 #include "../log/Log.hxx"
 

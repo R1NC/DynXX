@@ -6,7 +6,6 @@
 #include "../log/Log.hxx"
 #include <algorithm>
 #include <vector>
-#include <string>
 
 #define DEFAULT_TIMEOUT 5000L
 
