@@ -38,7 +38,7 @@ std::string NGenXX::Json::Decoder::readString(void *node)
 {
     cJSON *cj = this->parseNode(node);
     if (cj != NULL && cJSON_IsString(cj))
-    {                                                               \
+    {
         return std::string(cj->valuestring ?: "");
     }
     return "";
@@ -57,7 +57,8 @@ double NGenXX::Json::Decoder::readNumber(void *node)
 void *NGenXX::Json::Decoder::readChild(void *node)
 {
     cJSON *cj = this->parseNode(node);
-    if (cj != NULL && (this->isArray(cj) || this->isObject(cj))) {
+    if (cj != NULL && (this->isArray(cj) || this->isObject(cj)))
+    {
         return cj->child;
     }
     return NULL;
