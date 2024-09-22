@@ -12,8 +12,8 @@
 #define EXPORT_AUTO EXPORT
 #endif
 
-constexpr int HTTP_HEADERS_MAX_COUNT = 100;
-constexpr int HTTP_HEADER_MAX_LENGTH = 8190;
+constexpr size HTTP_HEADERS_MAX_COUNT = 100;
+constexpr size HTTP_HEADER_MAX_LENGTH = 8190;
 
 #endif
 

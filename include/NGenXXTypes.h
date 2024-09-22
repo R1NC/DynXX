@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 typedef unsigned char byte;
-typedef unsigned int size;
+typedef unsigned long size;
 
 #ifdef  __cplusplus
 }

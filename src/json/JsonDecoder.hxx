@@ -6,6 +6,7 @@
 #ifdef __cplusplus
 
 #include <string>
+#include <functional>
 
 namespace NGenXX
 {
@@ -30,6 +31,8 @@ namespace NGenXX
             void *readChild(void *node);
 
             void *readNext(void *node);
+
+            void readChildren(void *node, std::function<void(int idx, void* child)> callback);
 
             void *readNode(void *node, const std::string &k);
 

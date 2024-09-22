@@ -92,14 +92,11 @@ int ngenxx_net_http_requestL(lua_State *L)
     void *headersNode = decoder.readNode(NULL, "headers_v");
     if (headersNode)
     {
-        void *headerNode = decoder.readChild(headersNode);
-        int idx = 0;
-        while (headerNode && idx < HTTP_HEADERS_MAX_COUNT)
-        {
+        decoder.readChildren(headersNode, [&](int idx, void *child) -> void {
+            if (idx == HTTP_HEADERS_MAX_COUNT) return;
             headers_v[idx] = (char *)malloc(HTTP_HEADER_MAX_LENGTH * sizeof(char) + 1);
-            strcpy(headers_v[idx], decoder.readString(headerNode).c_str());
-            headerNode = decoder.readNext(headerNode);
-        }
+            strcpy(headers_v[idx], decoder.readString(child).c_str());
+        });
     }
 
     if (method < 0 || url == NULL || headers_c > HTTP_HEADERS_MAX_COUNT)

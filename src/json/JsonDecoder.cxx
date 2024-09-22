@@ -64,6 +64,20 @@ void *NGenXX::Json::Decoder::readChild(void *node)
     return NULL;
 }
 
+void NGenXX::Json::Decoder::readChildren(void *node, std::function<void(int idx, void *child)> callback)
+{
+    if (!this->isArray(node) && !this->isObject(node))
+        return;
+    void *childNode = this->readChild(node);
+    int idx = 0;
+    while (childNode)
+    {
+        if (callback)
+            callback(idx++, childNode);
+        childNode = this->readNext(childNode);
+    }
+}
+
 void *NGenXX::Json::Decoder::readNext(void *node)
 {
     cJSON *cj = this->parseNode(node);
