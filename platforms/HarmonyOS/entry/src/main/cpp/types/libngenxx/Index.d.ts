@@ -39,3 +39,13 @@ export const deviceName:() => string;
 export const deviceManufacturer:() => string;
 export const deviceOsVersion:() => string;
 export const deviceCpuArch:() => number;
+
+export const jsonDecoderInit:(json: string) => number;
+export const jsonDecoderIsArray:(decoder: number, node: number) => boolean;
+export const jsonDecoderIsObject:(decoder: number, node: number) => boolean;
+export const jsonDecoderReadNode:(decoder: number, node: number, k: string) => number;
+export const jsonDecoderReadChild:(decoder: number, node: number) => number;
+export const jsonDecoderReadNext:(decoder: number, node: number) => number;
+export const jsonDecoderReadString:(decoder: number, node: number) => string;
+export const jsonDecoderReadNumber:(decoder: number, node: number) => number;
+export const jsonDecoderRelease:(decoder: number) => void;

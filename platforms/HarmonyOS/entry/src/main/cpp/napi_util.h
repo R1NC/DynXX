@@ -32,7 +32,7 @@
         }                                                                                                              \
     } while (0);
 
-const char *napiValue2char(napi_env env, napi_value nv);
+const char *napiValue2chars(napi_env env, napi_value nv);
 
 bool napiValue2bool(napi_env env, napi_value nv);
 
@@ -42,7 +42,7 @@ long napiValue2long(napi_env env, napi_value nv);
 
 double napiValue2double(napi_env env, napi_value nv);
 
-napi_value char2NapiValue(napi_env env, const char *c);
+napi_value chars2NapiValue(napi_env env, const char *c);
 
 napi_value long2NapiValue(napi_env env, long l);
 

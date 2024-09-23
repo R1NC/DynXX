@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char *napiValue2char(napi_env env, napi_value nv) {
+const char *napiValue2chars(napi_env env, napi_value nv) {
     napi_status status;
     size_t len;
     status = napi_get_value_string_utf8(env, nv, NULL, 0, &len);
@@ -41,7 +41,7 @@ double napiValue2double(napi_env env, napi_value nv) {
     return d;
 }
 
-napi_value char2NapiValue(napi_env env, const char *c) {
+napi_value chars2NapiValue(napi_env env, const char *c) {
     if (c == NULL)
         c = "";
     napi_value v;
