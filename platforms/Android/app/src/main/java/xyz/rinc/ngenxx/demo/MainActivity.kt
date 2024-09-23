@@ -52,14 +52,33 @@ class MainActivity : ComponentActivity() {
         }
         NGenXX.lLoadS(luaScript)
 
-        val params = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\":1, \"timeout\":6666}"
-        val rsp = NGenXX.lCall("lNetHttpRequest", params)
+        val jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\":1, \"timeout\":6666}"
+        val rsp = NGenXX.lCall("lNetHttpRequest", jsonParams)
         /*val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
             "p0=1&p1=2&p2=3",
             0,
             arrayOf("Cache-Control: no-cache"),
             5555
         )*/
+
+        val jsonDecoder = NGenXX.jsonDecoderInit(jsonParams)
+        if (jsonDecoder > 0) {
+            val urlNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "url")
+            if (urlNode > 0) {
+                val url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
+                NGenXX.logPrint(1, "url:$url")
+            }
+            val headersNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "headers_v")
+            if (headersNode > 0) {
+                var headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headersNode)
+                while (headerNode > 0) {
+                    val header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)
+                    NGenXX.logPrint(1, "header:$header")
+                    headerNode = NGenXX.jsonDecoderReadNext(jsonDecoder, headerNode)
+                }
+            }
+            NGenXX.jsonDecoderRelease(jsonDecoder)
+        }
 
         val kvConn = NGenXX.storeKVOpen("test")
         if (kvConn > 0) {

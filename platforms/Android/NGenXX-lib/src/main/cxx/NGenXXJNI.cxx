@@ -504,3 +504,78 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashSha256(JNIEnv *env, jobject
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     return jba;
 }
+
+#pragma mark JsonDecoder
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderInit(JNIEnv *env, jobject thiz,
+                                                           jstring json)
+{
+    const char *cJson = env->GetStringUTFChars(json, nullptr);
+    auto res = (jlong)ngenxx_json_decoder_init(cJson);
+    env->ReleaseStringUTFChars(json, cJson);
+    return res;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderIsArray(JNIEnv *env, jobject thiz,
+                                                              jlong decoder, jlong node)
+{
+    return ngenxx_json_decoder_is_array((void *)decoder, (void *)node);
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderIsObject(JNIEnv *env, jobject thiz,
+                                                               jlong decoder, jlong node)
+{
+    return ngenxx_json_decoder_is_object((void *)decoder, (void *)node);
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadNode(JNIEnv *env, jobject thiz,
+                                                               jlong decoder, jlong node,
+                                                               jstring k)
+{
+    const char *cK = env->GetStringUTFChars(k, nullptr);
+    auto res = (jlong)ngenxx_json_decoder_read_node((void *)decoder, (void *)node, cK);
+    env->ReleaseStringUTFChars(k, cK);
+    return res;
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadString(JNIEnv *env, jobject thiz,
+                                                                 jlong decoder, jlong node)
+{
+    const char *res = ngenxx_json_decoder_read_string((void *)decoder, (void *)node);
+    jstring jstr = env->NewStringUTF(res ?: "");
+    free((void *)res);
+    return jstr;
+}
+
+extern "C" JNIEXPORT jdouble JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadNumber(JNIEnv *env, jobject thiz,
+                                                                 jlong decoder, jlong node)
+{
+    return ngenxx_json_decoder_read_number((void *)decoder, (void *)node);
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadChild(JNIEnv *env, jobject thiz,
+                                                                jlong decoder, jlong node)
+{
+    return (jlong)ngenxx_json_decoder_read_child((void *)decoder, (void *)node);
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadNext(JNIEnv *env, jobject thiz,
+                                                               jlong decoder, jlong node)
+{
+    return (jlong)ngenxx_json_decoder_read_next((void *)decoder, (void *)node);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderRelease(JNIEnv *env, jobject thiz,
+                                                              jlong decoder)
+{
+    ngenxx_json_decoder_release((void *)decoder);
+}
