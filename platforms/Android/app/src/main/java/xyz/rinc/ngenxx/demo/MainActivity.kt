@@ -73,9 +73,9 @@ class MainActivity : ComponentActivity() {
                 val headersC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headersCNode)
                 NGenXX.logPrint(1, "headers_c:${headersC.toInt()}")
             }
-            val headersNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "headers_v")
-            if (headersNode > 0) {
-                var headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headersNode)
+            val headersVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "headers_v")
+            if (headersVNode > 0) {
+                var headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headersVNode)
                 while (headerNode > 0) {
                     val header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)
                     NGenXX.logPrint(1, "header:$header")
