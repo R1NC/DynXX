@@ -17,7 +17,7 @@ extern "C"
      * @brief Check if the node is an array
      * @param decoder JSON decoder
      * @param node JSON node, `NULL` represents the root
-     * @return true if the node is an array
+     * @return `true` if the node is an array
      */
     bool ngenxx_json_decoder_is_array(void *decoder, void *node);
 
@@ -25,7 +25,7 @@ extern "C"
      * @brief Check if the node is an object
      * @param decoder JSON decoder
      * @param node JSON node, `NULL` represents the root
-     * @return true if the node is an array
+     * @return `true` if the node is an object
      */
     bool ngenxx_json_decoder_is_object(void *decoder, void *node);
 
