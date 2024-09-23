@@ -10,6 +10,7 @@
 #include "../../../external/openssl/include/openssl/md5.h"
 
 constexpr int OpenSSL_OK = 1;
+constexpr int OpenSSL_AES_Key_BITS = 128;
 
 /*
 void NGenXX::Crypto::AES::aesgcmEncrypt(byte *out,
@@ -80,7 +81,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
 
     AES_KEY aes_key;
 
-    int ret = AES_set_encrypt_key(key, 128, &aes_key);
+    int ret = AES_set_encrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
     if (ret != 0)
     {
         Log::print(NGenXXLogLevelError, "AES_set_encrypt_key error:" + std::to_string(ret));
@@ -119,7 +120,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
 
     AES_KEY aes_key;
 
-    int ret = AES_set_decrypt_key(key, 128, &aes_key);
+    int ret = AES_set_decrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
     if (ret != 0)
     {
         Log::print(NGenXXLogLevelError, "AES_set_decrypt_key error:" + std::to_string(ret));
