@@ -25,12 +25,13 @@ NGenXX::Net::HttpClient::~HttpClient()
     curl_global_cleanup();
 }
 
-const std::string NGenXX::Net::HttpClient::request(const std::string &url, const std::string &params, int method, std::vector<std::string> &headers, long timeout)
+const std::string NGenXX::Net::HttpClient::request(const std::string &url, const std::string &params, const int method, const std::vector<std::string> &headers, const unsigned long timeout)
 {
     std::string rsp;
-    if (timeout <= 0)
+    int _timeout = timeout;
+    if (_timeout <= 0)
     {
-        timeout = DEFAULT_TIMEOUT;
+        _timeout = DEFAULT_TIMEOUT;
     }
 
     CURL *curl = curl_easy_init();
@@ -38,8 +39,8 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
     {
         Log::print(NGenXXLogLevelDebug, "HttpClient.request url: " + url + " params: " + params);
 
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
-        curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, timeout);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
+        curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
         if (method == NGenXXNetHttpMethodPost)
         {

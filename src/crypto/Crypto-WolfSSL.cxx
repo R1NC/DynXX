@@ -8,6 +8,8 @@
 #include "../../../external/wolfssl/wolfssl/wolfcrypt/sha.h"
 #include "../../../external/wolfssl/wolfssl/wolfcrypt/sha256.h"
 
+constexpr int WolfSSL_OK = 0;
+
 /*
 void NGenXX::Crypto::AES::aesgcmEncrypt(byte *out,
                                                     const byte *key, size keyLen,
@@ -59,14 +61,14 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
     Aes aes[1];
 
     int ret = wc_AesInit(aes, NULL, 0);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "AES_set_decrypt_key error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     ret = wc_AesSetKey(aes, key, keyLen, out, AES_ENCRYPTION);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_AesSetKey_AES_ENCRYPTION error:" + std::to_string(ret));
         return EMPTY_RESULT;
@@ -75,7 +77,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
     while (offset < inLen)
     {
         ret = wc_AesEncryptDirect(aes, out + offset, fixedIn + offset);
-        if (ret != 0)
+        if (ret != WolfSSL_OK)
         {
             Log::print(NGenXXLogLevelError, "wc_AesEncryptDirect error:" + std::to_string(ret));
             return EMPTY_RESULT;
@@ -110,14 +112,14 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
     Aes aes[1];
 
     int ret = wc_AesInit(aes, NULL, 0);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_AesInit error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     ret = wc_AesSetKey(aes, key, keyLen, out, AES_DECRYPTION);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_AesSetKey_AES_DECRYPTION error:" + std::to_string(ret));
         return EMPTY_RESULT;
@@ -126,7 +128,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
     while (offset < inLen)
     {
         ret = wc_AesDecryptDirect(aes, out + offset, fixedIn + offset);
-        if (ret != 0)
+        if (ret != WolfSSL_OK)
         {
             Log::print(NGenXXLogLevelError, "wc_AesDecryptDirect error:" + std::to_string(ret));
             return EMPTY_RESULT;
@@ -150,21 +152,21 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::md5(NGenXX::Crypto::Bytes inBytes)
     wc_Md5 md5;
 
     int ret = wc_InitMd5(&md5);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_InitMd5 error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     ret = wc_Md5Update(&md5, (byte *)in, inLen);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_Md5Update error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     ret = wc_Md5Final(&md5, out);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_Md5Final error:" + std::to_string(ret));
         return EMPTY_RESULT;
@@ -188,21 +190,21 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::sha256(NGenXX::Crypto::Bytes inBytes
     wc_Sha256 sha256;
 
     int ret = wc_InitSha256(&sha256);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_InitSha256 error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     wc_Sha256Update(&sha256, (byte *)in, inLen);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_Sha256Update error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     wc_Sha256Final(&sha256, out);
-    if (ret != 0)
+    if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_Sha256Final error:" + std::to_string(ret));
         return EMPTY_RESULT;

@@ -9,6 +9,8 @@
 #include "../../../external/openssl/include/openssl/sha.h"
 #include "../../../external/openssl/include/openssl/md5.h"
 
+constexpr int OpenSSL_OK = 1;
+
 /*
 void NGenXX::Crypto::AES::aesgcmEncrypt(byte *out,
                                                     const byte *key, size keyLen,
@@ -79,7 +81,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
     AES_KEY aes_key;
 
     int ret = AES_set_encrypt_key(key, keyLen, &aes_key);
-    if (ret != 0)
+    if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "AES_set_encrypt_key error:" + std::to_string(ret));
         return EMPTY_RESULT;
@@ -118,7 +120,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
     AES_KEY aes_key;
 
     int ret = AES_set_decrypt_key(key, keyLen, &aes_key);
-    if (ret != 0)
+    if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "AES_set_decrypt_key error:" + std::to_string(ret));
         return EMPTY_RESULT;
@@ -146,21 +148,21 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::md5(NGenXX::Crypto::Bytes inBytes)
     MD5_CTX md5;
 
     int ret = MD5_Init(&md5);
-    if (ret != 0)
+    if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "MD5_Init error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     ret = MD5_Update(&md5, in, inLen);
-    if (ret != 0)
+    if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "MD5_Update error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     ret = MD5_Final(out, &md5);
-    if (ret != 0)
+    if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "MD5_Final error:" + std::to_string(ret));
         return EMPTY_RESULT;
@@ -182,21 +184,21 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::sha256(NGenXX::Crypto::Bytes inBytes
     SHA256_CTX sha256;
 
     int ret = SHA256_Init(&sha256);
-    if (ret != 0)
+    if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "SHA256_Init error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     ret = SHA256_Update(&sha256, in, inLen);
-    if (ret != 0)
+    if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "SHA256_Update error:" + std::to_string(ret));
         return EMPTY_RESULT;
     }
 
     ret = SHA256_Final(out, &sha256);
-    if (ret != 0)
+    if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "SHA256_Final error:" + std::to_string(ret));
         return EMPTY_RESULT;

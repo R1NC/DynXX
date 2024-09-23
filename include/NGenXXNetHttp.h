@@ -24,7 +24,7 @@ enum NGenXXNetHttpMethod
  * @param timeout Timeout(milliseconds)
  * @return response
  */
-const char *ngenxx_net_http_request(const char *url, const char *params, int method, char **headers_v, int headers_c, long timeout);
+const char *ngenxx_net_http_request(const char *url, const char *params, const int method, const char **headers_v, const int headers_c, const unsigned long timeout);
 
 #ifdef  __cplusplus
 }

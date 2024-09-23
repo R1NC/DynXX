@@ -84,9 +84,9 @@ int ngenxx_net_http_requestL(lua_State *L)
     NGenXX::Json::Decoder decoder(luaL_checkstring(L, 1));
     const char *url = str2charp(decoder.readString(decoder.readNode(NULL, "url")));
     const char *params = str2charp(decoder.readString(decoder.readNode(NULL, "params")));
-    int method = decoder.readNumber(decoder.readNode(NULL, "method"));
-    int headers_c = decoder.readNumber(decoder.readNode(NULL, "headers_c"));
-    long timeout = decoder.readNumber(decoder.readNode(NULL, "timeout"));
+    const int method = decoder.readNumber(decoder.readNode(NULL, "method"));
+    const int headers_c = decoder.readNumber(decoder.readNode(NULL, "headers_c"));
+    const unsigned long timeout = decoder.readNumber(decoder.readNode(NULL, "timeout"));
 
     char **headers_v = (char **)malloc(HTTP_HEADERS_MAX_COUNT * sizeof(char *));
     void *headersNode = decoder.readNode(NULL, "headers_v");
@@ -101,7 +101,7 @@ int ngenxx_net_http_requestL(lua_State *L)
 
     if (method < 0 || url == NULL || headers_c > HTTP_HEADERS_MAX_COUNT)
         return 1;
-    const char *res = ngenxx_net_http_request(url, params, method, headers_v, headers_c, timeout);
+    const char *res = ngenxx_net_http_request(url, params, method, (const char **)headers_v, headers_c, timeout);
     lua_pushstring(L, res);
     return 1;
 }

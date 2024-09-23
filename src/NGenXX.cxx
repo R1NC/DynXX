@@ -122,7 +122,7 @@ void ngenxx_log_print(int level, const char *content)
 #pragma mark Net.Http
 
 EXPORT_AUTO
-const char *ngenxx_net_http_request(const char *url, const char *params, int method, char **headers_v, int headers_c, long timeout)
+const char *ngenxx_net_http_request(const char *url, const char *params, const int method, const char **headers_v, const int headers_c, const unsigned long timeout)
 {
     if (_ngenxx_http_client == NULL || url == NULL)
         return NULL;
@@ -305,33 +305,33 @@ void ngenxx_store_kv_close(void *conn)
 #pragma mark Crypto
 
 EXPORT_AUTO
-const byte *ngenxx_crypto_aes_encrypt(const byte *in, const size inLen, const byte *key, const size keyLen, size *outLen)
+const byte *ngenxx_crypto_aes_encrypt(const byte *inBytes, const size inLen, const byte *keyBytes, const size keyLen, size *outLen)
 {
-    auto t = NGenXX::Crypto::AES::aesEncrypt({in, inLen}, {key, keyLen});
+    auto t = NGenXX::Crypto::AES::aesEncrypt({inBytes, inLen}, {keyBytes, keyLen});
     if (outLen) *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
 EXPORT_AUTO
-const byte *ngenxx_crypto_aes_decrypt(const byte *in, const size inLen, const byte *key, const size keyLen, size *outLen)
+const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, const size inLen, const byte *keyBytes, const size keyLen, size *outLen)
 {
-    auto t = NGenXX::Crypto::AES::aesDecrypt({in, inLen}, {key, keyLen});
+    auto t = NGenXX::Crypto::AES::aesDecrypt({inBytes, inLen}, {keyBytes, keyLen});
     if (outLen) *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
 EXPORT_AUTO
-const byte *ngenxx_crypto_hash_md5(const byte *in, const size inLen, size *outLen)
+const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size inLen, size *outLen)
 {
-    auto t = NGenXX::Crypto::Hash::md5({in, inLen});
+    auto t = NGenXX::Crypto::Hash::md5({inBytes, inLen});
     if (outLen) *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
 EXPORT_AUTO
-const byte *ngenxx_crypto_hash_sha256(const byte *in, const size inLen, size *outLen)
+const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size inLen, size *outLen)
 {
-    auto t = NGenXX::Crypto::Hash::sha256({in, inLen});
+    auto t = NGenXX::Crypto::Hash::sha256({inBytes, inLen});
     if (outLen) *outLen = std::get<1>(t);
     return copyBytes(t);
 }

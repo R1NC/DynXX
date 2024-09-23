@@ -10,43 +10,43 @@ extern "C"
 
     /**
      * @brief AES Encrypt
-     * @param in input bytes data
+     * @param inBytes input bytes data
      * @param inLen input bytes length
-     * @param key key Key bytes data
+     * @param keyBytes key Key bytes data
      * @param keyLen key bytes length（MUST BE 16!!）
      * @param outLen a pointer to read output bytes length
      * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
      */
-    const byte *ngenxx_crypto_aes_encrypt(const byte *in, const size inLen, const byte *key, const size keyLen, size *outLen);
+    const byte *ngenxx_crypto_aes_encrypt(const byte *inBytes, const size inLen, const byte *keyBytes, const size keyLen, size *outLen);
 
     /**
      * @brief AES Decrypt
-     * @param in input bytes data
+     * @param inBytes input bytes data
      * @param inLen input bytes length
-     * @param key key Key bytes data
+     * @param keyBytes key Key bytes data
      * @param keyLen key bytes length（MUST BE 16!!）
      * @param outLen a pointer to read output bytes length
      * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
      */
-    const byte *ngenxx_crypto_aes_decrypt(const byte *in, const size inLen, const byte *key, const size keyLen, size *outLen);
+    const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, const size inLen, const byte *keyBytes, const size keyLen, size *outLen);
 
     /**
      * @brief MD5 hash
-     * @param in input bytes data
+     * @param inBytes input bytes data
      * @param inLen input bytes length
      * @param outLen a pointer to read output bytes length
      * @return output bytes data
      */
-    const byte *ngenxx_crypto_hash_md5(const byte *in, const size inLen, size *outLen);
+    const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size inLen, size *outLen);
 
     /**
      * @brief SHA256
-     * @param in input bytes data
+     * @param inBytes input bytes data
      * @param inLen input bytes length
      * @param outLen a pointer to read output bytes length
      * @return output bytes data
      */
-    const byte *ngenxx_crypto_hash_sha256(const byte *in, const size inLen, size *outLen);
+    const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size inLen, size *outLen);
 
 #ifdef __cplusplus
 }
