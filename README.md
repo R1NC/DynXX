@@ -14,7 +14,7 @@ A cross-platform C/C++ framework.
 | SQLite |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
 |Key-Value Store|✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
 | JSON |✔️|🛠️|✔️|🛠️|🛠️|🛠️|🛠️|
-| Crypto |✔️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
+| Crypto |✔️|🛠️|✔️|🛠️|🛠️|🛠️|🛠️|
 | Device Info |✔️|✔️|🛠️|🛠️|✔️|🛠️|❔|
 
 - ❔ : Unknown.

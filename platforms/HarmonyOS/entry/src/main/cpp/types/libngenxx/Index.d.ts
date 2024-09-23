@@ -40,6 +40,12 @@ export const deviceManufacturer:() => string;
 export const deviceOsVersion:() => string;
 export const deviceCpuArch:() => number;
 
+
+export const cryptoAesEncrypt:(inBytes: number[], keyBytes: number[]) => number[];
+export const cryptoAesDecrypt:(inBytes: number[], keyBytes: number[]) => number[];
+export const cryptoHashMd5:(inBytes: number[]) => number[];
+export const cryptoHashSha256:(inBytes: number[]) => number[];
+
 export const jsonDecoderInit:(json: string) => number;
 export const jsonDecoderIsArray:(decoder: number, node: number) => boolean;
 export const jsonDecoderIsObject:(decoder: number, node: number) => boolean;

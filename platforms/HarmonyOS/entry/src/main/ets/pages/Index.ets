@@ -1,4 +1,5 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import util from '@ohos.util';
 import NGenXX from 'libngenxx.so';
 
 @Entry
@@ -25,6 +26,23 @@ struct Index {
             NGenXX.logPrint(1, `DeviceManufacturer: ${NGenXX.deviceManufacturer()}`);
             NGenXX.logPrint(1, `DeviceOsVersion: ${NGenXX.deviceOsVersion()}`);
             NGenXX.logPrint(1, `DeviceCpuArch: ${NGenXX.deviceCpuArch()}`);
+
+            let textEncoder = new util.TextEncoder()
+            let textDecoder = new util.TextDecoder()
+            let inputStr = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM<>()[]{}@#$%^&*-=+~!/|_,;:'`";
+            let inputBytes = Array.from(textEncoder.encodeInto(inputStr))
+            let keyStr = "MNBVCXZLKJHGFDSA"
+            let keyBytes = Array.from(textEncoder.encodeInto(keyStr))
+            let aesEncodedBytes = NGenXX.cryptoAesEncrypt(inputBytes, keyBytes)
+            let aesDecodedBytes = NGenXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
+            let aesDecodedStr = textDecoder.decodeToString(Uint8Array.from(aesDecodedBytes))
+            NGenXX.logPrint(1, `AES->${aesDecodedStr}`)
+            let md5Bytes = NGenXX.cryptoHashMd5(inputBytes)
+            let md5Str = textDecoder.decodeToString(Uint8Array.from(md5Bytes))
+            NGenXX.logPrint(1, `md5->${md5Str}`)
+            let sha256Bytes = NGenXX.cryptoHashSha256(inputBytes)
+            let sha256Str = textDecoder.decodeToString(Uint8Array.from(sha256Bytes))
+            NGenXX.logPrint(1, `sha256->${sha256Str}`)
 
             let dbConn = NGenXX.storeSQLiteOpen("test");
             if (dbConn > 0) {

@@ -80,8 +80,8 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
 
     AES_KEY aes_key;
 
-    int ret = AES_set_encrypt_key(key, keyLen, &aes_key);
-    if (ret != OpenSSL_OK)
+    int ret = AES_set_encrypt_key(key, 128, &aes_key);
+    if (ret != 0)
     {
         Log::print(NGenXXLogLevelError, "AES_set_encrypt_key error:" + std::to_string(ret));
         return EMPTY_RESULT;
@@ -119,8 +119,8 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
 
     AES_KEY aes_key;
 
-    int ret = AES_set_decrypt_key(key, keyLen, &aes_key);
-    if (ret != OpenSSL_OK)
+    int ret = AES_set_decrypt_key(key, 128, &aes_key);
+    if (ret != 0)
     {
         Log::print(NGenXXLogLevelError, "AES_set_decrypt_key error:" + std::to_string(ret));
         return EMPTY_RESULT;

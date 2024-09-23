@@ -96,7 +96,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env, jobject t
     const char *cUrl = env->GetStringUTFChars(url, nullptr);
     const char *cParams = env->GetStringUTFChars(params, nullptr);
 
-    int headersCount = env->GetArrayLength(headers);
+    const unsigned int headersCount = env->GetArrayLength(headers);
     char **cHeadersV = (char **)malloc(headersCount * sizeof(char *));
     auto *jstrV = (jstring *)malloc(sizeof(jstring));
     for (int i = 0; i < headersCount; i++)
@@ -105,7 +105,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env, jobject t
         cHeadersV[i] = (char *)env->GetStringUTFChars(jstrV[i], nullptr);
     }
 
-    const char *cRsp = ngenxx_net_http_request(cUrl, cParams, method, cHeadersV, headersCount, timeout);
+    const char *cRsp = ngenxx_net_http_request(cUrl, cParams, (const int)method, (const char **)cHeadersV, headersCount, (const unsigned long)timeout);
     jstring jstr = env->NewStringUTF(cRsp ?: "");
     free((void *)cRsp);
 

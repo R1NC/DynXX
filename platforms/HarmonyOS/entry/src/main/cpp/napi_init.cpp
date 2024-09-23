@@ -12,11 +12,7 @@ static napi_value GetVersion(napi_env env, napi_callback_info info) {
 }
 
 static napi_value Init(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     const char *root = napiValue2chars(env, argv[0]);
 
@@ -24,6 +20,7 @@ static napi_value Init(napi_env env, napi_callback_info info) {
     napi_value v = bool2NapiValue(env, b);
 
     free((void *)root);
+    free((void *)argv);
     return v;
 }
 
@@ -123,52 +120,43 @@ static void engineLogCallback(int level, const char *content) {
 #pragma mark Log API
 
 static napi_value LogSetLevel(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     int level = napiValue2int(env, argv[0]);
 
     ngenxx_log_set_level(level);
 
+    free((void *)argv);
     return int2NapiValue(env, napi_ok);
 }
 
 static napi_value LogSetCallback(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     napi_value vLogCallback = argv[0];
+    int status;
     if (vLogCallback == NULL) {
         sNapiEnv = NULL;
 
-        napi_delete_reference(env, sTsLogCallbackRef);
+        status = napi_delete_reference(env, sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_delete_reference() failed");
 
         ngenxx_log_set_callback(NULL);
     } else {
         sNapiEnv = env;
 
-        napi_create_reference(env, vLogCallback, 1, &sTsLogCallbackRef);
+        status = napi_create_reference(env, vLogCallback, 1, &sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_reference() failed");
 
         ngenxx_log_set_callback(engineLogCallback);
     }
 
+    free((void *)argv);
     return int2NapiValue(env, napi_ok);
 }
 
 static napi_value LogPrint(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     int level = napiValue2int(env, argv[0]);
     const char *content = napiValue2chars(env, argv[1]);
@@ -176,32 +164,21 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
     ngenxx_log_print(level, content);
     free((void *)content);
 
+    free((void *)argv);
     return int2NapiValue(env, napi_ok);
 }
 
 #pragma mark Net
 
 static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
-    size_t argc = 5;
-    napi_value argv[5] = {nullptr, nullptr, nullptr, nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 5);
 
     const char *cUrl = napiValue2chars(env, argv[0]);
     const char *cParams = napiValue2chars(env, argv[1]);
     int iMethod = napiValue2int(env, argv[2]);
 
-    uint32_t headers_c;
-    status = napi_get_array_length(env, argv[3], &headers_c);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_array_length() failed");
-    char **headers_v = (char **)malloc(headers_c * sizeof(char *));
-    for (int i = 0; i < headers_c; i++) {
-        napi_value vHeader;
-        status = napi_get_element(env, argv[3], i, &vHeader);
-        CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_element() failed");
-        headers_v[i] = (char *)napiValue2chars(env, vHeader);
-    }
+    uint32_t headers_c = napiValueLen(env, argv[3]);
+    const char **headers_v = napiValue2charsArray(env, argv[3], headers_c);
 
     long lTimeout = napiValue2long(env, argv[4]);
 
@@ -215,32 +192,26 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
     free((void *)headers_v);
     free((void *)cParams);
     free((void *)cUrl);
+    free((void *)argv);
     return nv;
 }
 
 #pragma mark Store.SQLite
 
 static napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     const char *_id = napiValue2chars(env, argv[0]);
     long res = (long)ngenxx_store_sqlite_open(_id);
     napi_value nv = long2NapiValue(env, res);
 
     free((void *)_id);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
     const char *sql = napiValue2chars(env, argv[1]);
@@ -249,15 +220,12 @@ static napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info) {
     napi_value nv = bool2NapiValue(env, res);
 
     free((void *)sql);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
     const char *sql = napiValue2chars(env, argv[1]);
@@ -266,30 +234,24 @@ static napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info) {
     napi_value nv = long2NapiValue(env, res);
 
     free((void *)sql);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     long query_result = napiValue2long(env, argv[0]);
 
     bool res = ngenxx_store_sqlite_query_read_row((void *)query_result);
     napi_value nv = bool2NapiValue(env, res);
 
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long query_result = napiValue2long(env, argv[0]);
     const char *column = napiValue2chars(env, argv[1]);
@@ -299,15 +261,12 @@ static napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_inf
 
     free((void *)res);
     free((void *)column);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long query_result = napiValue2long(env, argv[0]);
     const char *column = napiValue2chars(env, argv[1]);
@@ -316,15 +275,12 @@ static napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_
     napi_value nv = long2NapiValue(env, res);
 
     free((void *)column);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long query_result = napiValue2long(env, argv[0]);
     const char *column = napiValue2chars(env, argv[1]);
@@ -333,58 +289,46 @@ static napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_in
     napi_value nv = double2NapiValue(env, res);
 
     free((void *)column);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     long query_result = napiValue2long(env, argv[0]);
     ngenxx_store_sqlite_query_drop((void *)query_result);
 
+    free((void *)argv);
     return int2NapiValue(env, napi_ok);
 }
 
 static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     long conn = napiValue2long(env, argv[0]);
     ngenxx_store_sqlite_close((void *)conn);
 
+    free((void *)argv);
     return int2NapiValue(env, napi_ok);
 }
 
 #pragma mark Store.KV
 
 static napi_value StoreKVOpen(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     const char *_id = napiValue2chars(env, argv[0]);
     long res = (long)ngenxx_store_kv_open(_id);
     napi_value nv = long2NapiValue(env, res);
 
     free((void *)_id);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreKVReadString(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
     const char *k = napiValue2chars(env, argv[1]);
@@ -394,15 +338,12 @@ static napi_value StoreKVReadString(napi_env env, napi_callback_info info) {
 
     free((void *)res);
     free((void *)k);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreKVWriteString(napi_env env, napi_callback_info info) {
-    size_t argc = 3;
-    napi_value argv[3] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 3);
 
     long conn = napiValue2long(env, argv[0]);
     const char *k = napiValue2chars(env, argv[1]);
@@ -413,15 +354,12 @@ static napi_value StoreKVWriteString(napi_env env, napi_callback_info info) {
 
     free((void *)v);
     free((void *)k);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreKVReadInteger(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
     const char *k = napiValue2chars(env, argv[1]);
@@ -430,15 +368,12 @@ static napi_value StoreKVReadInteger(napi_env env, napi_callback_info info) {
     napi_value nv = long2NapiValue(env, res);
 
     free((void *)k);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info) {
-    size_t argc = 3;
-    napi_value argv[3] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 3);
 
     long conn = napiValue2long(env, argv[0]);
     const char *k = napiValue2chars(env, argv[1]);
@@ -448,15 +383,12 @@ static napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info) {
     napi_value nv = bool2NapiValue(env, res);
 
     free((void *)k);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreKVReadFloat(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
     const char *k = napiValue2chars(env, argv[1]);
@@ -465,15 +397,12 @@ static napi_value StoreKVReadFloat(napi_env env, napi_callback_info info) {
     napi_value nv = double2NapiValue(env, res);
 
     free((void *)k);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info) {
-    size_t argc = 3;
-    napi_value argv[3] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 3);
 
     long conn = napiValue2long(env, argv[0]);
     const char *k = napiValue2chars(env, argv[1]);
@@ -483,15 +412,12 @@ static napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info) {
     napi_value nv = bool2NapiValue(env, res);
 
     free((void *)k);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreKVContains(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
     const char *k = napiValue2chars(env, argv[1]);
@@ -500,32 +426,27 @@ static napi_value StoreKVContains(napi_env env, napi_callback_info info) {
     napi_value nv = bool2NapiValue(env, res);
 
     free((void *)k);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value StoreKVClear(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     long conn = napiValue2long(env, argv[0]);
     ngenxx_store_kv_clear((void *)conn);
 
+    free((void *)argv);
     return int2NapiValue(env, napi_ok);
 }
 
 static napi_value StoreKVClose(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     long conn = napiValue2long(env, argv[0]);
     ngenxx_store_kv_close((void *)conn);
 
+    free((void *)argv);
     return int2NapiValue(env, napi_ok);
 }
 
@@ -567,11 +488,7 @@ static napi_value DeviceCpuArch(napi_env env, napi_callback_info info) {
 #pragma mark JsonDecoder
 
 static napi_value JsonDecoderInit(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     const char *cJson = napiValue2chars(env, argv[0]);
     
@@ -579,15 +496,12 @@ static napi_value JsonDecoderInit(napi_env env, napi_callback_info info) {
     napi_value v = long2NapiValue(env, res);
 
     free((void *)cJson);
+    free((void *)argv);
     return v;
 }
 
 static napi_value JsonDecoderIsArray(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
@@ -595,15 +509,12 @@ static napi_value JsonDecoderIsArray(napi_env env, napi_callback_info info) {
     bool res = ngenxx_json_decoder_is_array((void *)decoder, (void *)node);
     napi_value v = bool2NapiValue(env, res);
     
+    free((void *)argv);
     return v;
 }
 
 static napi_value JsonDecoderIsObject(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
@@ -611,15 +522,12 @@ static napi_value JsonDecoderIsObject(napi_env env, napi_callback_info info) {
     bool res = ngenxx_json_decoder_is_object((void *)decoder, (void *)node);
     napi_value v = bool2NapiValue(env, res);
     
+    free((void *)argv);
     return v;
 }
 
 static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info) {
-    size_t argc = 3;
-    napi_value argv[3] = {nullptr, nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 3);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
@@ -629,15 +537,12 @@ static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info) {
     napi_value v = long2NapiValue(env, res);
 
     free((void *)cK);
+    free((void *)argv);
     return v;
 }
 
 static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
@@ -645,15 +550,12 @@ static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info) {
     long res = (long)ngenxx_json_decoder_read_child((void *)decoder, (void *)node);
     napi_value v = long2NapiValue(env, res);
     
+    free((void *)argv);
     return v;
 }
 
 static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
@@ -661,15 +563,12 @@ static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info) {
     long res = (long)ngenxx_json_decoder_read_next((void *)decoder, (void *)node);
     napi_value v = long2NapiValue(env, res);
     
+    free((void *)argv);
     return v;
 }
 
 static napi_value JsonDecoderReadString(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
@@ -678,15 +577,12 @@ static napi_value JsonDecoderReadString(napi_env env, napi_callback_info info) {
     napi_value v = chars2NapiValue(env, cRes);
     
     free((void *)cRes);
+    free((void *)argv);
     return v;
 }
 
 static napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
@@ -694,31 +590,97 @@ static napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info) {
     double res = ngenxx_json_decoder_read_number((void *)decoder, (void *)node);
     napi_value v = double2NapiValue(env, res);
     
+    free((void *)argv);
     return v;
 }
 
 static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     long decoder = napiValue2long(env, argv[0]);
     
     ngenxx_json_decoder_release((void *)decoder);
     
+    free((void *)argv);
     return int2NapiValue(env, napi_ok);
+}
+
+#pragma mark Crypto
+
+static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 2);
+
+    uint32_t inLen = napiValueLen(env, argv[0]);
+    const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
+    uint32_t keyLen = napiValueLen(env, argv[1]);
+    const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
+    
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
+    napi_value v = byteArray2NapiValue(env, outBytes, outLen);
+    
+    free((void *)outBytes);
+    free((void *)keyBytes);
+    free((void *)inBytes);
+    free((void *)argv);
+    return v;
+}
+
+static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 2);
+
+    uint32_t inLen = napiValueLen(env, argv[0]);
+    const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
+    uint32_t keyLen = napiValueLen(env, argv[1]);
+    const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
+    
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_aes_decrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
+    napi_value v = byteArray2NapiValue(env, outBytes, outLen);
+    
+    free((void *)outBytes);
+    free((void *)keyBytes);
+    free((void *)inBytes);
+    free((void *)argv);
+    return v;
+}
+
+static napi_value CryptoHashMd5(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 1);
+
+    uint32_t inLen = napiValueLen(env, argv[0]);
+    const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
+    
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_hash_md5(inBytes, inLen, &outLen);
+    napi_value v = byteArray2NapiValue(env, outBytes, outLen);
+    
+    free((void *)outBytes);
+    free((void *)inBytes);
+    free((void *)argv);
+    return v;
+}
+
+static napi_value CryptoHashSha256(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 1);
+
+    uint32_t inLen = napiValueLen(env, argv[0]);
+    const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
+    
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_hash_sha256(inBytes, inLen, &outLen);
+    napi_value v = byteArray2NapiValue(env, outBytes, outLen);
+    
+    free((void *)outBytes);
+    free((void *)inBytes);
+    free((void *)argv);
+    return v;
 }
 
 #pragma mark Lua
 
 static napi_value LLoadF(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     const char *file = napiValue2chars(env, argv[0]);
 
@@ -726,15 +688,12 @@ static napi_value LLoadF(napi_env env, napi_callback_info info) {
     napi_value nv = bool2NapiValue(env, res);
 
     free((void *)file);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value LLoadS(napi_env env, napi_callback_info info) {
-    size_t argc = 1;
-    napi_value argv[1] = {nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 1);
 
     const char *script = napiValue2chars(env, argv[0]);
 
@@ -742,15 +701,12 @@ static napi_value LLoadS(napi_env env, napi_callback_info info) {
     napi_value nv = bool2NapiValue(env, res);
 
     free((void *)script);
+    free((void *)argv);
     return nv;
 }
 
 static napi_value LCall(napi_env env, napi_callback_info info) {
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr, nullptr};
-
-    napi_status status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_cb_info() failed");
+    napi_value *argv = readParams(env, info, 2);
 
     const char *func = napiValue2chars(env, argv[0]);
     const char *params = napiValue2chars(env, argv[1]);
@@ -761,6 +717,7 @@ static napi_value LCall(napi_env env, napi_callback_info info) {
     free((void *)res);
     free((void *)params);
     free((void *)func);
+    free((void *)argv);
     return nv;
 }
 
@@ -829,6 +786,15 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports) {
         {"jsonDecoderReadNumber", nullptr, JsonDecoderReadNumber, nullptr, nullptr, nullptr, napi_default,
          nullptr},
         {"jsonDecoderRelease", nullptr, JsonDecoderRelease, nullptr, nullptr, nullptr, napi_default,
+         nullptr},
+        
+        {"cryptoAesEncrypt", nullptr, CryptoAesEncrypt, nullptr, nullptr, nullptr, napi_default,
+         nullptr},
+        {"cryptoAesDecrypt", nullptr, CryptoAesDecrypt, nullptr, nullptr, nullptr, napi_default,
+         nullptr},
+        {"cryptoHashMd5", nullptr, CryptoHashMd5, nullptr, nullptr, nullptr, napi_default,
+         nullptr},
+        {"cryptoHashSha256", nullptr, CryptoHashSha256, nullptr, nullptr, nullptr, napi_default,
          nullptr},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);

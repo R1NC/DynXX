@@ -122,7 +122,7 @@ void ngenxx_log_print(int level, const char *content)
 #pragma mark Net.Http
 
 EXPORT_AUTO
-const char *ngenxx_net_http_request(const char *url, const char *params, const int method, const char **headers_v, const int headers_c, const unsigned long timeout)
+const char *ngenxx_net_http_request(const char *url, const char *params, const int method, const char **headers_v, const unsigned int headers_c, const unsigned long timeout)
 {
     if (_ngenxx_http_client == NULL || url == NULL)
         return NULL;
