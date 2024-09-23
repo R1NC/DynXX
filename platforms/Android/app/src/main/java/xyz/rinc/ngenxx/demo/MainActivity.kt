@@ -68,6 +68,11 @@ class MainActivity : ComponentActivity() {
                 val url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
                 NGenXX.logPrint(1, "url:$url")
             }
+            val headersCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "headers_c")
+            if (headersCNode > 0) {
+                val headersC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headersCNode)
+                NGenXX.logPrint(1, "headers_c:${headersC.toInt()}")
+            }
             val headersNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "headers_v")
             if (headersNode > 0) {
                 var headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headersNode)
