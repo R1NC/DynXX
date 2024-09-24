@@ -677,6 +677,38 @@ static napi_value CryptoHashSha256(napi_env env, napi_callback_info info) {
     return v;
 }
 
+static napi_value CryptoBase64Encode(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 1);
+
+    uint32_t inLen = napiValueLen(env, argv[0]);
+    const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
+    
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, &outLen);
+    napi_value v = byteArray2NapiValue(env, outBytes, outLen);
+    
+    free((void *)outBytes);
+    free((void *)inBytes);
+    free((void *)argv);
+    return v;
+}
+
+static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 1);
+
+    uint32_t inLen = napiValueLen(env, argv[0]);
+    const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
+    
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, &outLen);
+    napi_value v = byteArray2NapiValue(env, outBytes, outLen);
+    
+    free((void *)outBytes);
+    free((void *)inBytes);
+    free((void *)argv);
+    return v;
+}
+
 #pragma mark Lua
 
 static napi_value LLoadF(napi_env env, napi_callback_info info) {
@@ -771,30 +803,22 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports) {
         {"deviceCpuArch", nullptr, DeviceCpuArch, nullptr, nullptr, nullptr, napi_default, nullptr},
 
         {"jsonDecoderInit", nullptr, JsonDecoderInit, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderIsArray", nullptr, JsonDecoderIsArray, nullptr, nullptr, nullptr, napi_default,
+        {"jsonDecoderIsArray", nullptr, JsonDecoderIsArray, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jsonDecoderIsObject", nullptr, JsonDecoderIsObject, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jsonDecoderReadNode", nullptr, JsonDecoderReadNode, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jsonDecoderReadChild", nullptr, JsonDecoderReadChild, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jsonDecoderReadNext", nullptr, JsonDecoderReadNext, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jsonDecoderReadString", nullptr, JsonDecoderReadString, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jsonDecoderReadNumber", nullptr, JsonDecoderReadNumber, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jsonDecoderRelease", nullptr, JsonDecoderRelease, nullptr, nullptr, nullptr, napi_default, nullptr},
+
+        {"cryptoAesEncrypt", nullptr, CryptoAesEncrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"cryptoAesDecrypt", nullptr, CryptoAesDecrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"cryptoHashMd5", nullptr, CryptoHashMd5, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"cryptoHashSha256", nullptr, CryptoHashSha256, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"cryptoBase64Encode", nullptr, CryptoBase64Encode, nullptr, nullptr, nullptr, napi_default,
          nullptr},
-        {"jsonDecoderIsObject", nullptr, JsonDecoderIsObject, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"jsonDecoderReadNode", nullptr, JsonDecoderReadNode, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"jsonDecoderReadChild", nullptr, JsonDecoderReadChild, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"jsonDecoderReadNext", nullptr, JsonDecoderReadNext, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"jsonDecoderReadString", nullptr, JsonDecoderReadString, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"jsonDecoderReadNumber", nullptr, JsonDecoderReadNumber, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"jsonDecoderRelease", nullptr, JsonDecoderRelease, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        
-        {"cryptoAesEncrypt", nullptr, CryptoAesEncrypt, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"cryptoAesDecrypt", nullptr, CryptoAesDecrypt, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"cryptoHashMd5", nullptr, CryptoHashMd5, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"cryptoHashSha256", nullptr, CryptoHashSha256, nullptr, nullptr, nullptr, napi_default,
+        {"cryptoBase64Decode", nullptr, CryptoBase64Decode, nullptr, nullptr, nullptr, napi_default,
          nullptr},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);

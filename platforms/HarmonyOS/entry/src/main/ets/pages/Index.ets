@@ -43,6 +43,10 @@ struct Index {
             let sha256Bytes = NGenXX.cryptoHashSha256(inputBytes)
             let sha256Str = textDecoder.decodeToString(Uint8Array.from(sha256Bytes))
             NGenXX.logPrint(1, `sha256->${sha256Str}`)
+            let base64Encoded = NGenXX.cryptoBase64Encode(inputBytes)
+            let base64Decoded = NGenXX.cryptoBase64Decode(base64Encoded)
+            let base64DecodedStr = textDecoder.decodeToString(Uint8Array.from(base64Decoded))
+            NGenXX.logPrint(1, `base64->${base64DecodedStr}`)
 
             let dbConn = NGenXX.storeSQLiteOpen("test");
             if (dbConn > 0) {
