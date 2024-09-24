@@ -8,6 +8,7 @@
 #include "../../../external/openssl/include/openssl/aes.h"
 #include "../../../external/openssl/include/openssl/sha.h"
 #include "../../../external/openssl/include/openssl/md5.h"
+#include "../../../external/openssl/include/openssl/buffer.h"
 
 constexpr int OpenSSL_OK = 1;
 constexpr int OpenSSL_AES_Key_BITS = 128;
@@ -58,14 +59,14 @@ void NGenXX::Crypto::AES::aesgcmDecrypt(byte *out,
     EVP_CIPHER_CTX_free(ctx);
 }*/
 
-NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBytes, NGenXX::Crypto::Bytes keyBytes)
+const NGenXX::Bytes NGenXX::Crypto::AES::aesEncrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
     const byte *key = std::get<0>(keyBytes);
     const size keyLen = std::get<1>(keyBytes);
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
-        return EMPTY_RESULT;
+        return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
     int outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
@@ -85,7 +86,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
     if (ret != 0)
     {
         Log::print(NGenXXLogLevelError, "AES_set_encrypt_key error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     while (offset < inLen)
@@ -97,14 +98,14 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
     return {out, (const size)outLen};
 }
 
-NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBytes, NGenXX::Crypto::Bytes keyBytes)
+const NGenXX::Bytes NGenXX::Crypto::AES::aesDecrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
     const byte *key = std::get<0>(keyBytes);
     const size keyLen = std::get<1>(keyBytes);
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
-        return EMPTY_RESULT;
+        return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
     int outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
@@ -124,7 +125,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
     if (ret != 0)
     {
         Log::print(NGenXXLogLevelError, "AES_set_decrypt_key error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     while (offset < inLen)
@@ -136,12 +137,12 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
     return {out, (const size)outLen};
 }
 
-NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::md5(NGenXX::Crypto::Bytes inBytes)
+const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
     if (in == NULL || inLen == 0)
-        return EMPTY_RESULT;
+        return BytesEmpty;
     int outLen = 16;
     byte out[outLen];
     memset(out, 0, outLen);
@@ -152,32 +153,32 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::md5(NGenXX::Crypto::Bytes inBytes)
     if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "MD5_Init error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     ret = MD5_Update(&md5, in, inLen);
     if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "MD5_Update error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     ret = MD5_Final(out, &md5);
     if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "MD5_Final error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     return {out, (const size)outLen};
 }
 
-NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::sha256(NGenXX::Crypto::Bytes inBytes)
+const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
     if (in == NULL || inLen == 0)
-        return EMPTY_RESULT;
+        return BytesEmpty;
     int outLen = 32;
     byte out[outLen];
     memset(out, 0, outLen);
@@ -188,22 +189,74 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::sha256(NGenXX::Crypto::Bytes inBytes
     if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "SHA256_Init error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     ret = SHA256_Update(&sha256, in, inLen);
     if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "SHA256_Update error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     ret = SHA256_Final(out, &sha256);
     if (ret != OpenSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "SHA256_Final error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     return {out, (const size)outLen};
+}
+
+const NGenXX::Bytes NGenXX::Crypto::Base64::encode(const NGenXX::Bytes inBytes)
+{
+    const byte *in = std::get<0>(inBytes);
+    const size inLen = std::get<1>(inBytes);
+    if (in == NULL || inLen == 0)
+        return BytesEmpty;
+
+    BIO *bio, *b64;
+    BUF_MEM *bptr;
+
+    b64 = BIO_new(BIO_f_base64());
+    bio = BIO_new(BIO_s_mem());
+    bio = BIO_push(b64, bio);
+
+    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
+    BIO_write(bio, in, inLen);
+    BIO_flush(bio);
+    BIO_get_mem_ptr(bio, &bptr);
+    BIO_set_close(bio, BIO_NOCLOSE);
+
+    NGenXX::Bytes outBytes = {(byte *)bptr->data, bptr->length};
+    BIO_free_all(bio);
+
+    return outBytes;
+}
+
+const NGenXX::Bytes NGenXX::Crypto::Base64::decode(const NGenXX::Bytes inBytes)
+{
+    const byte *in = std::get<0>(inBytes);
+    const size inLen = std::get<1>(inBytes);
+    if (in == NULL || inLen == 0)
+        return BytesEmpty;
+
+    BIO *bio, *b64;
+
+    int outLen = calcDecodedLen(inBytes);
+    byte outBuffer[outLen];
+    memset(outBuffer, 0, outLen);
+
+    bio = BIO_new_mem_buf(in, -1);
+    b64 = BIO_new(BIO_f_base64());
+    bio = BIO_push(b64, bio);
+
+    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
+    BIO_read(bio, outBuffer, inLen);
+
+    NGenXX::Bytes outBytes = {outBuffer, outLen};
+    BIO_free_all(bio);
+
+    return outBytes;
 }

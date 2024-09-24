@@ -336,6 +336,22 @@ const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size inLen, siz
     return copyBytes(t);
 }
 
+EXPORT_AUTO
+const byte *ngenxx_crypto_base64_encode(const byte *inBytes, const size inLen, size *outLen)
+{
+    auto t = NGenXX::Crypto::Base64::encode({inBytes, inLen});
+    if (outLen) *outLen = std::get<1>(t);
+    return copyBytes(t);
+}
+
+EXPORT_AUTO
+const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size inLen, size *outLen)
+{
+    auto t = NGenXX::Crypto::Base64::decode({inBytes, inLen});
+    if (outLen) *outLen = std::get<1>(t);
+    return copyBytes(t);
+}
+
 #pragma mark Json.Decoder
 
 EXPORT_AUTO

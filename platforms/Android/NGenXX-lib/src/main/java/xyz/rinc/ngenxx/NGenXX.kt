@@ -51,6 +51,8 @@ class NGenXX {
         external fun cryptoAesDecrypt(input: ByteArray, key: ByteArray): ByteArray
         external fun cryptoHashMd5(input: ByteArray): ByteArray
         external fun cryptoHashSha256(input: ByteArray): ByteArray
+        external fun cryptoBase64Encode(input: ByteArray): ByteArray
+        external fun cryptoBase64Decode(input: ByteArray): ByteArray
 
         external fun jsonDecoderInit(json: String): Long
         external fun jsonDecoderIsArray(decoder: Long, node: Long): Boolean

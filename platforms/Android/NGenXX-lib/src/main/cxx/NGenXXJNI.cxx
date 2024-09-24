@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <string>
 #include "../../../../../../build.Android/output/include/NGenXX.h"
+#include "JNIUtil.hxx"
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
@@ -403,20 +404,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesEncrypt(JNIEnv *env, jobject
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
     size keyLen = env->GetArrayLength(key);
 
-    jbyteArray jba;
     size outLen;
-
-    auto cRes = ngenxx_crypto_aes_encrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
-    if (cRes)
-    {
-        jba = env->NewByteArray(outLen);
-        env->SetByteArrayRegion(jba, 0, outLen, (jbyte *)cRes);
-        free((void *)cRes);
-    }
-    else
-    {
-        jba = env->NewByteArray(0);
-    }
+    auto cRes= ngenxx_crypto_aes_encrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
+    jbyteArray jba = toJByteArray(env, cRes, outLen);
 
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
@@ -433,20 +423,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesDecrypt(JNIEnv *env, jobject
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
     size keyLen = env->GetArrayLength(key);
 
-    jbyteArray jba;
     size outLen;
-
-    auto cRes = ngenxx_crypto_aes_decrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
-    if (cRes)
-    {
-        jba = env->NewByteArray(outLen);
-        env->SetByteArrayRegion(jba, 0, outLen, (jbyte *)cRes);
-        free((void *)cRes);
-    }
-    else
-    {
-        jba = env->NewByteArray(0);
-    }
+    auto cRes= ngenxx_crypto_aes_decrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
+    jbyteArray jba = toJByteArray(env, cRes, outLen);
 
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
@@ -460,20 +439,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashMd5(JNIEnv *env, jobject th
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
 
-    jbyteArray jba;
     size outLen;
-
-    auto cRes = ngenxx_crypto_hash_md5((const byte *)cIn, inLen, &outLen);
-    if (cRes)
-    {
-        jba = env->NewByteArray(outLen);
-        env->SetByteArrayRegion(jba, 0, outLen, (jbyte *)cRes);
-        free((void *)cRes);
-    }
-    else
-    {
-        jba = env->NewByteArray(0);
-    }
+    auto cRes= ngenxx_crypto_hash_md5((const byte *)cIn, inLen, &outLen);
+    jbyteArray jba = toJByteArray(env, cRes, outLen);
 
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     return jba;
@@ -486,20 +454,37 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashSha256(JNIEnv *env, jobject
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
 
-    jbyteArray jba;
     size outLen;
+    auto cRes= ngenxx_crypto_hash_sha256((const byte *)cIn, inLen, &outLen);
+    jbyteArray jba = toJByteArray(env, cRes, outLen);
 
-    auto cRes = ngenxx_crypto_hash_sha256((const byte *)cIn, inLen, &outLen);
-    if (cRes)
-    {
-        jba = env->NewByteArray(outLen);
-        env->SetByteArrayRegion(jba, 0, outLen, (jbyte *)cRes);
-        free((void *)cRes);
-    }
-    else
-    {
-        jba = env->NewByteArray(0);
-    }
+    env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+    return jba;
+}
+
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoBase64Encode(JNIEnv *env, jobject thiz,
+                                                              jbyteArray input) {
+    jbyte *cIn = env->GetByteArrayElements(input, nullptr);
+    size inLen = env->GetArrayLength(input);
+
+    size outLen;
+    auto cRes= ngenxx_crypto_base64_encode((const byte *)cIn, inLen, &outLen);
+    jbyteArray jba = toJByteArray(env, cRes, outLen);
+
+    env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+    return jba;
+}
+
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoBase64Decode(JNIEnv *env, jobject thiz,
+                                                              jbyteArray input) {
+    jbyte *cIn = env->GetByteArrayElements(input, nullptr);
+    size inLen = env->GetArrayLength(input);
+
+    size outLen;
+    auto cRes= ngenxx_crypto_base64_decode((const byte *)cIn, inLen, &outLen);
+    jbyteArray jba = toJByteArray(env, cRes, outLen);
 
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     return jba;

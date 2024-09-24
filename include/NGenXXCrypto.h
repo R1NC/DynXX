@@ -48,6 +48,16 @@ extern "C"
      */
     const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size inLen, size *outLen);
 
+    /**
+     * @brief Base64 encode
+     */
+    const byte *ngenxx_crypto_base64_encode(const byte *inBytes, const size inLen, size *outLen);
+
+    /**
+     * @brief Base64 decode
+     */
+    const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size inLen, size *outLen);
+
 #ifdef __cplusplus
 }
 #endif

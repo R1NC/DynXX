@@ -46,6 +46,10 @@ class MainActivity : ComponentActivity() {
         NGenXX.logPrint(1,"md5->$md5")
         val sha256 = NGenXX.cryptoHashSha256(inputBytes).toHexString()
         NGenXX.logPrint(1,"sha256->$sha256")
+        val base64Encoded = NGenXX.cryptoBase64Encode(inputBytes)
+        val base64Decoded = NGenXX.cryptoBase64Decode(base64Encoded)
+        val base64DecodedStr = base64Decoded.toString(Charsets.UTF_8)
+        NGenXX.logPrint(1,"base64->$base64DecodedStr")
 
         val luaScript = application.assets.open("biz.lua").bufferedReader().use {
             it.readText()

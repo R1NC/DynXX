@@ -7,6 +7,7 @@
 #include "../../../external/wolfssl/wolfssl/wolfcrypt/md5.h"
 #include "../../../external/wolfssl/wolfssl/wolfcrypt/sha.h"
 #include "../../../external/wolfssl/wolfssl/wolfcrypt/sha256.h"
+#include "../../../external/wolfssl/wolfssl/wolfcrypt/coding.h"
 
 constexpr int WolfSSL_OK = 0;
 
@@ -37,14 +38,14 @@ void NGenXX::Crypto::AES::aesgcmDecrypt(byte *out,
     wc_AesGcmDecrypt(aes, out, in, inLen, initVector, initVectorLen, authTag, authTagLen, authVector, authVectorLen);
 }*/
 
-NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBytes, NGenXX::Crypto::Bytes keyBytes)
+const NGenXX::Bytes NGenXX::Crypto::AES::aesEncrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
     const byte *key = std::get<0>(keyBytes);
     const size keyLen = std::get<1>(keyBytes);
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
-        return EMPTY_RESULT;
+        return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
     int outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
@@ -64,14 +65,14 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "AES_set_decrypt_key error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     ret = wc_AesSetKey(aes, key, keyLen, out, AES_ENCRYPTION);
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_AesSetKey_AES_ENCRYPTION error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     while (offset < inLen)
@@ -80,7 +81,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
         if (ret != WolfSSL_OK)
         {
             Log::print(NGenXXLogLevelError, "wc_AesEncryptDirect error:" + std::to_string(ret));
-            return EMPTY_RESULT;
+            return BytesEmpty;
         }
         offset += AES_BLOCK_SIZE;
     }
@@ -88,14 +89,14 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesEncrypt(NGenXX::Crypto::Bytes inBy
     return {out, (const size)outLen};
 }
 
-NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBytes, NGenXX::Crypto::Bytes keyBytes)
+const NGenXX::Bytes NGenXX::Crypto::AES::aesDecrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
     const byte *key = std::get<0>(keyBytes);
     const size keyLen = std::get<1>(keyBytes);
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
-        return EMPTY_RESULT;
+        return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
     int outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
@@ -115,14 +116,14 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_AesInit error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     ret = wc_AesSetKey(aes, key, keyLen, out, AES_DECRYPTION);
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_AesSetKey_AES_DECRYPTION error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     while (offset < inLen)
@@ -131,7 +132,7 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
         if (ret != WolfSSL_OK)
         {
             Log::print(NGenXXLogLevelError, "wc_AesDecryptDirect error:" + std::to_string(ret));
-            return EMPTY_RESULT;
+            return BytesEmpty;
         }
         offset += AES_BLOCK_SIZE;
     }
@@ -139,12 +140,12 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::AES::aesDecrypt(NGenXX::Crypto::Bytes inBy
     return {out, (const size)outLen};
 }
 
-NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::md5(NGenXX::Crypto::Bytes inBytes)
+const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
     if (in == NULL || inLen == 0)
-        return EMPTY_RESULT;
+        return BytesEmpty;
     int outLen = 16;
     byte out[outLen];
     memset(out, 0, outLen);
@@ -155,21 +156,21 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::md5(NGenXX::Crypto::Bytes inBytes)
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_InitMd5 error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     ret = wc_Md5Update(&md5, (byte *)in, inLen);
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_Md5Update error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     ret = wc_Md5Final(&md5, out);
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_Md5Final error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     wc_Md5Free(&md5);
@@ -177,12 +178,12 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::md5(NGenXX::Crypto::Bytes inBytes)
     return {out, (const size)outLen};
 }
 
-NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::sha256(NGenXX::Crypto::Bytes inBytes)
+const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
     if (in == NULL || inLen == 0)
-        return EMPTY_RESULT;
+        return BytesEmpty;
     int outLen = 32;
     byte out[outLen];
     memset(out, 0, outLen);
@@ -193,24 +194,68 @@ NGenXX::Crypto::Bytes NGenXX::Crypto::Hash::sha256(NGenXX::Crypto::Bytes inBytes
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_InitSha256 error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     wc_Sha256Update(&sha256, (byte *)in, inLen);
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_Sha256Update error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     wc_Sha256Final(&sha256, out);
     if (ret != WolfSSL_OK)
     {
         Log::print(NGenXXLogLevelError, "wc_Sha256Final error:" + std::to_string(ret));
-        return EMPTY_RESULT;
+        return BytesEmpty;
     }
 
     wc_Sha256Free(&sha256);
 
     return {out, (const size)outLen};
+}
+
+const NGenXX::Bytes NGenXX::Crypto::Base64::encode(const NGenXX::Bytes inBytes)
+{
+    const byte *in = std::get<0>(inBytes);
+    const size inLen = std::get<1>(inBytes);
+    if (in == NULL || inLen == 0)
+        return BytesEmpty;
+
+    unsigned int outLen = 0;
+    int ret = Base64_Encode_NoNl(in, inLen, NULL, &outLen);
+
+    byte outBuffer[outLen + 1];
+    memset(outBuffer, 0, outLen + 1);
+
+    ret = Base64_Encode_NoNl(in, inLen, outBuffer, &outLen);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "Base64_Encode error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+
+    return {outBuffer, outLen};
+}
+
+const NGenXX::Bytes NGenXX::Crypto::Base64::decode(const NGenXX::Bytes inBytes)
+{
+    const byte *in = std::get<0>(inBytes);
+    const size inLen = std::get<1>(inBytes);
+    if (in == NULL || inLen == 0)
+        return BytesEmpty;
+
+    unsigned int outLen = calcDecodedLen(inBytes);
+    byte outBuffer[outLen + 1];
+    memset(outBuffer, 0, outLen + 1);
+
+    int ret = Base64_Decode(in, inLen, outBuffer, &outLen);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "Base64_Decode error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+
+    return {outBuffer, outLen};
 }

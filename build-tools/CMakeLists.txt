@@ -9,6 +9,7 @@ set (CMAKE_CXX_STANDARD 17) # mmkv use `std::string_view` in C++17;
 option(USE_LUA "Use Lua or not" ON)
 if (NOT OHOS)
     option(USE_WOLFSSL_AES "Use WOLFSSL AES" ON)
+    option(USE_WOLFSSL_BASE64_ENCODE "Use WOLFSSL BASE64 ENCODE" ON)
 endif()
 
 if(USE_LUA)
@@ -16,6 +17,9 @@ if(USE_LUA)
 endif()
 if (USE_WOLFSSL_AES)
     add_definitions(-DWOLFSSL_AES_DIRECT)
+endif()
+if (USE_WOLFSSL_BASE64_ENCODE)
+    add_definitions(-DWOLFSSL_BASE64_ENCODE)
 endif()
 
 project(NGenXX)
