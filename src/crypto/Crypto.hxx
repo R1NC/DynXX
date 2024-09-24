@@ -13,21 +13,21 @@ namespace NGenXX
     {
         namespace AES
         {
-            const NGenXX::Bytes aesEncrypt(const NGenXX::Bytes in, const NGenXX::Bytes key);
+            const Bytes aesEncrypt(const Bytes in, const Bytes key);
 
-            const NGenXX::Bytes aesDecrypt(const NGenXX::Bytes in, const NGenXX::Bytes key);
+            const Bytes aesDecrypt(const Bytes in, const Bytes key);
         }
 
         namespace Hash
         {
-            const NGenXX::Bytes md5(const NGenXX::Bytes in);
+            const Bytes md5(const Bytes in);
 
-            const NGenXX::Bytes sha256(const NGenXX::Bytes in);
+            const Bytes sha256(const Bytes in);
         }
 
         namespace Base64
         {
-            static constexpr int calcDecodedLen(const NGenXX::Bytes inBytes)
+            constexpr int calcDecodedLen(const Bytes inBytes)
             {
                 const byte *in = std::get<0>(inBytes);
                 const size len = std::get<1>(inBytes);
@@ -39,9 +39,9 @@ namespace NGenXX
                 return (len * 3) / 4 - padding;
             }
 
-            const NGenXX::Bytes encode(const NGenXX::Bytes in);
+            const Bytes encode(const Bytes in);
 
-            const NGenXX::Bytes decode(const NGenXX::Bytes in);
+            const Bytes decode(const Bytes in);
         }
     }
 }
