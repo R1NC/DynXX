@@ -7,7 +7,7 @@ napi_value *readParams(napi_env env, napi_callback_info info, size_t count) {
     napi_value *argv = (napi_value *)malloc(sizeof(napi_value) * count + 1);
     memset((void *)argv, 0, count + 1);
     int status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_array_length() get length failed");
+    CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_cb_info() get length failed");
     return argv;
 }
 
@@ -53,7 +53,7 @@ long napiValue2long(napi_env env, napi_value nv) {
 double napiValue2double(napi_env env, napi_value nv) {
     double d;
     napi_status status = napi_get_value_double(env, nv, &d);
-    CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napiValue2double() get content failed");
+    CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_double() get content failed");
     return d;
 }
 
