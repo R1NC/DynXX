@@ -10,6 +10,13 @@ class NGenXX {
         external fun init(root: String): Boolean
         external fun release()
 
+        enum class LogLevel(val value: Int) {
+            Info(0),
+            Debug(1),
+            Warn(2),
+            Error(3),
+            None(4)
+        }
         external fun logSetLevel(level: Int)
         external fun logSetCallback(callback: ((level: Int, content: String) -> Unit)?)
         external fun logPrint(level: Int, content: String)
@@ -63,5 +70,21 @@ class NGenXX {
         external fun jsonDecoderReadChild(decoder: Long, node: Long): Long
         external fun jsonDecoderReadNext(decoder: Long, node: Long): Long
         external fun jsonDecoderRelease(decoder: Long)
+
+        enum class ZipMode(val value: Int) {
+            Default(-1),
+            PreferSpeed(1),
+            PreferSize(9)
+        }
+        external fun zZipInit(mode: Int, bufferSize: Long): Long
+        external fun zZipInput(zip: Long, inBytes: ByteArray, inLen: Int, inFinish: Boolean): Long
+        external fun zZipProcessDo(zip: Long): ByteArray
+        external fun zZipProcessFinished(zip: Long): Boolean
+        external fun zZipRelease(zip: Long)
+        external fun zUnZipInit(bufferSize: Long): Long
+        external fun zUnZipInput(unzip: Long, inBytes: ByteArray, inLen: Int, inFinish: Boolean): Long
+        external fun zUnZipProcessDo(unzip: Long): ByteArray
+        external fun zUnZipProcessFinished(unzip: Long): Boolean
+        external fun zUnZipRelease(unzip: Long)
     }
 }

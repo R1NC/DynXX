@@ -1,9 +1,12 @@
 package xyz.rinc.ngenxx.demo
 
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -11,21 +14,58 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import xyz.rinc.ngenxx.NGenXX
+import xyz.rinc.ngenxx.NGenXXHelper
 import xyz.rinc.ngenxx.demo.ui.theme.NGenXXTheme
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 class MainActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalStdlibApi::class)
+    private val reqPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            testNGenXX()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            reqPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else {
+            testNGenXX()
+        }
+
+        setContent {
+            NGenXXTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        txt = "",
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        NGenXX.release()
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun testNGenXX() {
         val dir = filesDir?.absolutePath ?: return
         if (!NGenXX.init(dir)) return
 
         NGenXX.logSetCallback {level, content ->
-            android.util.Log.d("NGenXX", "$level | $content")
+            Log.d("NGenXX", "$level | $content")
         }
 
         NGenXX.logPrint(1, "deviceType:${NGenXX.deviceType()}")
@@ -124,21 +164,25 @@ class MainActivity : ComponentActivity() {
             NGenXX.storeSQLiteClose(dbConn)
         }
 
-        setContent {
-            NGenXXTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        txt = "$rsp",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        val zipInStream = assets.open("prepare_data.sql")
+        val zipFile = File(externalCacheDir, "x.zip")
+        if (!zipFile.exists()) {
+            zipFile.delete()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        NGenXX.release()
+        zipFile.createNewFile()
+        val zipOutStream = FileOutputStream(zipFile)
+        val zipRes = NGenXXHelper.zZipF(NGenXX.Companion.ZipMode.Default, zipInStream, zipOutStream)
+        if (zipRes) {
+            val unzipInStream = FileInputStream(zipFile)
+            val unzipFile = File(externalCacheDir, "x.txt")
+            if (!unzipFile.exists()) {
+                unzipFile.delete()
+            }
+            unzipFile.createNewFile()
+            val unzipOutStream = FileOutputStream(unzipFile)
+            val unzipRes = NGenXXHelper.zUnZipF(unzipInStream, unzipOutStream)
+            if (unzipRes);
+        }
     }
 }
 

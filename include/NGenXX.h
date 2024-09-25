@@ -9,6 +9,7 @@
 #include "NGenXXStoreKV.h"
 #include "NGenXXStoreSQLite.h"
 #include "NGenXXJsonDecoder.h"
+#include "NGenXXZip.h"
 #include "NGenXXLua.h"
 
 #ifdef  __cplusplus

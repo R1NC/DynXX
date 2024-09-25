@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "../include/NGenXXTypes.h"
+#include "../include/NGenXX.h"
 #include "log/Log.hxx"
 #include "crypto/Crypto.hxx"
 #include "device/DeviceInfo.hxx"
@@ -13,6 +13,7 @@
 #include "store/SQLite.hxx"
 #include "store/KV.hxx"
 #include "json/JsonDecoder.hxx"
+#include "zip/Zip.hxx"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
 #ifdef USE_LUA
@@ -115,7 +116,8 @@ void ngenxx_log_set_callback(void (*callback)(int level, const char *content))
 EXPORT_AUTO
 void ngenxx_log_print(int level, const char *content)
 {
-    if (!content) return;
+    if (!content)
+        return;
     NGenXX::Log::print(level, std::string(content));
 }
 
@@ -308,7 +310,8 @@ EXPORT_AUTO
 const byte *ngenxx_crypto_aes_encrypt(const byte *inBytes, const size inLen, const byte *keyBytes, const size keyLen, size *outLen)
 {
     auto t = NGenXX::Crypto::AES::aesEncrypt({inBytes, inLen}, {keyBytes, keyLen});
-    if (outLen) *outLen = std::get<1>(t);
+    if (outLen)
+        *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
@@ -316,7 +319,8 @@ EXPORT_AUTO
 const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, const size inLen, const byte *keyBytes, const size keyLen, size *outLen)
 {
     auto t = NGenXX::Crypto::AES::aesDecrypt({inBytes, inLen}, {keyBytes, keyLen});
-    if (outLen) *outLen = std::get<1>(t);
+    if (outLen)
+        *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
@@ -324,7 +328,8 @@ EXPORT_AUTO
 const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size inLen, size *outLen)
 {
     auto t = NGenXX::Crypto::Hash::md5({inBytes, inLen});
-    if (outLen) *outLen = std::get<1>(t);
+    if (outLen)
+        *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
@@ -332,7 +337,8 @@ EXPORT_AUTO
 const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size inLen, size *outLen)
 {
     auto t = NGenXX::Crypto::Hash::sha256({inBytes, inLen});
-    if (outLen) *outLen = std::get<1>(t);
+    if (outLen)
+        *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
@@ -340,7 +346,8 @@ EXPORT_AUTO
 const byte *ngenxx_crypto_base64_encode(const byte *inBytes, const size inLen, size *outLen)
 {
     auto t = NGenXX::Crypto::Base64::encode({inBytes, inLen});
-    if (outLen) *outLen = std::get<1>(t);
+    if (outLen)
+        *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
@@ -348,7 +355,8 @@ EXPORT_AUTO
 const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size inLen, size *outLen)
 {
     auto t = NGenXX::Crypto::Base64::decode({inBytes, inLen});
-    if (outLen) *outLen = std::get<1>(t);
+    if (outLen)
+        *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
@@ -363,55 +371,125 @@ void *ngenxx_json_decoder_init(const char *json)
 EXPORT_AUTO
 bool ngenxx_json_decoder_is_array(void *decoder, void *node)
 {
-    if (decoder == NULL) return false;
+    if (decoder == NULL)
+        return false;
     return ((NGenXX::Json::Decoder *)decoder)->isArray(node);
 }
 
 EXPORT_AUTO
 bool ngenxx_json_decoder_is_object(void *decoder, void *node)
 {
-    if (decoder == NULL) return false;
+    if (decoder == NULL)
+        return false;
     return ((NGenXX::Json::Decoder *)decoder)->isObject(node);
 }
 
 EXPORT_AUTO
 void *ngenxx_json_decoder_read_node(void *decoder, void *node, const char *k)
 {
-    if (decoder == NULL || k == NULL) return NULL;
+    if (decoder == NULL || k == NULL)
+        return NULL;
     return ((NGenXX::Json::Decoder *)decoder)->readNode(node, std::string(k));
 }
 
 EXPORT_AUTO
 const char *ngenxx_json_decoder_read_string(void *decoder, void *node)
 {
-    if (decoder == NULL) return NULL;
+    if (decoder == NULL)
+        return NULL;
     return str2charp(((NGenXX::Json::Decoder *)decoder)->readString(node));
 }
 
 EXPORT_AUTO
 double ngenxx_json_decoder_read_number(void *decoder, void *node)
 {
-    if (decoder == NULL) return 0;
+    if (decoder == NULL)
+        return 0;
     return ((NGenXX::Json::Decoder *)decoder)->readNumber(node);
 }
 
 EXPORT_AUTO
 void *ngenxx_json_decoder_read_child(void *decoder, void *node)
 {
-    if (decoder == NULL) return NULL;
+    if (decoder == NULL)
+        return NULL;
     return ((NGenXX::Json::Decoder *)decoder)->readChild(node);
 }
 
 EXPORT_AUTO
 void *ngenxx_json_decoder_read_next(void *decoder, void *node)
 {
-    if (decoder == NULL) return NULL;
+    if (decoder == NULL)
+        return NULL;
     return ((NGenXX::Json::Decoder *)decoder)->readNext(node);
 }
 
 EXPORT_AUTO
 void ngenxx_json_decoder_release(void *decoder)
 {
-    if (decoder == NULL) return;
+    if (decoder == NULL)
+        return;
     delete (NGenXX::Json::Decoder *)decoder;
+}
+
+#pragma mark Zip
+
+EXPORT_AUTO
+void *ngenxx_z_zip_init(const int mode, const size bufferSize)
+{
+    return new NGenXX::Z::Zip(mode, bufferSize);
+}
+
+EXPORT_AUTO
+const size ngenxx_z_zip_input(const void *zip, const byte *in, const size inLen, const bool inFinish)
+{
+    return ((NGenXX::Z::Zip *)zip)->input(in, inLen, inFinish);
+}
+
+EXPORT_AUTO
+const byte *ngenxx_z_zip_process_do(const void *zip, size *outLen)
+{
+    return copyBytes({((NGenXX::Z::Zip *)zip)->processDo(outLen), *outLen});
+}
+
+EXPORT_AUTO
+const bool ngenxx_z_zip_process_finished(const void *zip)
+{
+    return ((NGenXX::Z::Zip *)zip)->processFinished();
+}
+
+EXPORT_AUTO
+void ngenxx_z_zip_release(const void *zip)
+{
+    delete (NGenXX::Z::Zip *)zip;
+}
+
+EXPORT_AUTO
+void *ngenxx_z_unzip_init(const size bufferSize)
+{
+    return new NGenXX::Z::UnZip(bufferSize);
+}
+
+EXPORT_AUTO
+const size ngenxx_z_unzip_input(const void *unzip, const byte *in, const size inLen, const bool inFinish)
+{
+    return ((NGenXX::Z::UnZip *)unzip)->input(in, inLen, inFinish);
+}
+
+EXPORT_AUTO
+const byte *ngenxx_z_unzip_process_do(const void *unzip, size *outLen)
+{
+    return copyBytes({((NGenXX::Z::UnZip *)unzip)->processDo(outLen), *outLen});
+}
+
+EXPORT_AUTO
+const bool ngenxx_z_unzip_process_finished(const void *unzip)
+{
+    return ((NGenXX::Z::UnZip *)unzip)->processFinished();
+}
+
+EXPORT_AUTO
+void ngenxx_z_unzip_release(const void *unzip)
+{
+    delete (NGenXX::Z::UnZip *)unzip;
 }

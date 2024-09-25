@@ -37,6 +37,7 @@ set(ENGINE_FILES
     ../src/store/SQLite.cxx
     ../src/store/KV.cxx
     ../src/json/JsonDecoder.cxx
+    ../src/zip/Zip.cxx
     ../src/NGenXX.cxx
 )
 if(OHOS)
