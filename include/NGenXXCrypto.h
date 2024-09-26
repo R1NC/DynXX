@@ -50,11 +50,19 @@ extern "C"
 
     /**
      * @brief Base64 encode
+     * @param inBytes input bytes data
+     * @param inLen input bytes length
+     * @param outLen a pointer to read output bytes length
+     * @return output bytes data
      */
     const byte *ngenxx_crypto_base64_encode(const byte *inBytes, const size inLen, size *outLen);
 
     /**
      * @brief Base64 decode
+     * @param inBytes input bytes data
+     * @param inLen input bytes length
+     * @param outLen a pointer to read output bytes length
+     * @return output bytes data
      */
     const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size inLen, size *outLen);
 

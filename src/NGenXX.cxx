@@ -437,7 +437,13 @@ void ngenxx_json_decoder_release(void *decoder)
 EXPORT_AUTO
 void *ngenxx_z_zip_init(const int mode, const size bufferSize)
 {
-    return new NGenXX::Z::Zip(mode, bufferSize);
+    void * zip = NULL;
+    try {
+        zip = new NGenXX::Z::Zip(mode, bufferSize);
+    } catch (const std::exception& e) {
+        NGenXX::Log::print(NGenXXLogLevelError, "ngenxx_z_zip_init failed");
+    }
+    return zip;
 }
 
 EXPORT_AUTO
@@ -461,13 +467,20 @@ const bool ngenxx_z_zip_process_finished(const void *zip)
 EXPORT_AUTO
 void ngenxx_z_zip_release(const void *zip)
 {
+    if (zip == NULL) return;
     delete (NGenXX::Z::Zip *)zip;
 }
 
 EXPORT_AUTO
 void *ngenxx_z_unzip_init(const size bufferSize)
 {
-    return new NGenXX::Z::UnZip(bufferSize);
+    void * zip = NULL;
+    try {
+        zip = new NGenXX::Z::UnZip(bufferSize);
+    } catch (const std::exception& e) {
+        NGenXX::Log::print(NGenXXLogLevelError, "ngenxx_z_unzip_init failed");
+    }
+    return zip;
 }
 
 EXPORT_AUTO
@@ -491,5 +504,6 @@ const bool ngenxx_z_unzip_process_finished(const void *unzip)
 EXPORT_AUTO
 void ngenxx_z_unzip_release(const void *unzip)
 {
+    if (unzip == NULL) return;
     delete (NGenXX::Z::UnZip *)unzip;
 }

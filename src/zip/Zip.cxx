@@ -13,6 +13,9 @@
 
 NGenXX::Z::ZBase::ZBase(const size bufferSize) : bufferSize{bufferSize}
 {
+    if (bufferSize <= 0) {
+        throw std::invalid_argument("bufferSize invalid");
+    }
     this->zs = {
         .zalloc = Z_NULL,
         .zfree = Z_NULL,
@@ -38,6 +41,7 @@ const size NGenXX::Z::ZBase::input(const byte *in, const size inLen, bool inFini
 
 const byte *NGenXX::Z::ZBase::processDo(size *outLen)
 {
+    if (outLen == NULL) return NULL;
     memset(this->outBuffer, 0, this->bufferSize);
     (this->zs).avail_out = this->bufferSize;
     (this->zs).next_out = (Bytef *)(this->outBuffer);
@@ -68,10 +72,14 @@ NGenXX::Z::ZBase::~ZBase()
 
 NGenXX::Z::Zip::Zip(int mode, const size bufferSize) : ZBase(bufferSize)
 {
+    if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) {
+        throw std::invalid_argument("mode invalid");
+    }
     this->ret = deflateInit(&(this->zs), mode);
     if (this->ret != Z_OK)
     {
         Log::print(NGenXXLogLevelError, "deflateInit error:" + std::to_string(this->ret));
+        throw std::runtime_error("deflateInit failed");
     }
 }
 
@@ -90,6 +98,7 @@ NGenXX::Z::UnZip::UnZip(const size bufferSize) : ZBase(bufferSize)
     if (this->ret != Z_OK)
     {
         Log::print(NGenXXLogLevelError, "inflateInit error:" + std::to_string(this->ret));
+        throw std::runtime_error("inflateInit failed");
     }
 }
 

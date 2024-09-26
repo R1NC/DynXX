@@ -6,74 +6,70 @@ import java.io.OutputStream
 class NGenXXHelper {
     companion object {
 
-        const val Z_BUFFER_SIZE = 16 * 1024
+        private const val Z_BUFFER_SIZE = 16 * 1024
 
-        fun zZipF(mode: NGenXX.Companion.ZipMode, inStream: InputStream, outStream: OutputStream): Boolean {
-            val inBuffer = ByteArray(Z_BUFFER_SIZE)
+        private fun zProcess(bufferSize: Int, inStream: InputStream, outStream: OutputStream,
+                             inputF: ((inBuffer: ByteArray, inLen: Int, inputFinished: Boolean) -> Long),
+                             processDoF: (() -> ByteArray),
+                             processFinishedF: (() -> Boolean)): Boolean {
+            val inBuffer = ByteArray(bufferSize)
             var inLen: Int
 
-            val zip = NGenXX.zZipInit(mode.value, inBuffer.size.toLong())
-            if (zip > 0) {
-                var inputFinished: Boolean
+            var inputFinished: Boolean
+            do {
+                inLen = inStream.read(inBuffer, 0, inBuffer.size)
+                inputFinished = inLen < bufferSize
+                val ret = inputF(inBuffer, inLen, inputFinished);
+                if (ret == 0L) {
+                    return false
+                }
+
+                var processFinished: Boolean
                 do {
-                    inLen = inStream.read(inBuffer, 0, inBuffer.size)
-                    inputFinished = inLen < inBuffer.size
-                    val ret = NGenXX.zZipInput(zip, inBuffer, inLen, inputFinished)
-                    if (ret == 0L) {
+                    val outBytes = processDoF()
+                    if (outBytes.isEmpty()) {
                         return false
                     }
+                    processFinished = processFinishedF()
 
-                    var processFinished: Boolean
-                    do {
-                        val outBytes = NGenXX.zZipProcessDo(zip)
-                        if (outBytes.isEmpty()) {
-                            return false
-                        }
-                        processFinished = NGenXX.zZipProcessFinished(zip)
+                    outStream.write(outBytes)
+                } while(!processFinished)
+            } while (!inputFinished)
+            outStream.flush()
 
-                        outStream.write(outBytes)
-                    } while(!processFinished)
-                } while (!inputFinished)
+            return true
+        }
 
-                outStream.flush()
-                NGenXX.zZipRelease(zip)
-                return true
-            }
-            return false
+        fun zZipF(mode: NGenXX.Companion.ZipMode, inStream: InputStream, outStream: OutputStream): Boolean {
+            val zip = NGenXX.zZipInit(mode.value, Z_BUFFER_SIZE.toLong())
+            if (zip <= 0) return false
+
+            val success = zProcess(Z_BUFFER_SIZE, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
+                NGenXX.zZipInput(zip, inBuffer, inLen, inputFinished)
+            }, {
+                NGenXX.zZipProcessDo(zip)
+            }, {
+                NGenXX.zZipProcessFinished(zip)
+            })
+
+            NGenXX.zZipRelease(zip)
+            return success
         }
 
         fun zUnZipF(inStream: InputStream, outStream: OutputStream): Boolean {
-            val inBuffer = ByteArray(Z_BUFFER_SIZE)
-            var inLen: Int
-
             val unzip = NGenXX.zUnZipInit(Z_BUFFER_SIZE.toLong())
-            if (unzip > 0) {
-                var inputFinished: Boolean
-                do {
-                    inLen = inStream.read(inBuffer, 0, inBuffer.size)
-                    inputFinished = inLen == -1
-                    val ret = NGenXX.zUnZipInput(unzip, inBuffer, inLen, inputFinished)
-                    if (ret == 0L) {
-                        return false
-                    }
+            if (unzip <= 0) return false
 
-                    var processFinished: Boolean
-                    do {
-                        val outBytes = NGenXX.zUnZipProcessDo(unzip)
-                        if (outBytes.isEmpty()) {
-                            return false
-                        }
-                        processFinished = NGenXX.zUnZipProcessFinished(unzip)
+            val success = zProcess(Z_BUFFER_SIZE, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
+                NGenXX.zUnZipInput(unzip, inBuffer, inLen, inputFinished)
+            }, {
+                NGenXX.zUnZipProcessDo(unzip)
+            }, {
+                NGenXX.zUnZipProcessFinished(unzip)
+            })
 
-                        outStream.write(outBytes)
-                    } while(!processFinished)
-                } while (!inputFinished)
-
-                outStream.flush()
-                NGenXX.zUnZipRelease(unzip)
-                return true
-            }
-            return false
+            NGenXX.zUnZipRelease(unzip)
+            return success
         }
     }
 }
