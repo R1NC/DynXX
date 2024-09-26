@@ -20,8 +20,8 @@ extern "C"
 
     /**
      * @brief initialize a ZIP process
-     * @param mode Compress mode
-     * @param bufferSize buffer size
+     * @param mode ZIP mode, see `NGenXXZipCompressMode`
+     * @param bufferSize buffer size，must be positive
      * @return a ZIP handle
      */
     void *ngenxx_z_zip_init(const int mode, const size bufferSize);
@@ -32,7 +32,7 @@ extern "C"
      * @param in input data bytes
      * @param inLen input data length
      * @param inFinish Whether input is finished or not
-     * @return The received data length
+     * @return The received data length, return `0` if error occurred
      */
     const size ngenxx_z_zip_input(const void *zip, const byte *in, const size inLen, const bool inFinish);
 
@@ -40,14 +40,14 @@ extern "C"
      * @brief process the ZIP input data
      * @param zip The ZIP handle
      * @param outLen a pointer to read the output data length
-     * @return output data bytes
+     * @return output data bytes, return `NULL` if error occurred
      */
     const byte *ngenxx_z_zip_process_do(const void *zip, size *outLen);
 
     /**
-     * @brief check whether ZIP process is finished
+     * @brief check whether all the ZIP data inputed before are processed
      * @param zip The ZIP handle
-     * @return whether ZIP process is finished or not
+     * @return whether finished or not
      */
     const bool ngenxx_z_zip_process_finished(const void *zip);
 
@@ -59,7 +59,7 @@ extern "C"
 
     /**
      * @brief initialize a UNZIP process
-     * @param bufferSize buffer size
+     * @param bufferSize buffer size，must be positive
      * @return a UNZIP handle
      */
     void *ngenxx_z_unzip_init(const size bufferSize);
@@ -70,7 +70,7 @@ extern "C"
      * @param in input data bytes
      * @param inLen input data length
      * @param inFinish Whether input is finished or not
-     * @return The received data length
+     * @return The received data length, return `0` if error occurred
      */
     const size ngenxx_z_unzip_input(const void *unzip, const byte *in, const size inLen, const bool inFinish);
 
@@ -78,14 +78,14 @@ extern "C"
      * @brief process the UNZIP input data
      * @param unzip The UNZIP handle
      * @param outLen a pointer to read the output data length
-     * @return output data bytes
+     * @return output data bytes, return `NULL` if error occurred
      */
     const byte *ngenxx_z_unzip_process_do(const void *unzip, size *outLen);
 
     /**
-     * @brief check whether UNZIP process is finished
+     * @brief check whether all the ZIP data inputed before are processed
      * @param unzip The UNZIP handle
-     * @return whether UNZIP process is finished or not
+     * @return whether finished or not
      */
     const bool ngenxx_z_unzip_process_finished(const void *unzip);
 
