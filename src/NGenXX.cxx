@@ -449,18 +449,21 @@ void *ngenxx_z_zip_init(const int mode, const size bufferSize)
 EXPORT_AUTO
 const size ngenxx_z_zip_input(const void *zip, const byte *in, const size inLen, const bool inFinish)
 {
+    if (zip == NULL) return 0;
     return ((NGenXX::Z::Zip *)zip)->input(in, inLen, inFinish);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_z_zip_process_do(const void *zip, size *outLen)
 {
+    if (zip == NULL) return NULL;
     return copyBytes({((NGenXX::Z::Zip *)zip)->processDo(outLen), *outLen});
 }
 
 EXPORT_AUTO
 const bool ngenxx_z_zip_process_finished(const void *zip)
 {
+    if (zip == NULL) return false;
     return ((NGenXX::Z::Zip *)zip)->processFinished();
 }
 
@@ -486,18 +489,21 @@ void *ngenxx_z_unzip_init(const size bufferSize)
 EXPORT_AUTO
 const size ngenxx_z_unzip_input(const void *unzip, const byte *in, const size inLen, const bool inFinish)
 {
+    if (unzip == NULL) return 0;
     return ((NGenXX::Z::UnZip *)unzip)->input(in, inLen, inFinish);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_z_unzip_process_do(const void *unzip, size *outLen)
 {
+    if (unzip == NULL) return NULL;
     return copyBytes({((NGenXX::Z::UnZip *)unzip)->processDo(outLen), *outLen});
 }
 
 EXPORT_AUTO
 const bool ngenxx_z_unzip_process_finished(const void *unzip)
 {
+    if (unzip == NULL) return false;
     return ((NGenXX::Z::UnZip *)unzip)->processFinished();
 }
 
