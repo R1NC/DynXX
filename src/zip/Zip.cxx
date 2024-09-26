@@ -65,7 +65,6 @@ const bool NGenXX::Z::ZBase::processFinished()
 
 NGenXX::Z::ZBase::~ZBase()
 {
-    deflateEnd(&(this->zs));
     free((void *)inBuffer);
     free((void *)outBuffer);
 }
@@ -90,6 +89,7 @@ void NGenXX::Z::Zip::processImp()
 
 NGenXX::Z::Zip::~Zip()
 {
+    deflateEnd(&(this->zs));
 }
 
 NGenXX::Z::UnZip::UnZip(const size bufferSize) : ZBase(bufferSize)
@@ -109,4 +109,5 @@ void NGenXX::Z::UnZip::processImp()
 
 NGenXX::Z::UnZip::~UnZip()
 {
+    inflateEnd(&(this->zs));
 }
