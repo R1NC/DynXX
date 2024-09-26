@@ -164,24 +164,27 @@ class MainActivity : ComponentActivity() {
             NGenXX.storeSQLiteClose(dbConn)
         }
 
-        val zipInStream = assets.open("prepare_data.sql")
-        val zipFile = File(externalCacheDir, "x.zip")
-        if (!zipFile.exists()) {
-            zipFile.delete()
-        }
-        zipFile.createNewFile()
-        val zipOutStream = FileOutputStream(zipFile)
-        val zipRes = NGenXXHelper.zZipF(NGenXX.Companion.ZipMode.Default, zipInStream, zipOutStream)
-        if (zipRes) {
-            val unzipInStream = FileInputStream(zipFile)
-            val unzipFile = File(externalCacheDir, "x.txt")
-            if (!unzipFile.exists()) {
-                unzipFile.delete()
+        assets.open("prepare_data.sql").use { zipInStream ->
+            val zipFile = File(externalCacheDir, "x.zip")
+            if (!zipFile.exists()) {
+                zipFile.delete()
             }
-            unzipFile.createNewFile()
-            val unzipOutStream = FileOutputStream(unzipFile)
-            val unzipRes = NGenXXHelper.zUnZipF(unzipInStream, unzipOutStream)
-            if (unzipRes);
+            zipFile.createNewFile()
+            FileOutputStream(zipFile).use { zipOutStream ->
+                val zipSuccess = NGenXXHelper.zZip(NGenXX.Companion.ZipMode.Default, zipInStream, zipOutStream)
+                if (zipSuccess) {
+                    FileInputStream(zipFile).use { unzipInStream ->
+                        val unzipFile = File(externalCacheDir, "x.txt")
+                        if (!unzipFile.exists()) {
+                            unzipFile.delete()
+                        }
+                        unzipFile.createNewFile()
+                        FileOutputStream(unzipFile).use { unzipOutStream ->
+                            NGenXXHelper.zUnZip(unzipInStream, unzipOutStream)
+                        }
+                    }
+                }
+            }
         }
     }
 }

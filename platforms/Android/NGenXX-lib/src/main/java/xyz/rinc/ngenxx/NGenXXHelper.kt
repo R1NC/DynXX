@@ -40,7 +40,7 @@ class NGenXXHelper {
             return true
         }
 
-        fun zZipF(mode: NGenXX.Companion.ZipMode, inStream: InputStream, outStream: OutputStream): Boolean {
+        fun zZip(mode: NGenXX.Companion.ZipMode, inStream: InputStream, outStream: OutputStream): Boolean {
             val zip = NGenXX.zZipInit(mode.value, Z_BUFFER_SIZE.toLong())
             if (zip <= 0) return false
 
@@ -56,7 +56,7 @@ class NGenXXHelper {
             return success
         }
 
-        fun zUnZipF(inStream: InputStream, outStream: OutputStream): Boolean {
+        fun zUnZip(inStream: InputStream, outStream: OutputStream): Boolean {
             val unzip = NGenXX.zUnZipInit(Z_BUFFER_SIZE.toLong())
             if (unzip <= 0) return false
 
