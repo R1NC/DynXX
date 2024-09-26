@@ -25,6 +25,7 @@ namespace NGenXX
             bool inFinish;
 
         public:
+            ZBase() = delete;
             ZBase(const size bufferSize);
             const size input(const byte *in, const size inLen, bool inFinish);
             const byte *processDo(size *outLen);
@@ -49,6 +50,7 @@ namespace NGenXX
             void processImp();
 
         public:
+            UnZip() = delete;
             UnZip(const size bufferSize);
             ~UnZip();
         };
