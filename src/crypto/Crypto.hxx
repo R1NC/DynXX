@@ -20,6 +20,9 @@ namespace NGenXX
 
         namespace Hash
         {
+            constexpr size MD5_BYTES_LEN = 16;
+            constexpr size SHA256_BYTES_LEN = 32;
+
             const Bytes md5(const Bytes in);
 
             const Bytes sha256(const Bytes in);

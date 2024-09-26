@@ -146,7 +146,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
     const size inLen = std::get<1>(inBytes);
     if (in == NULL || inLen == 0)
         return BytesEmpty;
-    int outLen = 16;
+    int outLen = MD5_BYTES_LEN;
     byte out[outLen];
     memset(out, 0, outLen);
 
@@ -184,7 +184,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
     const size inLen = std::get<1>(inBytes);
     if (in == NULL || inLen == 0)
         return BytesEmpty;
-    int outLen = 32;
+    int outLen = SHA256_BYTES_LEN;
     byte out[outLen];
     memset(out, 0, outLen);
 
