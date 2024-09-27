@@ -5,6 +5,7 @@
 
 #include <string>
 #include "../../external/mmkv/Core/MMKV.h"
+#include "../NGenXX-Types.hxx"
 
 namespace NGenXX
 {
@@ -26,15 +27,11 @@ namespace NGenXX
 
                 const std::string readString(const std::string &k);
 
-                long long readInteger(const std::string &k);
+                const long long readInteger(const std::string &k);
 
-                double readFloat(const std::string &k);
-
-                template <typename T>
-                bool write(const std::string &k, T v)
-                {
-                    return this->kv->set(v, k);
-                }
+                const double readFloat(const std::string &k);
+                
+                bool write(const std::string &k, const Any &v);
 
                 bool contains(const std::string &k);
 

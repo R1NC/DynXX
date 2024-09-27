@@ -184,16 +184,7 @@ const char *ngenxx_store_sqlite_query_read_column_text(void *query_result, const
     if (query_result == NULL || column == NULL)
         return NULL;
     auto a = ((NGenXX::Store::SQLite::Connection::QueryResult *)query_result)->readColumn(std::string(column));
-    std::string s;
-    try
-    {
-        s = std::get<std::string>(a);
-    }
-    catch (const std::bad_variant_access &ex)
-    {
-        NGenXX::Log::print(NGenXXLogLevelError, "bad_variant_access: string");
-    }
-    return str2charp(s);
+    return str2charp(*std::get_if<std::string>(&a));
 }
 
 EXPORT_AUTO
@@ -202,16 +193,7 @@ long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, cons
     if (query_result == NULL || column == NULL)
         return 0;
     auto a = ((NGenXX::Store::SQLite::Connection::QueryResult *)query_result)->readColumn(std::string(column));
-    long long ll;
-    try
-    {
-        ll = std::get<long long>(a);
-    }
-    catch (const std::bad_variant_access &ex)
-    {
-        NGenXX::Log::print(NGenXXLogLevelError, "bad_variant_access: long long");
-    }
-    return ll;
+    return *std::get_if<long long>(&a);
 }
 
 EXPORT_AUTO
@@ -220,16 +202,7 @@ double ngenxx_store_sqlite_query_read_column_float(void *query_result, const cha
     if (query_result == NULL || column == NULL)
         return 0.f;
     auto a = ((NGenXX::Store::SQLite::Connection::QueryResult *)query_result)->readColumn(std::string(column));
-    double d;
-    try
-    {
-        d = std::get<double>(a);
-    }
-    catch (const std::bad_variant_access &ex)
-    {
-        NGenXX::Log::print(NGenXXLogLevelError, "bad_variant_access: double");
-    }
-    return d;
+    return *std::get_if<double>(&a);
 }
 
 EXPORT_AUTO
@@ -263,6 +236,7 @@ const char *ngenxx_store_kv_read_string(void *conn, const char *k)
 {
     if (conn == NULL || k == NULL)
         return NULL;
+    auto a = ((NGenXX::Store::KV::Connection *)conn)->readString(std::string(k));
     return str2charp(((NGenXX::Store::KV::Connection *)conn)->readString(std::string(k)));
 }
 
@@ -271,7 +245,7 @@ bool ngenxx_store_kv_write_string(void *conn, const char *k, const char *v)
 {
     if (conn == NULL || k == NULL)
         return false;
-    return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
+    return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), std::string(v));
 }
 
 EXPORT_AUTO
@@ -287,7 +261,7 @@ bool ngenxx_store_kv_write_integer(void *conn, const char *k, long long v)
 {
     if (conn == NULL || k == NULL)
         return false;
-    return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), (int64_t)v);
+    return ((NGenXX::Store::KV::Connection *)conn)->write(std::string(k), v);
 }
 
 EXPORT_AUTO
