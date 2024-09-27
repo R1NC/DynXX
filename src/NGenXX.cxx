@@ -8,6 +8,7 @@
 #include "../include/NGenXX.h"
 #include "log/Log.hxx"
 #include "crypto/Crypto.hxx"
+#include "coding/Coding.hxx"
 #include "device/DeviceInfo.hxx"
 #include "net/HttpClient.hxx"
 #include "store/SQLite.hxx"
@@ -302,6 +303,23 @@ void ngenxx_store_kv_close(void *conn)
     if (conn == NULL)
         return;
     delete (NGenXX::Store::KV *)conn;
+}
+
+#pragma mark Coding
+
+EXPORT_AUTO
+const byte *ngenxx_coding_hex_str2bytes(const char *str, size *outLen)
+{
+    auto b = NGenXX::Coding::Hex::str2bytes(std::string(str));
+    *outLen = std::get<1>(b);
+    return copyBytes(b);
+}
+
+EXPORT_AUTO
+const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, const size inLen)
+{
+    auto s = NGenXX::Coding::Hex::bytes2str({inBytes, inLen});
+    return str2charp(s);
 }
 
 #pragma mark Crypto

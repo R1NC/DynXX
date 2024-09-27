@@ -4,6 +4,7 @@
 #include "NGenXXTypes.h"
 #include "NGenXXLog.h"
 #include "NGenXXCrypto.h"
+#include "NGenXXCoding.h"
 #include "NGenXXDeviceInfo.h"
 #include "NGenXXNetHttp.h"
 #include "NGenXXStoreKV.h"

@@ -2,8 +2,6 @@
 #define NGENXX_TYPES_HXX_
 
 #include "../include/NGenXXTypes.h"
-#include "../include/NGenXXLog.h"
-#include "log/Log.hxx"
 
 #ifdef __cplusplus
 

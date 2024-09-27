@@ -1,4 +1,6 @@
 #include "KV.hxx"
+#include "../../include/NGenXXLog.h"
+#include "../log/Log.hxx"
 
 NGenXX::Store::KV::KV(const std::string &root)
 {

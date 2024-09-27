@@ -59,7 +59,6 @@ class MainActivity : ComponentActivity() {
         NGenXX.release()
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     private fun testNGenXX() {
         val dir = filesDir?.absolutePath ?: return
         if (!NGenXX.init(dir)) return
@@ -82,28 +81,30 @@ class MainActivity : ComponentActivity() {
         val aesDecodedBytes = NGenXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
         val aesDecodedStr = aesDecodedBytes.toString(Charsets.UTF_8)
         NGenXX.logPrint(1,"AES->$aesDecodedStr")
-        val md5 = NGenXX.cryptoHashMd5(inputBytes).toHexString()
-        NGenXX.logPrint(1,"md5->$md5")
-        val sha256 = NGenXX.cryptoHashSha256(inputBytes).toHexString()
-        NGenXX.logPrint(1,"sha256->$sha256")
+        val md5Bytes = NGenXX.cryptoHashMd5(inputBytes)
+        val md5hex = NGenXX.codingHexBytes2Str(md5Bytes)
+        NGenXX.logPrint(1,"md5->$md5hex")
+        val sha256bytes = NGenXX.cryptoHashSha256(inputBytes)
+        val sha256hex = NGenXX.codingHexBytes2Str(sha256bytes)
+        NGenXX.logPrint(1,"sha256->$sha256hex")
         val base64Encoded = NGenXX.cryptoBase64Encode(inputBytes)
         val base64Decoded = NGenXX.cryptoBase64Decode(base64Encoded)
         val base64DecodedStr = base64Decoded.toString(Charsets.UTF_8)
         NGenXX.logPrint(1,"base64->$base64DecodedStr")
 
-        val luaScript = application.assets.open("biz.lua").bufferedReader().use {
-            it.readText()
-        }
-        NGenXX.lLoadS(luaScript)
-
         val jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\":1, \"timeout\":6666}"
-        val rsp = NGenXX.lCall("lNetHttpRequest", jsonParams)
-        /*val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
-            "p0=1&p1=2&p2=3",
-            0,
-            arrayOf("Cache-Control: no-cache"),
-            5555
-        )*/
+
+        application.assets.open("biz.lua").bufferedReader().use {
+            if (!NGenXX.lLoadS(it.readText())) return
+            val rsp = NGenXX.lCall("lNetHttpRequest", jsonParams)
+            /*val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
+                "p0=1&p1=2&p2=3",
+                0,
+                arrayOf("Cache-Control: no-cache"),
+                5555
+            )*/
+            NGenXX.logPrint(1, rsp!!)
+        }
 
         val jsonDecoder = NGenXX.jsonDecoderInit(jsonParams)
         if (jsonDecoder > 0) {

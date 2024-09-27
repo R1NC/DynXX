@@ -38,6 +38,7 @@ set(ENGINE_FILES
     ../src/store/KV.cxx
     ../src/json/JsonDecoder.cxx
     ../src/zip/Zip.cxx
+    ../src/coding/Coding.cxx
     ../src/NGenXX.cxx
 )
 if(OHOS)
