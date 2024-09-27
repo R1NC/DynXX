@@ -416,9 +416,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_codingHexStr2Bytes(JNIEnv *env,
 
     size outLen;
     auto cRes = ngenxx_coding_hex_str2bytes(cStr, &outLen);
-    jbyteArray jba = toJByteArray(env, cRes, outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen);
 
-    free((void *)cRes);
     env->ReleaseStringUTFChars(str, cStr);
     return jba;
 }
@@ -437,9 +436,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesEncrypt(JNIEnv *env, jobject
 
     size outLen;
     auto cRes = ngenxx_crypto_aes_encrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
-    jbyteArray jba = toJByteArray(env, cRes, outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen);
 
-    free((void *)cRes);
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
     return jba;
@@ -457,9 +455,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesDecrypt(JNIEnv *env, jobject
 
     size outLen;
     auto cRes = ngenxx_crypto_aes_decrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
-    jbyteArray jba = toJByteArray(env, cRes, outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen);
 
-    free((void *)cRes);
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
     return jba;
@@ -474,9 +471,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashMd5(JNIEnv *env, jobject th
 
     size outLen;
     auto cRes = ngenxx_crypto_hash_md5((const byte *)cIn, inLen, &outLen);
-    jbyteArray jba = toJByteArray(env, cRes, outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen);
 
-    free((void *)cRes);
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     return jba;
 }
@@ -490,9 +486,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashSha256(JNIEnv *env, jobject
 
     size outLen;
     auto cRes = ngenxx_crypto_hash_sha256((const byte *)cIn, inLen, &outLen);
-    jbyteArray jba = toJByteArray(env, cRes, outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen);
 
-    free((void *)cRes);
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     return jba;
 }
@@ -506,9 +501,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoBase64Encode(JNIEnv *env, jobje
 
     size outLen;
     auto cRes = ngenxx_crypto_base64_encode((const byte *)cIn, inLen, &outLen);
-    jbyteArray jba = toJByteArray(env, cRes, outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen);
 
-    free((void *)cRes);
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     return jba;
 }
@@ -522,9 +516,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoBase64Decode(JNIEnv *env, jobje
 
     size outLen;
     auto cRes = ngenxx_crypto_base64_decode((const byte *)cIn, inLen, &outLen);
-    jbyteArray jba = toJByteArray(env, cRes, outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen);
 
-    free((void *)cRes);
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     return jba;
 }
@@ -632,9 +625,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipProcessDo(JNIEnv *env, jobject th
 {
     size outLen = 0;
     auto cRes = ngenxx_z_zip_process_do((void *)zip, &outLen);
-    jbyteArray jba = toJByteArray(env, cRes, outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen);
 
-    free((void *)cRes);
     return jba;
 }
 
@@ -678,9 +670,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipProcessDo(JNIEnv *env, jobject 
 {
     size outLen = 0;
     auto cRes = ngenxx_z_unzip_process_do((void *)unzip, &outLen);
-    jbyteArray jba = toJByteArray(env, cRes, outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen);
 
-    free((void *)cRes);
     return jba;
 }
 
