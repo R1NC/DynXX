@@ -6,11 +6,15 @@
 #ifdef __cplusplus
 
 #include <tuple>
+#include <string>
+#include <variant>
 
 namespace NGenXX
 {
-    typedef std::tuple<const byte *, const size> Bytes;
-#define BytesEmpty {NULL, 0}
+    using Bytes = std::tuple<const byte *, const size>;
+    #define BytesEmpty {NULL, 0}
+
+    using Any = std::variant<long long, double, std::string>;
 }
 
 #endif

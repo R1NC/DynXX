@@ -183,8 +183,16 @@ const char *ngenxx_store_sqlite_query_read_column_text(void *query_result, const
 {
     if (query_result == NULL || column == NULL)
         return NULL;
-    NGenXX::Store::SQLite::Connection::QueryResult *xqr = (NGenXX::Store::SQLite::Connection::QueryResult *)query_result;
-    auto s = xqr->readColumnText(std::string(column));
+    auto a = ((NGenXX::Store::SQLite::Connection::QueryResult *)query_result)->readColumn(std::string(column));
+    std::string s;
+    try
+    {
+        s = std::get<std::string>(a);
+    }
+    catch (const std::bad_variant_access &ex)
+    {
+        NGenXX::Log::print(NGenXXLogLevelError, "bad_variant_access: string");
+    }
     return str2charp(s);
 }
 
@@ -193,8 +201,17 @@ long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, cons
 {
     if (query_result == NULL || column == NULL)
         return 0;
-    NGenXX::Store::SQLite::Connection::QueryResult *xqr = (NGenXX::Store::SQLite::Connection::QueryResult *)query_result;
-    return xqr->readColumnInteger(std::string(column));
+    auto a = ((NGenXX::Store::SQLite::Connection::QueryResult *)query_result)->readColumn(std::string(column));
+    long long ll;
+    try
+    {
+        ll = std::get<long long>(a);
+    }
+    catch (const std::bad_variant_access &ex)
+    {
+        NGenXX::Log::print(NGenXXLogLevelError, "bad_variant_access: long long");
+    }
+    return ll;
 }
 
 EXPORT_AUTO
@@ -202,8 +219,17 @@ double ngenxx_store_sqlite_query_read_column_float(void *query_result, const cha
 {
     if (query_result == NULL || column == NULL)
         return 0.f;
-    NGenXX::Store::SQLite::Connection::QueryResult *xqr = (NGenXX::Store::SQLite::Connection::QueryResult *)query_result;
-    return xqr->readColumnFloat(std::string(column));
+    auto a = ((NGenXX::Store::SQLite::Connection::QueryResult *)query_result)->readColumn(std::string(column));
+    double d;
+    try
+    {
+        d = std::get<double>(a);
+    }
+    catch (const std::bad_variant_access &ex)
+    {
+        NGenXX::Log::print(NGenXXLogLevelError, "bad_variant_access: double");
+    }
+    return d;
 }
 
 EXPORT_AUTO

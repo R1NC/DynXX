@@ -82,46 +82,25 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
     return rc == SQLITE_ROW;
 }
 
-std::string NGenXX::Store::SQLite::Connection::QueryResult::readColumnText(const std::string &column)
+NGenXX::Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column)
 {
     if (this->stmt == NULL)
-        return NULL;
+        return {};
     for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
     {
-        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0 && sqlite3_column_type(this->stmt, i) == SQLITE_TEXT)
+        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0)
         {
-            return (const char *)sqlite3_column_text(this->stmt, i);
+            int columnType = sqlite3_column_type(this->stmt, i);
+            if (columnType == SQLITE_TEXT) {
+                return std::string((const char *)sqlite3_column_text(this->stmt, i));
+            } else if (columnType == SQLITE_INTEGER) {
+                return sqlite3_column_int64(this->stmt, i);
+            } else if (columnType == SQLITE_FLOAT) {
+                return sqlite3_column_double(this->stmt, i);
+            }
         }
     }
-    return NULL;
-}
-
-long long NGenXX::Store::SQLite::Connection::QueryResult::readColumnInteger(const std::string &column)
-{
-    if (this->stmt == NULL)
-        return 0;
-    for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
-    {
-        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0 && sqlite3_column_type(this->stmt, i) == SQLITE_INTEGER)
-        {
-            return sqlite3_column_int64(this->stmt, i);
-        }
-    }
-    return 0;
-}
-
-double NGenXX::Store::SQLite::Connection::QueryResult::readColumnFloat(const std::string &column)
-{
-    if (this->stmt == NULL)
-        return 0.f;
-    for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
-    {
-        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0 && sqlite3_column_type(this->stmt, i) == SQLITE_FLOAT)
-        {
-            return sqlite3_column_double(this->stmt, i);
-        }
-    }
-    return 0;
+    return {};
 }
 
 NGenXX::Store::SQLite::Connection::QueryResult::~QueryResult()

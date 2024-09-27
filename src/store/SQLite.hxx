@@ -3,6 +3,7 @@
 
 #ifdef __cplusplus
 
+#include "../NGenXX-Types.hxx"
 #include <string>
 #ifdef __APPLE__
 #include <sqlite3.h>
@@ -53,23 +54,9 @@ namespace NGenXX
                     /**
                      * @brief Read text column data from QueryResult
                      * @param column Column name
-                     * @return Text column data
+                     * @return column data
                      */
-                    std::string readColumnText(const std::string &column);
-
-                    /**
-                     * @brief Read integer column data from QueryResult
-                     * @param column Column name
-                     * @return Integer column data
-                     */
-                    long long readColumnInteger(const std::string &column);
-
-                    /**
-                     * @brief Read float column data from QueryResult
-                     * @param column Column name
-                     * @return Float column data
-                     */
-                    double readColumnFloat(const std::string &column);
+                    Any readColumn(const std::string &column);
 
                     /**
                      * @brief Release QueryResult
