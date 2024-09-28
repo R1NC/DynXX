@@ -156,9 +156,10 @@ class MainActivity : ComponentActivity() {
             val queryResult = NGenXX.storeSQLiteQueryDo(dbConn, querySQL)
             if (queryResult > 0) {
                 while (NGenXX.storeSQLiteQueryReadRow(queryResult)) {
-                    val platform = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
-                    val vendor = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "vendor");
-                    NGenXX.logPrint(1,"$platform->$vendor")
+                    val s = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
+                    val i = NGenXX.storeSQLiteQueryReadColumnInteger(queryResult, "i")
+                    val f = NGenXX.storeSQLiteQueryReadColumnFloat(queryResult, "f")
+                    NGenXX.logPrint(1,"$s->$i->$f")
                 }
                 NGenXX.storeSQLiteQueryDrop(queryResult)
             }

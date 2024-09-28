@@ -19,7 +19,7 @@ namespace NGenXX
     using Bytes = std::tuple<const byte *, const size>;
 #define BytesEmpty {NULL, 0}
 
-    using Any = std::variant<long long, double, std::string>;
+    using Any = std::variant<int64_t, double, std::string>;
 }
 
 #endif

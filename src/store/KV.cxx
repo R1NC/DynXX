@@ -35,7 +35,7 @@ const std::string NGenXX::Store::KV::Connection::readString(const std::string &k
     return s;
 }
 
-const long long NGenXX::Store::KV::Connection::readInteger(const std::string &k)
+const int64_t NGenXX::Store::KV::Connection::readInteger(const std::string &k)
 {
     return this->kv->getInt64(k.c_str());
 }
@@ -47,24 +47,10 @@ const double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
 
 bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v)
 {
-    if (std::holds_alternative<long long>(v))
-    {
-        long long ll = *(std::get_if<long long>(&v));
-        return this->kv->set((int64_t)ll, k);
-    }
-    else if (std::holds_alternative<double>(v))
-    {
-        double d = *(std::get_if<double>(&v));
-        return this->kv->set(d, k);
-    }
-    else if (std::holds_alternative<std::string>(v))
-    {
-        std::string s = *(std::get_if<std::string>(&v));
-        return this->kv->set(s, k);
-    } else {
-        NGenXX::Log::print(NGenXXLogLevelError, "kv write invalid");
-    }
-    return false;
+    std::visit([&](auto &x) {
+        this->kv->set(x, k);
+    }, v);
+    return true;
 }
 
 bool NGenXX::Store::KV::Connection::contains(const std::string &k)

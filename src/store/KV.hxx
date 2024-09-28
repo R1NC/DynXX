@@ -27,7 +27,7 @@ namespace NGenXX
 
                 const std::string readString(const std::string &k);
 
-                const long long readInteger(const std::string &k);
+                const int64_t readInteger(const std::string &k);
 
                 const double readFloat(const std::string &k);
                 

@@ -194,7 +194,7 @@ long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, cons
     if (query_result == NULL || column == NULL)
         return 0;
     auto a = ((NGenXX::Store::SQLite::Connection::QueryResult *)query_result)->readColumn(std::string(column));
-    return *std::get_if<long long>(&a);
+    return *std::get_if<int64_t>(&a);
 }
 
 EXPORT_AUTO
