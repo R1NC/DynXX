@@ -47,10 +47,9 @@ const double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
 
 bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v)
 {
-    std::visit([&](auto &x) {
-        this->kv->set(x, k);
+    return std::visit([&](auto &x) {
+        return this->kv->set(x, k);
     }, v);
-    return true;
 }
 
 bool NGenXX::Store::KV::Connection::contains(const std::string &k)
