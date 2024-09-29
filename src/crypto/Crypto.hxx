@@ -11,11 +11,35 @@ namespace NGenXX
 {
     namespace Crypto
     {
+        bool rand(const size len, byte *bytes);
+
         namespace AES
         {
-            const Bytes aesEncrypt(const Bytes in, const Bytes key);
 
-            const Bytes aesDecrypt(const Bytes in, const Bytes key);
+            const Bytes encrypt(const Bytes in, const Bytes key);
+
+            const Bytes decrypt(const Bytes in, const Bytes key);
+
+            static constexpr bool checkGcmParams(const Bytes in, const Bytes key, const Bytes initVector, const size tagBits)
+            {
+                const unsigned char *inBytes = std::get<0>(in);
+                const unsigned int inLen = std::get<1>(in);
+                const unsigned char *keyBytes = std::get<0>(key);
+                const unsigned int keyLen = std::get<1>(key);
+                const unsigned char *inVectorBytes = std::get<0>(initVector);
+                const unsigned int inVectorLen = std::get<1>(initVector);
+                const unsigned int tagLen = tagBits / 8;
+                if (inBytes == NULL || inLen <= 0) return false;
+                if (keyBytes == NULL || (keyLen != 16 && keyLen != 24 && keyLen != 32)) return false;
+                if (inVectorBytes == NULL || inVectorLen != 12) return false;
+                if (tagBits != 96 && tagBits != 104 && tagBits != 112 && tagBits != 120 && tagBits != 128) return false;
+                if (inLen <= tagLen) return false;
+                return true;
+            }
+
+            const Bytes gcmEncrypt(const Bytes in, const Bytes key, const Bytes initVector, const size tagBits);
+
+            const Bytes gcmDecrypt(const Bytes in, Bytes key, const Bytes initVector, const size tagBits);
         }
 
         namespace Hash

@@ -3,6 +3,7 @@
 #include "../log/Log.hxx"
 #include <string>
 
+#include "../../../external/wolfssl/wolfssl/ssl.h"
 #include "../../../external/wolfssl/wolfssl/wolfcrypt/aes.h"
 #include "../../../external/wolfssl/wolfssl/wolfcrypt/md5.h"
 #include "../../../external/wolfssl/wolfssl/wolfcrypt/sha.h"
@@ -11,34 +12,14 @@
 
 constexpr int WolfSSL_OK = 0;
 
-/*
-void NGenXX::Crypto::AES::aesgcmEncrypt(byte *out,
-                                                    const byte *key, size keyLen,
-                                                    const byte *in, size inLen,
-                                                    const byte *initVector, size initVectorLen,
-                                                    byte *authTag, size authTagLen,
-                                                    const byte *authVector, size authVectorLen)
+bool NGenXX::Crypto::rand(const size len, byte *bytes)
 {
-    Aes aes[1];
-    wc_AesInit(aes, NULL, 0);
-    ret = wc_AesGcmSetKey(aes, key, keyLen);
-    wc_AesGcmEncrypt(aes, out, in, inLen, initVector, initVectorLen, authTag, authTagLen, authVector, authVectorLen);
+    if (len <= 0 || bytes == NULL) return false;
+    int ret = wolfSSL_RAND_bytes(bytes, len);
+    return ret == WOLFSSL_SUCCESS;
 }
 
-void NGenXX::Crypto::AES::aesgcmDecrypt(byte *out,
-                                                    const byte *key, size keyLen,
-                                                    const byte *in, size inLen,
-                                                    const byte *initVector, size initVectorLen,
-                                                    byte *authTag, size authTagLen,
-                                                    const byte *authVector, size authVectorLen)
-{
-    Aes aes[1];
-    wc_AesInit(aes, NULL, 0);
-    ret = wc_AesGcmSetKey(aes, key, keyLen);
-    wc_AesGcmDecrypt(aes, out, in, inLen, initVector, initVectorLen, authTag, authTagLen, authVector, authVectorLen);
-}*/
-
-const NGenXX::Bytes NGenXX::Crypto::AES::aesEncrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
+const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
@@ -89,7 +70,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::aesEncrypt(const NGenXX::Bytes inBytes,
     return {out, (const size)outLen};
 }
 
-const NGenXX::Bytes NGenXX::Crypto::AES::aesDecrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
+const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
 {
     const byte *in = std::get<0>(inBytes);
     const size inLen = std::get<1>(inBytes);
@@ -138,6 +119,92 @@ const NGenXX::Bytes NGenXX::Crypto::AES::aesDecrypt(const NGenXX::Bytes inBytes,
     }
 
     return {out, (const size)outLen};
+}
+
+const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes, const NGenXX::Bytes initVectorBytes, const size tagBits)
+{
+    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, tagBits)) return BytesEmpty;
+    const byte *in = std::get<0>(inBytes);
+    const size inLen = std::get<1>(inBytes);
+    const byte *key = std::get<0>(keyBytes);
+    const size keyLen = std::get<1>(keyBytes);
+    const byte *initVector = std::get<0>(initVectorBytes);
+    const size initVectorLen = std::get<1>(initVectorBytes);
+    const size tagLen = tagBits / 8;
+
+    unsigned char tag[tagLen];
+    std::memset(tag, 0, tagLen);
+    size outLen = inLen + tagLen;
+    unsigned char out[outLen];
+    std::memset(out, 0, outLen);
+    
+    Aes aes[1];
+    int ret = wc_AesInit(aes, NULL, 0);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "wc_AesInit error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+
+    ret = wc_AesGcmSetKey(aes, key, keyLen);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "wc_AesGcmSetKey error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+
+    ret = wc_AesGcmEncrypt(aes, out, in, inLen, initVector, initVectorLen, tag, tagLen, NULL, 0);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "wc_AesGcmEncrypt error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+    std::memcpy(out + inLen, tag, tagLen);
+    
+    return {out, outLen};
+}
+
+const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes, const NGenXX::Bytes initVectorBytes, const size tagBits)
+{
+    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, tagBits)) return BytesEmpty;
+    const byte *in = std::get<0>(inBytes);
+    size inLen = std::get<1>(inBytes);
+    const byte *key = std::get<0>(keyBytes);
+    const size keyLen = std::get<1>(keyBytes);
+    const byte *initVector = std::get<0>(initVectorBytes);
+    const size initVectorLen = std::get<1>(initVectorBytes);
+    const size tagLen = tagBits / 8;
+
+    inLen -= tagLen;
+    unsigned char tag[tagLen];
+    std::memcpy(tag, in + inLen, tagLen);
+    size outLen = inLen;
+    unsigned char out[outLen];
+    memset(out, 0, outLen);
+
+    Aes aes[1];
+    int ret = wc_AesInit(aes, NULL, 0);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "wc_AesInit error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+
+    ret = wc_AesGcmSetKey(aes, key, keyLen);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "wc_AesGcmSetKey error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+    
+    ret = wc_AesGcmDecrypt(aes, out, in, inLen, initVector, initVectorLen, tag, tagLen, NULL, 0);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "wc_AesGcmDecrypt error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+
+    return {out, outLen};
 }
 
 const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
