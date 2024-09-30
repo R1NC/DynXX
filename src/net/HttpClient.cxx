@@ -25,7 +25,7 @@ NGenXX::Net::HttpClient::~HttpClient()
     curl_global_cleanup();
 }
 
-const std::string NGenXX::Net::HttpClient::request(const std::string &url, const std::string &params, const int method, const std::vector<std::string> &headers, const unsigned long timeout)
+const std::string NGenXX::Net::HttpClient::request(const std::string &url, const std::string &params, const int method, const std::vector<std::string> &headers, const size timeout)
 {
     std::string rsp;
     int _timeout = timeout;

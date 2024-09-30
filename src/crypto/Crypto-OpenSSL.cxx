@@ -16,7 +16,8 @@ constexpr int OpenSSL_AES_Key_BITS = 128;
 
 bool NGenXX::Crypto::rand(const size len, byte *bytes)
 {
-    if (len <= 0 || bytes == NULL) return false;
+    if (len <= 0 || bytes == NULL)
+        return false;
     int ret = RAND_bytes(bytes, len);
     return ret != -1;
 }
@@ -99,26 +100,34 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
     return {out, (const size)outLen};
 }
 
-const EVP_CIPHER *aesGcmCipher(const NGenXX::Bytes keyBytes) {
+const EVP_CIPHER *aesGcmCipher(const NGenXX::Bytes keyBytes)
+{
     const byte *key = std::get<0>(keyBytes);
     const size keyLen = std::get<1>(keyBytes);
-    if (key != NULL && keyLen > 0) {
-        if (keyLen == 16) return EVP_aes_128_gcm();
-        if (keyLen == 24) return EVP_aes_256_gcm();
-        if (keyLen == 32) return EVP_aes_128_gcm();
+    if (key != NULL && keyLen > 0)
+    {
+        if (keyLen == 16)
+            return EVP_aes_128_gcm();
+        if (keyLen == 24)
+            return EVP_aes_256_gcm();
+        if (keyLen == 32)
+            return EVP_aes_128_gcm();
     }
     return NULL;
 }
 
-const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes, const NGenXX::Bytes initVectorBytes, const size tagBits)
+const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes, const NGenXX::Bytes initVectorBytes, const NGenXX::Bytes aadBytes, const size tagBits)
 {
-    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, tagBits)) return BytesEmpty;
+    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
+        return BytesEmpty;
     const byte *in = std::get<0>(inBytes);
     size inLen = std::get<1>(inBytes);
     const byte *key = std::get<0>(keyBytes);
     const size keyLen = std::get<1>(keyBytes);
     const byte *initVector = std::get<0>(initVectorBytes);
     const size initVectorLen = std::get<1>(initVectorBytes);
+    const byte *aad = std::get<0>(aadBytes);
+    const size aadLen = std::get<1>(aadBytes);
     const size tagLen = tagBits / 8;
 
     byte tag[tagLen];
@@ -130,7 +139,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
     auto cipher = aesGcmCipher(keyBytes);
 
     EVP_CIPHER_CTX *ctx;
-    
+
     ctx = EVP_CIPHER_CTX_new();
     if (ctx == NULL)
     {
@@ -160,6 +169,17 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
     }
 
     int len;
+
+    if (aad != NULL && aadLen > 0)
+    {
+        ret = EVP_EncryptUpdate(ctx, NULL, &len, aad, aadLen);
+        if (ret != OpenSSL_OK)
+        {
+            Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptUpdate aad error:" + std::to_string(ret));
+            return BytesEmpty;
+        }
+    }
+
     ret = EVP_EncryptUpdate(ctx, out, &len, in, inLen);
     if (ret != OpenSSL_OK)
     {
@@ -187,15 +207,18 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
     return {out, outLen};
 }
 
-const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes, const NGenXX::Bytes initVectorBytes, const size tagBits)
+const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes, const NGenXX::Bytes initVectorBytes, const NGenXX::Bytes aadBytes, const size tagBits)
 {
-    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, tagBits)) return BytesEmpty;
+    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
+        return BytesEmpty;
     const byte *in = std::get<0>(inBytes);
     size inLen = std::get<1>(inBytes);
     const byte *key = std::get<0>(keyBytes);
     const size keyLen = std::get<1>(keyBytes);
     const byte *initVector = std::get<0>(initVectorBytes);
     const size initVectorLen = std::get<1>(initVectorBytes);
+    const byte *aad = std::get<0>(aadBytes);
+    const size aadLen = std::get<1>(aadBytes);
     const size tagLen = tagBits / 8;
 
     inLen -= tagLen;
@@ -204,7 +227,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
     size outLen = inLen;
     byte out[outLen];
     memset(out, 0, outLen);
-    
+
     auto cipher = aesGcmCipher(keyBytes);
 
     EVP_CIPHER_CTX *ctx;
@@ -238,6 +261,17 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
     }
 
     int len;
+
+    if (aad != NULL && aadLen > 0)
+    {
+        ret = EVP_EncryptUpdate(ctx, NULL, &len, aad, aadLen);
+        if (ret != OpenSSL_OK)
+        {
+            Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_EncryptUpdate aad error:" + std::to_string(ret));
+            return BytesEmpty;
+        }
+    }
+
     ret = EVP_DecryptUpdate(ctx, out, &len, in, inLen);
     if (ret != OpenSSL_OK)
     {

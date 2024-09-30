@@ -14,7 +14,7 @@ extern "C"
      * @param bytes A pointer to store the output bytes
      * @return success or not
      */
-    bool ngenxx_crypto_rand(const unsigned long len, unsigned char *bytes);
+    bool ngenxx_crypto_rand(const unsigned long len, byte *bytes);
 
     /**
      * @brief AES Encrypt
@@ -47,13 +47,16 @@ extern "C"
      * @param initVectorBytes initVector bytes data
      * @param initVectorLen initVector bytes length（MUST BE 12!!）
      * @param tagBits tag bits length（MUST BE 96//104/112/120/128!!）
+     * @param aadBytes Additional Authentication Data (AAD) bytes
+     * @param aadLen Additional Authentication Data (AAD) length
      * @param outLen output bytes length（include the tag）
      * @return output bytes data（With a tag on tail）
      */
-    const unsigned char *ngenxx_crypto_aes_gcm_encrypt(const unsigned char *inBytes, const unsigned int inLen,
-                                                                  const unsigned char *keyBytes, const unsigned int keyLen,
-                                                                  const unsigned char *initVectorBytes, const unsigned int initVectorLen,
-                                                                  const unsigned int tagBits, unsigned int *outLen);
+    const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, const size inLen,
+                                                                  const byte *keyBytes, const size keyLen,
+                                                                  const byte *initVectorBytes, const size initVectorLen,
+                                                                  const byte *aadBytes, const size aadLen,
+                                                                  const size tagBits, size *outLen);
 
     /**
      * @brief AES GCM Decrypt
@@ -63,14 +66,17 @@ extern "C"
      * @param keyLen key bytes length（MUST BE 16/24/32!!）
      * @param initVectorBytes initVector bytes data
      * @param initVectorLen initVector bytes length（MUST BE 12!!）
+     * @param aadBytes Additional Authentication Data (AAD) bytes
+     * @param aadLen Additional Authentication Data (AAD) length
      * @param tagBits tag bits length（MUST BE 96//104/112/120/128!!）
      * @param outLen output bytes length（Not include the tag）
      * @return output bytes data（No tag on tail）
      */
-    const unsigned char *ngenxx_crypto_aes_gcm_decrypt(const unsigned char *inBytes, const unsigned int inLen,
-                                                                  const unsigned char *keyBytes, const unsigned int keyLen,
-                                                                  const unsigned char *initVectorBytes, const unsigned int initVectorLen,
-                                                                  const unsigned int tagBits, unsigned int *outLen);
+    const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size inLen,
+                                                                  const byte *keyBytes, const size keyLen,
+                                                                  const byte *initVectorBytes, const size initVectorLen,
+                                                                  const byte *aadBytes, const size aadLen,
+                                                                  const size tagBits, size *outLen);
 
     /**
      * @brief MD5 hash

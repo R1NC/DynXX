@@ -1,6 +1,8 @@
 #ifndef NGENXX_NET_HTTP_H_
 #define NGENXX_NET_HTTP_H_
 
+#include "NGenXXTypes.h"
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
@@ -24,7 +26,7 @@ enum NGenXXNetHttpMethod
  * @param timeout Timeout(milliseconds)
  * @return response
  */
-const char *ngenxx_net_http_request(const char *url, const char *params, const int method, const char **headers_v, const unsigned int headers_c, const unsigned long timeout);
+const char *ngenxx_net_http_request(const char *url, const char *params, const int method, const char **headers_v, const size headers_c, const size timeout);
 
 #ifdef  __cplusplus
 }

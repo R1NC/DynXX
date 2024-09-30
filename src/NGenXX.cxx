@@ -125,7 +125,7 @@ void ngenxx_log_print(int level, const char *content)
 #pragma mark Net.Http
 
 EXPORT_AUTO
-const char *ngenxx_net_http_request(const char *url, const char *params, const int method, const char **headers_v, const unsigned int headers_c, const unsigned long timeout)
+const char *ngenxx_net_http_request(const char *url, const char *params, const int method, const char **headers_v, const size headers_c, const size timeout)
 {
     if (_ngenxx_http_client == NULL || url == NULL)
         return NULL;
@@ -325,7 +325,7 @@ const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, const size inLen)
 #pragma mark Crypto
 
 EXPORT_AUTO
-bool ngenxx_crypto_rand(const unsigned long len, unsigned char *bytes)
+bool ngenxx_crypto_rand(const unsigned long len, byte *bytes)
 {
     return NGenXX::Crypto::rand(len, bytes);
 }
@@ -349,24 +349,26 @@ const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, const size inLen, con
 }
 
 EXPORT_AUTO
-const unsigned char *ngenxx_crypto_aes_gcm_encrypt(const unsigned char *inBytes, const unsigned int inLen,
-                                                                  const unsigned char *keyBytes, const unsigned int keyLen,
-                                                                  const unsigned char *initVectorBytes, const unsigned int initVectorLen,
-                                                                  const unsigned int tagBits, unsigned int *outLen)
+const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, const size inLen,
+                                                                  const byte *keyBytes, const size keyLen,
+                                                                  const byte *initVectorBytes, const size initVectorLen,
+                                                                  const byte *aadBytes, const size aadLen,
+                                                                  const size tagBits, size *outLen)
 {
-    auto t = NGenXX::Crypto::AES::gcmEncrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, tagBits);
+    auto t = NGenXX::Crypto::AES::gcmEncrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, {aadBytes, aadLen}, tagBits);
     if (outLen)
         *outLen = std::get<1>(t);
     return copyBytes(t);
 }
 
 EXPORT_AUTO
-const unsigned char *ngenxx_crypto_aes_gcm_decrypt(const unsigned char *inBytes, const unsigned int inLen,
-                                                                  const unsigned char *keyBytes, const unsigned int keyLen,
-                                                                  const unsigned char *initVectorBytes, const unsigned int initVectorLen,
-                                                                  const unsigned int tagBits, unsigned int *outLen)
+const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size inLen,
+                                                                  const byte *keyBytes, const size keyLen,
+                                                                  const byte *initVectorBytes, const size initVectorLen,
+                                                                  const byte *aadBytes, const size aadLen,
+                                                                  const size tagBits, size *outLen)
 {
-    auto t = NGenXX::Crypto::AES::gcmDecrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, tagBits);
+    auto t = NGenXX::Crypto::AES::gcmDecrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, {aadBytes, aadLen}, tagBits);
     if (outLen)
         *outLen = std::get<1>(t);
     return copyBytes(t);
