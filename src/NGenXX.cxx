@@ -310,9 +310,9 @@ void ngenxx_store_kv_close(void *conn)
 EXPORT_AUTO
 const byte *ngenxx_coding_hex_str2bytes(const char *str, size *outLen)
 {
-    auto b = NGenXX::Coding::Hex::str2bytes(std::string(str));
-    *outLen = std::get<1>(b);
-    return copyBytes(b);
+    auto t = NGenXX::Coding::Hex::str2bytes(std::string(str));
+    *outLen = t.second;
+    return copyBytes(t);
 }
 
 EXPORT_AUTO
@@ -335,7 +335,7 @@ const byte *ngenxx_crypto_aes_encrypt(const byte *inBytes, const size inLen, con
 {
     auto t = NGenXX::Crypto::AES::encrypt({inBytes, inLen}, {keyBytes, keyLen});
     if (outLen)
-        *outLen = std::get<1>(t);
+        *outLen = t.second;
     return copyBytes(t);
 }
 
@@ -344,7 +344,7 @@ const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, const size inLen, con
 {
     auto t = NGenXX::Crypto::AES::decrypt({inBytes, inLen}, {keyBytes, keyLen});
     if (outLen)
-        *outLen = std::get<1>(t);
+        *outLen = t.second;
     return copyBytes(t);
 }
 
@@ -357,7 +357,7 @@ const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, const size inLen,
 {
     auto t = NGenXX::Crypto::AES::gcmEncrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, {aadBytes, aadLen}, tagBits);
     if (outLen)
-        *outLen = std::get<1>(t);
+        *outLen = t.second;
     return copyBytes(t);
 }
 
@@ -370,7 +370,7 @@ const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size inLen,
 {
     auto t = NGenXX::Crypto::AES::gcmDecrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, {aadBytes, aadLen}, tagBits);
     if (outLen)
-        *outLen = std::get<1>(t);
+        *outLen = t.second;
     return copyBytes(t);
 }
 
@@ -379,7 +379,7 @@ const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size inLen, size *
 {
     auto t = NGenXX::Crypto::Hash::md5({inBytes, inLen});
     if (outLen)
-        *outLen = std::get<1>(t);
+        *outLen = t.second;
     return copyBytes(t);
 }
 
@@ -388,7 +388,7 @@ const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size inLen, siz
 {
     auto t = NGenXX::Crypto::Hash::sha256({inBytes, inLen});
     if (outLen)
-        *outLen = std::get<1>(t);
+        *outLen = t.second;
     return copyBytes(t);
 }
 
@@ -397,7 +397,7 @@ const byte *ngenxx_crypto_base64_encode(const byte *inBytes, const size inLen, s
 {
     auto t = NGenXX::Crypto::Base64::encode({inBytes, inLen});
     if (outLen)
-        *outLen = std::get<1>(t);
+        *outLen = t.second;
     return copyBytes(t);
 }
 
@@ -406,7 +406,7 @@ const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size inLen, s
 {
     auto t = NGenXX::Crypto::Base64::decode({inBytes, inLen});
     if (outLen)
-        *outLen = std::get<1>(t);
+        *outLen = t.second;
     return copyBytes(t);
 }
 

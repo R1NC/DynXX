@@ -5,7 +5,7 @@
 
 #ifdef __cplusplus
 
-#include <tuple>
+#include <utility>
 #include <string>
 #include <variant>
 
@@ -16,7 +16,7 @@ namespace NGenXX
     constexpr double kDoubleMin = std::numeric_limits<double>::min();
     constexpr double kDoubleMax = std::numeric_limits<double>::max();
 
-    using Bytes = std::tuple<const byte *, const size>;
+    using Bytes = std::pair<const byte *, const size>;
 #define BytesEmpty {NULL, 0}
 
     using Any = std::variant<int64_t, double, std::string>;

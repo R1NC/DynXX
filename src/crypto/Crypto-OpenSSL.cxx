@@ -24,10 +24,10 @@ bool NGenXX::Crypto::rand(const size len, byte *bytes)
 
 const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
 {
-    const byte *in = std::get<0>(inBytes);
-    const size inLen = std::get<1>(inBytes);
-    const byte *key = std::get<0>(keyBytes);
-    const size keyLen = std::get<1>(keyBytes);
+    const byte *in = inBytes.first;
+    const size inLen = inBytes.second;
+    const byte *key = keyBytes.first;
+    const size keyLen = keyBytes.second;
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
         return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
@@ -63,10 +63,10 @@ const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, co
 
 const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
 {
-    const byte *in = std::get<0>(inBytes);
-    const size inLen = std::get<1>(inBytes);
-    const byte *key = std::get<0>(keyBytes);
-    const size keyLen = std::get<1>(keyBytes);
+    const byte *in = inBytes.first;
+    const size inLen = inBytes.second;
+    const byte *key = keyBytes.first;
+    const size keyLen = keyBytes.second;
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
         return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
@@ -102,8 +102,8 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
 
 const EVP_CIPHER *aesGcmCipher(const NGenXX::Bytes keyBytes)
 {
-    const byte *key = std::get<0>(keyBytes);
-    const size keyLen = std::get<1>(keyBytes);
+    const byte *key = keyBytes.first;
+    const size keyLen = keyBytes.second;
     if (key != NULL && keyLen > 0)
     {
         if (keyLen == 16)
@@ -120,14 +120,14 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
         return BytesEmpty;
-    const byte *in = std::get<0>(inBytes);
-    size inLen = std::get<1>(inBytes);
-    const byte *key = std::get<0>(keyBytes);
-    const size keyLen = std::get<1>(keyBytes);
-    const byte *initVector = std::get<0>(initVectorBytes);
-    const size initVectorLen = std::get<1>(initVectorBytes);
-    const byte *aad = std::get<0>(aadBytes);
-    const size aadLen = std::get<1>(aadBytes);
+    const byte *in = inBytes.first;
+    size inLen = inBytes.second;
+    const byte *key = keyBytes.first;
+    const size keyLen = keyBytes.second;
+    const byte *initVector = initVectorBytes.first;
+    const size initVectorLen = initVectorBytes.second;
+    const byte *aad = aadBytes.first;
+    const size aadLen = aadBytes.second;
     const size tagLen = tagBits / 8;
 
     byte tag[tagLen];
@@ -211,14 +211,14 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
         return BytesEmpty;
-    const byte *in = std::get<0>(inBytes);
-    size inLen = std::get<1>(inBytes);
-    const byte *key = std::get<0>(keyBytes);
-    const size keyLen = std::get<1>(keyBytes);
-    const byte *initVector = std::get<0>(initVectorBytes);
-    const size initVectorLen = std::get<1>(initVectorBytes);
-    const byte *aad = std::get<0>(aadBytes);
-    const size aadLen = std::get<1>(aadBytes);
+    const byte *in = inBytes.first;
+    size inLen = inBytes.second;
+    const byte *key = keyBytes.first;
+    const size keyLen = keyBytes.second;
+    const byte *initVector = initVectorBytes.first;
+    const size initVectorLen = initVectorBytes.second;
+    const byte *aad = aadBytes.first;
+    const size aadLen = aadBytes.second;
     const size tagLen = tagBits / 8;
 
     inLen -= tagLen;
@@ -300,8 +300,8 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
 
 const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
 {
-    const byte *in = std::get<0>(inBytes);
-    const size inLen = std::get<1>(inBytes);
+    const byte *in = inBytes.first;
+    const size inLen = inBytes.second;
     if (in == NULL || inLen == 0)
         return BytesEmpty;
     int outLen = MD5_BYTES_LEN;
@@ -336,8 +336,8 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
 
 const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
 {
-    const byte *in = std::get<0>(inBytes);
-    const size inLen = std::get<1>(inBytes);
+    const byte *in = inBytes.first;
+    const size inLen = inBytes.second;
     if (in == NULL || inLen == 0)
         return BytesEmpty;
     int outLen = SHA256_BYTES_LEN;
@@ -372,8 +372,8 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
 
 const NGenXX::Bytes NGenXX::Crypto::Base64::encode(const NGenXX::Bytes inBytes)
 {
-    const byte *in = std::get<0>(inBytes);
-    const size inLen = std::get<1>(inBytes);
+    const byte *in = inBytes.first;
+    const size inLen = inBytes.second;
     if (in == NULL || inLen == 0)
         return BytesEmpty;
 
@@ -398,8 +398,8 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::encode(const NGenXX::Bytes inBytes)
 
 const NGenXX::Bytes NGenXX::Crypto::Base64::decode(const NGenXX::Bytes inBytes)
 {
-    const byte *in = std::get<0>(inBytes);
-    const size inLen = std::get<1>(inBytes);
+    const byte *in = inBytes.first;
+    const size inLen = inBytes.second;
     if (in == NULL || inLen == 0)
         return BytesEmpty;
 

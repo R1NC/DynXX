@@ -4,8 +4,8 @@
 
 const std::string NGenXX::Coding::Hex::bytes2str(const NGenXX::Bytes bytes)
 {
-    const byte *byt = std::get<0>(bytes);
-    const size len = std::get<1>(bytes);
+    const byte *byt = bytes.first;
+    const size len = bytes.second;
     if (byt == NULL || len <= 0)
         return "";
     std::stringstream strStream;

@@ -22,14 +22,14 @@ namespace NGenXX
 
             static constexpr bool checkGcmParams(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size tagBits)
             {
-                const unsigned char *inBytes = std::get<0>(in);
-                const unsigned int inLen = std::get<1>(in);
-                const unsigned char *keyBytes = std::get<0>(key);
-                const unsigned int keyLen = std::get<1>(key);
-                const unsigned char *inVectorBytes = std::get<0>(initVector);
-                const unsigned int inVectorLen = std::get<1>(initVector);
-                const byte *aadBytes = std::get<0>(aad);
-                const size aadLen = std::get<1>(aad);
+                const byte *inBytes = in.first;
+                const size inLen = in.second;
+                const byte *keyBytes = key.first;
+                const size keyLen = key.second;
+                const byte *inVectorBytes = initVector.first;
+                const size inVectorLen = initVector.second;
+                const byte *aadBytes = aad.first;
+                const size aadLen = aad.second;
                 const unsigned int tagLen = tagBits / 8;
                 if (inBytes == NULL || inLen <= 0) return false;
                 if (keyBytes == NULL || (keyLen != 16 && keyLen != 24 && keyLen != 32)) return false;
@@ -57,14 +57,14 @@ namespace NGenXX
 
         namespace Base64
         {
-            constexpr int calcDecodedLen(const Bytes inBytes)
+            constexpr int calcDecodedLen(const Bytes in)
             {
-                const byte *in = std::get<0>(inBytes);
-                const size len = std::get<1>(inBytes);
+                const byte *bytes = in.first;
+                const size len = in.second;
                 size_t padding = 0;
-                if (in[len - 1] == '=' && in[len - 2] == '=')
+                if (bytes[len - 1] == '=' && bytes[len - 2] == '=')
                     padding = 2;
-                else if (in[len - 1] == '=')
+                else if (bytes[len - 1] == '=')
                     padding = 1;
                 return (len * 3) / 4 - padding;
             }
