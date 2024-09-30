@@ -67,6 +67,8 @@ const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, co
         offset += AES_BLOCK_SIZE;
     }
 
+    wc_AesFree(aes);
+
     return {out, (const size)outLen};
 }
 
@@ -118,6 +120,8 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
         offset += AES_BLOCK_SIZE;
     }
 
+    wc_AesFree(aes);
+
     return {out, (const size)outLen};
 }
 
@@ -162,6 +166,8 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
         return BytesEmpty;
     }
     std::memcpy(out + inLen, tag, tagLen);
+
+    wc_AesFree(aes);
     
     return {out, outLen};
 }
@@ -207,6 +213,8 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
         Log::print(NGenXXLogLevelError, "wc_AesGcmDecrypt error:" + std::to_string(ret));
         return BytesEmpty;
     }
+
+    wc_AesFree(aes);
 
     return {out, outLen};
 }
