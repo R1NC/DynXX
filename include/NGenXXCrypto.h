@@ -47,8 +47,8 @@ extern "C"
      * @param initVectorBytes initVector bytes data
      * @param initVectorLen initVector bytes length（MUST BE 12!!）
      * @param tagBits tag bits length（MUST BE 96//104/112/120/128!!）
-     * @param aadBytes Additional Authentication Data (AAD) bytes
-     * @param aadLen Additional Authentication Data (AAD) length
+     * @param aadBytes Additional Authentication Data (AAD) bytes（Can be `NULL`）
+     * @param aadLen Additional Authentication Data (AAD) length（Must <= 16）
      * @param outLen output bytes length（include the tag）
      * @return output bytes data（With a tag on tail）
      */
@@ -66,8 +66,8 @@ extern "C"
      * @param keyLen key bytes length（MUST BE 16/24/32!!）
      * @param initVectorBytes initVector bytes data
      * @param initVectorLen initVector bytes length（MUST BE 12!!）
-     * @param aadBytes Additional Authentication Data (AAD) bytes
-     * @param aadLen Additional Authentication Data (AAD) length
+     * @param aadBytes Additional Authentication Data (AAD) bytes（Can be `NULL`）
+     * @param aadLen Additional Authentication Data (AAD) length（Must <= 16）
      * @param tagBits tag bits length（MUST BE 96//104/112/120/128!!）
      * @param outLen output bytes length（Not include the tag）
      * @return output bytes data（No tag on tail）

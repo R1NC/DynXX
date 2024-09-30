@@ -34,7 +34,7 @@ namespace NGenXX
                 if (inBytes == NULL || inLen <= 0) return false;
                 if (keyBytes == NULL || (keyLen != 16 && keyLen != 24 && keyLen != 32)) return false;
                 if (inVectorBytes == NULL || inVectorLen != 12) return false;
-                if (aadLen > 0 && aadBytes == NULL) return false;
+                if (aadLen > 16 || (aadLen > 0 && aadBytes == NULL)) return false;
                 if (tagBits != 96 && tagBits != 104 && tagBits != 112 && tagBits != 120 && tagBits != 128) return false;
                 if (inLen <= tagLen) return false;
                 return true;
