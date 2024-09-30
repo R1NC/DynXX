@@ -5,14 +5,14 @@
 #include <cstdlib>
 #include <string>
 
-jbyteArray moveToJByteArray(JNIEnv *env, const unsigned char *bytes, unsigned long outLen)
+jbyteArray moveToJByteArray(JNIEnv *env, const unsigned char *bytes, unsigned long outLen, bool needFree)
 {
     jbyteArray jba;
-    if (bytes)
+    if (bytes && outLen > 0)
     {
         jba = env->NewByteArray(outLen);
         env->SetByteArrayRegion(jba, 0, outLen, (jbyte *)bytes);
-        free((void *)bytes);
+        if (needFree) free((void *)bytes);
     }
     else
     {

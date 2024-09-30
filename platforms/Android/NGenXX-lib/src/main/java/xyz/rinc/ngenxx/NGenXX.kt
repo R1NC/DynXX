@@ -57,8 +57,11 @@ class NGenXX {
         external fun codingHexBytes2Str(bytes: ByteArray): String
         external fun codingHexStr2Bytes(str: String): ByteArray
 
+        external fun cryptoRandom(len: Int): ByteArray
         external fun cryptoAesEncrypt(input: ByteArray, key: ByteArray): ByteArray
         external fun cryptoAesDecrypt(input: ByteArray, key: ByteArray): ByteArray
+        external fun cryptoAesGcmEncrypt(input: ByteArray, key: ByteArray, initVector: ByteArray, aad: ByteArray?, tagBits: Int): ByteArray
+        external fun cryptoAesGcmDecrypt(input: ByteArray, key: ByteArray, initVector: ByteArray, aad: ByteArray?, tagBits: Int): ByteArray
         external fun cryptoHashMd5(input: ByteArray): ByteArray
         external fun cryptoHashSha256(input: ByteArray): ByteArray
         external fun cryptoBase64Encode(input: ByteArray): ByteArray

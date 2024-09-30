@@ -264,10 +264,10 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
 
     if (aad != NULL && aadLen > 0)
     {
-        ret = EVP_EncryptUpdate(ctx, NULL, &len, aad, aadLen);
+        ret = EVP_DecryptUpdate(ctx, NULL, &len, aad, aadLen);
         if (ret != OpenSSL_OK)
         {
-            Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_EncryptUpdate aad error:" + std::to_string(ret));
+            Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptUpdate aad error:" + std::to_string(ret));
             return BytesEmpty;
         }
     }
