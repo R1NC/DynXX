@@ -24,6 +24,7 @@
     [_na testDB];
     [_na testKV];
     [_na testHttpL];
+    [_na testCrypt];
 }
 
 @end

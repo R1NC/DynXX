@@ -12,5 +12,7 @@
 
 - (void)testDeviceInfo;
 
+- (void)testCrypto;
+
 @end
 

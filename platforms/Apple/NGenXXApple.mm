@@ -86,4 +86,36 @@
     NSLog(@"deviceType:%d deviceName:%s OS:%s arch:%d", deviceType, deviceName, osv, arch);
 }
 
+- (void)testCrypto {
+    NSString* inStr = @"0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM<>()[]{}|,;:'`~!@#$%^&*-=_+/";
+    NSData *inData = [inStr dataUsingEncoding:NSUTF8StringEncoding];
+    unsigned char *inBytes = (unsigned char *) inData.bytes;
+    unsigned long inLen = inData.length;
+    NSString * keyStr = @"MNBVCXZLKJHGFDSA";
+    NSData *keyData = [keyStr dataUsingEncoding:NSUTF8StringEncoding];
+    unsigned char *keyBytes = (unsigned char *) keyData.bytes;
+    unsigned long keyLen = keyData.length;
+    
+    unsigned int aesEncodedLen;
+    const unsigned char *aesEncodedBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &aesEncodedLen);
+    if (aesEncodedBytes && aesEncodedLen > 0) {
+        unsigned int aesDecodedLen;
+        const unsigned char *aesDecodedBytes = ngenxx_crypto_aes_decrypt(aesEncodedBytes, aesEncodedLen, keyBytes, keyLen, &aesDecodedLen);
+        if (aesDecodedBytes && aesDecodedLen > 0);
+    }
+    
+    unsigned long ivLen = 12;
+    unsigned char ivBytes[ivLen];
+    ngenxx_crypto_rand(ivLen, ivBytes);
+    unsigned long aesgcmTagBits = 15 * 8;
+    
+    unsigned int aesgcmEncodedLen;
+    const unsigned char *aesgcmEncodedBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmEncodedLen);
+    if (aesgcmEncodedBytes && aesgcmEncodedLen > 0) {
+        unsigned int aesgcmDecodedLen;
+        const unsigned char *aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmDecodedLen);
+        if (aesgcmDecodedBytes && aesgcmDecodedLen > 0);
+    }
+}
+
 @end
