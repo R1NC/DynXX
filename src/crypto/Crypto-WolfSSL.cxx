@@ -305,8 +305,8 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::encode(const NGenXX::Bytes inBytes)
     unsigned int outLen = 0;
     int ret = Base64_Encode_NoNl(in, inLen, NULL, &outLen);
 
-    byte outBuffer[outLen + 1];
-    memset(outBuffer, 0, outLen + 1);
+    byte outBuffer[outLen];
+    memset(outBuffer, 0, outLen);
 
     ret = Base64_Encode_NoNl(in, inLen, outBuffer, &outLen);
     if (ret != WolfSSL_OK)
@@ -326,8 +326,8 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::decode(const NGenXX::Bytes inBytes)
         return BytesEmpty;
 
     unsigned int outLen = calcDecodedLen(inBytes);
-    byte outBuffer[outLen + 1];
-    memset(outBuffer, 0, outLen + 1);
+    byte outBuffer[outLen];
+    memset(outBuffer, 0, outLen);
 
     int ret = Base64_Decode(in, inLen, outBuffer, &outLen);
     if (ret != WolfSSL_OK)
