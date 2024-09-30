@@ -481,8 +481,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesGcmEncrypt(JNIEnv *env, jobj
     size keyLen = env->GetArrayLength(key);
     jbyte *cIv = env->GetByteArrayElements(init_vector, nullptr);
     size ivLen = env->GetArrayLength(init_vector);
-    jbyte *cAad = env->GetByteArrayElements(aad, nullptr);
-    size aadLen = env->GetArrayLength(aad);
+    jbyte *cAad = aad ? env->GetByteArrayElements(aad, nullptr) : nullptr;
+    int aadLen = aad ? env->GetArrayLength(aad) : 0;
 
     size outLen;
     auto cRes = ngenxx_crypto_aes_gcm_encrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, (const byte *)cIv, ivLen, (const byte *)cAad, aadLen, tag_bits, &outLen);
@@ -491,7 +491,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesGcmEncrypt(JNIEnv *env, jobj
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
     env->ReleaseByteArrayElements(init_vector, cIv, JNI_ABORT);
-    env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
+    if (cAad) env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
     return jba;
 }
 
@@ -506,8 +506,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesGcmDecrypt(JNIEnv *env, jobj
     size keyLen = env->GetArrayLength(key);
     jbyte *cIv = env->GetByteArrayElements(init_vector, nullptr);
     size ivLen = env->GetArrayLength(init_vector);
-    jbyte *cAad = env->GetByteArrayElements(aad, nullptr);
-    size aadLen = env->GetArrayLength(aad);
+    jbyte *cAad = aad ? env->GetByteArrayElements(aad, nullptr) : nullptr;
+    int aadLen = aad ? env->GetArrayLength(aad) : 0;
 
     size outLen;
     auto cRes = ngenxx_crypto_aes_gcm_decrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, (const byte *)cIv, ivLen, (const byte *)cAad, aadLen, tag_bits, &outLen);
@@ -516,7 +516,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesGcmDecrypt(JNIEnv *env, jobj
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
     env->ReleaseByteArrayElements(init_vector, cIv, JNI_ABORT);
-    env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
+    if (cAad) env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
     return jba;
 }
 
