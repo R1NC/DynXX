@@ -152,17 +152,24 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
         return BytesEmpty;
     }
 
-    ret = wc_AesGcmSetKey(aes, key, keyLen);
+    ret = wc_AesGcmEncryptInit(aes, key, keyLen, initVector, initVectorLen);
     if (ret != WolfSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "wc_AesGcmSetKey error:" + std::to_string(ret));
+        Log::print(NGenXXLogLevelError, "wc_AesGcmEncryptInit error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
-    ret = wc_AesGcmEncrypt(aes, out, in, inLen, initVector, initVectorLen, tag, tagLen, aad, aadLen);
+    ret = wc_AesGcmEncryptUpdate(aes, out, in, inLen, aad, aadLen);
     if (ret != WolfSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "wc_AesGcmEncrypt error:" + std::to_string(ret));
+        Log::print(NGenXXLogLevelError, "wc_AesGcmEncryptUpdate error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+
+    ret = wc_AesGcmEncryptFinal(aes, tag, tagLen);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "wc_AesGcmEncryptFinal error:" + std::to_string(ret));
         return BytesEmpty;
     }
     std::memcpy(out + inLen, tag, tagLen);
@@ -200,17 +207,24 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
         return BytesEmpty;
     }
 
-    ret = wc_AesGcmSetKey(aes, key, keyLen);
+    ret = wc_AesGcmDecryptInit(aes, key, keyLen, initVector, initVectorLen);
     if (ret != WolfSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "wc_AesGcmSetKey error:" + std::to_string(ret));
+        Log::print(NGenXXLogLevelError, "wc_AesGcmDecryptInit error:" + std::to_string(ret));
         return BytesEmpty;
     }
-    
-    ret = wc_AesGcmDecrypt(aes, out, in, inLen, initVector, initVectorLen, tag, tagLen, aad, aadLen);
+
+    ret = wc_AesGcmDecryptUpdate(aes, out, in, inLen, aad, aadLen);
     if (ret != WolfSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "wc_AesGcmDecrypt error:" + std::to_string(ret));
+        Log::print(NGenXXLogLevelError, "wc_AesGcmDecryptUpdate error:" + std::to_string(ret));
+        return BytesEmpty;
+    }
+
+    ret = wc_AesGcmDecryptFinal(aes, tag, tagLen);
+    if (ret != WolfSSL_OK)
+    {
+        Log::print(NGenXXLogLevelError, "wc_AesGcmDecryptFinal error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
