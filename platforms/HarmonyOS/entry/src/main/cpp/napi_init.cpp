@@ -606,6 +606,36 @@ static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info) {
     return int2NapiValue(env, napi_ok);
 }
 
+#pragma mark Coding
+
+static napi_value CodingHexBytes2str(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 1);
+    
+    uint32_t inLen = napiValueArrayLen(env, argv[0]);
+    const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
+    
+    auto cRes = ngenxx_coding_hex_bytes2str(inBytes, inLen);
+    napi_value v = chars2NapiValue(env, cRes);
+    
+    free((void *)cRes);
+    free((void *)inBytes);
+    return v;
+}
+
+static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 1);
+    
+    const char *cStr = napiValue2chars(env, argv[0]);
+    
+    size outLen;
+    auto cRes = ngenxx_coding_hex_str2bytes(cStr, &outLen);
+    napi_value v = byteArray2NapiValue(env, cRes, outLen);
+    
+    free((void *)cRes);
+    free((void *)cStr);
+    return v;
+}
+
 #pragma mark Crypto
 
 static napi_value CryptoRand(napi_env env, napi_callback_info info) {
@@ -877,14 +907,17 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports) {
         {"jsonDecoderReadString", nullptr, JsonDecoderReadString, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"jsonDecoderReadNumber", nullptr, JsonDecoderReadNumber, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"jsonDecoderRelease", nullptr, JsonDecoderRelease, nullptr, nullptr, nullptr, napi_default, nullptr},
+        
+        {"codingHexBytes2str", nullptr, CodingHexBytes2str, nullptr, nullptr, nullptr, napi_default,
+         nullptr},
+        {"codingHexStr2Bytes", nullptr, CodingHexStr2Bytes, nullptr, nullptr, nullptr, napi_default,
+         nullptr},
 
         {"cryptoRand", nullptr, CryptoRand, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"cryptoAesEncrypt", nullptr, CryptoAesEncrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"cryptoAesDecrypt", nullptr, CryptoAesDecrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoAesGcmEncrypt", nullptr, CryptoAesGcmEncrypt, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"cryptoAesGcmDecrypt", nullptr, CryptoAesGcmDecrypt, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
+        {"cryptoAesGcmEncrypt", nullptr, CryptoAesGcmEncrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"cryptoAesGcmDecrypt", nullptr, CryptoAesGcmDecrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"cryptoHashMd5", nullptr, CryptoHashMd5, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"cryptoHashSha256", nullptr, CryptoHashSha256, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"cryptoBase64Encode", nullptr, CryptoBase64Encode, nullptr, nullptr, nullptr, napi_default, nullptr},

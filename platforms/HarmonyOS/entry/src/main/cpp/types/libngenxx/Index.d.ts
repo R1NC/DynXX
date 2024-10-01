@@ -40,7 +40,8 @@ export const deviceManufacturer:() => string;
 export const deviceOsVersion:() => string;
 export const deviceCpuArch:() => number;
 
-
+export const codingHexBytes2str:(bytes: number[]) => string;
+export const codingHexStr2Bytes:(str: string) => number[];
 
 export const cryptoRand:(len: number) => number[];
 export const cryptoAesEncrypt:(inBytes: number[], keyBytes: number[]) => number[];
