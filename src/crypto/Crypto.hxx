@@ -30,7 +30,7 @@ namespace NGenXX
                 const size inVectorLen = initVector.second;
                 const byte *aadBytes = aad.first;
                 const size aadLen = aad.second;
-                const unsigned int tagLen = tagBits / 8;
+                const size tagLen = tagBits / 8;
                 if (inBytes == NULL || inLen <= 0) return false;
                 if (keyBytes == NULL || (keyLen != 16 && keyLen != 24 && keyLen != 32)) return false;
                 if (inVectorBytes == NULL || inVectorLen != 12) return false;

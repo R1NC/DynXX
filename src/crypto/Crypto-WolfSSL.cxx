@@ -28,7 +28,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, co
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
         return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
-    int outLen = inLen;
+    size outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
@@ -69,7 +69,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, co
 
     wc_AesFree(aes);
 
-    return {out, (const size)outLen};
+    return {out, outLen};
 }
 
 const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
@@ -81,7 +81,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
         return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
-    int outLen = inLen;
+    size outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
@@ -122,7 +122,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
 
     wc_AesFree(aes);
 
-    return {out, (const size)outLen};
+    return {out, outLen};
 }
 
 const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes, const NGenXX::Bytes initVectorBytes, const NGenXX::Bytes aadBytes, const size tagBits)
@@ -138,10 +138,10 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
     const size aadLen = aadBytes.second;
     const size tagLen = tagBits / 8;
 
-    unsigned char tag[tagLen];
+    byte tag[tagLen];
     std::memset(tag, 0, tagLen);
     size outLen = inLen + tagLen;
-    unsigned char out[outLen];
+    byte out[outLen];
     std::memset(out, 0, outLen);
     
     Aes aes[1];
@@ -186,10 +186,10 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
     const size tagLen = tagBits / 8;
 
     inLen -= tagLen;
-    unsigned char tag[tagLen];
+    byte tag[tagLen];
     std::memcpy(tag, in + inLen, tagLen);
     size outLen = inLen;
-    unsigned char out[outLen];
+    byte out[outLen];
     memset(out, 0, outLen);
 
     Aes aes[1];
@@ -225,7 +225,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
     const size inLen = inBytes.second;
     if (in == NULL || inLen == 0)
         return BytesEmpty;
-    int outLen = MD5_BYTES_LEN;
+    const size outLen = MD5_BYTES_LEN;
     byte out[outLen];
     memset(out, 0, outLen);
 
@@ -254,7 +254,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
 
     wc_Md5Free(&md5);
 
-    return {out, (const size)outLen};
+    return {out, outLen};
 }
 
 const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
@@ -263,7 +263,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
     const size inLen = inBytes.second;
     if (in == NULL || inLen == 0)
         return BytesEmpty;
-    int outLen = SHA256_BYTES_LEN;
+    const size outLen = SHA256_BYTES_LEN;
     byte out[outLen];
     memset(out, 0, outLen);
 
@@ -292,7 +292,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
 
     wc_Sha256Free(&sha256);
 
-    return {out, (const size)outLen};
+    return {out, outLen};
 }
 
 const NGenXX::Bytes NGenXX::Crypto::Base64::encode(const NGenXX::Bytes inBytes)
@@ -302,7 +302,7 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::encode(const NGenXX::Bytes inBytes)
     if (in == NULL || inLen == 0)
         return BytesEmpty;
 
-    unsigned int outLen = 0;
+    size outLen = 0;
     int ret = Base64_Encode_NoNl(in, inLen, NULL, &outLen);
 
     byte outBuffer[outLen];
@@ -325,7 +325,7 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::decode(const NGenXX::Bytes inBytes)
     if (in == NULL || inLen == 0)
         return BytesEmpty;
 
-    unsigned int outLen = calcDecodedLen(inBytes);
+    size outLen = calcDecodedLen(inBytes);
     byte outBuffer[outLen];
     memset(outBuffer, 0, outLen);
 

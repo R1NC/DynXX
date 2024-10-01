@@ -31,7 +31,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, co
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
         return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
-    int outLen = inLen;
+    size outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
@@ -58,7 +58,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, co
         offset += AES_BLOCK_SIZE;
     }
 
-    return {out, (const size)outLen};
+    return {out, outLen};
 }
 
 const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, const NGenXX::Bytes keyBytes)
@@ -70,7 +70,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
         return BytesEmpty;
     // keyLen = AES_BLOCK_SIZE * 8;
-    int outLen = inLen;
+    size outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
@@ -97,7 +97,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
         offset += AES_BLOCK_SIZE;
     }
 
-    return {out, (const size)outLen};
+    return {out, outLen};
 }
 
 const EVP_CIPHER *aesGcmCipher(const NGenXX::Bytes keyBytes)
@@ -168,7 +168,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
         return BytesEmpty;
     }
 
-    int len;
+    size len;
 
     if (aad != NULL && aadLen > 0)
     {
@@ -260,7 +260,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
         return BytesEmpty;
     }
 
-    int len;
+    size len;
 
     if (aad != NULL && aadLen > 0)
     {
@@ -304,7 +304,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
     const size inLen = inBytes.second;
     if (in == NULL || inLen == 0)
         return BytesEmpty;
-    int outLen = MD5_BYTES_LEN;
+    size outLen = MD5_BYTES_LEN;
     byte out[outLen];
     memset(out, 0, outLen);
 
@@ -331,7 +331,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
         return BytesEmpty;
     }
 
-    return {out, (const size)outLen};
+    return {out, outLen};
 }
 
 const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
@@ -340,7 +340,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
     const size inLen = inBytes.second;
     if (in == NULL || inLen == 0)
         return BytesEmpty;
-    int outLen = SHA256_BYTES_LEN;
+    size outLen = SHA256_BYTES_LEN;
     byte out[outLen];
     memset(out, 0, outLen);
 
@@ -367,7 +367,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
         return BytesEmpty;
     }
 
-    return {out, (const size)outLen};
+    return {out, outLen};
 }
 
 const NGenXX::Bytes NGenXX::Crypto::Base64::encode(const NGenXX::Bytes inBytes)
@@ -405,7 +405,7 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::decode(const NGenXX::Bytes inBytes)
 
     BIO *bio, *b64;
 
-    int outLen = calcDecodedLen(inBytes);
+    size outLen = calcDecodedLen(inBytes);
     byte outBuffer[outLen];
     memset(outBuffer, 0, outLen);
 
