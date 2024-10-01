@@ -168,7 +168,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
         return BytesEmpty;
     }
 
-    size len;
+    int len;
 
     if (aad != NULL && aadLen > 0)
     {
@@ -260,7 +260,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
         return BytesEmpty;
     }
 
-    size len;
+    int len;
 
     if (aad != NULL && aadLen > 0)
     {
