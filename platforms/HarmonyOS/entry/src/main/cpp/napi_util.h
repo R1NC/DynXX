@@ -34,7 +34,7 @@
 
 napi_value *readParams(napi_env env, napi_callback_info info, size_t count);
 
-const unsigned int napiValueLen(napi_env env, napi_value nv);
+const unsigned int napiValueArrayLen(napi_env env, napi_value nv);
 
 const char *napiValue2chars(napi_env env, napi_value nv);
 

@@ -37,6 +37,12 @@ struct Index {
             let aesDecodedBytes = NGenXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
             let aesDecodedStr = textDecoder.decodeToString(Uint8Array.from(aesDecodedBytes))
             NGenXX.logPrint(1, `AES->${aesDecodedStr}`)
+            let aesgcmIvBytes = NGenXX.cryptoRand(12)
+            let aesgcmTagBits = 15 * 8
+            let aesgcmEncodedBytes = NGenXX.cryptoAesGcmEncrypt(inputBytes, keyBytes, aesgcmIvBytes, [], aesgcmTagBits)
+            let aesgcmDecodedBytes = NGenXX.cryptoAesGcmDecrypt(aesgcmEncodedBytes, keyBytes, aesgcmIvBytes, [], aesgcmTagBits)
+            let aesgcmDecodedStr = textDecoder.decodeToString(Uint8Array.from(aesgcmDecodedBytes))
+            NGenXX.logPrint(1, `AES-GCM->${aesgcmDecodedStr}`)
             let md5Bytes = NGenXX.cryptoHashMd5(inputBytes)
             let md5Str = textDecoder.decodeToString(Uint8Array.from(md5Bytes))
             NGenXX.logPrint(1, `md5->${md5Str}`)

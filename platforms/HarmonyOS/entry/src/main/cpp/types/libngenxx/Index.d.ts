@@ -40,8 +40,13 @@ export const deviceManufacturer:() => string;
 export const deviceOsVersion:() => string;
 export const deviceCpuArch:() => number;
 
+
+
+export const cryptoRand:(len: number) => number[];
 export const cryptoAesEncrypt:(inBytes: number[], keyBytes: number[]) => number[];
 export const cryptoAesDecrypt:(inBytes: number[], keyBytes: number[]) => number[];
+export const cryptoAesGcmEncrypt:(inBytes: number[], keyBytes: number[], initVectorBytes: number[], aadBytes: number[], tagBits: number) => number[];
+export const cryptoAesGcmDecrypt:(inBytes: number[], keyBytes: number[], initVectorBytes: number[], aadBytes: number[], tagBits: number) => number[];
 export const cryptoHashMd5:(inBytes: number[]) => number[];
 export const cryptoHashSha256:(inBytes: number[]) => number[];
 export const cryptoBase64Encode:(inBytes: number[]) => number[];
