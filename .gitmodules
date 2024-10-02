@@ -4,9 +4,6 @@
 [submodule "external/curl"]
 	path = external/curl
 	url = git@github.com:R1NC/curl.git
-[submodule "external/wolfssl"]
-	path = external/wolfssl
-	url = git@github.com:R1NC/wolfssl.git
 [submodule "external/lua"]
 	path = external/lua
 	url = git@github.com:R1NC/lua.git

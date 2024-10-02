@@ -63,9 +63,8 @@ LIB_OUTPUT_DIR=output/${LIB_TYPE}
 mkdir -p ${LIB_OUTPUT_DIR}
 ${COMMAND} ${LIB_DIR}libNGenXX.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/NGenXX.a
 ${COMMAND} curl.output/lib/${LIB_DIR}libcurl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/curl.a
-#${COMMAND} openssl.output/ssl/${LIB_DIR}libssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ssl.a
-#${COMMAND} openssl.output/crypto/${LIB_DIR}libcrypto.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/crypto.a
-${COMMAND} wolfssl.output/${LIB_DIR}libwolfssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/wolfssl.a
+${COMMAND} openssl.output/ssl/${LIB_DIR}libssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ssl.a
+${COMMAND} openssl.output/crypto/${LIB_DIR}libcrypto.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/crypto.a
 ${COMMAND} lua.output/${LIB_DIR}liblua.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/lua.a
 ${COMMAND} cjson.output/${LIB_DIR}libcjson.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/cjson.a
 ${COMMAND} mmkv.output/Core/${LIB_DIR}/libmmkvcore.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkvcore.a

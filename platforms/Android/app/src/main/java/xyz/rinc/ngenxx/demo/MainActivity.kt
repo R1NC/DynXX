@@ -81,6 +81,15 @@ class MainActivity : ComponentActivity() {
         val aesDecodedBytes = NGenXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
         val aesDecodedStr = aesDecodedBytes.toString(Charsets.UTF_8)
         NGenXX.logPrint(1,"AES->$aesDecodedStr")
+        val aesgcmIV = NGenXX.cryptoRandom(12)
+        val aesgcmAad = null
+        val aesgcmTagBits = 15 * 8
+        val aesgcmEncodedBytes = NGenXX.cryptoAesGcmEncrypt(inputBytes, keyBytes, aesgcmIV,
+            aesgcmAad, aesgcmTagBits)
+        val aesgcmDecodedBytes = NGenXX.cryptoAesGcmEncrypt(aesgcmEncodedBytes, keyBytes, aesgcmIV,
+            aesgcmAad, aesgcmTagBits)
+        val aesgcmDecodedStr = aesgcmDecodedBytes.toString(Charsets.UTF_8)
+        NGenXX.logPrint(1,"AES-GCM->$aesgcmDecodedStr")
         val md5Bytes = NGenXX.cryptoHashMd5(inputBytes)
         val md5hex = NGenXX.codingHexBytes2Str(md5Bytes)
         NGenXX.logPrint(1,"md5->$md5hex")

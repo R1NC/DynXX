@@ -25,9 +25,8 @@ LIB_OUTPUT_DIR=output/${LIB_TYPE}
 mkdir -p ${LIB_OUTPUT_DIR}
 mv libNGenXX.a ${LIB_OUTPUT_DIR}/NGenXX.a
 mv curl.output/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
-#mv openssl.output/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
-#mv openssl.output/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
-mv wolfssl.output/libwolfssl.a ${LIB_OUTPUT_DIR}/wolfssl.a
+mv openssl.output/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
+mv openssl.output/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
 mv lua.output/liblua.a ${LIB_OUTPUT_DIR}/lua.a
 mv cjson.output/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
 mv sqlite.output/libsqlite3.a ${LIB_OUTPUT_DIR}/sqlite3.a

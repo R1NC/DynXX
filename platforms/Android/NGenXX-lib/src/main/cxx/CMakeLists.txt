@@ -7,19 +7,14 @@ add_library(${CMAKE_PROJECT_NAME} SHARED NGenXXJNI.cxx)
 set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.Android/output/Release/${ANDROID_ABI})
 
 #Find libcrypto
-#set(libcryptoPath ${libDir}/libcrypto.a)
-#add_library(libcrypto STATIC IMPORTED)
-#set_property(TARGET libcrypto PROPERTY IMPORTED_LOCATION ${libcryptoPath})
+set(libcryptoPath ${libDir}/libcrypto.a)
+add_library(libcrypto STATIC IMPORTED)
+set_property(TARGET libcrypto PROPERTY IMPORTED_LOCATION ${libcryptoPath})
 
 #Find libssl
-#set(libsslPath ${libDir}/libssl.a)
-#add_library(libssl STATIC IMPORTED)
-#set_property(TARGET libssl PROPERTY IMPORTED_LOCATION ${libsslPath})
-
-#Find libwolfssl
-set(libwolfsslPath ${libDir}/libwolfssl.a)
-add_library(libwolfssl STATIC IMPORTED)
-set_property(TARGET libwolfssl PROPERTY IMPORTED_LOCATION ${libwolfsslPath})
+set(libsslPath ${libDir}/libssl.a)
+add_library(libssl STATIC IMPORTED)
+set_property(TARGET libssl PROPERTY IMPORTED_LOCATION ${libsslPath})
 
 #Find libcurl
 set(libcurlPath ${libDir}/libcurl.a)
@@ -57,9 +52,8 @@ add_library(libNGenXX STATIC IMPORTED)
 set_property(TARGET libNGenXX PROPERTY IMPORTED_LOCATION ${libNGenXXPath})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        #libcrypto
-        #libssl
-        libwolfssl
+        libcrypto
+        libssl
         libcurl
         liblua
         libcjson

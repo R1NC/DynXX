@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2569810E2C763BD2008E8472 /* libapple_nghttp2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2569810D2C763BD2008E8472 /* libapple_nghttp2.tbd */; };
+		25D0D0242CAD4C2900F5FBFF /* ssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D0D0222CAD4C2900F5FBFF /* ssl.a */; };
+		25D0D0252CAD4C2900F5FBFF /* crypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D0D0232CAD4C2900F5FBFF /* crypto.a */; };
 		401522872C9580AF0010B594 /* biz.lua in Resources */ = {isa = PBXBuildFile; fileRef = 401522842C9580AF0010B594 /* biz.lua */; };
 		401522882C9580AF0010B594 /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 401522852C9580AF0010B594 /* query.sql */; };
 		401522892C9580AF0010B594 /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 401522862C9580AF0010B594 /* prepare_data.sql */; };
@@ -17,7 +19,6 @@
 		4015228F2C9580E70010B594 /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0472C778034006CD672 /* lua.a */; };
 		401522902C9580E70010B594 /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */; };
 		401522912C9580E70010B594 /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0462C778034006CD672 /* NGenXX.a */; };
-		401522922C9580E70010B594 /* wolfssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0452C778034006CD672 /* wolfssl.a */; };
 		401522942C9580E70010B594 /* mmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 401522932C9580E70010B594 /* mmkv.a */; };
 		40596B7D2C75AAD700AC552D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7C2C75AAD700AC552D /* AppDelegate.m */; };
 		40596B802C75AAD700AC552D /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7F2C75AAD700AC552D /* SceneDelegate.m */; };
@@ -38,6 +39,10 @@
 		253FF0472C778034006CD672 /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../build.iOS/output/Release/lua.a; sourceTree = "<group>"; };
 		2569810D2C763BD2008E8472 /* libapple_nghttp2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libapple_nghttp2.tbd; path = usr/lib/libapple_nghttp2.tbd; sourceTree = SDKROOT; };
 		25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.iOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
+		25D0D01E2CAD466400F5FBFF /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = ../../build.iOS/output/Release/libssl.a; sourceTree = "<group>"; };
+		25D0D01F2CAD466400F5FBFF /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../build.iOS/output/Release/libcrypto.a; sourceTree = "<group>"; };
+		25D0D0222CAD4C2900F5FBFF /* ssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ssl.a; path = ../../build.iOS/output/Release/ssl.a; sourceTree = "<group>"; };
+		25D0D0232CAD4C2900F5FBFF /* crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = crypto.a; path = ../../build.iOS/output/Release/crypto.a; sourceTree = "<group>"; };
 		401522842C9580AF0010B594 /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../Android/app/src/main/assets/biz.lua; sourceTree = "<group>"; };
 		401522852C9580AF0010B594 /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
 		401522862C9580AF0010B594 /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
@@ -89,13 +94,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25D0D0242CAD4C2900F5FBFF /* ssl.a in Frameworks */,
+				25D0D0252CAD4C2900F5FBFF /* crypto.a in Frameworks */,
 				401522942C9580E70010B594 /* mmkv.a in Frameworks */,
 				4015228D2C9580E60010B594 /* cjson.a in Frameworks */,
 				4015228E2C9580E70010B594 /* curl.a in Frameworks */,
 				4015228F2C9580E70010B594 /* lua.a in Frameworks */,
 				401522902C9580E70010B594 /* mmkvcore.a in Frameworks */,
 				401522912C9580E70010B594 /* NGenXX.a in Frameworks */,
-				401522922C9580E70010B594 /* wolfssl.a in Frameworks */,
 				407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */,
 				2569810E2C763BD2008E8472 /* libapple_nghttp2.tbd in Frameworks */,
 				40596BA02C75BECB00AC552D /* libz.1.tbd in Frameworks */,
@@ -148,6 +154,10 @@
 		40596B982C75BC5A00AC552D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25D0D0232CAD4C2900F5FBFF /* crypto.a */,
+				25D0D0222CAD4C2900F5FBFF /* ssl.a */,
+				25D0D01F2CAD466400F5FBFF /* libcrypto.a */,
+				25D0D01E2CAD466400F5FBFF /* libssl.a */,
 				401522932C9580E70010B594 /* mmkv.a */,
 				25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */,
 				407D2BA52C929C2E008A138C /* cjson.a */,
