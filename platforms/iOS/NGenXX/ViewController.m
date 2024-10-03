@@ -26,6 +26,7 @@
     [_na testHttpL];
     [_na testCrypto];
     [_na testJsonDecoder];
+    [_na testZip];
 }
 
 @end
