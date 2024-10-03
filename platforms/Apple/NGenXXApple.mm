@@ -6,6 +6,8 @@
 #define CharP2NSString(cp) [NSString stringWithCString:cp encoding:NSUTF8StringEncoding]
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
 
+static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\": 1, \"timeout\":6666}";
+
 @interface NGenXXApple () {
     void *_db_conn;
     void *_kv_conn;
@@ -39,8 +41,7 @@
     if (!ngenxx_L_loadF(cLuaPath)) {
         NSLog(@"!!! LOAD LUA FAILED !!!");
     }
-    static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\": 1, \"timeout\":6666}";
-    const char * cRsp = ngenxx_L_call("lNetHttpRequest", cParams);
+    const char * cRsp = ngenxx_L_call("lNetHttpRequest", cParamsJson);
     NSLog(@"%s", cRsp);
 }
 
@@ -115,6 +116,32 @@
         size aesgcmDecodedLen;
         const byte *aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmDecodedLen);
         if (aesgcmDecodedBytes && aesgcmDecodedLen > 0);
+    }
+}
+
+- (void)testJsonDecoder {
+    void *jsonDecoder = ngenxx_json_decoder_init(cParamsJson);
+    if (jsonDecoder) {
+        void *urlNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "url");
+        if (urlNode) {
+            const char *url = ngenxx_json_decoder_read_string(jsonDecoder, urlNode);
+            NSLog(@"url:%s", url);
+        }
+        void *headersCNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "headers_c");
+        if (headersCNode) {
+            double headersC = ngenxx_json_decoder_read_number(jsonDecoder, headersCNode);
+            NSLog(@"headers_c:%f", headersC);
+        }
+        void *headersVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "headers_v");
+        if (headersVNode) {
+            void *headerNode = ngenxx_json_decoder_read_child(jsonDecoder, headersVNode);
+            while (headerNode) {
+                const char *header = ngenxx_json_decoder_read_string(jsonDecoder, headerNode);
+                NSLog(@"header:%s", header);
+                headerNode = ngenxx_json_decoder_read_next(jsonDecoder, headerNode);
+            }
+        }
+        ngenxx_json_decoder_release(jsonDecoder);
     }
 }
 

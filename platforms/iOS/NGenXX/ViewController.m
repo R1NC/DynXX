@@ -25,6 +25,7 @@
     [_na testKV];
     [_na testHttpL];
     [_na testCrypto];
+    [_na testJsonDecoder];
 }
 
 @end

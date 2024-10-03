@@ -14,5 +14,7 @@
 
 - (void)testCrypto;
 
+- (void)testJsonDecoder;
+
 @end
 
