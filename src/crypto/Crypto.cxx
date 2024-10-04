@@ -201,7 +201,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
         Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:" + std::to_string(ret));
         return BytesEmpty;
     }
-    std::std::memcpy(out + inLen, tag, tagLen);
+    std::memcpy(out + inLen, tag, tagLen);
 
     EVP_CIPHER_CTX_free(ctx);
 
@@ -224,7 +224,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
 
     inLen -= tagLen;
     byte tag[tagLen];
-    std::std::memcpy(tag, in + inLen, tagLen);
+    std::memcpy(tag, in + inLen, tagLen);
     size outLen = inLen;
     byte out[outLen];
     std::memset(out, 0, outLen);
