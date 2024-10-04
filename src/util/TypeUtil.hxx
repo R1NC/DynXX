@@ -3,6 +3,7 @@
 
 #include <string>
 #include <tuple>
+#include <cstring>
 #include "../NGenXX-Types.hxx"
 
 static inline const char *str2charp(std::string s)
@@ -19,8 +20,8 @@ static inline const byte *copyBytes(NGenXX::Bytes t)
     int len = t.second;
     if (cs == NULL || len <= 0) return NULL;
     const byte *ncs = (byte *)malloc(len + 1);
-    memset((void *)ncs, 0, len + 1);
-    memcpy((void *)ncs, cs, len);
+    std::memset((void *)ncs, 0, len + 1);
+    std::memcpy((void *)ncs, cs, len);
     return ncs;
 }
 

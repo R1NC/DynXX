@@ -2,6 +2,7 @@
 #include "../../include/NGenXXLog.h"
 #include "../log/Log.hxx"
 #include <string>
+#include <cstring>
 
 #include "../../../external/openssl/include/openssl/bio.h"
 #include "../../../external/openssl/include/openssl/rand.h"
@@ -37,10 +38,10 @@ const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, co
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
     }
     byte fixedIn[outLen];
-    memset(fixedIn, 0, outLen);
-    memcpy(fixedIn, in, inLen);
+    std::memset(fixedIn, 0, outLen);
+    std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
     int offset = 0;
 
     AES_KEY aes_key;
@@ -76,10 +77,10 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
     }
     byte fixedIn[outLen];
-    memset(fixedIn, 0, outLen);
-    memcpy(fixedIn, in, inLen);
+    std::memset(fixedIn, 0, outLen);
+    std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
     int offset = 0;
 
     AES_KEY aes_key;
@@ -200,7 +201,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
         Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:" + std::to_string(ret));
         return BytesEmpty;
     }
-    std::memcpy(out + inLen, tag, tagLen);
+    std::std::memcpy(out + inLen, tag, tagLen);
 
     EVP_CIPHER_CTX_free(ctx);
 
@@ -223,10 +224,10 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
 
     inLen -= tagLen;
     byte tag[tagLen];
-    std::memcpy(tag, in + inLen, tagLen);
+    std::std::memcpy(tag, in + inLen, tagLen);
     size outLen = inLen;
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
 
     auto cipher = aesGcmCipher(keyBytes);
 
@@ -306,7 +307,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
         return BytesEmpty;
     size outLen = MD5_BYTES_LEN;
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
 
     MD5_CTX md5;
 
@@ -342,7 +343,7 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
         return BytesEmpty;
     size outLen = SHA256_BYTES_LEN;
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
 
     SHA256_CTX sha256;
 
@@ -407,7 +408,7 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::decode(const NGenXX::Bytes inBytes)
 
     size outLen = calcDecodedLen(inBytes);
     byte outBuffer[outLen];
-    memset(outBuffer, 0, outLen);
+    std::memset(outBuffer, 0, outLen);
 
     bio = BIO_new_mem_buf(in, -1);
     b64 = BIO_new(BIO_f_base64());
