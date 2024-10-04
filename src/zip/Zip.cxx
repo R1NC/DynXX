@@ -2,6 +2,7 @@
 #include "../../include/NGenXXLog.h"
 #include "../log/Log.hxx"
 #include <algorithm>
+#include <stdexcept>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -30,7 +31,7 @@ const size NGenXX::Z::ZBase::input(const byte *in, const size inLen, bool inFini
         return 0;
     size dataLen = std::min(inLen, this->bufferSize);
 
-    memset(this->inBuffer, 0, this->bufferSize);
+    std::memset(this->inBuffer, 0, this->bufferSize);
     memcpy(this->inBuffer, in, dataLen);
 
     (this->zs).avail_in = dataLen;
@@ -42,7 +43,7 @@ const size NGenXX::Z::ZBase::input(const byte *in, const size inLen, bool inFini
 const byte *NGenXX::Z::ZBase::processDo(size *outLen)
 {
     if (outLen == NULL) return NULL;
-    memset(this->outBuffer, 0, this->bufferSize);
+    std::memset(this->outBuffer, 0, this->bufferSize);
     (this->zs).avail_out = this->bufferSize;
     (this->zs).next_out = (Bytef *)(this->outBuffer);
 
