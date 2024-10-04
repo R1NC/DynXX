@@ -67,6 +67,41 @@ void ngenxx_posix_testKV(void)
     }
 }
 
+void ngenxx_posix_testCrypto(void)
+{
+    const char *inStr = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM<>()[]{}|,;:'`~!@#$%^&*-=_+/";
+    byte *inBytes = (unsigned char *) inStr;
+    size inLen = strlen(inStr);
+    const char *keyStr = "MNBVCXZLKJHGFDSA";
+    byte *keyBytes = (unsigned char *) keyStr;
+    size keyLen = strlen(keyStr);
+    
+    size aesEncodedLen;
+    const byte *aesEncodedBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &aesEncodedLen);
+    if (aesEncodedBytes && aesEncodedLen > 0) {
+        size aesDecodedLen;
+        const byte *aesDecodedBytes = ngenxx_crypto_aes_decrypt(aesEncodedBytes, aesEncodedLen, keyBytes, keyLen, &aesDecodedLen);
+        if (aesDecodedBytes && aesDecodedLen > 0) {
+            std::cout << "AES: " << (char *)aesDecodedBytes << std::endl;
+        }
+    }
+    
+    size ivLen = 12;
+    byte ivBytes[ivLen];
+    ngenxx_crypto_rand(ivLen, ivBytes);
+    size aesgcmTagBits = 15 * 8;
+    
+    size aesgcmEncodedLen;
+    const byte *aesgcmEncodedBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmEncodedLen);
+    if (aesgcmEncodedBytes && aesgcmEncodedLen > 0) {
+        size aesgcmDecodedLen;
+        const byte *aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmDecodedLen);
+        if (aesgcmDecodedBytes && aesgcmDecodedLen > 0) {
+            std::cout << "AES-GCM: " << (char *)aesgcmDecodedBytes << std::endl;
+        }
+    }
+}
+
 void ngenxx_posix_release()
 {
     ngenxx_release();
