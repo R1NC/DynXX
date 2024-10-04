@@ -2,6 +2,7 @@
 #include "../../include/NGenXX.h"
 
 #include <iostream>
+#include <cstring>
 
 void ngenxx_posix_init(const char *root)
 {
