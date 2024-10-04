@@ -8,6 +8,7 @@
 #include <utility>
 #include <string>
 #include <variant>
+#include <limits>
 
 namespace NGenXX
 {
