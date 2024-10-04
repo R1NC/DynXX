@@ -1,7 +1,11 @@
 #ifndef NGENXX_ZIP_HXX_
 #define NGENXX_ZIP_HXX_
 
+#ifdef __EMSCRIPTEN__
+#include "../../../external/zlib/zlib.h"
+#else
 #include <zlib.h>
+#endif
 
 #ifdef __cplusplus
 

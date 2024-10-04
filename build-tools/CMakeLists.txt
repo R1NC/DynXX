@@ -55,6 +55,7 @@ endif()
 # WARNING:
 # 1). The buillt-in sqlite in iOS/macOS is available，no need to compile；
 # 2). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
+# 3). WASM has no built-in zlib;
 add_subdirectory(../external/cjson cjson.output)
 add_subdirectory(../external/mmkv/POSIX/src mmkv.output)
 add_subdirectory(../external/openssl openssl.output)
@@ -64,6 +65,9 @@ if(USE_LUA)
 endif()
 if(NOT APPLE)
     add_subdirectory(../external/sqlite sqlite.output)
+endif()
+if(EMSCRIPTEN)
+    add_subdirectory(../external/zlib zlib.output)
 endif()
 
 set(LINK_LIBS
@@ -85,6 +89,11 @@ if(APPLE)
 else()
     set(LINK_LIBS ${LINK_LIBS}
         sqlite3-static
+    )
+endif()
+if(EMSCRIPTEN)
+    set(LINK_LIBS ${LINK_LIBS}
+        zlib
     )
 endif()
 
