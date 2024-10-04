@@ -3,6 +3,7 @@
 #include "../log/Log.hxx"
 #include <algorithm>
 #include <stdexcept>
+#include <cstring>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
