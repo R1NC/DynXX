@@ -9,7 +9,7 @@ Module['onRuntimeInitialized'] = function () {
         * https://github.com/emscripten-core/emscripten/issues/16567
         */
         var _func = Module.addFunction(function (level, content) {
-            sContent = Module.UTF8ToString(content);
+            var sContent = Module.UTF8ToString(content);
             console.log('NGenXX<' + level + '>' + sContent);
         }, 'vii');//wasm type signature just support number
         Module._ngenxx_log_set_callback(_func);
