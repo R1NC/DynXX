@@ -14,5 +14,7 @@ int main()
 
     ngenxx_posix_testCrypto();
 
+    ngenxx_posix_testZip();
+
     ngenxx_posix_release();
 }
