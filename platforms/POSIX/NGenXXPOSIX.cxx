@@ -111,19 +111,19 @@ void ngenxx_posix_testJsonDecoder(void)
         void *urlNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "url");
         if (urlNode) {
             const char *url = ngenxx_json_decoder_read_string(jsonDecoder, urlNode);
-            std::cout << "url:%s" << url << std::endl;
+            std::cout << "url:" << url << std::endl;
         }
         void *headersCNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "headers_c");
         if (headersCNode) {
             double headersC = ngenxx_json_decoder_read_number(jsonDecoder, headersCNode);
-            std::cout << "headers_c:%f" << headersC << std::endl;
+            std::cout << "headers_c:" << headersC << std::endl;
         }
         void *headersVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "headers_v");
         if (headersVNode) {
             void *headerNode = ngenxx_json_decoder_read_child(jsonDecoder, headersVNode);
             while (headerNode) {
                 const char *header = ngenxx_json_decoder_read_string(jsonDecoder, headerNode);
-                std::cout << "header:%s" << header << std::endl;
+                std::cout << "header:" << header << std::endl;
                 headerNode = ngenxx_json_decoder_read_next(jsonDecoder, headerNode);
             }
         }
