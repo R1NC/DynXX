@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstring>
 
+static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\": 1, \"timeout\":6666}";
+
 void ngenxx_posix_init(const char *root)
 {
     ngenxx_init(root);
@@ -14,8 +16,7 @@ void ngenxx_posix_testHttpL(void)
     bool loadSuccess = ngenxx_L_loadF("../Android/app/src/main/assets/biz.lua");
     if (loadSuccess)
     {
-        static const char *cParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\": 1, \"timeout\":6666}";
-        const char *cRsp = ngenxx_L_call("lNetHttpRequest", cParams);
+        const char *cRsp = ngenxx_L_call("lNetHttpRequest", cParamsJson);
         std::cout << cRsp << std::endl;
     }
 }
@@ -100,6 +101,33 @@ void ngenxx_posix_testCrypto(void)
         if (aesgcmDecodedBytes && aesgcmDecodedLen > 0) {
             std::cout << "AES-GCM: " << (char *)aesgcmDecodedBytes << std::endl;
         }
+    }
+}
+
+void ngenxx_posix_testJsonDecoder(void)
+{
+    void *jsonDecoder = ngenxx_json_decoder_init(cParamsJson);
+    if (jsonDecoder) {
+        void *urlNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "url");
+        if (urlNode) {
+            const char *url = ngenxx_json_decoder_read_string(jsonDecoder, urlNode);
+            std::cout << "url:%s" << url << std::endl;
+        }
+        void *headersCNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "headers_c");
+        if (headersCNode) {
+            double headersC = ngenxx_json_decoder_read_number(jsonDecoder, headersCNode);
+            std::cout << "headers_c:%f" << headersC << std::endl;
+        }
+        void *headersVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "headers_v");
+        if (headersVNode) {
+            void *headerNode = ngenxx_json_decoder_read_child(jsonDecoder, headersVNode);
+            while (headerNode) {
+                const char *header = ngenxx_json_decoder_read_string(jsonDecoder, headerNode);
+                std::cout << "header:%s" << header << std::endl;
+                headerNode = ngenxx_json_decoder_read_next(jsonDecoder, headerNode);
+            }
+        }
+        ngenxx_json_decoder_release(jsonDecoder);
     }
 }
 

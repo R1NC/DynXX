@@ -10,6 +10,8 @@ int main()
 
     ngenxx_posix_testKV();
 
+    ngenxx_posix_testJsonDecoder();
+
     ngenxx_posix_testCrypto();
 
     ngenxx_posix_release();

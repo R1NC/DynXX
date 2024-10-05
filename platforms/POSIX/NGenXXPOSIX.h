@@ -11,6 +11,8 @@ void ngenxx_posix_testKV(void);
 
 void ngenxx_posix_testCrypto(void);
 
+void ngenxx_posix_testJsonDecoder(void);
+
 void ngenxx_posix_release(void);
 
 #endif // NGENXX_POSIX_H_
