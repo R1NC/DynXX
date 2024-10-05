@@ -2,6 +2,8 @@
 #include "../../include/NGenXX.h"
 
 #include <iostream>
+#include <istream>
+#include <ostream>
 #include <fstream>
 #include <cstring>
 #include <functional>
@@ -135,7 +137,7 @@ void ngenxx_posix_testJsonDecoder(void)
 
 #pragma mark zip
 
-bool zProcess(const size bufferSize, std::ifstream &inStream, std::ofstream &outStream,
+bool zProcess(const size bufferSize, std::istream &inStream, std::ostream &outStream,
               std::function<size(byte *, size, bool)> inputF,
               std::function<const std::pair<const byte *, const size>()> processDoF,
               std::function<bool()> processFinishedF)
@@ -172,7 +174,7 @@ bool zProcess(const size bufferSize, std::ifstream &inStream, std::ofstream &out
 
 static const size kZBufferSize = 1024;
 
-bool zip(std::ifstream &inStream, std::ofstream &outStream)
+bool zip(std::istream &inStream, std::ostream &outStream)
 {
     void *zip = ngenxx_z_zip_init(-1, kZBufferSize);
     bool res = zProcess(kZBufferSize, inStream, outStream, 
@@ -192,7 +194,7 @@ bool zip(std::ifstream &inStream, std::ofstream &outStream)
     return res;
 }
 
-bool unzip(std::ifstream &inStream, std::ofstream &outStream)
+bool unzip(std::istream &inStream, std::ostream &outStream)
 {
     void *zip = ngenxx_z_unzip_init(kZBufferSize);
     bool res = zProcess(kZBufferSize, inStream, outStream, 
