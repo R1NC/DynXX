@@ -214,7 +214,7 @@ bool unzip(std::ifstream &inStream, std::ofstream &outStream)
 
 void ngenxx_posix_testZip(void)
 {
-    std::ifstream zipIS("../Android/app/src/assets/prepare_data.sql", std::ios::binary);
+    std::ifstream zipIS("../Android/app/src/main/assets/prepare_data.sql", std::ios::binary);
     std::ofstream zipOS("./x.zip", std::ios::binary);
     bool zipRes = zip(zipIS, zipOS);
     std::cout << "zip res:" << zipRes << std::endl;
