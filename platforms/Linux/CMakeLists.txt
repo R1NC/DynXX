@@ -12,17 +12,17 @@ add_executable(${PROJECT_NAME}
 )
 
 get_filename_component(CURRENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
-set(STATIC_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../build.Linux/output/Release")
+set(LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../build.Linux/output/Release")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${STATIC_LIB_PATH}/NGenXX.a
-    ${STATIC_LIB_PATH}/ssl.a
-    ${STATIC_LIB_PATH}/crypto.a
-    ${STATIC_LIB_PATH}/curl.a
-    ${STATIC_LIB_PATH}/sqlite3.a
-    ${STATIC_LIB_PATH}/mmkvcore.a
-    ${STATIC_LIB_PATH}/mmkv.a
-    ${STATIC_LIB_PATH}/cjson.a
-    ${STATIC_LIB_PATH}/lua.a
+    ${LIB_PATH}/NGenXX.a
+    ${LIB_PATH}/cjson.a
+    ${LIB_PATH}/lua.a
+    ${LIB_PATH}/sqlite3.a
+    ${LIB_PATH}/curl.a
+    ${LIB_PATH}/ssl.a
+    ${LIB_PATH}/crypto.a
+    ${LIB_PATH}/mmkv.a
+    ${LIB_PATH}/mmkvcore.a
     z
 )
