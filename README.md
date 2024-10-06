@@ -15,7 +15,7 @@ A cross-platform C/C++ framework.
 | Key-Value Store |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
 | JSON |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
 | Crypto |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
-| Zip |✔️|✔️|🛠️|🛠️|✔️|🛠️|🛠️|
+| Zip |✔️|✔️|🛠️|🛠️|✔️|✔️|🛠️|
 | Device Info |✔️|✔️|🛠️|🛠️|✔️|🛠️|❔|
 
 - ❔ : Unknown.
