@@ -148,7 +148,7 @@ bool zProcess(const size bufferSize, std::istream &inStream, std::ostream &outSt
     do
     {
         size inLen = inStream.readsome((char *)inBuffer, bufferSize);
-        inputFinished = inStream.eof();
+        inputFinished = inLen < bufferSize;
         int ret = inputF(inBuffer, inLen, inputFinished);
         if (ret == 0L)
         {
