@@ -168,6 +168,7 @@ bool zProcess(const size bufferSize, std::istream &inStream, std::ostream &outSt
             outStream.write((char *)(outBytes.first), outBytes.second);
         } while (!processFinished);
     } while (!inputFinished);
+    outStream.flush();
 
     return true;
 }
@@ -206,7 +207,7 @@ bool unzip(std::istream &inStream, std::ostream &outStream)
             const byte *outBytes = ngenxx_z_unzip_process_do(unzip, &outLen);
             return {outBytes, outLen};
         },
-        [&] -> bool {
+        [&]() -> bool {
             return ngenxx_z_unzip_process_finished(unzip);
         }
     );
