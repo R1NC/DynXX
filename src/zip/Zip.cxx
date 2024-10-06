@@ -51,7 +51,7 @@ const byte *NGenXX::Z::ZBase::processDo(size *outLen)
     this->processImp();
     if (this->ret != Z_OK && ret != Z_STREAM_END)
     {
-        Log::print(NGenXXLogLevelError, "z error:" + std::to_string(this->ret));
+        Log::print(NGenXXLogLevelError, "z process error:" + std::to_string(this->ret));
         *outLen = 0;
         return NULL;
     }

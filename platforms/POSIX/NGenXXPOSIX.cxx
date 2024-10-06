@@ -196,33 +196,33 @@ bool zip(std::istream &inStream, std::ostream &outStream)
 
 bool unzip(std::istream &inStream, std::ostream &outStream)
 {
-    void *zip = ngenxx_z_unzip_init(kZBufferSize);
+    void *unzip = ngenxx_z_unzip_init(kZBufferSize);
     bool res = zProcess(kZBufferSize, inStream, outStream, 
         [&](byte *inBuffer, size inLen, bool inputFinished) -> size {
-            return ngenxx_z_unzip_input(zip, inBuffer, inLen, inputFinished);
+            return ngenxx_z_unzip_input(unzip, inBuffer, inLen, inputFinished);
         },
         [&]() -> const std::pair<const byte *, const size> {
             size outLen;
-            const byte *outBytes = ngenxx_z_unzip_process_do(zip, &outLen);
+            const byte *outBytes = ngenxx_z_unzip_process_do(unzip, &outLen);
             return {outBytes, outLen};
         },
         [&] -> bool {
-            return ngenxx_z_unzip_process_finished(zip);
+            return ngenxx_z_unzip_process_finished(unzip);
         }
     );
-    ngenxx_z_unzip_release(zip);
+    ngenxx_z_unzip_release(unzip);
     return res;
 }
 
 void ngenxx_posix_testZip(void)
 {
-    std::ifstream zipIS("../Android/app/src/main/assets/prepare_data.sql", std::ios::binary);
-    std::ofstream zipOS("./x.zip", std::ios::binary);
+    std::ifstream zipIS("../Android/app/src/main/assets/prepare_data.sql", std::ios::in);
+    std::ofstream zipOS("./x.zip", std::ios::out);
     bool zipRes = zip(zipIS, zipOS);
     std::cout << "zip res:" << zipRes << std::endl;
 
-    std::ifstream unzipIS("./x.zip", std::ios::binary);
-    std::ofstream unzipOS("./x.txt", std::ios::binary);
+    std::ifstream unzipIS("./x.zip", std::ios::in);
+    std::ofstream unzipOS("./x.txt", std::ios::out);
     bool unzipRes = unzip(unzipIS, unzipOS);
     std::cout << "unzip res:" << unzipRes << std::endl;
 }
