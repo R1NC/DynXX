@@ -187,7 +187,7 @@ bool zip(std::istream &inStream, std::ostream &outStream)
             const byte *outBytes = ngenxx_z_zip_process_do(zip, &outLen);
             return {outBytes, outLen};
         },
-        [&] -> bool {
+        [&]() -> bool {
             return ngenxx_z_zip_process_finished(zip);
         }
     );
