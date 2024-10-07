@@ -16,8 +16,6 @@
 
 - (void)testJsonDecoder;
 
-- (BOOL)zipWithInputStream:(NSInputStream*)inStream outputStream:(NSOutputStream*)outStream;
-- (BOOL)unzipWithInputStream:(NSInputStream*)inStream outputStream:(NSOutputStream*)outStream;
 - (void)testZip;
 
 @end

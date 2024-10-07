@@ -10,6 +10,9 @@
 #ifdef __cplusplus
 
 #include "../../include/NGenXXZip.h"
+#include <istream>
+#include <ostream>
+#include <cstdio>
 
 namespace NGenXX
 {
@@ -58,6 +61,14 @@ namespace NGenXX
             UnZip(const size bufferSize);
             ~UnZip();
         };
+
+        bool zip(int mode, const size bufferSize, std::istream *inStream, std::ostream *outStream);
+
+        bool unzip(const size bufferSize, std::istream *inStream, std::ostream *outStream);
+
+        bool zip(int mode, const size bufferSize, std::FILE *inFile, std::FILE *outFile);
+
+        bool unzip(const size bufferSize, std::FILE *inFile, std::FILE *outFile);
     }
 }
 

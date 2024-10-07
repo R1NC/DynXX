@@ -1,16 +1,11 @@
 #import "NGenXXApple.h"
 
 #import "NGenXX.h"
+#include <fstream>
 
 #define NSString2CharP(nsstr) [nsstr cStringUsingEncoding:NSUTF8StringEncoding]
 #define CharP2NSString(cp) [NSString stringWithCString:cp encoding:NSUTF8StringEncoding]
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
-
-struct Bytes {
-    const byte *data;
-    const size len;
-};
-typedef struct Bytes Bytes;
 
 static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\": 1, \"timeout\":6666}";
 
@@ -152,99 +147,20 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     }
 }
 
-#pragma mark Zip
-
-static const size kZBufferSize = 1024;
-
 - (void)testZip {
-    NSInputStream *zipInS = [[NSInputStream alloc] initWithFileAtPath:[NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"]];
-    //[zipInS scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [zipInS open];
-    NSOutputStream *zipOutS = [[NSOutputStream alloc] initToFileAtPath:[self.root stringByAppendingPathComponent:@"xx.zip"] append:NO];
-    //[zipOutS scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [zipOutS open];
-    //[[NSRunLoop currentRunLoop] run];
-    [self zipWithInputStream:zipInS outputStream:zipOutS];
-    //[zipInS removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [zipInS close];
-    //[zipOutS removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [zipOutS close];
-    
-    NSInputStream *unzipInS = [[NSInputStream alloc] initWithFileAtPath:[self.root stringByAppendingPathComponent:@"xx.zip"]];
-    //[unzipInS scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [unzipInS open];
-    NSOutputStream *unzipOutS = [[NSOutputStream alloc] initToFileAtPath:[self.root stringByAppendingPathComponent:@"xx.txt"] append:NO];
-    //[unzipOutS scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [unzipOutS open];
-    [self unzipWithInputStream:unzipInS outputStream:unzipOutS];
-    //[unzipInS removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [unzipInS close];
-    //[unzipOutS removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [unzipOutS close];
-}
-
-- (BOOL)zipWithInputStream:(NSInputStream*)inStream outputStream:(NSOutputStream*)outStream {
-    void *zip = ngenxx_z_zip_init(-1, kZBufferSize);
-    BOOL res = [self zProcessWithBufferSize:kZBufferSize inputStream:inStream outputStream:outStream
-                                 inputF:^size(byte *inBuffer, size inLen, BOOL inputFinished) {
-        return ngenxx_z_zip_input(zip, inBuffer, inLen, inputFinished);
-    } processDoF:^const Bytes{
-        size outLen;
-        const byte *outBytes = ngenxx_z_zip_process_do(zip, &outLen);
-        return {.data = outBytes, .len = outLen};
-    } processFinishedF:^BOOL{
-        return ngenxx_z_zip_process_finished(zip);
-    }];
-    ngenxx_z_zip_release(zip);
-    return res;
-}
-
-- (BOOL)unzipWithInputStream:(NSInputStream*)inStream outputStream:(NSOutputStream*)outStream {
-    void *unzip = ngenxx_z_unzip_init(kZBufferSize);
-    BOOL res = [self zProcessWithBufferSize:kZBufferSize inputStream:inStream outputStream:outStream
-                                 inputF:^size(byte *inBuffer, size inLen, BOOL inputFinished) {
-        return ngenxx_z_unzip_input(unzip, inBuffer, inLen, inputFinished);
-    } processDoF:^const Bytes{
-        size outLen;
-        const byte *outBytes = ngenxx_z_unzip_process_do(unzip, &outLen);
-        return {.data = outBytes, .len = outLen};
-    } processFinishedF:^BOOL{
-        return ngenxx_z_unzip_process_finished(unzip);
-    }];
-    ngenxx_z_unzip_release(unzip);
-    return res;
-}
-
-- (BOOL)zProcessWithBufferSize:(size)bufferSize
-                   inputStream:(NSInputStream*)inStream
-                  outputStream:(NSOutputStream*)outStream
-                        inputF:(size(^)(byte *inBuffer, size inLen, BOOL inputFinished))inputF
-                    processDoF:(const Bytes(^)())processDoF
-              processFinishedF:(BOOL(^)())processFinishedF {
-    byte inBuffer[bufferSize];
-
-    BOOL inputFinished;
-    do {
-        size inLen = (size)[inStream read:inBuffer maxLength:bufferSize];
-        inputFinished = inLen < bufferSize;
-        int ret = inputF(inBuffer, inLen, inputFinished);
-        if (ret == 0L) {
-            return NO;
-        }
-
-        BOOL processFinished;
-        do {
-            const Bytes outBytes = processDoF();
-            if (outBytes.data == NULL) {
-                return NO;
-            }
-            processFinished = processFinishedF();
-
-            [outStream write:outBytes.data maxLength:outBytes.len];
-        } while(!processFinished);
-    } while (!inputFinished);
-
-    return YES;
+    static const size kZBufferSize = 1024;
+    NSString *sqlPath = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
+    std::ifstream zipIS(NSString2CharP(sqlPath), std::ios::in);
+    NSString *zipPath = [self.root stringByAppendingPathComponent:@"xxx.zip"];
+    std::ifstream zipOS(NSString2CharP(zipPath), std::ios::out);
+    BOOL zipRes = ngenxx_z_cxxstream_zip(NGenXXZipCompressModeDefault, kZBufferSize, (void *)(&zipIS), (void *)(&zipOS));
+    if (zipRes) {
+        NSString *txtPath = [self.root stringByAppendingPathComponent:@"xxx.txt"];
+        std::ifstream unzipIS(NSString2CharP(zipPath), std::ios::in);
+        std::ifstream unzipOS(NSString2CharP(txtPath), std::ios::out);
+        BOOL unzipRes = ngenxx_z_cxxstream_unzip(kZBufferSize, (void *)&unzipIS, (void *)&unzipOS);
+        if (unzipRes);
+    }
 }
 
 @end

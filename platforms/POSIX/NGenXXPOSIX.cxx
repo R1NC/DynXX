@@ -2,8 +2,6 @@
 #include "../../include/NGenXX.h"
 
 #include <iostream>
-#include <istream>
-#include <ostream>
 #include <fstream>
 #include <cstring>
 #include <functional>
@@ -135,96 +133,17 @@ void ngenxx_posix_testJsonDecoder(void)
     }
 }
 
-#pragma mark zip
-
-bool zProcess(const size bufferSize, std::istream &inStream, std::ostream &outStream,
-              std::function<size(byte *, size, bool)> inputF,
-              std::function<const std::pair<const byte *, const size>()> processDoF,
-              std::function<bool()> processFinishedF)
-{
-    byte inBuffer[bufferSize];
-
-    bool inputFinished;
-    do
-    {
-        size inLen = inStream.readsome((char *)inBuffer, bufferSize);
-        inputFinished = inLen < bufferSize;
-        int ret = inputF(inBuffer, inLen, inputFinished);
-        if (ret == 0L)
-        {
-            return false;
-        }
-
-        bool processFinished;
-        do
-        {
-            auto outBytes = processDoF();
-            if (outBytes.first == NULL)
-            {
-                return false;
-            }
-            processFinished = processFinishedF();
-
-            outStream.write((char *)(outBytes.first), outBytes.second);
-        } while (!processFinished);
-    } while (!inputFinished);
-    outStream.flush();
-
-    return true;
-}
-
-static const size kZBufferSize = 1024;
-
-bool zip(std::istream &inStream, std::ostream &outStream)
-{
-    void *zip = ngenxx_z_zip_init(-1, kZBufferSize);
-    bool res = zProcess(kZBufferSize, inStream, outStream, 
-        [&](byte *inBuffer, size inLen, bool inputFinished) -> size {
-            return ngenxx_z_zip_input(zip, inBuffer, inLen, inputFinished);
-        },
-        [&]() -> const std::pair<const byte *, const size> {
-            size outLen;
-            const byte *outBytes = ngenxx_z_zip_process_do(zip, &outLen);
-            return {outBytes, outLen};
-        },
-        [&]() -> bool {
-            return ngenxx_z_zip_process_finished(zip);
-        }
-    );
-    ngenxx_z_zip_release(zip);
-    return res;
-}
-
-bool unzip(std::istream &inStream, std::ostream &outStream)
-{
-    void *unzip = ngenxx_z_unzip_init(kZBufferSize);
-    bool res = zProcess(kZBufferSize, inStream, outStream, 
-        [&](byte *inBuffer, size inLen, bool inputFinished) -> size {
-            return ngenxx_z_unzip_input(unzip, inBuffer, inLen, inputFinished);
-        },
-        [&]() -> const std::pair<const byte *, const size> {
-            size outLen;
-            const byte *outBytes = ngenxx_z_unzip_process_do(unzip, &outLen);
-            return {outBytes, outLen};
-        },
-        [&]() -> bool {
-            return ngenxx_z_unzip_process_finished(unzip);
-        }
-    );
-    ngenxx_z_unzip_release(unzip);
-    return res;
-}
-
 void ngenxx_posix_testZip(void)
 {
+    static const size kZBufferSize = 1024;
     std::ifstream zipIS("../Android/app/src/main/assets/prepare_data.sql", std::ios::in);
     std::ofstream zipOS("./x.zip", std::ios::out);
-    bool zipRes = zip(zipIS, zipOS);
+    bool zipRes = ngenxx_z_cxxstream_zip(NGenXXZipCompressModeDefault, kZBufferSize, (void *)&zipIS, (void *)&zipOS);
     std::cout << "zip res:" << zipRes << std::endl;
 
     std::ifstream unzipIS("./x.zip", std::ios::in);
     std::ofstream unzipOS("./x.txt", std::ios::out);
-    bool unzipRes = unzip(unzipIS, unzipOS);
+    bool unzipRes = ngenxx_z_cxxstream_unzip(kZBufferSize, (void *)&unzipIS, (void *)&unzipOS);
     std::cout << "unzip res:" << unzipRes << std::endl;
 }
 

@@ -95,6 +95,44 @@ extern "C"
      */
     void ngenxx_z_unzip_release(const void *unzip);
 
+    /**
+     * @brief ZIP for C FILE
+     * @param mode ZIP mode, see `NGenXXZipCompressMode`
+     * @param bufferSize buffer size，must be positive
+     * @param cFILEIn Input C `FILE`
+     * @param cFILEOut Output C `FILE`
+     * @param whether finished or not
+     */
+    bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, void *cFILEIn, void *cFILEOut);
+
+    /**
+     * @brief UNZIP for C FILE
+     * @param bufferSize buffer size，must be positive
+     * @param cFILEIn Input C `FILE`
+     * @param cFILEOut Output C `FILE`
+     * @param whether finished or not
+     */
+    bool ngenxx_z_cfile_unzip(const size bufferSize, void *cFILEIn, void *cFILEOut);
+
+    /**
+     * @brief ZIP for C++ Stream
+     * @param mode ZIP mode, see `NGenXXZipCompressMode`
+     * @param bufferSize buffer size，must be positive
+     * @param cxxStreamIn Input C++ Stream(`istream`)
+     * @param cxxStreamOut Output C++ Stream(`ostream`)
+     * @param whether finished or not
+     */
+    bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, void *cxxStreamIn, void *cxxStreamOut);
+
+    /**
+     * @brief UNZIP for C++ Stream
+     * @param bufferSize buffer size，must be positive
+     * @param cxxStreamIn Input C++ Stream(`istream`)
+     * @param cxxStreamOut Output C++ Stream(`ostream`)
+     * @param whether finished or not
+     */
+    bool ngenxx_z_cxxstream_unzip(const size bufferSize, void *cxxStreamIn, void *cxxStreamOut);
+
 #ifdef __cplusplus
 }
 #endif

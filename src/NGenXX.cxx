@@ -563,3 +563,33 @@ void ngenxx_z_unzip_release(const void *unzip)
     if (unzip == NULL) return;
     delete (NGenXX::Z::UnZip *)unzip;
 }
+
+bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, void *cFILEIn, void *cFILEOut)
+{
+    if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) return false;
+    if (bufferSize <= 0) return false;
+    if (cFILEIn == NULL || cFILEOut == NULL) return false;
+    return NGenXX::Z::zip(mode, bufferSize, (std::FILE *)cFILEIn, (std::FILE *)cFILEOut);
+}
+
+bool ngenxx_z_cfile_unzip(const size bufferSize, void *cFILEIn, void *cFILEOut)
+{
+    if (bufferSize <= 0) return false;
+    if (cFILEIn == NULL || cFILEOut == NULL) return false;
+    return NGenXX::Z::unzip(bufferSize, (std::FILE *)cFILEIn, (std::FILE *)cFILEOut);
+}
+
+bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, void *cxxStreamIn, void *cxxStreamOut)
+{
+    if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) return false;
+    if (bufferSize <= 0) return false;
+    if (cxxStreamIn == NULL || cxxStreamOut == NULL) return false;
+    return NGenXX::Z::zip(mode, bufferSize, (std::istream *)cxxStreamIn, (std::ostream *)cxxStreamOut);
+}
+
+bool ngenxx_z_cxxstream_unzip(const size bufferSize, void *cxxStreamIn, void *cxxStreamOut)
+{
+    if (bufferSize <= 0) return false;
+    if (cxxStreamIn == NULL || cxxStreamOut == NULL) return false;
+    return NGenXX::Z::unzip(bufferSize, (std::istream *)cxxStreamIn, (std::ostream *)cxxStreamOut);
+}
