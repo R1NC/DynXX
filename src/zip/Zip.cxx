@@ -119,12 +119,10 @@ NGenXX::Z::UnZip::~UnZip()
 #pragma mark Stream
 
 bool zProcess(const size bufferSize,
-                   std::function<size(NGenXX::Bytes)> sReadF,
-                   std::function<void(NGenXX::Bytes)> sWriteF,
-                   std::function<void()> sFlushF,
-                   std::function<size(NGenXX::Bytes, bool)> inputF,
-                   std::function<const NGenXX::Bytes()> processDoF,
-                   std::function<bool()> processFinishedF)
+              std::function<size(NGenXX::Bytes)> sReadF,
+              std::function<void(NGenXX::Bytes)> sWriteF,
+              std::function<void()> sFlushF,
+              NGenXX::Z::ZBase &zb)
 {
     byte inBuffer[bufferSize];
 
@@ -133,7 +131,7 @@ bool zProcess(const size bufferSize,
     {
         size inLen = sReadF({inBuffer, bufferSize});
         inputFinished = inLen < bufferSize;
-        int ret = inputF({inBuffer, inLen}, inputFinished);
+        int ret = zb.input(inBuffer, inLen, inputFinished);
         if (ret == 0L)
         {
             return false;
@@ -142,12 +140,14 @@ bool zProcess(const size bufferSize,
         bool processFinished;
         do
         {
-            auto outBytes = processDoF();
-            if (outBytes.first == NULL)
+            size outLen;
+            const byte *outData = zb.processDo(&outLen);
+            if (outData == NULL)
             {
                 return false;
             }
-            processFinished = processFinishedF();
+            NGenXX::Bytes outBytes = {outData, outLen};
+            processFinished = zb.processFinished();
 
             sWriteF(outBytes);
         } while (!processFinished);
@@ -159,10 +159,7 @@ bool zProcess(const size bufferSize,
 
 #pragma mark Cxx stream
 
-bool zProcessCxxStream(const size bufferSize, std::istream *inStream, std::ostream *outStream,
-              std::function<size(NGenXX::Bytes, bool)> inputF,
-              std::function<const NGenXX::Bytes()> processDoF,
-              std::function<bool()> processFinishedF)
+bool zProcessCxxStream(const size bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase &zb)
 {
     return zProcess(bufferSize, 
         [&](NGenXX::Bytes bytes) -> size {
@@ -174,54 +171,25 @@ bool zProcessCxxStream(const size bufferSize, std::istream *inStream, std::ostre
         [&]() -> void {
             outStream->flush();
         },
-        inputF, processDoF, processFinishedF
+        zb
     );
 }
 
 bool NGenXX::Z::zip(int mode, const size bufferSize, std::istream *inStream, std::ostream *outStream)
 {
     auto zip = Zip(mode, bufferSize);
-    bool res = zProcessCxxStream(bufferSize, inStream, outStream, 
-        [&](NGenXX::Bytes bytes, bool inputFinished) -> size {
-            return zip.input(bytes.first, bytes.second, inputFinished);
-        },
-        [&]() -> const NGenXX::Bytes {
-            size outLen;
-            const byte *outBytes = zip.processDo(&outLen);
-            return {outBytes, outLen};
-        },
-        [&]() -> bool {
-            return zip.processFinished();
-        }
-    );
-    return res;
+    return zProcessCxxStream(bufferSize, inStream, outStream, zip);
 }
 
 bool NGenXX::Z::unzip(const size bufferSize, std::istream *inStream, std::ostream *outStream)
 {
     auto unzip = UnZip(bufferSize);
-    bool res = zProcessCxxStream(bufferSize, inStream, outStream, 
-        [&](NGenXX::Bytes bytes, bool inputFinished) -> size {
-            return unzip.input(bytes.first, bytes.second, inputFinished);
-        },
-        [&]() -> const NGenXX::Bytes {
-            size outLen;
-            const byte *outBytes = unzip.processDo(&outLen);
-            return {outBytes, outLen};
-        },
-        [&]() -> bool {
-            return unzip.processFinished();
-        }
-    );
-    return res;
+    return zProcessCxxStream(bufferSize, inStream, outStream, unzip);
 }
 
 #pragma mark C FILE
 
-bool zProcessCFILE(const size bufferSize, std::FILE *inFile, std::FILE *outFile,
-              std::function<size(NGenXX::Bytes, bool)> inputF,
-              std::function<const NGenXX::Bytes()> processDoF,
-              std::function<bool()> processFinishedF)
+bool zProcessCFILE(const size bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase &zb)
 {
     return zProcess(bufferSize, 
         [&](NGenXX::Bytes bytes) -> size {
@@ -233,44 +201,18 @@ bool zProcessCFILE(const size bufferSize, std::FILE *inFile, std::FILE *outFile,
         [&]() -> void {
             std::fflush(outFile);
         },
-        inputF, processDoF, processFinishedF
+        zb
     );
 }
 
 bool NGenXX::Z::zip(int mode, const size bufferSize, std::FILE *inFile, std::FILE *outFile)
 {
     auto zip = Zip(mode, bufferSize);
-    bool res = zProcessCFILE(bufferSize, inFile, outFile, 
-        [&](NGenXX::Bytes bytes, bool inputFinished) -> size {
-            return zip.input(bytes.first, bytes.second, inputFinished);
-        },
-        [&]() -> const NGenXX::Bytes {
-            size outLen;
-            const byte *outBytes = zip.processDo(&outLen);
-            return {outBytes, outLen};
-        },
-        [&]() -> bool {
-            return zip.processFinished();
-        }
-    );
-    return res;
+    return zProcessCFILE(bufferSize, inFile, outFile, zip);
 }
 
 bool NGenXX::Z::unzip(const size bufferSize, std::FILE *inFile, std::FILE *outFile)
 {
     auto unzip = UnZip(bufferSize);
-    bool res = zProcessCFILE(bufferSize, inFile, outFile, 
-        [&](NGenXX::Bytes bytes, bool inputFinished) -> size {
-            return unzip.input(bytes.first, bytes.second, inputFinished);
-        },
-        [&]() -> NGenXX::Bytes {
-            size outLen;
-            const byte *outBytes = unzip.processDo(&outLen);
-            return {outBytes, outLen};
-        },
-        [&]() -> bool {
-            return unzip.processFinished();
-        }
-    );
-    return res;
+    return zProcessCFILE(bufferSize, inFile, outFile, unzip);
 }
