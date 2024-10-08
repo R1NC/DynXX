@@ -82,7 +82,6 @@ int ngenxx_log_printL(lua_State *L)
 
     ngenxx_log_print(level, content);
 
-    free((void *)content);
     return 1;
 }
 
