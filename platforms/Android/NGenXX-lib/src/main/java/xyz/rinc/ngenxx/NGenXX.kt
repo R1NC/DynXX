@@ -21,7 +21,19 @@ class NGenXX {
         external fun logSetCallback(callback: ((level: Int, content: String) -> Unit)?)
         external fun logPrint(level: Int, content: String)
 
-        external fun netHttpRequest(url: String, params: String?, method: Int, headers: Array<String>?, timeout: Long): String?
+        enum class HttpMethod(val value: Int) {
+            Get(0),
+            Post(1),
+            Put(2),
+        }
+        external fun netHttpRequest(url: String, params: String?, method: Int,
+                                    headerV: Array<String>?,
+                                    formFieldNameV: Array<String>?,
+                                    formFieldMimeV: Array<String>?,
+                                    formFieldDataV: Array<String>?,
+                                    filePath: String?,
+                                    fileLength: Long,
+                                    timeout: Long): String?
 
         external fun lLoadF(file: String): Boolean
         external fun lLoadS(script: String): Boolean

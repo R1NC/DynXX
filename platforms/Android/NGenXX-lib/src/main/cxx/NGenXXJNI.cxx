@@ -89,34 +89,78 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logPrint(JNIEnv *env, jobject thiz,
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env, jobject thiz,
-                                                          jstring url, jstring params,
-                                                          jint method,
-                                                          jobjectArray headers,
-                                                          jlong timeout)
-{
+                                                                        jstring url, jstring params,
+                                                                        jint method,
+                                                                        jobjectArray headerV,
+                                                                        jobjectArray formFieldNameV,
+                                                                        jobjectArray formFieldMimeV,
+                                                                        jobjectArray formFieldDataV,
+                                                                        jstring filePath,
+                                                                        jlong  fileLength,
+                                                                        jlong timeout) {
     const char *cUrl = env->GetStringUTFChars(url, nullptr);
     const char *cParams = env->GetStringUTFChars(params, nullptr);
 
-    const unsigned int headersCount = env->GetArrayLength(headers);
-    char **cHeadersV = (char **)malloc(headersCount * sizeof(char *));
-    auto *jstrV = (jstring *)malloc(sizeof(jstring));
-    for (int i = 0; i < headersCount; i++)
-    {
-        jstrV[i] = (jstring)(env->GetObjectArrayElement(headers, i));
-        cHeadersV[i] = (char *)env->GetStringUTFChars(jstrV[i], nullptr);
+    const unsigned int headerCount = env->GetArrayLength(headerV);
+    char **cHeaderV = (char **) malloc(headerCount * sizeof(char *));
+    auto *jstrHeaderV = (jstring *) malloc(sizeof(jstring));
+    for (int i = 0; i < headerCount; i++) {
+        jstrHeaderV[i] = (jstring) (env->GetObjectArrayElement(headerV, i));
+        cHeaderV[i] = (char *) env->GetStringUTFChars(jstrHeaderV[i], nullptr);
     }
 
-    const char *cRsp = ngenxx_net_http_request(cUrl, cParams, (const int)method, (const char **)cHeadersV, headersCount, (const unsigned long)timeout);
+    const unsigned int formFieldCount = env->GetArrayLength(formFieldNameV);
+    char **cFormFieldNameV = (char **) malloc(formFieldCount * sizeof(char *));
+    auto *jstrFormFieldNameV = (jstring *) malloc(sizeof(jstring));
+    for (int i = 0; i < formFieldCount; i++) {
+        jstrFormFieldNameV[i] = (jstring) (env->GetObjectArrayElement(formFieldNameV, i));
+        cFormFieldNameV[i] = (char *) env->GetStringUTFChars(jstrFormFieldNameV[i], nullptr);
+    }
+
+    char **cFormFieldMimeV = (char **) malloc(formFieldCount * sizeof(char *));
+    auto *jstrFormFieldMimeV = (jstring *) malloc(sizeof(jstring));
+    for (int i = 0; i < formFieldCount; i++) {
+        jstrFormFieldMimeV[i] = (jstring) (env->GetObjectArrayElement(formFieldMimeV, i));
+        cFormFieldMimeV[i] = (char *) env->GetStringUTFChars(jstrFormFieldMimeV[i], nullptr);
+    }
+
+    char **cFormFieldDataV = (char **) malloc(formFieldCount * sizeof(char *));
+    auto *jstrFormFieldDataV = (jstring *) malloc(sizeof(jstring));
+    for (int i = 0; i < formFieldCount; i++) {
+        jstrFormFieldDataV[i] = (jstring) (env->GetObjectArrayElement(formFieldDataV, i));
+        cFormFieldDataV[i] = (char *) env->GetStringUTFChars(jstrFormFieldDataV[i], nullptr);
+    }
+
+    const char *cFilePath = env->GetStringUTFChars(filePath, nullptr);
+    FILE *cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
+
+    const char *cRsp = ngenxx_net_http_request(cUrl, cParams, (const int) method,
+                                                          (const char **) cHeaderV, headerCount,
+                                                          (const char **) cFormFieldNameV,
+                                                          (const char **) cFormFieldMimeV,
+                                                          (const char **) cFormFieldDataV,
+                                                          formFieldCount,
+                                                          (void *)cFILE, fileLength,
+                                                          (const unsigned long) timeout);
     jstring jstr = env->NewStringUTF(cRsp ?: "");
-    free((void *)cRsp);
+    free((void *) cRsp);
 
-    for (int i = 0; i < headersCount; i++)
-    {
-        env->ReleaseStringUTFChars(jstrV[i], cHeadersV[i]);
+    for (int i = 0; i < headerCount; i++) {
+        env->ReleaseStringUTFChars(jstrHeaderV[i], cHeaderV[i]);
+        free((void *) jstrHeaderV[i]);
     }
-    free((void *)jstrV);
-    free((void *)cHeadersV);
+    for (int i = 0; i < formFieldCount; i++) {
+        env->ReleaseStringUTFChars(jstrFormFieldNameV[i], cFormFieldNameV[i]);
+        free((void *) jstrFormFieldNameV[i]);
+        env->ReleaseStringUTFChars(jstrFormFieldMimeV[i], cFormFieldMimeV[i]);
+        free((void *) jstrFormFieldMimeV[i]);
+        env->ReleaseStringUTFChars(jstrFormFieldDataV[i], cFormFieldDataV[i]);
+        free((void *) jstrFormFieldDataV[i]);
+    }
 
+    if (cFilePath) {
+        free((void *)cFilePath);
+    }
     env->ReleaseStringUTFChars(params, cParams);
     env->ReleaseStringUTFChars(url, cUrl);
 

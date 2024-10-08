@@ -1,5 +1,6 @@
 package xyz.rinc.ngenxx
 
+import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -71,5 +72,44 @@ class NGenXXHelper {
             NGenXX.zUnZipRelease(unzip)
             return success
         }
+    }
+
+    data class HttpFormField(val name: String, val mime: String, val data: String)
+    fun netHttpRequest(url: String,
+                       paramMap: Map<String, String>?,
+                       method: NGenXX.Companion.HttpMethod,
+                       headerMap: Map<String, String>?,
+                       formFieldV: Array<HttpFormField>?,
+                       file: File?,
+                       timeout: Long): String? {
+        val paramSB = StringBuilder()
+        paramMap?.forEach { h ->
+            paramSB.append(if (paramSB.isEmpty()) "?" else "&")
+            paramSB.append("${h.key}=${h.value}")
+        }
+
+        val headerL = mutableListOf<String>()
+        headerMap?.forEach { h ->
+            headerL.add("${h.key}:${h.value}")
+        }
+
+        val formFieldNameL = mutableListOf<String>()
+        val formFieldMimeL = mutableListOf<String>()
+        val formFieldDataL = mutableListOf<String>()
+        formFieldV?.forEach { ff ->
+            formFieldNameL.add(ff.name)
+            formFieldMimeL.add(ff.mime)
+            formFieldDataL.add(ff.data)
+        }
+
+        return NGenXX.netHttpRequest(url, paramSB.toString(), method.value,
+            headerL.toTypedArray(),
+            formFieldNameL.toTypedArray(),
+            formFieldMimeL.toTypedArray(),
+            formFieldDataL.toTypedArray(),
+            file?.absolutePath,
+            file?.length() ?: 0,
+            timeout
+        )
     }
 }
