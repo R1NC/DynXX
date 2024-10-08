@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
         val base64DecodedStr = base64Decoded.toString(Charsets.UTF_8)
         NGenXX.logPrint(1,"base64->$base64DecodedStr")
 
-        val jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\":1, \"timeout\":6666}"
+        val jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\":1, \"timeout\":6666}"
 
         application.assets.open("biz.lua").bufferedReader().use {
             if (!NGenXX.lLoadS(it.readText())) return
@@ -122,14 +122,14 @@ class MainActivity : ComponentActivity() {
                 val url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
                 NGenXX.logPrint(1, "url:$url")
             }
-            val headersCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "headers_c")
-            if (headersCNode > 0) {
-                val headersC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headersCNode)
-                NGenXX.logPrint(1, "headers_c:${headersC.toInt()}")
+            val headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_c")
+            if (headerCNode > 0) {
+                val headerC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headerCNode)
+                NGenXX.logPrint(1, "header_c:${headerC.toInt()}")
             }
-            val headersVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "headers_v")
-            if (headersVNode > 0) {
-                var headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headersVNode)
+            val headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_v")
+            if (headerVNode > 0) {
+                var headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headerVNode)
                 while (headerNode > 0) {
                     val header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)
                     NGenXX.logPrint(1, "header:$header")

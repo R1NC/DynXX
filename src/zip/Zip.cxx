@@ -53,7 +53,7 @@ const byte *NGenXX::Z::ZBase::processDo(size *outLen)
     this->processImp();
     if (this->ret != Z_OK && ret != Z_STREAM_END)
     {
-        Log::print(NGenXXLogLevelError, "z process error:" + std::to_string(this->ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "z process error:" + std::to_string(this->ret));
         *outLen = 0;
         return NULL;
     }
@@ -81,7 +81,7 @@ NGenXX::Z::Zip::Zip(int mode, const size bufferSize) : ZBase(bufferSize)
     this->ret = deflateInit(&(this->zs), mode);
     if (this->ret != Z_OK)
     {
-        Log::print(NGenXXLogLevelError, "deflateInit error:" + std::to_string(this->ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "deflateInit error:" + std::to_string(this->ret));
         throw std::runtime_error("deflateInit failed");
     }
 }
@@ -101,7 +101,7 @@ NGenXX::Z::UnZip::UnZip(const size bufferSize) : ZBase(bufferSize)
     this->ret = inflateInit(&(this->zs));
     if (this->ret != Z_OK)
     {
-        Log::print(NGenXXLogLevelError, "inflateInit error:" + std::to_string(this->ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "inflateInit error:" + std::to_string(this->ret));
         throw std::runtime_error("inflateInit failed");
     }
 }

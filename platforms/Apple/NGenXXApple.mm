@@ -7,7 +7,7 @@
 #define CharP2NSString(cp) [NSString stringWithCString:cp encoding:NSUTF8StringEncoding]
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
 
-static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\": 1, \"timeout\":6666}";
+static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\": 1, \"timeout\":6666}";
 
 @interface NGenXXApple () {
     void *_db_conn;
@@ -129,14 +129,14 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
             const char *url = ngenxx_json_decoder_read_string(jsonDecoder, urlNode);
             NSLog(@"url:%s", url);
         }
-        void *headersCNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "headers_c");
-        if (headersCNode) {
-            double headersC = ngenxx_json_decoder_read_number(jsonDecoder, headersCNode);
-            NSLog(@"headers_c:%f", headersC);
+        void *headerCNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_c");
+        if (headerCNode) {
+            double headerC = ngenxx_json_decoder_read_number(jsonDecoder, headerCNode);
+            NSLog(@"header_c:%f", headerC);
         }
-        void *headersVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "headers_v");
-        if (headersVNode) {
-            void *headerNode = ngenxx_json_decoder_read_child(jsonDecoder, headersVNode);
+        void *headerVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_v");
+        if (headerVNode) {
+            void *headerNode = ngenxx_json_decoder_read_child(jsonDecoder, headerVNode);
             while (headerNode) {
                 const char *header = ngenxx_json_decoder_read_string(jsonDecoder, headerNode);
                 NSLog(@"header:%s", header);

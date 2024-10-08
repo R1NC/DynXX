@@ -99,7 +99,7 @@ struct Index {
                 "end"
             );
 
-            let jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"headers_v\":[\"Cache-Control: no-cache\"], \"headers_c\": 1, \"timeout\":6666}";
+            let jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\": 1, \"timeout\":6666}";
             let rsp = NGenXX.lCall("lNetHttpRequest", jsonParams);
             /*let rsp = NGenXX.netHttpRequest("https://rinc.xyz",
               "p0=1&p1=2&p2=3",
@@ -116,13 +116,13 @@ struct Index {
                 let url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
                 NGenXX.logPrint(1, `url:${url}`)
               }
-              let headersCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "headers_c")
-              if (headersCNode > 0) {
+              let headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_c")
+              if (headerCNode > 0) {
                 let headersC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headersCNode)
                 NGenXX.logPrint(1, `headersC:${headersC}`)
               }
-              let headersVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "headers_v")
-              if (headersVNode > 0) {
+              let headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_v")
+              if (headerVNode > 0) {
                 let headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headersVNode)
                 while (headerNode > 0) {
                   let header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)

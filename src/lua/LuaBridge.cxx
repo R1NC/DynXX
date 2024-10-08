@@ -11,7 +11,7 @@
         const char *luaErrMsg = lua_tostring(L, -1);                                       \
         if (luaErrMsg != NULL)                                                             \
         {                                                                                  \
-            Log::print(NGenXXLogLevelError, std::string(prefix) + std::string(luaErrMsg)); \
+            NGenXX::Log::print(NGenXXLogLevelError, std::string(prefix) + std::string(luaErrMsg)); \
         }                                                                                  \
     } while (0);
 

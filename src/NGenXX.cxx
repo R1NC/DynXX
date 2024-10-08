@@ -125,19 +125,39 @@ void ngenxx_log_print(int level, const char *content)
 #pragma mark Net.Http
 
 EXPORT_AUTO
-const char *ngenxx_net_http_request(const char *url, const char *params, const int method, const char **headers_v, const size headers_c, const size timeout)
+const char *ngenxx_net_http_request(const char *url, const char *params, const int method,
+                                    const char **header_v, const unsigned int header_c,
+                                    const char **form_field_name_v,
+                                    const char **form_field_mime_v,
+                                    const unsigned char **form_field_data_content_v, const unsigned int *form_field_data_length_v,
+                                    const unsigned int form_field_count,
+                                    const void *cFILE, const unsigned long file_size,
+                                    const unsigned long timeout)
 {
     if (_ngenxx_http_client == NULL || url == NULL)
         return NULL;
     const std::string sUrl(url);
     const std::string sParams(params);
     std::vector<std::string> vHeaders;
-    if (headers_v != NULL && headers_c > 0)
+    if (header_v != NULL && header_c > 0)
     {
-        vHeaders = std::vector<std::string>(headers_v, headers_v + headers_c);
+        vHeaders = std::vector<std::string>(header_v, header_v + header_c);
+    }
+    std::vector<NGenXX::Net::HttpFormField> vFormFields;
+    if (form_field_count > 0 && form_field_name_v != NULL && form_field_mime_v != NULL && form_field_data_content_v != NULL && form_field_data_length_v != NULL)
+    {
+        for (int i = 0; i < form_field_count; i++)
+        {
+            NGenXX::Net::HttpFormField form_field = {
+                .name = std::string(form_field_name_v[i]),
+                .mime = std::string(form_field_mime_v[i]),
+                .data = {form_field_data_content_v[i], form_field_data_length_v[i]}
+            };
+            vFormFields.push_back(form_field);
+        }
     }
 
-    auto s = _ngenxx_http_client->request(sUrl, sParams, method, vHeaders, timeout);
+    auto s = _ngenxx_http_client->request(sUrl, sParams, method, vHeaders, vFormFields, (std::FILE *)cFILE, file_size, timeout);
     return str2charp(s);
 }
 

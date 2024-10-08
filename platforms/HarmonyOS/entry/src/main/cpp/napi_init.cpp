@@ -178,19 +178,19 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
     const char *cParams = napiValue2chars(env, argv[1]);
     int iMethod = napiValue2int(env, argv[2]);
 
-    uint32_t headers_c = napiValueArrayLen(env, argv[3]);
-    const char **headers_v = napiValue2charsArray(env, argv[3], headers_c);
+    uint32_t header_c = napiValueArrayLen(env, argv[3]);
+    const char **header_v = napiValue2charsArray(env, argv[3], header_c);
 
     long lTimeout = napiValue2long(env, argv[4]);
 
-    const char *res = ngenxx_net_http_request(cUrl, cParams, iMethod, headers_v, headers_c, lTimeout);
+    const char *res = ngenxx_net_http_request(cUrl, cParams, iMethod, header_v, header_c, lTimeout);
     napi_value nv = chars2NapiValue(env, res);
 
     free((void *)res);
-    for (int i = 0; i < headers_c; i++) {
-        free((void *)headers_v[i]);
+    for (int i = 0; i < header_c; i++) {
+        free((void *)header_v[i]);
     }
-    free((void *)headers_v);
+    free((void *)header_v);
     free((void *)cParams);
     free((void *)cUrl);
     free((void *)argv);

@@ -49,7 +49,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::encrypt(const NGenXX::Bytes inBytes, co
     int ret = AES_set_encrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
     if (ret != 0)
     {
-        Log::print(NGenXXLogLevelError, "AES_set_encrypt_key error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "AES_set_encrypt_key error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
@@ -88,7 +88,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
     int ret = AES_set_decrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
     if (ret != 0)
     {
-        Log::print(NGenXXLogLevelError, "AES_set_decrypt_key error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "AES_set_decrypt_key error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
@@ -144,28 +144,28 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
     ctx = EVP_CIPHER_CTX_new();
     if (ctx == NULL)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
         return BytesEmpty;
     }
 
     int ret = EVP_EncryptInit_ex(ctx, cipher, NULL, NULL, NULL);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptInit_ex cipher error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptInit_ex cipher error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, initVectorLen, NULL);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = EVP_EncryptInit_ex(ctx, NULL, NULL, key, initVector);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptInit_ex initVector error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptInit_ex initVector error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
@@ -176,7 +176,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
         ret = EVP_EncryptUpdate(ctx, NULL, &len, aad, aadLen);
         if (ret != OpenSSL_OK)
         {
-            Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptUpdate aad error:" + std::to_string(ret));
+            NGenXX::Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptUpdate aad error:" + std::to_string(ret));
             return BytesEmpty;
         }
     }
@@ -184,21 +184,21 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmEncrypt(const NGenXX::Bytes inBytes,
     ret = EVP_EncryptUpdate(ctx, out, &len, in, inLen);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptUpdate error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptUpdate error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = EVP_EncryptFinal_ex(ctx, out, &len);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptFinal_ex error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_EncryptFinal_ex error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, tagLen, tag);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:" + std::to_string(ret));
         return BytesEmpty;
     }
     std::memcpy(out + inLen, tag, tagLen);
@@ -236,28 +236,28 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
     ctx = EVP_CIPHER_CTX_new();
     if (ctx == NULL)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
         return BytesEmpty;
     }
 
     int ret = EVP_DecryptInit_ex(ctx, cipher, NULL, NULL, NULL);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptInit_ex cipher error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptInit_ex cipher error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, initVectorLen, NULL);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmdDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmdDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = EVP_DecryptInit_ex(ctx, NULL, NULL, key, initVector);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptInit_ex initVector error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptInit_ex initVector error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
@@ -268,7 +268,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
         ret = EVP_DecryptUpdate(ctx, NULL, &len, aad, aadLen);
         if (ret != OpenSSL_OK)
         {
-            Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptUpdate aad error:" + std::to_string(ret));
+            NGenXX::Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptUpdate aad error:" + std::to_string(ret));
             return BytesEmpty;
         }
     }
@@ -276,21 +276,21 @@ const NGenXX::Bytes NGenXX::Crypto::AES::gcmDecrypt(const NGenXX::Bytes inBytes,
     ret = EVP_DecryptUpdate(ctx, out, &len, in, inLen);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptUpdate error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptUpdate error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, tagLen, tag);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = EVP_DecryptFinal_ex(ctx, out, &len);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptFinal_ex error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "aesGcmDecrypt EVP_DecryptFinal_ex error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
@@ -314,21 +314,21 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::md5(const NGenXX::Bytes inBytes)
     int ret = MD5_Init(&md5);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "MD5_Init error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "MD5_Init error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = MD5_Update(&md5, in, inLen);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "MD5_Update error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "MD5_Update error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = MD5_Final(out, &md5);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "MD5_Final error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "MD5_Final error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
@@ -350,21 +350,21 @@ const NGenXX::Bytes NGenXX::Crypto::Hash::sha256(const NGenXX::Bytes inBytes)
     int ret = SHA256_Init(&sha256);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "SHA256_Init error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "SHA256_Init error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = SHA256_Update(&sha256, in, inLen);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "SHA256_Update error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "SHA256_Update error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
     ret = SHA256_Final(out, &sha256);
     if (ret != OpenSSL_OK)
     {
-        Log::print(NGenXXLogLevelError, "SHA256_Final error:" + std::to_string(ret));
+        NGenXX::Log::print(NGenXXLogLevelError, "SHA256_Final error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
