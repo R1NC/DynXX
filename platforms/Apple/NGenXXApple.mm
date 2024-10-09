@@ -46,6 +46,14 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     NSLog(@"%s", cRsp);
 }
 
+- (void)testHttpJ {
+    NSString *jsPath = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
+    if (ngenxx_J_loadF(NSString2CharP(jsPath))) {
+        const char * res = ngenxx_J_call("jNetHttpRequest", "https://rinc.xyz");
+        NSLog(@"rsp from js: %s", res);
+    }
+}
+
 - (void)testDB {
     _db_conn = ngenxx_store_sqlite_open("test.db");
     if (!_db_conn) return;

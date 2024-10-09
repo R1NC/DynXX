@@ -20,6 +20,9 @@
 #ifdef USE_LUA
 #include "NGenXX-Lua.hxx"
 #endif
+#ifdef USE_QJS
+#include "NGenXX-JS.hxx"
+#endif
 
 #define VERSION "0.0.1"
 
@@ -47,6 +50,9 @@ bool ngenxx_init(const char *root)
 #ifdef USE_LUA
     _ngenxx_lua_init();
 #endif
+#ifdef USE_QJS
+    _ngenxx_js_init();
+#endif
     return true;
 }
 
@@ -65,6 +71,9 @@ void ngenxx_release()
     _ngenxx_kv = NULL;
 #ifdef USE_LUA
     _ngenxx_lua_release();
+#endif
+#ifdef USE_QJS
+    _ngenxx_js_release();
 #endif
 }
 
