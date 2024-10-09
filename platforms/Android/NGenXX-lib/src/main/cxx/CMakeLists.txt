@@ -26,6 +26,11 @@ set(libluaPath ${libDir}/liblua.a)
 add_library(liblua STATIC IMPORTED)
 set_property(TARGET liblua PROPERTY IMPORTED_LOCATION ${libluaPath})
 
+#Find libquickjs
+set(libquickjsPath ${libDir}/libquickjs.a)
+add_library(libquickjs STATIC IMPORTED)
+set_property(TARGET libquickjs PROPERTY IMPORTED_LOCATION ${libquickjsPath})
+
 #Find libcjson
 set(libcjsonPath ${libDir}/libcjson.a)
 add_library(libcjson STATIC IMPORTED)
@@ -56,6 +61,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         libssl
         libcurl
         liblua
+        libquickjs
         libcjson
         libsqlite
         libmmkvcore

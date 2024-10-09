@@ -14,6 +14,7 @@ namespace NGenXX
     private:
         JSRuntime *runtime;
         JSContext *context;
+        JSValue global;
 
     public:
         /**
@@ -35,6 +36,14 @@ namespace NGenXX
          * @return success or not
          */
         bool loadFile(const std::string &file);
+
+        /**
+         * @brief Load JS script
+         * @param script JS script
+         * @param name JS file name
+         * @return success or not
+         */
+        bool loadScript(const std::string &script, const std::string &name);
 
         /**
          * @brief call JS func

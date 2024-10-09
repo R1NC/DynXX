@@ -27,11 +27,6 @@ set(sslPath ${libDir}/libssl.a)
 add_library(libssl STATIC IMPORTED)
 set_property(TARGET libssl PROPERTY IMPORTED_LOCATION ${sslPath})
 
-#Find wolfssl
-#set(wolfsslPath ${libDir}/libwolfssl.a)
-#add_library(libwolfssl STATIC IMPORTED)
-#set_property(TARGET libwolfssl PROPERTY IMPORTED_LOCATION ${wolfsslPath})
-
 #Find curl
 set(curlPath ${libDir}/libcurl.a)
 add_library(libcurl STATIC IMPORTED)
@@ -41,6 +36,11 @@ set_property(TARGET libcurl PROPERTY IMPORTED_LOCATION ${curlPath})
 set(luaPath ${libDir}/liblua.a)
 add_library(liblua STATIC IMPORTED)
 set_property(TARGET liblua PROPERTY IMPORTED_LOCATION ${luaPath})
+
+#Find quickjs
+set(quickjsPath ${libDir}/libquickjs.a)
+add_library(libquickjs STATIC IMPORTED)
+set_property(TARGET libquickjs PROPERTY IMPORTED_LOCATION ${quickjsPath})
 
 #Find cjson
 set(cjsonPath ${libDir}/libcjson.a)
@@ -70,9 +70,9 @@ set_property(TARGET libNGenXX PROPERTY IMPORTED_LOCATION ${NGenXXPath})
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     libcrypto
     libssl
-    #libwolfssl
     libcurl
     liblua
+    libquickjs
     libcjson
     libsqlite
     libmmkvcore

@@ -56,6 +56,13 @@ bool ngenxx_J_loadF(const char *file)
     return _ngenxx_js->loadFile(std::string(file));
 }
 
+bool ngenxx_J_loadS(const char *script, const char *name)
+{
+    if (_ngenxx_js == NULL || script == NULL || name == NULL)
+        return false;
+    return _ngenxx_js->loadScript(std::string(script), std::string(name));
+}
+
 const char *ngenxx_J_call(const char *func, const char *params)
 {
     if (_ngenxx_js == NULL || func == NULL)

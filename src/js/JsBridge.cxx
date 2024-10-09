@@ -1,14 +1,17 @@
 #include "JsBridge.hxx"
+#include "../../include/NGenXXLog.h"
+#include "../log/Log.hxx"
 #include <fstream>
 #include <sstream>
 #include <streambuf>
-#include "../../include/NGenXXLog.h"
-#include "../log/Log.hxx"
 
 NGenXX::JsBridge::JsBridge()
 {
     this->runtime = JS_NewRuntime();
     this->context = JS_NewContext(this->runtime);
+    js_init_module_std(this->context, "std");
+    js_init_module_os(this->context, "os");
+    this->global = JS_GetGlobalObject(this->context);
 }
 
 bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -23,14 +26,12 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
     }
     else
     {
-        JSValue jGlobal = JS_GetGlobalObject(this->context);
-        if (!JS_DefinePropertyValueStr(this->context, jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE))
+        if (!JS_DefinePropertyValueStr(this->context, this->global, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE))
         {
             Log::print(NGenXXLogLevelError, "JS_DefinePropertyValueStr failed");
             js_std_dump_error(this->context);
             res = false;
         }
-        JS_FreeValue(this->context, jGlobal);
         JS_FreeValue(this->context, jFunc);
     }
     return res;
@@ -43,8 +44,13 @@ bool NGenXX::JsBridge::loadFile(const std::string &file)
     std::stringstream ss;
     ss << ifs.rdbuf();
     std::string script_text = ss.str();
+    return this->loadScript(script_text, file);
+}
 
-    JSValue jRes = JS_Eval(this->context, script_text.c_str(), script_text.length(), file.c_str(), JS_EVAL_TYPE_GLOBAL);
+bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name)
+{
+    bool res = true;
+    JSValue jRes = JS_Eval(this->context, script.c_str(), script.length(), name.c_str(), JS_EVAL_TYPE_GLOBAL);
     if (JS_IsException(jRes))
     {
         Log::print(NGenXXLogLevelError, "JS_Eval failed");
@@ -60,14 +66,13 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 {
     std::string s;
 
-    JSValue jGlobal = JS_GetGlobalObject(this->context);
-    JSValue jFunc = JS_GetPropertyStr(this->context, jGlobal, func.c_str());
+    JSValue jFunc = JS_GetPropertyStr(this->context, this->global, func.c_str());
     if (JS_IsFunction(this->context, jFunc))
     {
         JSValue jParams = JS_NewString(this->context, params.c_str());
         JSValue argv[] = {jParams};
 
-        JSValue jRes = JS_Call(this->context, jFunc, jGlobal, sizeof(argv), argv);
+        JSValue jRes = JS_Call(this->context, jFunc, this->global, sizeof(argv), argv);
         if (JS_IsException(jRes))
         {
             Log::print(NGenXXLogLevelError, "JS_Call failed");
@@ -86,13 +91,13 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     }
 
     JS_FreeValue(this->context, jFunc);
-    JS_FreeValue(this->context, jGlobal);
 
     return s;
 }
 
 NGenXX::JsBridge::~JsBridge()
 {
+    JS_FreeValue(this->context, this->global);
     JS_FreeContext(this->context);
     JS_FreeRuntime(this->runtime);
 }

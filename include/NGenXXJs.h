@@ -10,6 +10,15 @@
 bool ngenxx_J_loadF(const char *file);
 
 /**
+ * @brief Load JS Script
+ * @warning Not accessible in JS!
+ * @param script JS script
+ * @param name JS file name
+ * @return success or not
+ */
+bool ngenxx_J_loadS(const char *script, const char *name);
+
+/**
  * @brief Call JS function
  * @warning Not accessible in JS!
  * @param func JS function name
