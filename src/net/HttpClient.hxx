@@ -17,7 +17,7 @@ namespace NGenXX
         {
             std::string name;
             std::string mime;
-            NGenXX::Bytes data;
+            std::string data;
         };
         typedef struct HttpFormField HttpFormField;
 

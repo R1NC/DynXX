@@ -112,7 +112,7 @@ int ngenxx_net_http_requestL(lua_State *L)
         return 1;
 
     //TODO
-    const char *res = ngenxx_net_http_request(url, params, method, (const char **)header_v, header_c, NULL, NULL, NULL, NULL, 0, NULL, 0, timeout);
+    const char *res = ngenxx_net_http_request(url, params, method, (const char **)header_v, header_c, NULL, NULL, NULL, 0, NULL, 0, timeout);
     lua_pushstring(L, res);
 
     free((void *)url);
