@@ -129,7 +129,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
                                     const char **header_v, const unsigned int header_c,
                                     const char **form_field_name_v,
                                     const char **form_field_mime_v,
-                                    const unsigned char **form_field_data_content_v, const unsigned int *form_field_data_length_v,
+                                    const char **form_field_data_v,
                                     const unsigned int form_field_count,
                                     const void *cFILE, const unsigned long file_size,
                                     const unsigned long timeout)
@@ -144,14 +144,14 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
         vHeaders = std::vector<std::string>(header_v, header_v + header_c);
     }
     std::vector<NGenXX::Net::HttpFormField> vFormFields;
-    if (form_field_count > 0 && form_field_name_v != NULL && form_field_mime_v != NULL && form_field_data_content_v != NULL && form_field_data_length_v != NULL)
+    if (form_field_count > 0 && form_field_name_v != NULL && form_field_mime_v != NULL && form_field_data_v != NULL)
     {
         for (int i = 0; i < form_field_count; i++)
         {
             NGenXX::Net::HttpFormField form_field = {
                 .name = std::string(form_field_name_v[i]),
                 .mime = std::string(form_field_mime_v[i]),
-                .data = {form_field_data_content_v[i], form_field_data_length_v[i]}
+                .data = std::string(form_field_data_v[i])
             };
             vFormFields.push_back(form_field);
         }

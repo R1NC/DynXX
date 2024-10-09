@@ -78,7 +78,7 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
             {
                 curl_mime_name(part, it->name.c_str());
                 curl_mime_type(part, it->mime.c_str());
-                curl_mime_data(part, (char *)it->data.first, it->data.second);
+                curl_mime_data(part, it->data.c_str(), CURL_ZERO_TERMINATED);
             }
 
             curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
