@@ -8,6 +8,7 @@
 #include "../include/NGenXX.h"
 #include "../external/quickjs/quickjs.h"
 #include "NGenXX-inner.hxx"
+#include "util/TypeUtil.hxx"
 #include "js/JsBridge.hxx"
 
 static NGenXX::JsBridge *_ngenxx_js;
@@ -39,7 +40,7 @@ JSValue ngenxx_net_http_requestJ(JSContext *ctx, JSValueConst this_val, int argc
     if (url == NULL)
         return JS_EXCEPTION;
 
-    const char *res = ngenxx_net_http_request(url, NULL, 0, NULL, 0, 0);
+    const char *res = ngenxx_net_http_request(url, NULL, 0, NULL, 0, NULL, NULL, NULL, 0, NULL, 0, 5000);
 
     JS_FreeCString(ctx, url);
 
