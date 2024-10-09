@@ -12,5 +12,11 @@
 
 - (void)testDeviceInfo;
 
+- (void)testCrypto;
+
+- (void)testJsonDecoder;
+
+- (void)testZip;
+
 @end
 

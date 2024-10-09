@@ -2,7 +2,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <string>
 #include "../../include/NGenXXLog.h"
 #include "../log/Log.hxx"
 
@@ -12,7 +11,7 @@
         const char *luaErrMsg = lua_tostring(L, -1);                                       \
         if (luaErrMsg != NULL)                                                             \
         {                                                                                  \
-            Log::print(NGenXXLogLevelError, std::string(prefix) + std::string(luaErrMsg)); \
+            NGenXX::Log::print(NGenXXLogLevelError, std::string(prefix) + std::string(luaErrMsg)); \
         }                                                                                  \
     } while (0);
 

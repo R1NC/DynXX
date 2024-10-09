@@ -10,11 +10,30 @@ class NGenXX {
         external fun init(root: String): Boolean
         external fun release()
 
+        enum class LogLevel(val value: Int) {
+            Info(0),
+            Debug(1),
+            Warn(2),
+            Error(3),
+            None(4)
+        }
         external fun logSetLevel(level: Int)
         external fun logSetCallback(callback: ((level: Int, content: String) -> Unit)?)
         external fun logPrint(level: Int, content: String)
 
-        external fun netHttpRequest(url: String, params: String?, method: Int, headers: Array<String>?, timeout: Long): String?
+        enum class HttpMethod(val value: Int) {
+            Get(0),
+            Post(1),
+            Put(2),
+        }
+        external fun netHttpRequest(url: String, params: String?, method: Int,
+                                    headerV: Array<String>?,
+                                    formFieldNameV: Array<String>?,
+                                    formFieldMimeV: Array<String>?,
+                                    formFieldDataV: Array<String>?,
+                                    filePath: String?,
+                                    fileLength: Long,
+                                    timeout: Long): String?
 
         external fun lLoadF(file: String): Boolean
         external fun lLoadS(script: String): Boolean
@@ -47,9 +66,43 @@ class NGenXX {
         external fun deviceOsVersion(): String?
         external fun deviceCpuArch(): Int
 
+        external fun codingHexBytes2Str(bytes: ByteArray): String
+        external fun codingHexStr2Bytes(str: String): ByteArray
+
+        external fun cryptoRandom(len: Int): ByteArray
         external fun cryptoAesEncrypt(input: ByteArray, key: ByteArray): ByteArray
         external fun cryptoAesDecrypt(input: ByteArray, key: ByteArray): ByteArray
+        external fun cryptoAesGcmEncrypt(input: ByteArray, key: ByteArray, initVector: ByteArray, aad: ByteArray?, tagBits: Int): ByteArray
+        external fun cryptoAesGcmDecrypt(input: ByteArray, key: ByteArray, initVector: ByteArray, aad: ByteArray?, tagBits: Int): ByteArray
         external fun cryptoHashMd5(input: ByteArray): ByteArray
         external fun cryptoHashSha256(input: ByteArray): ByteArray
+        external fun cryptoBase64Encode(input: ByteArray): ByteArray
+        external fun cryptoBase64Decode(input: ByteArray): ByteArray
+
+        external fun jsonDecoderInit(json: String): Long
+        external fun jsonDecoderIsArray(decoder: Long, node: Long): Boolean
+        external fun jsonDecoderIsObject(decoder: Long, node: Long): Boolean
+        external fun jsonDecoderReadNode(decoder: Long, node: Long, k: String): Long
+        external fun jsonDecoderReadString(decoder: Long, node: Long): String?
+        external fun jsonDecoderReadNumber(decoder: Long, node: Long): Double
+        external fun jsonDecoderReadChild(decoder: Long, node: Long): Long
+        external fun jsonDecoderReadNext(decoder: Long, node: Long): Long
+        external fun jsonDecoderRelease(decoder: Long)
+
+        enum class ZipMode(val value: Int) {
+            Default(-1),
+            PreferSpeed(1),
+            PreferSize(9)
+        }
+        external fun zZipInit(mode: Int, bufferSize: Long): Long
+        external fun zZipInput(zip: Long, inBytes: ByteArray, inLen: Int, inFinish: Boolean): Long
+        external fun zZipProcessDo(zip: Long): ByteArray
+        external fun zZipProcessFinished(zip: Long): Boolean
+        external fun zZipRelease(zip: Long)
+        external fun zUnZipInit(bufferSize: Long): Long
+        external fun zUnZipInput(unzip: Long, inBytes: ByteArray, inLen: Int, inFinish: Boolean): Long
+        external fun zUnZipProcessDo(unzip: Long): ByteArray
+        external fun zUnZipProcessFinished(unzip: Long): Boolean
+        external fun zUnZipRelease(unzip: Long)
     }
 }

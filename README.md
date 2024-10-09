@@ -9,12 +9,13 @@ A cross-platform C/C++ framework.
 | | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
 | :-- | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime|🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|
+| JS Runtime |🛠️|🛠️|🛠️|❌|🛠️|🛠️|🛠️|
 | Network |✔️|✔️|✔️|✔️|✔️|✔️|⁉️|
 | SQLite |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
-|Key-Value Store|✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
-| JSON |🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
-| Crypto |✔️|🛠️|🛠️|🛠️|🛠️|🛠️|🛠️|
+| Key-Value Store |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
+| JSON |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
+| Crypto |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
+| Zip |✔️|✔️|🛠️|🛠️|✔️|✔️|🛠️|
 | Device Info |✔️|✔️|🛠️|🛠️|✔️|🛠️|❔|
 
 - ❔ : Unknown.

@@ -1,4 +1,6 @@
 #include "KV.hxx"
+#include "../../include/NGenXXLog.h"
+#include "../log/Log.hxx"
 
 NGenXX::Store::KV::KV(const std::string &root)
 {
@@ -28,19 +30,26 @@ NGenXX::Store::KV::Connection::Connection(const std::string &_id)
 
 const std::string NGenXX::Store::KV::Connection::readString(const std::string &k)
 {
-    std::string v;
-    this->kv->getString(k.c_str(), v);
-    return v;
+    std::string s;
+    this->kv->getString(k.c_str(), s, "");
+    return s;
 }
 
-long long NGenXX::Store::KV::Connection::readInteger(const std::string &k)
+const int64_t NGenXX::Store::KV::Connection::readInteger(const std::string &k)
 {
     return this->kv->getInt64(k.c_str());
 }
 
-double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
+const double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
 {
     return this->kv->getDouble(k.c_str());
+}
+
+bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v)
+{
+    return std::visit([&](auto &x) {
+        return this->kv->set(x, k);
+    }, v);
 }
 
 bool NGenXX::Store::KV::Connection::contains(const std::string &k)

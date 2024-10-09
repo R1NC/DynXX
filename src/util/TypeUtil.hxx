@@ -3,6 +3,8 @@
 
 #include <string>
 #include <tuple>
+#include <cstring>
+#include "../NGenXX-Types.hxx"
 
 static inline const char *str2charp(std::string s)
 {
@@ -12,14 +14,14 @@ static inline const char *str2charp(std::string s)
     return nc;
 }
 
-static inline const unsigned char *copyBytes(std::tuple<const unsigned char *, const unsigned int> t)
+static inline const byte *copyBytes(NGenXX::Bytes t)
 {
-    const unsigned char *cs = std::get<0>(t);
-    int len = std::get<1>(t);
+    const byte *cs = t.first;
+    int len = t.second;
     if (cs == NULL || len <= 0) return NULL;
-    const unsigned char *ncs = (unsigned char *)malloc(len + 1);
-    memset((void *)ncs, 0, len + 1);
-    memcpy((void *)ncs, cs, len);
+    const byte *ncs = (byte *)malloc(len + 1);
+    std::memset((void *)ncs, 0, len + 1);
+    std::memcpy((void *)ncs, cs, len);
     return ncs;
 }
 

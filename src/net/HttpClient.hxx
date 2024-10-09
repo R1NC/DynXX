@@ -3,13 +3,24 @@
 
 #ifdef __cplusplus
 
+#include "../NGenXX-Types.hxx"
+
 #include <string>
 #include <vector>
+#include <cstdio>
 
 namespace NGenXX
 {
     namespace Net
     {
+        struct HttpFormField
+        {
+            std::string name;
+            std::string mime;
+            NGenXX::Bytes data;
+        };
+        typedef struct HttpFormField HttpFormField;
+
         class HttpClient
         {
         public:
@@ -24,7 +35,11 @@ namespace NGenXX
              * @param params params(transfer multiple params like `v1=a&v2=b`)
              * @return response
              */
-            const std::string request(const std::string &url, const std::string &params, int method, std::vector<std::string> &headers, long timeout);
+            const std::string request(const std::string &url, const std::string &params, const int method,
+                                      const std::vector<std::string> &headers,
+                                      const std::vector<HttpFormField> &formFields,
+                                      const std::FILE *cFILE, const size fileSize,
+                                      const size timeout);
 
             /**
              *

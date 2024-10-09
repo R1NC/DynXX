@@ -2,7 +2,8 @@
 
 #pragma comment(lib, "../../build.Windows/output/Release/lua.lib")
 #pragma comment(lib, "../../build.Windows/output/Release/cjson.lib")
-#pragma comment(lib, "../../build.Windows/output/Release/wolfssl.lib")
+#pragma comment(lib, "../../build.Windows/output/Release/ssl.lib")
+#pragma comment(lib, "../../build.Windows/output/Release/crypto.lib")
 #pragma comment(lib, "../../build.Windows/output/Release/libcurl.lib")
 #pragma comment(lib, "../../build.Windows/output/Release/sqlite3.lib")
 #pragma comment(lib, "../../build.Windows/output/Release/mmkvcore.lib")

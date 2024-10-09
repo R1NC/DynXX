@@ -2,23 +2,17 @@ cmake_minimum_required(VERSION 3.6)
 
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
-set (CMAKE_C_STANDARD 99) # curl/openssl/wolfssl use `long long` in C99;
-set (CMAKE_CXX_STANDARD 17) # mmkv use `std::string_view` in C++17;
-#add_compile_options("-stdlib=libc++" "-lc++abi" "-v")
+set (CMAKE_C_STANDARD 99)
+set (CMAKE_CXX_STANDARD 17)
 
 option(USE_LUA "Use Lua or not" ON)
 option(USE_QJS "Use QuickJS or not" ON)
-if (NOT OHOS)
-    option(USE_WOLFSSL_AES "Use WOLFSSL AES" ON)
-endif()
 
 if(USE_LUA)
     add_definitions(-DUSE_LUA)
 endif()
 if(USE_QJS)
     add_definitions(-DUSE_QJS)
-if (USE_WOLFSSL_AES)
-    add_definitions(-DWOLFSSL_AES_DIRECT)
 endif()
 
 project(NGenXX)
@@ -35,17 +29,12 @@ set(ENGINE_FILES
     ../src/net/HttpClient.cxx
     ../src/store/SQLite.cxx
     ../src/store/KV.cxx
+    ../src/json/JsonDecoder.cxx
+    ../src/zip/Zip.cxx
+    ../src/coding/Coding.cxx
+    ../src/crypto/Crypto.cxx
     ../src/NGenXX.cxx
 )
-if(OHOS)
-    set(ENGINE_FILES ${ENGINE_FILES}
-        ../src/crypto/Crypto-OpenSSL.cxx
-    )
-else()
-    set(ENGINE_FILES ${ENGINE_FILES}
-        ../src/crypto/Crypto-WolfSSL.cxx
-    )
-endif()
 if(USE_LUA)
     set(ENGINE_FILES ${ENGINE_FILES}
         ../src/lua/LuaBridge.cxx
@@ -74,11 +63,13 @@ else()
 endif()
 
 # WARNING:
-# 1). WolfSSL is not available in HarmonyOS，use OpenSSL instead;
-# 2). The buillt-in sqlite in iOS/macOS is available，no need to compile；
-# 3). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
+# 1). The buillt-in sqlite in iOS/macOS is available，no need to compile；
+# 2). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
+# 3). WASM has no built-in zlib;
 add_subdirectory(../external/cjson cjson.output)
 add_subdirectory(../external/mmkv/POSIX/src mmkv.output)
+add_subdirectory(../external/openssl openssl.output)
+add_subdirectory(../external/curl curl.output)
 if(USE_LUA)
     add_subdirectory(../external/lua lua.output)
 endif()
@@ -88,16 +79,15 @@ endif()
 if(NOT APPLE)
     add_subdirectory(../external/sqlite sqlite.output)
 endif()
-if(OHOS)
-    add_subdirectory(../external/openssl openssl.output)
-else()
-    add_subdirectory(../external/wolfssl wolfssl.output)
+if(EMSCRIPTEN)
+    add_subdirectory(../external/zlib zlib.output)
 endif()
-add_subdirectory(../external/curl curl.output)
 
 set(LINK_LIBS
     mmkv
     cjson
+    OpenSSL::SSL 
+    OpenSSL::Crypto
     CURL::libcurl
 )
 if(USE_LUA)
@@ -110,16 +100,6 @@ if(USE_QJS)
         quickjs
     )
 endif()
-if(OHOS)
-    set(LINK_LIBS ${LINK_LIBS}
-        OpenSSL::SSL 
-        OpenSSL::Crypto
-    )
-else()
-    set(LINK_LIBS ${LINK_LIBS}
-        wolfssl::wolfssl
-    )
-endif()
 if(APPLE)
     set(LINK_LIBS ${LINK_LIBS}
         sqlite3
@@ -127,6 +107,11 @@ if(APPLE)
 else()
     set(LINK_LIBS ${LINK_LIBS}
         sqlite3-static
+    )
+endif()
+if(EMSCRIPTEN)
+    set(LINK_LIBS ${LINK_LIBS}
+        zlib
     )
 endif()
 

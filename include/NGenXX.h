@@ -1,12 +1,16 @@
 #ifndef NGENXX_H_
 #define NGENXX_H_
 
+#include "NGenXXTypes.h"
 #include "NGenXXLog.h"
 #include "NGenXXCrypto.h"
+#include "NGenXXCoding.h"
 #include "NGenXXDeviceInfo.h"
 #include "NGenXXNetHttp.h"
 #include "NGenXXStoreKV.h"
 #include "NGenXXStoreSQLite.h"
+#include "NGenXXJsonDecoder.h"
+#include "NGenXXZip.h"
 #include "NGenXXLua.h"
 #include "NGenXXJs.h"
 

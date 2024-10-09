@@ -39,3 +39,26 @@ export const deviceName:() => string;
 export const deviceManufacturer:() => string;
 export const deviceOsVersion:() => string;
 export const deviceCpuArch:() => number;
+
+export const codingHexBytes2str:(bytes: number[]) => string;
+export const codingHexStr2Bytes:(str: string) => number[];
+
+export const cryptoRand:(len: number) => number[];
+export const cryptoAesEncrypt:(inBytes: number[], keyBytes: number[]) => number[];
+export const cryptoAesDecrypt:(inBytes: number[], keyBytes: number[]) => number[];
+export const cryptoAesGcmEncrypt:(inBytes: number[], keyBytes: number[], initVectorBytes: number[], aadBytes: number[], tagBits: number) => number[];
+export const cryptoAesGcmDecrypt:(inBytes: number[], keyBytes: number[], initVectorBytes: number[], aadBytes: number[], tagBits: number) => number[];
+export const cryptoHashMd5:(inBytes: number[]) => number[];
+export const cryptoHashSha256:(inBytes: number[]) => number[];
+export const cryptoBase64Encode:(inBytes: number[]) => number[];
+export const cryptoBase64Decode:(inBytes: number[]) => number[];
+
+export const jsonDecoderInit:(json: string) => number;
+export const jsonDecoderIsArray:(decoder: number, node: number) => boolean;
+export const jsonDecoderIsObject:(decoder: number, node: number) => boolean;
+export const jsonDecoderReadNode:(decoder: number, node: number, k: string) => number;
+export const jsonDecoderReadChild:(decoder: number, node: number) => number;
+export const jsonDecoderReadNext:(decoder: number, node: number) => number;
+export const jsonDecoderReadString:(decoder: number, node: number) => string;
+export const jsonDecoderReadNumber:(decoder: number, node: number) => number;
+export const jsonDecoderRelease:(decoder: number) => void;

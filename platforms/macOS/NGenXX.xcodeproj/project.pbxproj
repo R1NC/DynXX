@@ -8,11 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */; };
+		25A1BBBB2CAEC7C400B60E5B /* ssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A1BBB92CAEC7C400B60E5B /* ssl.a */; };
+		25A1BBBC2CAEC7C400B60E5B /* crypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A1BBBA2CAEC7C400B60E5B /* crypto.a */; };
 		401522952C9581540010B594 /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F732C783F070039639C /* cjson.a */; };
 		401522962C9581540010B594 /* curl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F722C783F070039639C /* curl.a */; };
 		401522972C9581540010B594 /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F742C783F070039639C /* lua.a */; };
 		401522982C9581540010B594 /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F762C783F070039639C /* NGenXX.a */; };
-		401522992C9581540010B594 /* wolfssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F752C783F070039639C /* wolfssl.a */; };
 		4015229C2C9581540010B594 /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4015229A2C9581540010B594 /* mmkvcore.a */; };
 		4015229D2C9581540010B594 /* mmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4015229B2C9581540010B594 /* mmkv.a */; };
 		401522A12C9581660010B594 /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 4015229E2C9581660010B594 /* prepare_data.sql */; };
@@ -30,6 +31,8 @@
 
 /* Begin PBXFileReference section */
 		256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libapple_nghttp2.tbd; path = usr/lib/libapple_nghttp2.tbd; sourceTree = SDKROOT; };
+		25A1BBB92CAEC7C400B60E5B /* ssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ssl.a; path = ../../build.macOS/output/Release/ssl.a; sourceTree = "<group>"; };
+		25A1BBBA2CAEC7C400B60E5B /* crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = crypto.a; path = ../../build.macOS/output/Release/crypto.a; sourceTree = "<group>"; };
 		4015229A2C9581540010B594 /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.macOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
 		4015229B2C9581540010B594 /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../build.macOS/output/Release/mmkv.a; sourceTree = "<group>"; };
 		4015229E2C9581660010B594 /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
@@ -67,13 +70,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25A1BBBB2CAEC7C400B60E5B /* ssl.a in Frameworks */,
+				25A1BBBC2CAEC7C400B60E5B /* crypto.a in Frameworks */,
 				4015229C2C9581540010B594 /* mmkvcore.a in Frameworks */,
 				4015229D2C9581540010B594 /* mmkv.a in Frameworks */,
 				401522952C9581540010B594 /* cjson.a in Frameworks */,
 				401522962C9581540010B594 /* curl.a in Frameworks */,
 				401522972C9581540010B594 /* lua.a in Frameworks */,
 				401522982C9581540010B594 /* NGenXX.a in Frameworks */,
-				401522992C9581540010B594 /* wolfssl.a in Frameworks */,
 				407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */,
 				256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */,
 				40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */,
@@ -123,6 +127,8 @@
 		40348F712C783F070039639C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25A1BBBA2CAEC7C400B60E5B /* crypto.a */,
+				25A1BBB92CAEC7C400B60E5B /* ssl.a */,
 				4015229B2C9581540010B594 /* mmkv.a */,
 				4015229A2C9581540010B594 /* mmkvcore.a */,
 				407D2BBE2C929D00008A138C /* cjson.a */,
