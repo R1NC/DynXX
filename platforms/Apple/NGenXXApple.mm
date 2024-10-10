@@ -49,7 +49,7 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
 - (void)testHttpJ {
     NSString *jsPath = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
     if (ngenxx_J_loadF(NSString2CharP(jsPath))) {
-        const char * res = ngenxx_J_call("jNetHttpRequest", "https://rinc.xyz");
+        const char * res = ngenxx_J_call("jNetHttpRequest", cParamsJson);
         NSLog(@"rsp from js: %s", res);
     }
 }

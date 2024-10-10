@@ -9,6 +9,8 @@ NGenXX::JsBridge::JsBridge()
 {
     this->runtime = JS_NewRuntime();
     this->context = JS_NewContext(this->runtime);
+    js_std_add_helpers(this->context, 0, NULL);
+    js_std_init_handlers(this->runtime);
     js_init_module_std(this->context, "std");
     js_init_module_os(this->context, "os");
     this->global = JS_GetGlobalObject(this->context);
@@ -32,7 +34,6 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
             js_std_dump_error(this->context);
             res = false;
         }
-        JS_FreeValue(this->context, jFunc);
     }
     return res;
 }
@@ -89,8 +90,6 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     {
         Log::print(NGenXXLogLevelError, ("Can not find JS func:" + func).c_str());
     }
-
-    JS_FreeValue(this->context, jFunc);
 
     return s;
 }

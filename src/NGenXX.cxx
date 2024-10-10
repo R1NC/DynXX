@@ -146,7 +146,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
     if (_ngenxx_http_client == NULL || url == NULL)
         return NULL;
     const std::string sUrl(url);
-    const std::string sParams(params);
+    const std::string sParams(params ? : "");
     std::vector<std::string> vHeaders;
     if (header_v != NULL && header_c > 0)
     {
