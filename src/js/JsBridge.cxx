@@ -40,12 +40,10 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
 
 bool NGenXX::JsBridge::loadFile(const std::string &file)
 {
-    bool res = true;
     std::ifstream ifs(file.c_str());
     std::stringstream ss;
     ss << ifs.rdbuf();
-    std::string script_text = ss.str();
-    return this->loadScript(script_text, file);
+    return this->loadScript(ss.str(), file);
 }
 
 bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name)
