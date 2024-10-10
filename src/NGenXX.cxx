@@ -20,6 +20,9 @@
 #ifdef USE_LUA
 #include "NGenXX-Lua.hxx"
 #endif
+#ifdef USE_QJS
+#include "NGenXX-JS.hxx"
+#endif
 
 #define VERSION "0.0.1"
 
@@ -47,6 +50,9 @@ bool ngenxx_init(const char *root)
 #ifdef USE_LUA
     _ngenxx_lua_init();
 #endif
+#ifdef USE_QJS
+    _ngenxx_js_init();
+#endif
     return true;
 }
 
@@ -65,6 +71,9 @@ void ngenxx_release()
     _ngenxx_kv = NULL;
 #ifdef USE_LUA
     _ngenxx_lua_release();
+#endif
+#ifdef USE_QJS
+    _ngenxx_js_release();
 #endif
 }
 
@@ -137,7 +146,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
     if (_ngenxx_http_client == NULL || url == NULL)
         return NULL;
     const std::string sUrl(url);
-    const std::string sParams(params);
+    const std::string sParams(params ? : "");
     std::vector<std::string> vHeaders;
     if (header_v != NULL && header_c > 0)
     {

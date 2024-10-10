@@ -12,6 +12,7 @@
 #include "NGenXXJsonDecoder.h"
 #include "NGenXXZip.h"
 #include "NGenXXLua.h"
+#include "NGenXXJs.h"
 
 #ifdef  __cplusplus
 extern "C" {

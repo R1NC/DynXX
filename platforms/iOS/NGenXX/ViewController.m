@@ -24,6 +24,7 @@
     [_na testDB];
     [_na testKV];
     [_na testHttpL];
+    [_na testHttpJ];
     [_na testCrypto];
     [_na testJsonDecoder];
     [_na testZip];

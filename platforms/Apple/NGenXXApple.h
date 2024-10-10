@@ -6,6 +6,8 @@
 
 - (void)testHttpL;
 
+- (void)testHttpJ;
+
 - (void)testDB;
 
 - (void)testKV;

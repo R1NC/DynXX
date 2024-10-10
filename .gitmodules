@@ -19,6 +19,9 @@
 [submodule "external/mmkv"]
 	path = external/mmkv
 	url = git@github.com:R1NC/MMKV.git
+[submodule "external/quickjs"]
+	path = external/quickjs
+	url = git@github.com:R1NC/quickjs.git
 [submodule "external/zlib"]
 	path = external/zlib
 	url = git@github.com:R1NC/zlib.git

@@ -2,13 +2,17 @@ cmake_minimum_required(VERSION 3.6)
 
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
-set (CMAKE_C_STANDARD 99)
-set (CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 17)
 
 option(USE_LUA "Use Lua or not" ON)
+option(USE_QJS "Use QuickJS or not" ON)
 
 if(USE_LUA)
     add_definitions(-DUSE_LUA)
+endif()
+if(USE_QJS)
+    add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
 endif()
 
 project(NGenXX)
@@ -37,6 +41,12 @@ if(USE_LUA)
         ../src/NGenXX-Lua.cxx
     )
 endif()
+if(USE_QJS)
+    set(ENGINE_FILES ${ENGINE_FILES}
+        ../src/js/JsBridge.cxx
+        ../src/NGenXX-JS.cxx
+    )
+endif()
 
 set(LIB_TYPE STATIC)
 if(EMSCRIPTEN)
@@ -63,6 +73,9 @@ add_subdirectory(../external/curl curl.output)
 if(USE_LUA)
     add_subdirectory(../external/lua lua.output)
 endif()
+if(USE_QJS)
+    add_subdirectory(../external/quickjs quickjs.output)
+endif()
 if(NOT APPLE)
     add_subdirectory(../external/sqlite sqlite.output)
 endif()
@@ -80,6 +93,11 @@ set(LINK_LIBS
 if(USE_LUA)
     set(LINK_LIBS ${LINK_LIBS}
         lua
+    )
+endif()
+if(USE_QJS)
+    set(LINK_LIBS ${LINK_LIBS}
+        quickjs
     )
 endif()
 if(APPLE)
