@@ -461,12 +461,11 @@ void _ngenxx_export_funcs_for_lua()
     BIND_LUA_FUNC(ngenxx_store_kv_closeL);
 }
 
-bool _ngenxx_lua_init(void)
+void _ngenxx_lua_init(void)
 {
-    if (_ngenxx_lua != NULL) return true;
+    if (_ngenxx_lua != NULL) return;
     _ngenxx_lua = new NGenXX::LuaBridge();
     _ngenxx_export_funcs_for_lua();
-    return true;
 }
 
 void _ngenxx_lua_release(void)

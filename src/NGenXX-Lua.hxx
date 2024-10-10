@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-bool _ngenxx_lua_init(void);
+void _ngenxx_lua_init(void);
 
 void _ngenxx_lua_release(void);
 

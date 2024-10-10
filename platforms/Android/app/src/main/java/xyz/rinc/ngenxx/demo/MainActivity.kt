@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
 
         val jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\":1, \"timeout\":6666}"
 
-        application.assets.open("biz.lua").bufferedReader().use {
+        /*application.assets.open("biz.lua").bufferedReader().use {
             if (!NGenXX.lLoadS(it.readText())) return
             val rsp = NGenXX.lCall("lNetHttpRequest", jsonParams)
             /*val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
@@ -112,6 +112,13 @@ class MainActivity : ComponentActivity() {
                 arrayOf("Cache-Control: no-cache"),
                 5555
             )*/
+            NGenXX.logPrint(1, rsp!!)
+        }*/
+
+        val jsName = "biz.js"
+        application.assets.open(jsName).bufferedReader().use {
+            if (!NGenXX.jLoadS(it.readText(), jsName)) return
+            val rsp = NGenXX.jCall("jNetHttpRequest", jsonParams)
             NGenXX.logPrint(1, rsp!!)
         }
 

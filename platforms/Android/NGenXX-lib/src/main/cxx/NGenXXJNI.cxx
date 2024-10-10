@@ -204,6 +204,45 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCall(JNIEnv *env, jobject thiz,
     return jstr;
 }
 
+#pragma mark JS
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadF(JNIEnv *env, jobject thiz,
+                                                  jstring file)
+{
+    const char *cFile = env->GetStringUTFChars(file, nullptr);
+    jboolean res = ngenxx_J_loadF(cFile);
+    env->ReleaseStringUTFChars(file, cFile);
+    return res;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadS(JNIEnv *env, jobject thiz,
+                                                  jstring script, jstring name)
+{
+    const char *cScript = env->GetStringUTFChars(script, nullptr);
+    const char *cName = env->GetStringUTFChars(name, nullptr);
+    jboolean res = ngenxx_J_loadS(cScript, cName);
+    env->ReleaseStringUTFChars(script, cScript);
+    env->ReleaseStringUTFChars(name, cName);
+    return res;
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jCall(JNIEnv *env, jobject thiz,
+                                                 jstring func,
+                                                 jstring params)
+{
+    const char *cFunc = env->GetStringUTFChars(func, nullptr);
+    const char *cParams = params ? env->GetStringUTFChars(params, JNI_FALSE) : nullptr;
+    const char *cRes = ngenxx_J_call(cFunc, cParams);
+    jstring jstr = env->NewStringUTF(cRes ?: "");
+    free((void *)cRes);
+    env->ReleaseStringUTFChars(params, cParams);
+    env->ReleaseStringUTFChars(func, cFunc);
+    return jstr;
+}
+
 #pragma mark Store.SQLite
 
 extern "C" JNIEXPORT jlong JNICALL

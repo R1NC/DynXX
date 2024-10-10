@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-bool _ngenxx_js_init(void);
+void _ngenxx_js_init(void);
 
 void _ngenxx_js_release(void);
 

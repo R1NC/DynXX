@@ -37,7 +37,11 @@ class NGenXX {
 
         external fun lLoadF(file: String): Boolean
         external fun lLoadS(script: String): Boolean
-        external fun lCall(func : String, params :String?): String?
+        external fun lCall(func: String, params: String?): String?
+
+        external fun jLoadF(file: String): Boolean
+        external fun jLoadS(script: String, name: String): Boolean
+        external fun jCall(func: String, params: String?): String?
 
         external fun storeSQLiteOpen(id: String): Long
         external fun storeSQLiteExecute(conn: Long, sql: String): Boolean

@@ -17,12 +17,11 @@ static NGenXX::JsBridge *_ngenxx_js;
 void registerJsModule();
 #define BIND_JS_FUNC(f) _ngenxx_js->bindFunc(#f, f);
 
-bool _ngenxx_js_init(void)
+void _ngenxx_js_init(void)
 {
-    if (_ngenxx_js != NULL) return true;
+    if (_ngenxx_js != NULL) return;
     _ngenxx_js = new NGenXX::JsBridge();
     registerJsModule();
-    return true;
 }
 
 void _ngenxx_js_release(void)
