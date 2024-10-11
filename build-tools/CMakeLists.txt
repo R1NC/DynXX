@@ -33,6 +33,7 @@ set(ENGINE_FILES
     ../src/zip/Zip.cxx
     ../src/coding/Coding.cxx
     ../src/crypto/Crypto.cxx
+    ../src/NGenXX-S.cxx
     ../src/NGenXX.cxx
 )
 if(USE_LUA)

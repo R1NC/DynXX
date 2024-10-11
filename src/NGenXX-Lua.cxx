@@ -1,30 +1,22 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <string>
+#include "NGenXX-Lua.hxx"
 
 extern "C"
 {
 #include "../../../external/lua/lauxlib.h"
 }
 
-#include "json/JsonDecoder.hxx"
-#include "util/TypeUtil.hxx"
 #include "lua/LuaBridge.hxx"
-#include "../include/NGenXX.h"
+#include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
-#include "NGenXX-Lua.hxx"
+#include "NGenXX-S.hxx"
 
 static NGenXX::LuaBridge *_ngenxx_lua;
-
 #define BIND_LUA_FUNC(f) _ngenxx_lua->bindFunc(std::string(#f), f);
 
 int ngenxx_get_versionL(lua_State *L)
 {
-    const char *res = ngenxx_get_version();
-    lua_pushstring(L, res);
-
+    const char *res = ngenxx_get_versionS(NULL);
+    lua_pushstring(L, res ?: "");
     return 1;
 }
 
@@ -32,41 +24,36 @@ int ngenxx_get_versionL(lua_State *L)
 
 int ngenxx_device_typeL(lua_State *L)
 {
-    int res = ngenxx_device_type();
+    int res = ngenxx_device_typeS(NULL);
     lua_pushinteger(L, res);
-
     return 1;
 }
 
 int ngenxx_device_nameL(lua_State *L)
 {
-    const char *res = ngenxx_device_name();
-    lua_pushstring(L, res);
-
+    const char *res = ngenxx_device_nameS(NULL);
+    lua_pushstring(L, res ?: "");
     return 1;
 }
 
 int ngenxx_device_manufacturerL(lua_State *L)
 {
-    const char *res = ngenxx_device_manufacturer();
-    lua_pushstring(L, res);
-
+    const char *res = ngenxx_device_manufacturerS(NULL);
+    lua_pushstring(L, res ?: "");
     return 1;
 }
 
 int ngenxx_device_os_versionL(lua_State *L)
 {
-    const char *res = ngenxx_device_os_version();
-    lua_pushstring(L, res);
-
+    const char *res = ngenxx_device_os_versionS(NULL);
+    lua_pushstring(L, res ?: "");
     return 1;
 }
 
 int ngenxx_device_cpu_archL(lua_State *L)
 {
-    int res = ngenxx_device_cpu_arch();
+    int res = ngenxx_device_cpu_archS(NULL);
     lua_pushinteger(L, res);
-
     return 1;
 }
 
@@ -74,14 +61,8 @@ int ngenxx_device_cpu_archL(lua_State *L)
 
 int ngenxx_log_printL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    int level = decoder.readNumber(decoder.readNode(NULL, "level"));
-    const char *content = str2charp(decoder.readString(decoder.readNode(NULL, "content")));
-    if (level < 0 || content == NULL)
-        return 1;
-
-    ngenxx_log_print(level, content);
-
+    const char *json = luaL_checkstring(L, 1);
+    ngenxx_log_printS(json);
     return 1;
 }
 
@@ -89,38 +70,9 @@ int ngenxx_log_printL(lua_State *L)
 
 int ngenxx_net_http_requestL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(luaL_checkstring(L, 1));
-    const char *url = str2charp(decoder.readString(decoder.readNode(NULL, "url")));
-    const char *params = str2charp(decoder.readString(decoder.readNode(NULL, "params")));
-    const int method = decoder.readNumber(decoder.readNode(NULL, "method"));
-    const int header_c = decoder.readNumber(decoder.readNode(NULL, "header_c"));
-    const int form_field_count = decoder.readNumber(decoder.readNode(NULL, "form_field_count"));
-    const unsigned long timeout = decoder.readNumber(decoder.readNode(NULL, "timeout"));
-
-    char **header_v = (char **)malloc(HTTP_HEADERS_MAX_COUNT * sizeof(char *));
-    void *header_vNode = decoder.readNode(NULL, "header_v");
-    if (header_vNode)
-    {
-        decoder.readChildren(header_vNode, [&](int idx, void *child) -> void {
-            if (idx == HTTP_HEADERS_MAX_COUNT) return;
-            header_v[idx] = (char *)malloc(HTTP_HEADER_MAX_LENGTH * sizeof(char) + 1);
-            strcpy(header_v[idx], decoder.readString(child).c_str());
-        });
-    }
-
-    if (method < 0 || url == NULL || header_c > HTTP_HEADERS_MAX_COUNT)
-        return 1;
-
-    //TODO
-    const char *res = ngenxx_net_http_request(url, params, method, (const char **)header_v, header_c, NULL, NULL, NULL, 0, NULL, 0, timeout);
-    lua_pushstring(L, res);
-
-    free((void *)url);
-    free((void *)params);
-    for (int i = 0; i < header_c; i++)
-    {
-        free((void *)header_v[i]);
-    }
+    const char *json = luaL_checkstring(L, 1);
+    const char *res = ngenxx_net_http_requestS(json);
+    lua_pushstring(L, res ?: "");
     return 1;
 }
 
@@ -128,127 +80,71 @@ int ngenxx_net_http_requestL(lua_State *L)
 
 int ngenxx_store_sqlite_openL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    const char *_id = str2charp(decoder.readString(decoder.readNode(NULL, "_id")));
-    if (_id == NULL)
-        return 1;
-
-    void *db = ngenxx_store_sqlite_open(_id);
+    const char *json = luaL_checkstring(L, 1);
+    void *db = ngenxx_store_sqlite_openS(json);
     lua_pushinteger(L, (long)db);
-
-    free((void *)_id);
     return 1;
 }
 
 int ngenxx_store_sqlite_executeL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    const char *sql = str2charp(decoder.readString(decoder.readNode(NULL, "sql")));
-    if (conn <= 0 || sql == NULL)
-        return 1;
-
-    bool res = ngenxx_store_sqlite_execute((void *)conn, sql);
+    const char *json = luaL_checkstring(L, 1);
+    bool res = ngenxx_store_sqlite_executeS(json);
     lua_pushboolean(L, res);
-
-    free((void *)sql);
     return 1;
 }
 
 int ngenxx_store_sqlite_query_doL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    const char *sql = str2charp(decoder.readString(decoder.readNode(NULL, "sql")));
-    if (conn <= 0 || sql == NULL)
-        return 1;
-
-    void *res = ngenxx_store_sqlite_query_do((void *)conn, sql);
+    const char *json = luaL_checkstring(L, 1);
+    void *res = ngenxx_store_sqlite_query_doS(json);
     lua_pushinteger(L, (long)res);
-
-    free((void *)sql);
     return 1;
 }
 
 int ngenxx_store_sqlite_query_read_rowL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long query_result = decoder.readNumber(decoder.readNode(NULL, "query_result"));
-    if (query_result <= 0)
-        return 1;
-
-    bool res = ngenxx_store_sqlite_query_read_row((void *)query_result);
+    const char *json = luaL_checkstring(L, 1);
+    bool res = ngenxx_store_sqlite_query_read_rowS(json);
     lua_pushboolean(L, res);
-
     return 1;
 }
 
 int ngenxx_store_sqlite_query_read_column_textL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long query_result = decoder.readNumber(decoder.readNode(NULL, "query_result"));
-    const char *column = str2charp(decoder.readString(decoder.readNode(NULL, "column")));
-    if (query_result <= 0 || column == NULL)
-        return 1;
-
-    const char *res = ngenxx_store_sqlite_query_read_column_text((void *)query_result, column);
-    lua_pushstring(L, res);
-
-    free((void *)column);
+    const char *json = luaL_checkstring(L, 1);
+    const char *res = ngenxx_store_sqlite_query_read_column_textS(json);
+    lua_pushstring(L, res ?: "");
     return 1;
 }
 
 int ngenxx_store_sqlite_query_read_column_integerL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long query_result = decoder.readNumber(decoder.readNode(NULL, "query_result"));
-    const char *column = str2charp(decoder.readString(decoder.readNode(NULL, "column")));
-    if (query_result <= 0 || column == NULL)
-        return 1;
-
-    long long res = ngenxx_store_sqlite_query_read_column_integer((void *)query_result, column);
+    const char *json = luaL_checkstring(L, 1);
+    long long res = ngenxx_store_sqlite_query_read_column_integerS(json);
     lua_pushinteger(L, res);
-
-    free((void *)column);    
     return 1;
 }
 
 int ngenxx_store_sqlite_query_read_column_floatL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long query_result = decoder.readNumber(decoder.readNode(NULL, "query_result"));
-    const char *column = str2charp(decoder.readString(decoder.readNode(NULL, "column")));
-    if (query_result <= 0 || column == NULL)
-        return 1;
-
-    double res = ngenxx_store_sqlite_query_read_column_float((void *)query_result, column);
+    const char *json = luaL_checkstring(L, 1);
+    double res = ngenxx_store_sqlite_query_read_column_floatS(json);
     lua_pushnumber(L, res);
-
-    free((void *)column);
     return 1;
 }
 
 int ngenxx_store_sqlite_query_dropL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long query_result = decoder.readNumber(decoder.readNode(NULL, "query_result"));
-    if (query_result <= 0)
-        return 1;
-
-    ngenxx_store_sqlite_query_drop((void *)query_result);
-
+    const char *json = luaL_checkstring(L, 1);
+    ngenxx_store_sqlite_query_dropS(json);
     return 1;
 }
 
 int ngenxx_store_sqlite_closeL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    if (conn <= 0)
-        return 1;
-
-    ngenxx_store_sqlite_close((void *)conn);
-
+    const char *json = luaL_checkstring(L, 1);
+    ngenxx_store_sqlite_closeS(json);
     return 1;
 }
 
@@ -256,154 +152,86 @@ int ngenxx_store_sqlite_closeL(lua_State *L)
 
 int ngenxx_store_kv_openL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    const char *_id = str2charp(decoder.readString(decoder.readNode(NULL, "_id")));
-    if (_id == NULL)
-        return 1;
-
-    void *res = ngenxx_store_kv_open(_id);
+    const char *json = luaL_checkstring(L, 1);
+    void *res = ngenxx_store_kv_openS(json);
     lua_pushinteger(L, (long)res);
-
-    free((void *)_id);
     return 1;
 }
 
 int ngenxx_store_kv_read_stringL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
-    if (conn <= 0 || k == NULL)
-        return 1;
-
-    const char *res = ngenxx_store_kv_read_string((void *)conn, k);
-    lua_pushstring(L, res);
-
-    free((void *)k);
+    const char *json = luaL_checkstring(L, 1);
+    const char *res = ngenxx_store_kv_read_stringS(json);
+    lua_pushstring(L, res ?: "");
     return 1;
 }
 
 int ngenxx_store_kv_write_stringL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
-    const char *v = str2charp(decoder.readString(decoder.readNode(NULL, "v")));
-    if (conn <= 0 || k == NULL)
-        return 1;
-
-    bool res = ngenxx_store_kv_write_string((void *)conn, k, v);
+    const char *json = luaL_checkstring(L, 1);
+    bool res = ngenxx_store_kv_write_stringS(json);
     lua_pushboolean(L, res);
-
-    free((void *)k);
-    free((void *)v);
     return 1;
 }
 
 int ngenxx_store_kv_read_integerL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
-    if (conn <= 0 || k == NULL)
-        return 1;
-
-    long long res = ngenxx_store_kv_read_integer((void *)conn, k);
+    const char *json = luaL_checkstring(L, 1);
+    long long res = ngenxx_store_kv_read_integerS(json);
     lua_pushinteger(L, res);
-
-    free((void *)k);
     return 1;
 }
 
 int ngenxx_store_kv_write_integerL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
-    long long v = decoder.readNumber(decoder.readNode(NULL, "v"));
-    if (conn <= 0 || k == NULL)
-        return 1;
-
-    bool res = ngenxx_store_kv_write_integer((void *)conn, k, v);
+    const char *json = luaL_checkstring(L, 1);
+    bool res = ngenxx_store_kv_write_integerS(json);
     lua_pushboolean(L, res);
-
-    free((void *)k);
     return 1;
 }
 
 int ngenxx_store_kv_read_floatL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
-    if (conn <= 0 || k == NULL)
-        return 1;
-
-    double res = ngenxx_store_kv_read_float((void *)conn, k);
+    const char *json = luaL_checkstring(L, 1);
+    double res = ngenxx_store_kv_read_floatS(json);
     lua_pushnumber(L, res);
-
-    free((void *)k);
     return 1;
 }
 
 int ngenxx_store_kv_write_floatL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
-    double v = decoder.readNumber(decoder.readNode(NULL, "v"));
-    if (conn <= 0 || k == NULL)
-        return 1;
-
-    bool res = ngenxx_store_kv_write_float((void *)conn, k, v);
+    const char *json = luaL_checkstring(L, 1);
+    bool res = ngenxx_store_kv_write_floatS(json);
     lua_pushboolean(L, res);
-
-    free((void *)k);
     return 1;
 }
 
 int ngenxx_store_kv_containsL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
-    if (conn <= 0 || k == NULL)
-        return 1;
-
-    bool res = ngenxx_store_kv_contains((void *)conn, k);
+    const char *json = luaL_checkstring(L, 1);
+    bool res = ngenxx_store_kv_containsS(json);
     lua_pushboolean(L, res);
-
-    free((void *)k);
     return 1;
 }
 
 int ngenxx_store_kv_clearL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    if (conn <= 0)
-        return 1;
-
-    ngenxx_store_kv_clear((void *)conn);
-
+    const char *json = luaL_checkstring(L, 1);
+    ngenxx_store_kv_clearS(json);
     return 1;
 }
 
 int ngenxx_store_kv_closeL(lua_State *L)
 {
-    NGenXX::Json::Decoder decoder(std::string(luaL_checkstring(L, 1)));
-    long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
-    if (conn <= 0)
-        return 1;
-
-    ngenxx_store_kv_close((void *)conn);
-
+    const char *json = luaL_checkstring(L, 1);
+    ngenxx_store_kv_closeS(json);
     return 1;
 }
 
 #pragma mark Lua
 
 #ifndef __EMSCRIPTEN__
+EXPORT
 bool ngenxx_L_loadF(const char *file)
 {
     if (_ngenxx_lua == NULL || file == NULL) return false;
