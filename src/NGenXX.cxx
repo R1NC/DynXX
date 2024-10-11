@@ -135,13 +135,13 @@ void ngenxx_log_print(int level, const char *content)
 
 EXPORT_AUTO
 const char *ngenxx_net_http_request(const char *url, const char *params, const int method,
-                                    const char **header_v, const unsigned int header_c,
+                                    const char **header_v, const size header_c,
                                     const char **form_field_name_v,
                                     const char **form_field_mime_v,
                                     const char **form_field_data_v,
-                                    const unsigned int form_field_count,
-                                    const void *cFILE, const unsigned long file_size,
-                                    const unsigned long timeout)
+                                    const size form_field_count,
+                                    const void *cFILE, const size file_size,
+                                    const size timeout)
 {
     if (_ngenxx_http_client == NULL || url == NULL)
         return NULL;

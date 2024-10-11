@@ -8,6 +8,14 @@ extern "C"
 {
 #endif
 
+    static const size NGENXX_HTTP_HEADER_MAX_COUNT = 100;
+    static const size NGENXX_HTTP_HEADER_MAX_LENGTH = 8190;
+
+    static const size NGENXX_HTTP_FORM_FIELD_MAX_COUNT = 16;
+    static const size NGENXX_HTTP_FORM_FIELD_NAME_MAX_LENGTH = 256;
+    static const size NGENXX_HTTP_FORM_FIELD_MINE_MAX_LENGTH = 256;
+    static const size NGENXX_HTTP_FORM_FIELD_DATA_MAX_LENGTH = 64 * 1024;
+
     /**
      * HTTP method
      */
@@ -23,25 +31,25 @@ extern "C"
      * @param url URL
      * @param params params(transfer multiple params like `v1=a&v2=b`)
      * @param method HTTP method, see `NGenXXNetHttpMethod`
-     * @param header_v HTTP header vector, max length is 8190
-     * @param header_c HTTP header count, max count is 100
-     * @param form_field_name_v Form name vector
-     * @param form_field_mime_v Form mime vector
-     * @param form_field_data_v Form data bytes vector
-     * @param form_field_count Form count
+     * @param header_v HTTP header vector, max length is `NGENXX_HTTP_HEADER_MAX_LENGTH`
+     * @param header_c HTTP header count, max count is `NGENXX_HTTP_HEADER_MAX_COUNT`
+     * @param form_field_name_v Form field name vector, max length is `NGENXX_HTTP_FORM_FIELD_NAME_MAX_LENGTH`
+     * @param form_field_mime_v Form field mime vector, max length is `NGENXX_HTTP_FORM_FIELD_MIME_MAX_LENGTH`
+     * @param form_field_data_v Form field data bytes vector, max length is `NGENXX_HTTP_FORM_FIELD_DATA_MAX_LENGTH`
+     * @param form_field_count Form field count, max ount is `NGENXX_HTTP_FORM_FIELD_MAX_COUNT`
      * @param cFILE A `FILE` (pointer) to PUT
      * @param fileSize File size
      * @param timeout Timeout(milliseconds)
      * @return response
      */
     const char *ngenxx_net_http_request(const char *url, const char *params, const int method,
-                                        const char **header_v, const unsigned int header_c,
+                                        const char **header_v, const size header_c,
                                         const char **form_field_name_v,
                                         const char **form_field_mime_v,
                                         const char **form_field_data_v,
-                                        const unsigned int form_field_count,
-                                        const void *cFILE, const unsigned long file_size,
-                                        const unsigned long timeout);
+                                        const size form_field_count,
+                                        const void *cFILE, const size file_size,
+                                        const size timeout);
 
 #ifdef __cplusplus
 }

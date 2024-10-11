@@ -12,10 +12,6 @@
 #define EXPORT_AUTO EXPORT
 #endif
 
-constexpr size HTTP_HEADERS_MAX_COUNT = 100;
-constexpr size HTTP_HEADER_MAX_LENGTH = 8190;
-constexpr size HTTP_FORM_FIELD_MAX_LENGTH = 100 * 1024 * 1024;
-
 #endif
 
 #endif // NGENXX_INNER_HXX_
