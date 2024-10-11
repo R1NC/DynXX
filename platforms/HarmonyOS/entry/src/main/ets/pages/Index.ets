@@ -93,7 +93,7 @@ struct Index {
             let jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\": 1, \"timeout\":6666}";
             /*NGenXX.lLoadS(
               "function lNetHttpRequest(pReq)\n" +
-                "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
+                "pLog = '{\"level\":1,\"content\":\"Send Net Req from Lua..\"}';\n" +
                 "ngenxx_log_printL(pLog);\n" +
                 "rsp = ngenxx_net_http_requestL(pReq);\n" +
                 "return rsp;\n" +
@@ -101,10 +101,12 @@ struct Index {
             );
             let rsp = NGenXX.lCall("lNetHttpRequest", jsonParams);*/
             NGenXX.jLoadS(
-              "function jNetHttpRequest(params) {\n" +
-                "ngenxx_log_printJ('->Send net http req from JS..');\n" +
-                "return ngenxx_net_http_requestJ(params);\n" +
-                "}\n"
+              "function jNetHttpRequest(params) {\n"
+              + "var url = JSON.parse(params).url;\n"
+              + "var pLog = `{\"level\":1,\"content\":\"Send Net Req from JS, url: ${url}\"}`;\n"
+              + "ngenxx_log_printJ(pLog);\n"
+              + "return ngenxx_net_http_requestJ(params);\n"
+              + "}\n"
             , "biz.js");
             let rsp = NGenXX.jCall("jNetHttpRequest", jsonParams);
             /*let rsp = NGenXX.netHttpRequest("https://rinc.xyz",
