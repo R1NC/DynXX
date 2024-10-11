@@ -90,7 +90,8 @@ struct Index {
               NGenXX.storeKVClose(kvConn);
             }
 
-            NGenXX.lLoadS(
+            let jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\": 1, \"timeout\":6666}";
+            /*NGenXX.lLoadS(
               "function lNetHttpRequest(pReq)\n" +
                 "pLog = '{\"level\":3,\"content\":\"Send Net Req from Lua..\"}';\n" +
                 "ngenxx_log_printL(pLog);\n" +
@@ -98,9 +99,14 @@ struct Index {
                 "return rsp;\n" +
                 "end"
             );
-
-            let jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\": 1, \"timeout\":6666}";
-            let rsp = NGenXX.lCall("lNetHttpRequest", jsonParams);
+            let rsp = NGenXX.lCall("lNetHttpRequest", jsonParams);*/
+            NGenXX.jLoadS(
+              "function jNetHttpRequest(params) {\n" +
+                "ngenxx_log_printJ('->Send net http req from JS..');\n" +
+                "return ngenxx_net_http_requestJ(params);\n" +
+                "}\n"
+            , "biz.js");
+            let rsp = NGenXX.jCall("jNetHttpRequest", jsonParams);
             /*let rsp = NGenXX.netHttpRequest("https://rinc.xyz",
               "p0=1&p1=2&p2=3",
               0,
@@ -118,12 +124,12 @@ struct Index {
               }
               let headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_c")
               if (headerCNode > 0) {
-                let headersC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headersCNode)
-                NGenXX.logPrint(1, `headersC:${headersC}`)
+                let headerC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headerCNode)
+                NGenXX.logPrint(1, `headerC:${headerC}`)
               }
               let headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_v")
               if (headerVNode > 0) {
-                let headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headersVNode)
+                let headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headerVNode)
                 while (headerNode > 0) {
                   let header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)
                   NGenXX.logPrint(1, `header:${header}`)

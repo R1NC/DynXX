@@ -7,7 +7,13 @@ export type LogCallbackType = (level: number, log: string) => void;
 export const logSetCallback: (callback?: LogCallbackType) => void;
 export const logPrint: (level: number, content: string) => void;
 
-export const netHttpRequest: (url: string, params: string, method: number, headers: string[], timeout: number) => string;
+export const netHttpRequest: (url: string, params: string, method: number,
+  headerV: string[],
+  formFieldNameV: string[],
+  formFieldMimeV: string[],
+  formFieldDataV: string[],
+  filePath: string, fileLength: number,
+  timeout: number) => string;
 
 export const lLoadF: (file: string) => boolean;
 export const lLoadS: (script: string) => boolean;

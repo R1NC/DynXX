@@ -172,7 +172,7 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
 #pragma mark Net
 
 static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
-    napi_value *argv = readParams(env, info, 5);
+    napi_value *argv = readParams(env, info, 10);
 
     const char *cUrl = napiValue2chars(env, argv[0]);
     const char *cParams = napiValue2chars(env, argv[1]);
@@ -180,17 +180,34 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
 
     uint32_t header_c = napiValueArrayLen(env, argv[3]);
     const char **header_v = napiValue2charsArray(env, argv[3], header_c);
+    
+    uint32_t form_field_count = napiValueArrayLen(env, argv[4]);
+    const char **form_field_name_v = napiValue2charsArray(env, argv[4], form_field_count);
+    const char **form_field_mime_v = napiValue2charsArray(env, argv[5], form_field_count);
+    const char **form_field_data_v = napiValue2charsArray(env, argv[6], form_field_count);
+    
+    const char *cFilePath = napiValue2chars(env, argv[7]);
+    FILE *cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
+    long fileLength = napiValue2long(env, argv[8]);
 
-    long lTimeout = napiValue2long(env, argv[4]);
+    long lTimeout = napiValue2long(env, argv[9]);
 
-    const char *res = ngenxx_net_http_request(cUrl, cParams, iMethod, header_v, header_c, lTimeout);
+    const char *res = ngenxx_net_http_request(cUrl, cParams, iMethod, 
+    header_v, header_c, 
+    form_field_name_v, form_field_mime_v, form_field_data_v, form_field_count,
+    (void *)cFILE, fileLength,
+    lTimeout);
     napi_value nv = chars2NapiValue(env, res);
 
     free((void *)res);
     for (int i = 0; i < header_c; i++) {
         free((void *)header_v[i]);
     }
-    free((void *)header_v);
+    for (int i = 0; i < form_field_count; i++) {
+        free((void *)form_field_name_v[i]);
+        free((void *)form_field_mime_v[i]);
+        free((void *)form_field_data_v[i]);
+    }
     free((void *)cParams);
     free((void *)cUrl);
     free((void *)argv);
@@ -849,6 +866,52 @@ static napi_value LCall(napi_env env, napi_callback_info info) {
     return nv;
 }
 
+#pragma mark JS
+
+static napi_value JLoadF(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 1);
+
+    const char *file = napiValue2chars(env, argv[0]);
+
+    bool res = ngenxx_J_loadF(file);
+    napi_value nv = bool2NapiValue(env, res);
+
+    free((void *)file);
+    free((void *)argv);
+    return nv;
+}
+
+static napi_value JLoadS(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 2);
+
+    const char *script = napiValue2chars(env, argv[0]);
+    const char *name = napiValue2chars(env, argv[1]);
+
+    bool res = ngenxx_J_loadS(script, name);
+    napi_value nv = bool2NapiValue(env, res);
+
+    free((void *)script);
+    free((void *)name);
+    free((void *)argv);
+    return nv;
+}
+
+static napi_value JCall(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 2);
+
+    const char *func = napiValue2chars(env, argv[0]);
+    const char *params = napiValue2chars(env, argv[1]);
+
+    const char *res = ngenxx_J_call(func, params);
+    napi_value nv = chars2NapiValue(env, res);
+
+    free((void *)res);
+    free((void *)params);
+    free((void *)func);
+    free((void *)argv);
+    return nv;
+}
+
 #pragma mark Register Module
 
 EXTERN_C_START
@@ -867,6 +930,10 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports) {
         {"lLoadF", nullptr, LLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lLoadS", nullptr, LLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lCall", nullptr, LCall, nullptr, nullptr, nullptr, napi_default, nullptr},
+        
+        {"jLoadF", nullptr, JLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jLoadS", nullptr, JLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jCall", nullptr, JCall, nullptr, nullptr, nullptr, napi_default, nullptr},
 
         {"storeSQLiteOpen", nullptr, StoreSQLiteOpen, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"storeSQLiteExecute", nullptr, StoreSQLiteExecute, nullptr, nullptr, nullptr, napi_default, nullptr},
