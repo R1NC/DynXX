@@ -36,6 +36,12 @@ bool ngenxx_store_kv_containsS(const char *json);
 void ngenxx_store_kv_clearS(const char *json);
 void ngenxx_store_kv_closeS(const char *json);
 
+const char *ngenxx_coding_hex_bytes2strS(const char *json);
+const char *ngenxx_coding_hex_str2bytesS(const char *json);
+
+const char *ngenxx_crypto_base64_encodeS(const char *json);
+const char *ngenxx_crypto_base64_decodeS(const char *json);
+
 #endif
 
-#endif // NGENXX_LUA_HXX_
+#endif // NGENXX_S_HXX_

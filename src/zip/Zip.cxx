@@ -23,7 +23,8 @@ NGenXX::Z::ZBase::ZBase(const size bufferSize) : bufferSize{bufferSize}
     this->zs = {
         .zalloc = Z_NULL,
         .zfree = Z_NULL,
-        .opaque = Z_NULL};
+        .opaque = Z_NULL
+    };
     this->inBuffer = (byte *)malloc(sizeof(byte) * bufferSize + 1);
     this->outBuffer = (byte *)malloc(sizeof(byte) * bufferSize + 1);
 }

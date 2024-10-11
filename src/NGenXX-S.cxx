@@ -9,6 +9,17 @@
 #include "../include/NGenXX.h"
 #include "NGenXX-inner.hxx"
 
+const char *bytes2json(const byte *bytes, const size len)
+{
+    int x[len];
+    for (int i = 0; i < len; i++) x[i] = bytes[i];
+    auto cj = bytes == NULL || len <= 0 ? cJSON_CreateArray() : cJSON_CreateIntArray(x, len);
+    const char *outJson = cJSON_Print(cj);
+    char *s = (char *)malloc(strlen(outJson));
+    strcpy(s, outJson);
+    return s;
+}
+
 const char *ngenxx_get_versionS(const char *json)
 {
     return ngenxx_get_version();
@@ -463,4 +474,127 @@ void ngenxx_store_kv_closeS(const char *json)
         return;
 
     ngenxx_store_kv_close((void *)conn);
+}
+
+#pragma mark Coding
+
+const char *ngenxx_coding_hex_bytes2strS(const char *json)
+{
+    if (json == NULL)
+        return NULL;
+    NGenXX::Json::Decoder decoder(json);
+
+    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
+    byte *inBytes = NULL;
+    if (inLen > 0)
+    {
+        inBytes = (byte *)malloc(inLen * sizeof(byte));
+        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
+        if (inBytes_vNode)
+        {
+            decoder.readChildren(inBytes_vNode,
+                                 [&inBytes, &decoder](int idx, void *child) -> void
+                                 {
+                                     inBytes[idx] = decoder.readNumber(child);
+                                 });
+        }
+    }
+
+    if (inBytes == NULL)
+        return NULL;
+
+    const char *res = ngenxx_coding_hex_bytes2str(inBytes, inLen);
+
+    free((void *)inBytes);
+
+    return res;
+}
+
+const char *ngenxx_coding_hex_str2bytesS(const char *json)
+{
+    if (json == NULL)
+        return NULL;
+    NGenXX::Json::Decoder decoder(json);
+
+    auto str = decoder.readString(decoder.readNode(NULL, "str"));
+
+    if (str.size() == 0)
+        return NULL;
+
+    size outLen;
+    const byte *outBytes = ngenxx_coding_hex_str2bytes(str.c_str(), &outLen);
+    const char *outJson = bytes2json(outBytes, outLen);
+
+    free((void *)outBytes);
+    return outJson;
+}
+
+#pragma mark Crypto
+
+const char *ngenxx_crypto_base64_encodeS(const char *json)
+{
+    if (json == NULL)
+        return NULL;
+    NGenXX::Json::Decoder decoder(json);
+
+    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
+    byte *inBytes = NULL;
+    if (inLen > 0)
+    {
+        inBytes = (byte *)malloc(inLen * sizeof(byte));
+        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
+        if (inBytes_vNode)
+        {
+            decoder.readChildren(inBytes_vNode,
+                                 [&inBytes, &decoder](int idx, void *child) -> void
+                                 {
+                                     inBytes[idx] = decoder.readNumber(child);
+                                 });
+        }
+    }
+
+    if (inBytes == NULL)
+        return NULL;
+
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, &outLen);
+    const char *outJson = bytes2json(outBytes, outLen);
+
+    free((void *)inBytes);
+    free((void *)outBytes);
+    return outJson;
+}
+
+const char *ngenxx_crypto_base64_decodeS(const char *json)
+{
+    if (json == NULL)
+        return NULL;
+    NGenXX::Json::Decoder decoder(json);
+
+    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
+    byte *inBytes = NULL;
+    if (inLen > 0)
+    {
+        inBytes = (byte *)malloc(inLen * sizeof(byte));
+        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
+        if (inBytes_vNode)
+        {
+            decoder.readChildren(inBytes_vNode,
+                                 [&inBytes, &decoder](int idx, void *child) -> void
+                                 {
+                                     inBytes[idx] = decoder.readNumber(child);
+                                 });
+        }
+    }
+
+    if (inBytes == NULL)
+        return NULL;
+
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, &outLen);
+    const char *outJson = bytes2json(outBytes, outLen);
+
+    free((void *)inBytes);
+    free((void *)outBytes);
+    return outJson;
 }

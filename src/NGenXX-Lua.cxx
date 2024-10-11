@@ -228,6 +228,42 @@ int ngenxx_store_kv_closeL(lua_State *L)
     return 1;
 }
 
+#pragma mark Coding
+
+int ngenxx_coding_hex_bytes2strL(lua_State *L)
+{
+    const char *json = luaL_checkstring(L, 1);
+    const char *res = ngenxx_coding_hex_bytes2strS(json);
+    lua_pushstring(L, res);
+    return 1;
+}
+
+int ngenxx_coding_hex_str2bytesL(lua_State *L)
+{
+    const char *json = luaL_checkstring(L, 1);
+    const char *res = ngenxx_coding_hex_str2bytesS(json);
+    lua_pushstring(L, res);
+    return 1;
+}
+
+#pragma mark Crypto
+
+int ngenxx_crypto_base64_encodeL(lua_State *L)
+{
+    const char *json = luaL_checkstring(L, 1);
+    const char *res = ngenxx_crypto_base64_encodeS(json);
+    lua_pushstring(L, res);
+    return 1;
+}
+
+int ngenxx_crypto_base64_decodeL(lua_State *L)
+{
+    const char *json = luaL_checkstring(L, 1);
+    const char *res = ngenxx_crypto_base64_decodeS(json);
+    lua_pushstring(L, res);
+    return 1;
+}
+
 #pragma mark Lua
 
 #ifndef __EMSCRIPTEN__
@@ -287,6 +323,12 @@ void _ngenxx_export_funcs_for_lua()
     BIND_LUA_FUNC(ngenxx_store_kv_containsL);
     BIND_LUA_FUNC(ngenxx_store_kv_clearL);
     BIND_LUA_FUNC(ngenxx_store_kv_closeL);
+
+    BIND_LUA_FUNC(ngenxx_coding_hex_bytes2strL);
+    BIND_LUA_FUNC(ngenxx_coding_hex_str2bytesL);
+
+    BIND_LUA_FUNC(ngenxx_crypto_base64_encodeL);
+    BIND_LUA_FUNC(ngenxx_crypto_base64_decodeL);
 }
 
 void _ngenxx_lua_init(void)

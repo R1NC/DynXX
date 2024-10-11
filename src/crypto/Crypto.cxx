@@ -391,7 +391,7 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::encode(const NGenXX::Bytes inBytes)
     BIO_get_mem_ptr(bio, &bptr);
     BIO_set_close(bio, BIO_NOCLOSE);
 
-    NGenXX::Bytes outBytes = {(byte *)bptr->data, bptr->max};
+    NGenXX::Bytes outBytes = {(byte *)bptr->data, bptr->length};
     BIO_free_all(bio);
 
     return outBytes;

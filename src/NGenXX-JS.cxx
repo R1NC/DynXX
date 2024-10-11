@@ -221,6 +221,42 @@ static JSValue ngenxx_store_kv_closeJ(JSContext *ctx, JSValueConst this_val, int
     return JS_UNDEFINED;
 }
 
+#pragma mark Coding
+
+static JSValue ngenxx_coding_hex_bytes2strJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv)
+{
+    const char *json = JS_ToCString(ctx, argv[0]);
+    const char *res = ngenxx_coding_hex_bytes2strS(json);
+    JS_FreeCString(ctx, json);
+    return JS_NewString(ctx, res ?: "");
+}
+
+static JSValue ngenxx_coding_hex_str2bytesJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv)
+{
+    const char *json = JS_ToCString(ctx, argv[0]);
+    const char *res = ngenxx_coding_hex_str2bytesS(json);
+    JS_FreeCString(ctx, json);
+    return JS_NewString(ctx, res ?: "");
+}
+
+#pragma mark Crypto
+
+static JSValue ngenxx_crypto_base64_encodeJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv)
+{
+    const char *json = JS_ToCString(ctx, argv[0]);
+    const char *res = ngenxx_crypto_base64_encodeS(json);
+    JS_FreeCString(ctx, json);
+    return JS_NewString(ctx, res ?: "");
+}
+
+static JSValue ngenxx_crypto_base64_decodeJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv)
+{
+    const char *json = JS_ToCString(ctx, argv[0]);
+    const char *res = ngenxx_crypto_base64_decodeS(json);
+    JS_FreeCString(ctx, json);
+    return JS_NewString(ctx, res ?: "");
+}
+
 #pragma mark JS
 
 EXPORT_AUTO
@@ -283,6 +319,12 @@ void registerJsModule()
     BIND_JS_FUNC(ngenxx_store_kv_containsJ);
     BIND_JS_FUNC(ngenxx_store_kv_clearJ);
     BIND_JS_FUNC(ngenxx_store_kv_closeJ);
+
+    BIND_JS_FUNC(ngenxx_coding_hex_bytes2strJ);
+    BIND_JS_FUNC(ngenxx_coding_hex_str2bytesJ);
+
+    BIND_JS_FUNC(ngenxx_crypto_base64_encodeJ);
+    BIND_JS_FUNC(ngenxx_crypto_base64_decodeJ);
 }
 
 void _ngenxx_js_init(void)
