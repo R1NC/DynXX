@@ -13,256 +13,89 @@ extern "C"
 static NGenXX::LuaBridge *_ngenxx_lua;
 #define BIND_LUA_FUNC(f) _ngenxx_lua->bindFunc(std::string(#f), f);
 
-int ngenxx_get_versionL(lua_State *L)
-{
-    const char *res = ngenxx_get_versionS(NULL);
-    lua_pushstring(L, res ?: "");
-    return 1;
-}
+#define DEF_LUA_FUNC_VOID(fL, fS)                  \
+    int fL(lua_State *L)                           \
+    {                                              \
+        const char *json = luaL_checkstring(L, 1); \
+        fS(json);                                  \
+        return 1;                                  \
+    }
 
-#pragma mark Device.DeviceInfo
+#define DEF_LUA_FUNC_STRING(fL, fS)                \
+    int fL(lua_State *L)                           \
+    {                                              \
+        const char *json = luaL_checkstring(L, 1); \
+        const char *res = fS(json);                \
+        lua_pushstring(L, res ?: "");              \
+        return 1;                                  \
+    }
 
-int ngenxx_device_typeL(lua_State *L)
-{
-    int res = ngenxx_device_typeS(NULL);
-    lua_pushinteger(L, res);
-    return 1;
-}
+#define DEF_LUA_FUNC_INTEGER(fL, fS)               \
+    int fL(lua_State *L)                           \
+    {                                              \
+        const char *json = luaL_checkstring(L, 1); \
+        auto res = (long long)fS(json);            \
+        lua_pushinteger(L, res);                   \
+        return 1;                                  \
+    }
 
-int ngenxx_device_nameL(lua_State *L)
-{
-    const char *res = ngenxx_device_nameS(NULL);
-    lua_pushstring(L, res ?: "");
-    return 1;
-}
+#define DEF_LUA_FUNC_BOOL(fL, fS)                  \
+    int fL(lua_State *L)                           \
+    {                                              \
+        const char *json = luaL_checkstring(L, 1); \
+        bool res = fS(json);                       \
+        lua_pushboolean(L, res);                   \
+        return 1;                                  \
+    }
 
-int ngenxx_device_manufacturerL(lua_State *L)
-{
-    const char *res = ngenxx_device_manufacturerS(NULL);
-    lua_pushstring(L, res ?: "");
-    return 1;
-}
+#define DEF_LUA_FUNC_FLOAT(fL, fS)                 \
+    int fL(lua_State *L)                           \
+    {                                              \
+        const char *json = luaL_checkstring(L, 1); \
+        double res = fS(json);                     \
+        lua_pushnumber(L, res);                    \
+        return 1;                                  \
+    }
 
-int ngenxx_device_os_versionL(lua_State *L)
-{
-    const char *res = ngenxx_device_os_versionS(NULL);
-    lua_pushstring(L, res ?: "");
-    return 1;
-}
+DEF_LUA_FUNC_STRING(ngenxx_get_versionL, ngenxx_get_versionS)
 
-int ngenxx_device_cpu_archL(lua_State *L)
-{
-    int res = ngenxx_device_cpu_archS(NULL);
-    lua_pushinteger(L, res);
-    return 1;
-}
+DEF_LUA_FUNC_INTEGER(ngenxx_device_typeL, ngenxx_device_typeS)
+DEF_LUA_FUNC_STRING(ngenxx_device_nameL, ngenxx_device_nameS)
+DEF_LUA_FUNC_STRING(ngenxx_device_manufacturerL, ngenxx_device_manufacturerS)
+DEF_LUA_FUNC_STRING(ngenxx_device_os_versionL, ngenxx_device_os_versionS)
+DEF_LUA_FUNC_INTEGER(ngenxx_device_cpu_archL, ngenxx_device_cpu_archS)
 
-#pragma mark Log
+DEF_LUA_FUNC_VOID(ngenxx_log_printL, ngenxx_log_printS)
 
-int ngenxx_log_printL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    ngenxx_log_printS(json);
-    return 1;
-}
+DEF_LUA_FUNC_STRING(ngenxx_net_http_requestL, ngenxx_net_http_requestS)
 
-#pragma mark Net.Http
+DEF_LUA_FUNC_INTEGER(ngenxx_store_sqlite_openL, ngenxx_store_sqlite_openS)
+DEF_LUA_FUNC_BOOL(ngenxx_store_sqlite_executeL, ngenxx_store_sqlite_executeS)
+DEF_LUA_FUNC_INTEGER(ngenxx_store_sqlite_query_doL, ngenxx_store_sqlite_query_doS)
+DEF_LUA_FUNC_BOOL(ngenxx_store_sqlite_query_read_rowL, ngenxx_store_sqlite_query_read_rowS)
+DEF_LUA_FUNC_STRING(ngenxx_store_sqlite_query_read_column_textL, ngenxx_store_sqlite_query_read_column_textS)
+DEF_LUA_FUNC_INTEGER(ngenxx_store_sqlite_query_read_column_integerL, ngenxx_store_sqlite_query_read_column_integerS)
+DEF_LUA_FUNC_FLOAT(ngenxx_store_sqlite_query_read_column_floatL, ngenxx_store_sqlite_query_read_column_floatS)
+DEF_LUA_FUNC_VOID(ngenxx_store_sqlite_query_dropL, ngenxx_store_sqlite_query_dropS)
+DEF_LUA_FUNC_VOID(ngenxx_store_sqlite_closeL, ngenxx_store_sqlite_closeS)
 
-int ngenxx_net_http_requestL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    const char *res = ngenxx_net_http_requestS(json);
-    lua_pushstring(L, res ?: "");
-    return 1;
-}
+DEF_LUA_FUNC_INTEGER(ngenxx_store_kv_openL, ngenxx_store_kv_openS)
+DEF_LUA_FUNC_STRING(ngenxx_store_kv_read_stringL, ngenxx_store_kv_read_stringS)
+DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_stringL, ngenxx_store_kv_write_stringS)
+DEF_LUA_FUNC_INTEGER(ngenxx_store_kv_read_integerL, ngenxx_store_kv_read_integerS)
+DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_integerL, ngenxx_store_kv_write_integerS)
+DEF_LUA_FUNC_FLOAT(ngenxx_store_kv_read_floatL, ngenxx_store_kv_read_floatS)
+DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_floatL, ngenxx_store_kv_write_floatS)
+DEF_LUA_FUNC_BOOL(ngenxx_store_kv_containsL, ngenxx_store_kv_containsS)
+DEF_LUA_FUNC_VOID(ngenxx_store_kv_clearL, ngenxx_store_kv_clearS)
+DEF_LUA_FUNC_VOID(ngenxx_store_kv_closeL, ngenxx_store_kv_closeS)
 
-#pragma mark Store.SQLite
+DEF_LUA_FUNC_STRING(ngenxx_coding_hex_bytes2strL, ngenxx_coding_hex_bytes2strS)
+DEF_LUA_FUNC_STRING(ngenxx_coding_hex_str2bytesL, ngenxx_coding_hex_str2bytesS)
 
-int ngenxx_store_sqlite_openL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    void *db = ngenxx_store_sqlite_openS(json);
-    lua_pushinteger(L, (long)db);
-    return 1;
-}
-
-int ngenxx_store_sqlite_executeL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    bool res = ngenxx_store_sqlite_executeS(json);
-    lua_pushboolean(L, res);
-    return 1;
-}
-
-int ngenxx_store_sqlite_query_doL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    void *res = ngenxx_store_sqlite_query_doS(json);
-    lua_pushinteger(L, (long)res);
-    return 1;
-}
-
-int ngenxx_store_sqlite_query_read_rowL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    bool res = ngenxx_store_sqlite_query_read_rowS(json);
-    lua_pushboolean(L, res);
-    return 1;
-}
-
-int ngenxx_store_sqlite_query_read_column_textL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    const char *res = ngenxx_store_sqlite_query_read_column_textS(json);
-    lua_pushstring(L, res ?: "");
-    return 1;
-}
-
-int ngenxx_store_sqlite_query_read_column_integerL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    long long res = ngenxx_store_sqlite_query_read_column_integerS(json);
-    lua_pushinteger(L, res);
-    return 1;
-}
-
-int ngenxx_store_sqlite_query_read_column_floatL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    double res = ngenxx_store_sqlite_query_read_column_floatS(json);
-    lua_pushnumber(L, res);
-    return 1;
-}
-
-int ngenxx_store_sqlite_query_dropL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    ngenxx_store_sqlite_query_dropS(json);
-    return 1;
-}
-
-int ngenxx_store_sqlite_closeL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    ngenxx_store_sqlite_closeS(json);
-    return 1;
-}
-
-#pragma mark Store.KV
-
-int ngenxx_store_kv_openL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    void *res = ngenxx_store_kv_openS(json);
-    lua_pushinteger(L, (long)res);
-    return 1;
-}
-
-int ngenxx_store_kv_read_stringL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    const char *res = ngenxx_store_kv_read_stringS(json);
-    lua_pushstring(L, res ?: "");
-    return 1;
-}
-
-int ngenxx_store_kv_write_stringL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    bool res = ngenxx_store_kv_write_stringS(json);
-    lua_pushboolean(L, res);
-    return 1;
-}
-
-int ngenxx_store_kv_read_integerL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    long long res = ngenxx_store_kv_read_integerS(json);
-    lua_pushinteger(L, res);
-    return 1;
-}
-
-int ngenxx_store_kv_write_integerL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    bool res = ngenxx_store_kv_write_integerS(json);
-    lua_pushboolean(L, res);
-    return 1;
-}
-
-int ngenxx_store_kv_read_floatL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    double res = ngenxx_store_kv_read_floatS(json);
-    lua_pushnumber(L, res);
-    return 1;
-}
-
-int ngenxx_store_kv_write_floatL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    bool res = ngenxx_store_kv_write_floatS(json);
-    lua_pushboolean(L, res);
-    return 1;
-}
-
-int ngenxx_store_kv_containsL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    bool res = ngenxx_store_kv_containsS(json);
-    lua_pushboolean(L, res);
-    return 1;
-}
-
-int ngenxx_store_kv_clearL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    ngenxx_store_kv_clearS(json);
-    return 1;
-}
-
-int ngenxx_store_kv_closeL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    ngenxx_store_kv_closeS(json);
-    return 1;
-}
-
-#pragma mark Coding
-
-int ngenxx_coding_hex_bytes2strL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    const char *res = ngenxx_coding_hex_bytes2strS(json);
-    lua_pushstring(L, res);
-    return 1;
-}
-
-int ngenxx_coding_hex_str2bytesL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    const char *res = ngenxx_coding_hex_str2bytesS(json);
-    lua_pushstring(L, res);
-    return 1;
-}
-
-#pragma mark Crypto
-
-int ngenxx_crypto_base64_encodeL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    const char *res = ngenxx_crypto_base64_encodeS(json);
-    lua_pushstring(L, res);
-    return 1;
-}
-
-int ngenxx_crypto_base64_decodeL(lua_State *L)
-{
-    const char *json = luaL_checkstring(L, 1);
-    const char *res = ngenxx_crypto_base64_decodeS(json);
-    lua_pushstring(L, res);
-    return 1;
-}
+DEF_LUA_FUNC_STRING(ngenxx_crypto_randL, ngenxx_crypto_randS)
+DEF_LUA_FUNC_STRING(ngenxx_crypto_base64_encodeL, ngenxx_crypto_base64_encodeS)
+DEF_LUA_FUNC_STRING(ngenxx_crypto_base64_decodeL, ngenxx_crypto_base64_decodeS)
 
 #pragma mark Lua
 
@@ -270,7 +103,8 @@ int ngenxx_crypto_base64_decodeL(lua_State *L)
 EXPORT
 bool ngenxx_L_loadF(const char *file)
 {
-    if (_ngenxx_lua == NULL || file == NULL) return false;
+    if (_ngenxx_lua == NULL || file == NULL)
+        return false;
     return _ngenxx_lua->loadFile(std::string(file)) == LUA_OK;
 }
 #endif
@@ -278,14 +112,16 @@ bool ngenxx_L_loadF(const char *file)
 EXPORT
 bool ngenxx_L_loadS(const char *script)
 {
-    if (_ngenxx_lua == NULL || script == NULL) return false;
+    if (_ngenxx_lua == NULL || script == NULL)
+        return false;
     return _ngenxx_lua->loadScript(std::string(script)) == LUA_OK;
 }
 
 EXPORT
 const char *ngenxx_L_call(const char *func, const char *params)
 {
-    if (_ngenxx_lua == NULL || func == NULL) return NULL;
+    if (_ngenxx_lua == NULL || func == NULL)
+        return NULL;
     return str2charp(_ngenxx_lua->callFunc(std::string(func), std::string(params)));
 }
 
@@ -327,20 +163,23 @@ void _ngenxx_export_funcs_for_lua()
     BIND_LUA_FUNC(ngenxx_coding_hex_bytes2strL);
     BIND_LUA_FUNC(ngenxx_coding_hex_str2bytesL);
 
+    BIND_LUA_FUNC(ngenxx_crypto_randL);
     BIND_LUA_FUNC(ngenxx_crypto_base64_encodeL);
     BIND_LUA_FUNC(ngenxx_crypto_base64_decodeL);
 }
 
 void _ngenxx_lua_init(void)
 {
-    if (_ngenxx_lua != NULL) return;
+    if (_ngenxx_lua != NULL)
+        return;
     _ngenxx_lua = new NGenXX::LuaBridge();
     _ngenxx_export_funcs_for_lua();
 }
 
 void _ngenxx_lua_release(void)
 {
-    if (_ngenxx_lua == NULL) return;
+    if (_ngenxx_lua == NULL)
+        return;
     delete _ngenxx_lua;
     _ngenxx_lua = NULL;
 }

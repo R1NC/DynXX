@@ -531,6 +531,22 @@ const char *ngenxx_coding_hex_str2bytesS(const char *json)
 
 #pragma mark Crypto
 
+const char *ngenxx_crypto_randS(const char *json)
+{
+    if (json == NULL)
+        return NULL;
+    NGenXX::Json::Decoder decoder(json);
+    size outLen = decoder.readNumber(decoder.readNode(NULL, "len"));
+    if (outLen <= 0)
+        return NULL;
+    byte outBytes[outLen];
+
+    ngenxx_crypto_rand(outLen, outBytes);
+    const char *outJson = bytes2json(outBytes, outLen);
+    
+    return outJson;
+}
+
 const char *ngenxx_crypto_base64_encodeS(const char *json)
 {
     if (json == NULL)
