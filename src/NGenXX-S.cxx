@@ -21,6 +21,50 @@ const char *bytes2json(const byte *bytes, const size len)
     return s;
 }
 
+NGenXX::Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK, const char *lenK)
+{
+    size len = decoder.readNumber(decoder.readNode(NULL, lenK));
+    byte *byteV = NULL;
+    if (len > 0)
+    {
+        byteV = (byte *)malloc(len * sizeof(byte));
+        void *byte_vNode = decoder.readNode(NULL, bytesK);
+        if (byte_vNode)
+        {
+            decoder.readChildren(byte_vNode,
+                                 [&byteV, &decoder, &len](int idx, void *child) -> void
+                                 {
+                                     if (idx == len)
+                                         return;
+                                     byteV[idx] = decoder.readNumber(child);
+                                 });
+        }
+    }
+    return {byteV, len};
+}
+
+char **parseStrArray(NGenXX::Json::Decoder &decoder, const char *strVK, const size count, const size maxLen)
+{
+    char **strV = NULL;
+    if (count > 0)
+    {
+        strV = (char **)malloc(count * sizeof(char *));
+        void *str_vNode = decoder.readNode(NULL, strVK);
+        if (str_vNode)
+        {
+            decoder.readChildren(str_vNode,
+                                 [&strV, &decoder, &count, &maxLen](int idx, void *child) -> void
+                                 {
+                                     if (idx == count)
+                                         return;
+                                     strV[idx] = (char *)malloc(maxLen * sizeof(char) + 1);
+                                     strcpy(strV[idx], decoder.readString(child).c_str());
+                                 });
+        }
+    }
+    return strV;
+}
+
 const char *ngenxx_get_versionS(const char *json)
 {
     return ngenxx_get_version();
@@ -80,74 +124,14 @@ const char *ngenxx_net_http_requestS(const char *json)
     const int method = decoder.readNumber(decoder.readNode(NULL, "method"));
 
     size header_c = decoder.readNumber(decoder.readNode(NULL, "header_c"));
-    char **header_v = NULL;
-    if (header_c > 0)
-    {
-        header_c = std::min(header_c, NGENXX_HTTP_HEADER_MAX_COUNT);
-        header_v = (char **)malloc(header_c * sizeof(char *));
-        void *header_vNode = decoder.readNode(NULL, "header_v");
-        if (header_vNode)
-        {
-            decoder.readChildren(header_vNode,
-                                 [&header_v, &decoder, &header_c](int idx, void *child) -> void
-                                 {
-                                     if (idx == header_c)
-                                         return;
-                                     header_v[idx] = (char *)malloc(NGENXX_HTTP_HEADER_MAX_LENGTH * sizeof(char) + 1);
-                                     strcpy(header_v[idx], decoder.readString(child).c_str());
-                                 });
-        }
-    }
+    header_c = std::min(header_c, NGENXX_HTTP_HEADER_MAX_COUNT);
+    char **header_v = parseStrArray(decoder, "header_v", header_c, NGENXX_HTTP_HEADER_MAX_LENGTH);
 
     size form_field_count = decoder.readNumber(decoder.readNode(NULL, "form_field_count"));
-    char **form_field_name_v = NULL;
-    char **form_field_mime_v = NULL;
-    char **form_field_data_v = NULL;
-    if (form_field_count > 0)
-    {
-        form_field_count = std::min(form_field_count, NGENXX_HTTP_FORM_FIELD_MAX_COUNT);
-        form_field_name_v = (char **)malloc(form_field_count * sizeof(char *));
-        void *form_field_name_vNode = decoder.readNode(NULL, "form_field_name_v");
-        if (form_field_name_vNode)
-        {
-            decoder.readChildren(form_field_name_vNode,
-                                 [&form_field_name_v, &decoder, &form_field_count](int idx, void *child) -> void
-                                 {
-                                     if (idx == form_field_count)
-                                         return;
-                                     form_field_name_v[idx] = (char *)malloc(NGENXX_HTTP_FORM_FIELD_NAME_MAX_LENGTH * sizeof(char) + 1);
-                                     strcpy(form_field_name_v[idx], decoder.readString(child).c_str());
-                                 });
-        }
-
-        form_field_mime_v = (char **)malloc(form_field_count * sizeof(char *));
-        void *form_field_mime_vNode = decoder.readNode(NULL, "form_field_mime_v");
-        if (form_field_mime_vNode)
-        {
-            decoder.readChildren(form_field_mime_vNode,
-                                 [&form_field_mime_v, &decoder, &form_field_count](int idx, void *child) -> void
-                                 {
-                                     if (idx == form_field_count)
-                                         return;
-                                     form_field_mime_v[idx] = (char *)malloc(NGENXX_HTTP_FORM_FIELD_MINE_MAX_LENGTH * sizeof(char) + 1);
-                                     strcpy(form_field_mime_v[idx], decoder.readString(child).c_str());
-                                 });
-        }
-
-        form_field_data_v = (char **)malloc(form_field_count * sizeof(char *));
-        void *form_field_data_vNode = decoder.readNode(NULL, "form_field_data_v");
-        if (form_field_data_vNode)
-        {
-            decoder.readChildren(form_field_data_vNode,
-                                 [&form_field_data_v, &decoder, &form_field_count](int idx, void *child) -> void
-                                 {
-                                     if (idx == form_field_count)
-                                         return;
-                                     form_field_data_v[idx] = (char *)malloc(NGENXX_HTTP_FORM_FIELD_DATA_MAX_LENGTH * sizeof(char) + 1);
-                                     strcpy(form_field_data_v[idx], decoder.readString(child).c_str());
-                                 });
-        }
-    }
+    form_field_count = std::min(form_field_count, NGENXX_HTTP_FORM_FIELD_MAX_COUNT);
+    char **form_field_name_v = parseStrArray(decoder, "form_field_name_v", form_field_count, NGENXX_HTTP_FORM_FIELD_NAME_MAX_LENGTH);
+    char **form_field_mime_v = parseStrArray(decoder, "form_field_mime_v", form_field_count, NGENXX_HTTP_FORM_FIELD_MINE_MAX_LENGTH);
+    char **form_field_data_v = parseStrArray(decoder, "form_field_data_v", form_field_count, NGENXX_HTTP_FORM_FIELD_DATA_MAX_LENGTH);
 
     const unsigned long cFILE = decoder.readNumber(decoder.readNode(NULL, "cFILE"));
     const size fileSize = decoder.readNumber(decoder.readNode(NULL, "file_size"));
@@ -485,29 +469,13 @@ const char *ngenxx_coding_hex_bytes2strS(const char *json)
         return NULL;
     NGenXX::Json::Decoder decoder(json);
 
-    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
-    byte *inBytes = NULL;
-    if (inLen > 0)
-    {
-        inBytes = (byte *)malloc(inLen * sizeof(byte));
-        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
-        if (inBytes_vNode)
-        {
-            decoder.readChildren(inBytes_vNode,
-                                 [&inBytes, &decoder](int idx, void *child) -> void
-                                 {
-                                     inBytes[idx] = decoder.readNumber(child);
-                                 });
-        }
-    }
-
-    if (inBytes == NULL)
+    auto in = parseByteArray(decoder, "inBytes", "inLen");
+    if (in.first == NULL || in.second <= 0)
         return NULL;
 
-    const char *res = ngenxx_coding_hex_bytes2str(inBytes, inLen);
+    const char *res = ngenxx_coding_hex_bytes2str(in.first, in.second);
 
-    free((void *)inBytes);
-
+    free((void *)in.first);
     return res;
 }
 
@@ -548,35 +516,69 @@ const char *ngenxx_crypto_randS(const char *json)
     return outJson;
 }
 
+const char *ngenxx_crypto_aes_encrypt(const char *json)
+{
+    if (json == NULL)
+        return NULL;
+    NGenXX::Json::Decoder decoder(json);
+
+    auto in = parseByteArray(decoder, "inBytes", "inLen");
+    if (in.first == NULL || in.second <= 0)
+        return NULL;
+
+    auto key = parseByteArray(decoder, "keyBytes", "keyLen");
+    if (key.first == NULL || key.second <= 0)
+        return NULL;
+
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_aes_encrypt(in.first, in.second, key.first, key.second, &outLen);
+    const char *outJson = bytes2json(outBytes, outLen);
+
+    free((void *)in.first);
+    free((void *)key.first);
+    free((void *)outBytes);
+    return outJson;
+}
+
+const char *ngenxx_crypto_aes_decrypt(const char *json)
+{
+    if (json == NULL)
+        return NULL;
+    NGenXX::Json::Decoder decoder(json);
+
+    auto in = parseByteArray(decoder, "inBytes", "inLen");
+    if (in.first == NULL || in.second <= 0)
+        return NULL;
+
+    auto key = parseByteArray(decoder, "keyBytes", "keyLen");
+    if (key.first == NULL || key.second <= 0)
+        return NULL;
+
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_aes_decrypt(in.first, in.second, key.first, key.second, &outLen);
+    const char *outJson = bytes2json(outBytes, outLen);
+
+    free((void *)in.first);
+    free((void *)key.first);
+    free((void *)outBytes);
+    return outJson;
+}
+
 const char *ngenxx_crypto_hash_md5S(const char *json)
 {
     if (json == NULL)
         return NULL;
     NGenXX::Json::Decoder decoder(json);
 
-    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
-    byte *inBytes = NULL;
-    if (inLen > 0)
-    {
-        inBytes = (byte *)malloc(inLen * sizeof(byte));
-        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
-        if (inBytes_vNode)
-        {
-            decoder.readChildren(inBytes_vNode,
-                                 [&inBytes, &decoder](int idx, void *child) -> void
-                                 {
-                                     inBytes[idx] = decoder.readNumber(child);
-                                 });
-        }
-    }
-
-    if (inBytes == NULL)
+    auto in = parseByteArray(decoder, "inBytes", "inLen");
+    if (in.first == NULL || in.second <= 0)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_hash_md5(inBytes, inLen, &outLen);
+    const byte *outBytes = ngenxx_crypto_hash_md5(in.first, in.second, &outLen);
     const char *outJson = bytes2json(outBytes, outLen);
 
+    free((void *)in.first);
     free((void *)outBytes);
     return outJson;
 }
@@ -587,29 +589,15 @@ const char *ngenxx_crypto_hash_sha256S(const char *json)
         return NULL;
     NGenXX::Json::Decoder decoder(json);
 
-    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
-    byte *inBytes = NULL;
-    if (inLen > 0)
-    {
-        inBytes = (byte *)malloc(inLen * sizeof(byte));
-        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
-        if (inBytes_vNode)
-        {
-            decoder.readChildren(inBytes_vNode,
-                                 [&inBytes, &decoder](int idx, void *child) -> void
-                                 {
-                                     inBytes[idx] = decoder.readNumber(child);
-                                 });
-        }
-    }
-
-    if (inBytes == NULL)
+    auto in = parseByteArray(decoder, "inBytes", "inLen");
+    if (in.first == NULL || in.second <= 0)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_hash_sha256(inBytes, inLen, &outLen);
+    const byte *outBytes = ngenxx_crypto_hash_sha256(in.first, in.second, &outLen);
     const char *outJson = bytes2json(outBytes, outLen);
 
+    free((void *)in.first);
     free((void *)outBytes);
     return outJson;
 }
@@ -620,30 +608,15 @@ const char *ngenxx_crypto_base64_encodeS(const char *json)
         return NULL;
     NGenXX::Json::Decoder decoder(json);
 
-    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
-    byte *inBytes = NULL;
-    if (inLen > 0)
-    {
-        inBytes = (byte *)malloc(inLen * sizeof(byte));
-        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
-        if (inBytes_vNode)
-        {
-            decoder.readChildren(inBytes_vNode,
-                                 [&inBytes, &decoder](int idx, void *child) -> void
-                                 {
-                                     inBytes[idx] = decoder.readNumber(child);
-                                 });
-        }
-    }
-
-    if (inBytes == NULL)
+    auto in = parseByteArray(decoder, "inBytes", "inLen");
+    if (in.first == NULL || in.second <= 0)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, &outLen);
+    const byte *outBytes = ngenxx_crypto_base64_encode(in.first, in.second, &outLen);
     const char *outJson = bytes2json(outBytes, outLen);
 
-    free((void *)inBytes);
+    free((void *)in.first);
     free((void *)outBytes);
     return outJson;
 }
@@ -654,30 +627,15 @@ const char *ngenxx_crypto_base64_decodeS(const char *json)
         return NULL;
     NGenXX::Json::Decoder decoder(json);
 
-    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
-    byte *inBytes = NULL;
-    if (inLen > 0)
-    {
-        inBytes = (byte *)malloc(inLen * sizeof(byte));
-        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
-        if (inBytes_vNode)
-        {
-            decoder.readChildren(inBytes_vNode,
-                                 [&inBytes, &decoder](int idx, void *child) -> void
-                                 {
-                                     inBytes[idx] = decoder.readNumber(child);
-                                 });
-        }
-    }
-
-    if (inBytes == NULL)
+    auto in = parseByteArray(decoder, "inBytes", "inLen");
+    if (in.first == NULL || in.second <= 0)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, &outLen);
+    const byte *outBytes = ngenxx_crypto_base64_decode(in.first, in.second, &outLen);
     const char *outJson = bytes2json(outBytes, outLen);
 
-    free((void *)inBytes);
+    free((void *)in.first);
     free((void *)outBytes);
     return outJson;
 }
