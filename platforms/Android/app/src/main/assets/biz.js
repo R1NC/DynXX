@@ -1,37 +1,8 @@
-function str2bytes(s) {
-    return Array.from(s, char => char.charCodeAt(0))
-}
-
-function bytes2str(b) {
-    return b.map((byte) => {
-        return String.fromCharCode(byte);
-    }).join("");
-}
-
-function NGenXXLogPrint(l, c)
+function jTestBase64(s)
 {
-    ngenxx_log_printJ(`{"level":${l},"content":"${c}"}`);
-}
-
-function NGenXXHttpReq(params)
-{
-    var url = JSON.parse(params).url;
-    NGenXXLogPrint(1, `Send Net Req from JS, url: ${url}`);
-    return ngenxx_net_http_requestJ(params);
-}
-
-function NGenXXBase64Encode(s)
-{
-    var bytes = str2bytes(s);
-    var encodedJson = ngenxx_crypto_base64_encodeJ(`{"inBytes":[${bytes}], "inLen":${bytes.length}}`);
-    var encodedBytes = JSON.parse(encodedJson);
-    return bytes2str(encodedBytes);
-}
-
-function NGenXXBase64Decode(s)
-{
-    var bytes = str2bytes(s);
-    var decodedJson = ngenxx_crypto_base64_decodeJ(`{"inBytes":[${bytes}], "inLen":${bytes.length}}`);
-    var decodedBytes = JSON.parse(decodedJson);
-    return bytes2str(decodedBytes);
+    var en = NGenXXBase64Encode(s);
+    NGenXXLogPrint(1, `Base64 encoded: ${en}`);
+    
+    var de = NGenXXBase64Decode(en);
+    NGenXXLogPrint(1, `Base64 decoded: ${de}`);
 }
