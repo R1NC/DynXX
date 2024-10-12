@@ -22,6 +22,7 @@
 		401522902C9580E70010B594 /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6A2B82C8BE1AA00F6BBD2 /* mmkvcore.a */; };
 		401522912C9580E70010B594 /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253FF0462C778034006CD672 /* NGenXX.a */; };
 		401522942C9580E70010B594 /* mmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 401522932C9580E70010B594 /* mmkv.a */; };
+		403F9F582CBA687E00F4ECE6 /* NGenXX.js in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F572CBA687E00F4ECE6 /* NGenXX.js */; };
 		40596B7D2C75AAD700AC552D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7C2C75AAD700AC552D /* AppDelegate.m */; };
 		40596B802C75AAD700AC552D /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7F2C75AAD700AC552D /* SceneDelegate.m */; };
 		40596B862C75AAD700AC552D /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 40596B852C75AAD700AC552D /* Base */; };
@@ -53,6 +54,7 @@
 		4015228A2C9580C00010B594 /* NGenXXApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NGenXXApple.mm; path = ../../Apple/NGenXXApple.mm; sourceTree = "<group>"; };
 		4015228B2C9580C00010B594 /* NGenXXApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NGenXXApple.h; path = ../../Apple/NGenXXApple.h; sourceTree = "<group>"; };
 		401522932C9580E70010B594 /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../build.iOS/output/Release/mmkv.a; sourceTree = "<group>"; };
+		403F9F572CBA687E00F4ECE6 /* NGenXX.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = NGenXX.js; path = ../Android/app/src/main/assets/NGenXX.js; sourceTree = "<group>"; };
 		40596B782C75AAD700AC552D /* NGenXX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NGenXX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40596B7B2C75AAD700AC552D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		40596B7C2C75AAD700AC552D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 		40596B6F2C75AAD700AC552D = {
 			isa = PBXGroup;
 			children = (
+				403F9F572CBA687E00F4ECE6 /* NGenXX.js */,
 				400F054B2CB61DFA009B3260 /* biz.js */,
 				401522842C9580AF0010B594 /* biz.lua */,
 				401522862C9580AF0010B594 /* prepare_data.sql */,
@@ -260,6 +263,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				403F9F582CBA687E00F4ECE6 /* NGenXX.js in Resources */,
 				400F054C2CB61DFA009B3260 /* biz.js in Resources */,
 				401522872C9580AF0010B594 /* biz.lua in Resources */,
 				401522882C9580AF0010B594 /* query.sql in Resources */,

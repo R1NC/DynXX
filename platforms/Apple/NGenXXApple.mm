@@ -7,7 +7,7 @@
 #define CharP2NSString(cp) [NSString stringWithCString:cp encoding:NSUTF8StringEncoding]
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
 
-static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\": 1, \"timeout\":6666}";
+static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\": 1, \"timeout\":66666}";
 
 @interface NGenXXApple () {
     void *_db_conn;
@@ -47,10 +47,10 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
 }
 
 - (void)testHttpJ {
-    NSString *jsPath = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
-    if (ngenxx_J_loadF(NSString2CharP(jsPath))) {
-        const char * res = ngenxx_J_call("jNetHttpRequest", cParamsJson);
-        NSLog(@"rsp from js: %s", res);
+    NSString *jsPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.js"];
+    NSString *jsPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
+    if (ngenxx_J_loadF(NSString2CharP(jsPath0)) && ngenxx_J_loadF(NSString2CharP(jsPath1))) {
+        ngenxx_J_call("jTestBase64", "NGenXX^*(&())(<?><{}|{[[]\]!@#$%^");
     }
 }
 
