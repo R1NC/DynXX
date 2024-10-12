@@ -5,6 +5,42 @@
 #include <sstream>
 #include <streambuf>
 
+static void _ngenxx_js_dump_obj(JSContext *ctx, JSValueConst val)
+{
+    const char *str;
+    str = JS_ToCString(ctx, val);
+    if (str)
+    {
+        NGenXX::Log::print(NGenXXLogLevelError, str);
+        JS_FreeCString(ctx, str);
+    }
+}
+
+static void _ngenxx_js_dump_error1(JSContext *ctx, JSValueConst exception_val)
+{
+    JSValue val;
+    bool is_error;
+    is_error = JS_IsError(ctx, exception_val);
+    _ngenxx_js_dump_obj(ctx, exception_val);
+    if (is_error)
+    {
+        val = JS_GetPropertyStr(ctx, exception_val, "stack");
+        if (!JS_IsUndefined(val))
+        {
+            _ngenxx_js_dump_obj(ctx, val);
+        }
+        JS_FreeValue(ctx, val);
+    }
+}
+
+void _ngenxx_js_dump_error(JSContext *ctx)
+{
+    JSValue exception_val;
+    exception_val = JS_GetException(ctx);
+    _ngenxx_js_dump_error1(ctx, exception_val);
+    JS_FreeValue(ctx, exception_val);
+}
+
 NGenXX::JsBridge::JsBridge()
 {
     this->runtime = JS_NewRuntime();
@@ -22,16 +58,16 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
     JSValue jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
     if (JS_IsException(jFunc))
     {
-        Log::print(NGenXXLogLevelError, "JS_NewCFunction failed");
-        js_std_dump_error(this->context);
+        Log::print(NGenXXLogLevelError, "JS_NewCFunction failed ->");
+        _ngenxx_js_dump_error(this->context);
         res = false;
     }
     else
     {
         if (!JS_DefinePropertyValueStr(this->context, this->global, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE))
         {
-            Log::print(NGenXXLogLevelError, "JS_DefinePropertyValueStr failed");
-            js_std_dump_error(this->context);
+            Log::print(NGenXXLogLevelError, "JS_DefinePropertyValueStr failed ->");
+            _ngenxx_js_dump_error(this->context);
             res = false;
         }
     }
@@ -52,8 +88,8 @@ bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &
     JSValue jRes = JS_Eval(this->context, script.c_str(), script.length(), name.c_str(), JS_EVAL_TYPE_GLOBAL);
     if (JS_IsException(jRes))
     {
-        Log::print(NGenXXLogLevelError, "JS_Eval failed");
-        js_std_dump_error(this->context);
+        Log::print(NGenXXLogLevelError, "JS_Eval failed ->");
+        _ngenxx_js_dump_error(this->context);
         res = false;
     }
 
@@ -74,8 +110,8 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         JSValue jRes = JS_Call(this->context, jFunc, this->global, sizeof(argv), argv);
         if (JS_IsException(jRes))
         {
-            Log::print(NGenXXLogLevelError, "JS_Call failed");
-            js_std_dump_error(this->context);
+            Log::print(NGenXXLogLevelError, "JS_Call failed ->");
+            _ngenxx_js_dump_error(this->context);
         }
         else
         {

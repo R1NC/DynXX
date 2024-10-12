@@ -195,7 +195,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCall(JNIEnv *env, jobject thiz,
                                                  jstring params)
 {
     const char *cFunc = env->GetStringUTFChars(func, nullptr);
-    const char *cParams = params ? env->GetStringUTFChars(params, JNI_FALSE) : nullptr;
+    const char *cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
     const char *cRes = ngenxx_L_call(cFunc, cParams);
     jstring jstr = env->NewStringUTF(cRes ?: "");
     free((void *)cRes);
@@ -234,7 +234,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jCall(JNIEnv *env, jobject thiz,
                                                  jstring params)
 {
     const char *cFunc = env->GetStringUTFChars(func, nullptr);
-    const char *cParams = params ? env->GetStringUTFChars(params, JNI_FALSE) : nullptr;
+    const char *cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
     const char *cRes = ngenxx_J_call(cFunc, cParams);
     jstring jstr = env->NewStringUTF(cRes ?: "");
     free((void *)cRes);
