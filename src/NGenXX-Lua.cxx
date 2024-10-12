@@ -25,8 +25,8 @@ static NGenXX::LuaBridge *_ngenxx_lua;
     int fL(lua_State *L)                           \
     {                                              \
         const char *json = luaL_checkstring(L, 1); \
-        const char *res = fS(json);                \
-        lua_pushstring(L, res ?: "");              \
+        const std::string res = fS(json);          \
+        lua_pushstring(L, res.c_str());            \
         return 1;                                  \
     }
 
@@ -96,6 +96,8 @@ DEF_LUA_FUNC_STRING(ngenxx_coding_hex_str2bytesL, ngenxx_coding_hex_str2bytesS)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_randL, ngenxx_crypto_randS)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_aes_encryptL, ngenxx_crypto_aes_encryptS)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_aes_decryptL, ngenxx_crypto_aes_decryptS)
+DEF_LUA_FUNC_STRING(ngenxx_crypto_aes_gcm_encryptL, ngenxx_crypto_aes_gcm_encryptS)
+DEF_LUA_FUNC_STRING(ngenxx_crypto_aes_gcm_decryptL, ngenxx_crypto_aes_gcm_decryptS)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_hash_md5L, ngenxx_crypto_hash_md5S)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_hash_sha256L, ngenxx_crypto_hash_sha256S)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_base64_encodeL, ngenxx_crypto_base64_encodeS)
@@ -170,6 +172,8 @@ void _ngenxx_export_funcs_for_lua()
     BIND_LUA_FUNC(ngenxx_crypto_randL);
     BIND_LUA_FUNC(ngenxx_crypto_aes_encryptL);
     BIND_LUA_FUNC(ngenxx_crypto_aes_decryptL);
+    BIND_LUA_FUNC(ngenxx_crypto_aes_gcm_encryptL);
+    BIND_LUA_FUNC(ngenxx_crypto_aes_gcm_decryptL);
     BIND_LUA_FUNC(ngenxx_crypto_hash_md5L);
     BIND_LUA_FUNC(ngenxx_crypto_hash_sha256L);
     BIND_LUA_FUNC(ngenxx_crypto_base64_encodeL);

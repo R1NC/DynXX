@@ -21,9 +21,9 @@ static NGenXX::JsBridge *_ngenxx_js;
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        const char *res = fS(json);                                                        \
+        const std::string res = fS(json);                                                  \
         JS_FreeCString(ctx, json);                                                         \
-        return JS_NewString(ctx, res ?: "");                                               \
+        return JS_NewString(ctx, res.c_str());                                             \
     }
 
 #define DEF_JS_FUNC_BOOL(fJ, fS)                                                           \
@@ -100,6 +100,8 @@ DEF_JS_FUNC_STRING(ngenxx_coding_hex_str2bytesJ, ngenxx_coding_hex_str2bytesS)
 DEF_JS_FUNC_STRING(ngenxx_crypto_randJ, ngenxx_crypto_randS)
 DEF_JS_FUNC_STRING(ngenxx_crypto_aes_encryptJ, ngenxx_crypto_aes_encryptS)
 DEF_JS_FUNC_STRING(ngenxx_crypto_aes_decryptJ, ngenxx_crypto_aes_decryptS)
+DEF_JS_FUNC_STRING(ngenxx_crypto_aes_gcm_encryptJ, ngenxx_crypto_aes_gcm_encryptS)
+DEF_JS_FUNC_STRING(ngenxx_crypto_aes_gcm_decryptJ, ngenxx_crypto_aes_gcm_decryptS)
 DEF_JS_FUNC_STRING(ngenxx_crypto_hash_md5J, ngenxx_crypto_hash_md5S)
 DEF_JS_FUNC_STRING(ngenxx_crypto_hash_sha256J, ngenxx_crypto_hash_sha256S)
 DEF_JS_FUNC_STRING(ngenxx_crypto_base64_encodeJ, ngenxx_crypto_base64_encodeS)
@@ -174,6 +176,8 @@ void registerJsModule()
     BIND_JS_FUNC(ngenxx_crypto_randJ);
     BIND_JS_FUNC(ngenxx_crypto_aes_encryptJ);
     BIND_JS_FUNC(ngenxx_crypto_aes_decryptJ);
+    BIND_JS_FUNC(ngenxx_crypto_aes_gcm_encryptJ);
+    BIND_JS_FUNC(ngenxx_crypto_aes_gcm_decryptJ);
     BIND_JS_FUNC(ngenxx_crypto_hash_md5J);
     BIND_JS_FUNC(ngenxx_crypto_hash_sha256J);
     BIND_JS_FUNC(ngenxx_crypto_base64_encodeJ);
