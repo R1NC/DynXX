@@ -52,14 +52,16 @@ function NGenXXCryptoHashMD5(s) {
     var inBytes = str2bytes(s);
     var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
     var outJson = ngenxx_crypto_hash_md5J(inJson);
-    return JSON.parse(outJson);
+    var outBytes = JSON.parse(outJson);
+    return NGenXXCodingHexBytes2Str(outBytes);
 }
 
 function NGenXXCryptoHashSHA256(s) {
     var inBytes = str2bytes(s);
     var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
     var outJson = ngenxx_crypto_hash_sha256J(inJson);
-    return JSON.parse(outJson);
+    var outBytes = JSON.parse(outJson);
+    return NGenXXCodingHexBytes2Str(outBytes);
 }
 
 // Crypto.Base64
