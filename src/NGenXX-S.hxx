@@ -40,8 +40,8 @@ const char *ngenxx_coding_hex_bytes2strS(const char *json);
 const char *ngenxx_coding_hex_str2bytesS(const char *json);
 
 const char *ngenxx_crypto_randS(const char *json);
-const char *ngenxx_crypto_aes_encrypt(const char *json);
-const char *ngenxx_crypto_aes_decrypt(const char *json);
+const char *ngenxx_crypto_aes_encryptS(const char *json);
+const char *ngenxx_crypto_aes_decryptS(const char *json);
 const char *ngenxx_crypto_hash_md5S(const char *json);
 const char *ngenxx_crypto_hash_sha256S(const char *json);
 const char *ngenxx_crypto_base64_encodeS(const char *json);

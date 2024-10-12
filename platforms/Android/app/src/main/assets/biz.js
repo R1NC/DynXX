@@ -13,3 +13,9 @@ function jTestHash(s) {
     var sha256 = NGenXXCryptoHashSHA256(s);
     NGenXXLogPrint(1, `SHA256: ${sha256}`);
 }
+
+function jTestAes(str) {
+    var key = "QWERTYUIOPASDFGH";
+    var code = NGenXXCryptoAESEncrypt(str, key);
+    return NGenXXCryptoAESDecrypt(code, key);
+}

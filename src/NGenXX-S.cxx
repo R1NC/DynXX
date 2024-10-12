@@ -516,7 +516,7 @@ const char *ngenxx_crypto_randS(const char *json)
     return outJson;
 }
 
-const char *ngenxx_crypto_aes_encrypt(const char *json)
+const char *ngenxx_crypto_aes_encryptS(const char *json)
 {
     if (json == NULL)
         return NULL;
@@ -540,7 +540,7 @@ const char *ngenxx_crypto_aes_encrypt(const char *json)
     return outJson;
 }
 
-const char *ngenxx_crypto_aes_decrypt(const char *json)
+const char *ngenxx_crypto_aes_decryptS(const char *json)
 {
     if (json == NULL)
         return NULL;

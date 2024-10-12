@@ -46,6 +46,27 @@ function NGenXXCryptoRand(n) {
     return JSON.parse(outBytes);
 }
 
+// Crypto.AES
+
+function NGenXXCryptoAESEncrypt(str, key) {
+    var inBytes = str2bytes(str);
+    var keyBytes = str2bytes(key);
+    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}}`;
+    var outJson = ngenxx_crypto_aes_encryptJ(inJson);
+    var outBytes = JSON.parse(outJson);
+    //return NGenXXCodingHexBytes2Str(outBytes);
+    return outBytes;
+}
+
+function NGenXXCryptoAESDecrypt(inBytes, key) {
+    //var inBytes = NGenXXCodingHexStr2Bytes(str);
+    var keyBytes = str2bytes(key);
+    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}}`;
+    var outJson = ngenxx_crypto_aes_decryptJ(inJson);
+    var outBytes = JSON.parse(outJson);
+    return bytes2str(outBytes);
+}
+
 // Crypto.Hash
 
 function NGenXXCryptoHashMD5(s) {
