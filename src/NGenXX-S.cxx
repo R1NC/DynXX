@@ -12,7 +12,8 @@
 const char *bytes2json(const byte *bytes, const size len)
 {
     int x[len];
-    for (int i = 0; i < len; i++) x[i] = bytes[i];
+    for (int i = 0; i < len; i++)
+        x[i] = bytes[i];
     auto cj = bytes == NULL || len <= 0 ? cJSON_CreateArray() : cJSON_CreateIntArray(x, len);
     const char *outJson = cJSON_Print(cj);
     char *s = (char *)malloc(strlen(outJson));
@@ -543,7 +544,73 @@ const char *ngenxx_crypto_randS(const char *json)
 
     ngenxx_crypto_rand(outLen, outBytes);
     const char *outJson = bytes2json(outBytes, outLen);
-    
+
+    return outJson;
+}
+
+const char *ngenxx_crypto_hash_md5S(const char *json)
+{
+    if (json == NULL)
+        return NULL;
+    NGenXX::Json::Decoder decoder(json);
+
+    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
+    byte *inBytes = NULL;
+    if (inLen > 0)
+    {
+        inBytes = (byte *)malloc(inLen * sizeof(byte));
+        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
+        if (inBytes_vNode)
+        {
+            decoder.readChildren(inBytes_vNode,
+                                 [&inBytes, &decoder](int idx, void *child) -> void
+                                 {
+                                     inBytes[idx] = decoder.readNumber(child);
+                                 });
+        }
+    }
+
+    if (inBytes == NULL)
+        return NULL;
+
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_hash_md5(inBytes, inLen, &outLen);
+    const char *outJson = bytes2json(outBytes, outLen);
+
+    free((void *)outBytes);
+    return outJson;
+}
+
+const char *ngenxx_crypto_hash_sha256S(const char *json)
+{
+    if (json == NULL)
+        return NULL;
+    NGenXX::Json::Decoder decoder(json);
+
+    size inLen = decoder.readNumber(decoder.readNode(NULL, "inLen"));
+    byte *inBytes = NULL;
+    if (inLen > 0)
+    {
+        inBytes = (byte *)malloc(inLen * sizeof(byte));
+        void *inBytes_vNode = decoder.readNode(NULL, "inBytes");
+        if (inBytes_vNode)
+        {
+            decoder.readChildren(inBytes_vNode,
+                                 [&inBytes, &decoder](int idx, void *child) -> void
+                                 {
+                                     inBytes[idx] = decoder.readNumber(child);
+                                 });
+        }
+    }
+
+    if (inBytes == NULL)
+        return NULL;
+
+    size outLen;
+    const byte *outBytes = ngenxx_crypto_hash_sha256(inBytes, inLen, &outLen);
+    const char *outJson = bytes2json(outBytes, outLen);
+
+    free((void *)outBytes);
     return outJson;
 }
 
