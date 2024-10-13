@@ -57,7 +57,7 @@ function NGenXXCryptoAesEncrypt(str, key) {
     return NGenXXCodingHexBytes2Str(outBytes);
 }
 
-function NGenXXCryptoAesßDecrypt(hexStr, key) {
+function NGenXXCryptoAesDecrypt(hexStr, key) {
     var inBytes = NGenXXCodingHexStr2Bytes(hexStr);
     var keyBytes = str2bytes(key);
     var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}}`;

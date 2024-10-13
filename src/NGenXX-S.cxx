@@ -575,8 +575,6 @@ const std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
         return NULL;
 
     auto aad = parseByteArray(decoder, "aadBytes", "aadLen");
-    if (aad.size() == 0)
-        return NULL;
 
     size tagBits = decoder.readNumber(decoder.readNode(NULL, "tagBits"));
 
@@ -612,8 +610,6 @@ const std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
         return NULL;
 
     auto aad = parseByteArray(decoder, "aadBytes", "aadLen");
-    if (aad.size() == 0)
-        return NULL;
 
     size tagBits = decoder.readNumber(decoder.readNode(NULL, "tagBits"));
 
