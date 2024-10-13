@@ -48,21 +48,40 @@ function NGenXXCryptoRand(n) {
 
 // Crypto.AES
 
-function NGenXXCryptoAESEncrypt(str, key) {
+function NGenXXCryptoAesEncrypt(str, key) {
     var inBytes = str2bytes(str);
     var keyBytes = str2bytes(key);
     var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}}`;
     var outJson = ngenxx_crypto_aes_encryptJ(inJson);
     var outBytes = JSON.parse(outJson);
-    //return NGenXXCodingHexBytes2Str(outBytes);
-    return outBytes;
+    return NGenXXCodingHexBytes2Str(outBytes);
 }
 
-function NGenXXCryptoAESDecrypt(inBytes, key) {
-    //var inBytes = NGenXXCodingHexStr2Bytes(str);
+function NGenXXCryptoAesßDecrypt(hexStr, key) {
+    var inBytes = NGenXXCodingHexStr2Bytes(hexStr);
     var keyBytes = str2bytes(key);
     var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}}`;
     var outJson = ngenxx_crypto_aes_decryptJ(inJson);
+    var outBytes = JSON.parse(outJson);
+    return bytes2str(outBytes);
+}
+
+function NGenXXCryptoAesGcmEncrypt(str, key, iv, tagBits) {
+    var inBytes = str2bytes(str);
+    var keyBytes = str2bytes(key);
+    var ivBytes = str2bytes(iv);
+    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}, "initVectorBytes":[${ivBytes}], "initVectorLen":${ivBytes.length}, "tagBits":${tagBits}}`;
+    var outJson = ngenxx_crypto_aes_gcm_encryptJ(inJson);
+    var outBytes = JSON.parse(outJson);
+    return NGenXXCodingHexBytes2Str(outBytes);
+}
+
+function NGenXXCryptoAesGcmDecrypt(str, key, iv, tagBits) {
+    var inBytes = NGenXXCodingHexStr2Bytes(str);
+    var keyBytes = str2bytes(key);
+    var ivBytes = str2bytes(iv);
+    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}, "initVectorBytes":[${ivBytes}], "initVectorLen":${ivBytes.length}, "tagBits":${tagBits}}`;
+    var outJson = ngenxx_crypto_aes_gcm_decryptJ(inJson);
     var outBytes = JSON.parse(outJson);
     return bytes2str(outBytes);
 }

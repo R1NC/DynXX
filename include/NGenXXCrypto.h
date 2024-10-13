@@ -46,7 +46,7 @@ extern "C"
      * @param keyLen key bytes length（MUST BE 16/24/32!!）
      * @param initVectorBytes initVector bytes data
      * @param initVectorLen initVector bytes length（MUST BE 12!!）
-     * @param tagBits tag bits length（MUST BE 96//104/112/120/128!!）
+     * @param tagBits tag bits length（MUST BE 96/104/112/120/128!!）
      * @param aadBytes Additional Authentication Data (AAD) bytes（Can be `NULL`）
      * @param aadLen Additional Authentication Data (AAD) length（Must <= 16）
      * @param outLen output bytes length（include the tag）

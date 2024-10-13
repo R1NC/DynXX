@@ -16,6 +16,16 @@ function jTestHash(s) {
 
 function jTestAes(str) {
     var key = "QWERTYUIOPASDFGH";
-    var code = NGenXXCryptoAESEncrypt(str, key);
-    return NGenXXCryptoAESDecrypt(code, key);
+    var enc = NGenXXCryptoAesEncrypt(str, key);
+    var dec = NGenXXCryptoAesDecrypt(enc, key);
+    return dec;
+}
+
+function jTestAesGcm(str) {
+    var key = "QWERTYUIOPASDFGH";
+    var iv = "ASDFGHJKLZXC";
+    var tagBits = 96;
+    var enc = NGenXXCryptoAesGcmEncrypt(str, key, iv, tagBits);
+    var dec = NGenXXCryptoAesGcmDecrypt(enc, key, iv, tagBits);
+    return dec;
 }
