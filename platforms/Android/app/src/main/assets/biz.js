@@ -1,3 +1,12 @@
+function jTestHttp() {
+    var url = "https://rinc.xyz";
+    var params = "p0=1&p1=2";
+    var method = 0;
+    var headerV = ["Cache-Control: no-cache"];
+    var timeout = 55555;
+    return NGenXXNetHttpReq(url, params, method, headerV, null, null, null, timeout);
+}
+
 function jTestBase64(s) {
     var en = NGenXXCryptoBase64Encode(s);
     NGenXXLogPrint(1, `Base64 encoded: ${en}`);

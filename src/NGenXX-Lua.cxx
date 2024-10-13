@@ -128,7 +128,7 @@ const char *ngenxx_L_call(const char *func, const char *params)
 {
     if (_ngenxx_lua == NULL || func == NULL)
         return NULL;
-    return str2charp(_ngenxx_lua->callFunc(std::string(func), std::string(params)));
+    return str2charp(_ngenxx_lua->callFunc(std::string(func), std::string(params ? : "")));
 }
 
 void _ngenxx_export_funcs_for_lua()

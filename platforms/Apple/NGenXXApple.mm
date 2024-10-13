@@ -50,7 +50,8 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     NSString *jsPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.js"];
     NSString *jsPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
     if (ngenxx_J_loadF(NSString2CharP(jsPath0)) && ngenxx_J_loadF(NSString2CharP(jsPath1))) {
-        ngenxx_J_call("jTestBase64", "NGenXX^*(&())(<?><{}|{[[]\]!@#$%^");
+        auto res = ngenxx_J_call("jTestHttp", NULL);
+        NSLog(@"%s", res);
     }
 }
 

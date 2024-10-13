@@ -130,7 +130,7 @@ const char *ngenxx_J_call(const char *func, const char *params)
 {
     if (_ngenxx_js == NULL || func == NULL)
         return NULL;
-    return str2charp(_ngenxx_js->callFunc(std::string(func), std::string(params)));
+    return str2charp(_ngenxx_js->callFunc(std::string(func), std::string(params ? : "")));
 }
 
 #pragma mark JS Module Register
