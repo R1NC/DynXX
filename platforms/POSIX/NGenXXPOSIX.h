@@ -5,6 +5,8 @@ void ngenxx_posix_init(const char *root);
 
 void ngenxx_posix_testHttpL(void);
 
+void ngenxx_posix_testHttpJ(void);
+
 void ngenxx_posix_testDB(void);
 
 void ngenxx_posix_testKV(void);

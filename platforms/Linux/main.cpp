@@ -4,7 +4,7 @@ int main()
 {
     ngenxx_posix_init("/var/www/");
 
-    ngenxx_posix_testHttpL();
+    ngenxx_posix_testHttpJ();
 
     ngenxx_posix_testDB();
 

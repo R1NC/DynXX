@@ -23,6 +23,15 @@ void ngenxx_posix_testHttpL(void)
     }
 }
 
+void ngenxx_posix_testHttpJ(void)
+{
+    if (ngenxx_L_loadF("../Android/app/src/main/assets/NGenXX.js") && ngenxx_J_loadF("../Android/app/src/main/assets/biz.js"))
+    {
+        const char *cRsp = ngenxx_J_call("NGenXXHttpReq", cParamsJson);
+        std::cout << cRsp << std::endl;
+    }
+}
+
 void ngenxx_posix_testDB(void)
 {
     void *dbConn = ngenxx_store_sqlite_open("test");
