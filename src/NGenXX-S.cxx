@@ -487,8 +487,8 @@ const std::string ngenxx_coding_hex_str2bytesS(const char *json)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_coding_hex_str2bytes(str.c_str(), &outLen);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outBytes = ngenxx_coding_hex_str2bytes(str.c_str(), &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
     return outJson;
@@ -507,7 +507,7 @@ const std::string ngenxx_crypto_randS(const char *json)
     byte outBytes[outLen];
 
     ngenxx_crypto_rand(outLen, outBytes);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     return outJson;
 }
@@ -527,8 +527,8 @@ const std::string ngenxx_crypto_aes_encryptS(const char *json)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_aes_encrypt(in.data(), in.size(), key.data(), key.size(), &outLen);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outBytes = ngenxx_crypto_aes_encrypt(in.data(), in.size(), key.data(), key.size(), &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
     return outJson;
@@ -549,8 +549,8 @@ const std::string ngenxx_crypto_aes_decryptS(const char *json)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_aes_decrypt(in.data(), in.size(), key.data(), key.size(), &outLen);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outBytes = ngenxx_crypto_aes_decrypt(in.data(), in.size(), key.data(), key.size(), &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
     return outJson;
@@ -579,13 +579,13 @@ const std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
     size tagBits = decoder.readNumber(decoder.readNode(NULL, "tagBits"));
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_aes_gcm_encrypt(in.data(), in.size(),
-                                                         key.data(), key.size(),
-                                                         iv.data(), iv.size(),
-                                                         aad.data(), aad.size(),
-                                                         tagBits,
-                                                         &outLen);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outBytes = ngenxx_crypto_aes_gcm_encrypt(in.data(), in.size(),
+                                                  key.data(), key.size(),
+                                                  iv.data(), iv.size(),
+                                                  aad.data(), aad.size(),
+                                                  tagBits,
+                                                  &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
     return outJson;
@@ -614,13 +614,13 @@ const std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
     size tagBits = decoder.readNumber(decoder.readNode(NULL, "tagBits"));
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_aes_gcm_decrypt(in.data(), in.size(),
-                                                         key.data(), key.size(),
-                                                         iv.data(), iv.size(),
-                                                         aad.data(), aad.size(),
-                                                         tagBits,
-                                                         &outLen);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outBytes = ngenxx_crypto_aes_gcm_decrypt(in.data(), in.size(),
+                                                  key.data(), key.size(),
+                                                  iv.data(), iv.size(),
+                                                  aad.data(), aad.size(),
+                                                  tagBits,
+                                                  &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
     return outJson;
@@ -637,8 +637,8 @@ const std::string ngenxx_crypto_hash_md5S(const char *json)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_hash_md5(in.data(), in.size(), &outLen);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outBytes = ngenxx_crypto_hash_md5(in.data(), in.size(), &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
     return outJson;
@@ -655,8 +655,8 @@ const std::string ngenxx_crypto_hash_sha256S(const char *json)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_hash_sha256(in.data(), in.size(), &outLen);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outBytes = ngenxx_crypto_hash_sha256(in.data(), in.size(), &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
     return outJson;
@@ -673,8 +673,8 @@ const std::string ngenxx_crypto_base64_encodeS(const char *json)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_base64_encode(in.data(), in.size(), &outLen);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outBytes = ngenxx_crypto_base64_encode(in.data(), in.size(), &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
     return outJson;
@@ -691,8 +691,8 @@ const std::string ngenxx_crypto_base64_decodeS(const char *json)
         return NULL;
 
     size outLen;
-    const byte *outBytes = ngenxx_crypto_base64_decode(in.data(), in.size(), &outLen);
-    const std::string outJson = bytes2json(outBytes, outLen);
+    auto outBytes = ngenxx_crypto_base64_decode(in.data(), in.size(), &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
     return outJson;
