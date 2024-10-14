@@ -7,6 +7,77 @@ function jTestNetHttpReq() {
     return NGenXXNetHttpRequest(url, params, method, headerV, null, null, null, timeout);
 }
 
+function jTestStoreKV() {
+    let kvId = 'test_kv';
+    let conn = NGenXXStoreKVOpen(kvId);
+    if (conn > 0) {
+        let kS = "kS";
+        if (NGenXXStoreKVContains(conn, kS)) {
+            NGenXXStoreKVRemove(conn, kS);
+        }
+        NGenXXStoreKVWriteString(conn, kS, "NGenXX");
+        let vS = NGenXXStoreKVReadString(conn, kS);
+        NGenXXLogPrint(1, `KV read ${kS}: ${vS}`);
+        
+        let kI = "kI";
+        if (NGenXXStoreKVContains(conn, kI)) {
+            NGenXXStoreKVRemove(conn, kI);
+        }
+        NGenXXStoreKVWriteInteger(conn, kI, 12345678909666666);
+        let vI = NGenXXStoreKVReadInteger(conn, kI);
+        NGenXXLogPrint(1, `KV read ${kI}: ${vI}`);
+        
+        let kF = "kF";
+        if (NGenXXStoreKVContains(conn, kF)) {
+            NGenXXStoreKVRemove(conn, kF);
+        }
+        NGenXXStoreKVWriteFloat(conn, kF, -0.12345678987654321);
+        let vF = NGenXXStoreKVReadFloat(conn, kF);
+        NGenXXLogPrint(1, `KV read ${kF}: ${vF}`);
+        
+        NGenXXStoreKVClose(conn);
+    } else {
+        NGenXXLogPrint(1, `KV open failed!!!`);
+    }
+}
+
+let sqlPrepareData = `
+DROP TABLE IF EXISTS TestTable;
+CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, s TEXT, i INTEGER, f FLOAT);
+INSERT OR IGNORE INTO TestTable (s, i, f) VALUES
+('iOS', 1, 0.111111111),
+('Android', 2, 0.2222222222),
+('HarmonyOS', 3, 0.3333333333);`;
+
+let sqlQuery = `SELECT * FROM TestTable;`;
+
+function jTestStoreSQLite() {
+    let dbId = 'test_db';
+    let conn = NGenXXStoreSQLiteOpen(dbId);
+    if (conn > 0) {
+        if (NGenXXStoreSQLiteExecute(conn, sqlPrepareData)) {
+            let queryResult = NGenXXStoreSQLiteQueryDo(conn, sqlQuery);
+            if (queryResult > 0) {
+                while (NGenXXStoreSQLiteQueryReadRow(queryResult)) {
+                    let s = NGenXXStoreSQLiteQueryReadColumnText(queryResult, 's');
+                    let i = NGenXXStoreSQLiteQueryReadColumnInteger(queryResult, 'i');
+                    let f = NGenXXStoreSQLiteQueryReadColumnFloat(queryResult, 'f');
+                    NGenXXLogPrint(1, `s:${s} i:${i} f:${f}`);
+                }
+                
+                NGenXXStoreSQLiteQueryDrop(queryResult);
+            } else {
+                NGenXXLogPrint(1, `SQLite query failed!!!`);
+            }
+        } else {
+            NGenXXLogPrint(1, `SQLite execute failed!!!`);
+        }
+        NGenXXStoreSQLiteClose(conn);
+    } else {
+        NGenXXLogPrint(1, `SQLite open failed!!!`);
+    }
+}
+
 function jTestCryptoBase64(s) {
     let inBytes = NGenXXStr2Bytes(s);
     let enBytes = NGenXXCryptoBase64Encode(inBytes);

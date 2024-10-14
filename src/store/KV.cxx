@@ -57,6 +57,11 @@ bool NGenXX::Store::KV::Connection::contains(const std::string &k)
     return this->kv->containsKey(k.c_str());
 }
 
+void NGenXX::Store::KV::Connection::remove(const std::string &k)
+{
+    return this->kv->removeValueForKey(k.c_str());
+}
+
 void NGenXX::Store::KV::Connection::clear()
 {
     this->kv->clearAll();

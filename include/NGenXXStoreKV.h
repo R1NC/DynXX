@@ -72,6 +72,13 @@ bool ngenxx_store_kv_write_float(void *conn, const char *k, double v);
 bool ngenxx_store_kv_contains(void *conn, const char *k);
 
 /**
+ * @brief Remove key-value from KV Store
+ * @param conn A KV connection handle
+ * @param k key
+ */
+void ngenxx_store_kv_remove(void *conn, const char *k);
+
+/**
  * @brief Clear a KV Store
  * @param conn A KV connection handle
  */

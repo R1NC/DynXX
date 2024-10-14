@@ -319,6 +319,14 @@ bool ngenxx_store_kv_contains(void *conn, const char *k)
 }
 
 EXPORT_AUTO
+void ngenxx_store_kv_remove(void *conn, const char *k)
+{
+    if (conn == NULL || k == NULL)
+        return;
+    ((NGenXX::Store::KV::Connection *)conn)->remove(std::string(k));
+}
+
+EXPORT_AUTO
 void ngenxx_store_kv_clear(void *conn)
 {
     if (conn == NULL)

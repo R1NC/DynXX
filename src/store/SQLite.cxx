@@ -75,7 +75,7 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
     if (this->stmt == NULL)
         return false;
     int rc = sqlite3_step(this->stmt);
-    if (rc != SQLITE_ROW)
+    if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
         PRINT_ERR(rc, NULL);
     }

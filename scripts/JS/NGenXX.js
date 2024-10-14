@@ -49,6 +49,110 @@ function NGenXXNetHttpRequest(url, params, method, headerArray, formFieldNameArr
     return ngenxx_net_http_requestJ(inJson);
 }
 
+// Store.SQLite
+
+function NGenXXStoreSQLiteOpen(_id) {
+    let inJson = `{"_id":"${_id}"}`;
+    return ngenxx_store_sqlite_openJ(inJson);
+}
+
+function NGenXXStoreSQLiteExecute(conn, sql) {
+    let inJson = `{"conn":${conn}, "sql":"${sql}"}`;
+    return ngenxx_store_sqlite_executeJ(inJson);
+}
+
+function NGenXXStoreSQLiteQueryDo(conn, sql) {
+    let inJson = `{"conn":${conn}, "sql":"${sql}"}`;
+    return ngenxx_store_sqlite_query_doJ(inJson);
+}
+
+function NGenXXStoreSQLiteQueryReadRow(query_result) {
+    let inJson = `{"query_result":${query_result}}`;
+    return ngenxx_store_sqlite_query_read_rowJ(inJson);
+}
+
+function NGenXXStoreSQLiteQueryReadColumnText(query_result, column) {
+    let inJson = `{"query_result":${query_result}, "column":"${column}"}`;
+    return ngenxx_store_sqlite_query_read_column_textJ(inJson);
+}
+
+function NGenXXStoreSQLiteQueryReadColumnInteger(query_result, column) {
+    let inJson = `{"query_result":${query_result}, "column":"${column}"}`;
+    return ngenxx_store_sqlite_query_read_column_integerJ(inJson);
+}
+
+function NGenXXStoreSQLiteQueryReadColumnFloat(query_result, column) {
+    let inJson = `{"query_result":${query_result}, "column":"${column}"}`;
+    return ngenxx_store_sqlite_query_read_column_floatJ(inJson);
+}
+
+function NGenXXStoreSQLiteQueryDrop(query_result) {
+    let inJson = `{"query_result":${query_result}}`;
+    ngenxx_store_sqlite_query_dropJ(inJson);
+}
+
+function NGenXXStoreSQLiteClose(conn) {
+    let inJson = `{"conn":${conn}}`;
+    ngenxx_store_sqlite_closeJ(inJson);
+}
+
+// Store.KV
+
+function NGenXXStoreKVOpen(_id) {
+    let inJson = `{"_id":"${_id}"}`;
+    return ngenxx_store_kv_openJ(inJson);
+}
+
+function NGenXXStoreKVReadString(conn, k) {
+    let inJson = `{"conn":${conn}, "k":"${k}"}`;
+    return ngenxx_store_kv_read_stringJ(inJson);
+}
+
+function NGenXXStoreKVWriteString(conn, k, s) {
+    let inJson = `{"conn":${conn}, "k":"${k}", "v":"${s}"}`;
+    return ngenxx_store_kv_write_stringJ(inJson);
+}
+
+function NGenXXStoreKVReadInteger(conn, k) {
+    let inJson = `{"conn":${conn}, "k":"${k}"}`;
+    return ngenxx_store_kv_read_integerJ(inJson);
+}
+
+function NGenXXStoreKVWriteInteger(conn, k, i) {
+    let inJson = `{"conn":${conn}, "k":"${k}", "v":${i}}`;
+    return ngenxx_store_kv_write_integerJ(inJson);
+}
+
+function NGenXXStoreKVReadFloat(conn, k) {
+    let inJson = `{"conn":${conn}, "k":"${k}"}`;
+    return ngenxx_store_kv_read_floatJ(inJson);
+}
+
+function NGenXXStoreKVWriteFloat(conn, k, f) {
+    let inJson = `{"conn":${conn}, "k":"${k}", "v":${f}}`;
+    return ngenxx_store_kv_write_floatJ(inJson);
+}
+
+function NGenXXStoreKVContains(conn, k) {
+    let inJson = `{"conn":${conn}, "k":"${k}"}`;
+    return ngenxx_store_kv_containsJ(inJson);
+}
+
+function NGenXXStoreKVRemove(conn, k) {
+    let inJson = `{"conn":${conn}, "k":"${k}"}`;
+    ngenxx_store_kv_removeJ(inJson);
+}
+
+function NGenXXStoreKVClear(conn) {
+    let inJson = `{"conn":${conn}}`;
+    ngenxx_store_kv_clearJ(inJson);
+}
+
+function NGenXXStoreKVClose(conn) {
+    let inJson = `{"conn":${conn}}`;
+    ngenxx_store_kv_closeJ(inJson);
+}
+
 // Coding
 
 function NGenXXCodingHexBytes2Str(bytes) {

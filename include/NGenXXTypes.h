@@ -8,6 +8,7 @@ extern "C" {
 
 typedef unsigned char byte;
 typedef unsigned int size;
+typedef unsigned long long address;
 
 #ifdef  __cplusplus
 }
