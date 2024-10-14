@@ -13,6 +13,12 @@ function _json2Array(json) {
     return JSON.parse(json || `[]`);
 }
 
+function _printArray(arr) {
+    arr.map((x) => {
+        NGenXXLogPrint(1, `${x}`);
+    });
+}
+
 // Utils
 
 function NGenXXStr2Bytes(str) {
@@ -21,7 +27,7 @@ function NGenXXStr2Bytes(str) {
 
 function NGenXXBytes2Str(bytes) {
     return bytes.map((b) => {
-        return String.fromCharCode(b);
+        return b > 0 ? String.fromCharCode(b) : '';
     }).join('');
 }
 
