@@ -98,6 +98,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
         offset += AES_BLOCK_SIZE;
     }
 
+    outLen = strlen((char *)out);//trim zeros
     return {out, outLen};
 }
 

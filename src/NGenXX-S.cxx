@@ -113,8 +113,9 @@ void ngenxx_log_printS(const char *json)
 
 const std::string ngenxx_net_http_requestS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
     const char *url = str2charp(decoder.readString(decoder.readNode(NULL, "url")));
     const char *params = str2charp(decoder.readString(decoder.readNode(NULL, "params")));
@@ -136,15 +137,15 @@ const std::string ngenxx_net_http_requestS(const char *json)
     const size timeout = decoder.readNumber(decoder.readNode(NULL, "timeout"));
 
     if (method < 0 || url == NULL || header_c > NGENXX_HTTP_HEADER_MAX_COUNT)
-        return NULL;
+        return s;
     if (form_field_count <= 0 && (form_field_name_v != NULL || form_field_mime_v != NULL || form_field_data_v != NULL))
-        return NULL;
+        return s;
     if (form_field_count > 0 && (form_field_name_v == NULL || form_field_mime_v == NULL || form_field_data_v == NULL))
-        return NULL;
+        return s;
     if ((cFILE > 0 && fileSize <= 0) || (cFILE <= 0 && fileSize > 0))
-        return NULL;
+        return s;
 
-    const char *res = ngenxx_net_http_request(url, params, method,
+    s = ngenxx_net_http_request(url, params, method,
                                               (const char **)header_v, (const size)header_c,
                                               (const char **)form_field_name_v, (const char **)form_field_mime_v, (const char **)form_field_data_v, (const size)form_field_count,
                                               (void *)cFILE, fileSize,
@@ -163,7 +164,7 @@ const std::string ngenxx_net_http_requestS(const char *json)
         free((void *)form_field_data_v[i]);
     }
 
-    return res;
+    return s;
 }
 
 #pragma mark Store.SQLite
@@ -231,18 +232,19 @@ bool ngenxx_store_sqlite_query_read_rowS(const char *json)
 
 const std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
     long query_result = decoder.readNumber(decoder.readNode(NULL, "query_result"));
     const char *column = str2charp(decoder.readString(decoder.readNode(NULL, "column")));
     if (query_result <= 0 || column == NULL)
-        return NULL;
+        return s;
 
-    const char *res = ngenxx_store_sqlite_query_read_column_text((void *)query_result, column);
+    s = ngenxx_store_sqlite_query_read_column_text((void *)query_result, column);
 
     free((void *)column);
-    return res;
+    return s;
 }
 
 long long ngenxx_store_sqlite_query_read_column_integerS(const char *json)
@@ -320,18 +322,19 @@ void *ngenxx_store_kv_openS(const char *json)
 
 const std::string ngenxx_store_kv_read_stringS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
     long conn = decoder.readNumber(decoder.readNode(NULL, "conn"));
     const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
     if (conn <= 0 || k == NULL)
-        return NULL;
+        return s;
 
-    const char *res = ngenxx_store_kv_read_string((void *)conn, k);
+    s = ngenxx_store_kv_read_string((void *)conn, k);
 
     free((void *)k);
-    return res;
+    return s;
 }
 
 bool ngenxx_store_kv_write_stringS(const char *json)
@@ -462,29 +465,31 @@ void ngenxx_store_kv_closeS(const char *json)
 
 const std::string ngenxx_coding_hex_bytes2strS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
-        return NULL;
+        return s;
 
-    const char *res = ngenxx_coding_hex_bytes2str(in.data(), in.size());
+    s = ngenxx_coding_hex_bytes2str(in.data(), in.size());
 
-    return res;
+    return s;
 }
 
 const std::string ngenxx_coding_hex_str2bytesS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto str = decoder.readString(decoder.readNode(NULL, "str"));
 
     if (str.size() == 0)
-        return NULL;
+        return s;
 
     size outLen;
     auto outBytes = ngenxx_coding_hex_str2bytes(str.c_str(), &outLen);
@@ -498,12 +503,13 @@ const std::string ngenxx_coding_hex_str2bytesS(const char *json)
 
 const std::string ngenxx_crypto_randS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
     size outLen = decoder.readNumber(decoder.readNode(NULL, "len"));
     if (outLen <= 0)
-        return NULL;
+        return s;
     byte outBytes[outLen];
 
     ngenxx_crypto_rand(outLen, outBytes);
@@ -514,17 +520,18 @@ const std::string ngenxx_crypto_randS(const char *json)
 
 const std::string ngenxx_crypto_aes_encryptS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
-        return NULL;
+        return s;
 
     auto key = parseByteArray(decoder, "keyBytes", "keyLen");
     if (key.size() == 0)
-        return NULL;
+        return s;
 
     size outLen;
     auto outBytes = ngenxx_crypto_aes_encrypt(in.data(), in.size(), key.data(), key.size(), &outLen);
@@ -536,17 +543,18 @@ const std::string ngenxx_crypto_aes_encryptS(const char *json)
 
 const std::string ngenxx_crypto_aes_decryptS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
-        return NULL;
+        return s;
 
     auto key = parseByteArray(decoder, "keyBytes", "keyLen");
     if (key.size() == 0)
-        return NULL;
+        return s;
 
     size outLen;
     auto outBytes = ngenxx_crypto_aes_decrypt(in.data(), in.size(), key.data(), key.size(), &outLen);
@@ -558,21 +566,22 @@ const std::string ngenxx_crypto_aes_decryptS(const char *json)
 
 const std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
-        return NULL;
+        return s;
 
     auto key = parseByteArray(decoder, "keyBytes", "keyLen");
     if (key.size() == 0)
-        return NULL;
+        return s;
 
     auto iv = parseByteArray(decoder, "initVectorBytes", "initVectorLen");
     if (iv.size() == 0)
-        return NULL;
+        return s;
 
     auto aad = parseByteArray(decoder, "aadBytes", "aadLen");
 
@@ -593,21 +602,22 @@ const std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
 
 const std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
-        return NULL;
+        return s;
 
     auto key = parseByteArray(decoder, "keyBytes", "keyLen");
     if (key.size() == 0)
-        return NULL;
+        return s;
 
     auto iv = parseByteArray(decoder, "initVectorBytes", "initVectorLen");
     if (iv.size() == 0)
-        return NULL;
+        return s;
 
     auto aad = parseByteArray(decoder, "aadBytes", "aadLen");
 
@@ -628,13 +638,14 @@ const std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
 
 const std::string ngenxx_crypto_hash_md5S(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
-        return NULL;
+        return s;
 
     size outLen;
     auto outBytes = ngenxx_crypto_hash_md5(in.data(), in.size(), &outLen);
@@ -646,13 +657,14 @@ const std::string ngenxx_crypto_hash_md5S(const char *json)
 
 const std::string ngenxx_crypto_hash_sha256S(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
-        return NULL;
+        return s;
 
     size outLen;
     auto outBytes = ngenxx_crypto_hash_sha256(in.data(), in.size(), &outLen);
@@ -664,13 +676,14 @@ const std::string ngenxx_crypto_hash_sha256S(const char *json)
 
 const std::string ngenxx_crypto_base64_encodeS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
-        return NULL;
+        return s;
 
     size outLen;
     auto outBytes = ngenxx_crypto_base64_encode(in.data(), in.size(), &outLen);
@@ -682,13 +695,14 @@ const std::string ngenxx_crypto_base64_encodeS(const char *json)
 
 const std::string ngenxx_crypto_base64_decodeS(const char *json)
 {
+    std::string s;
     if (json == NULL)
-        return NULL;
+        return s;
     NGenXX::Json::Decoder decoder(json);
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
-        return NULL;
+        return s;
 
     size outLen;
     auto outBytes = ngenxx_crypto_base64_decode(in.data(), in.size(), &outLen);

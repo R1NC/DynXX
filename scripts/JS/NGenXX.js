@@ -1,4 +1,4 @@
-function strArray2Json(strArray) {
+function _strArray2Json(strArray) {
     var json = '';
     strArray = strArray || [];
     json += '[';
@@ -7,6 +7,10 @@ function strArray2Json(strArray) {
     });
     json += ']';
     return json;
+}
+
+function _json2Array(json) {
+    return JSON.parse(json || `[]`);
 }
 
 // Utils
@@ -18,127 +22,106 @@ function NGenXXStr2Bytes(str) {
 function NGenXXBytes2Str(bytes) {
     return bytes.map((b) => {
         return String.fromCharCode(b);
-    }).join("");
+    }).join('');
 }
 
 // Log
 
 function NGenXXLogPrint(level, content) {
-    var inJson = `{"level":${level},"content":"${content}"}`;
+    content = content || ``;
+    let inJson = `{"level":${level},"content":"${content}"}`;
     ngenxx_log_printJ(inJson);
 }
 
 // Net.Http
 
-function NGenXXNetHttpReq(url, params, method, headerArray, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
+function NGenXXNetHttpRequest(url, params, method, headerArray, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
     params = params || ''
     headerArray = headerArray || []
     formFieldNameArray = formFieldNameArray || []
     formFieldMimeArray = formFieldMimeArray || []
     formFieldDataArray = formFieldDataArray || []
-    headerArrayJson = strArray2Json(headerArray)
-    formFieldNameArrayJson = strArray2Json(formFieldNameArray)
-    formFieldMimeArrayJson = strArray2Json(formFieldMimeArray)
-    formFieldDataArrayJson = strArray2Json(formFieldDataArray)
-    var inJson = `{"url":"${url}", "params":"${params}", "method":${method}, "header_v":${headerArrayJson}, "header_c":${headerArray.length}, "form_field_name_v":${formFieldNameArrayJson}, "form_field_mimeme_v":${formFieldMimeArrayJson}, "form_field_data_v":${formFieldDataArrayJson}, "form_field_count":${formFieldNameArray.length}, "timeout":${timeout}}`;
+    headerArrayJson = _strArray2Json(headerArray)
+    formFieldNameArrayJson = _strArray2Json(formFieldNameArray)
+    formFieldMimeArrayJson = _strArray2Json(formFieldMimeArray)
+    formFieldDataArrayJson = _strArray2Json(formFieldDataArray)
+    let inJson = `{"url":"${url}", "params":"${params}", "method":${method}, "header_v":${headerArrayJson}, "header_c":${headerArray.length}, "form_field_name_v":${formFieldNameArrayJson}, "form_field_mimeme_v":${formFieldMimeArrayJson}, "form_field_data_v":${formFieldDataArrayJson}, "form_field_count":${formFieldNameArray.length}, "timeout":${timeout}}`;
     return ngenxx_net_http_requestJ(inJson);
 }
 
 // Coding
 
 function NGenXXCodingHexBytes2Str(bytes) {
-    var inJson = `{"inBytes":[${bytes}], "inLen":${bytes.length}}`;
+    let inJson = `{"inBytes":[${bytes}], "inLen":${bytes.length}}`;
     return ngenxx_coding_hex_bytes2strJ(inJson);
 }
 
 function NGenXXCodingHexStr2Bytes(hexStr) {
-    var inJson = `{"str":${hexStr}}`;
-    var outBytes = ngenxx_coding_hex_str2bytesJ(inJson);
-    return JSON.parse(outBytes);
+    let inJson = `{"str":${hexStr}}`;
+    let outJson = ngenxx_coding_hex_str2bytesJ(inJson);
+    return _json2Array(outJson);
 }
 
 // Crypto
 
 function NGenXXCryptoRand(len) {
-    var inJson = `{"len":${len}}`;
-    var outBytes = ngenxx_crypto_randJ(inJson);
-    return JSON.parse(outBytes);
+    let inJson = `{"len":${len}}`;
+    let outJson = ngenxx_crypto_randJ(inJson);
+    return _json2Array(outJson);
 }
 
 // Crypto.AES
 
-function NGenXXCryptoAesEncrypt(str, key) {
-    var inBytes = NGenXXStr2Bytes(str);
-    var keyBytes = NGenXXStr2Bytes(key);
-    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}}`;
-    var outJson = ngenxx_crypto_aes_encryptJ(inJson);
-    var outBytes = JSON.parse(outJson);
-    return NGenXXCodingHexBytes2Str(outBytes);
+function NGenXXCryptoAesEncrypt(inBytes, keyBytes) {
+    let inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}}`;
+    let outJson = ngenxx_crypto_aes_encryptJ(inJson);
+    return _json2Array(outJson);
 }
 
-function NGenXXCryptoAesDecrypt(hexStr, key) {
-    var inBytes = NGenXXCodingHexStr2Bytes(hexStr);
-    var keyBytes = NGenXXStr2Bytes(key);
-    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}}`;
-    var outJson = ngenxx_crypto_aes_decryptJ(inJson);
-    var outBytes = JSON.parse(outJson);
-    return NGenXXStr2Bytes(outBytes);
+function NGenXXCryptoAesDecrypt(inBytes, keyBytes) {
+    let inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}}`;
+    let outJson = ngenxx_crypto_aes_decryptJ(inJson);
+    return _json2Array(outJson);
 }
 
-function NGenXXCryptoAesGcmEncrypt(str, key, iv, aad, tagBits) {
-    var inBytes = NGenXXStr2Bytes(str);
-    var keyBytes = NGenXXStr2Bytes(key);
-    var ivBytes = NGenXXStr2Bytes(iv);
-    var aadBytes = NGenXXStr2Bytes(aad) || [];
-    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}, "initVectorBytes":[${ivBytes}], "initVectorLen":${ivBytes.length}, "aadBytes":[${aadBytes}], "aadLen":${aadBytes.length}, "tagBits":${tagBits}}`;
-    var outJson = ngenxx_crypto_aes_gcm_encryptJ(inJson);
-    var outBytes = JSON.parse(outJson);
-    return NGenXXCodingHexBytes2Str(outBytes);
+function NGenXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, aadBytes, tagBits) {
+    aadBytes = aadBytes || [];
+    let inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}, "initVectorBytes":[${ivBytes}], "initVectorLen":${ivBytes.length}, "aadBytes":[${aadBytes}], "aadLen":${aadBytes.length}, "tagBits":${tagBits}}`;
+    let outJson = ngenxx_crypto_aes_gcm_encryptJ(inJson);
+    return _json2Array(outJson);
 }
 
-function NGenXXCryptoAesGcmDecrypt(hexStr, key, iv, aad, tagBits) {
-    var inBytes = NGenXXCodingHexStr2Bytes(hexStr);
-    var keyBytes = NGenXXStr2Bytes(key);
-    var ivBytes = NGenXXStr2Bytes(iv);
-    var aadBytes = NGenXXStr2Bytes(aad) || [];
-    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}, "initVectorBytes":[${ivBytes}], "initVectorLen":${ivBytes.length}, "aadBytes":[${aadBytes}], "aadLen":${aadBytes.length}, "tagBits":${tagBits}}`;
-    var outJson = ngenxx_crypto_aes_gcm_decryptJ(inJson);
-    var outBytes = JSON.parse(outJson);
-    return NGenXXStr2Bytes(outBytes);
+function NGenXXCryptoAesGcmDecrypt(inBytes, keyBytes, ivBytes, aadBytes, tagBits) {
+    aadBytes = aadBytes || [];
+    let inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}, "keyBytes":[${keyBytes}], "keyLen":${keyBytes.length}, "initVectorBytes":[${ivBytes}], "initVectorLen":${ivBytes.length}, "aadBytes":[${aadBytes}], "aadLen":${aadBytes.length}, "tagBits":${tagBits}}`;
+    let outJson = ngenxx_crypto_aes_gcm_decryptJ(inJson);
+    return _json2Array(outJson);
 }
 
 // Crypto.Hash
 
-function NGenXXCryptoHashMD5(str) {
-    var inBytes = NGenXXStr2Bytes(str);
-    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
-    var outJson = ngenxx_crypto_hash_md5J(inJson);
-    var outBytes = JSON.parse(outJson);
-    return NGenXXCodingHexBytes2Str(outBytes);
+function NGenXXCryptoHashMD5(inBytes) {
+    let inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
+    let outJson = ngenxx_crypto_hash_md5J(inJson);
+    return _json2Array(outJson);
 }
 
-function NGenXXCryptoHashSHA256(str) {
-    var inBytes = NGenXXStr2Bytes(str);
-    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
-    var outJson = ngenxx_crypto_hash_sha256J(inJson);
-    var outBytes = JSON.parse(outJson);
-    return NGenXXCodingHexBytes2Str(outBytes);
+function NGenXXCryptoHashSHA256(inBytes) {
+    let inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
+    let outJson = ngenxx_crypto_hash_sha256J(inJson);
+    return _json2Array(outJson);
 }
 
 // Crypto.Base64
 
-function NGenXXCryptoBase64Encode(str) {
-    var inBytes = NGenXXStr2Bytes(s);
-    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
-    var outJson = ngenxx_crypto_base64_encodeJ(inJson);
-    var outBytes = JSON.parse(outJson);
-    return NGenXXStr2Bytes(outBytes);
+function NGenXXCryptoBase64Encode(inBytes) {
+    let inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
+    let outJson = ngenxx_crypto_base64_encodeJ(inJson);
+    return _json2Array(outJson);
 }
 
-function NGenXXCryptoBase64Decode(str) {
-    var inBytes = NGenXXStr2Bytes(str);
-    var inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
-    var outJson = ngenxx_crypto_base64_decodeJ(inJson);
-    var outBytes = JSON.parse(outJson);
-    return NGenXXStr2Bytes(outBytes);
+function NGenXXCryptoBase64Decode(inBytes) {
+    let inJson = `{"inBytes":[${inBytes}], "inLen":${inBytes.length}}`;
+    let outJson = ngenxx_crypto_base64_decodeJ(inJson);
+    return _json2Array(outJson);
 }
