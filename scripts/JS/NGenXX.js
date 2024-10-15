@@ -33,6 +33,14 @@ function NGenXXBytes2Str(bytes) {
 
 // Log
 
+const NGenXXLogLevel = Object.freeze({
+    Info: 0,
+    Debug: 1,
+    Warn: 2,
+    Error: 3,
+    None: 4
+});
+
 function NGenXXLogPrint(level, content) {
     content = content || ``;
     let inJson = `{"level":${level},"content":"${content}"}`;

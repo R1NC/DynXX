@@ -36,7 +36,7 @@ function jTestStoreKV() {
         }
         NGenXXStoreKVWriteString(conn, kS, "NGenXX");
         let vS = NGenXXStoreKVReadString(conn, kS);
-        NGenXXLogPrint(1, `KV read ${kS}: ${vS}`);
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `KV read ${kS}: ${vS}`);
 
         let kI = "kI";
         if (NGenXXStoreKVContains(conn, kI)) {
@@ -44,7 +44,7 @@ function jTestStoreKV() {
         }
         NGenXXStoreKVWriteInteger(conn, kI, 12345678909666666);
         let vI = NGenXXStoreKVReadInteger(conn, kI);
-        NGenXXLogPrint(1, `KV read ${kI}: ${vI}`);
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `KV read ${kI}: ${vI}`);
 
         let kF = "kF";
         if (NGenXXStoreKVContains(conn, kF)) {
@@ -52,11 +52,11 @@ function jTestStoreKV() {
         }
         NGenXXStoreKVWriteFloat(conn, kF, -0.12345678987654321);
         let vF = NGenXXStoreKVReadFloat(conn, kF);
-        NGenXXLogPrint(1, `KV read ${kF}: ${vF}`);
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `KV read ${kF}: ${vF}`);
 
         NGenXXStoreKVClose(conn);
     } else {
-        NGenXXLogPrint(1, `KV open failed!!!`);
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `KV open failed!!!`);
     }
 }
 
@@ -81,19 +81,19 @@ function jTestStoreSQLite() {
                     let s = NGenXXStoreSQLiteQueryReadColumnText(queryResult, 's');
                     let i = NGenXXStoreSQLiteQueryReadColumnInteger(queryResult, 'i');
                     let f = NGenXXStoreSQLiteQueryReadColumnFloat(queryResult, 'f');
-                    NGenXXLogPrint(1, `s:${s} i:${i} f:${f}`);
+                    NGenXXLogPrint(NGenXXLogLevel.Debug, `s:${s} i:${i} f:${f}`);
                 }
 
                 NGenXXStoreSQLiteQueryDrop(queryResult);
             } else {
-                NGenXXLogPrint(1, `SQLite query failed!!!`);
+                NGenXXLogPrint(NGenXXLogLevel.Debug, `SQLite query failed!!!`);
             }
         } else {
-            NGenXXLogPrint(1, `SQLite execute failed!!!`);
+            NGenXXLogPrint(NGenXXLogLevel.Debug, `SQLite execute failed!!!`);
         }
         NGenXXStoreSQLiteClose(conn);
     } else {
-        NGenXXLogPrint(1, `SQLite open failed!!!`);
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `SQLite open failed!!!`);
     }
 }
 
@@ -101,11 +101,11 @@ function jTestCryptoBase64(s) {
     let inBytes = NGenXXStr2Bytes(s);
     let enBytes = NGenXXCryptoBase64Encode(inBytes);
     let enS = NGenXXBytes2Str(enBytes);
-    NGenXXLogPrint(1, `Base64 encoded: ${enS}`);
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `Base64 encoded: ${enS}`);
 
     let deBytes = NGenXXCryptoBase64Decode(enBytes);
     let deS = NGenXXBytes2Str(deBytes);
-    NGenXXLogPrint(1, `Base64 decoded: ${deS}`);
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `Base64 decoded: ${deS}`);
 }
 
 function jTestCryptoHash(s) {
@@ -113,11 +113,11 @@ function jTestCryptoHash(s) {
 
     let md5Bytes = NGenXXCryptoHashMD5(inBytes);
     let md5S = NGenXXCodingHexBytes2Str(md5Bytes);
-    NGenXXLogPrint(1, `MD5: ${md5S}`);
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `MD5: ${md5S}`);
 
     let sha256Bytes = NGenXXCryptoHashSHA256(s);
     let sha256S = NGenXXCodingHexBytes2Str(sha256Bytes);
-    NGenXXLogPrint(1, `SHA256: ${sha256S}`);
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `SHA256: ${sha256S}`);
 }
 
 let AES_KEY = "QWERTYUIOPASDFGH";
@@ -128,11 +128,11 @@ function jTestCryptoAes(s) {
 
     let enBytes = NGenXXCryptoAesEncrypt(inBytes, keyBytes);
     let enS = NGenXXCodingHexBytes2Str(enBytes);
-    NGenXXLogPrint(1, `AES encoded: ${enS}`);
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `AES encoded: ${enS}`);
 
     let deBytes = NGenXXCryptoAesDecrypt(enBytes, keyBytes);
     let deS = NGenXXBytes2Str(deBytes);
-    NGenXXLogPrint(1, `AES decoded: ${deS}`);
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `AES decoded: ${deS}`);
 }
 
 function jTestCryptoAesGcm(s) {
@@ -144,9 +144,9 @@ function jTestCryptoAesGcm(s) {
 
     let enBytes = NGenXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, aadBytes, tagBits);
     let enS = NGenXXCodingHexBytes2Str(enBytes);
-    NGenXXLogPrint(1, `AES-GCM encoded: ${enS}`);
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `AES-GCM encoded: ${enS}`);
 
     let deBytes = NGenXXCryptoAesGcmDecrypt(enBytes, keyBytes, ivBytes, aadBytes, tagBits);
     let deS = NGenXXBytes2Str(deBytes);
-    NGenXXLogPrint(1, `AES-GCM decoded: ${deS}`);
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `AES-GCM decoded: ${deS}`);
 }
