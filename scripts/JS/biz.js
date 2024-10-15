@@ -1,10 +1,29 @@
-function jTestNetHttpReq() {
-    let url = "https://rinc.xyz";
+function jTestStdOs() {
+    std.puts(`Test JS std & os at ${os.now()}...\n`);
+
+    let url = 'https://rinc.xyz';
+    os.sleep(3333);
+    std.puts(`Send HTTP req from JS async at ${os.now()}...\n`);
+    
+    std.evalScript(`jTestNetHttpReq("${url}");`, {async: true})
+    .then(res => {
+        std.puts(res);
+    }, err => {
+        std.puts(err);
+    });
+    
+    std.gc();
+    //std.exit(0);
+}
+
+function jTestNetHttpReq(url) {
     let params = "p0=1&p1=2";
     let method = 0;
     let headerV = ["Cache-Control: no-cache"];
     let timeout = 55555;
-    return NGenXXNetHttpRequest(url, params, method, headerV, null, null, null, timeout);
+    let rsp = NGenXXNetHttpRequest(url, params, method, headerV, null, null, null, timeout);
+    console.log(rsp);
+    return rsp;
 }
 
 function jTestStoreKV() {
@@ -18,7 +37,7 @@ function jTestStoreKV() {
         NGenXXStoreKVWriteString(conn, kS, "NGenXX");
         let vS = NGenXXStoreKVReadString(conn, kS);
         NGenXXLogPrint(1, `KV read ${kS}: ${vS}`);
-        
+
         let kI = "kI";
         if (NGenXXStoreKVContains(conn, kI)) {
             NGenXXStoreKVRemove(conn, kI);
@@ -26,7 +45,7 @@ function jTestStoreKV() {
         NGenXXStoreKVWriteInteger(conn, kI, 12345678909666666);
         let vI = NGenXXStoreKVReadInteger(conn, kI);
         NGenXXLogPrint(1, `KV read ${kI}: ${vI}`);
-        
+
         let kF = "kF";
         if (NGenXXStoreKVContains(conn, kF)) {
             NGenXXStoreKVRemove(conn, kF);
@@ -34,7 +53,7 @@ function jTestStoreKV() {
         NGenXXStoreKVWriteFloat(conn, kF, -0.12345678987654321);
         let vF = NGenXXStoreKVReadFloat(conn, kF);
         NGenXXLogPrint(1, `KV read ${kF}: ${vF}`);
-        
+
         NGenXXStoreKVClose(conn);
     } else {
         NGenXXLogPrint(1, `KV open failed!!!`);
@@ -64,7 +83,7 @@ function jTestStoreSQLite() {
                     let f = NGenXXStoreSQLiteQueryReadColumnFloat(queryResult, 'f');
                     NGenXXLogPrint(1, `s:${s} i:${i} f:${f}`);
                 }
-                
+
                 NGenXXStoreSQLiteQueryDrop(queryResult);
             } else {
                 NGenXXLogPrint(1, `SQLite query failed!!!`);

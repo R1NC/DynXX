@@ -5,6 +5,11 @@
 #include <sstream>
 #include <streambuf>
 
+constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'std';\n"
+                                         "import * as os from 'os';\n"
+                                         "globalThis.std = std;\n"
+                                         "globalThis.os = os;\n";
+
 static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
 {
     const char *str = JS_ToCString(ctx, val);
@@ -18,7 +23,7 @@ static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
 void _ngenxx_js_dump_err(JSContext *ctx)
 {
     JSValue exception_val = JS_GetException(ctx);
-    
+
     _ngenxx_js_print_err(ctx, exception_val);
     if (JS_IsError(ctx, exception_val))
     {
@@ -37,10 +42,25 @@ NGenXX::JsBridge::JsBridge()
 {
     this->runtime = JS_NewRuntime();
     this->context = JS_NewContext(this->runtime);
+
     js_std_add_helpers(this->context, 0, NULL);
     js_std_init_handlers(this->runtime);
     js_init_module_std(this->context, "std");
     js_init_module_os(this->context, "os");
+    JSValue std_val = JS_Eval(this->context, IMPORT_STD_OS_JS, strlen(IMPORT_STD_OS_JS), "import-std-os.js", JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
+    if (!JS_IsException(std_val))
+    {
+        js_module_set_import_meta(this->context, std_val, 1, 1);
+        std_val = JS_EvalFunction(this->context, std_val);
+    }
+    else
+    {
+        Log::print(NGenXXLogLevelError, "JS Import std/os failed ->");
+        _ngenxx_js_dump_err(this->context);
+    }
+    std_val = js_std_await(this->context, std_val);
+    JS_FreeValue(this->context, std_val);
+
     this->global = JS_GetGlobalObject(this->context);
 }
 
