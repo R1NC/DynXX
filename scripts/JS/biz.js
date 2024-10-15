@@ -17,7 +17,7 @@ function jTestStdOs() {
 }
 
 function jTestNetHttpReq(url) {
-    let method = EworldHttpMethod.Get;
+    let method = NGenXXHttpMethod.Get;
     let timeout = 55555;
     
     var paramMap = new Map();
