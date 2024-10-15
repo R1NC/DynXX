@@ -172,11 +172,11 @@ const std::string ngenxx_net_http_requestS(const char *json)
 address ngenxx_store_sqlite_openS(const char *json)
 {
     if (json == NULL)
-        return NULL;
+        return 0;
     NGenXX::Json::Decoder decoder(json);
     const char *_id = str2charp(decoder.readString(decoder.readNode(NULL, "_id")));
     if (_id == NULL)
-        return NULL;
+        return 0;
 
     void *db = ngenxx_store_sqlite_open(_id);
 
@@ -203,12 +203,12 @@ bool ngenxx_store_sqlite_executeS(const char *json)
 address ngenxx_store_sqlite_query_doS(const char *json)
 {
     if (json == NULL)
-        return NULL;
+        return 0;
     NGenXX::Json::Decoder decoder(json);
     auto conn = (address)decoder.readNumber(decoder.readNode(NULL, "conn"));
     const char *sql = str2charp(decoder.readString(decoder.readNode(NULL, "sql")));
     if (conn <= 0 || sql == NULL)
-        return NULL;
+        return 0;
 
     void *res = ngenxx_store_sqlite_query_do((void *)conn, sql);
 
@@ -308,11 +308,11 @@ void ngenxx_store_sqlite_closeS(const char *json)
 address ngenxx_store_kv_openS(const char *json)
 {
     if (json == NULL)
-        return NULL;
+        return 0;
     NGenXX::Json::Decoder decoder(json);
     const char *_id = str2charp(decoder.readString(decoder.readNode(NULL, "_id")));
     if (_id == NULL)
-        return NULL;
+        return 0;
 
     void *res = ngenxx_store_kv_open(_id);
 

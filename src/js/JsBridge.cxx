@@ -17,7 +17,7 @@ static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
 
 void _ngenxx_js_dump_err(JSContext *ctx)
 {
-    JSValue exception_val = exception_val = JS_GetException(ctx);
+    JSValue exception_val = JS_GetException(ctx);
     
     _ngenxx_js_print_err(ctx, exception_val);
     if (JS_IsError(ctx, exception_val))
