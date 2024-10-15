@@ -1,12 +1,29 @@
-function _strArray2Json(strArray) {
-    var json = '';
-    strArray = strArray || [];
-    json += '[';
-    strArray.forEach((item, index, arr) => {
-        json += `"${item}"`;
+function _Array2Str(array) {
+    var s = '';
+    array = array || [];
+    array.forEach((item, index, arr) => {
+        s += `${item}`;
     });
-    json += ']';
-    return json;
+    return s;
+}
+
+function _Map2UrlStr(map) {
+    map = map || new Map();
+    var s = '';
+    map.forEach((v, k) => {
+        s += s.length === 0 ? '?' : '&';
+        s += `${k}=${v}`;
+    });
+    return s;
+}
+
+function _Map2StrArrayJson(map) {
+    var arr = [];
+    map = map || new Map();
+    map.forEach((v, k) => {
+        arr.push(`"${k}=${v}"`);
+    });
+    return arr;
 }
 
 function _json2Array(json) {
@@ -15,7 +32,7 @@ function _json2Array(json) {
 
 function _printArray(arr) {
     arr.map((x) => {
-        NGenXXLogPrint(1, `${x}`);
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `${x}`);
     });
 }
 
@@ -43,23 +60,34 @@ const NGenXXLogLevel = Object.freeze({
 
 function NGenXXLogPrint(level, content) {
     content = content || ``;
-    let inJson = `{"level":${level},"content":"${content}"}`;
+    let inJson = `{"level":${level}, "content":"${content}"}`;
     ngenxx_log_printJ(inJson);
 }
 
 // Net.Http
 
-function NGenXXNetHttpRequest(url, params, method, headerArray, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
-    params = params || ''
-    headerArray = headerArray || []
-    formFieldNameArray = formFieldNameArray || []
-    formFieldMimeArray = formFieldMimeArray || []
-    formFieldDataArray = formFieldDataArray || []
-    headerArrayJson = _strArray2Json(headerArray)
-    formFieldNameArrayJson = _strArray2Json(formFieldNameArray)
-    formFieldMimeArrayJson = _strArray2Json(formFieldMimeArray)
-    formFieldDataArrayJson = _strArray2Json(formFieldDataArray)
-    let inJson = `{"url":"${url}", "params":"${params}", "method":${method}, "header_v":${headerArrayJson}, "header_c":${headerArray.length}, "form_field_name_v":${formFieldNameArrayJson}, "form_field_mimeme_v":${formFieldMimeArrayJson}, "form_field_data_v":${formFieldDataArrayJson}, "form_field_count":${formFieldNameArray.length}, "timeout":${timeout}}`;
+const NGenXXHttpMethod = Object.freeze({
+    Get: 0,
+    Post: 1,
+    Put: 2
+});
+
+function NGenXXNetHttpRequest(url, paramMap, method, headerMap, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
+    paramStr = _Map2UrlStr(paramMap);
+    headerMap = headerMap || new Map();
+    headerArrayStr = _Map2StrArrayJson(headerMap);
+    
+    formFieldNameArray = formFieldNameArray || [];
+    formFieldMimeArray = formFieldMimeArray || [];
+    formFieldDataArray = formFieldDataArray || [];
+    formFieldNameArrayStr = _Array2Str(formFieldNameArray);
+    formFieldMimeArrayStr = _Array2Str(formFieldMimeArray);
+    formFieldDataArrayStr = _Array2Str(formFieldDataArray);
+    
+    let inJson = `{"url":"${url}", "params":"${paramStr}", "method":${method}, "header_v":[${headerArrayStr}], "header_c":${headerMap.size}, "form_field_name_v":[${formFieldNameArrayStr}], "form_field_mimeme_v":[${formFieldMimeArrayStr}], "form_field_data_v":[${formFieldDataArrayStr}], "form_field_count":${formFieldNameArray.length}, "timeout":${timeout}}`;
+    
+    console.log(inJson);
+    
     return ngenxx_net_http_requestJ(inJson);
 }
 

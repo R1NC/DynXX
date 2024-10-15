@@ -17,11 +17,18 @@ function jTestStdOs() {
 }
 
 function jTestNetHttpReq(url) {
-    let params = "p0=1&p1=2";
-    let method = 0;
-    let headerV = ["Cache-Control: no-cache"];
+    let method = EworldHttpMethod.Get;
     let timeout = 55555;
-    let rsp = NGenXXNetHttpRequest(url, params, method, headerV, null, null, null, timeout);
+    
+    var paramMap = new Map();
+    paramMap.set('p0', 123);
+    paramMap.set('p1', 'abc');
+    
+    var headerMap = new Map();
+    headerMap.set('User-Agent', 'NGenXX');
+    headerMap.set('Cache-Control', 'no-cache');
+    
+    let rsp = NGenXXNetHttpRequest(url, paramMap, method, headerMap, null, null, null, timeout);
     console.log(rsp);
     return rsp;
 }
