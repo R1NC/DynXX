@@ -453,7 +453,7 @@ function NGenXXCryptoBase64Decode(inBytes) {
 
 // Z.Atomic
 
-const NGenXXZipMode = Object.freeze({
+const NGenXXZZipMode = Object.freeze({
     Default: -1,
     PreferSpeed: 1,
     PreferSize: 9
@@ -544,8 +544,7 @@ function NGenXXZUnZipRelease(unzip) {
 
 let NGenXXZBufferSize = 1024 * 16;
 
-function NGenXXZStream(readFunc, writeFunc, flushFunc, z, inputFunc, processDoFunc, processFinishedFunc) {
-    let bufferSize = NGenXXZBufferSize;
+function NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc, z, inputFunc, processDoFunc, processFinishedFunc) {
     var buffer = new Array(bufferSize);
 
     var inputFinished = false;
@@ -571,9 +570,10 @@ function NGenXXZStream(readFunc, writeFunc, flushFunc, z, inputFunc, processDoFu
 }
 
 function NGenXXZZipStream(mode, readFunc, writeFunc, flushFunc) {
+    let bufferSize = NGenXXZBufferSize;
     let zip = NGenXXZZipInit(mode, bufferSize);
 
-    let res = NGenXXZStream(readFunc, writeFunc, flushFunc, zip,
+    let res = NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc, zip,
         (z, buffer, inputFinished) => {
             return NGenXXZZipInput(z, buffer, inputFinished);
         }, (z) => {
@@ -587,9 +587,10 @@ function NGenXXZZipStream(mode, readFunc, writeFunc, flushFunc) {
 }
 
 function NGenXXZUnZipStream(readFunc, writeFunc, flushFunc) {
+    let bufferSize = NGenXXZBufferSize;
     let unzip = NGenXXZUnZipInit(bufferSize);
 
-    let res = NGenXXZStream(readFunc, writeFunc, flushFunc, unzip,
+    let res = NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc, unzip,
         (z, buffer, inputFinished) => {
             return NGenXXZUnZipInput(z, buffer, inputFinished);
         }, (z) => {
