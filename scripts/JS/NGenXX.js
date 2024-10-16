@@ -114,7 +114,7 @@ function NGenXXNetHttpRequest(url, paramMap, method, headerMap, formFieldNameArr
     formFieldNameArray = formFieldNameArray || [];
     formFieldMimeArray = formFieldMimeArray || [];
     formFieldDataArray = formFieldDataArray || [];
-    
+
     let inJson = JSON.stringify({
         "url": url,
         "method": method,
@@ -127,7 +127,7 @@ function NGenXXNetHttpRequest(url, paramMap, method, headerMap, formFieldNameArr
         "form_field_count": formFieldNameArray.length,
         "timeout": timeout
     });
-    
+
     return ngenxx_net_http_requestJ(inJson);
 }
 
@@ -441,4 +441,93 @@ function NGenXXCryptoBase64Decode(inBytes) {
     });
     let outJson = ngenxx_crypto_base64_decodeJ(inJson);
     return _json2Array(outJson);
+}
+
+// Zip
+
+const NGenXXZipMode = Object.freeze({
+    Default: -1,
+    PreferSpeed: 1,
+    PreferSize: 9
+});
+
+function NGenXXZZipInit(mode, bufferSize) {
+    let inJson = JSON.stringify({
+        "mode": mode,
+        "bufferSize": bufferSize
+    });
+    return ngenxx_z_zip_initJ(inJson);
+}
+
+function NGenXXZZipInput(zip, bytes, len, finish) {
+    bytes = bytes || [];
+    let inJson = JSON.stringify({
+        "zip": zip,
+        "in": bytes,
+        "inLen": bytes.length,
+        "inFinish": finish
+    });
+    return ngenxx_z_zip_inputJ(inJson);
+}
+
+function NGenXXZZipProcessDo(zip) {
+    let inJson = JSON.stringify({
+        "zip": zip
+    });
+    let outJson = ngenxx_z_zip_process_doJ(inJson);
+    return _json2Array(outJson);
+}
+
+function NGenXXZZipProcessFinished(zip) {
+    let inJson = JSON.stringify({
+        "zip": zip
+    });
+    ngenxx_z_zip_process_finishedJ(inJson);
+}
+
+function NGenXXZZipRelease(zip) {
+    let inJson = JSON.stringify({
+        "zip": zip
+    });
+    ngenxx_z_zip_releaseJ(inJson);
+}
+
+function NGenXXZUnZipInit(bufferSize) {
+    let inJson = JSON.stringify({
+        "bufferSize": bufferSize
+    });
+    return ngenxx_z_unzip_initJ(inJson);
+}
+
+function NGenXXZUnZipInput(unzip, bytes, len, finish) {
+    bytes = bytes || [];
+    let inJson = JSON.stringify({
+        "unzip": unzip,
+        "in": bytes,
+        "inLen": bytes.length,
+        "inFinish": finish
+    });
+    return ngenxx_z_unzip_inputJ(inJson);
+}
+
+function NGenXXZUnZipProcessDo(unzip) {
+    let inJson = JSON.stringify({
+        "unzip": unzip
+    });
+    let outJson = ngenxx_z_unzip_process_doJ(inJson);
+    return _json2Array(outJson);
+}
+
+function NGenXXZUnZipProcessFinished(unzip) {
+    let inJson = JSON.stringify({
+        "unzip": unzip
+    });
+    ngenxx_z_unzip_process_finishedJ(inJson);
+}
+
+function NGenXXZUnZipRelease(unzip) {
+    let inJson = JSON.stringify({
+        "unzip": unzip
+    });
+    ngenxx_z_unzip_releaseJ(inJson);
 }
