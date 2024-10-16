@@ -67,6 +67,11 @@ const std::string ngenxx_get_versionS(const char *json)
     return ngenxx_get_version();
 }
 
+const std::string ngenxx_root_pathS(const char *json)
+{
+    return ngenxx_root_path();
+}
+
 #pragma mark Device.DeviceInfo
 
 int ngenxx_device_typeS(const char *json)

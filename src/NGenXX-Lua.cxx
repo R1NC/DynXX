@@ -58,6 +58,7 @@ static NGenXX::LuaBridge *_ngenxx_lua;
     }
 
 DEF_LUA_FUNC_STRING(ngenxx_get_versionL, ngenxx_get_versionS)
+DEF_LUA_FUNC_STRING(ngenxx_root_pathL, ngenxx_root_pathS)
 
 DEF_LUA_FUNC_INTEGER(ngenxx_device_typeL, ngenxx_device_typeS)
 DEF_LUA_FUNC_STRING(ngenxx_device_nameL, ngenxx_device_nameS)
@@ -146,6 +147,7 @@ const char *ngenxx_L_call(const char *func, const char *params)
 void _ngenxx_export_funcs_for_lua()
 {
     BIND_LUA_FUNC(ngenxx_get_versionL);
+    BIND_LUA_FUNC(ngenxx_root_pathL);
 
     BIND_LUA_FUNC(ngenxx_log_printL);
 

@@ -36,6 +36,14 @@ function _printArray(arr) {
     });
 }
 
+function NGenXXGetVersion() {
+    return ngenxx_get_versionJ();
+}
+
+function NGenXXRootPath() {
+    return ngenxx_root_pathJ();
+}
+
 // Log
 
 const NGenXXLogLevel = Object.freeze({

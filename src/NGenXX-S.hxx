@@ -8,6 +8,7 @@
 #include <string>
 
 const std::string ngenxx_get_versionS(const char *json);
+const std::string ngenxx_root_pathS(const char *json);
 
 int ngenxx_device_typeS(const char *json);
 const std::string ngenxx_device_nameS(const char *json);

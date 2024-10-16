@@ -63,6 +63,8 @@ static NGenXX::JsBridge *_ngenxx_js;
     }
 
 DEF_JS_FUNC_STRING(ngenxx_get_versionJ, ngenxx_get_versionS)
+DEF_JS_FUNC_STRING(ngenxx_root_pathJ, ngenxx_root_pathS)
+
 DEF_JS_FUNC_INT32(ngenxx_device_typeJ, ngenxx_device_typeS)
 DEF_JS_FUNC_STRING(ngenxx_device_nameJ, ngenxx_device_nameS)
 DEF_JS_FUNC_STRING(ngenxx_device_manufacturerJ, ngenxx_device_manufacturerS)
@@ -150,6 +152,7 @@ const char *ngenxx_J_call(const char *func, const char *params)
 void registerJsModule()
 {
     BIND_JS_FUNC(ngenxx_get_versionJ);
+    BIND_JS_FUNC(ngenxx_root_pathJ);
 
     BIND_JS_FUNC(ngenxx_log_printJ);
 

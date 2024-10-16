@@ -33,6 +33,12 @@ const char *ngenxx_get_version(void);
 bool ngenxx_init(const char *root);
 
 /**
+ * @brief Read the root path
+ * @return the root path
+ */
+const char *ngenxx_root_path();
+
+/**
  * @brief Release SDK
  * @warning Not accessible in Lua!
  */

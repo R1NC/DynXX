@@ -56,6 +56,13 @@ bool ngenxx_init(const char *root)
     return true;
 }
 
+EXPORT_AUTO
+const char *ngenxx_root_path()
+{
+    if (!_ngenxx_root) return NULL;
+    return str2charp(*_ngenxx_root);
+}
+
 EXPORT
 void ngenxx_release()
 {
