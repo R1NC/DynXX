@@ -36,18 +36,6 @@ function _printArray(arr) {
     });
 }
 
-// Utils
-
-function NGenXXStr2Bytes(str) {
-    return Array.from(str, char => char.charCodeAt(0))
-}
-
-function NGenXXBytes2Str(bytes) {
-    return bytes.map((b) => {
-        return b > 0 ? String.fromCharCode(b) : '';
-    }).join('');
-}
-
 // Log
 
 const NGenXXLogLevel = Object.freeze({
@@ -65,6 +53,51 @@ function NGenXXLogPrint(level, content) {
         "content": content
     });
     ngenxx_log_printJ(inJson);
+}
+
+// DeviceInfo
+
+const NGenXXDeviceType = Object.freeze({
+    Unknown: 0,
+    Android: 1,
+    ApplePhone: 2,
+    ApplePad: 3,
+    AppleMac: 4,
+    AppleWatch: 5,
+    AppleTV: 6,
+    HarmonyOS: 7,
+    Windows: 8,
+    Linux: 9,
+    Web: 10
+});
+
+const NGenXXDeviceCpuArch = Object.freeze({
+    Unknown: 0,
+    X86: 1,
+    X86_64: 2,
+    IA64: 3,
+    ARM: 4,
+    ARM_64: 5
+});
+
+function NGenXXDeviceType() {
+    return ngenxx_sdk_engine_device_typeJ();
+}
+
+function NGenXXDeviceName() {
+    return ngenxx_sdk_engine_device_nameJ();
+}
+
+function NGenXXDeviceManufacturer() {
+    return ngenxx_sdk_engine_device_manufacturerJ();
+}
+
+function NGenXXDeviceOsVersion() {
+    return ngenxx_sdk_engine_device_os_versionJ();
+}
+
+function NGenXXDeviceCpuArch() {
+    return ngenxx_sdk_engine_device_cpu_archJ();
 }
 
 // Net.Http
@@ -259,6 +292,16 @@ function NGenXXStoreKVClose(conn) {
 }
 
 // Coding
+
+function NGenXXStr2Bytes(str) {
+    return Array.from(str, char => char.charCodeAt(0))
+}
+
+function NGenXXBytes2Str(bytes) {
+    return bytes.map((b) => {
+        return b > 0 ? String.fromCharCode(b) : '';
+    }).join('');
+}
 
 function NGenXXCodingHexBytes2Str(bytes) {
     bytes = bytes || [];

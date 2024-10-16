@@ -16,6 +16,19 @@ function jTestStdOs() {
     //std.exit(0);
 }
 
+function jTestDeviceInfo() {
+    let deviceType = NGenXXDeviceType();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceType:${deviceType}`);
+    let deviceName = NGenXXDeviceName();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceName:${deviceName}`);
+    let deviceManufacturer = NGenXXDeviceManufacturer();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceManufacturer:${deviceManufacturer}`);
+    let deviceOsVersion = NGenXXDeviceOsVersion();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceOsVersion:${deviceOsVersion}`);
+    let deviceCpuArch = NGenXXDeviceCpuArch();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceCpuArch:${deviceCpuArch}`);
+}
+
 function jTestNetHttpReq(url) {
     let method = NGenXXHttpMethod.Get;
     let timeout = 55555;
