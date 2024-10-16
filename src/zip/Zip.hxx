@@ -10,6 +10,7 @@
 #ifdef __cplusplus
 
 #include "../../include/NGenXXZip.h"
+#include "../NGenXX-Types.hxx"
 #include <istream>
 #include <ostream>
 #include <cstdio>
@@ -34,7 +35,7 @@ namespace NGenXX
         public:
             ZBase() = delete;
             ZBase(const size bufferSize);
-            const size input(const byte *in, const size inLen, bool inFinish);
+            const size input(const Bytes bytes, bool inFinish);
             const byte *processDo(size *outLen);
             const bool processFinished();
             virtual ~ZBase();

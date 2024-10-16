@@ -544,7 +544,7 @@ EXPORT_AUTO
 const size ngenxx_z_zip_input(const void *zip, const byte *in, const size inLen, const bool inFinish)
 {
     if (zip == NULL) return 0;
-    return ((NGenXX::Z::Zip *)zip)->input(in, inLen, inFinish);
+    return ((NGenXX::Z::Zip *)zip)->input({in, inLen}, inFinish);
 }
 
 EXPORT_AUTO
@@ -584,7 +584,7 @@ EXPORT_AUTO
 const size ngenxx_z_unzip_input(const void *unzip, const byte *in, const size inLen, const bool inFinish)
 {
     if (unzip == NULL) return 0;
-    return ((NGenXX::Z::UnZip *)unzip)->input(in, inLen, inFinish);
+    return ((NGenXX::Z::UnZip *)unzip)->input({in, inLen}, inFinish);
 }
 
 EXPORT_AUTO

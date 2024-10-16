@@ -29,8 +29,9 @@ NGenXX::Z::ZBase::ZBase(const size bufferSize) : bufferSize{bufferSize}
     this->outBuffer = (byte *)malloc(sizeof(byte) * bufferSize + 1);
 }
 
-const size NGenXX::Z::ZBase::input(const byte *in, const size inLen, bool inFinish)
+const size NGenXX::Z::ZBase::input(const Bytes bytes, bool inFinish)
 {
+    auto [in, inLen] = bytes;
     if (in == NULL || inLen <= 0)
         return 0;
     size dataLen = std::min(inLen, this->bufferSize);
@@ -132,7 +133,7 @@ bool zProcess(const size bufferSize,
     {
         size inLen = sReadF({inBuffer, bufferSize});
         inputFinished = inLen < bufferSize;
-        int ret = zb.input(inBuffer, inLen, inputFinished);
+        int ret = zb.input({inBuffer, inLen}, inputFinished);
         if (ret == 0L)
         {
             return false;
