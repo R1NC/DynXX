@@ -80,24 +80,24 @@ const NGenXXDeviceCpuArch = Object.freeze({
     ARM_64: 5
 });
 
-function NGenXXDeviceType() {
-    return ngenxx_sdk_engine_device_typeJ();
+function NGenXXDevicePlatform() {
+    return ngenxx_device_typeJ();
 }
 
 function NGenXXDeviceName() {
-    return ngenxx_sdk_engine_device_nameJ();
+    return ngenxx_device_nameJ();
 }
 
 function NGenXXDeviceManufacturer() {
-    return ngenxx_sdk_engine_device_manufacturerJ();
+    return ngenxx_device_manufacturerJ();
 }
 
-function NGenXXDeviceOsVersion() {
-    return ngenxx_sdk_engine_device_os_versionJ();
+function NGenXXDeviceOSVersion() {
+    return ngenxx_device_os_versionJ();
 }
 
-function NGenXXDeviceCpuArch() {
-    return ngenxx_sdk_engine_device_cpu_archJ();
+function NGenXXDeviceCPUArch() {
+    return ngenxx_device_cpu_archJ();
 }
 
 // Net.Http

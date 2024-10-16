@@ -17,16 +17,16 @@ function jTestStdOs() {
 }
 
 function jTestDeviceInfo() {
-    let deviceType = NGenXXDeviceType();
-    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceType:${deviceType}`);
-    let deviceName = NGenXXDeviceName();
-    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceName:${deviceName}`);
-    let deviceManufacturer = NGenXXDeviceManufacturer();
-    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceManufacturer:${deviceManufacturer}`);
-    let deviceOsVersion = NGenXXDeviceOsVersion();
-    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceOsVersion:${deviceOsVersion}`);
-    let deviceCpuArch = NGenXXDeviceCpuArch();
-    NGenXXLogPrint(NGenXXLogLevel.Debug, `deviceCpuArch:${deviceCpuArch}`);
+    let platform = NGenXXDevicePlatform();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `Platform: ${platform}`);
+    let name = NGenXXDeviceName();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `Name: ${name}`);
+    let manufacturer = NGenXXDeviceManufacturer();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `Manufacturer: ${manufacturer}`);
+    let os = NGenXXDeviceOSVersion();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `OS Version: ${os}`);
+    let cpuArch = NGenXXDeviceCPUArch();
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `CPU Arch: ${cpuArch}`);
 }
 
 function jTestNetHttpReq(url) {
