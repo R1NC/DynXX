@@ -22,21 +22,23 @@ namespace NGenXX
 
             static constexpr bool checkGcmParams(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size tagBits)
             {
-                const byte *inBytes = in.first;
-                const size inLen = in.second;
-                const byte *keyBytes = key.first;
-                const size keyLen = key.second;
-                const byte *inVectorBytes = initVector.first;
-                const size inVectorLen = initVector.second;
-                const byte *aadBytes = aad.first;
-                const size aadLen = aad.second;
+                auto [inBytes, inLen] = in;
+                auto [keyBytes, keyLen] = key;
+                auto [initVectorBytes, initVectorLen] = initVector;
+                auto [aadBytes, aadLen] = aad;
                 const size tagLen = tagBits / 8;
-                if (inBytes == NULL || inLen <= 0) return false;
-                if (keyBytes == NULL || (keyLen != 16 && keyLen != 24 && keyLen != 32)) return false;
-                if (inVectorBytes == NULL || inVectorLen != 12) return false;
-                if (aadLen > 16 || (aadLen > 0 && aadBytes == NULL)) return false;
-                if (tagBits != 96 && tagBits != 104 && tagBits != 112 && tagBits != 120 && tagBits != 128) return false;
-                if (inLen <= tagLen) return false;
+                if (inBytes == NULL || inLen <= 0)
+                    return false;
+                if (keyBytes == NULL || (keyLen != 16 && keyLen != 24 && keyLen != 32))
+                    return false;
+                if (initVectorBytes == NULL || initVectorLen != 12)
+                    return false;
+                if (aadLen > 16 || (aadLen > 0 && aadBytes == NULL))
+                    return false;
+                if (tagBits != 96 && tagBits != 104 && tagBits != 112 && tagBits != 120 && tagBits != 128)
+                    return false;
+                if (inLen <= tagLen)
+                    return false;
                 return true;
             }
 
