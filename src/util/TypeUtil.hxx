@@ -16,8 +16,7 @@ static inline const char *str2charp(std::string s)
 
 static inline const byte *copyBytes(NGenXX::Bytes t)
 {
-    const byte *cs = t.first;
-    int len = t.second;
+    auto [cs, len] = t;
     if (cs == NULL || len <= 0) return NULL;
     const byte *ncs = (byte *)malloc(len + 1);
     std::memset((void *)ncs, 0, len + 1);
