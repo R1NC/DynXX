@@ -646,7 +646,7 @@ function NGenXXZUnZipFile(inFilePath, outFilePath) {
         () => {
             let readLen = inF.read(inBuffer, readPos, bufferSize);
             readPos += readLen;
-            return new Uint8Array(buffer);
+            return new Uint8Array(inBuffer);
         },
         (bytes) => {
             let outBuffer = new Uint8Array(bytes).buffer;
