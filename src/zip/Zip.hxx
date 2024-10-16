@@ -36,7 +36,7 @@ namespace NGenXX
             ZBase() = delete;
             ZBase(const size bufferSize);
             const size input(const Bytes bytes, bool inFinish);
-            const byte *processDo(size *outLen);
+            const Bytes processDo();
             const bool processFinished();
             virtual ~ZBase();
         };

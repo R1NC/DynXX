@@ -551,7 +551,9 @@ EXPORT_AUTO
 const byte *ngenxx_z_zip_process_do(const void *zip, size *outLen)
 {
     if (zip == NULL) return NULL;
-    return copyBytes({((NGenXX::Z::Zip *)zip)->processDo(outLen), *outLen});
+    auto t = ((NGenXX::Z::Zip *)zip)->processDo();
+    if (outLen) *outLen = t.second;
+    return copyBytes(t);
 }
 
 EXPORT_AUTO
@@ -591,7 +593,9 @@ EXPORT_AUTO
 const byte *ngenxx_z_unzip_process_do(const void *unzip, size *outLen)
 {
     if (unzip == NULL) return NULL;
-    return copyBytes({((NGenXX::Z::UnZip *)unzip)->processDo(outLen), *outLen});
+    auto t = ((NGenXX::Z::UnZip *)unzip)->processDo();
+    if (outLen) *outLen = t.second;
+    return copyBytes(t);
 }
 
 EXPORT_AUTO

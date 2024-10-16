@@ -45,9 +45,8 @@ const size NGenXX::Z::ZBase::input(const Bytes bytes, bool inFinish)
     return dataLen;
 }
 
-const byte *NGenXX::Z::ZBase::processDo(size *outLen)
+const NGenXX::Bytes NGenXX::Z::ZBase::processDo()
 {
-    if (outLen == NULL) return NULL;
     std::memset(this->outBuffer, 0, this->bufferSize);
     (this->zs).avail_out = this->bufferSize;
     (this->zs).next_out = (Bytef *)(this->outBuffer);
@@ -56,12 +55,11 @@ const byte *NGenXX::Z::ZBase::processDo(size *outLen)
     if (this->ret != Z_OK && ret != Z_STREAM_END)
     {
         NGenXX::Log::print(NGenXXLogLevelError, "z process error:" + std::to_string(this->ret));
-        *outLen = 0;
-        return NULL;
+        return BytesEmpty;
     }
 
-    *outLen = this->bufferSize - (this->zs).avail_out;
-    return this->outBuffer;
+    size outLen = this->bufferSize - (this->zs).avail_out;
+    return {this->outBuffer, outLen};
 }
 
 const bool NGenXX::Z::ZBase::processFinished()
@@ -142,8 +140,7 @@ bool zProcess(const size bufferSize,
         bool processFinished;
         do
         {
-            size outLen;
-            const byte *outData = zb.processDo(&outLen);
+            auto [outData, outLen] = zb.processDo();
             if (outData == NULL)
             {
                 return false;
