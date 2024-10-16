@@ -545,7 +545,7 @@ function NGenXXZUnZipRelease(unzip) {
 let NGenXXZBufferSize = 1024 * 16;
 
 function NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,
-                       z, inputFunc, processDoFunc, processFinishedFunc) {
+    z, inputFunc, processDoFunc, processFinishedFunc) {
     var inputFinished = false;
     do {
         let inBytes = readFunc();
@@ -603,7 +603,7 @@ function NGenXXZUnZipStream(bufferSize, readFunc, writeFunc, flushFunc) {
 function NGenXXZZipFile(mode, inFilePath, outFilePath) {
     let bufferSize = NGenXXZBufferSize;
     let inBuffer = new ArrayBuffer(bufferSize);
-    
+
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
 
@@ -635,13 +635,13 @@ function NGenXXZZipFile(mode, inFilePath, outFilePath) {
 function NGenXXZUnZipFile(inFilePath, outFilePath) {
     let bufferSize = NGenXXZBufferSize;
     let inBuffer = new ArrayBuffer(bufferSize);
-    
+
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
 
     var readPos = 0;
     var writePos = 0;
-    
+
     let res = NGenXXZUnZipStream(bufferSize,
         () => {
             let readLen = inF.read(inBuffer, readPos, bufferSize);
@@ -649,9 +649,9 @@ function NGenXXZUnZipFile(inFilePath, outFilePath) {
             return new Uint8Array(buffer);
         },
         (bytes) => {
-            let buffer = bytes.buffer;
+            let outBuffer = new Uint8Array(bytes).buffer;
             let writeLen = bytes.length;
-            outF.write(buffer, writePos, writeLen);
+            outF.write(outBuffer, writePos, writeLen);
             writePos += writeLen;
         },
         () => {
