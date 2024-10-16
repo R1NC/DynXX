@@ -21,8 +21,8 @@
 		403F9F802CBCB5DB00F4ECE6 /* NGenXX.js in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F7E2CBCB5DB00F4ECE6 /* NGenXX.js */; };
 		403F9F812CBCB5DB00F4ECE6 /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F7F2CBCB5DB00F4ECE6 /* biz.js */; };
 		403F9F832CBCB5E600F4ECE6 /* biz.lua in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F822CBCB5E600F4ECE6 /* biz.lua */; };
-		403F9F862CBCB5F400F4ECE6 /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F842CBCB5F400F4ECE6 /* prepare_data.sql */; };
-		403F9F872CBCB5F400F4ECE6 /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F852CBCB5F400F4ECE6 /* query.sql */; };
+		403F9F8E2CBF480F00F4ECE6 /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F8C2CBF480F00F4ECE6 /* prepare_data.sql */; };
+		403F9F8F2CBF480F00F4ECE6 /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F8D2CBF480F00F4ECE6 /* query.sql */; };
 		40596B7D2C75AAD700AC552D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7C2C75AAD700AC552D /* AppDelegate.m */; };
 		40596B802C75AAD700AC552D /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40596B7F2C75AAD700AC552D /* SceneDelegate.m */; };
 		40596B862C75AAD700AC552D /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 40596B852C75AAD700AC552D /* Base */; };
@@ -53,8 +53,8 @@
 		403F9F7E2CBCB5DB00F4ECE6 /* NGenXX.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = NGenXX.js; path = ../../scripts/JS/NGenXX.js; sourceTree = "<group>"; };
 		403F9F7F2CBCB5DB00F4ECE6 /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../../scripts/JS/biz.js; sourceTree = "<group>"; };
 		403F9F822CBCB5E600F4ECE6 /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../../scripts/Lua/biz.lua; sourceTree = "<group>"; };
-		403F9F842CBCB5F400F4ECE6 /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../../scripts/SQL/prepare_data.sql; sourceTree = "<group>"; };
-		403F9F852CBCB5F400F4ECE6 /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../../scripts/SQL/query.sql; sourceTree = "<group>"; };
+		403F9F8C2CBF480F00F4ECE6 /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
+		403F9F8D2CBF480F00F4ECE6 /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
 		40596B782C75AAD700AC552D /* NGenXX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NGenXX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40596B7B2C75AAD700AC552D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		40596B7C2C75AAD700AC552D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -121,8 +121,8 @@
 		40596B6F2C75AAD700AC552D = {
 			isa = PBXGroup;
 			children = (
-				403F9F842CBCB5F400F4ECE6 /* prepare_data.sql */,
-				403F9F852CBCB5F400F4ECE6 /* query.sql */,
+				403F9F8C2CBF480F00F4ECE6 /* prepare_data.sql */,
+				403F9F8D2CBF480F00F4ECE6 /* query.sql */,
 				403F9F822CBCB5E600F4ECE6 /* biz.lua */,
 				403F9F7F2CBCB5DB00F4ECE6 /* biz.js */,
 				403F9F7E2CBCB5DB00F4ECE6 /* NGenXX.js */,
@@ -263,8 +263,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				403F9F862CBCB5F400F4ECE6 /* prepare_data.sql in Resources */,
-				403F9F872CBCB5F400F4ECE6 /* query.sql in Resources */,
+				403F9F8E2CBF480F00F4ECE6 /* prepare_data.sql in Resources */,
+				403F9F8F2CBF480F00F4ECE6 /* query.sql in Resources */,
 				403F9F832CBCB5E600F4ECE6 /* biz.lua in Resources */,
 				403F9F802CBCB5DB00F4ECE6 /* NGenXX.js in Resources */,
 				403F9F812CBCB5DB00F4ECE6 /* biz.js in Resources */,
