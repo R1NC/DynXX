@@ -536,7 +536,7 @@ function NGenXXZUnZipRelease(unzip) {
 
 let NGenXXZBufferSize = 1024 * 16;
 
-function NGenXXZStream(readFunc, writeFunc, flushFunc, inputFunc, z, processDoFunc, processFinishedFunc) {
+function NGenXXZStream(readFunc, writeFunc, flushFunc, z, inputFunc, processDoFunc, processFinishedFunc) {
     let bufferSize = NGenXXZBufferSize;
     var buffer = new Array(bufferSize);
 
@@ -591,5 +591,103 @@ function NGenXXZUnZipStream(readFunc, writeFunc, flushFunc) {
         });
 
     NGenXXZUnZipRelease(unzip);
+    return res;
+}
+
+function NGenXXZZipFile(mode, inFilePath, outFilePath) {
+    let inF = std.open(inFilePath, 'r');
+    let outF = std.open(outFilePath, 'w');
+
+    let res = NGenXXZZipStream(mode,
+        (buffer, bufferSize) => {
+            return inF.read(buffer, 0, bufferSize);
+        },
+        (bytes) => {
+            outF.write(bytes, 0, bytes.length);
+        },
+        () => {
+            outF.flush();
+        }
+    );
+
+    outF.close();
+    inF.close();
+    return res;
+}
+
+function NGenXXZUnZipFile(inFilePath, outFilePath) {
+    let inF = std.open(inFilePath, 'r');
+    let outF = std.open(outFilePath, 'w');
+    
+    let res = NGenXXZUnZipStream(
+        (buffer, bufferSize) => {
+            return inF.read(buffer, 0, bufferSize);
+        },
+        (bytes) => {
+            outF.write(bytes, 0, bytes.length);
+        },
+        () => {
+            outF.flush();
+        }
+    );
+
+    outF.close();
+    inF.close();
+    return res;
+}
+
+function NGenXXZZipFile(mode, inFilePath, outFilePath) {
+    let inF = std.open(inFilePath, 'r');
+    let outF = std.open(outFilePath, 'w');
+
+    var readPos = 0;
+    var writePos = 0;
+
+    let res = NGenXXZZipStream(mode,
+        (buffer, bufferSize) => {
+            let readLen = inF.read(buffer, readPos, bufferSize);
+            readPos += readLen;
+            return readLen;
+        },
+        (bytes) => {
+            let writeLen = bytes.length;
+            outF.write(bytes, writePos, writeLen);
+            writePos += writeLen;
+        },
+        () => {
+            outF.flush();
+        }
+    );
+
+    outF.close();
+    inF.close();
+    return res;
+}
+
+function NGenXXZUnZipFile(inFilePath, outFilePath) {
+    let inF = std.open(inFilePath, 'r');
+    let outF = std.open(outFilePath, 'w');
+
+    var readPos = 0;
+    var writePos = 0;
+    
+    let res = NGenXXZUnZipStream(
+        (buffer, bufferSize) => {
+            let readLen = inF.read(buffer, readPos, bufferSize);
+            readPos += readLen;
+            return readLen;
+        },
+        (bytes) => {
+            let writeLen = bytes.length;
+            outF.write(bytes, writePos, writeLen);
+            writePos += writeLen;
+        },
+        () => {
+            outF.flush();
+        }
+    );
+
+    outF.close();
+    inF.close();
     return res;
 }
