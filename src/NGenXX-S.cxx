@@ -146,10 +146,10 @@ const std::string ngenxx_net_http_requestS(const char *json)
         return s;
 
     s = ngenxx_net_http_request(url, params, method,
-                                              (const char **)header_v, (const size)header_c,
-                                              (const char **)form_field_name_v, (const char **)form_field_mime_v, (const char **)form_field_data_v, (const size)form_field_count,
-                                              (void *)cFILE, fileSize,
-                                              timeout);
+                                (const char **)header_v, (const size)header_c,
+                                (const char **)form_field_name_v, (const char **)form_field_mime_v, (const char **)form_field_data_v, (const size)form_field_count,
+                                (void *)cFILE, fileSize,
+                                timeout);
 
     free((void *)url);
     free((void *)params);
@@ -169,7 +169,7 @@ const std::string ngenxx_net_http_requestS(const char *json)
 
 #pragma mark Store.SQLite
 
-address ngenxx_store_sqlite_openS(const char *json)
+const address ngenxx_store_sqlite_openS(const char *json)
 {
     if (json == NULL)
         return 0;
@@ -200,7 +200,7 @@ bool ngenxx_store_sqlite_executeS(const char *json)
     return res;
 }
 
-address ngenxx_store_sqlite_query_doS(const char *json)
+const address ngenxx_store_sqlite_query_doS(const char *json)
 {
     if (json == NULL)
         return 0;
@@ -305,7 +305,7 @@ void ngenxx_store_sqlite_closeS(const char *json)
 
 #pragma mark Store.KV
 
-address ngenxx_store_kv_openS(const char *json)
+const address ngenxx_store_kv_openS(const char *json)
 {
     if (json == NULL)
         return 0;
@@ -725,4 +725,151 @@ const std::string ngenxx_crypto_base64_decodeS(const char *json)
 
     free((void *)outBytes);
     return outJson;
+}
+
+#pragma mark Zip
+
+const address ngenxx_z_zip_initS(const char *json)
+{
+    if (json == NULL)
+        return 0;
+    NGenXX::Json::Decoder decoder(json);
+    int mode = decoder.readNumber(decoder.readNode(NULL, "mode"));
+    size bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
+
+    void *zip = ngenxx_z_zip_init(mode, bufferSize);
+
+    return (address)zip;
+}
+
+const size ngenxx_z_zip_inputS(const char *json)
+{
+    if (json == NULL)
+        return 0;
+    NGenXX::Json::Decoder decoder(json);
+    auto zip = (address)decoder.readNumber(decoder.readNode(NULL, "zip"));
+    if (zip <= 0)
+        return 0;
+
+    auto in = parseByteArray(decoder, "in", "inLen");
+    if (in.size() == 0)
+        return 0;
+
+    auto inFinish = (bool)decoder.readNumber(decoder.readNode(NULL, "inFinish"));
+
+    return ngenxx_z_zip_input((void *)zip, in.data(), in.size(), inFinish);
+}
+
+const std::string ngenxx_z_zip_process_doS(const char *json)
+{
+    std::string s;
+    if (json == NULL)
+        return s;
+    NGenXX::Json::Decoder decoder(json);
+    auto zip = (address)decoder.readNumber(decoder.readNode(NULL, "zip"));
+    if (zip <= 0)
+        return s;
+
+    size outLen;
+    auto outBytes = ngenxx_z_zip_process_do((void *)zip, &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
+
+    free((void *)outBytes);
+    return outJson;
+}
+
+bool ngenxx_z_zip_process_finishedS(const char *json)
+{
+    if (json == NULL)
+        return false;
+    NGenXX::Json::Decoder decoder(json);
+    auto zip = (address)decoder.readNumber(decoder.readNode(NULL, "zip"));
+    if (zip <= 0)
+        return false;
+
+    return ngenxx_z_zip_process_finished((void *)zip);
+}
+
+void ngenxx_z_zip_releaseS(const char *json)
+{
+    if (json == NULL)
+        return;
+    NGenXX::Json::Decoder decoder(json);
+    auto zip = (address)decoder.readNumber(decoder.readNode(NULL, "zip"));
+    if (zip <= 0)
+        return;
+
+    ngenxx_z_zip_release((void *)zip);
+}
+
+const address ngenxx_z_unzip_initS(const char *json)
+{
+    if (json == NULL)
+        return 0;
+    NGenXX::Json::Decoder decoder(json);
+    size bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
+
+    void *zip = ngenxx_z_unzip_init(bufferSize);
+
+    return (address)zip;
+}
+
+const size ngenxx_z_unzip_inputS(const char *json)
+{
+    if (json == NULL)
+        return 0;
+    NGenXX::Json::Decoder decoder(json);
+    auto unzip = (address)decoder.readNumber(decoder.readNode(NULL, "unzip"));
+    if (unzip <= 0)
+        return 0;
+
+    auto in = parseByteArray(decoder, "in", "inLen");
+    if (in.size() == 0)
+        return 0;
+
+    auto inFinish = (bool)decoder.readNumber(decoder.readNode(NULL, "inFinish"));
+
+    return ngenxx_z_unzip_input((void *)unzip, in.data(), in.size(), inFinish);
+}
+
+const std::string ngenxx_z_unzip_process_doS(const char *json)
+{
+    std::string s;
+    if (json == NULL)
+        return s;
+    NGenXX::Json::Decoder decoder(json);
+    auto unzip = (address)decoder.readNumber(decoder.readNode(NULL, "unzip"));
+    if (unzip <= 0)
+        return s;
+
+    size outLen;
+    auto outBytes = ngenxx_z_unzip_process_do((void *)unzip, &outLen);
+    auto outJson = bytes2json(outBytes, outLen);
+
+    free((void *)outBytes);
+    return outJson;
+}
+
+bool ngenxx_z_unzip_process_finishedS(const char *json)
+{
+    if (json == NULL)
+        return false;
+    NGenXX::Json::Decoder decoder(json);
+    auto unzip = (address)decoder.readNumber(decoder.readNode(NULL, "unzip"));
+    if (unzip <= 0)
+        return false;
+
+    return ngenxx_z_unzip_process_finished((void *)unzip);
+}
+
+void ngenxx_z_unzip_releaseS(const char *json)
+{
+    if (json == NULL)
+        return;
+    NGenXX::Json::Decoder decoder(json);
+    auto unzip = (address)decoder.readNumber(decoder.readNode(NULL, "unzip"));
+    if (unzip <= 0)
+        return;
+
+    ngenxx_z_unzip_release((void *)unzip);
 }

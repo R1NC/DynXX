@@ -104,6 +104,17 @@ DEF_LUA_FUNC_STRING(ngenxx_crypto_hash_sha256L, ngenxx_crypto_hash_sha256S)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_base64_encodeL, ngenxx_crypto_base64_encodeS)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_base64_decodeL, ngenxx_crypto_base64_decodeS)
 
+DEF_LUA_FUNC_INTEGER(ngenxx_z_zip_initL, ngenxx_z_zip_initS)
+DEF_LUA_FUNC_INTEGER(ngenxx_z_zip_inputL, ngenxx_z_zip_inputS)
+DEF_LUA_FUNC_STRING(ngenxx_z_zip_process_doL, ngenxx_z_zip_process_doS)
+DEF_LUA_FUNC_BOOL(ngenxx_z_zip_process_finishedL, ngenxx_z_zip_process_finishedS)
+DEF_LUA_FUNC_VOID(ngenxx_z_zip_releaseL, ngenxx_z_zip_releaseS)
+DEF_LUA_FUNC_INTEGER(ngenxx_z_unzip_initL, ngenxx_z_unzip_initS)
+DEF_LUA_FUNC_INTEGER(ngenxx_z_unzip_inputL, ngenxx_z_unzip_inputS)
+DEF_LUA_FUNC_STRING(ngenxx_z_unzip_process_doL, ngenxx_z_unzip_process_doS)
+DEF_LUA_FUNC_BOOL(ngenxx_z_unzip_process_finishedL, ngenxx_z_unzip_process_finishedS)
+DEF_LUA_FUNC_VOID(ngenxx_z_unzip_releaseL, ngenxx_z_unzip_releaseS)
+
 #pragma mark Lua
 
 #ifndef __EMSCRIPTEN__
@@ -180,6 +191,17 @@ void _ngenxx_export_funcs_for_lua()
     BIND_LUA_FUNC(ngenxx_crypto_hash_sha256L);
     BIND_LUA_FUNC(ngenxx_crypto_base64_encodeL);
     BIND_LUA_FUNC(ngenxx_crypto_base64_decodeL);
+
+    BIND_LUA_FUNC(ngenxx_z_zip_initL);
+    BIND_LUA_FUNC(ngenxx_z_zip_inputL);
+    BIND_LUA_FUNC(ngenxx_z_zip_process_doL);
+    BIND_LUA_FUNC(ngenxx_z_zip_process_finishedL);
+    BIND_LUA_FUNC(ngenxx_z_zip_releaseL);
+    BIND_LUA_FUNC(ngenxx_z_unzip_initL);
+    BIND_LUA_FUNC(ngenxx_z_unzip_inputL);
+    BIND_LUA_FUNC(ngenxx_z_unzip_process_doL);
+    BIND_LUA_FUNC(ngenxx_z_unzip_process_finishedL);
+    BIND_LUA_FUNC(ngenxx_z_unzip_releaseL);
 }
 
 void _ngenxx_lua_init(void)

@@ -108,6 +108,17 @@ DEF_JS_FUNC_STRING(ngenxx_crypto_hash_sha256J, ngenxx_crypto_hash_sha256S)
 DEF_JS_FUNC_STRING(ngenxx_crypto_base64_encodeJ, ngenxx_crypto_base64_encodeS)
 DEF_JS_FUNC_STRING(ngenxx_crypto_base64_decodeJ, ngenxx_crypto_base64_decodeS)
 
+DEF_JS_FUNC_INT64(ngenxx_z_zip_initJ, ngenxx_z_zip_initS)
+DEF_JS_FUNC_INT64(ngenxx_z_zip_inputJ, ngenxx_z_zip_inputS)
+DEF_JS_FUNC_STRING(ngenxx_z_zip_process_doJ, ngenxx_z_zip_process_doS)
+DEF_JS_FUNC_BOOL(ngenxx_z_zip_process_finishedJ, ngenxx_z_zip_process_finishedS)
+DEF_JS_FUNC_VOID(ngenxx_z_zip_releaseJ, ngenxx_z_zip_releaseS)
+DEF_JS_FUNC_INT64(ngenxx_z_unzip_initJ, ngenxx_z_unzip_initS)
+DEF_JS_FUNC_INT64(ngenxx_z_unzip_inputJ, ngenxx_z_unzip_inputS)
+DEF_JS_FUNC_STRING(ngenxx_z_unzip_process_doJ, ngenxx_z_unzip_process_doS)
+DEF_JS_FUNC_BOOL(ngenxx_z_unzip_process_finishedJ, ngenxx_z_unzip_process_finishedS)
+DEF_JS_FUNC_VOID(ngenxx_z_unzip_releaseJ, ngenxx_z_unzip_releaseS)
+
 #pragma mark JS
 
 EXPORT_AUTO
@@ -131,7 +142,7 @@ const char *ngenxx_J_call(const char *func, const char *params)
 {
     if (_ngenxx_js == NULL || func == NULL)
         return NULL;
-    return str2charp(_ngenxx_js->callFunc(std::string(func), std::string(params ? : "")));
+    return str2charp(_ngenxx_js->callFunc(std::string(func), std::string(params ?: "")));
 }
 
 #pragma mark JS Module Register
@@ -184,6 +195,17 @@ void registerJsModule()
     BIND_JS_FUNC(ngenxx_crypto_hash_sha256J);
     BIND_JS_FUNC(ngenxx_crypto_base64_encodeJ);
     BIND_JS_FUNC(ngenxx_crypto_base64_decodeJ);
+
+    BIND_JS_FUNC(ngenxx_z_zip_initJ);
+    BIND_JS_FUNC(ngenxx_z_zip_inputJ);
+    BIND_JS_FUNC(ngenxx_z_zip_process_doJ);
+    BIND_JS_FUNC(ngenxx_z_zip_process_finishedJ);
+    BIND_JS_FUNC(ngenxx_z_zip_releaseJ);
+    BIND_JS_FUNC(ngenxx_z_unzip_initJ);
+    BIND_JS_FUNC(ngenxx_z_unzip_inputJ);
+    BIND_JS_FUNC(ngenxx_z_unzip_process_doJ);
+    BIND_JS_FUNC(ngenxx_z_unzip_process_finishedJ);
+    BIND_JS_FUNC(ngenxx_z_unzip_releaseJ);
 }
 
 void _ngenxx_js_init(void)
