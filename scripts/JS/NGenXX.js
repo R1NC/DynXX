@@ -473,7 +473,7 @@ function NGenXXZZipInput(zip, bytes, finish) {
         "zip": zip,
         "in": bytes,
         "inLen": bytes.length,
-        "inFinish": finish
+        "inFinish": finish ? 1 : 0
     });
     return ngenxx_z_zip_inputJ(inJson);
 }
@@ -513,7 +513,7 @@ function NGenXXZUnZipInput(unzip, bytes, finish) {
         "unzip": unzip,
         "in": bytes,
         "inLen": bytes.length,
-        "inFinish": finish
+        "inFinish": finish ? 1 : 0
     });
     return ngenxx_z_unzip_inputJ(inJson);
 }
@@ -602,7 +602,6 @@ function NGenXXZUnZipStream(bufferSize, readFunc, writeFunc, flushFunc) {
 
 function NGenXXZZipFile(mode, inFilePath, outFilePath) {
     let bufferSize = NGenXXZBufferSize;
-    let inBuffer = new ArrayBuffer(bufferSize);
 
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
@@ -612,9 +611,11 @@ function NGenXXZZipFile(mode, inFilePath, outFilePath) {
 
     let res = NGenXXZZipStream(mode, bufferSize,
         () => {
+            let inBuffer = new ArrayBuffer(bufferSize);
             let readLen = inF.read(inBuffer, readPos, bufferSize);
+            let inBytes = Array.from(new Uint8Array(inBuffer));
             readPos += readLen;
-            return new Uint8Array(inBuffer);
+            return inBytes;
         },
         (bytes) => {
             let outBuffer = new Uint8Array(bytes).buffer;
@@ -634,7 +635,6 @@ function NGenXXZZipFile(mode, inFilePath, outFilePath) {
 
 function NGenXXZUnZipFile(inFilePath, outFilePath) {
     let bufferSize = NGenXXZBufferSize;
-    let inBuffer = new ArrayBuffer(bufferSize);
 
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
@@ -644,9 +644,11 @@ function NGenXXZUnZipFile(inFilePath, outFilePath) {
 
     let res = NGenXXZUnZipStream(bufferSize,
         () => {
+            let inBuffer = new ArrayBuffer(bufferSize);
             let readLen = inF.read(inBuffer, readPos, bufferSize);
+            let inBytes = Array.from(new Uint8Array(inBuffer));
             readPos += readLen;
-            return new Uint8Array(inBuffer);
+            return inBytes;
         },
         (bytes) => {
             let outBuffer = new Uint8Array(bytes).buffer;
