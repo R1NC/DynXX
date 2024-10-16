@@ -443,7 +443,7 @@ function NGenXXCryptoBase64Decode(inBytes) {
     return _json2Array(outJson);
 }
 
-// Zip
+// Z.Atomic
 
 const NGenXXZipMode = Object.freeze({
     Default: -1,
@@ -459,7 +459,7 @@ function NGenXXZZipInit(mode, bufferSize) {
     return ngenxx_z_zip_initJ(inJson);
 }
 
-function NGenXXZZipInput(zip, bytes, len, finish) {
+function NGenXXZZipInput(zip, bytes, finish) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
         "zip": zip,
@@ -499,7 +499,7 @@ function NGenXXZUnZipInit(bufferSize) {
     return ngenxx_z_unzip_initJ(inJson);
 }
 
-function NGenXXZUnZipInput(unzip, bytes, len, finish) {
+function NGenXXZUnZipInput(unzip, bytes, finish) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
         "unzip": unzip,
@@ -530,4 +530,68 @@ function NGenXXZUnZipRelease(unzip) {
         "unzip": unzip
     });
     ngenxx_z_unzip_releaseJ(inJson);
+}
+
+// Z.Stream
+
+let NGenXXZBufferSize = 1024 * 16;
+
+function NGenXXZZipStream(mode, readFunc, writeFunc, flushFunc) {
+    let bufferSize = NGenXXZBufferSize;
+    
+    var buffer = new Array(bufferSize);
+    let zip = NGenXXZZipInit(mode, bufferSize);
+    
+    var inputFinished = false;
+    do {
+        let readLen = readFunc(buffer, bufferSize);
+        inputFinished = readLen < bufferSize;
+        
+        let inputRet = NGenXXZZipInput(zip, buffer, inputFinished);
+        if (inputRet <= 0) return false;
+        
+        var processFinished = false;
+        do {
+            let outBytes = NGenXXZZipProcessDo(zip);
+            if (outBytes.length === 0) return false;
+            processFinished = NGenXXZZipProcessFinished(zip);
+            
+            writeFunc(outBytes);
+        } while(!processFinished);
+    } while (!inputFinished);
+    
+    flushFunc();
+    NGenXXZZipRelease(zip);
+    
+    return true;
+}
+
+function NGenXXZUnZipStream(readFunc, writeFunc, flushFunc) {
+    let bufferSize = NGenXXZBufferSize;
+    
+    var buffer = new Array(bufferSize);
+    let unzip = NGenXXZUnZipInit(bufferSize);
+    
+    var inputFinished = false;
+    do {
+        let readLen = readFunc(buffer, bufferSize);
+        inputFinished = readLen < bufferSize;
+        
+        let inputRet = NGenXXZUnZipInput(unzip, buffer, inputFinished);
+        if (inputRet <= 0) return false;
+        
+        var processFinished = false;
+        do {
+            let outBytes = NGenXXZUnZipProcessDo(unzip);
+            if (outBytes.length === 0) return false;
+            processFinished = NGenXXZUnZipProcessFinished(unzip);
+            
+            writeFunc(outBytes);
+        } while(!processFinished);
+    } while (!inputFinished);
+    
+    flushFunc();
+    NGenXXZUnZipRelease(unzip);
+    
+    return true;
 }
