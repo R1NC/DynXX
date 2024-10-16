@@ -536,62 +536,60 @@ function NGenXXZUnZipRelease(unzip) {
 
 let NGenXXZBufferSize = 1024 * 16;
 
-function NGenXXZZipStream(mode, readFunc, writeFunc, flushFunc) {
+function NGenXXZStream(readFunc, writeFunc, flushFunc, inputFunc, z, processDoFunc, processFinishedFunc) {
     let bufferSize = NGenXXZBufferSize;
-    
     var buffer = new Array(bufferSize);
-    let zip = NGenXXZZipInit(mode, bufferSize);
-    
+
     var inputFinished = false;
     do {
         let readLen = readFunc(buffer, bufferSize);
         inputFinished = readLen < bufferSize;
-        
-        let inputRet = NGenXXZZipInput(zip, buffer, inputFinished);
+
+        let inputRet = inputFunc(z, buffer, inputFinished);
         if (inputRet <= 0) return false;
-        
+
         var processFinished = false;
         do {
-            let outBytes = NGenXXZZipProcessDo(zip);
+            let outBytes = processDoFunc(z);
             if (outBytes.length === 0) return false;
-            processFinished = NGenXXZZipProcessFinished(zip);
-            
+            processFinished = processFinishedFunc(z);
+
             writeFunc(outBytes);
-        } while(!processFinished);
+        } while (!processFinished);
     } while (!inputFinished);
-    
+
     flushFunc();
-    NGenXXZZipRelease(zip);
-    
     return true;
 }
 
+function NGenXXZZipStream(mode, readFunc, writeFunc, flushFunc) {
+    let zip = NGenXXZZipInit(mode, bufferSize);
+
+    let res = NGenXXZStream(readFunc, writeFunc, flushFunc, zip,
+        (z, buffer, inputFinished) => {
+            return NGenXXZZipInput(z, buffer, inputFinished);
+        }, (z) => {
+            return NGenXXZZipProcessDo(z);
+        }, (z) => {
+            return NGenXXZZipProcessFinished(z);
+        });
+
+    NGenXXZZipRelease(zip);
+    return res;
+}
+
 function NGenXXZUnZipStream(readFunc, writeFunc, flushFunc) {
-    let bufferSize = NGenXXZBufferSize;
-    
-    var buffer = new Array(bufferSize);
     let unzip = NGenXXZUnZipInit(bufferSize);
-    
-    var inputFinished = false;
-    do {
-        let readLen = readFunc(buffer, bufferSize);
-        inputFinished = readLen < bufferSize;
-        
-        let inputRet = NGenXXZUnZipInput(unzip, buffer, inputFinished);
-        if (inputRet <= 0) return false;
-        
-        var processFinished = false;
-        do {
-            let outBytes = NGenXXZUnZipProcessDo(unzip);
-            if (outBytes.length === 0) return false;
-            processFinished = NGenXXZUnZipProcessFinished(unzip);
-            
-            writeFunc(outBytes);
-        } while(!processFinished);
-    } while (!inputFinished);
-    
-    flushFunc();
+
+    let res = NGenXXZStream(readFunc, writeFunc, flushFunc, unzip,
+        (z, buffer, inputFinished) => {
+            return NGenXXZUnZipInput(z, buffer, inputFinished);
+        }, (z) => {
+            return NGenXXZUnZipProcessDo(z);
+        }, (z) => {
+            return NGenXXZUnZipProcessFinished(z);
+        });
+
     NGenXXZUnZipRelease(unzip);
-    
-    return true;
+    return res;
 }
