@@ -896,6 +896,21 @@ static napi_value JLoadS(napi_env env, napi_callback_info info) {
     return nv;
 }
 
+static napi_value JLoadB(napi_env env, napi_callback_info info) {
+    napi_value *argv = readParams(env, info, 1);
+
+    uint32_t inLen = napiValueArrayLen(env, argv[0]);
+    const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
+    
+    size outLen;
+    bool b = ngenxx_J_loadB(inBytes, inLen);
+    napi_value v = bool2NapiValue(env, b);
+    
+    free((void *)inBytes);
+    free((void *)argv);
+    return v;
+}
+
 static napi_value JCall(napi_env env, napi_callback_info info) {
     napi_value *argv = readParams(env, info, 2);
 
@@ -930,9 +945,10 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports) {
         {"lLoadF", nullptr, LLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lLoadS", nullptr, LLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"lCall", nullptr, LCall, nullptr, nullptr, nullptr, napi_default, nullptr},
-        
+
         {"jLoadF", nullptr, JLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"jLoadS", nullptr, JLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jLoadB", nullptr, JLoadB, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"jCall", nullptr, JCall, nullptr, nullptr, nullptr, napi_default, nullptr},
 
         {"storeSQLiteOpen", nullptr, StoreSQLiteOpen, nullptr, nullptr, nullptr, napi_default, nullptr},
@@ -974,11 +990,9 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports) {
         {"jsonDecoderReadString", nullptr, JsonDecoderReadString, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"jsonDecoderReadNumber", nullptr, JsonDecoderReadNumber, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"jsonDecoderRelease", nullptr, JsonDecoderRelease, nullptr, nullptr, nullptr, napi_default, nullptr},
-        
-        {"codingHexBytes2str", nullptr, CodingHexBytes2str, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
-        {"codingHexStr2Bytes", nullptr, CodingHexStr2Bytes, nullptr, nullptr, nullptr, napi_default,
-         nullptr},
+
+        {"codingHexBytes2str", nullptr, CodingHexBytes2str, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"codingHexStr2Bytes", nullptr, CodingHexStr2Bytes, nullptr, nullptr, nullptr, napi_default, nullptr},
 
         {"cryptoRand", nullptr, CryptoRand, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"cryptoAesEncrypt", nullptr, CryptoAesEncrypt, nullptr, nullptr, nullptr, napi_default, nullptr},

@@ -228,6 +228,18 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadS(JNIEnv *env, jobject thiz,
     return res;
 }
 
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadB(JNIEnv *env, jobject thiz, jbyteArray bytes) {
+    jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
+    size inLen = env->GetArrayLength(bytes);
+
+    bool res = ngenxx_J_loadB((const byte *)cIn, inLen);
+
+    env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
+    return res;
+}
+
 extern "C" JNIEXPORT jstring JNICALL
 Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jCall(JNIEnv *env, jobject thiz,
                                                  jstring func,
