@@ -140,6 +140,14 @@ bool ngenxx_J_loadS(const char *script, const char *name)
 }
 
 EXPORT_AUTO
+bool ngenxx_J_loadB(const byte *bytes, const size len)
+{
+    if (_ngenxx_js == NULL || bytes == NULL || len <= 0)
+        return false;
+    return _ngenxx_js->loadBinary({bytes, len});
+}
+
+EXPORT_AUTO
 const char *ngenxx_J_call(const char *func, const char *params)
 {
     if (_ngenxx_js == NULL || func == NULL)

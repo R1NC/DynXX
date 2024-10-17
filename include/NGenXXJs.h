@@ -24,6 +24,15 @@ extern "C"
     bool ngenxx_J_loadS(const char *script, const char *name);
 
     /**
+     * @brief Load JS ByteCode
+     * @warning Not accessible in JS!
+     * @param bytes Byte array data
+     * @param len Byte array length
+     * @return success or not
+     */
+    bool ngenxx_J_loadB(const byte *bytes, const size len);
+
+    /**
      * @brief Call JS function
      * @warning Not accessible in JS!
      * @param func JS function name

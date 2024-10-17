@@ -6,6 +6,7 @@
 #include <string>
 
 #include "../../external/quickjs/quickjs-libc.h"
+#include "../NGenXX-Types.hxx"
 
 namespace NGenXX
 {
@@ -44,6 +45,12 @@ namespace NGenXX
          * @return success or not
          */
         bool loadScript(const std::string &script, const std::string &name);
+
+        /**
+         * @brief Load JS ByteCode
+         * @param bytes JS ByteCode
+         */
+        bool loadBinary(Bytes bytes);
 
         /**
          * @brief call JS func
