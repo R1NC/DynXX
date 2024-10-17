@@ -51,7 +51,10 @@ const NGenXX::Bytes NGenXX::Z::ZBase::processDo()
     (this->zs).avail_out = this->bufferSize;
     (this->zs).next_out = (Bytef *)(this->outBuffer);
 
+    NGenXX::Log::print(NGenXXLogLevelDebug, "z process before avIn:" + std::to_string((this->zs).avail_in) + " avOut:" + std::to_string((this->zs).avail_out));
     this->processImp();
+    NGenXX::Log::print(NGenXXLogLevelDebug, "z process after avIn:" + std::to_string((this->zs).avail_in) + " avOut:" + std::to_string((this->zs).avail_out));
+
     if (this->ret != Z_OK && ret != Z_STREAM_END)
     {
         NGenXX::Log::print(NGenXXLogLevelError, "z process error:" + std::to_string(this->ret));

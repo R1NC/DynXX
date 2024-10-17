@@ -30,6 +30,14 @@ function _json2Array(json) {
     return JSON.parse(json || '[]');
 }
 
+function _buffer2Bytes(buffer) {
+    return Array.from(new Uint8Array(buffer));
+}
+
+function _bytes2Buffer(bytes) {
+    return new Uint8Array(bytes).buffer;
+}
+
 function _printArray(arr) {
     arr.map((x) => {
         NGenXXLogPrint(NGenXXLogLevel.Debug, `${x}`);
@@ -490,7 +498,7 @@ function NGenXXZZipProcessFinished(zip) {
     let inJson = JSON.stringify({
         "zip": zip
     });
-    ngenxx_z_zip_process_finishedJ(inJson);
+    return ngenxx_z_zip_process_finishedJ(inJson);
 }
 
 function NGenXXZZipRelease(zip) {
@@ -530,7 +538,7 @@ function NGenXXZUnZipProcessFinished(unzip) {
     let inJson = JSON.stringify({
         "unzip": unzip
     });
-    ngenxx_z_unzip_process_finishedJ(inJson);
+    return ngenxx_z_unzip_process_finishedJ(inJson);
 }
 
 function NGenXXZUnZipRelease(unzip) {
@@ -542,23 +550,32 @@ function NGenXXZUnZipRelease(unzip) {
 
 // Z.Stream
 
-let NGenXXZBufferSize = 1024 * 16;
+let NGenXXZBufferSize = 1024;
 
 function NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,
     z, inputFunc, processDoFunc, processFinishedFunc) {
     var inputFinished = false;
+    var processFinished = false;
     do {
         let inBytes = readFunc();
         inputFinished = inBytes.length < bufferSize;
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `z <- len:${inBytes.length} finished:${inputFinished}`);
 
         let inputRet = inputFunc(z, inBytes, inputFinished);
-        if (inputRet <= 0) return false;
+        if (inputRet <= 0) {
+            NGenXXLogPrint(NGenXXLogLevel.Error, 'z input failed!');
+            return false;
+        }
 
-        var processFinished = false;
+        processFinished = false;
         do {
             let outBytes = processDoFunc(z);
-            if (outBytes.length === 0) return false;
+            if (outBytes.length === 0) {
+                NGenXXLogPrint(NGenXXLogLevel.Error, 'z process failed!');
+                return false;
+            }
             processFinished = processFinishedFunc(z);
+            NGenXXLogPrint(NGenXXLogLevel.Debug, `z -> len:${outBytes.length} finished:${processFinished}`);
 
             writeFunc(outBytes);
         } while (!processFinished);
@@ -606,22 +623,16 @@ function NGenXXZZipFile(mode, inFilePath, outFilePath) {
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
 
-    var readPos = 0;
-    var writePos = 0;
-
     let res = NGenXXZZipStream(mode, bufferSize,
         () => {
             let inBuffer = new ArrayBuffer(bufferSize);
-            let readLen = inF.read(inBuffer, readPos, bufferSize);
-            let inBytes = Array.from(new Uint8Array(inBuffer));
-            readPos += readLen;
-            return inBytes;
+            inF.read(inBuffer, 0, bufferSize);
+            return _buffer2Bytes(inBuffer);
         },
         (bytes) => {
-            let outBuffer = new Uint8Array(bytes).buffer;
+            let outBuffer = _bytes2Buffer(bytes);
             let writeLen = bytes.length;
-            outF.write(outBuffer, writePos, writeLen);
-            writePos += writeLen;
+            outF.write(outBuffer, 0, writeLen);
         },
         () => {
             outF.flush();
@@ -639,22 +650,16 @@ function NGenXXZUnZipFile(inFilePath, outFilePath) {
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
 
-    var readPos = 0;
-    var writePos = 0;
-
     let res = NGenXXZUnZipStream(bufferSize,
         () => {
             let inBuffer = new ArrayBuffer(bufferSize);
-            let readLen = inF.read(inBuffer, readPos, bufferSize);
-            let inBytes = Array.from(new Uint8Array(inBuffer));
-            readPos += readLen;
-            return inBytes;
+            inF.read(inBuffer, 0, bufferSize);
+            return _buffer2Bytes(inBuffer);
         },
         (bytes) => {
-            let outBuffer = new Uint8Array(bytes).buffer;
+            let outBuffer = _bytes2Buffer(bytes);
             let writeLen = bytes.length;
-            outF.write(outBuffer, writePos, writeLen);
-            writePos += writeLen;
+            outF.write(outBuffer, 0, writeLen);
         },
         () => {
             outF.flush();
