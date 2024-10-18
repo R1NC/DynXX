@@ -109,5 +109,7 @@ class NGenXX {
         external fun zUnZipProcessDo(unzip: Long): ByteArray
         external fun zUnZipProcessFinished(unzip: Long): Boolean
         external fun zUnZipRelease(unzip: Long)
+        external fun zZipBytes(mode: Int, bufferSize: Long, bytes: ByteArray): ByteArray
+        external fun zUnZipBytes(bufferSize: Long, bytes: ByteArray): ByteArray
     }
 }

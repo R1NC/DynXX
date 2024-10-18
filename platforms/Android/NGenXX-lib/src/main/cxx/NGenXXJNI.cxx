@@ -841,3 +841,33 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipRelease(JNIEnv *env, jobject th
 {
     ngenxx_z_unzip_release((void *)zip);
 }
+
+extern "C"
+JNIEXPORT jbyteArray JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipBytes(JNIEnv *env, jobject thiz, jint mode,
+                                                     jlong buffer_size, jbyteArray bytes) {
+    jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
+    size inLen = env->GetArrayLength(bytes);
+
+    size outLen;
+    auto cRes = ngenxx_z_bytes_zip(mode, buffer_size, (const byte *)cIn, inLen, &outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
+
+    env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
+    return jba;
+}
+
+extern "C"
+JNIEXPORT jbyteArray JNICALL
+Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipBytes(JNIEnv *env, jobject thiz, jlong buffer_size,
+                                                       jbyteArray bytes) {
+    jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
+    size inLen = env->GetArrayLength(bytes);
+
+    size outLen;
+    auto cRes = ngenxx_z_bytes_unzip(buffer_size, (const byte *)cIn, inLen, &outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
+
+    env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
+    return jba;
+}

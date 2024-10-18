@@ -226,11 +226,11 @@ bool NGenXX::Z::unzip(const size bufferSize, std::FILE *inFile, std::FILE *outFi
 
 const NGenXX::Bytes zProcessBytes(const size bufferSize, const NGenXX::Bytes in, NGenXX::Z::ZBase &zb)
 {
-    int pos = 0;
+    size pos = 0;
     std::vector<byte> outBytes;
     auto b = zProcess(bufferSize, 
         [&]() -> NGenXX::Bytes {
-            int len = std::min(bufferSize, in.second - pos);
+            auto len = std::min(bufferSize, in.second - pos);
             byte bytes[len];
             for (auto i = 0; i < len; i++)
             {
