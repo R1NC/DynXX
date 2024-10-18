@@ -4,9 +4,9 @@
 #include "../../../../../../build.Android/output/include/NGenXX.h"
 #include "JNIUtil.hxx"
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
-                                                      jobject thiz)
+jstring
+NGenXX_JNI_getVersion(JNIEnv *env,
+                      jobject thiz)
 {
     const char *cV = ngenxx_get_version();
     jstring jstr = env->NewStringUTF(cV ?: "");
@@ -14,8 +14,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_getVersion(JNIEnv *env,
     return jstr;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz, jstring root)
+jboolean
+NGenXX_JNI_init(JNIEnv *env, jobject thiz, jstring root)
 {
     const char *cRoot = env->GetStringUTFChars(root, nullptr);
     jboolean res = ngenxx_init(cRoot);
@@ -23,8 +23,7 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_init(JNIEnv *env, jobject thiz, jstri
     return res;
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_release(JNIEnv *env, jobject thiz)
+void NGenXX_JNI_release(JNIEnv *env, jobject thiz)
 {
     ngenxx_release();
 }
@@ -45,16 +44,14 @@ static void ngenxx_jni_log_callback(int level, const char *content)
     }
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logSetLevel(JNIEnv *env, jobject thiz,
-                                                       jint level)
+void NGenXX_JNI_logSetLevel(JNIEnv *env, jobject thiz,
+                            jint level)
 {
     ngenxx_log_set_level(level);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logSetCallback(JNIEnv *env, jobject thiz,
-                                                          jobject callback)
+void NGenXX_JNI_logSetCallback(JNIEnv *env, jobject thiz,
+                               jobject callback)
 {
     if (callback)
     {
@@ -76,9 +73,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logSetCallback(JNIEnv *env, jobject t
     }
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logPrint(JNIEnv *env, jobject thiz,
-                                                    jint level, jstring content)
+void NGenXX_JNI_logPrint(JNIEnv *env, jobject thiz,
+                         jint level, jstring content)
 {
     const char *cContent = env->GetStringUTFChars(content, nullptr);
     ngenxx_log_print(level, cContent);
@@ -87,78 +83,86 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_logPrint(JNIEnv *env, jobject thiz,
 
 #pragma mark Net
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env, jobject thiz,
-                                                                        jstring url, jstring params,
-                                                                        jint method,
-                                                                        jobjectArray headerV,
-                                                                        jobjectArray formFieldNameV,
-                                                                        jobjectArray formFieldMimeV,
-                                                                        jobjectArray formFieldDataV,
-                                                                        jstring filePath,
-                                                                        jlong  fileLength,
-                                                                        jlong timeout) {
+jstring
+NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
+                          jstring url, jstring params,
+                          jint method,
+                          jobjectArray headerV,
+                          jobjectArray formFieldNameV,
+                          jobjectArray formFieldMimeV,
+                          jobjectArray formFieldDataV,
+                          jstring filePath,
+                          jlong fileLength,
+                          jlong timeout)
+{
     const char *cUrl = env->GetStringUTFChars(url, nullptr);
     const char *cParams = env->GetStringUTFChars(params, nullptr);
 
     const unsigned int headerCount = env->GetArrayLength(headerV);
-    char **cHeaderV = (char **) malloc(headerCount * sizeof(char *));
-    auto *jstrHeaderV = (jstring *) malloc(sizeof(jstring));
-    for (int i = 0; i < headerCount; i++) {
-        jstrHeaderV[i] = (jstring) (env->GetObjectArrayElement(headerV, i));
-        cHeaderV[i] = (char *) env->GetStringUTFChars(jstrHeaderV[i], nullptr);
+    char **cHeaderV = (char **)malloc(headerCount * sizeof(char *));
+    auto *jstrHeaderV = (jstring *)malloc(sizeof(jstring));
+    for (int i = 0; i < headerCount; i++)
+    {
+        jstrHeaderV[i] = (jstring)(env->GetObjectArrayElement(headerV, i));
+        cHeaderV[i] = (char *)env->GetStringUTFChars(jstrHeaderV[i], nullptr);
     }
 
     const unsigned int formFieldCount = env->GetArrayLength(formFieldNameV);
-    char **cFormFieldNameV = (char **) malloc(formFieldCount * sizeof(char *));
-    auto *jstrFormFieldNameV = (jstring *) malloc(sizeof(jstring));
-    for (int i = 0; i < formFieldCount; i++) {
-        jstrFormFieldNameV[i] = (jstring) (env->GetObjectArrayElement(formFieldNameV, i));
-        cFormFieldNameV[i] = (char *) env->GetStringUTFChars(jstrFormFieldNameV[i], nullptr);
+    char **cFormFieldNameV = (char **)malloc(formFieldCount * sizeof(char *));
+    auto *jstrFormFieldNameV = (jstring *)malloc(sizeof(jstring));
+    for (int i = 0; i < formFieldCount; i++)
+    {
+        jstrFormFieldNameV[i] = (jstring)(env->GetObjectArrayElement(formFieldNameV, i));
+        cFormFieldNameV[i] = (char *)env->GetStringUTFChars(jstrFormFieldNameV[i], nullptr);
     }
 
-    char **cFormFieldMimeV = (char **) malloc(formFieldCount * sizeof(char *));
-    auto *jstrFormFieldMimeV = (jstring *) malloc(sizeof(jstring));
-    for (int i = 0; i < formFieldCount; i++) {
-        jstrFormFieldMimeV[i] = (jstring) (env->GetObjectArrayElement(formFieldMimeV, i));
-        cFormFieldMimeV[i] = (char *) env->GetStringUTFChars(jstrFormFieldMimeV[i], nullptr);
+    char **cFormFieldMimeV = (char **)malloc(formFieldCount * sizeof(char *));
+    auto *jstrFormFieldMimeV = (jstring *)malloc(sizeof(jstring));
+    for (int i = 0; i < formFieldCount; i++)
+    {
+        jstrFormFieldMimeV[i] = (jstring)(env->GetObjectArrayElement(formFieldMimeV, i));
+        cFormFieldMimeV[i] = (char *)env->GetStringUTFChars(jstrFormFieldMimeV[i], nullptr);
     }
 
-    char **cFormFieldDataV = (char **) malloc(formFieldCount * sizeof(char *));
-    auto *jstrFormFieldDataV = (jstring *) malloc(sizeof(jstring));
-    for (int i = 0; i < formFieldCount; i++) {
-        jstrFormFieldDataV[i] = (jstring) (env->GetObjectArrayElement(formFieldDataV, i));
-        cFormFieldDataV[i] = (char *) env->GetStringUTFChars(jstrFormFieldDataV[i], nullptr);
+    char **cFormFieldDataV = (char **)malloc(formFieldCount * sizeof(char *));
+    auto *jstrFormFieldDataV = (jstring *)malloc(sizeof(jstring));
+    for (int i = 0; i < formFieldCount; i++)
+    {
+        jstrFormFieldDataV[i] = (jstring)(env->GetObjectArrayElement(formFieldDataV, i));
+        cFormFieldDataV[i] = (char *)env->GetStringUTFChars(jstrFormFieldDataV[i], nullptr);
     }
 
     const char *cFilePath = env->GetStringUTFChars(filePath, nullptr);
     FILE *cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
 
-    const char *cRsp = ngenxx_net_http_request(cUrl, cParams, (const int) method,
-                                                          (const char **) cHeaderV, headerCount,
-                                                          (const char **) cFormFieldNameV,
-                                                          (const char **) cFormFieldMimeV,
-                                                          (const char **) cFormFieldDataV,
-                                                          formFieldCount,
-                                                          (void *)cFILE, fileLength,
-                                                          (const unsigned long) timeout);
+    const char *cRsp = ngenxx_net_http_request(cUrl, cParams, (const int)method,
+                                               (const char **)cHeaderV, headerCount,
+                                               (const char **)cFormFieldNameV,
+                                               (const char **)cFormFieldMimeV,
+                                               (const char **)cFormFieldDataV,
+                                               formFieldCount,
+                                               (void *)cFILE, fileLength,
+                                               (const unsigned long)timeout);
     jstring jstr = env->NewStringUTF(cRsp ?: "");
-    free((void *) cRsp);
+    free((void *)cRsp);
 
-    for (int i = 0; i < headerCount; i++) {
+    for (int i = 0; i < headerCount; i++)
+    {
         env->ReleaseStringUTFChars(jstrHeaderV[i], cHeaderV[i]);
-        free((void *) jstrHeaderV[i]);
+        free((void *)jstrHeaderV[i]);
     }
-    for (int i = 0; i < formFieldCount; i++) {
+    for (int i = 0; i < formFieldCount; i++)
+    {
         env->ReleaseStringUTFChars(jstrFormFieldNameV[i], cFormFieldNameV[i]);
-        free((void *) jstrFormFieldNameV[i]);
+        free((void *)jstrFormFieldNameV[i]);
         env->ReleaseStringUTFChars(jstrFormFieldMimeV[i], cFormFieldMimeV[i]);
-        free((void *) jstrFormFieldMimeV[i]);
+        free((void *)jstrFormFieldMimeV[i]);
         env->ReleaseStringUTFChars(jstrFormFieldDataV[i], cFormFieldDataV[i]);
-        free((void *) jstrFormFieldDataV[i]);
+        free((void *)jstrFormFieldDataV[i]);
     }
 
-    if (cFilePath) {
+    if (cFilePath)
+    {
         free((void *)cFilePath);
     }
     env->ReleaseStringUTFChars(params, cParams);
@@ -169,9 +173,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_netHttpRequest(JNIEnv *env, jobject t
 
 #pragma mark Lua
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadF(JNIEnv *env, jobject thiz,
-                                                  jstring file)
+jboolean
+NGenXX_JNI_lLoadF(JNIEnv *env, jobject thiz,
+                  jstring file)
 {
     const char *cFile = env->GetStringUTFChars(file, nullptr);
     jboolean res = ngenxx_L_loadF(cFile);
@@ -179,9 +183,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadF(JNIEnv *env, jobject thiz,
     return res;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadS(JNIEnv *env, jobject thiz,
-                                                  jstring script)
+jboolean
+NGenXX_JNI_lLoadS(JNIEnv *env, jobject thiz,
+                  jstring script)
 {
     const char *cScript = env->GetStringUTFChars(script, nullptr);
     jboolean res = ngenxx_L_loadS(cScript);
@@ -189,10 +193,10 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lLoadS(JNIEnv *env, jobject thiz,
     return res;
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCall(JNIEnv *env, jobject thiz,
-                                                 jstring func,
-                                                 jstring params)
+jstring
+NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
+                 jstring func,
+                 jstring params)
 {
     const char *cFunc = env->GetStringUTFChars(func, nullptr);
     const char *cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
@@ -206,9 +210,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_lCall(JNIEnv *env, jobject thiz,
 
 #pragma mark JS
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadF(JNIEnv *env, jobject thiz,
-                                                  jstring file)
+jboolean
+NGenXX_JNI_jLoadF(JNIEnv *env, jobject thiz,
+                  jstring file)
 {
     const char *cFile = env->GetStringUTFChars(file, nullptr);
     jboolean res = ngenxx_J_loadF(cFile);
@@ -216,9 +220,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadF(JNIEnv *env, jobject thiz,
     return res;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadS(JNIEnv *env, jobject thiz,
-                                                  jstring script, jstring name)
+jboolean
+NGenXX_JNI_jLoadS(JNIEnv *env, jobject thiz,
+                  jstring script, jstring name)
 {
     const char *cScript = env->GetStringUTFChars(script, nullptr);
     const char *cName = env->GetStringUTFChars(name, nullptr);
@@ -228,9 +232,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadS(JNIEnv *env, jobject thiz,
     return res;
 }
 
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadB(JNIEnv *env, jobject thiz, jbyteArray bytes) {
+jboolean
+NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz, jbyteArray bytes)
+{
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
 
@@ -240,10 +244,10 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jLoadB(JNIEnv *env, jobject thiz, jby
     return res;
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jCall(JNIEnv *env, jobject thiz,
-                                                 jstring func,
-                                                 jstring params)
+jstring
+NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
+                 jstring func,
+                 jstring params)
 {
     const char *cFunc = env->GetStringUTFChars(func, nullptr);
     const char *cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
@@ -257,9 +261,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jCall(JNIEnv *env, jobject thiz,
 
 #pragma mark Store.SQLite
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteOpen(JNIEnv *env, jobject thiz,
-                                                           jstring id)
+jlong NGenXX_JNI_storeSQLiteOpen(JNIEnv *env, jobject thiz,
+                                 jstring id)
 {
     const char *cId = env->GetStringUTFChars(id, nullptr);
     auto res = (jlong)ngenxx_store_sqlite_open(cId);
@@ -267,10 +270,10 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteOpen(JNIEnv *env, jobject 
     return res;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteExecute(JNIEnv *env, jobject thiz,
-                                                              jlong conn,
-                                                              jstring sql)
+jboolean
+NGenXX_JNI_storeSQLiteExecute(JNIEnv *env, jobject thiz,
+                              jlong conn,
+                              jstring sql)
 {
     const char *cSql = env->GetStringUTFChars(sql, nullptr);
     jboolean res = ngenxx_store_sqlite_execute((void *)conn, cSql);
@@ -278,10 +281,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteExecute(JNIEnv *env, jobje
     return res;
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDo(JNIEnv *env, jobject thiz,
-                                                              jlong conn,
-                                                              jstring sql)
+jlong NGenXX_JNI_storeSQLiteQueryDo(JNIEnv *env, jobject thiz,
+                                    jlong conn,
+                                    jstring sql)
 {
     const char *cSql = env->GetStringUTFChars(sql, nullptr);
     auto res = (jlong)ngenxx_store_sqlite_query_do((void *)conn, cSql);
@@ -289,18 +291,18 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDo(JNIEnv *env, jobje
     return res;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadRow(JNIEnv *env, jobject thiz,
-                                                                   jlong query_result)
+jboolean
+NGenXX_JNI_storeSQLiteQueryReadRow(JNIEnv *env, jobject thiz,
+                                   jlong query_result)
 {
     jboolean res = ngenxx_store_sqlite_query_read_row((void *)query_result);
     return res;
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
-                                                                          jlong query_result,
-                                                                          jstring column)
+jstring
+NGenXX_JNI_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
+                                          jlong query_result,
+                                          jstring column)
 {
     const char *cColumn = env->GetStringUTFChars(column, nullptr);
     const char *cRes = ngenxx_store_sqlite_query_read_column_text((void *)query_result, cColumn);
@@ -310,9 +312,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnText(JNIEnv
     return jstr;
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
-                                                                             jlong query_result, jstring column)
+jlong NGenXX_JNI_storeSQLiteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
+                                                   jlong query_result, jstring column)
 {
     const char *cColumn = env->GetStringUTFChars(column, nullptr);
     jlong res = ngenxx_store_sqlite_query_read_column_integer((void *)query_result, cColumn);
@@ -320,9 +321,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnInteger(JNI
     return res;
 }
 
-extern "C" JNIEXPORT jdouble JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
-                                                                           jlong query_result, jstring column)
+jdouble
+NGenXX_JNI_storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
+                                           jlong query_result, jstring column)
 {
     const char *cColumn = env->GetStringUTFChars(column, nullptr);
     jdouble res = ngenxx_store_sqlite_query_read_column_float((void *)query_result, cColumn);
@@ -330,25 +331,22 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryReadColumnFloat(JNIEn
     return res;
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteQueryDrop(JNIEnv *env, jobject thiz,
-                                                                jlong query_result)
+void NGenXX_JNI_storeSQLiteQueryDrop(JNIEnv *env, jobject thiz,
+                                     jlong query_result)
 {
     ngenxx_store_sqlite_query_drop((void *)query_result);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeSQLiteClose(JNIEnv *env, jobject thiz,
-                                                            jlong conn)
+void NGenXX_JNI_storeSQLiteClose(JNIEnv *env, jobject thiz,
+                                 jlong conn)
 {
     ngenxx_store_sqlite_close((void *)conn);
 }
 
 #pragma mark Srore.KV
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVOpen(JNIEnv *env, jobject thiz,
-                                                       jstring id)
+jlong NGenXX_JNI_storeKVOpen(JNIEnv *env, jobject thiz,
+                             jstring id)
 {
     const char *cId = env->GetStringUTFChars(id, nullptr);
     auto res = (jlong)ngenxx_store_kv_open(cId);
@@ -356,9 +354,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVOpen(JNIEnv *env, jobject thiz
     return res;
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadString(JNIEnv *env, jobject thiz,
-                                                             jlong conn, jstring k)
+jstring
+NGenXX_JNI_storeKVReadString(JNIEnv *env, jobject thiz,
+                             jlong conn, jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     const char *cRes = ngenxx_store_kv_read_string((void *)conn, cK);
@@ -368,10 +366,10 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadString(JNIEnv *env, jobjec
     return jstr;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteString(JNIEnv *env, jobject thiz,
-                                                              jlong conn, jstring k,
-                                                              jstring v)
+jboolean
+NGenXX_JNI_storeKVWriteString(JNIEnv *env, jobject thiz,
+                              jlong conn, jstring k,
+                              jstring v)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     const char *cV = env->GetStringUTFChars(v, nullptr);
@@ -381,9 +379,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteString(JNIEnv *env, jobje
     return res;
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadInteger(JNIEnv *env, jobject thiz,
-                                                              jlong conn, jstring k)
+jlong NGenXX_JNI_storeKVReadInteger(JNIEnv *env, jobject thiz,
+                                    jlong conn, jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jlong res = ngenxx_store_kv_read_integer((void *)conn, cK);
@@ -391,10 +388,10 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadInteger(JNIEnv *env, jobje
     return res;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteInteger(JNIEnv *env, jobject thiz,
-                                                               jlong conn, jstring k,
-                                                               jlong v)
+jboolean
+NGenXX_JNI_storeKVWriteInteger(JNIEnv *env, jobject thiz,
+                               jlong conn, jstring k,
+                               jlong v)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jboolean res = ngenxx_store_kv_write_integer((void *)conn, cK, v);
@@ -402,9 +399,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteInteger(JNIEnv *env, jobj
     return res;
 }
 
-extern "C" JNIEXPORT jdouble JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadFloat(JNIEnv *env, jobject thiz,
-                                                            jlong conn, jstring k)
+jdouble
+NGenXX_JNI_storeKVReadFloat(JNIEnv *env, jobject thiz,
+                            jlong conn, jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jdouble res = ngenxx_store_kv_read_float((void *)conn, cK);
@@ -412,9 +409,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVReadFloat(JNIEnv *env, jobject
     return res;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteFloat(JNIEnv *env, jobject thiz,
-                                                             jlong conn, jstring k, jdouble v)
+jboolean
+NGenXX_JNI_storeKVWriteFloat(JNIEnv *env, jobject thiz,
+                             jlong conn, jstring k, jdouble v)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jboolean res = ngenxx_store_kv_write_float((void *)conn, cK, v);
@@ -422,9 +419,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVWriteFloat(JNIEnv *env, jobjec
     return res;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVContains(JNIEnv *env, jobject thiz,
-                                                           jlong conn, jstring k)
+jboolean
+NGenXX_JNI_storeKVContains(JNIEnv *env, jobject thiz,
+                           jlong conn, jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jboolean res = ngenxx_store_kv_contains((void *)conn, cK);
@@ -432,30 +429,27 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVContains(JNIEnv *env, jobject 
     return res;
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVClear(JNIEnv *env, jobject thiz,
-                                                        jlong conn)
+void NGenXX_JNI_storeKVClear(JNIEnv *env, jobject thiz,
+                             jlong conn)
 {
     ngenxx_store_kv_clear((void *)conn);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_storeKVClose(JNIEnv *env, jobject thiz,
-                                                        jlong conn)
+void NGenXX_JNI_storeKVClose(JNIEnv *env, jobject thiz,
+                             jlong conn)
 {
     ngenxx_store_kv_close((void *)conn);
 }
 
 #pragma mark Device
 
-extern "C" JNIEXPORT jint JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceType(JNIEnv *env, jobject thiz)
+jint NGenXX_JNI_deviceType(JNIEnv *env, jobject thiz)
 {
     return ngenxx_device_type();
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceName(JNIEnv *env, jobject thiz)
+jstring
+NGenXX_JNI_deviceName(JNIEnv *env, jobject thiz)
 {
     const char *cDN = ngenxx_device_name();
     jstring jstr = env->NewStringUTF(cDN ?: "");
@@ -463,8 +457,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceName(JNIEnv *env, jobject thiz)
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceManufacturer(JNIEnv *env, jobject thiz)
+jstring
+NGenXX_JNI_deviceManufacturer(JNIEnv *env, jobject thiz)
 {
     const char *cDM = ngenxx_device_manufacturer();
     jstring jstr = env->NewStringUTF(cDM ?: "");
@@ -472,8 +466,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceManufacturer(JNIEnv *env, jobje
     return jstr;
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceOsVersion(JNIEnv *env, jobject thiz)
+jstring
+NGenXX_JNI_deviceOsVersion(JNIEnv *env, jobject thiz)
 {
     const char *cDOV = ngenxx_device_os_version();
     jstring jstr = env->NewStringUTF(cDOV ?: "");
@@ -481,17 +475,17 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceOsVersion(JNIEnv *env, jobject 
     return jstr;
 }
 
-extern "C" JNIEXPORT jint JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_deviceCpuArch(JNIEnv *env, jobject thiz)
+jint NGenXX_JNI_deviceCpuArch(JNIEnv *env, jobject thiz)
 {
     return ngenxx_device_cpu_arch();
 }
 
 #pragma mark Coding
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_codingHexBytes2Str(JNIEnv *env, jobject thiz,
-                                                                   jbyteArray bytes) {
+jstring
+NGenXX_JNI_codingHexBytes2Str(JNIEnv *env, jobject thiz,
+                              jbyteArray bytes)
+{
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
 
@@ -503,10 +497,11 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_codingHexBytes2Str(JNIEnv *env, jobje
     return jstr;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_codingHexStr2Bytes(JNIEnv *env,
-                                                                                   jobject thiz,
-                                                                                   jstring str) {
+jbyteArray
+NGenXX_JNI_codingHexStr2Bytes(JNIEnv *env,
+                              jobject thiz,
+                              jstring str)
+{
     const char *cStr = env->GetStringUTFChars(str, nullptr);
 
     size outLen;
@@ -519,18 +514,19 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_codingHexStr2Bytes(JNIEnv *env,
 
 #pragma mark Crypto
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoRandom(JNIEnv *env, jobject thiz, jint len) {
+jbyteArray
+NGenXX_JNI_cryptoRandom(JNIEnv *env, jobject thiz, jint len)
+{
     byte out[len];
     std::memset(out, 0, len);
     ngenxx_crypto_rand(len, out);
     return moveToJByteArray(env, out, len, false);
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
-                                                            jbyteArray input,
-                                                            jbyteArray key)
+jbyteArray
+NGenXX_JNI_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
+                            jbyteArray input,
+                            jbyteArray key)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -546,10 +542,10 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesEncrypt(JNIEnv *env, jobject
     return jba;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
-                                                            jbyteArray input,
-                                                            jbyteArray key)
+jbyteArray
+NGenXX_JNI_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
+                            jbyteArray input,
+                            jbyteArray key)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -565,11 +561,12 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesDecrypt(JNIEnv *env, jobject
     return jba;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesGcmEncrypt(JNIEnv *env, jobject thiz,
-                                                               jbyteArray input, jbyteArray key,
-                                                               jbyteArray init_vector,
-                                                               jbyteArray aad, jint tag_bits) {
+jbyteArray
+NGenXX_JNI_cryptoAesGcmEncrypt(JNIEnv *env, jobject thiz,
+                               jbyteArray input, jbyteArray key,
+                               jbyteArray init_vector,
+                               jbyteArray aad, jint tag_bits)
+{
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
@@ -586,15 +583,17 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesGcmEncrypt(JNIEnv *env, jobj
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
     env->ReleaseByteArrayElements(init_vector, cIv, JNI_ABORT);
-    if (cAad) env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
+    if (cAad)
+        env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
     return jba;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
-                                                               jbyteArray input, jbyteArray key,
-                                                               jbyteArray init_vector,
-                                                               jbyteArray aad, jint tag_bits) {
+jbyteArray
+NGenXX_JNI_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
+                               jbyteArray input, jbyteArray key,
+                               jbyteArray init_vector,
+                               jbyteArray aad, jint tag_bits)
+{
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
@@ -611,13 +610,14 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoAesGcmDecrypt(JNIEnv *env, jobj
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
     env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
     env->ReleaseByteArrayElements(init_vector, cIv, JNI_ABORT);
-    if (cAad) env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
+    if (cAad)
+        env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
     return jba;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashMd5(JNIEnv *env, jobject thiz,
-                                                         jbyteArray input)
+jbyteArray
+NGenXX_JNI_cryptoHashMd5(JNIEnv *env, jobject thiz,
+                         jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -630,9 +630,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashMd5(JNIEnv *env, jobject th
     return jba;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashSha256(JNIEnv *env, jobject thiz,
-                                                            jbyteArray input)
+jbyteArray
+NGenXX_JNI_cryptoHashSha256(JNIEnv *env, jobject thiz,
+                            jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -645,9 +645,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoHashSha256(JNIEnv *env, jobject
     return jba;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoBase64Encode(JNIEnv *env, jobject thiz,
-                                                              jbyteArray input)
+jbyteArray
+NGenXX_JNI_cryptoBase64Encode(JNIEnv *env, jobject thiz,
+                              jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -660,9 +660,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoBase64Encode(JNIEnv *env, jobje
     return jba;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoBase64Decode(JNIEnv *env, jobject thiz,
-                                                              jbyteArray input)
+jbyteArray
+NGenXX_JNI_cryptoBase64Decode(JNIEnv *env, jobject thiz,
+                              jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -677,9 +677,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_cryptoBase64Decode(JNIEnv *env, jobje
 
 #pragma mark JsonDecoder
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderInit(JNIEnv *env, jobject thiz,
-                                                           jstring json)
+jlong NGenXX_JNI_jsonDecoderInit(JNIEnv *env, jobject thiz,
+                                 jstring json)
 {
     const char *cJson = env->GetStringUTFChars(json, nullptr);
     auto res = (jlong)ngenxx_json_decoder_init(cJson);
@@ -687,24 +686,23 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderInit(JNIEnv *env, jobject 
     return res;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderIsArray(JNIEnv *env, jobject thiz,
-                                                              jlong decoder, jlong node)
+jboolean
+NGenXX_JNI_jsonDecoderIsArray(JNIEnv *env, jobject thiz,
+                              jlong decoder, jlong node)
 {
     return ngenxx_json_decoder_is_array((void *)decoder, (void *)node);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderIsObject(JNIEnv *env, jobject thiz,
-                                                               jlong decoder, jlong node)
+jboolean
+NGenXX_JNI_jsonDecoderIsObject(JNIEnv *env, jobject thiz,
+                               jlong decoder, jlong node)
 {
     return ngenxx_json_decoder_is_object((void *)decoder, (void *)node);
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadNode(JNIEnv *env, jobject thiz,
-                                                               jlong decoder, jlong node,
-                                                               jstring k)
+jlong NGenXX_JNI_jsonDecoderReadNode(JNIEnv *env, jobject thiz,
+                                     jlong decoder, jlong node,
+                                     jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     auto res = (jlong)ngenxx_json_decoder_read_node((void *)decoder, (void *)node, cK);
@@ -712,9 +710,9 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadNode(JNIEnv *env, jobj
     return res;
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadString(JNIEnv *env, jobject thiz,
-                                                                 jlong decoder, jlong node)
+jstring
+NGenXX_JNI_jsonDecoderReadString(JNIEnv *env, jobject thiz,
+                                 jlong decoder, jlong node)
 {
     const char *res = ngenxx_json_decoder_read_string((void *)decoder, (void *)node);
     jstring jstr = env->NewStringUTF(res ?: "");
@@ -722,49 +720,44 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadString(JNIEnv *env, jo
     return jstr;
 }
 
-extern "C" JNIEXPORT jdouble JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadNumber(JNIEnv *env, jobject thiz,
-                                                                 jlong decoder, jlong node)
+jdouble
+NGenXX_JNI_jsonDecoderReadNumber(JNIEnv *env, jobject thiz,
+                                 jlong decoder, jlong node)
 {
     return ngenxx_json_decoder_read_number((void *)decoder, (void *)node);
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadChild(JNIEnv *env, jobject thiz,
-                                                                jlong decoder, jlong node)
+jlong NGenXX_JNI_jsonDecoderReadChild(JNIEnv *env, jobject thiz,
+                                      jlong decoder, jlong node)
 {
     return (jlong)ngenxx_json_decoder_read_child((void *)decoder, (void *)node);
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderReadNext(JNIEnv *env, jobject thiz,
-                                                               jlong decoder, jlong node)
+jlong NGenXX_JNI_jsonDecoderReadNext(JNIEnv *env, jobject thiz,
+                                     jlong decoder, jlong node)
 {
     return (jlong)ngenxx_json_decoder_read_next((void *)decoder, (void *)node);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_jsonDecoderRelease(JNIEnv *env, jobject thiz,
-                                                              jlong decoder)
+void NGenXX_JNI_jsonDecoderRelease(JNIEnv *env, jobject thiz,
+                                   jlong decoder)
 {
     ngenxx_json_decoder_release((void *)decoder);
 }
 
 #pragma mark Zip
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipInit(JNIEnv *env, jobject thiz,
-                                                    jint mode, jlong bufferSize)
+jlong NGenXX_JNI_zZipInit(JNIEnv *env, jobject thiz,
+                          jint mode, jlong bufferSize)
 {
     return (long)ngenxx_z_zip_init(mode, bufferSize);
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipInput(JNIEnv *env, jobject thiz, jlong zip,
-                                                     jbyteArray inBytes, jint inLen, jboolean inFinish)
+jlong NGenXX_JNI_zZipInput(JNIEnv *env, jobject thiz, jlong zip,
+                           jbyteArray inBytes, jint inLen, jboolean inFinish)
 {
     jbyte *cIn = env->GetByteArrayElements(inBytes, nullptr);
-    //size inLen = env->GetArrayLength(input);
+    // size inLen = env->GetArrayLength(input);
 
     size ret = ngenxx_z_zip_input((void *)zip, (const byte *)cIn, inLen, inFinish);
 
@@ -773,8 +766,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipInput(JNIEnv *env, jobject thiz, 
     return ret;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
+jbyteArray
+NGenXX_JNI_zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
 {
     size outLen = 0;
     auto cRes = ngenxx_z_zip_process_do((void *)zip, &outLen);
@@ -783,33 +776,30 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipProcessDo(JNIEnv *env, jobject th
     return jba;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipProcessFinished(JNIEnv *env, jobject thiz,
-                                                               jlong zip)
+jboolean
+NGenXX_JNI_zZipProcessFinished(JNIEnv *env, jobject thiz,
+                               jlong zip)
 {
     return ngenxx_z_zip_process_finished((void *)zip);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipRelease(JNIEnv *env, jobject thiz,
-                                                       jlong zip)
+void NGenXX_JNI_zZipRelease(JNIEnv *env, jobject thiz,
+                            jlong zip)
 {
     ngenxx_z_zip_release((void *)zip);
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipInit(JNIEnv *env, jobject thiz,
-                                                      jlong bufferSize)
+jlong NGenXX_JNI_zUnZipInit(JNIEnv *env, jobject thiz,
+                            jlong bufferSize)
 {
     return (long)ngenxx_z_unzip_init(bufferSize);
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipInput(JNIEnv *env, jobject thiz, jlong unzip,
-                                                       jbyteArray inBytes, jint inLen, jboolean inFinish)
+jlong NGenXX_JNI_zUnZipInput(JNIEnv *env, jobject thiz, jlong unzip,
+                             jbyteArray inBytes, jint inLen, jboolean inFinish)
 {
     jbyte *cIn = env->GetByteArrayElements(inBytes, nullptr);
-    //size inLen = env->GetArrayLength(input);
+    // size inLen = env->GetArrayLength(input);
 
     size ret = ngenxx_z_unzip_input((void *)unzip, (const byte *)cIn, inLen, inFinish);
 
@@ -818,8 +808,8 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipInput(JNIEnv *env, jobject thiz
     return ret;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip)
+jbyteArray
+NGenXX_JNI_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip)
 {
     size outLen = 0;
     auto cRes = ngenxx_z_unzip_process_do((void *)unzip, &outLen);
@@ -828,24 +818,23 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipProcessDo(JNIEnv *env, jobject 
     return jba;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipProcessFinished(JNIEnv *env, jobject thiz,
-                                                                 jlong unzip)
+jboolean
+NGenXX_JNI_zUnZipProcessFinished(JNIEnv *env, jobject thiz,
+                                 jlong unzip)
 {
     return ngenxx_z_unzip_process_finished((void *)unzip);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipRelease(JNIEnv *env, jobject thiz,
-                                                         jlong zip)
+void NGenXX_JNI_zUnZipRelease(JNIEnv *env, jobject thiz,
+                              jlong zip)
 {
     ngenxx_z_unzip_release((void *)zip);
 }
 
-extern "C"
-JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipBytes(JNIEnv *env, jobject thiz, jint mode,
-                                                     jlong buffer_size, jbyteArray bytes) {
+jbyteArray
+NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz, jint mode,
+                     jlong buffer_size, jbyteArray bytes)
+{
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
 
@@ -857,10 +846,10 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zZipBytes(JNIEnv *env, jobject thiz, 
     return jba;
 }
 
-extern "C"
-JNIEXPORT jbyteArray JNICALL
-Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipBytes(JNIEnv *env, jobject thiz, jlong buffer_size,
-                                                       jbyteArray bytes) {
+jbyteArray
+NGenXX_JNI_zUnZipBytes(JNIEnv *env, jobject thiz, jlong buffer_size,
+                       jbyteArray bytes)
+{
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
 
@@ -870,4 +859,103 @@ Java_xyz_rinc_ngenxx_NGenXX_00024Companion_zUnZipBytes(JNIEnv *env, jobject thiz
 
     env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
     return jba;
+}
+
+static const char *JClassName = "xyz/rinc/ngenxx/NGenXX$Companion";
+
+static const JNINativeMethod JMethods[] = {
+    {"getVersion", "()Ljava/lang/String;", (void *)NGenXX_JNI_getVersion},
+    {"init", "(Ljava/lang/String;)Z", (void *)NGenXX_JNI_init},
+    {"release", "()V", (void *)NGenXX_JNI_release},
+
+    {"logSetLevel", "(I)V", (void *)NGenXX_JNI_logSetLevel},
+    {"logSetCallback", "(Lkotlin/jvm/functions/Function2;)V", (void *)NGenXX_JNI_logSetCallback},
+    {"logPrint", "(ILjava/lang/String;)V", (void *)NGenXX_JNI_logPrint},
+
+    {"netHttpRequest", "(Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;JJ)Ljava/lang/String;", (void *)NGenXX_JNI_netHttpRequest},
+
+    {"lLoadF", "(Ljava/lang/String;)Z", (void *)NGenXX_JNI_lLoadF},
+    {"lLoadS", "(Ljava/lang/String;)Z", (void *)NGenXX_JNI_lLoadS},
+    {"lCall", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *)NGenXX_JNI_lCall},
+
+    {"jLoadF", "(Ljava/lang/String;)Z", (void *)NGenXX_JNI_jLoadF},
+    {"jLoadS", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)NGenXX_JNI_jLoadS},
+    {"jLoadB", "([B)Z", (void *)NGenXX_JNI_jLoadB},
+    {"jCall", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *)NGenXX_JNI_jCall},
+
+    {"storeSQLiteOpen", "(Ljava/lang/String;)J", (void *) NGenXX_JNI_storeSQLiteOpen},
+    {"storeSQLiteExecute", "(JLjava/lang/String;)Z", (void *) NGenXX_JNI_storeSQLiteExecute},
+    {"storeSQLiteQueryDo", "(JLjava/lang/String;)J", (void *) NGenXX_JNI_storeSQLiteQueryDo},
+    {"storeSQLiteQueryReadRow", "(J)Z", (void *) NGenXX_JNI_storeSQLiteQueryReadRow},
+    {"storeSQLiteQueryReadColumnText", "(JLjava/lang/String;)Ljava/lang/String;", (void *) NGenXX_JNI_storeSQLiteQueryReadColumnText},
+    {"storeSQLiteQueryReadColumnInteger", "(JLjava/lang/String;)J", (void *) NGenXX_JNI_storeSQLiteQueryReadColumnInteger},
+    {"storeSQLiteQueryReadColumnFloat", "(JLjava/lang/String;)D", (void *) NGenXX_JNI_storeSQLiteQueryReadColumnFloat},
+    {"storeSQLiteQueryDrop", "(J)V", (void *) NGenXX_JNI_storeSQLiteQueryDrop},
+    {"storeSQLiteClose", "(J)V", (void *) NGenXX_JNI_storeSQLiteClose},
+
+    {"storeKVOpen", "(Ljava/lang/String;)J", (void *) NGenXX_JNI_storeKVOpen},
+    {"storeKVReadString", "(JLjava/lang/String;)Ljava/lang/String;", (void *) NGenXX_JNI_storeKVReadString},
+    {"storeKVWriteString", "(JLjava/lang/String;Ljava/lang/String;)Z", (void *) NGenXX_JNI_storeKVWriteString},
+    {"storeKVReadInteger", "(JLjava/lang/String;)J", (void *) NGenXX_JNI_storeKVReadInteger},
+    {"storeKVWriteInteger", "(JLjava/lang/String;J)Z", (void *) NGenXX_JNI_storeKVWriteInteger},
+    {"storeKVReadFloat", "(JLjava/lang/String;)D", (void *) NGenXX_JNI_storeKVReadFloat},
+    {"storeKVWriteFloat", "(JLjava/lang/String;D)Z", (void *) NGenXX_JNI_storeKVWriteFloat},
+    {"storeKVContains", "(JLjava/lang/String;)Z", (void *) NGenXX_JNI_storeKVContains},
+    {"storeKVClear", "(J)V", (void *) NGenXX_JNI_storeKVClear},
+    {"storeKVClose", "(J)V", (void *) NGenXX_JNI_storeKVClose},
+
+    {"deviceType", "()I", (void *) NGenXX_JNI_deviceType},
+    {"deviceName", "()Ljava/lang/String;", (void *) NGenXX_JNI_deviceName},
+    {"deviceManufacturer", "()Ljava/lang/String;", (void *) NGenXX_JNI_deviceManufacturer},
+    {"deviceOsVersion", "()Ljava/lang/String;", (void *) NGenXX_JNI_deviceOsVersion},
+    {"deviceCpuArch", "()I", (void *) NGenXX_JNI_deviceCpuArch},
+
+    {"codingHexBytes2Str", "([B)Ljava/lang/String;", (void *) NGenXX_JNI_codingHexBytes2Str},
+    {"codingHexStr2Bytes", "(Ljava/lang/String;)[B", (void *) NGenXX_JNI_codingHexStr2Bytes},
+
+    {"cryptoRandom", "(I)[B", (void *) NGenXX_JNI_cryptoRandom},
+    {"cryptoAesEncrypt", "([B[B)[B", (void *) NGenXX_JNI_cryptoAesEncrypt},
+    {"cryptoAesDecrypt", "([B[B)[B", (void *) NGenXX_JNI_cryptoAesDecrypt},
+    {"cryptoAesGcmEncrypt", "([B[B[B[BI)[B", (void *) NGenXX_JNI_cryptoAesGcmEncrypt},
+    {"cryptoAesGcmDecrypt", "([B[B[B[BI)[B", (void *) NGenXX_JNI_cryptoAesGcmDecrypt},
+    {"cryptoHashMd5", "([B)[B", (void *) NGenXX_JNI_cryptoHashMd5},
+    {"cryptoHashSha256", "([B)[B", (void *) NGenXX_JNI_cryptoHashSha256},
+    {"cryptoBase64Encode", "([B)[B", (void *) NGenXX_JNI_cryptoBase64Encode},
+    {"cryptoBase64Decode", "([B)[B", (void *) NGenXX_JNI_cryptoBase64Decode},
+
+    {"jsonDecoderInit", "(Ljava/lang/String;)J", (void *) NGenXX_JNI_jsonDecoderInit},
+    {"jsonDecoderIsArray", "(JJ)Z", (void *) NGenXX_JNI_jsonDecoderIsArray},
+    {"jsonDecoderIsObject", "(JJ)Z", (void *) NGenXX_JNI_jsonDecoderIsObject},
+    {"jsonDecoderReadNode", "(JJLjava/lang/String;)J", (void *) NGenXX_JNI_jsonDecoderReadNode},
+    {"jsonDecoderReadString", "(JJ)Ljava/lang/String;", (void *) NGenXX_JNI_jsonDecoderReadString},
+    {"jsonDecoderReadNumber", "(JJ)D", (void *) NGenXX_JNI_jsonDecoderReadNumber},
+    {"jsonDecoderReadChild", "(JJ)J", (void *) NGenXX_JNI_jsonDecoderReadChild},
+    {"jsonDecoderReadNext", "(JJ)J", (void *) NGenXX_JNI_jsonDecoderReadNext},
+    {"jsonDecoderRelease", "(J)V", (void *) NGenXX_JNI_jsonDecoderRelease},
+
+    {"zZipInit", "(IJ)J", (void *) NGenXX_JNI_zZipInit},
+    {"zZipInput", "(J[BIZ)J", (void *) NGenXX_JNI_zZipInput},
+    {"zZipProcessDo", "(J)[B", (void *) NGenXX_JNI_zZipProcessDo},
+    {"zZipProcessFinished", "(J)Z", (void *) NGenXX_JNI_zZipProcessFinished},
+    {"zZipRelease", "(J)V", (void *) NGenXX_JNI_zZipRelease},
+    {"zUnZipInit", "(J)J", (void *) NGenXX_JNI_zUnZipInit},
+    {"zUnZipInput", "(J[BIZ)J", (void *) NGenXX_JNI_zUnZipInput},
+    {"zUnZipProcessDo", "(J)[B", (void *) NGenXX_JNI_zUnZipProcessDo},
+    {"zUnZipProcessFinished", "(J)Z", (void *) NGenXX_JNI_zUnZipProcessFinished},
+    {"zUnZipRelease", "(J)V", (void *) NGenXX_JNI_zUnZipRelease},
+    {"zZipBytes", "(IJ[B)[B", (void *) NGenXX_JNI_zZipBytes},
+    {"zUnZipBytes", "(J[B)[B", (void *) NGenXX_JNI_zUnZipBytes},
+};
+
+int JNI_OnLoad(JavaVM *vm, void *reserved)
+{
+    JNIEnv *env = nullptr;
+    int registerResult = vm->GetEnv((void **)&env, JNI_VERSION_1_6);
+    if (registerResult != JNI_OK)
+    {
+        return -1;
+    }
+    jclass jclazz = env->FindClass(JClassName);
+    env->RegisterNatives(jclazz, JMethods, sizeof(JMethods) / sizeof(JNINativeMethod));
+    return JNI_VERSION_1_6;
 }
