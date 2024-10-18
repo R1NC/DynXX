@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
         val aesgcmTagBits = 15 * 8
         val aesgcmEncodedBytes = NGenXX.cryptoAesGcmEncrypt(inputBytes, keyBytes, aesgcmIV,
             aesgcmAad, aesgcmTagBits)
-        val aesgcmDecodedBytes = NGenXX.cryptoAesGcmEncrypt(aesgcmEncodedBytes, keyBytes, aesgcmIV,
+        val aesgcmDecodedBytes = NGenXX.cryptoAesGcmDecrypt(aesgcmEncodedBytes, keyBytes, aesgcmIV,
             aesgcmAad, aesgcmTagBits)
         val aesgcmDecodedStr = aesgcmDecodedBytes.toString(Charsets.UTF_8)
         NGenXX.logPrint(1,"AES-GCM->$aesgcmDecodedStr")

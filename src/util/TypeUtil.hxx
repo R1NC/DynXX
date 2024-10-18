@@ -24,4 +24,15 @@ static inline const byte *copyBytes(NGenXX::Bytes t)
     return ncs;
 }
 
+static inline const NGenXX::Bytes trimBytes(NGenXX::Bytes bytes)
+{
+    auto [data, len] = bytes;
+    auto fixedLen = len;
+    for (auto i = len - 1; i > 0; i--)
+    {
+        if (data[i] <= 0) fixedLen--;
+    }
+    return {data, fixedLen};
+}
+
 #endif // NGENXX_UTIL_TYPE_H_

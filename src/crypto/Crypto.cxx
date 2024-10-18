@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 
+#include "../util/TypeUtil.hxx"
 #include "../../../external/openssl/include/openssl/bio.h"
 #include "../../../external/openssl/include/openssl/rand.h"
 #include "../../../external/openssl/include/openssl/evp.h"
@@ -94,7 +95,7 @@ const NGenXX::Bytes NGenXX::Crypto::AES::decrypt(const NGenXX::Bytes inBytes, co
         offset += AES_BLOCK_SIZE;
     }
 
-    return {out, outLen};
+    return trimBytes({out, outLen});
 }
 
 const EVP_CIPHER *aesGcmCipher(const NGenXX::Bytes keyBytes)
@@ -389,7 +390,7 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::decode(const NGenXX::Bytes inBytes)
 
     BIO *bio, *b64;
 
-    size outLen = calcDecodedLen(inBytes);
+    size outLen = inLen * 2;
     byte outBuffer[outLen];
     std::memset(outBuffer, 0, outLen);
 
@@ -403,5 +404,5 @@ const NGenXX::Bytes NGenXX::Crypto::Base64::decode(const NGenXX::Bytes inBytes)
     NGenXX::Bytes outBytes = {outBuffer, outLen};
     BIO_free_all(bio);
 
-    return outBytes;
+    return trimBytes(outBytes);
 }

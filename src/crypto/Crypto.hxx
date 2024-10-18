@@ -59,18 +59,6 @@ namespace NGenXX
 
         namespace Base64
         {
-            constexpr int calcDecodedLen(const Bytes in)
-            {
-                const byte *bytes = in.first;
-                const size len = in.second;
-                size_t padding = 0;
-                if (bytes[len - 1] == '=' && bytes[len - 2] == '=')
-                    padding = 2;
-                else if (bytes[len - 1] == '=')
-                    padding = 1;
-                return (len * 3) / 4 - padding;
-            }
-
             const Bytes encode(const Bytes in);
 
             const Bytes decode(const Bytes in);
