@@ -617,6 +617,8 @@ function NGenXXZUnZipStream(bufferSize, readFunc, writeFunc, flushFunc) {
     return res;
 }
 
+// Z.file
+
 function NGenXXZZipFile(mode, inFilePath, outFilePath) {
     let bufferSize = NGenXXZBufferSize;
 
@@ -669,4 +671,54 @@ function NGenXXZUnZipFile(inFilePath, outFilePath) {
     outF.close();
     inF.close();
     return res;
+}
+
+// Z.ByteArray
+
+function NGenXXZZipBytes(mode, inBytes) {
+    let bufferSize = NGenXXZBufferSize;
+    var outBytes = [];
+    var pos = 0;
+
+    let res = NGenXXZZipStream(mode, bufferSize,
+        () => {
+            var inArr = [];
+            for (var i = pos; i < bufferSize && i < inBytes.length; i++) {
+                inArr.push(inBytes[i]);
+                pos++;
+            }
+            return inArr;
+        },
+        (bytes) => {
+            outBytes.push(bytes);
+        },
+        () => {
+        }
+    );
+
+    return outBytes;
+}
+
+function NGenXXZUnZipBytes(mode, inBytes) {
+    let bufferSize = NGenXXZBufferSize;
+    var outBytes = [];
+    var pos = 0;
+
+    let res = NGenXXZUnZipStream(bufferSize,
+        () => {
+            var inArr = [];
+            for (var i = pos; i < bufferSize && i < inBytes.length; i++) {
+                inArr.push(inBytes[i]);
+                pos++;
+            }
+            return inArr;
+        },
+        (bytes) => {
+            outBytes.push(bytes);
+        },
+        () => {
+        }
+    );
+
+    return outBytes;
 }
