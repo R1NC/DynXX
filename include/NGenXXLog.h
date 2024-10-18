@@ -18,14 +18,14 @@ enum NGenXXLogLevel {
 
 /**
  * @brief Set log level
- * @warning Not accessible in Lua!
+ * @warning Not accessible in JS/Lua!
  * @param level Log level
  */
 void ngenxx_log_set_level(int level);
 
 /**
  * @brief Set log callback
- * @warning Not accessible in Lua!
+ * @warning Not accessible in JS/Lua!
  * @param callback log callback
  */
 void ngenxx_log_set_callback(void (*callback)(int level, const char *content));

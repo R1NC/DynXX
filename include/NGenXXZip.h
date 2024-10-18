@@ -97,6 +97,7 @@ extern "C"
 
     /**
      * @brief ZIP for C FILE
+     * @warning Not accessible in JS/Lua!
      * @param mode ZIP mode, see `NGenXXZipCompressMode`
      * @param bufferSize buffer size，must be positive
      * @param cFILEIn Input C `FILE`
@@ -107,6 +108,7 @@ extern "C"
 
     /**
      * @brief UNZIP for C FILE
+     * @warning Not accessible in JS/Lua!
      * @param bufferSize buffer size，must be positive
      * @param cFILEIn Input C `FILE`
      * @param cFILEOut Output C `FILE`
@@ -116,6 +118,7 @@ extern "C"
 
     /**
      * @brief ZIP for C++ Stream
+     * @warning Not accessible in JS/Lua!
      * @param mode ZIP mode, see `NGenXXZipCompressMode`
      * @param bufferSize buffer size，must be positive
      * @param cxxStreamIn Input C++ Stream(`istream`)
@@ -126,12 +129,34 @@ extern "C"
 
     /**
      * @brief UNZIP for C++ Stream
+     * @warning Not accessible in JS/Lua!
      * @param bufferSize buffer size，must be positive
      * @param cxxStreamIn Input C++ Stream(`istream`)
      * @param cxxStreamOut Output C++ Stream(`ostream`)
      * @param whether finished or not
      */
     bool ngenxx_z_cxxstream_unzip(const size bufferSize, void *cxxStreamIn, void *cxxStreamOut);
+
+    /**
+     * @brief ZIP for bytes
+     * @param mode ZIP mode, see `NGenXXZipCompressMode`
+     * @param bufferSize buffer size，must be positive
+     * @param inBytes Input bytes data
+     * @param inLen Input bytes length
+     * @param outLen A pointer to read output bytes length
+     * @param output bytes data
+     */
+    const byte *ngenxx_z_bytes_zip(const int mode, const size bufferSize, const byte *inBytes, const size inLen, size *outLen);
+
+    /**
+     * @brief UNZIP for bytes
+     * @param bufferSize buffer size，must be positive
+     * @param inBytes Input bytes data
+     * @param inLen Input bytes length
+     * @param outLen A pointer to read output bytes length
+     * @param output bytes data
+     */
+    const byte *ngenxx_z_bytes_unzip(const int mode, const size bufferSize, const byte *inBytes, const size inLen, size *outLen);
 
 #ifdef __cplusplus
 }

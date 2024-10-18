@@ -115,6 +115,8 @@ DEF_LUA_FUNC_INTEGER(ngenxx_z_unzip_inputL, ngenxx_z_unzip_inputS)
 DEF_LUA_FUNC_STRING(ngenxx_z_unzip_process_doL, ngenxx_z_unzip_process_doS)
 DEF_LUA_FUNC_BOOL(ngenxx_z_unzip_process_finishedL, ngenxx_z_unzip_process_finishedS)
 DEF_LUA_FUNC_VOID(ngenxx_z_unzip_releaseL, ngenxx_z_unzip_releaseS)
+DEF_LUA_FUNC_STRING(ngenxx_z_bytes_zipL, ngenxx_z_bytes_zipS)
+DEF_LUA_FUNC_STRING(ngenxx_z_bytes_unzipL, ngenxx_z_bytes_unzipS)
 
 #pragma mark Lua
 
@@ -204,6 +206,8 @@ void _ngenxx_export_funcs_for_lua()
     BIND_LUA_FUNC(ngenxx_z_unzip_process_doL);
     BIND_LUA_FUNC(ngenxx_z_unzip_process_finishedL);
     BIND_LUA_FUNC(ngenxx_z_unzip_releaseL);
+    BIND_LUA_FUNC(ngenxx_z_bytes_zipL)
+    BIND_LUA_FUNC(ngenxx_z_bytes_unzipL)
 }
 
 void _ngenxx_lua_init(void)

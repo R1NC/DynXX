@@ -120,6 +120,8 @@ DEF_JS_FUNC_INT64(ngenxx_z_unzip_inputJ, ngenxx_z_unzip_inputS)
 DEF_JS_FUNC_STRING(ngenxx_z_unzip_process_doJ, ngenxx_z_unzip_process_doS)
 DEF_JS_FUNC_BOOL(ngenxx_z_unzip_process_finishedJ, ngenxx_z_unzip_process_finishedS)
 DEF_JS_FUNC_VOID(ngenxx_z_unzip_releaseJ, ngenxx_z_unzip_releaseS)
+DEF_JS_FUNC_STRING(ngenxx_z_bytes_zipJ, ngenxx_z_bytes_zipS)
+DEF_JS_FUNC_STRING(ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
 
 #pragma mark JS
 
@@ -217,6 +219,8 @@ void registerJsModule()
     BIND_JS_FUNC(ngenxx_z_unzip_process_doJ);
     BIND_JS_FUNC(ngenxx_z_unzip_process_finishedJ);
     BIND_JS_FUNC(ngenxx_z_unzip_releaseJ);
+    BIND_JS_FUNC(ngenxx_z_bytes_zipJ)
+    BIND_JS_FUNC(ngenxx_z_bytes_unzipJ)
 }
 
 void _ngenxx_js_init(void)

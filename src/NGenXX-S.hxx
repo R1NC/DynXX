@@ -65,6 +65,8 @@ const size ngenxx_z_unzip_inputS(const char *json);
 const std::string ngenxx_z_unzip_process_doS(const char *json);
 bool ngenxx_z_unzip_process_finishedS(const char *json);
 void ngenxx_z_unzip_releaseS(const char *json);
+const std::string ngenxx_z_bytes_zipS(const char *json);
+const std::string ngenxx_z_bytes_unzipS(const char *json);
 
 #endif
 

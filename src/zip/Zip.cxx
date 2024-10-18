@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <cstring>
 #include <functional>
+#include <vector>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -122,19 +123,17 @@ NGenXX::Z::UnZip::~UnZip()
 #pragma mark Stream
 
 bool zProcess(const size bufferSize,
-              std::function<size(NGenXX::Bytes)> sReadF,
+              std::function<NGenXX::Bytes()> sReadF,
               std::function<void(NGenXX::Bytes)> sWriteF,
               std::function<void()> sFlushF,
               NGenXX::Z::ZBase &zb)
 {
-    byte inBuffer[bufferSize];
-
     bool inputFinished;
     do
     {
-        size inLen = sReadF({inBuffer, bufferSize});
-        inputFinished = inLen < bufferSize;
-        int ret = zb.input({inBuffer, inLen}, inputFinished);
+        auto in = sReadF();
+        inputFinished = in.second < bufferSize;
+        int ret = zb.input(in, inputFinished);
         if (ret == 0L)
         {
             return false;
@@ -164,8 +163,10 @@ bool zProcess(const size bufferSize,
 bool zProcessCxxStream(const size bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase &zb)
 {
     return zProcess(bufferSize, 
-        [&](NGenXX::Bytes bytes) -> size {
-            return inStream->readsome((char *)bytes.first, bytes.second);
+        [&]() -> NGenXX::Bytes {
+            std::vector<byte> in;
+            inStream->readsome((char *)in.data(), bufferSize);
+            return {in.data(), in.size()};
         },
         [&](NGenXX::Bytes bytes) -> void {
             outStream->write((char *)(bytes.first), bytes.second);
@@ -194,8 +195,10 @@ bool NGenXX::Z::unzip(const size bufferSize, std::istream *inStream, std::ostrea
 bool zProcessCFILE(const size bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase &zb)
 {
     return zProcess(bufferSize, 
-        [&](NGenXX::Bytes bytes) -> size {
-            return std::fread((void *)bytes.first, sizeof(byte), bytes.second, inFile);
+        [&]() -> NGenXX::Bytes {
+            std::vector<byte> in;
+            std::fread((void *)in.data(), sizeof(byte), bufferSize, inFile);
+            return {in.data(), in.size()};
         },
         [&](NGenXX::Bytes bytes) -> void {
             std::fwrite(bytes.first, sizeof(byte), bytes.second, outFile);
@@ -217,4 +220,47 @@ bool NGenXX::Z::unzip(const size bufferSize, std::FILE *inFile, std::FILE *outFi
 {
     auto unzip = UnZip(bufferSize);
     return zProcessCFILE(bufferSize, inFile, outFile, unzip);
+}
+
+#pragma mark Bytes
+
+const NGenXX::Bytes zProcessBytes(const size bufferSize, const NGenXX::Bytes in, NGenXX::Z::ZBase &zb)
+{
+    int pos = 0;
+    std::vector<byte> outBytes;
+    auto b = zProcess(bufferSize, 
+        [&]() -> NGenXX::Bytes {
+            int len = std::min(bufferSize, in.second - pos);
+            byte bytes[len];
+            for (auto i = 0; i < len; i++)
+            {
+                bytes[i] = in.first[pos];
+                pos++;
+            }
+            return {bytes, len};
+        },
+        [&outBytes](NGenXX::Bytes bytes) -> void {
+            auto [data, len] = bytes;
+            for (auto i = 0; i < len; i++)
+                outBytes.push_back(data[i]);
+        },
+        [&]() -> void {},
+        zb
+    );
+
+    if (!b)
+        return BytesEmpty;
+    return {outBytes.data(), outBytes.size()};
+}
+
+const NGenXX::Bytes NGenXX::Z::zip(int mode, const size bufferSize, const NGenXX::Bytes bytes)
+{
+    auto zip = Zip(mode, bufferSize);
+    return zProcessBytes(bufferSize, bytes, zip);
+}
+
+const NGenXX::Bytes NGenXX::Z::unzip(const size bufferSize, const NGenXX::Bytes bytes)
+{
+    auto unzip = UnZip(bufferSize);
+    return zProcessBytes(bufferSize, bytes, unzip);
 }

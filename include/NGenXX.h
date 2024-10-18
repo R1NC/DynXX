@@ -26,7 +26,7 @@ const char *ngenxx_get_version(void);
 
 /**
  * @brief Initialize SDK
- * @warning Not accessible in Lua!
+ * @warning Not accessible in JS/Lua!
  * @param root Root path to store SDK inner files
  * @return Success or not
  */
@@ -40,7 +40,7 @@ const char *ngenxx_root_path();
 
 /**
  * @brief Release SDK
- * @warning Not accessible in Lua!
+ * @warning Not accessible in JS/Lua!
  */
 void ngenxx_release(void);
 

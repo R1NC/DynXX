@@ -70,6 +70,10 @@ namespace NGenXX
         bool zip(int mode, const size bufferSize, std::FILE *inFile, std::FILE *outFile);
 
         bool unzip(const size bufferSize, std::FILE *inFile, std::FILE *outFile);
+
+        const Bytes zip(int mode, const size bufferSize, const Bytes bytes);
+
+        const Bytes unzip(const size bufferSize, const Bytes bytes);
     }
 }
 
