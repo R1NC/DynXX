@@ -4,9 +4,8 @@
 #include "../../../../../../build.Android/output/include/NGenXX.h"
 #include "JNIUtil.hxx"
 
-jstring
-NGenXX_JNI_getVersion(JNIEnv *env,
-                      jobject thiz)
+jstring NGenXX_JNI_getVersion(JNIEnv *env,
+                              jobject thiz)
 {
     const char *cV = ngenxx_get_version();
     jstring jstr = env->NewStringUTF(cV ?: "");
@@ -14,8 +13,7 @@ NGenXX_JNI_getVersion(JNIEnv *env,
     return jstr;
 }
 
-jboolean
-NGenXX_JNI_init(JNIEnv *env, jobject thiz, jstring root)
+jboolean NGenXX_JNI_init(JNIEnv *env, jobject thiz, jstring root)
 {
     const char *cRoot = env->GetStringUTFChars(root, nullptr);
     jboolean res = ngenxx_init(cRoot);
@@ -83,17 +81,15 @@ void NGenXX_JNI_logPrint(JNIEnv *env, jobject thiz,
 
 #pragma mark Net
 
-jstring
-NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
-                          jstring url, jstring params,
-                          jint method,
-                          jobjectArray headerV,
-                          jobjectArray formFieldNameV,
-                          jobjectArray formFieldMimeV,
-                          jobjectArray formFieldDataV,
-                          jstring filePath,
-                          jlong fileLength,
-                          jlong timeout)
+jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
+                                  jstring url, jstring params,
+                                  jint method,
+                                  jobjectArray headerV,
+                                  jobjectArray formFieldNameV,
+                                  jobjectArray formFieldMimeV,
+                                  jobjectArray formFieldDataV,
+                                  jstring filePath, jlong fileLength,
+                                  jlong timeout)
 {
     const char *cUrl = env->GetStringUTFChars(url, nullptr);
     const char *cParams = env->GetStringUTFChars(params, nullptr);
@@ -173,9 +169,8 @@ NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
 
 #pragma mark Lua
 
-jboolean
-NGenXX_JNI_lLoadF(JNIEnv *env, jobject thiz,
-                  jstring file)
+jboolean NGenXX_JNI_lLoadF(JNIEnv *env, jobject thiz,
+                           jstring file)
 {
     const char *cFile = env->GetStringUTFChars(file, nullptr);
     jboolean res = ngenxx_L_loadF(cFile);
@@ -183,9 +178,8 @@ NGenXX_JNI_lLoadF(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean
-NGenXX_JNI_lLoadS(JNIEnv *env, jobject thiz,
-                  jstring script)
+jboolean NGenXX_JNI_lLoadS(JNIEnv *env, jobject thiz,
+                           jstring script)
 {
     const char *cScript = env->GetStringUTFChars(script, nullptr);
     jboolean res = ngenxx_L_loadS(cScript);
@@ -193,10 +187,9 @@ NGenXX_JNI_lLoadS(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jstring
-NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
-                 jstring func,
-                 jstring params)
+jstring NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
+                         jstring func,
+                         jstring params)
 {
     const char *cFunc = env->GetStringUTFChars(func, nullptr);
     const char *cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
@@ -210,9 +203,8 @@ NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
 
 #pragma mark JS
 
-jboolean
-NGenXX_JNI_jLoadF(JNIEnv *env, jobject thiz,
-                  jstring file)
+jboolean NGenXX_JNI_jLoadF(JNIEnv *env, jobject thiz,
+                           jstring file)
 {
     const char *cFile = env->GetStringUTFChars(file, nullptr);
     jboolean res = ngenxx_J_loadF(cFile);
@@ -220,9 +212,8 @@ NGenXX_JNI_jLoadF(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean
-NGenXX_JNI_jLoadS(JNIEnv *env, jobject thiz,
-                  jstring script, jstring name)
+jboolean NGenXX_JNI_jLoadS(JNIEnv *env, jobject thiz,
+                           jstring script, jstring name)
 {
     const char *cScript = env->GetStringUTFChars(script, nullptr);
     const char *cName = env->GetStringUTFChars(name, nullptr);
@@ -232,8 +223,7 @@ NGenXX_JNI_jLoadS(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean
-NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz, jbyteArray bytes)
+jboolean NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz, jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
@@ -244,10 +234,9 @@ NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz, jbyteArray bytes)
     return res;
 }
 
-jstring
-NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
-                 jstring func,
-                 jstring params)
+jstring NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
+                         jstring func,
+                         jstring params)
 {
     const char *cFunc = env->GetStringUTFChars(func, nullptr);
     const char *cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
@@ -270,10 +259,9 @@ jlong NGenXX_JNI_storeSQLiteOpen(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean
-NGenXX_JNI_storeSQLiteExecute(JNIEnv *env, jobject thiz,
-                              jlong conn,
-                              jstring sql)
+jboolean NGenXX_JNI_storeSQLiteExecute(JNIEnv *env, jobject thiz,
+                                       jlong conn,
+                                       jstring sql)
 {
     const char *cSql = env->GetStringUTFChars(sql, nullptr);
     jboolean res = ngenxx_store_sqlite_execute((void *)conn, cSql);
@@ -291,18 +279,16 @@ jlong NGenXX_JNI_storeSQLiteQueryDo(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean
-NGenXX_JNI_storeSQLiteQueryReadRow(JNIEnv *env, jobject thiz,
-                                   jlong query_result)
+jboolean NGenXX_JNI_storeSQLiteQueryReadRow(JNIEnv *env, jobject thiz,
+                                            jlong query_result)
 {
     jboolean res = ngenxx_store_sqlite_query_read_row((void *)query_result);
     return res;
 }
 
-jstring
-NGenXX_JNI_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
-                                          jlong query_result,
-                                          jstring column)
+jstring NGenXX_JNI_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
+                                                  jlong query_result,
+                                                  jstring column)
 {
     const char *cColumn = env->GetStringUTFChars(column, nullptr);
     const char *cRes = ngenxx_store_sqlite_query_read_column_text((void *)query_result, cColumn);
@@ -321,9 +307,8 @@ jlong NGenXX_JNI_storeSQLiteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jdouble
-NGenXX_JNI_storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
-                                           jlong query_result, jstring column)
+jdouble NGenXX_JNI_storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
+                                                   jlong query_result, jstring column)
 {
     const char *cColumn = env->GetStringUTFChars(column, nullptr);
     jdouble res = ngenxx_store_sqlite_query_read_column_float((void *)query_result, cColumn);
@@ -354,9 +339,8 @@ jlong NGenXX_JNI_storeKVOpen(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jstring
-NGenXX_JNI_storeKVReadString(JNIEnv *env, jobject thiz,
-                             jlong conn, jstring k)
+jstring NGenXX_JNI_storeKVReadString(JNIEnv *env, jobject thiz,
+                                     jlong conn, jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     const char *cRes = ngenxx_store_kv_read_string((void *)conn, cK);
@@ -366,10 +350,8 @@ NGenXX_JNI_storeKVReadString(JNIEnv *env, jobject thiz,
     return jstr;
 }
 
-jboolean
-NGenXX_JNI_storeKVWriteString(JNIEnv *env, jobject thiz,
-                              jlong conn, jstring k,
-                              jstring v)
+jboolean NGenXX_JNI_storeKVWriteString(JNIEnv *env, jobject thiz,
+                                       jlong conn, jstring k, jstring v)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     const char *cV = env->GetStringUTFChars(v, nullptr);
@@ -388,10 +370,8 @@ jlong NGenXX_JNI_storeKVReadInteger(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean
-NGenXX_JNI_storeKVWriteInteger(JNIEnv *env, jobject thiz,
-                               jlong conn, jstring k,
-                               jlong v)
+jboolean NGenXX_JNI_storeKVWriteInteger(JNIEnv *env, jobject thiz,
+                                        jlong conn, jstring k, jlong v)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jboolean res = ngenxx_store_kv_write_integer((void *)conn, cK, v);
@@ -399,9 +379,8 @@ NGenXX_JNI_storeKVWriteInteger(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jdouble
-NGenXX_JNI_storeKVReadFloat(JNIEnv *env, jobject thiz,
-                            jlong conn, jstring k)
+jdouble NGenXX_JNI_storeKVReadFloat(JNIEnv *env, jobject thiz,
+                                    jlong conn, jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jdouble res = ngenxx_store_kv_read_float((void *)conn, cK);
@@ -409,9 +388,8 @@ NGenXX_JNI_storeKVReadFloat(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean
-NGenXX_JNI_storeKVWriteFloat(JNIEnv *env, jobject thiz,
-                             jlong conn, jstring k, jdouble v)
+jboolean NGenXX_JNI_storeKVWriteFloat(JNIEnv *env, jobject thiz,
+                                      jlong conn, jstring k, jdouble v)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jboolean res = ngenxx_store_kv_write_float((void *)conn, cK, v);
@@ -419,9 +397,8 @@ NGenXX_JNI_storeKVWriteFloat(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean
-NGenXX_JNI_storeKVContains(JNIEnv *env, jobject thiz,
-                           jlong conn, jstring k)
+jboolean NGenXX_JNI_storeKVContains(JNIEnv *env, jobject thiz,
+                                    jlong conn, jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
     jboolean res = ngenxx_store_kv_contains((void *)conn, cK);
@@ -448,8 +425,7 @@ jint NGenXX_JNI_deviceType(JNIEnv *env, jobject thiz)
     return ngenxx_device_type();
 }
 
-jstring
-NGenXX_JNI_deviceName(JNIEnv *env, jobject thiz)
+jstring NGenXX_JNI_deviceName(JNIEnv *env, jobject thiz)
 {
     const char *cDN = ngenxx_device_name();
     jstring jstr = env->NewStringUTF(cDN ?: "");
@@ -457,8 +433,7 @@ NGenXX_JNI_deviceName(JNIEnv *env, jobject thiz)
     return jstr;
 }
 
-jstring
-NGenXX_JNI_deviceManufacturer(JNIEnv *env, jobject thiz)
+jstring NGenXX_JNI_deviceManufacturer(JNIEnv *env, jobject thiz)
 {
     const char *cDM = ngenxx_device_manufacturer();
     jstring jstr = env->NewStringUTF(cDM ?: "");
@@ -466,8 +441,7 @@ NGenXX_JNI_deviceManufacturer(JNIEnv *env, jobject thiz)
     return jstr;
 }
 
-jstring
-NGenXX_JNI_deviceOsVersion(JNIEnv *env, jobject thiz)
+jstring NGenXX_JNI_deviceOsVersion(JNIEnv *env, jobject thiz)
 {
     const char *cDOV = ngenxx_device_os_version();
     jstring jstr = env->NewStringUTF(cDOV ?: "");
@@ -482,9 +456,8 @@ jint NGenXX_JNI_deviceCpuArch(JNIEnv *env, jobject thiz)
 
 #pragma mark Coding
 
-jstring
-NGenXX_JNI_codingHexBytes2Str(JNIEnv *env, jobject thiz,
-                              jbyteArray bytes)
+jstring NGenXX_JNI_codingHexBytes2Str(JNIEnv *env, jobject thiz,
+                                      jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
@@ -497,10 +470,9 @@ NGenXX_JNI_codingHexBytes2Str(JNIEnv *env, jobject thiz,
     return jstr;
 }
 
-jbyteArray
-NGenXX_JNI_codingHexStr2Bytes(JNIEnv *env,
-                              jobject thiz,
-                              jstring str)
+jbyteArray NGenXX_JNI_codingHexStr2Bytes(JNIEnv *env,
+                                         jobject thiz,
+                                         jstring str)
 {
     const char *cStr = env->GetStringUTFChars(str, nullptr);
 
@@ -514,8 +486,7 @@ NGenXX_JNI_codingHexStr2Bytes(JNIEnv *env,
 
 #pragma mark Crypto
 
-jbyteArray
-NGenXX_JNI_cryptoRandom(JNIEnv *env, jobject thiz, jint len)
+jbyteArray NGenXX_JNI_cryptoRandom(JNIEnv *env, jobject thiz, jint len)
 {
     byte out[len];
     std::memset(out, 0, len);
@@ -523,10 +494,9 @@ NGenXX_JNI_cryptoRandom(JNIEnv *env, jobject thiz, jint len)
     return moveToJByteArray(env, out, len, false);
 }
 
-jbyteArray
-NGenXX_JNI_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
-                            jbyteArray input,
-                            jbyteArray key)
+jbyteArray NGenXX_JNI_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
+                                       jbyteArray input,
+                                       jbyteArray key)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -534,7 +504,9 @@ NGenXX_JNI_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
     size keyLen = env->GetArrayLength(key);
 
     size outLen;
-    auto cRes = ngenxx_crypto_aes_encrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
+    auto cRes = ngenxx_crypto_aes_encrypt((const byte *)cIn, inLen,
+                                          (const byte *)cKey, keyLen,
+                                          &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
@@ -542,10 +514,9 @@ NGenXX_JNI_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray
-NGenXX_JNI_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
-                            jbyteArray input,
-                            jbyteArray key)
+jbyteArray NGenXX_JNI_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
+                                       jbyteArray input,
+                                       jbyteArray key)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -553,7 +524,9 @@ NGenXX_JNI_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
     size keyLen = env->GetArrayLength(key);
 
     size outLen;
-    auto cRes = ngenxx_crypto_aes_decrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, &outLen);
+    auto cRes = ngenxx_crypto_aes_decrypt((const byte *)cIn, inLen,
+                                          (const byte *)cKey, keyLen,
+                                          &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
@@ -561,38 +534,10 @@ NGenXX_JNI_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray
-NGenXX_JNI_cryptoAesGcmEncrypt(JNIEnv *env, jobject thiz,
-                               jbyteArray input, jbyteArray key,
-                               jbyteArray init_vector,
-                               jbyteArray aad, jint tag_bits)
-{
-    jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    size inLen = env->GetArrayLength(input);
-    jbyte *cKey = env->GetByteArrayElements(key, nullptr);
-    size keyLen = env->GetArrayLength(key);
-    jbyte *cIv = env->GetByteArrayElements(init_vector, nullptr);
-    size ivLen = env->GetArrayLength(init_vector);
-    jbyte *cAad = aad ? env->GetByteArrayElements(aad, nullptr) : nullptr;
-    int aadLen = aad ? env->GetArrayLength(aad) : 0;
-
-    size outLen;
-    auto cRes = ngenxx_crypto_aes_gcm_encrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, (const byte *)cIv, ivLen, (const byte *)cAad, aadLen, tag_bits, &outLen);
-    jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
-
-    env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
-    env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
-    env->ReleaseByteArrayElements(init_vector, cIv, JNI_ABORT);
-    if (cAad)
-        env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
-    return jba;
-}
-
-jbyteArray
-NGenXX_JNI_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
-                               jbyteArray input, jbyteArray key,
-                               jbyteArray init_vector,
-                               jbyteArray aad, jint tag_bits)
+jbyteArray NGenXX_JNI_cryptoAesGcmEncrypt(JNIEnv *env, jobject thiz,
+                                          jbyteArray input, jbyteArray key,
+                                          jbyteArray init_vector,
+                                          jbyteArray aad, jint tag_bits)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -604,7 +549,11 @@ NGenXX_JNI_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
     int aadLen = aad ? env->GetArrayLength(aad) : 0;
 
     size outLen;
-    auto cRes = ngenxx_crypto_aes_gcm_decrypt((const byte *)cIn, inLen, (const byte *)cKey, keyLen, (const byte *)cIv, ivLen, (const byte *)cAad, aadLen, tag_bits, &outLen);
+    auto cRes = ngenxx_crypto_aes_gcm_encrypt((const byte *)cIn, inLen,
+                                              (const byte *)cKey, keyLen,
+                                              (const byte *)cIv, ivLen,
+                                              (const byte *)cAad, aadLen,
+                                              tag_bits, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
     env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
@@ -615,9 +564,38 @@ NGenXX_JNI_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray
-NGenXX_JNI_cryptoHashMd5(JNIEnv *env, jobject thiz,
-                         jbyteArray input)
+jbyteArray NGenXX_JNI_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
+                                          jbyteArray input, jbyteArray key,
+                                          jbyteArray init_vector,
+                                          jbyteArray aad, jint tag_bits)
+{
+    jbyte *cIn = env->GetByteArrayElements(input, nullptr);
+    size inLen = env->GetArrayLength(input);
+    jbyte *cKey = env->GetByteArrayElements(key, nullptr);
+    size keyLen = env->GetArrayLength(key);
+    jbyte *cIv = env->GetByteArrayElements(init_vector, nullptr);
+    size ivLen = env->GetArrayLength(init_vector);
+    jbyte *cAad = aad ? env->GetByteArrayElements(aad, nullptr) : nullptr;
+    int aadLen = aad ? env->GetArrayLength(aad) : 0;
+
+    size outLen;
+    auto cRes = ngenxx_crypto_aes_gcm_decrypt((const byte *)cIn, inLen,
+                                              (const byte *)cKey, keyLen,
+                                              (const byte *)cIv, ivLen,
+                                              (const byte *)cAad, aadLen,
+                                              tag_bits, &outLen);
+    jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
+
+    env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+    env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
+    env->ReleaseByteArrayElements(init_vector, cIv, JNI_ABORT);
+    if (cAad)
+        env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
+    return jba;
+}
+
+jbyteArray NGenXX_JNI_cryptoHashMd5(JNIEnv *env, jobject thiz,
+                                    jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -630,9 +608,8 @@ NGenXX_JNI_cryptoHashMd5(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray
-NGenXX_JNI_cryptoHashSha256(JNIEnv *env, jobject thiz,
-                            jbyteArray input)
+jbyteArray NGenXX_JNI_cryptoHashSha256(JNIEnv *env, jobject thiz,
+                                       jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -645,9 +622,8 @@ NGenXX_JNI_cryptoHashSha256(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray
-NGenXX_JNI_cryptoBase64Encode(JNIEnv *env, jobject thiz,
-                              jbyteArray input)
+jbyteArray NGenXX_JNI_cryptoBase64Encode(JNIEnv *env, jobject thiz,
+                                         jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -660,9 +636,8 @@ NGenXX_JNI_cryptoBase64Encode(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray
-NGenXX_JNI_cryptoBase64Decode(JNIEnv *env, jobject thiz,
-                              jbyteArray input)
+jbyteArray NGenXX_JNI_cryptoBase64Decode(JNIEnv *env, jobject thiz,
+                                         jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
     size inLen = env->GetArrayLength(input);
@@ -686,16 +661,14 @@ jlong NGenXX_JNI_jsonDecoderInit(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean
-NGenXX_JNI_jsonDecoderIsArray(JNIEnv *env, jobject thiz,
-                              jlong decoder, jlong node)
+jboolean NGenXX_JNI_jsonDecoderIsArray(JNIEnv *env, jobject thiz,
+                                       jlong decoder, jlong node)
 {
     return ngenxx_json_decoder_is_array((void *)decoder, (void *)node);
 }
 
-jboolean
-NGenXX_JNI_jsonDecoderIsObject(JNIEnv *env, jobject thiz,
-                               jlong decoder, jlong node)
+jboolean NGenXX_JNI_jsonDecoderIsObject(JNIEnv *env, jobject thiz,
+                                        jlong decoder, jlong node)
 {
     return ngenxx_json_decoder_is_object((void *)decoder, (void *)node);
 }
@@ -710,9 +683,8 @@ jlong NGenXX_JNI_jsonDecoderReadNode(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jstring
-NGenXX_JNI_jsonDecoderReadString(JNIEnv *env, jobject thiz,
-                                 jlong decoder, jlong node)
+jstring NGenXX_JNI_jsonDecoderReadString(JNIEnv *env, jobject thiz,
+                                         jlong decoder, jlong node)
 {
     const char *res = ngenxx_json_decoder_read_string((void *)decoder, (void *)node);
     jstring jstr = env->NewStringUTF(res ?: "");
@@ -720,9 +692,8 @@ NGenXX_JNI_jsonDecoderReadString(JNIEnv *env, jobject thiz,
     return jstr;
 }
 
-jdouble
-NGenXX_JNI_jsonDecoderReadNumber(JNIEnv *env, jobject thiz,
-                                 jlong decoder, jlong node)
+jdouble NGenXX_JNI_jsonDecoderReadNumber(JNIEnv *env, jobject thiz,
+                                         jlong decoder, jlong node)
 {
     return ngenxx_json_decoder_read_number((void *)decoder, (void *)node);
 }
@@ -766,8 +737,7 @@ jlong NGenXX_JNI_zZipInput(JNIEnv *env, jobject thiz, jlong zip,
     return ret;
 }
 
-jbyteArray
-NGenXX_JNI_zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
+jbyteArray NGenXX_JNI_zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
 {
     size outLen = 0;
     auto cRes = ngenxx_z_zip_process_do((void *)zip, &outLen);
@@ -776,9 +746,8 @@ NGenXX_JNI_zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
     return jba;
 }
 
-jboolean
-NGenXX_JNI_zZipProcessFinished(JNIEnv *env, jobject thiz,
-                               jlong zip)
+jboolean NGenXX_JNI_zZipProcessFinished(JNIEnv *env, jobject thiz,
+                                        jlong zip)
 {
     return ngenxx_z_zip_process_finished((void *)zip);
 }
@@ -808,8 +777,7 @@ jlong NGenXX_JNI_zUnZipInput(JNIEnv *env, jobject thiz, jlong unzip,
     return ret;
 }
 
-jbyteArray
-NGenXX_JNI_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip)
+jbyteArray NGenXX_JNI_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip)
 {
     size outLen = 0;
     auto cRes = ngenxx_z_unzip_process_do((void *)unzip, &outLen);
@@ -818,9 +786,8 @@ NGenXX_JNI_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip)
     return jba;
 }
 
-jboolean
-NGenXX_JNI_zUnZipProcessFinished(JNIEnv *env, jobject thiz,
-                                 jlong unzip)
+jboolean NGenXX_JNI_zUnZipProcessFinished(JNIEnv *env, jobject thiz,
+                                          jlong unzip)
 {
     return ngenxx_z_unzip_process_finished((void *)unzip);
 }
@@ -831,9 +798,8 @@ void NGenXX_JNI_zUnZipRelease(JNIEnv *env, jobject thiz,
     ngenxx_z_unzip_release((void *)zip);
 }
 
-jbyteArray
-NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz, jint mode,
-                     jlong buffer_size, jbyteArray bytes)
+jbyteArray NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz, jint mode,
+                                jlong buffer_size, jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
@@ -846,9 +812,8 @@ NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz, jint mode,
     return jba;
 }
 
-jbyteArray
-NGenXX_JNI_zUnZipBytes(JNIEnv *env, jobject thiz, jlong buffer_size,
-                       jbyteArray bytes)
+jbyteArray NGenXX_JNI_zUnZipBytes(JNIEnv *env, jobject thiz, jlong buffer_size,
+                                  jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
@@ -883,68 +848,68 @@ static const JNINativeMethod JMethods[] = {
     {"jLoadB", "([B)Z", (void *)NGenXX_JNI_jLoadB},
     {"jCall", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *)NGenXX_JNI_jCall},
 
-    {"storeSQLiteOpen", "(Ljava/lang/String;)J", (void *) NGenXX_JNI_storeSQLiteOpen},
-    {"storeSQLiteExecute", "(JLjava/lang/String;)Z", (void *) NGenXX_JNI_storeSQLiteExecute},
-    {"storeSQLiteQueryDo", "(JLjava/lang/String;)J", (void *) NGenXX_JNI_storeSQLiteQueryDo},
-    {"storeSQLiteQueryReadRow", "(J)Z", (void *) NGenXX_JNI_storeSQLiteQueryReadRow},
-    {"storeSQLiteQueryReadColumnText", "(JLjava/lang/String;)Ljava/lang/String;", (void *) NGenXX_JNI_storeSQLiteQueryReadColumnText},
-    {"storeSQLiteQueryReadColumnInteger", "(JLjava/lang/String;)J", (void *) NGenXX_JNI_storeSQLiteQueryReadColumnInteger},
-    {"storeSQLiteQueryReadColumnFloat", "(JLjava/lang/String;)D", (void *) NGenXX_JNI_storeSQLiteQueryReadColumnFloat},
-    {"storeSQLiteQueryDrop", "(J)V", (void *) NGenXX_JNI_storeSQLiteQueryDrop},
-    {"storeSQLiteClose", "(J)V", (void *) NGenXX_JNI_storeSQLiteClose},
+    {"storeSQLiteOpen", "(Ljava/lang/String;)J", (void *)NGenXX_JNI_storeSQLiteOpen},
+    {"storeSQLiteExecute", "(JLjava/lang/String;)Z", (void *)NGenXX_JNI_storeSQLiteExecute},
+    {"storeSQLiteQueryDo", "(JLjava/lang/String;)J", (void *)NGenXX_JNI_storeSQLiteQueryDo},
+    {"storeSQLiteQueryReadRow", "(J)Z", (void *)NGenXX_JNI_storeSQLiteQueryReadRow},
+    {"storeSQLiteQueryReadColumnText", "(JLjava/lang/String;)Ljava/lang/String;", (void *)NGenXX_JNI_storeSQLiteQueryReadColumnText},
+    {"storeSQLiteQueryReadColumnInteger", "(JLjava/lang/String;)J", (void *)NGenXX_JNI_storeSQLiteQueryReadColumnInteger},
+    {"storeSQLiteQueryReadColumnFloat", "(JLjava/lang/String;)D", (void *)NGenXX_JNI_storeSQLiteQueryReadColumnFloat},
+    {"storeSQLiteQueryDrop", "(J)V", (void *)NGenXX_JNI_storeSQLiteQueryDrop},
+    {"storeSQLiteClose", "(J)V", (void *)NGenXX_JNI_storeSQLiteClose},
 
-    {"storeKVOpen", "(Ljava/lang/String;)J", (void *) NGenXX_JNI_storeKVOpen},
-    {"storeKVReadString", "(JLjava/lang/String;)Ljava/lang/String;", (void *) NGenXX_JNI_storeKVReadString},
-    {"storeKVWriteString", "(JLjava/lang/String;Ljava/lang/String;)Z", (void *) NGenXX_JNI_storeKVWriteString},
-    {"storeKVReadInteger", "(JLjava/lang/String;)J", (void *) NGenXX_JNI_storeKVReadInteger},
-    {"storeKVWriteInteger", "(JLjava/lang/String;J)Z", (void *) NGenXX_JNI_storeKVWriteInteger},
-    {"storeKVReadFloat", "(JLjava/lang/String;)D", (void *) NGenXX_JNI_storeKVReadFloat},
-    {"storeKVWriteFloat", "(JLjava/lang/String;D)Z", (void *) NGenXX_JNI_storeKVWriteFloat},
-    {"storeKVContains", "(JLjava/lang/String;)Z", (void *) NGenXX_JNI_storeKVContains},
-    {"storeKVClear", "(J)V", (void *) NGenXX_JNI_storeKVClear},
-    {"storeKVClose", "(J)V", (void *) NGenXX_JNI_storeKVClose},
+    {"storeKVOpen", "(Ljava/lang/String;)J", (void *)NGenXX_JNI_storeKVOpen},
+    {"storeKVReadString", "(JLjava/lang/String;)Ljava/lang/String;", (void *)NGenXX_JNI_storeKVReadString},
+    {"storeKVWriteString", "(JLjava/lang/String;Ljava/lang/String;)Z", (void *)NGenXX_JNI_storeKVWriteString},
+    {"storeKVReadInteger", "(JLjava/lang/String;)J", (void *)NGenXX_JNI_storeKVReadInteger},
+    {"storeKVWriteInteger", "(JLjava/lang/String;J)Z", (void *)NGenXX_JNI_storeKVWriteInteger},
+    {"storeKVReadFloat", "(JLjava/lang/String;)D", (void *)NGenXX_JNI_storeKVReadFloat},
+    {"storeKVWriteFloat", "(JLjava/lang/String;D)Z", (void *)NGenXX_JNI_storeKVWriteFloat},
+    {"storeKVContains", "(JLjava/lang/String;)Z", (void *)NGenXX_JNI_storeKVContains},
+    {"storeKVClear", "(J)V", (void *)NGenXX_JNI_storeKVClear},
+    {"storeKVClose", "(J)V", (void *)NGenXX_JNI_storeKVClose},
 
-    {"deviceType", "()I", (void *) NGenXX_JNI_deviceType},
-    {"deviceName", "()Ljava/lang/String;", (void *) NGenXX_JNI_deviceName},
-    {"deviceManufacturer", "()Ljava/lang/String;", (void *) NGenXX_JNI_deviceManufacturer},
-    {"deviceOsVersion", "()Ljava/lang/String;", (void *) NGenXX_JNI_deviceOsVersion},
-    {"deviceCpuArch", "()I", (void *) NGenXX_JNI_deviceCpuArch},
+    {"deviceType", "()I", (void *)NGenXX_JNI_deviceType},
+    {"deviceName", "()Ljava/lang/String;", (void *)NGenXX_JNI_deviceName},
+    {"deviceManufacturer", "()Ljava/lang/String;", (void *)NGenXX_JNI_deviceManufacturer},
+    {"deviceOsVersion", "()Ljava/lang/String;", (void *)NGenXX_JNI_deviceOsVersion},
+    {"deviceCpuArch", "()I", (void *)NGenXX_JNI_deviceCpuArch},
 
-    {"codingHexBytes2Str", "([B)Ljava/lang/String;", (void *) NGenXX_JNI_codingHexBytes2Str},
-    {"codingHexStr2Bytes", "(Ljava/lang/String;)[B", (void *) NGenXX_JNI_codingHexStr2Bytes},
+    {"codingHexBytes2Str", "([B)Ljava/lang/String;", (void *)NGenXX_JNI_codingHexBytes2Str},
+    {"codingHexStr2Bytes", "(Ljava/lang/String;)[B", (void *)NGenXX_JNI_codingHexStr2Bytes},
 
-    {"cryptoRandom", "(I)[B", (void *) NGenXX_JNI_cryptoRandom},
-    {"cryptoAesEncrypt", "([B[B)[B", (void *) NGenXX_JNI_cryptoAesEncrypt},
-    {"cryptoAesDecrypt", "([B[B)[B", (void *) NGenXX_JNI_cryptoAesDecrypt},
-    {"cryptoAesGcmEncrypt", "([B[B[B[BI)[B", (void *) NGenXX_JNI_cryptoAesGcmEncrypt},
-    {"cryptoAesGcmDecrypt", "([B[B[B[BI)[B", (void *) NGenXX_JNI_cryptoAesGcmDecrypt},
-    {"cryptoHashMd5", "([B)[B", (void *) NGenXX_JNI_cryptoHashMd5},
-    {"cryptoHashSha256", "([B)[B", (void *) NGenXX_JNI_cryptoHashSha256},
-    {"cryptoBase64Encode", "([B)[B", (void *) NGenXX_JNI_cryptoBase64Encode},
-    {"cryptoBase64Decode", "([B)[B", (void *) NGenXX_JNI_cryptoBase64Decode},
+    {"cryptoRandom", "(I)[B", (void *)NGenXX_JNI_cryptoRandom},
+    {"cryptoAesEncrypt", "([B[B)[B", (void *)NGenXX_JNI_cryptoAesEncrypt},
+    {"cryptoAesDecrypt", "([B[B)[B", (void *)NGenXX_JNI_cryptoAesDecrypt},
+    {"cryptoAesGcmEncrypt", "([B[B[B[BI)[B", (void *)NGenXX_JNI_cryptoAesGcmEncrypt},
+    {"cryptoAesGcmDecrypt", "([B[B[B[BI)[B", (void *)NGenXX_JNI_cryptoAesGcmDecrypt},
+    {"cryptoHashMd5", "([B)[B", (void *)NGenXX_JNI_cryptoHashMd5},
+    {"cryptoHashSha256", "([B)[B", (void *)NGenXX_JNI_cryptoHashSha256},
+    {"cryptoBase64Encode", "([B)[B", (void *)NGenXX_JNI_cryptoBase64Encode},
+    {"cryptoBase64Decode", "([B)[B", (void *)NGenXX_JNI_cryptoBase64Decode},
 
-    {"jsonDecoderInit", "(Ljava/lang/String;)J", (void *) NGenXX_JNI_jsonDecoderInit},
-    {"jsonDecoderIsArray", "(JJ)Z", (void *) NGenXX_JNI_jsonDecoderIsArray},
-    {"jsonDecoderIsObject", "(JJ)Z", (void *) NGenXX_JNI_jsonDecoderIsObject},
-    {"jsonDecoderReadNode", "(JJLjava/lang/String;)J", (void *) NGenXX_JNI_jsonDecoderReadNode},
-    {"jsonDecoderReadString", "(JJ)Ljava/lang/String;", (void *) NGenXX_JNI_jsonDecoderReadString},
-    {"jsonDecoderReadNumber", "(JJ)D", (void *) NGenXX_JNI_jsonDecoderReadNumber},
-    {"jsonDecoderReadChild", "(JJ)J", (void *) NGenXX_JNI_jsonDecoderReadChild},
-    {"jsonDecoderReadNext", "(JJ)J", (void *) NGenXX_JNI_jsonDecoderReadNext},
-    {"jsonDecoderRelease", "(J)V", (void *) NGenXX_JNI_jsonDecoderRelease},
+    {"jsonDecoderInit", "(Ljava/lang/String;)J", (void *)NGenXX_JNI_jsonDecoderInit},
+    {"jsonDecoderIsArray", "(JJ)Z", (void *)NGenXX_JNI_jsonDecoderIsArray},
+    {"jsonDecoderIsObject", "(JJ)Z", (void *)NGenXX_JNI_jsonDecoderIsObject},
+    {"jsonDecoderReadNode", "(JJLjava/lang/String;)J", (void *)NGenXX_JNI_jsonDecoderReadNode},
+    {"jsonDecoderReadString", "(JJ)Ljava/lang/String;", (void *)NGenXX_JNI_jsonDecoderReadString},
+    {"jsonDecoderReadNumber", "(JJ)D", (void *)NGenXX_JNI_jsonDecoderReadNumber},
+    {"jsonDecoderReadChild", "(JJ)J", (void *)NGenXX_JNI_jsonDecoderReadChild},
+    {"jsonDecoderReadNext", "(JJ)J", (void *)NGenXX_JNI_jsonDecoderReadNext},
+    {"jsonDecoderRelease", "(J)V", (void *)NGenXX_JNI_jsonDecoderRelease},
 
-    {"zZipInit", "(IJ)J", (void *) NGenXX_JNI_zZipInit},
-    {"zZipInput", "(J[BIZ)J", (void *) NGenXX_JNI_zZipInput},
-    {"zZipProcessDo", "(J)[B", (void *) NGenXX_JNI_zZipProcessDo},
-    {"zZipProcessFinished", "(J)Z", (void *) NGenXX_JNI_zZipProcessFinished},
-    {"zZipRelease", "(J)V", (void *) NGenXX_JNI_zZipRelease},
-    {"zUnZipInit", "(J)J", (void *) NGenXX_JNI_zUnZipInit},
-    {"zUnZipInput", "(J[BIZ)J", (void *) NGenXX_JNI_zUnZipInput},
-    {"zUnZipProcessDo", "(J)[B", (void *) NGenXX_JNI_zUnZipProcessDo},
-    {"zUnZipProcessFinished", "(J)Z", (void *) NGenXX_JNI_zUnZipProcessFinished},
-    {"zUnZipRelease", "(J)V", (void *) NGenXX_JNI_zUnZipRelease},
-    {"zZipBytes", "(IJ[B)[B", (void *) NGenXX_JNI_zZipBytes},
-    {"zUnZipBytes", "(J[B)[B", (void *) NGenXX_JNI_zUnZipBytes},
+    {"zZipInit", "(IJ)J", (void *)NGenXX_JNI_zZipInit},
+    {"zZipInput", "(J[BIZ)J", (void *)NGenXX_JNI_zZipInput},
+    {"zZipProcessDo", "(J)[B", (void *)NGenXX_JNI_zZipProcessDo},
+    {"zZipProcessFinished", "(J)Z", (void *)NGenXX_JNI_zZipProcessFinished},
+    {"zZipRelease", "(J)V", (void *)NGenXX_JNI_zZipRelease},
+    {"zUnZipInit", "(J)J", (void *)NGenXX_JNI_zUnZipInit},
+    {"zUnZipInput", "(J[BIZ)J", (void *)NGenXX_JNI_zUnZipInput},
+    {"zUnZipProcessDo", "(J)[B", (void *)NGenXX_JNI_zUnZipProcessDo},
+    {"zUnZipProcessFinished", "(J)Z", (void *)NGenXX_JNI_zUnZipProcessFinished},
+    {"zUnZipRelease", "(J)V", (void *)NGenXX_JNI_zUnZipRelease},
+    {"zZipBytes", "(IJ[B)[B", (void *)NGenXX_JNI_zZipBytes},
+    {"zUnZipBytes", "(J[B)[B", (void *)NGenXX_JNI_zUnZipBytes},
 };
 
 int JNI_OnLoad(JavaVM *vm, void *reserved)
@@ -952,9 +917,7 @@ int JNI_OnLoad(JavaVM *vm, void *reserved)
     JNIEnv *env = nullptr;
     int registerResult = vm->GetEnv((void **)&env, JNI_VERSION_1_6);
     if (registerResult != JNI_OK)
-    {
-        return -1;
-    }
+        return JNI_ERR;
     jclass jclazz = env->FindClass(JClassName);
     env->RegisterNatives(jclazz, JMethods, sizeof(JMethods) / sizeof(JNINativeMethod));
     return JNI_VERSION_1_6;
