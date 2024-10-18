@@ -102,7 +102,7 @@ extern "C"
      * @param bufferSize buffer size，must be positive
      * @param cFILEIn Input C `FILE`
      * @param cFILEOut Output C `FILE`
-     * @param whether finished or not
+     * @return whether finished or not
      */
     bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, void *cFILEIn, void *cFILEOut);
 
@@ -112,7 +112,7 @@ extern "C"
      * @param bufferSize buffer size，must be positive
      * @param cFILEIn Input C `FILE`
      * @param cFILEOut Output C `FILE`
-     * @param whether finished or not
+     * @return whether finished or not
      */
     bool ngenxx_z_cfile_unzip(const size bufferSize, void *cFILEIn, void *cFILEOut);
 
@@ -123,7 +123,7 @@ extern "C"
      * @param bufferSize buffer size，must be positive
      * @param cxxStreamIn Input C++ Stream(`istream`)
      * @param cxxStreamOut Output C++ Stream(`ostream`)
-     * @param whether finished or not
+     * @return whether finished or not
      */
     bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, void *cxxStreamIn, void *cxxStreamOut);
 
@@ -133,7 +133,7 @@ extern "C"
      * @param bufferSize buffer size，must be positive
      * @param cxxStreamIn Input C++ Stream(`istream`)
      * @param cxxStreamOut Output C++ Stream(`ostream`)
-     * @param whether finished or not
+     * @return whether finished or not
      */
     bool ngenxx_z_cxxstream_unzip(const size bufferSize, void *cxxStreamIn, void *cxxStreamOut);
 
