@@ -144,7 +144,7 @@ extern "C"
      * @param inBytes Input bytes data
      * @param inLen Input bytes length
      * @param outLen A pointer to read output bytes length
-     * @param output bytes data
+     * @return output bytes data
      */
     const byte *ngenxx_z_bytes_zip(const int mode, const size bufferSize, const byte *inBytes, const size inLen, size *outLen);
 
@@ -154,9 +154,9 @@ extern "C"
      * @param inBytes Input bytes data
      * @param inLen Input bytes length
      * @param outLen A pointer to read output bytes length
-     * @param output bytes data
+     * @return output bytes data
      */
-    const byte *ngenxx_z_bytes_unzip(const int mode, const size bufferSize, const byte *inBytes, const size inLen, size *outLen);
+    const byte *ngenxx_z_bytes_unzip(const size bufferSize, const byte *inBytes, const size inLen, size *outLen);
 
 #ifdef __cplusplus
 }
