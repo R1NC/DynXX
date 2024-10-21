@@ -851,7 +851,7 @@ jbyteArray NGenXX_JNI_zUnZipBytes(JNIEnv *env, jobject thiz,
 
 static const char *JClassName = "xyz/rinc/ngenxx/NGenXX$Companion";
 
-static const JNINativeMethod JMethods[] = {
+static const JNINativeMethod JCFuncList[] = {
     {"getVersion", "()Ljava/lang/String;", (void *)NGenXX_JNI_getVersion},
     {"init", "(Ljava/lang/String;)Z", (void *)NGenXX_JNI_init},
     {"release", "()V", (void *)NGenXX_JNI_release},
@@ -937,11 +937,19 @@ static const JNINativeMethod JMethods[] = {
 
 int JNI_OnLoad(JavaVM *vm, void *reserved)
 {
+    int v = JNI_VERSION_1_6;
     JNIEnv *env = nullptr;
-    int registerResult = vm->GetEnv((void **)&env, JNI_VERSION_1_6);
-    if (registerResult != JNI_OK)
+    int ret = vm->GetEnv((void **)&env, v);
+    if (ret != JNI_OK) {
         return JNI_ERR;
+    }
     jclass jclazz = env->FindClass(JClassName);
-    env->RegisterNatives(jclazz, JMethods, sizeof(JMethods) / sizeof(JNINativeMethod));
-    return JNI_VERSION_1_6;
+    if (jclazz == nullptr) {
+        return JNI_ERR;
+    }
+    ret = env->RegisterNatives(jclazz, JCFuncList, sizeof(JCFuncList) / sizeof(JNINativeMethod));
+    if (ret != JNI_OK) {
+        return JNI_ERR;
+    }
+    return v;
 }
