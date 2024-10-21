@@ -179,7 +179,7 @@ function jTestZip() {
     if (zipRes) {
         let outFile = `${root}/test.txt`;
         let unzipRes = NGenXXZUnZipFile(zipFile, outFile);
-        NGenXXLogPrint(NGenXXLogLevel.Debug, 'UNZIP result: ${unzipRes}');
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `UNZIP result: ${unzipRes}`);
     } else {
         NGenXXLogPrint(NGenXXLogLevel.Debug, 'ZIP failed');
     }

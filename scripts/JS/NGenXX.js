@@ -31,7 +31,11 @@ function _json2Array(json) {
 }
 
 function _buffer2Bytes(buffer) {
-    return Array.from(new Uint8Array(buffer));
+    var bytes = [];
+    new Uint8Array(buffer).forEach((x) => {
+        if (x > 0) bytes.push(x);
+    });
+    return bytes;
 }
 
 function _bytes2Buffer(bytes) {
