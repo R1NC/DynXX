@@ -756,7 +756,7 @@ const size ngenxx_z_zip_inputS(const char *json)
     if (zip <= 0)
         return 0;
 
-    auto in = parseByteArray(decoder, "in", "inLen");
+    auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
         return 0;
 

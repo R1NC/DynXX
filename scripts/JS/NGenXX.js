@@ -483,7 +483,7 @@ function NGenXXZZipInput(zip, bytes, finish) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
         "zip": zip,
-        "in": bytes,
+        "inBytes": bytes,
         "inLen": bytes.length,
         "inFinish": finish ? 1 : 0
     });
@@ -523,7 +523,7 @@ function NGenXXZUnZipInput(unzip, bytes, finish) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
         "unzip": unzip,
-        "in": bytes,
+        "inBytes": bytes,
         "inLen": bytes.length,
         "inFinish": finish ? 1 : 0
     });
@@ -578,7 +578,7 @@ function NGenXXZUnZipBytes(bufferSize, bytes) {
 
 // Z.Stream
 
-let NGenXXZBufferSize = 1024;
+let NGenXXZBufferSize = 16 * 1024;
 
 function NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,
     z, inputFunc, processDoFunc, processFinishedFunc) {

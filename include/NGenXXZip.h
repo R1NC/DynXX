@@ -29,12 +29,12 @@ extern "C"
     /**
      * @brief input data to ZIP process
      * @param zip The ZIP handle
-     * @param in input data bytes
+     * @param inBytes input data bytes
      * @param inLen input data length
      * @param inFinish Whether input is finished or not
      * @return The received data length, return `0` if error occurred
      */
-    const size ngenxx_z_zip_input(const void *zip, const byte *in, const size inLen, const bool inFinish);
+    const size ngenxx_z_zip_input(const void *zip, const byte *inBytes, const size inLen, const bool inFinish);
 
     /**
      * @brief process the ZIP input data
@@ -67,12 +67,12 @@ extern "C"
     /**
      * @brief input data to UNZIP process
      * @param unzip The UNZIP handle
-     * @param in input data bytes
+     * @param inBytes input data bytes
      * @param inLen input data length
      * @param inFinish Whether input is finished or not
      * @return The received data length, return `0` if error occurred
      */
-    const size ngenxx_z_unzip_input(const void *unzip, const byte *in, const size inLen, const bool inFinish);
+    const size ngenxx_z_unzip_input(const void *unzip, const byte *inBytes, const size inLen, const bool inFinish);
 
     /**
      * @brief process the UNZIP input data
