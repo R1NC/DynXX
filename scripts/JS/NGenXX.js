@@ -652,7 +652,7 @@ function NGenXXZZipFile(mode, inFilePath, outFilePath) {
 
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
-
+    
     let res = NGenXXZZipStream(mode, bufferSize,
         () => {
             let inBuffer = new ArrayBuffer(bufferSize);
@@ -661,8 +661,7 @@ function NGenXXZZipFile(mode, inFilePath, outFilePath) {
         },
         (bytes) => {
             let outBuffer = _bytes2Buffer(bytes);
-            let writeLen = bytes.length;
-            outF.write(outBuffer, 0, writeLen);
+            outF.write(outBuffer, 0, bytes.length);
         },
         () => {
             outF.flush();
@@ -688,8 +687,7 @@ function NGenXXZUnZipFile(inFilePath, outFilePath) {
         },
         (bytes) => {
             let outBuffer = _bytes2Buffer(bytes);
-            let writeLen = bytes.length;
-            outF.write(outBuffer, 0, writeLen);
+            outF.write(outBuffer, 0, bytes.length);
         },
         () => {
             outF.flush();
