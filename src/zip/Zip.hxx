@@ -25,16 +25,18 @@ namespace NGenXX
             byte *inBuffer;
             byte *outBuffer;
             size bufferSize;
+            int format;
             virtual void processImp() = 0;
 
         protected:
             z_stream zs;
             int ret;
             bool inFinish;
+            int windowBits();
 
         public:
             ZBase() = delete;
-            ZBase(const size bufferSize);
+            ZBase(const size bufferSize, const int format);
             const size input(const Bytes bytes, bool inFinish);
             const Bytes processDo();
             const bool processFinished();
@@ -48,7 +50,7 @@ namespace NGenXX
 
         public:
             Zip() = delete;
-            Zip(int mode, const size bufferSize);
+            Zip(int mode, const size bufferSize, const int format);
             ~Zip();
         };
 
@@ -59,21 +61,21 @@ namespace NGenXX
 
         public:
             UnZip() = delete;
-            UnZip(const size bufferSize);
+            UnZip(const size bufferSize, const int format);
             ~UnZip();
         };
 
-        bool zip(int mode, const size bufferSize, std::istream *inStream, std::ostream *outStream);
+        bool zip(int mode, const size bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
 
-        bool unzip(const size bufferSize, std::istream *inStream, std::ostream *outStream);
+        bool unzip(const size bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
 
-        bool zip(int mode, const size bufferSize, std::FILE *inFile, std::FILE *outFile);
+        bool zip(int mode, const size bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
 
-        bool unzip(const size bufferSize, std::FILE *inFile, std::FILE *outFile);
+        bool unzip(const size bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
 
-        const Bytes zip(int mode, const size bufferSize, const Bytes bytes);
+        const Bytes zip(int mode, const size bufferSize, const int format, const Bytes bytes);
 
-        const Bytes unzip(const size bufferSize, const Bytes bytes);
+        const Bytes unzip(const size bufferSize, const int format, const Bytes bytes);
     }
 }
 

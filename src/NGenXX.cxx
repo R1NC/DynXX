@@ -529,11 +529,11 @@ void ngenxx_json_decoder_release(void *decoder)
 #pragma mark Zip
 
 EXPORT_AUTO
-void *ngenxx_z_zip_init(const int mode, const size bufferSize)
+void *ngenxx_z_zip_init(const int mode, const size bufferSize, const int format)
 {
     void * zip = NULL;
     try {
-        zip = new NGenXX::Z::Zip(mode, bufferSize);
+        zip = new NGenXX::Z::Zip(mode, bufferSize, format);
     } catch (const std::exception& e) {
         NGenXX::Log::print(NGenXXLogLevelError, "ngenxx_z_zip_init failed");
     }
@@ -571,11 +571,11 @@ void ngenxx_z_zip_release(const void *zip)
 }
 
 EXPORT_AUTO
-void *ngenxx_z_unzip_init(const size bufferSize)
+void *ngenxx_z_unzip_init(const size bufferSize, const int format)
 {
     void * zip = NULL;
     try {
-        zip = new NGenXX::Z::UnZip(bufferSize);
+        zip = new NGenXX::Z::UnZip(bufferSize, format);
     } catch (const std::exception& e) {
         NGenXX::Log::print(NGenXXLogLevelError, "ngenxx_z_unzip_init failed");
     }
@@ -613,56 +613,56 @@ void ngenxx_z_unzip_release(const void *unzip)
 }
 
 EXPORT_AUTO
-bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, void *cFILEIn, void *cFILEOut)
+bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, const int format, void *cFILEIn, void *cFILEOut)
 {
     if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) return false;
     if (bufferSize <= 0) return false;
     if (cFILEIn == NULL || cFILEOut == NULL) return false;
-    return NGenXX::Z::zip(mode, bufferSize, (std::FILE *)cFILEIn, (std::FILE *)cFILEOut);
+    return NGenXX::Z::zip(mode, bufferSize, format, (std::FILE *)cFILEIn, (std::FILE *)cFILEOut);
 }
 
 EXPORT_AUTO
-bool ngenxx_z_cfile_unzip(const size bufferSize, void *cFILEIn, void *cFILEOut)
+bool ngenxx_z_cfile_unzip(const size bufferSize, const int format, void *cFILEIn, void *cFILEOut)
 {
     if (bufferSize <= 0) return false;
     if (cFILEIn == NULL || cFILEOut == NULL) return false;
-    return NGenXX::Z::unzip(bufferSize, (std::FILE *)cFILEIn, (std::FILE *)cFILEOut);
+    return NGenXX::Z::unzip(bufferSize, format, (std::FILE *)cFILEIn, (std::FILE *)cFILEOut);
 }
 
 EXPORT_AUTO
-bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, void *cxxStreamIn, void *cxxStreamOut)
+bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, const int format, void *cxxStreamIn, void *cxxStreamOut)
 {
     if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) return false;
     if (bufferSize <= 0) return false;
     if (cxxStreamIn == NULL || cxxStreamOut == NULL) return false;
-    return NGenXX::Z::zip(mode, bufferSize, (std::istream *)cxxStreamIn, (std::ostream *)cxxStreamOut);
+    return NGenXX::Z::zip(mode, bufferSize, format, (std::istream *)cxxStreamIn, (std::ostream *)cxxStreamOut);
 }
 
 EXPORT_AUTO
-bool ngenxx_z_cxxstream_unzip(const size bufferSize, void *cxxStreamIn, void *cxxStreamOut)
+bool ngenxx_z_cxxstream_unzip(const size bufferSize, const int format, void *cxxStreamIn, void *cxxStreamOut)
 {
     if (bufferSize <= 0) return false;
     if (cxxStreamIn == NULL || cxxStreamOut == NULL) return false;
-    return NGenXX::Z::unzip(bufferSize, (std::istream *)cxxStreamIn, (std::ostream *)cxxStreamOut);
+    return NGenXX::Z::unzip(bufferSize, format, (std::istream *)cxxStreamIn, (std::ostream *)cxxStreamOut);
 }
 
 EXPORT_AUTO
-const byte *ngenxx_z_bytes_zip(const int mode, const size bufferSize, const byte *inBytes, const size inLen, size *outLen)
+const byte *ngenxx_z_bytes_zip(const int mode, const size bufferSize, const int format, const byte *inBytes, const size inLen, size *outLen)
 {
     if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) return NULL;
     if (bufferSize <= 0) return NULL;
     if (inBytes == NULL || inLen <= 0 || outLen == NULL) return NULL;
-    auto t = NGenXX::Z::zip(mode, bufferSize, {inBytes, inLen});
+    auto t = NGenXX::Z::zip(mode, bufferSize, format, {inBytes, inLen});
     *outLen = t.second;
     return copyBytes(t);
 }
 
 EXPORT_AUTO
-const byte *ngenxx_z_bytes_unzip(const size bufferSize, const byte *inBytes, const size inLen, size *outLen)
+const byte *ngenxx_z_bytes_unzip(const size bufferSize, const int format, const byte *inBytes, const size inLen, size *outLen)
 {
     if (bufferSize <= 0) return NULL;
     if (inBytes == NULL || inLen <= 0 || outLen == NULL) return NULL;
-    auto t = NGenXX::Z::unzip(bufferSize, {inBytes, inLen});
+    auto t = NGenXX::Z::unzip(bufferSize, format, {inBytes, inLen});
     *outLen = t.second;
     return copyBytes(t);
 }

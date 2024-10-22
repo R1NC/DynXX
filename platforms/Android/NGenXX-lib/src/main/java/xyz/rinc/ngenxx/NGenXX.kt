@@ -99,17 +99,22 @@ class NGenXX {
             PreferSpeed(1),
             PreferSize(9)
         }
-        external fun zZipInit(mode: Int, bufferSize: Long): Long
+        enum class ZFormat(val value: Int) {
+            ZLib(0),
+            GZip(1),
+            Raw(2)
+        }
+        external fun zZipInit(mode: Int, bufferSize: Long, format: Int): Long
         external fun zZipInput(zip: Long, inBytes: ByteArray, inLen: Int, inFinish: Boolean): Long
         external fun zZipProcessDo(zip: Long): ByteArray
         external fun zZipProcessFinished(zip: Long): Boolean
         external fun zZipRelease(zip: Long)
-        external fun zUnZipInit(bufferSize: Long): Long
+        external fun zUnZipInit(bufferSize: Long, format: Int): Long
         external fun zUnZipInput(unzip: Long, inBytes: ByteArray, inLen: Int, inFinish: Boolean): Long
         external fun zUnZipProcessDo(unzip: Long): ByteArray
         external fun zUnZipProcessFinished(unzip: Long): Boolean
         external fun zUnZipRelease(unzip: Long)
-        external fun zZipBytes(mode: Int, bufferSize: Long, bytes: ByteArray): ByteArray
-        external fun zUnZipBytes(bufferSize: Long, bytes: ByteArray): ByteArray
+        external fun zZipBytes(mode: Int, bufferSize: Long, format: Int, bytes: ByteArray): ByteArray
+        external fun zUnZipBytes(bufferSize: Long, format: Int, bytes: ByteArray): ByteArray
     }
 }

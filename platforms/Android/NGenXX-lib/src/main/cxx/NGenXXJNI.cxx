@@ -739,9 +739,9 @@ void NGenXX_JNI_jsonDecoderRelease(JNIEnv *env, jobject thiz,
 #pragma mark Zip
 
 jlong NGenXX_JNI_zZipInit(JNIEnv *env, jobject thiz,
-                          jint mode, jlong bufferSize)
+                          jint mode, jlong bufferSize, jint format)
 {
-    return (long)ngenxx_z_zip_init(mode, bufferSize);
+    return (long)ngenxx_z_zip_init(mode, bufferSize, format);
 }
 
 jlong NGenXX_JNI_zZipInput(JNIEnv *env, jobject thiz,
@@ -780,9 +780,9 @@ void NGenXX_JNI_zZipRelease(JNIEnv *env, jobject thiz,
 }
 
 jlong NGenXX_JNI_zUnZipInit(JNIEnv *env, jobject thiz,
-                            jlong bufferSize)
+                            jlong bufferSize, jint format)
 {
-    return (long)ngenxx_z_unzip_init(bufferSize);
+    return (long)ngenxx_z_unzip_init(bufferSize, format);
 }
 
 jlong NGenXX_JNI_zUnZipInput(JNIEnv *env, jobject thiz,
@@ -822,13 +822,13 @@ void NGenXX_JNI_zUnZipRelease(JNIEnv *env, jobject thiz,
 
 jbyteArray NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz,
                                 jint mode,
-                                jlong buffer_size, jbyteArray bytes)
+                                jlong buffer_size, jint format, jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
 
     size outLen;
-    auto cRes = ngenxx_z_bytes_zip(mode, buffer_size, (const byte *)cIn, inLen, &outLen);
+    auto cRes = ngenxx_z_bytes_zip(mode, buffer_size, format, (const byte *)cIn, inLen, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
     env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
@@ -836,13 +836,13 @@ jbyteArray NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz,
 }
 
 jbyteArray NGenXX_JNI_zUnZipBytes(JNIEnv *env, jobject thiz,
-                                  jlong buffer_size, jbyteArray bytes)
+                                  jlong buffer_size, jint format, jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
 
     size outLen;
-    auto cRes = ngenxx_z_bytes_unzip(buffer_size, (const byte *)cIn, inLen, &outLen);
+    auto cRes = ngenxx_z_bytes_unzip(buffer_size, format, (const byte *)cIn, inLen, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
     env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
@@ -921,18 +921,18 @@ static const JNINativeMethod JCFuncList[] = {
     {"jsonDecoderReadNext", "(JJ)J", (void *)NGenXX_JNI_jsonDecoderReadNext},
     {"jsonDecoderRelease", "(J)V", (void *)NGenXX_JNI_jsonDecoderRelease},
 
-    {"zZipInit", "(IJ)J", (void *)NGenXX_JNI_zZipInit},
+    {"zZipInit", "(IJI)J", (void *)NGenXX_JNI_zZipInit},
     {"zZipInput", "(J[BIZ)J", (void *)NGenXX_JNI_zZipInput},
     {"zZipProcessDo", "(J)[B", (void *)NGenXX_JNI_zZipProcessDo},
     {"zZipProcessFinished", "(J)Z", (void *)NGenXX_JNI_zZipProcessFinished},
     {"zZipRelease", "(J)V", (void *)NGenXX_JNI_zZipRelease},
-    {"zUnZipInit", "(J)J", (void *)NGenXX_JNI_zUnZipInit},
+    {"zUnZipInit", "(JI)J", (void *)NGenXX_JNI_zUnZipInit},
     {"zUnZipInput", "(J[BIZ)J", (void *)NGenXX_JNI_zUnZipInput},
     {"zUnZipProcessDo", "(J)[B", (void *)NGenXX_JNI_zUnZipProcessDo},
     {"zUnZipProcessFinished", "(J)Z", (void *)NGenXX_JNI_zUnZipProcessFinished},
     {"zUnZipRelease", "(J)V", (void *)NGenXX_JNI_zUnZipRelease},
-    {"zZipBytes", "(IJ[B)[B", (void *)NGenXX_JNI_zZipBytes},
-    {"zUnZipBytes", "(J[B)[B", (void *)NGenXX_JNI_zUnZipBytes},
+    {"zZipBytes", "(IJI[B)[B", (void *)NGenXX_JNI_zZipBytes},
+    {"zUnZipBytes", "(JI[B)[B", (void *)NGenXX_JNI_zUnZipBytes},
 };
 
 int JNI_OnLoad(JavaVM *vm, void *reserved)

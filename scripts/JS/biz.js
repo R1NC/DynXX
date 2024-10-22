@@ -172,13 +172,15 @@ function jTestCryptoAesGcm(s) {
 }
 
 function jTestZip() {
+    let format = NGenXXZFormat.GZip;
     let root = NGenXXRootPath();
-    let inFile = `${root}/README.md`;
-    let zipFile = `${root}/test.zip`;
-    let zipRes = NGenXXZZipFile(NGenXXZZipMode.Default, inFile, zipFile);
+    let inFile = `${root}/test.js`;
+    let zipFile = `${root}/test.gzip`;
+    let zipRes = NGenXXZZipFile(NGenXXZZipMode.Default, format, inFile, zipFile);
     if (zipRes) {
+        NGenXXLogPrint(NGenXXLogLevel.Debug, 'ZIP succeed!');
         let outFile = `${root}/test.txt`;
-        let unzipRes = NGenXXZUnZipFile(zipFile, outFile);
+        let unzipRes = NGenXXZUnZipFile(format, zipFile, outFile);
         NGenXXLogPrint(NGenXXLogLevel.Debug, `UNZIP result: ${unzipRes}`);
     } else {
         NGenXXLogPrint(NGenXXLogLevel.Debug, 'ZIP failed');

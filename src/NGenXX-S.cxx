@@ -741,8 +741,9 @@ const address ngenxx_z_zip_initS(const char *json)
     NGenXX::Json::Decoder decoder(json);
     int mode = decoder.readNumber(decoder.readNode(NULL, "mode"));
     size bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
+    int format = decoder.readNumber(decoder.readNode(NULL, "format"));
 
-    void *zip = ngenxx_z_zip_init(mode, bufferSize);
+    void *zip = ngenxx_z_zip_init(mode, bufferSize, format);
 
     return (address)zip;
 }
@@ -813,8 +814,9 @@ const address ngenxx_z_unzip_initS(const char *json)
         return 0;
     NGenXX::Json::Decoder decoder(json);
     size bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
+    int format = decoder.readNumber(decoder.readNode(NULL, "format"));
 
-    void *zip = ngenxx_z_unzip_init(bufferSize);
+    void *zip = ngenxx_z_unzip_init(bufferSize, format);
 
     return (address)zip;
 }
@@ -887,12 +889,13 @@ const std::string ngenxx_z_bytes_zipS(const char *json)
     NGenXX::Json::Decoder decoder(json);
     int mode = decoder.readNumber(decoder.readNode(NULL, "mode"));
     size bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
+    int format = decoder.readNumber(decoder.readNode(NULL, "format"));
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
         return s;
 
     size outLen;
-    auto outBytes = ngenxx_z_bytes_zip(mode, bufferSize, in.data(), in.size(), &outLen);
+    auto outBytes = ngenxx_z_bytes_zip(mode, bufferSize, format, in.data(), in.size(), &outLen);
     auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);
@@ -906,12 +909,13 @@ const std::string ngenxx_z_bytes_unzipS(const char *json)
         return s;
     NGenXX::Json::Decoder decoder(json);
     size bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
+    int format = decoder.readNumber(decoder.readNode(NULL, "format"));
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.size() == 0)
         return s;
     
     size outLen;
-    auto outBytes = ngenxx_z_bytes_unzip(bufferSize, in.data(), in.size(), &outLen);
+    auto outBytes = ngenxx_z_bytes_unzip(bufferSize, format, in.data(), in.size(), &outLen);
     auto outJson = bytes2json(outBytes, outLen);
 
     free((void *)outBytes);

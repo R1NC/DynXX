@@ -16,10 +16,22 @@
 #define SET_BINARY_MODE(file)
 #endif
 
-NGenXX::Z::ZBase::ZBase(const size bufferSize) : bufferSize{bufferSize}
+int NGenXX::Z::ZBase::windowBits()
+{
+    if (this->format == NGenXXZFormatGZip)
+        return 16;
+    if (this->format == NGenXXZFormatRaw)
+        return -15;
+    return 15;
+}
+
+NGenXX::Z::ZBase::ZBase(const size bufferSize, const int format) : bufferSize{bufferSize}, format{format}
 {
     if (bufferSize <= 0) {
         throw std::invalid_argument("bufferSize invalid");
+    }
+    if (format != NGenXXZFormatRaw && format != NGenXXZFormatZLib && format != NGenXXZFormatGZip) {
+        throw std::invalid_argument("format invalid");
     }
     this->zs = {
         .zalloc = Z_NULL,
@@ -77,12 +89,12 @@ NGenXX::Z::ZBase::~ZBase()
     free((void *)outBuffer);
 }
 
-NGenXX::Z::Zip::Zip(int mode, const size bufferSize) : ZBase(bufferSize)
+NGenXX::Z::Zip::Zip(int mode, const size bufferSize, const int format) : ZBase(bufferSize, format)
 {
     if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) {
         throw std::invalid_argument("mode invalid");
     }
-    this->ret = deflateInit(&(this->zs), mode);
+    this->ret = deflateInit2(&(this->zs), mode, Z_DEFLATED, this->windowBits(), 8, Z_DEFAULT_STRATEGY);
     if (this->ret != Z_OK)
     {
         NGenXX::Log::print(NGenXXLogLevelError, "deflateInit error:" + std::to_string(this->ret));
@@ -100,9 +112,9 @@ NGenXX::Z::Zip::~Zip()
     deflateEnd(&(this->zs));
 }
 
-NGenXX::Z::UnZip::UnZip(const size bufferSize) : ZBase(bufferSize)
+NGenXX::Z::UnZip::UnZip(const size bufferSize, const int format) : ZBase(bufferSize, format)
 {
-    this->ret = inflateInit(&(this->zs));
+    this->ret = inflateInit2(&(this->zs), this->windowBits());
     if (this->ret != Z_OK)
     {
         NGenXX::Log::print(NGenXXLogLevelError, "inflateInit error:" + std::to_string(this->ret));
@@ -178,15 +190,15 @@ bool zProcessCxxStream(const size bufferSize, std::istream *inStream, std::ostre
     );
 }
 
-bool NGenXX::Z::zip(int mode, const size bufferSize, std::istream *inStream, std::ostream *outStream)
+bool NGenXX::Z::zip(int mode, const size bufferSize, const int format, std::istream *inStream, std::ostream *outStream)
 {
-    auto zip = Zip(mode, bufferSize);
+    auto zip = Zip(mode, bufferSize, format);
     return zProcessCxxStream(bufferSize, inStream, outStream, zip);
 }
 
-bool NGenXX::Z::unzip(const size bufferSize, std::istream *inStream, std::ostream *outStream)
+bool NGenXX::Z::unzip(const size bufferSize, const int format, std::istream *inStream, std::ostream *outStream)
 {
-    auto unzip = UnZip(bufferSize);
+    auto unzip = UnZip(bufferSize, format);
     return zProcessCxxStream(bufferSize, inStream, outStream, unzip);
 }
 
@@ -210,15 +222,15 @@ bool zProcessCFILE(const size bufferSize, std::FILE *inFile, std::FILE *outFile,
     );
 }
 
-bool NGenXX::Z::zip(int mode, const size bufferSize, std::FILE *inFile, std::FILE *outFile)
+bool NGenXX::Z::zip(int mode, const size bufferSize, const int format, std::FILE *inFile, std::FILE *outFile)
 {
-    auto zip = Zip(mode, bufferSize);
+    auto zip = Zip(mode, bufferSize, format);
     return zProcessCFILE(bufferSize, inFile, outFile, zip);
 }
 
-bool NGenXX::Z::unzip(const size bufferSize, std::FILE *inFile, std::FILE *outFile)
+bool NGenXX::Z::unzip(const size bufferSize, const int format, std::FILE *inFile, std::FILE *outFile)
 {
-    auto unzip = UnZip(bufferSize);
+    auto unzip = UnZip(bufferSize, format);
     return zProcessCFILE(bufferSize, inFile, outFile, unzip);
 }
 
@@ -253,14 +265,14 @@ const NGenXX::Bytes zProcessBytes(const size bufferSize, const NGenXX::Bytes in,
     return {outBytes.data(), outBytes.size()};
 }
 
-const NGenXX::Bytes NGenXX::Z::zip(int mode, const size bufferSize, const NGenXX::Bytes bytes)
+const NGenXX::Bytes NGenXX::Z::zip(int mode, const size bufferSize, const int format, const NGenXX::Bytes bytes)
 {
-    auto zip = Zip(mode, bufferSize);
+    auto zip = Zip(mode, bufferSize, format);
     return zProcessBytes(bufferSize, bytes, zip);
 }
 
-const NGenXX::Bytes NGenXX::Z::unzip(const size bufferSize, const NGenXX::Bytes bytes)
+const NGenXX::Bytes NGenXX::Z::unzip(const size bufferSize, const int format, const NGenXX::Bytes bytes)
 {
-    auto unzip = UnZip(bufferSize);
+    auto unzip = UnZip(bufferSize, format);
     return zProcessBytes(bufferSize, bytes, unzip);
 }

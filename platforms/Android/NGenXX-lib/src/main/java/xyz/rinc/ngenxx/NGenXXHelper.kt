@@ -41,8 +41,8 @@ class NGenXXHelper {
             return true
         }
 
-        fun zZip(mode: NGenXX.Companion.ZipMode, inStream: InputStream, outStream: OutputStream): Boolean {
-            val zip = NGenXX.zZipInit(mode.value, Z_BUFFER_SIZE.toLong())
+        fun zZip(mode: NGenXX.Companion.ZipMode, format: NGenXX.Companion.ZFormat, inStream: InputStream, outStream: OutputStream): Boolean {
+            val zip = NGenXX.zZipInit(mode.value, Z_BUFFER_SIZE.toLong(), format.ordinal)
             if (zip <= 0) return false
 
             val success = zProcess(Z_BUFFER_SIZE, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
@@ -57,8 +57,8 @@ class NGenXXHelper {
             return success
         }
 
-        fun zUnZip(inStream: InputStream, outStream: OutputStream): Boolean {
-            val unzip = NGenXX.zUnZipInit(Z_BUFFER_SIZE.toLong())
+        fun zUnZip(format: NGenXX.Companion.ZFormat, inStream: InputStream, outStream: OutputStream): Boolean {
+            val unzip = NGenXX.zUnZipInit(Z_BUFFER_SIZE.toLong(), format.ordinal)
             if (unzip <= 0) return false
 
             val success = zProcess(Z_BUFFER_SIZE, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
