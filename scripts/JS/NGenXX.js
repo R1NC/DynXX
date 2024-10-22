@@ -657,9 +657,7 @@ function NGenXXZUnZipStream(bufferSize, format, readFunc, writeFunc, flushFunc) 
 
 // Z.file
 
-function NGenXXZZipFile(mode, format, inFilePath, outFilePath) {
-    let bufferSize = NGenXXZBufferSize;
-
+function NGenXXZZipFile(mode, bufferSize, format, inFilePath, outFilePath) {
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
     
@@ -683,9 +681,7 @@ function NGenXXZZipFile(mode, format, inFilePath, outFilePath) {
     return res;
 }
 
-function NGenXXZUnZipFile(format, inFilePath, outFilePath) {
-    let bufferSize = NGenXXZBufferSize;
-
+function NGenXXZUnZipFile(bufferSize, format, inFilePath, outFilePath) {
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
 
