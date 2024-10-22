@@ -12,3 +12,5 @@ CMakeFiles
 CMakeScripts
 Makefile
 cmake_install.cmake
+scripts/JS/dist
+*.qjsb
