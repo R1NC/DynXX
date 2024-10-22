@@ -166,9 +166,9 @@ declare function NGenXXZUnZipProcessFinished(unzip: number): boolean
 
 declare function NGenXXZUnZipRelease(unzip: number): void
 
-declare function NGenXXZZipBytes(mode: NGenXXZZipMode, bufferSize: number, bytes: number[], format: NGenXXZFormat): number[]
+declare function NGenXXZZipBytes(mode: NGenXXZZipMode, bufferSize: number, format: NGenXXZFormat, bytes: number[]): number[]
 
-declare function NGenXXZUnZipBytes(bufferSize: number, bytes: number[], format: NGenXXZFormat): number[]
+declare function NGenXXZUnZipBytes(bufferSize: number, format: NGenXXZFormat, bytes: number[]): number[]
 
 declare function NGenXXZZipStream(
     mode: NGenXXZZipMode,

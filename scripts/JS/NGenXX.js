@@ -56,8 +56,6 @@ function NGenXXRootPath() {
     return ngenxx_root_pathJ();
 }
 
-// Log
-
 const NGenXXLogLevel = Object.freeze({
     Info: 0,
     Debug: 1,
@@ -74,8 +72,6 @@ function NGenXXLogPrint(level, content) {
     });
     ngenxx_log_printJ(inJson);
 }
-
-// DeviceInfo
 
 const NGenXXDeviceType = Object.freeze({
     Unknown: 0,
@@ -120,8 +116,6 @@ function NGenXXDeviceCPUArch() {
     return ngenxx_device_cpu_archJ();
 }
 
-// Net.Http
-
 const NGenXXHttpMethod = Object.freeze({
     Get: 0,
     Post: 1,
@@ -150,8 +144,6 @@ function NGenXXNetHttpRequest(url, paramMap, method, headerMap, formFieldNameArr
 
     return ngenxx_net_http_requestJ(inJson);
 }
-
-// Store.SQLite
 
 function NGenXXStoreSQLiteOpen(_id) {
     let inJson = JSON.stringify({
@@ -220,8 +212,6 @@ function NGenXXStoreSQLiteClose(conn) {
     });
     ngenxx_store_sqlite_closeJ(inJson);
 }
-
-// Store.KV
 
 function NGenXXStoreKVOpen(_id) {
     let inJson = JSON.stringify({
@@ -311,8 +301,6 @@ function NGenXXStoreKVClose(conn) {
     ngenxx_store_kv_closeJ(inJson);
 }
 
-// Coding
-
 function NGenXXStr2Bytes(str) {
     return Array.from(str, char => char.charCodeAt(0))
 }
@@ -341,8 +329,6 @@ function NGenXXCodingHexStr2Bytes(hexStr) {
     return _json2Array(outJson);
 }
 
-// Crypto
-
 function NGenXXCryptoRand(len) {
     let inJson = JSON.stringify({
         "len": len
@@ -350,8 +336,6 @@ function NGenXXCryptoRand(len) {
     let outJson = ngenxx_crypto_randJ(inJson);
     return _json2Array(outJson);
 }
-
-// Crypto.AES
 
 function NGenXXCryptoAesEncrypt(inBytes, keyBytes) {
     inBytes = inBytes || [];
@@ -419,8 +403,6 @@ function NGenXXCryptoAesGcmDecrypt(inBytes, keyBytes, ivBytes, aadBytes, tagBits
     return _json2Array(outJson);
 }
 
-// Crypto.Hash
-
 function NGenXXCryptoHashMD5(inBytes) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({
@@ -441,8 +423,6 @@ function NGenXXCryptoHashSHA256(inBytes) {
     return _json2Array(outJson);
 }
 
-// Crypto.Base64
-
 function NGenXXCryptoBase64Encode(inBytes) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({
@@ -462,8 +442,6 @@ function NGenXXCryptoBase64Decode(inBytes) {
     let outJson = ngenxx_crypto_base64_decodeJ(inJson);
     return _json2Array(outJson);
 }
-
-// Z.Atomic
 
 const NGenXXZZipMode = Object.freeze({
     Default: -1,
@@ -560,8 +538,6 @@ function NGenXXZUnZipRelease(unzip) {
     ngenxx_z_unzip_releaseJ(inJson);
 }
 
-// Z.ByteArray
-
 function NGenXXZZipBytes(mode, bufferSize, bytes, format) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
@@ -585,8 +561,6 @@ function NGenXXZUnZipBytes(bufferSize, bytes, format) {
     let outJson = ngenxx_z_bytes_unzipJ(inJson);
     return _json2Array(outJson);
 }
-
-// Z.Stream
 
 let NGenXXZBufferSize = 16 * 1024;
 
@@ -654,8 +628,6 @@ function NGenXXZUnZipStream(bufferSize, format, readFunc, writeFunc, flushFunc) 
     NGenXXZUnZipRelease(unzip);
     return res;
 }
-
-// Z.file
 
 function NGenXXZZipFile(mode, bufferSize, format, inFilePath, outFilePath) {
     let inF = std.open(inFilePath, 'r');
