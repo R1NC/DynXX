@@ -1,16 +1,6 @@
-declare function _Array2Str(array: (string | number)[]): string
-
-declare function _Map2UrlStr(map: Map<string, string | number>): string
-
-declare function _Map2StrArray(map: Map<string, string | number>): string[]
-
-declare function _json2Array(json: string): any[]
-
 declare function _buffer2Bytes(buffer: ArrayBuffer): number[]
 
 declare function _bytes2Buffer(bytes: number[]): ArrayBuffer
-
-declare function _printArray(arr: (string | number)[]): void
 
 declare function NGenXXGetVersion(): string
 
@@ -72,7 +62,7 @@ declare function NGenXXNetHttpRequest(
     headerMap: Map<string, string | number>,
     formFieldNameArray: string[],
     formFieldMimeArray: string[],
-    formFieldDataArray: any[],
+    formFieldDataArray: string[],
     timeout: number
 ): string
 
