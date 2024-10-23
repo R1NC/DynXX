@@ -35,7 +35,7 @@ extern "C"
      * @param format header type, see `NGenXXZFormat`
      * @return a ZIP handle
      */
-    void *ngenxx_z_zip_init(const int mode, const size bufferSize, const int format);
+    void *const ngenxx_z_zip_init(const int mode, const size bufferSize, const int format);
 
     /**
      * @brief input data to ZIP process
@@ -45,7 +45,7 @@ extern "C"
      * @param inFinish Whether input is finished or not
      * @return The received data length, return `0` if error occurred
      */
-    const size ngenxx_z_zip_input(const void *zip, const byte *inBytes, const size inLen, const bool inFinish);
+    const size ngenxx_z_zip_input(void *const zip, const byte *inBytes, const size inLen, const bool inFinish);
 
     /**
      * @brief process the ZIP input data
@@ -53,20 +53,20 @@ extern "C"
      * @param outLen a pointer to read the output data length
      * @return output data bytes, return `NULL` if error occurred
      */
-    const byte *ngenxx_z_zip_process_do(const void *zip, size *outLen);
+    const byte *ngenxx_z_zip_process_do(void *const zip, size *outLen);
 
     /**
      * @brief check whether all the ZIP data inputed before are processed
      * @param zip The ZIP handle
      * @return whether finished or not
      */
-    const bool ngenxx_z_zip_process_finished(const void *zip);
+    const bool ngenxx_z_zip_process_finished(void *const zip);
 
     /**
      * @brief release a ZIP process
      * @param zip The ZIP handle
      */
-    void ngenxx_z_zip_release(const void *zip);
+    void ngenxx_z_zip_release(void *const zip);
 
     /**
      * @brief initialize a UNZIP process
@@ -74,7 +74,7 @@ extern "C"
      * @param format header type, see `NGenXXZFormat`
      * @return a UNZIP handle
      */
-    void *ngenxx_z_unzip_init(const size bufferSize, const int header);
+    void *const ngenxx_z_unzip_init(const size bufferSize, const int header);
 
     /**
      * @brief input data to UNZIP process
@@ -84,7 +84,7 @@ extern "C"
      * @param inFinish Whether input is finished or not
      * @return The received data length, return `0` if error occurred
      */
-    const size ngenxx_z_unzip_input(const void *unzip, const byte *inBytes, const size inLen, const bool inFinish);
+    const size ngenxx_z_unzip_input(void *const unzip, const byte *inBytes, const size inLen, const bool inFinish);
 
     /**
      * @brief process the UNZIP input data
@@ -92,20 +92,20 @@ extern "C"
      * @param outLen a pointer to read the output data length
      * @return output data bytes, return `NULL` if error occurred
      */
-    const byte *ngenxx_z_unzip_process_do(const void *unzip, size *outLen);
+    const byte *ngenxx_z_unzip_process_do(void *const unzip, size *outLen);
 
     /**
      * @brief check whether all the ZIP data inputed before are processed
      * @param unzip The UNZIP handle
      * @return whether finished or not
      */
-    const bool ngenxx_z_unzip_process_finished(const void *unzip);
+    const bool ngenxx_z_unzip_process_finished(void *const unzip);
 
     /**
      * @brief release a unzip process
      * @param unzip The unzip handle
      */
-    void ngenxx_z_unzip_release(const void *unzip);
+    void ngenxx_z_unzip_release(void *const unzip);
 
     /**
      * @brief ZIP for C FILE
@@ -117,7 +117,7 @@ extern "C"
      * @param cFILEOut Output C `FILE`
      * @return whether finished or not
      */
-    bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, const int format, void *cFILEIn, void *cFILEOut);
+    bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, const int format, void *const cFILEIn, void *const cFILEOut);
 
     /**
      * @brief UNZIP for C FILE
@@ -128,7 +128,7 @@ extern "C"
      * @param cFILEOut Output C `FILE`
      * @return whether finished or not
      */
-    bool ngenxx_z_cfile_unzip(const size bufferSize, const int format, void *cFILEIn, void *cFILEOut);
+    bool ngenxx_z_cfile_unzip(const size bufferSize, const int format, void *const cFILEIn, void *const cFILEOut);
 
     /**
      * @brief ZIP for C++ Stream
@@ -140,7 +140,7 @@ extern "C"
      * @param cxxStreamOut Output C++ Stream(`ostream`)
      * @return whether finished or not
      */
-    bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, const int format, void *cxxStreamIn, void *cxxStreamOut);
+    bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, const int format, void *const cxxStreamIn, void *const cxxStreamOut);
 
     /**
      * @brief UNZIP for C++ Stream
@@ -151,7 +151,7 @@ extern "C"
      * @param cxxStreamOut Output C++ Stream(`ostream`)
      * @return whether finished or not
      */
-    bool ngenxx_z_cxxstream_unzip(const size bufferSize, const int format, void *cxxStreamIn, void *cxxStreamOut);
+    bool ngenxx_z_cxxstream_unzip(const size bufferSize, const int format, void *const cxxStreamIn, void *const cxxStreamOut);
 
     /**
      * @brief ZIP for bytes

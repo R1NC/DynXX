@@ -17,28 +17,28 @@ namespace NGenXX
         private:
             cJSON *cjson;
 
-            cJSON *parseNode(const void *node);
+            cJSON *parseNode(void *const node);
 
         public:
             Decoder() = delete;
 
             Decoder(const std::string &json);
 
-            bool isArray(const void *node);
+            bool isArray(void *const node);
 
-            bool isObject(const void *node);
+            bool isObject(void *const node);
 
-            void *readChild(const void *node);
+            void *const readChild(void *const node);
 
-            void *readNext(const void *node);
+            void *const readNext(void *const node);
 
-            void readChildren(const void *node, std::function<void(int idx, void* child)> callback);
+            void readChildren(void *const node, std::function<void(int idx, void* child)> callback);
 
-            void *readNode(const void *node, const std::string &k);
+            void *const readNode(void *const node, const std::string &k);
 
-            std::string readString(const void *node);
+            std::string readString(void *const node);
 
-            double readNumber(const void *node);
+            double readNumber(void *const node);
 
             ~Decoder();
         };

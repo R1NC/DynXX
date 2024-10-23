@@ -48,7 +48,7 @@ extern "C"
                                         const char **form_field_mime_v,
                                         const char **form_field_data_v,
                                         const size form_field_count,
-                                        const void *cFILE, const size file_size,
+                                        void *const cFILE, const size file_size,
                                         const size timeout);
 
 #ifdef __cplusplus

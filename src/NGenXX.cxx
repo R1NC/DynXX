@@ -148,7 +148,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
                                     const char **form_field_mime_v,
                                     const char **form_field_data_v,
                                     const size form_field_count,
-                                    const void *cFILE, const size file_size,
+                                    void *const cFILE, const size file_size,
                                     const size timeout)
 {
     if (_ngenxx_http_client == NULL || url == NULL)
@@ -174,7 +174,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
     }
 
     auto s = _ngenxx_http_client->request(sUrl, sParams, method, vHeaders, vFormFields,
-                                          reinterpret_cast<std::FILE *>(const_cast<void *>(cFILE)),
+                                          reinterpret_cast<std::FILE *>(cFILE),
                                           file_size, timeout);
     return str2charp(s);
 }
@@ -182,7 +182,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
 #pragma mark Store.SQLite
 
 EXPORT_AUTO
-void *ngenxx_store_sqlite_open(const char *_id)
+void *const ngenxx_store_sqlite_open(const char *_id)
 {
     if (_ngenxx_sqlite == NULL || _ngenxx_root == NULL || _id == NULL)
         return NULL;
@@ -191,84 +191,84 @@ void *ngenxx_store_sqlite_open(const char *_id)
 }
 
 EXPORT_AUTO
-bool ngenxx_store_sqlite_execute(const void *conn, const char *sql)
+bool ngenxx_store_sqlite_execute(void *const conn, const char *sql)
 {
     if (conn == NULL || sql == NULL)
         return false;
-    auto xconn = reinterpret_cast<NGenXX::Store::SQLite::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::SQLite::Connection *>(conn);
     return xconn->execute(std::string(sql));
 }
 
 EXPORT_AUTO
-void *ngenxx_store_sqlite_query_do(const void *conn, const char *sql)
+void *const ngenxx_store_sqlite_query_do(void *const conn, const char *sql)
 {
     if (conn == NULL || sql == NULL)
         return NULL;
-    auto xconn = reinterpret_cast<NGenXX::Store::SQLite::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::SQLite::Connection *>(conn);
     return xconn->query(std::string(sql));
 }
 
 EXPORT_AUTO
-bool ngenxx_store_sqlite_query_read_row(const void *query_result)
+bool ngenxx_store_sqlite_query_read_row(void *const query_result)
 {
     if (query_result == NULL)
         return false;
-    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(const_cast<void *>(query_result));
+    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     return xqr->readRow();
 }
 
 EXPORT_AUTO
-const char *ngenxx_store_sqlite_query_read_column_text(const void *query_result, const char *column)
+const char *ngenxx_store_sqlite_query_read_column_text(void *const query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
         return NULL;
-    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(const_cast<void *>(query_result));
+    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     auto a = xqr->readColumn(std::string(column));
     return str2charp(*std::get_if<std::string>(&a));
 }
 
 EXPORT_AUTO
-long long ngenxx_store_sqlite_query_read_column_integer(const void *query_result, const char *column)
+long long ngenxx_store_sqlite_query_read_column_integer(void *const query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
         return 0;
-    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(const_cast<void *>(query_result));
+    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     auto a = xqr->readColumn(std::string(column));
     return *std::get_if<int64_t>(&a);
 }
 
 EXPORT_AUTO
-double ngenxx_store_sqlite_query_read_column_float(const void *query_result, const char *column)
+double ngenxx_store_sqlite_query_read_column_float(void *const query_result, const char *column)
 {
     if (query_result == NULL || column == NULL)
         return 0.f;
-    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(const_cast<void *>(query_result));
+    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     auto a = xqr->readColumn(std::string(column));
     return *std::get_if<double>(&a);
 }
 
 EXPORT_AUTO
-void ngenxx_store_sqlite_query_drop(const void *query_result)
+void ngenxx_store_sqlite_query_drop(void *const query_result)
 {
     if (query_result == NULL)
         return;
-    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(const_cast<void *>(query_result));
+    auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     delete xqr;
 }
 
 EXPORT_AUTO
-void ngenxx_store_sqlite_close(const void *conn)
+void ngenxx_store_sqlite_close(void *const conn)
 {
     if (conn == NULL)
         return;
-    auto xconn = reinterpret_cast<NGenXX::Store::SQLite::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::SQLite::Connection *>(conn);
     delete xconn;
 }
 
 #pragma mark Store.KV
 
 EXPORT_AUTO
-void *ngenxx_store_kv_open(const char *_id)
+void *const ngenxx_store_kv_open(const char *_id)
 {
     if (_ngenxx_kv == NULL || _id == NULL)
         return NULL;
@@ -276,93 +276,93 @@ void *ngenxx_store_kv_open(const char *_id)
 }
 
 EXPORT_AUTO
-const char *ngenxx_store_kv_read_string(const void *conn, const char *k)
+const char *ngenxx_store_kv_read_string(void *const conn, const char *k)
 {
     if (conn == NULL || k == NULL)
         return NULL;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     auto s = xconn->readString(std::string(k));
     return str2charp(s);
 }
 
 EXPORT_AUTO
-bool ngenxx_store_kv_write_string(const void *conn, const char *k, const char *v)
+bool ngenxx_store_kv_write_string(void *const conn, const char *k, const char *v)
 {
     if (conn == NULL || k == NULL)
         return false;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->write(std::string(k), std::string(v));
 }
 
 EXPORT_AUTO
-long long ngenxx_store_kv_read_integer(const void *conn, const char *k)
+long long ngenxx_store_kv_read_integer(void *const conn, const char *k)
 {
     if (conn == NULL || k == NULL)
         return 0;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->readInteger(std::string(k));
 }
 
 EXPORT_AUTO
-bool ngenxx_store_kv_write_integer(const void *conn, const char *k, long long v)
+bool ngenxx_store_kv_write_integer(void *const conn, const char *k, long long v)
 {
     if (conn == NULL || k == NULL)
         return false;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->write(std::string(k), v);
 }
 
 EXPORT_AUTO
-double ngenxx_store_kv_read_float(const void *conn, const char *k)
+double ngenxx_store_kv_read_float(void *const conn, const char *k)
 {
     if (conn == NULL || k == NULL)
         return 0;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->readFloat(std::string(k));
 }
 
 EXPORT_AUTO
-bool ngenxx_store_kv_write_float(const void *conn, const char *k, double v)
+bool ngenxx_store_kv_write_float(void *const conn, const char *k, double v)
 {
     if (conn == NULL || k == NULL)
         return false;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->write(std::string(k), v);
 }
 
 EXPORT_AUTO
-bool ngenxx_store_kv_contains(const void *conn, const char *k)
+bool ngenxx_store_kv_contains(void *const conn, const char *k)
 {
     if (conn == NULL || k == NULL)
         return false;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->contains(std::string(k));
 }
 
 EXPORT_AUTO
-void ngenxx_store_kv_remove(const void *conn, const char *k)
+void ngenxx_store_kv_remove(void *const conn, const char *k)
 {
     if (conn == NULL || k == NULL)
         return;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     xconn->remove(std::string(k));
 }
 
 EXPORT_AUTO
-void ngenxx_store_kv_clear(const void *conn)
+void ngenxx_store_kv_clear(void *const conn)
 {
     if (conn == NULL)
         return;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     xconn->clear();
 }
 
 EXPORT_AUTO
-void ngenxx_store_kv_close(const void *conn)
+void ngenxx_store_kv_close(void *const conn)
 {
     if (conn == NULL)
         return;
-    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(const_cast<void *>(conn));
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     delete xconn;
 }
 
@@ -474,87 +474,87 @@ const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size inLen, s
 #pragma mark Json.Decoder
 
 EXPORT_AUTO
-void *ngenxx_json_decoder_init(const char *json)
+void *const ngenxx_json_decoder_init(const char *json)
 {
     return json ? new NGenXX::Json::Decoder(std::string(json)) : NULL;
 }
 
 EXPORT_AUTO
-bool ngenxx_json_decoder_is_array(const void *decoder, const void *node)
+bool ngenxx_json_decoder_is_array(void *const decoder, void *const node)
 {
     if (decoder == NULL)
         return false;
-    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(const_cast<void *>(decoder));
+    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->isArray(node);
 }
 
 EXPORT_AUTO
-bool ngenxx_json_decoder_is_object(const void *decoder, const void *node)
+bool ngenxx_json_decoder_is_object(void *const decoder, void *const node)
 {
     if (decoder == NULL)
         return false;
-    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(const_cast<void *>(decoder));
+    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->isObject(node);
 }
 
 EXPORT_AUTO
-void *ngenxx_json_decoder_read_node(const void *decoder, const void *node, const char *k)
+void *const ngenxx_json_decoder_read_node(void *const decoder, void *const node, const char *k)
 {
     if (decoder == NULL || k == NULL)
         return NULL;
-    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(const_cast<void *>(decoder));
+    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readNode(node, std::string(k));
 }
 
 EXPORT_AUTO
-const char *ngenxx_json_decoder_read_string(const void *decoder, const void *node)
+const char *ngenxx_json_decoder_read_string(void *const decoder, void *const node)
 {
     if (decoder == NULL)
         return NULL;
-    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(const_cast<void *>(decoder));
+    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
     return str2charp(xdecoder->readString(node));
 }
 
 EXPORT_AUTO
-double ngenxx_json_decoder_read_number(const void *decoder, const void *node)
+double ngenxx_json_decoder_read_number(void *const decoder, void *const node)
 {
     if (decoder == NULL)
         return 0;
-    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(const_cast<void *>(decoder));
+    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readNumber(node);
 }
 
 EXPORT_AUTO
-void *ngenxx_json_decoder_read_child(const void *decoder, const  void *node)
+void *const ngenxx_json_decoder_read_child(void *const decoder, void *const node)
 {
     if (decoder == NULL)
         return NULL;
-    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(const_cast<void *>(decoder));
+    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readChild(node);
 }
 
 EXPORT_AUTO
-void *ngenxx_json_decoder_read_next(const void *decoder, const void *node)
+void *const ngenxx_json_decoder_read_next(void *const decoder, void *const node)
 {
     if (decoder == NULL)
         return NULL;
-    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(const_cast<void *>(decoder));
+    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readNext(node);
 }
 
 EXPORT_AUTO
-void ngenxx_json_decoder_release(const void *decoder)
+void ngenxx_json_decoder_release(void *const decoder)
 {
     if (decoder == NULL)
         return;
-    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(const_cast<void *>(decoder));
+    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
     delete xdecoder;
 }
 
 #pragma mark Zip
 
 EXPORT_AUTO
-void *ngenxx_z_zip_init(const int mode, const size bufferSize, const int format)
+void *const ngenxx_z_zip_init(const int mode, const size bufferSize, const int format)
 {
     void *zip = NULL;
     try
@@ -569,20 +569,20 @@ void *ngenxx_z_zip_init(const int mode, const size bufferSize, const int format)
 }
 
 EXPORT_AUTO
-const size ngenxx_z_zip_input(const void *zip, const byte *inBytes, const size inLen, const bool inFinish)
+const size ngenxx_z_zip_input(void *const zip, const byte *inBytes, const size inLen, const bool inFinish)
 {
     if (zip == NULL)
         return 0;
-    auto xzip = reinterpret_cast<NGenXX::Z::Zip *>(const_cast<void *>(zip));
+    auto xzip = reinterpret_cast<NGenXX::Z::Zip *>(zip);
     return xzip->input({inBytes, inLen}, inFinish);
 }
 
 EXPORT_AUTO
-const byte *ngenxx_z_zip_process_do(const void *zip, size *outLen)
+const byte *ngenxx_z_zip_process_do(void *const zip, size *outLen)
 {
     if (zip == NULL)
         return NULL;
-    auto xzip = reinterpret_cast<NGenXX::Z::Zip *>(const_cast<void *>(zip));
+    auto xzip = reinterpret_cast<NGenXX::Z::Zip *>(zip);
     auto t = xzip->processDo();
     if (outLen)
         *outLen = t.second;
@@ -590,25 +590,25 @@ const byte *ngenxx_z_zip_process_do(const void *zip, size *outLen)
 }
 
 EXPORT_AUTO
-const bool ngenxx_z_zip_process_finished(const void *zip)
+const bool ngenxx_z_zip_process_finished(void *const zip)
 {
     if (zip == NULL)
         return false;
-    auto xzip = reinterpret_cast<NGenXX::Z::Zip *>(const_cast<void *>(zip));
+    auto xzip = reinterpret_cast<NGenXX::Z::Zip *>(zip);
     return xzip->processFinished();
 }
 
 EXPORT_AUTO
-void ngenxx_z_zip_release(const void *zip)
+void ngenxx_z_zip_release(void *const zip)
 {
     if (zip == NULL)
         return;
-    auto xzip = reinterpret_cast<NGenXX::Z::Zip *>(const_cast<void *>(zip));
+    auto xzip = reinterpret_cast<NGenXX::Z::Zip *>(zip);
     delete xzip;
 }
 
 EXPORT_AUTO
-void *ngenxx_z_unzip_init(const size bufferSize, const int format)
+void *const ngenxx_z_unzip_init(const size bufferSize, const int format)
 {
     void *zip = NULL;
     try
@@ -623,20 +623,20 @@ void *ngenxx_z_unzip_init(const size bufferSize, const int format)
 }
 
 EXPORT_AUTO
-const size ngenxx_z_unzip_input(const void *unzip, const byte *inBytes, const size inLen, const bool inFinish)
+const size ngenxx_z_unzip_input(void *const unzip, const byte *inBytes, const size inLen, const bool inFinish)
 {
     if (unzip == NULL)
         return 0;
-    auto xunzip = reinterpret_cast<NGenXX::Z::UnZip *>(const_cast<void *>(unzip));
+    auto xunzip = reinterpret_cast<NGenXX::Z::UnZip *>(unzip);
     return xunzip->input({inBytes, inLen}, inFinish);
 }
 
 EXPORT_AUTO
-const byte *ngenxx_z_unzip_process_do(const void *unzip, size *outLen)
+const byte *ngenxx_z_unzip_process_do(void *const unzip, size *outLen)
 {
     if (unzip == NULL)
         return NULL;
-    auto xunzip = reinterpret_cast<NGenXX::Z::UnZip *>(const_cast<void *>(unzip));
+    auto xunzip = reinterpret_cast<NGenXX::Z::UnZip *>(unzip);
     auto t = xunzip->processDo();
     if (outLen)
         *outLen = t.second;
@@ -644,25 +644,25 @@ const byte *ngenxx_z_unzip_process_do(const void *unzip, size *outLen)
 }
 
 EXPORT_AUTO
-const bool ngenxx_z_unzip_process_finished(const void *unzip)
+const bool ngenxx_z_unzip_process_finished(void *const unzip)
 {
     if (unzip == NULL)
         return false;
-    auto xunzip = reinterpret_cast<NGenXX::Z::UnZip *>(const_cast<void *>(unzip));
+    auto xunzip = reinterpret_cast<NGenXX::Z::UnZip *>(unzip);
     return xunzip->processFinished();
 }
 
 EXPORT_AUTO
-void ngenxx_z_unzip_release(const void *unzip)
+void ngenxx_z_unzip_release(void *const unzip)
 {
     if (unzip == NULL)
         return;
-    auto xunzip = reinterpret_cast<NGenXX::Z::UnZip *>(const_cast<void *>(unzip));
+    auto xunzip = reinterpret_cast<NGenXX::Z::UnZip *>(unzip);
     delete xunzip;
 }
 
 EXPORT_AUTO
-bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, const int format, void *cFILEIn, void *cFILEOut)
+bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, const int format, void *const cFILEIn, void *const cFILEOut)
 {
     if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed)
         return false;
@@ -675,7 +675,7 @@ bool ngenxx_z_cfile_zip(const int mode, const size bufferSize, const int format,
 }
 
 EXPORT_AUTO
-bool ngenxx_z_cfile_unzip(const size bufferSize, const int format, void *cFILEIn, void *cFILEOut)
+bool ngenxx_z_cfile_unzip(const size bufferSize, const int format, void *const cFILEIn, void *const cFILEOut)
 {
     if (bufferSize <= 0)
         return false;
@@ -686,7 +686,7 @@ bool ngenxx_z_cfile_unzip(const size bufferSize, const int format, void *cFILEIn
 }
 
 EXPORT_AUTO
-bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, const int format, void *cxxStreamIn, void *cxxStreamOut)
+bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, const int format, void *const cxxStreamIn, void *const cxxStreamOut)
 {
     if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed)
         return false;
@@ -699,7 +699,7 @@ bool ngenxx_z_cxxstream_zip(const int mode, const size bufferSize, const int for
 }
 
 EXPORT_AUTO
-bool ngenxx_z_cxxstream_unzip(const size bufferSize, const int format, void *cxxStreamIn, void *cxxStreamOut)
+bool ngenxx_z_cxxstream_unzip(const size bufferSize, const int format, void *const cxxStreamIn, void *const cxxStreamOut)
 {
     if (bufferSize <= 0)
         return false;
