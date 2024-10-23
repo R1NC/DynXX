@@ -209,7 +209,7 @@ bool zProcessCFILE(const size bufferSize, std::FILE *inFile, std::FILE *outFile,
     return zProcess(bufferSize, 
         [&]() -> NGenXX::Bytes {
             std::vector<byte> in;
-            std::fread(reinterpret_cast<void *>(in.data()), sizeof(byte), bufferSize, inFile);
+            std::fread(static_cast<void *>(in.data()), sizeof(byte), bufferSize, inFile);
             return {in.data(), in.size()};
         },
         [&](NGenXX::Bytes bytes) -> void {
