@@ -660,7 +660,7 @@ static napi_value CryptoRand(napi_env env, napi_callback_info info) {
     
     uint32_t len = napiValue2int(env, argv[0]);
     byte out[len];
-    std::memset(out, 0, len);
+    memset(out, 0, len);
     
     ngenxx_crypto_rand(len, out);
     napi_value v = byteArray2NapiValue(env, out, len);
