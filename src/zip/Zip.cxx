@@ -38,8 +38,8 @@ NGenXX::Z::ZBase::ZBase(const size bufferSize, const int format) : bufferSize{bu
         .zfree = Z_NULL,
         .opaque = Z_NULL
     };
-    this->inBuffer = (byte *)malloc(sizeof(byte) * bufferSize + 1);
-    this->outBuffer = (byte *)malloc(sizeof(byte) * bufferSize + 1);
+    this->inBuffer = reinterpret_cast<byte *>(malloc(sizeof(byte) * bufferSize + 1));
+    this->outBuffer = reinterpret_cast<byte *>(malloc(sizeof(byte) * bufferSize + 1));
 }
 
 const size NGenXX::Z::ZBase::input(const Bytes bytes, bool inFinish)
@@ -53,7 +53,7 @@ const size NGenXX::Z::ZBase::input(const Bytes bytes, bool inFinish)
     memcpy(this->inBuffer, in, dataLen);
 
     (this->zs).avail_in = dataLen;
-    (this->zs).next_in = (Bytef *)(this->inBuffer);
+    (this->zs).next_in = reinterpret_cast<Bytef *>(this->inBuffer);
     this->inFinish = inFinish;
     return dataLen;
 }
@@ -62,7 +62,7 @@ const NGenXX::Bytes NGenXX::Z::ZBase::processDo()
 {
     std::memset(this->outBuffer, 0, this->bufferSize);
     (this->zs).avail_out = this->bufferSize;
-    (this->zs).next_out = (Bytef *)(this->outBuffer);
+    (this->zs).next_out = reinterpret_cast<Bytef *>(this->outBuffer);
 
     NGenXX::Log::print(NGenXXLogLevelDebug, "z process before avIn:" + std::to_string((this->zs).avail_in) + " avOut:" + std::to_string((this->zs).avail_out));
     this->processImp();
@@ -177,11 +177,11 @@ bool zProcessCxxStream(const size bufferSize, std::istream *inStream, std::ostre
     return zProcess(bufferSize, 
         [&]() -> NGenXX::Bytes {
             std::vector<byte> in;
-            inStream->readsome((char *)in.data(), bufferSize);
+            inStream->readsome(reinterpret_cast<char *>(in.data()), bufferSize);
             return {in.data(), in.size()};
         },
         [&](NGenXX::Bytes bytes) -> void {
-            outStream->write((char *)(bytes.first), bytes.second);
+            outStream->write(reinterpret_cast<char *>(const_cast<byte *>(bytes.first)), bytes.second);
         },
         [&]() -> void {
             outStream->flush();
@@ -209,7 +209,7 @@ bool zProcessCFILE(const size bufferSize, std::FILE *inFile, std::FILE *outFile,
     return zProcess(bufferSize, 
         [&]() -> NGenXX::Bytes {
             std::vector<byte> in;
-            std::fread((void *)in.data(), sizeof(byte), bufferSize, inFile);
+            std::fread(reinterpret_cast<void *>(in.data()), sizeof(byte), bufferSize, inFile);
             return {in.data(), in.size()};
         },
         [&](NGenXX::Bytes bytes) -> void {

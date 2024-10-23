@@ -34,7 +34,7 @@ static NGenXX::LuaBridge *_ngenxx_lua;
     int fL(lua_State *L)                           \
     {                                              \
         const char *json = luaL_checkstring(L, 1); \
-        auto res = (long long)fS(json);            \
+        auto res = static_cast<long long>(fS(json));            \
         lua_pushinteger(L, res);                   \
         return 1;                                  \
     }

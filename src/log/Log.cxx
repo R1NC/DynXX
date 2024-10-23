@@ -27,7 +27,7 @@ void NGenXX::Log::print(int level, const std::string &content)
         return;
     if (_NGenXX_Log_callback)
     {
-        char *c = (char *)malloc(strlen(content.c_str()) + 1);
+        char *c = reinterpret_cast<char *>(malloc(strlen(content.c_str()) + 1));
         strcpy(c, content.c_str());
         _NGenXX_Log_callback(level, c);
     }

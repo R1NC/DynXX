@@ -30,7 +30,7 @@ static NGenXX::JsBridge *_ngenxx_js;
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = (bool)fS(json);                                                         \
+        auto res = static_cast<bool>(fS(json));                                                         \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewBool(ctx, res);                                                       \
     }
@@ -39,7 +39,7 @@ static NGenXX::JsBridge *_ngenxx_js;
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = (int32_t)fS(json);                                                      \
+        auto res = static_cast<int32_t>(fS(json));                                                      \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewInt32(ctx, res);                                                      \
     }
@@ -48,7 +48,7 @@ static NGenXX::JsBridge *_ngenxx_js;
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = (int64_t)fS(json);                                                      \
+        auto res = static_cast<int64_t>(fS(json));                                                      \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewInt64(ctx, res);                                                      \
     }
@@ -57,7 +57,7 @@ static NGenXX::JsBridge *_ngenxx_js;
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = (double)fS(json);                                                       \
+        auto res = static_cast<double>(fS(json));                                                       \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewFloat64(ctx, res);                                                    \
     }

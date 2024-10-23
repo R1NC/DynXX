@@ -1,10 +1,10 @@
 #include "JsonDecoder.hxx"
 
-cJSON *NGenXX::Json::Decoder::parseNode(void *node)
+cJSON *NGenXX::Json::Decoder::parseNode(const void *node)
 {
     if (node == NULL)
         return this->cjson;
-    return (cJSON *)node;
+    return reinterpret_cast<cJSON *>(const_cast<void *>(node));
 }
 
 NGenXX::Json::Decoder::Decoder(const std::string &json)
@@ -12,19 +12,19 @@ NGenXX::Json::Decoder::Decoder(const std::string &json)
     this->cjson = cJSON_Parse(json.c_str());
 }
 
-bool NGenXX::Json::Decoder::isArray(void *node)
+bool NGenXX::Json::Decoder::isArray(const void *node)
 {
     cJSON *cj = this->parseNode(node);
     return cj ? cJSON_IsArray(cj) : false;
 }
 
-bool NGenXX::Json::Decoder::isObject(void *node)
+bool NGenXX::Json::Decoder::isObject(const void *node)
 {
     cJSON *cj = this->parseNode(node);
     return cj ? cJSON_IsObject(cj) : false;
 }
 
-void *NGenXX::Json::Decoder::readNode(void *node, const std::string &k)
+void *NGenXX::Json::Decoder::readNode(const void *node, const std::string &k)
 {
     cJSON *cj = this->parseNode(node);
     if (cj != NULL)
@@ -34,7 +34,7 @@ void *NGenXX::Json::Decoder::readNode(void *node, const std::string &k)
     return NULL;
 }
 
-std::string NGenXX::Json::Decoder::readString(void *node)
+std::string NGenXX::Json::Decoder::readString(const void *node)
 {
     cJSON *cj = this->parseNode(node);
     if (cj != NULL && cJSON_IsString(cj))
@@ -44,7 +44,7 @@ std::string NGenXX::Json::Decoder::readString(void *node)
     return "";
 }
 
-double NGenXX::Json::Decoder::readNumber(void *node)
+double NGenXX::Json::Decoder::readNumber(const void *node)
 {
     cJSON *cj = this->parseNode(node);
     if (cj != NULL && cJSON_IsNumber(cj))
@@ -54,7 +54,7 @@ double NGenXX::Json::Decoder::readNumber(void *node)
     return 0;
 }
 
-void *NGenXX::Json::Decoder::readChild(void *node)
+void *NGenXX::Json::Decoder::readChild(const void *node)
 {
     cJSON *cj = this->parseNode(node);
     if (cj != NULL && (this->isArray(cj) || this->isObject(cj)))
@@ -64,7 +64,7 @@ void *NGenXX::Json::Decoder::readChild(void *node)
     return NULL;
 }
 
-void NGenXX::Json::Decoder::readChildren(void *node, std::function<void(int idx, void *child)> callback)
+void NGenXX::Json::Decoder::readChildren(const void *node, std::function<void(int idx, void *child)> callback)
 {
     if (!this->isArray(node) && !this->isObject(node))
         return;
@@ -78,7 +78,7 @@ void NGenXX::Json::Decoder::readChildren(void *node, std::function<void(int idx,
     }
 }
 
-void *NGenXX::Json::Decoder::readNext(void *node)
+void *NGenXX::Json::Decoder::readNext(const void *node)
 {
     cJSON *cj = this->parseNode(node);
     return cj ? cj->next : NULL;

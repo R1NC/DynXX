@@ -25,7 +25,7 @@ const NGenXX::Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     size j(0);
     for (size i(0); i < str.length(); i += 2, j++) {
         auto s = str.substr(i, 2);
-        outBytes[j] = (unsigned char)std::stoi(s.c_str(), nullptr, 16);
+        outBytes[j] = static_cast<unsigned char>(std::stoi(s.c_str(), nullptr, 16));
     }
     return {outBytes, j};
 }

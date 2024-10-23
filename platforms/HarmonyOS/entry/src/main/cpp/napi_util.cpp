@@ -4,7 +4,7 @@
 
 napi_value *readParams(napi_env env, napi_callback_info info, size_t count) {
     size_t argc = count;
-    napi_value *argv = (napi_value *)malloc(sizeof(napi_value) * count + 1);
+    napi_value *argv = reinterpret_cast<napi_value *>(malloc(sizeof(napi_value) * count + 1));
     memset((void *)argv, 0, count + 1);
     int status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_cb_info() failed");
@@ -23,7 +23,7 @@ const char *napiValue2chars(napi_env env, napi_value nv) {
     size_t len;
     status = napi_get_value_string_utf8(env, nv, NULL, 0, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
-    char *cStr = (char *)malloc(len + 1);
+    char *cStr = reinterpret_cast<char *>(malloc(len + 1));
     status = napi_get_value_string_utf8(env, nv, cStr, len + 1, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
     return cStr;
@@ -59,7 +59,7 @@ double napiValue2double(napi_env env, napi_value nv) {
 
 const unsigned char *napiValue2byteArray(napi_env env, napi_value nv, unsigned long len) {
     if (len <= 0) return NULL;
-    unsigned char *byteArray = (unsigned char *)malloc(len * sizeof(const unsigned char) + 1);
+    unsigned char *byteArray = reinterpret_cast<unsigned char *>(malloc(len * sizeof(const unsigned char) + 1));
     int status;
     for (int i = 0; i < len; i++) {
         napi_value vByte;
@@ -72,7 +72,7 @@ const unsigned char *napiValue2byteArray(napi_env env, napi_value nv, unsigned l
 
 const char **napiValue2charsArray(napi_env env, napi_value nv, unsigned long len) {
     if (len <= 0) return NULL;
-    const char **charsArray = (const char **)malloc(len * sizeof(char *) + 1);
+    const char **charsArray = reinterpret_cast<const char **>(malloc(len * sizeof(char *) + 1));
     int status;
     for (int i = 0; i < len; i++) {
         napi_value vChars;

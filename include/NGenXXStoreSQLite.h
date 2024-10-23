@@ -18,7 +18,7 @@ void *ngenxx_store_sqlite_open(const char *_id);
  * @param sql SQL
  * @return Successfull or not
  */
-bool ngenxx_store_sqlite_execute(void *conn, const char *sql);
+bool ngenxx_store_sqlite_execute(const void *conn, const char *sql);
 
 /**
  * @brief Query with a SQL
@@ -26,14 +26,14 @@ bool ngenxx_store_sqlite_execute(void *conn, const char *sql);
  * @param sql SQL
  * @return Handle of query result
  */
-void *ngenxx_store_sqlite_query_do(void *conn, const char *sql);
+void *ngenxx_store_sqlite_query_do(const void *conn, const char *sql);
 
 /**
  * @brief Read a row from query result
  * @param query_result Handle of query result
  * @return Successful or not
  */
-bool ngenxx_store_sqlite_query_read_row(void *query_result);
+bool ngenxx_store_sqlite_query_read_row(const void *query_result);
 
 /**
  * @brief Read text column data from query result
@@ -41,7 +41,7 @@ bool ngenxx_store_sqlite_query_read_row(void *query_result);
  * @param column Column name
  * @return Text column data
  */
-const char *ngenxx_store_sqlite_query_read_column_text(void *query_result, const char *column);
+const char *ngenxx_store_sqlite_query_read_column_text(const void *query_result, const char *column);
 
 /**
  * @brief Read integer column data from query result
@@ -49,7 +49,7 @@ const char *ngenxx_store_sqlite_query_read_column_text(void *query_result, const
  * @param column Column name
  * @return Integer column data
  */
-long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, const char *column);
+long long ngenxx_store_sqlite_query_read_column_integer(const void *query_result, const char *column);
 
 /**
  * @brief Read float column data from query result
@@ -57,19 +57,19 @@ long long ngenxx_store_sqlite_query_read_column_integer(void *query_result, cons
  * @param column Column name
  * @return Float column data
  */
-double ngenxx_store_sqlite_query_read_column_float(void *query_result, const char *column);
+double ngenxx_store_sqlite_query_read_column_float(const void *query_result, const char *column);
 
 /**
  * @brief Release query result
  * @param query_result Handle of query result
  */
-void ngenxx_store_sqlite_query_drop(void *query_result);
+void ngenxx_store_sqlite_query_drop(const void *query_result);
 
 /**
  * @brief Close DB
  * @param conn DB connection handle
  */
-void ngenxx_store_sqlite_close(void *conn);
+void ngenxx_store_sqlite_close(const void *conn);
 
 #ifdef  __cplusplus
 }

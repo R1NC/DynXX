@@ -190,7 +190,7 @@ class MainActivity : ComponentActivity() {
             }
             zipFile.createNewFile()
             FileOutputStream(zipFile).use { zipOutStream ->
-                val zipSuccess = NGenXXHelper.zZip(NGenXX.Companion.ZipMode.Default, zipInStream, zipOutStream)
+                val zipSuccess = NGenXXHelper.zZip(NGenXX.Companion.ZipMode.Default, NGenXX.Companion.ZFormat.GZip, zipInStream, zipOutStream)
                 if (zipSuccess) {
                     FileInputStream(zipFile).use { unzipInStream ->
                         val unzipFile = File(externalCacheDir, "x.txt")
@@ -199,7 +199,7 @@ class MainActivity : ComponentActivity() {
                         }
                         unzipFile.createNewFile()
                         FileOutputStream(unzipFile).use { unzipOutStream ->
-                            NGenXXHelper.zUnZip(unzipInStream, unzipOutStream)
+                            val unzipSuccess = NGenXXHelper.zUnZip(NGenXX.Companion.ZFormat.GZip, unzipInStream, unzipOutStream)
                         }
                     }
                 }
