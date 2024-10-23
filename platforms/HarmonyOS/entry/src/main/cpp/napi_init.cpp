@@ -8,7 +8,7 @@
 static napi_value GetVersion(napi_env env, napi_callback_info info) {
     const char *c = ngenxx_get_version();
     napi_value v = chars2NapiValue(env, c);
-    free((void *)c);
+    free(static_cast<void *>(const_cast<char *>(c)));
     return v;
 }
 
@@ -20,8 +20,8 @@ static napi_value Init(napi_env env, napi_callback_info info) {
     bool b = ngenxx_init(root);
     napi_value v = bool2NapiValue(env, b);
 
-    free((void *)root);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(root)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -64,8 +64,8 @@ static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context,
     status = napi_call_function(env, vGlobal, ts_callback, argc, argv, NULL);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_call_function() failed");
 
-    free((void *)tSLogWorkData->logContent);
-    free((void *)tSLogWorkData);
+    free(static_cast<void *>(const_cast<char *>(tSLogWorkData->logContent)));
+    free(static_cast<void *>(tSLogWorkData));
 }
 
 static void OnLogWorkExecute(napi_env env, void *data) {
@@ -98,7 +98,7 @@ static void engineLogCallback(int level, const char *content) {
     tSLogWorkData->logLevel = level;
     tSLogWorkData->logContent = reinterpret_cast<char *>(malloc(strlen(content) + 1));
     strcpy(const_cast<char *>(tSLogWorkData->logContent), content);
-    free((void *)content);
+    free(static_cast<void *>(const_cast<char *>(content)));
 
     napi_value vWorkName = chars2NapiValue(sNapiEnv, "NAPI_LOG_CALLBACK_WORK");
 
@@ -127,7 +127,7 @@ static napi_value LogSetLevel(napi_env env, napi_callback_info info) {
 
     ngenxx_log_set_level(level);
 
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -152,7 +152,7 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info) {
         ngenxx_log_set_callback(engineLogCallback);
     }
 
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -163,9 +163,9 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
     const char *content = napiValue2chars(env, argv[1]);
 
     ngenxx_log_print(level, content);
-    free((void *)content);
+    free(static_cast<void *>(const_cast<char *>(content)));
 
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -195,22 +195,22 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
     const char *res = ngenxx_net_http_request(cUrl, cParams, iMethod, 
     header_v, header_c, 
     form_field_name_v, form_field_mime_v, form_field_data_v, form_field_count,
-    reinterpret_cast<void *>(cFILE), fileLength,
+    static_cast<void *>(cFILE), fileLength,
     lTimeout);
     napi_value nv = chars2NapiValue(env, res);
 
-    free((void *)res);
+    free(static_cast<void *>(const_cast<char *>(res)));
     for (int i = 0; i < header_c; i++) {
-        free((void *)header_v[i]);
+        free(static_cast<void *>(const_cast<char *>(header_v[i])));
     }
     for (int i = 0; i < form_field_count; i++) {
-        free((void *)form_field_name_v[i]);
-        free((void *)form_field_mime_v[i]);
-        free((void *)form_field_data_v[i]);
+        free(static_cast<void *>(const_cast<char *>(form_field_name_v[i])));
+        free(static_cast<void *>(const_cast<char *>(form_field_mime_v[i])));
+        free(static_cast<void *>(const_cast<char *>(form_field_data_v[i])));
     }
-    free((void *)cParams);
-    free((void *)cUrl);
-    free((void *)argv);
+    if (cParams) free(static_cast<void *>(const_cast<char *>(cParams)));
+    if (cUrl) free(static_cast<void *>(const_cast<char *>(cUrl)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -223,8 +223,8 @@ static napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info) {
     long res = reinterpret_cast<long>(ngenxx_store_sqlite_open(_id));
     napi_value nv = long2NapiValue(env, res);
 
-    free((void *)_id);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(_id)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -237,8 +237,8 @@ static napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info) {
     bool res = ngenxx_store_sqlite_execute(reinterpret_cast<void *>(conn), sql);
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)sql);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(sql)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -251,8 +251,8 @@ static napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info) {
     long res = reinterpret_cast<long>(ngenxx_store_sqlite_query_do(reinterpret_cast<void *>(conn), sql));
     napi_value nv = long2NapiValue(env, res);
 
-    free((void *)sql);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(sql)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -264,7 +264,7 @@ static napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
     bool res = ngenxx_store_sqlite_query_read_row(reinterpret_cast<void *>(query_result));
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -277,9 +277,9 @@ static napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_inf
     const char *res = ngenxx_store_sqlite_query_read_column_text(reinterpret_cast<void *>(query_result), column);
     napi_value nv = chars2NapiValue(env, res);
 
-    free((void *)res);
-    free((void *)column);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(res)));
+    free(static_cast<void *>(const_cast<char *>(column)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -292,8 +292,8 @@ static napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_
     long res = ngenxx_store_sqlite_query_read_column_integer(reinterpret_cast<void *>(query_result), column);
     napi_value nv = long2NapiValue(env, res);
 
-    free((void *)column);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(column)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -306,8 +306,8 @@ static napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_in
     double res = ngenxx_store_sqlite_query_read_column_float(reinterpret_cast<void *>(query_result), column);
     napi_value nv = double2NapiValue(env, res);
 
-    free((void *)column);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(column)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -317,7 +317,7 @@ static napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info) {
     long query_result = napiValue2long(env, argv[0]);
     ngenxx_store_sqlite_query_drop(reinterpret_cast<void *>(query_result));
 
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -327,7 +327,7 @@ static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info) {
     long conn = napiValue2long(env, argv[0]);
     ngenxx_store_sqlite_close(reinterpret_cast<void *>(conn));
 
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -340,8 +340,8 @@ static napi_value StoreKVOpen(napi_env env, napi_callback_info info) {
     long res = (long)ngenxx_store_kv_open(_id);
     napi_value nv = long2NapiValue(env, res);
 
-    free((void *)_id);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(_id)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -354,9 +354,9 @@ static napi_value StoreKVReadString(napi_env env, napi_callback_info info) {
     const char *res = ngenxx_store_kv_read_string(reinterpret_cast<void *>(conn), k);
     napi_value nv = chars2NapiValue(env, res);
 
-    free((void *)res);
-    free((void *)k);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(res)));
+    free(static_cast<void *>(const_cast<char *>(k)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -370,9 +370,9 @@ static napi_value StoreKVWriteString(napi_env env, napi_callback_info info) {
     bool res = ngenxx_store_kv_write_string(reinterpret_cast<void *>(conn), k, v);
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)v);
-    free((void *)k);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(v)));
+    free(static_cast<void *>(const_cast<char *>(k)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -385,8 +385,8 @@ static napi_value StoreKVReadInteger(napi_env env, napi_callback_info info) {
     long res = ngenxx_store_kv_read_integer(reinterpret_cast<void *>(conn), k);
     napi_value nv = long2NapiValue(env, res);
 
-    free((void *)k);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(k)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -400,8 +400,8 @@ static napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info) {
     bool res = ngenxx_store_kv_write_integer(reinterpret_cast<void *>(conn), k, v);
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)k);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(k)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -414,8 +414,8 @@ static napi_value StoreKVReadFloat(napi_env env, napi_callback_info info) {
     double res = ngenxx_store_kv_read_integer(reinterpret_cast<void *>(conn), k);
     napi_value nv = double2NapiValue(env, res);
 
-    free((void *)k);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(k)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -429,8 +429,8 @@ static napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info) {
     bool res = ngenxx_store_kv_write_integer(reinterpret_cast<void *>(conn), k, v);
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)k);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(k)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -443,8 +443,8 @@ static napi_value StoreKVContains(napi_env env, napi_callback_info info) {
     bool res = ngenxx_store_kv_contains(reinterpret_cast<void *>(conn), k);
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)k);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(k)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -454,7 +454,7 @@ static napi_value StoreKVClear(napi_env env, napi_callback_info info) {
     long conn = napiValue2long(env, argv[0]);
     ngenxx_store_kv_clear(reinterpret_cast<void *>(conn));
 
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -464,7 +464,7 @@ static napi_value StoreKVClose(napi_env env, napi_callback_info info) {
     long conn = napiValue2long(env, argv[0]);
     ngenxx_store_kv_close(reinterpret_cast<void *>(conn));
 
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -479,21 +479,21 @@ static napi_value DeviceType(napi_env env, napi_callback_info info) {
 static napi_value DeviceName(napi_env env, napi_callback_info info) {
     const char *cDN = ngenxx_device_name();
     napi_value v = chars2NapiValue(env, cDN);
-    free((void *)cDN);
+    free(static_cast<void *>(const_cast<char *>(cDN)));
     return v;
 }
 
 static napi_value DeviceManufacturer(napi_env env, napi_callback_info info) {
     const char *cDM = ngenxx_device_manufacturer();
     napi_value v = chars2NapiValue(env, cDM);
-    free((void *)cDM);
+    free(static_cast<void *>(const_cast<char *>(cDM)));
     return v;
 }
 
 static napi_value DeviceOsVersion(napi_env env, napi_callback_info info) {
     const char *cOV = ngenxx_device_name();
     napi_value v = chars2NapiValue(env, cOV);
-    free((void *)cOV);
+    free(static_cast<void *>(const_cast<char *>(cOV)));
     return v;
 }
 
@@ -513,8 +513,8 @@ static napi_value JsonDecoderInit(napi_env env, napi_callback_info info) {
     long res = reinterpret_cast<long>(ngenxx_json_decoder_init(cJson));
     napi_value v = long2NapiValue(env, res);
 
-    free((void *)cJson);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(cJson)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -527,7 +527,7 @@ static napi_value JsonDecoderIsArray(napi_env env, napi_callback_info info) {
     bool res = ngenxx_json_decoder_is_array(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = bool2NapiValue(env, res);
     
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -540,7 +540,7 @@ static napi_value JsonDecoderIsObject(napi_env env, napi_callback_info info) {
     bool res = ngenxx_json_decoder_is_object(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = bool2NapiValue(env, res);
     
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -554,8 +554,8 @@ static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info) {
     long res = (long)ngenxx_json_decoder_read_node(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node), cK);
     napi_value v = long2NapiValue(env, res);
 
-    free((void *)cK);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(cK)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -568,7 +568,7 @@ static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info) {
     long res = (long)ngenxx_json_decoder_read_child(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = long2NapiValue(env, res);
     
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -581,7 +581,7 @@ static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info) {
     long res = (long)ngenxx_json_decoder_read_next(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = long2NapiValue(env, res);
     
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -594,8 +594,8 @@ static napi_value JsonDecoderReadString(napi_env env, napi_callback_info info) {
     const char *cRes = ngenxx_json_decoder_read_string(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = chars2NapiValue(env, cRes);
     
-    free((void *)cRes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(cRes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -608,7 +608,7 @@ static napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info) {
     double res = ngenxx_json_decoder_read_number(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = double2NapiValue(env, res);
     
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -619,7 +619,7 @@ static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info) {
     
     ngenxx_json_decoder_release(reinterpret_cast<void *>(decoder));
     
-    free((void *)argv);
+    free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -634,8 +634,8 @@ static napi_value CodingHexBytes2str(napi_env env, napi_callback_info info) {
     auto cRes = ngenxx_coding_hex_bytes2str(inBytes, inLen);
     napi_value v = chars2NapiValue(env, cRes);
     
-    free((void *)cRes);
-    free((void *)inBytes);
+    free(static_cast<void *>(const_cast<char *>(cRes)));
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
     return v;
 }
 
@@ -648,8 +648,8 @@ static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info) {
     auto cRes = ngenxx_coding_hex_str2bytes(cStr, &outLen);
     napi_value v = byteArray2NapiValue(env, cRes, outLen);
     
-    free((void *)cRes);
-    free((void *)cStr);
+    free(static_cast<void *>(const_cast<byte *>(cRes)));
+    free(static_cast<void *>(const_cast<char *>(cStr)));
     return v;
 }
 
@@ -680,10 +680,10 @@ static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info) {
     const byte *outBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
-    free((void *)outBytes);
-    free((void *)keyBytes);
-    free((void *)inBytes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<byte *>(outBytes)));
+    free(static_cast<void *>(const_cast<byte *>(keyBytes)));
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -699,10 +699,10 @@ static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info) {
     const byte *outBytes = ngenxx_crypto_aes_decrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
-    free((void *)outBytes);
-    free((void *)keyBytes);
-    free((void *)inBytes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<byte *>(outBytes)));
+    free(static_cast<void *>(const_cast<byte *>(keyBytes)));
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -723,12 +723,12 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
     const byte *outBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
-    free((void *)outBytes);
-    if (aadBytes) free((void *)aadBytes);
-    free((void *)initVectorBytes);
-    free((void *)keyBytes);
-    free((void *)inBytes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<byte *>(outBytes)));
+    if (aadBytes) free(static_cast<void *>(const_cast<byte *>(aadBytes)));
+    free(static_cast<void *>(const_cast<byte *>(initVectorBytes)));
+    free(static_cast<void *>(const_cast<byte *>(keyBytes)));
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -749,12 +749,12 @@ static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
     const byte *outBytes = ngenxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
-    free((void *)outBytes);
-    if (aadBytes) free((void *)aadBytes);
-    free((void *)initVectorBytes);
-    free((void *)keyBytes);
-    free((void *)inBytes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<byte *>(outBytes)));
+    if (aadBytes) free(static_cast<void *>(const_cast<byte *>(aadBytes)));
+    free(static_cast<void *>(const_cast<byte *>(initVectorBytes)));
+    free(static_cast<void *>(const_cast<byte *>(keyBytes)));
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -768,9 +768,9 @@ static napi_value CryptoHashMd5(napi_env env, napi_callback_info info) {
     const byte *outBytes = ngenxx_crypto_hash_md5(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
-    free((void *)outBytes);
-    free((void *)inBytes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<byte *>(outBytes)));
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -784,9 +784,9 @@ static napi_value CryptoHashSha256(napi_env env, napi_callback_info info) {
     const byte *outBytes = ngenxx_crypto_hash_sha256(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
-    free((void *)outBytes);
-    free((void *)inBytes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<byte *>(outBytes)));
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -800,9 +800,9 @@ static napi_value CryptoBase64Encode(napi_env env, napi_callback_info info) {
     const byte *outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
-    free((void *)outBytes);
-    free((void *)inBytes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<byte *>(outBytes)));
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -816,9 +816,9 @@ static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info) {
     const byte *outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
-    free((void *)outBytes);
-    free((void *)inBytes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<byte *>(outBytes)));
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -832,8 +832,8 @@ static napi_value LLoadF(napi_env env, napi_callback_info info) {
     bool res = ngenxx_L_loadF(file);
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)file);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(file)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -845,8 +845,8 @@ static napi_value LLoadS(napi_env env, napi_callback_info info) {
     bool res = ngenxx_L_loadS(script);
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)script);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(script)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -859,10 +859,10 @@ static napi_value LCall(napi_env env, napi_callback_info info) {
     const char *res = ngenxx_L_call(func, params);
     napi_value nv = chars2NapiValue(env, res);
 
-    free((void *)res);
-    free((void *)params);
-    free((void *)func);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(res)));
+    free(static_cast<void *>(const_cast<char *>(params)));
+    free(static_cast<void *>(const_cast<char *>(func)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -876,8 +876,8 @@ static napi_value JLoadF(napi_env env, napi_callback_info info) {
     bool res = ngenxx_J_loadF(file);
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)file);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(file)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -890,9 +890,9 @@ static napi_value JLoadS(napi_env env, napi_callback_info info) {
     bool res = ngenxx_J_loadS(script, name);
     napi_value nv = bool2NapiValue(env, res);
 
-    free((void *)script);
-    free((void *)name);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(script)));
+    free(static_cast<void *>(const_cast<char *>(name)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -906,8 +906,8 @@ static napi_value JLoadB(napi_env env, napi_callback_info info) {
     bool b = ngenxx_J_loadB(inBytes, inLen);
     napi_value v = bool2NapiValue(env, b);
     
-    free((void *)inBytes);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<byte *>(inBytes)));
+    free(static_cast<void *>(argv));
     return v;
 }
 
@@ -920,89 +920,88 @@ static napi_value JCall(napi_env env, napi_callback_info info) {
     const char *res = ngenxx_J_call(func, params);
     napi_value nv = chars2NapiValue(env, res);
 
-    free((void *)res);
-    free((void *)params);
-    free((void *)func);
-    free((void *)argv);
+    free(static_cast<void *>(const_cast<char *>(res)));
+    free(static_cast<void *>(const_cast<char *>(params)));
+    free(static_cast<void *>(const_cast<char *>(func)));
+    free(static_cast<void *>(argv));
     return nv;
 }
 
 #pragma mark Register Module
 
+#define DECLARE_NAPI_FUNC(name, funcPtr) {name, nullptr, funcPtr, nullptr, nullptr, nullptr, napi_default, nullptr}
+
 EXTERN_C_START
 static napi_value RegisterFuncs(napi_env env, napi_value exports) {
     napi_property_descriptor desc[] = {
-        {"getVersion", nullptr, GetVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"init", nullptr, Init, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"release", nullptr, Release, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("getVersion", GetVersion),
+        DECLARE_NAPI_FUNC("init", Init),
+        DECLARE_NAPI_FUNC("release", Release),
 
-        {"logSetLevel", nullptr, LogSetLevel, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"logSetCallback", nullptr, LogSetCallback, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"logPrint", nullptr, LogPrint, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("logSetLevel", LogSetLevel),
+        DECLARE_NAPI_FUNC("logSetCallback", LogSetCallback),
+        DECLARE_NAPI_FUNC("logPrint", LogPrint),
 
-        {"netHttpRequest", nullptr, NetHttpRequest, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("netHttpRequest", NetHttpRequest),
 
-        {"lLoadF", nullptr, LLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"lLoadS", nullptr, LLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"lCall", nullptr, LCall, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("lLoadF", LLoadF),
+        DECLARE_NAPI_FUNC("lLoadS", LLoadS),
+        DECLARE_NAPI_FUNC("lCall", LCall),
 
-        {"jLoadF", nullptr, JLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jLoadS", nullptr, JLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jLoadB", nullptr, JLoadB, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jCall", nullptr, JCall, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("jLoadF", JLoadF),
+        DECLARE_NAPI_FUNC("jLoadS", JLoadS),
+        DECLARE_NAPI_FUNC("jLoadB", JLoadB),
+        DECLARE_NAPI_FUNC("jCall", JCall),
 
-        {"storeSQLiteOpen", nullptr, StoreSQLiteOpen, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteExecute", nullptr, StoreSQLiteExecute, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteQueryDo", nullptr, StoreSQLiteQueryDo, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteQueryReadRow", nullptr, StoreSQLiteQueryReadRow, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteQueryReadColumnText", nullptr, StoreSQLiteQueryReadColumnText, nullptr, nullptr, nullptr,
-         napi_default, nullptr},
-        {"storeSQLiteQueryReadColumnInteger", nullptr, StoreSQLiteQueryReadColumnInteger, nullptr, nullptr, nullptr,
-         napi_default, nullptr},
-        {"storeSQLiteQueryReadColumnFloat", nullptr, StoreSQLiteQueryReadColumnFloat, nullptr, nullptr, nullptr,
-         napi_default, nullptr},
-        {"storeSQLiteQueryDrop", nullptr, StoreSQLiteQueryDrop, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteClose", nullptr, StoreSQLiteClose, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("storeSQLiteOpen", StoreSQLiteOpen),
+        DECLARE_NAPI_FUNC("storeSQLiteExecute", StoreSQLiteExecute),
+        DECLARE_NAPI_FUNC("storeSQLiteQueryDo", StoreSQLiteQueryDo),
+        DECLARE_NAPI_FUNC("storeSQLiteQueryReadRow", StoreSQLiteQueryReadRow),
+        DECLARE_NAPI_FUNC("storeSQLiteQueryReadColumnText", StoreSQLiteQueryReadColumnText),
+        DECLARE_NAPI_FUNC("storeSQLiteQueryReadColumnInteger", StoreSQLiteQueryReadColumnInteger),
+        DECLARE_NAPI_FUNC("storeSQLiteQueryReadColumnFloat", StoreSQLiteQueryReadColumnFloat),
+        DECLARE_NAPI_FUNC("storeSQLiteQueryDrop", StoreSQLiteQueryDrop),
+        DECLARE_NAPI_FUNC("storeSQLiteClose", StoreSQLiteClose),
 
-        {"storeKVOpen", nullptr, StoreKVOpen, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVReadString", nullptr, StoreKVReadString, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVWriteString", nullptr, StoreKVWriteString, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVReadInteger", nullptr, StoreKVReadInteger, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVWriteInteger", nullptr, StoreKVWriteInteger, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVReadFloat", nullptr, StoreKVReadFloat, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVWriteFloat", nullptr, StoreKVWriteFloat, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVContains", nullptr, StoreKVContains, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVClear", nullptr, StoreKVClear, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVClose", nullptr, StoreKVClose, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("storeKVOpen", StoreKVOpen),
+        DECLARE_NAPI_FUNC("storeKVReadString", StoreKVReadString),
+        DECLARE_NAPI_FUNC("storeKVWriteString", StoreKVWriteString),
+        DECLARE_NAPI_FUNC("storeKVReadInteger", StoreKVReadInteger),
+        DECLARE_NAPI_FUNC("storeKVWriteInteger", StoreKVWriteInteger),
+        DECLARE_NAPI_FUNC("storeKVReadFloat", StoreKVReadFloat),
+        DECLARE_NAPI_FUNC("storeKVWriteFloat", StoreKVWriteFloat),
+        DECLARE_NAPI_FUNC("storeKVContains", StoreKVContains),
+        DECLARE_NAPI_FUNC("storeKVClear", StoreKVClear),
+        DECLARE_NAPI_FUNC("storeKVClose", StoreKVClose),
 
-        {"deviceType", nullptr, DeviceType, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"deviceName", nullptr, DeviceName, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"deviceManufacturer", nullptr, DeviceManufacturer, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"deviceOsVersion", nullptr, DeviceOsVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"deviceCpuArch", nullptr, DeviceCpuArch, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("deviceType", DeviceType),
+        DECLARE_NAPI_FUNC("deviceName", DeviceName),
+        DECLARE_NAPI_FUNC("deviceManufacturer", DeviceManufacturer),
+        DECLARE_NAPI_FUNC("deviceOsVersion", DeviceOsVersion),
+        DECLARE_NAPI_FUNC("deviceCpuArch", DeviceCpuArch),
 
-        {"jsonDecoderInit", nullptr, JsonDecoderInit, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderIsArray", nullptr, JsonDecoderIsArray, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderIsObject", nullptr, JsonDecoderIsObject, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadNode", nullptr, JsonDecoderReadNode, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadChild", nullptr, JsonDecoderReadChild, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadNext", nullptr, JsonDecoderReadNext, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadString", nullptr, JsonDecoderReadString, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadNumber", nullptr, JsonDecoderReadNumber, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderRelease", nullptr, JsonDecoderRelease, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("jsonDecoderInit", JsonDecoderInit),
+        DECLARE_NAPI_FUNC("jsonDecoderIsArray", JsonDecoderIsArray),
+        DECLARE_NAPI_FUNC("jsonDecoderIsObject", JsonDecoderIsObject),
+        DECLARE_NAPI_FUNC("jsonDecoderReadNode", JsonDecoderReadNode),
+        DECLARE_NAPI_FUNC("jsonDecoderReadChild", JsonDecoderReadChild),
+        DECLARE_NAPI_FUNC("jsonDecoderReadNext", JsonDecoderReadNext),
+        DECLARE_NAPI_FUNC("jsonDecoderReadString", JsonDecoderReadString),
+        DECLARE_NAPI_FUNC("jsonDecoderReadNumber", JsonDecoderReadNumber),
+        DECLARE_NAPI_FUNC("jsonDecoderRelease", JsonDecoderRelease),
 
-        {"codingHexBytes2str", nullptr, CodingHexBytes2str, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"codingHexStr2Bytes", nullptr, CodingHexStr2Bytes, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("codingHexBytes2str", CodingHexBytes2str),
+        DECLARE_NAPI_FUNC("codingHexStr2Bytes", CodingHexStr2Bytes),
 
-        {"cryptoRand", nullptr, CryptoRand, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoAesEncrypt", nullptr, CryptoAesEncrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoAesDecrypt", nullptr, CryptoAesDecrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoAesGcmEncrypt", nullptr, CryptoAesGcmEncrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoAesGcmDecrypt", nullptr, CryptoAesGcmDecrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoHashMd5", nullptr, CryptoHashMd5, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoHashSha256", nullptr, CryptoHashSha256, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoBase64Encode", nullptr, CryptoBase64Encode, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoBase64Decode", nullptr, CryptoBase64Decode, nullptr, nullptr, nullptr, napi_default, nullptr},
+        DECLARE_NAPI_FUNC("cryptoRand", CryptoRand),
+        DECLARE_NAPI_FUNC("cryptoAesEncrypt", CryptoAesEncrypt),
+        DECLARE_NAPI_FUNC("cryptoAesDecrypt", CryptoAesDecrypt),
+        DECLARE_NAPI_FUNC("cryptoAesGcmEncrypt", CryptoAesGcmEncrypt),
+        DECLARE_NAPI_FUNC("cryptoAesGcmDecrypt", CryptoAesGcmDecrypt),
+        DECLARE_NAPI_FUNC("cryptoHashMd5", CryptoHashMd5),
+        DECLARE_NAPI_FUNC("cryptoHashSha256", CryptoHashSha256),
+        DECLARE_NAPI_FUNC("cryptoBase64Encode", CryptoBase64Encode),
+        DECLARE_NAPI_FUNC("cryptoBase64Decode", CryptoBase64Decode),
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
@@ -1015,7 +1014,7 @@ static napi_module ngenxxModule = {
     .nm_filename = nullptr,
     .nm_register_func = RegisterFuncs,
     .nm_modname = "ngenxx",
-    .nm_priv = ((void *)0),
+    .nm_priv = (reinterpret_cast<void *>(0)),
     .reserved = {0},
 };
 
