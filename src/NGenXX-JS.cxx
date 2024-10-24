@@ -73,7 +73,9 @@ const std::string ngenxx_jaguar_ask_platform(const char *msg)
     std::string s;
     if (msg == NULL || _NGenXX_J_msg_callback == nullptr)
         return s;
-    return _NGenXX_J_msg_callback(msg);
+    char *cMsg = reinterpret_cast<char *>(malloc(strlen(msg) + 1));
+    strcpy(cMsg, msg);
+    return _NGenXX_J_msg_callback(cMsg);
 }
 
 DEF_JS_FUNC_STRING(ngenxx_ask_platformJ, ngenxx_jaguar_ask_platform)

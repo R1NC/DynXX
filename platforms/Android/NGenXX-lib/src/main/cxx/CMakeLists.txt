@@ -4,7 +4,7 @@ project("NGenXXJNI")
 
 add_library(${CMAKE_PROJECT_NAME} SHARED NGenXXJNI.cxx)
 
-set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.Android/output/Release/${ANDROID_ABI})
+set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.Android/output/libs/${ANDROID_ABI})
 
 #Find libcrypto
 set(libcryptoPath ${libDir}/libcrypto.a)

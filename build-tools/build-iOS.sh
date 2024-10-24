@@ -59,7 +59,7 @@ then
     COMMAND="mv"
     COMMAND_ARG=""
 fi
-LIB_OUTPUT_DIR=output/${LIB_TYPE}
+LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
 ${COMMAND} ${LIB_DIR}libNGenXX.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/NGenXX.a
 ${COMMAND} curl.output/lib/${LIB_DIR}libcurl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/curl.a

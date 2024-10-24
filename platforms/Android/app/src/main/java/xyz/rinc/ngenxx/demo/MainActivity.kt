@@ -67,6 +67,10 @@ class MainActivity : ComponentActivity() {
             Log.d("NGenXX", "$level | $content")
         }
 
+        NGenXX.jSetMsgCallback { msg ->
+            "Android->$msg@${System.currentTimeMillis()}"
+         }
+
         NGenXX.logPrint(1, "deviceType:${NGenXX.deviceType()}")
         NGenXX.logPrint(1, "deviceName:${NGenXX.deviceName()}")
         NGenXX.logPrint(1, "deviceManufacturer:${NGenXX.deviceManufacturer()}")

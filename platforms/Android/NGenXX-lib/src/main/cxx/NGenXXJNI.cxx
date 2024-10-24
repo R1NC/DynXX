@@ -172,7 +172,7 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
     {
         free(static_cast<void *>(const_cast<char *>(cFilePath)));
     }
-    env->ReleaseStringUTFChars(params, cParams);
+    if (cParams) env->ReleaseStringUTFChars(params, cParams);
     env->ReleaseStringUTFChars(url, cUrl);
 
     return jstr;
@@ -206,7 +206,7 @@ jstring NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
     const char *cRes = ngenxx_L_call(cFunc, cParams);
     jstring jstr = env->NewStringUTF(cRes ?: "");
     free(static_cast<void *>(const_cast<char *>(cRes)));
-    env->ReleaseStringUTFChars(params, cParams);
+    if (cParams) env->ReleaseStringUTFChars(params, cParams);
     env->ReleaseStringUTFChars(func, cFunc);
     return jstr;
 }
@@ -253,7 +253,7 @@ jstring NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
     const char *cRes = ngenxx_J_call(cFunc, cParams);
     jstring jstr = env->NewStringUTF(cRes ?: "");
     free(static_cast<void *>(const_cast<char *>(cRes)));
-    env->ReleaseStringUTFChars(params, cParams);
+    if (cParams) env->ReleaseStringUTFChars(params, cParams);
     env->ReleaseStringUTFChars(func, cFunc);
     return jstr;
 }

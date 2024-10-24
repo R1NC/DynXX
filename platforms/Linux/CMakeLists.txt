@@ -12,7 +12,7 @@ add_executable(${PROJECT_NAME}
 )
 
 get_filename_component(CURRENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
-set(LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../build.Linux/output/Release")
+set(LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../build.Linux/output/libs")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     ${LIB_PATH}/NGenXX.a

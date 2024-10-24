@@ -186,3 +186,8 @@ function jTestZip(): void {
         NGenXXLogPrint(NGenXXLogLevel.Debug, 'ZIP failed')
     }
 }
+
+function jTestCallPlatform(): void {
+    let res = NGenXXAskPlatform("tsCallPlatformParam")
+    NGenXXLogPrint(NGenXXLogLevel.Debug, `Return value from Platform: ${res}`)
+}

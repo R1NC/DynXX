@@ -41,7 +41,7 @@ build4macos MAC_UNIVERSAL $LIB_TYPE arm64
 #build4macos MAC_UNIVERSAL $LIB_TYPE x86_64
 
 #Copy libs
-LIB_OUTPUT_DIR=output/${LIB_TYPE}
+LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
 mv libNGenXX.a ${LIB_OUTPUT_DIR}/NGenXX.a
 mv curl.output/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a

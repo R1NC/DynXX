@@ -14,7 +14,7 @@ function build4harmony {
 
   ROOT_DIR=$(pwd)
   ABI_BUILD_DIR=${ROOT_DIR}/${ABI}
-  OUTPUT_DIR=${ROOT_DIR}/output/${BUILD_TYPE}/${ABI}
+  OUTPUT_DIR=${ROOT_DIR}/output/libs/${ABI}
   mkdir -p ${ABI_BUILD_DIR}
   mkdir -p ${OUTPUT_DIR}
 

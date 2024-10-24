@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 
 #include <string>
+#include <vector>
 
 #include "../../external/quickjs/quickjs-libc.h"
 #include "../NGenXX-Types.hxx"
@@ -16,6 +17,7 @@ namespace NGenXX
         JSRuntime *runtime;
         JSContext *context;
         JSValue global;
+        std::vector<JSValue> cFuncs;
 
     public:
         /**

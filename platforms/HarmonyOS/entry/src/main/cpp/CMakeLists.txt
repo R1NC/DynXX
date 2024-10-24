@@ -15,7 +15,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
     napi_init.cpp
 )
 
-set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.HarmonyOS/output/Release/arm64-v8a)
+set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.HarmonyOS/output/libs/arm64-v8a)
 
 #Find crypto
 set(cryptoPath ${libDir}/libcrypto.a)

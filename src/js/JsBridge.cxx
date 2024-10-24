@@ -83,6 +83,9 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
             res = false;
         }
     }
+
+    this->cFuncs.push_back(jFunc);
+
     return res;
 }
 
@@ -149,6 +152,8 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 
 NGenXX::JsBridge::~JsBridge()
 {
+    for (auto &f : this->cFuncs)
+        JS_FreeValue(this->context, f);
     JS_FreeValue(this->context, this->global);
     JS_FreeContext(this->context);
     JS_FreeRuntime(this->runtime);

@@ -21,7 +21,7 @@ cmake ../build-tools \
 cmake --build . --config ${LIB_TYPE}
 
 #Copy libs
-LIB_OUTPUT_DIR=output/${LIB_TYPE}
+LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
 mv libNGenXX.a ${LIB_OUTPUT_DIR}/NGenXX.a
 mv curl.output/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a

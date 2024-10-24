@@ -860,7 +860,7 @@ static napi_value LCall(napi_env env, napi_callback_info info) {
     napi_value nv = chars2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(res)));
-    free(static_cast<void *>(const_cast<char *>(params)));
+    if (params) free(static_cast<void *>(const_cast<char *>(params)));
     free(static_cast<void *>(const_cast<char *>(func)));
     free(static_cast<void *>(argv));
     return nv;
@@ -921,7 +921,7 @@ static napi_value JCall(napi_env env, napi_callback_info info) {
     napi_value nv = chars2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(res)));
-    free(static_cast<void *>(const_cast<char *>(params)));
+    if (params) free(static_cast<void *>(const_cast<char *>(params)));
     free(static_cast<void *>(const_cast<char *>(func)));
     free(static_cast<void *>(argv));
     return nv;
