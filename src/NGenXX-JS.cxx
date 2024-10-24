@@ -5,8 +5,10 @@
 #include "js/JsBridge.hxx"
 #include "NGenXX-S.hxx"
 
-static NGenXX::JsBridge *_ngenxx_js;
-#define BIND_JS_FUNC(f) _ngenxx_js->bindFunc(#f, f);
+#include <memory>
+
+std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
+#define BIND_JS_FUNC(f) if (_ngenxx_js != nullptr) _ngenxx_js->bindFunc(#f, f);
 
 #define DEF_JS_FUNC_VOID(fJ, fS)                                                           \
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
@@ -128,7 +130,7 @@ DEF_JS_FUNC_STRING(ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
 EXPORT_AUTO
 bool ngenxx_J_loadF(const char *file)
 {
-    if (_ngenxx_js == NULL || file == NULL)
+    if (_ngenxx_js == nullptr || file == NULL)
         return false;
     return _ngenxx_js->loadFile(std::string(file));
 }
@@ -136,7 +138,7 @@ bool ngenxx_J_loadF(const char *file)
 EXPORT_AUTO
 bool ngenxx_J_loadS(const char *script, const char *name)
 {
-    if (_ngenxx_js == NULL || script == NULL || name == NULL)
+    if (_ngenxx_js == nullptr || script == NULL || name == NULL)
         return false;
     return _ngenxx_js->loadScript(std::string(script), std::string(name));
 }
@@ -144,7 +146,7 @@ bool ngenxx_J_loadS(const char *script, const char *name)
 EXPORT_AUTO
 bool ngenxx_J_loadB(const byte *bytes, const size len)
 {
-    if (_ngenxx_js == NULL || bytes == NULL || len <= 0)
+    if (_ngenxx_js == nullptr || bytes == NULL || len <= 0)
         return false;
     return _ngenxx_js->loadBinary({bytes, len});
 }
@@ -152,7 +154,7 @@ bool ngenxx_J_loadB(const byte *bytes, const size len)
 EXPORT_AUTO
 const char *ngenxx_J_call(const char *func, const char *params)
 {
-    if (_ngenxx_js == NULL || func == NULL)
+    if (_ngenxx_js == nullptr || func == NULL)
         return NULL;
     return str2charp(_ngenxx_js->callFunc(std::string(func), std::string(params ?: "")));
 }
@@ -225,16 +227,15 @@ void registerJsModule()
 
 void _ngenxx_js_init(void)
 {
-    if (_ngenxx_js != NULL)
+    if (_ngenxx_js != nullptr)
         return;
-    _ngenxx_js = new NGenXX::JsBridge();
+    _ngenxx_js = std::make_shared<NGenXX::JsBridge>();
     registerJsModule();
 }
 
 void _ngenxx_js_release(void)
 {
-    if (_ngenxx_js == NULL)
+    if (_ngenxx_js == nullptr)
         return;
-    delete _ngenxx_js;
-    _ngenxx_js = NULL;
+    _ngenxx_js.reset();
 }

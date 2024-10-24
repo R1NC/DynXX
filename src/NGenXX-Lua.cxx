@@ -10,8 +10,10 @@ extern "C"
 #include "NGenXX-inner.hxx"
 #include "NGenXX-S.hxx"
 
-static NGenXX::LuaBridge *_ngenxx_lua;
-#define BIND_LUA_FUNC(f) _ngenxx_lua->bindFunc(std::string(#f), f);
+#include <memory>
+
+std::shared_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
+#define BIND_LUA_FUNC(f) if (_ngenxx_lua != nullptr) _ngenxx_lua->bindFunc(std::string(#f), f);
 
 #define DEF_LUA_FUNC_VOID(fL, fS)                  \
     int fL(lua_State *L)                           \
@@ -124,7 +126,7 @@ DEF_LUA_FUNC_STRING(ngenxx_z_bytes_unzipL, ngenxx_z_bytes_unzipS)
 EXPORT
 bool ngenxx_L_loadF(const char *file)
 {
-    if (_ngenxx_lua == NULL || file == NULL)
+    if (_ngenxx_lua == nullptr || file == NULL)
         return false;
     return _ngenxx_lua->loadFile(std::string(file)) == LUA_OK;
 }
@@ -133,7 +135,7 @@ bool ngenxx_L_loadF(const char *file)
 EXPORT
 bool ngenxx_L_loadS(const char *script)
 {
-    if (_ngenxx_lua == NULL || script == NULL)
+    if (_ngenxx_lua == nullptr || script == NULL)
         return false;
     return _ngenxx_lua->loadScript(std::string(script)) == LUA_OK;
 }
@@ -141,7 +143,7 @@ bool ngenxx_L_loadS(const char *script)
 EXPORT
 const char *ngenxx_L_call(const char *func, const char *params)
 {
-    if (_ngenxx_lua == NULL || func == NULL)
+    if (_ngenxx_lua == nullptr || func == NULL)
         return NULL;
     return str2charp(_ngenxx_lua->callFunc(std::string(func), std::string(params ? : "")));
 }
@@ -212,16 +214,15 @@ void _ngenxx_export_funcs_for_lua()
 
 void _ngenxx_lua_init(void)
 {
-    if (_ngenxx_lua != NULL)
+    if (_ngenxx_lua != nullptr)
         return;
-    _ngenxx_lua = new NGenXX::LuaBridge();
+    _ngenxx_lua = std::make_shared<NGenXX::LuaBridge>();
     _ngenxx_export_funcs_for_lua();
 }
 
 void _ngenxx_lua_release(void)
 {
-    if (_ngenxx_lua == NULL)
+    if (_ngenxx_lua == nullptr)
         return;
-    delete _ngenxx_lua;
-    _ngenxx_lua = NULL;
+    _ngenxx_lua.reset();
 }

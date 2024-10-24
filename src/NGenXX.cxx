@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "../include/NGenXX.h"
 #include "log/Log.hxx"
@@ -26,10 +27,10 @@
 
 #define VERSION "0.0.1"
 
-static NGenXX::Net::HttpClient *_ngenxx_http_client;
-static NGenXX::Store::SQLite *_ngenxx_sqlite;
-static NGenXX::Store::KV *_ngenxx_kv;
-static const std::string *_ngenxx_root;
+std::shared_ptr<NGenXX::Net::HttpClient> _ngenxx_http_client = nullptr;
+std::shared_ptr<NGenXX::Store::SQLite> _ngenxx_sqlite = nullptr;
+std::shared_ptr<NGenXX::Store::KV> _ngenxx_kv = nullptr;
+std::shared_ptr<const std::string> _ngenxx_root = nullptr;
 
 EXPORT_AUTO
 const char *ngenxx_get_version(void)
@@ -41,12 +42,12 @@ const char *ngenxx_get_version(void)
 EXPORT
 bool ngenxx_init(const char *root)
 {
-    if (_ngenxx_root != NULL || root == NULL)
+    if (_ngenxx_root != nullptr || root == NULL)
         return false;
-    _ngenxx_root = new std::string(root);
-    _ngenxx_sqlite = new NGenXX::Store::SQLite();
-    _ngenxx_kv = new NGenXX::Store::KV(*_ngenxx_root);
-    _ngenxx_http_client = new NGenXX::Net::HttpClient();
+    _ngenxx_root = std::make_shared<std::string>(root);
+    _ngenxx_sqlite = std::make_shared<NGenXX::Store::SQLite>();
+    _ngenxx_kv = std::make_shared<NGenXX::Store::KV>(*_ngenxx_root);
+    _ngenxx_http_client = std::make_shared<NGenXX::Net::HttpClient>();
 #ifdef USE_LUA
     _ngenxx_lua_init();
 #endif
@@ -59,7 +60,7 @@ bool ngenxx_init(const char *root)
 EXPORT_AUTO
 const char *ngenxx_root_path()
 {
-    if (!_ngenxx_root)
+    if (_ngenxx_root == nullptr)
         return NULL;
     return str2charp(*_ngenxx_root);
 }
@@ -67,16 +68,12 @@ const char *ngenxx_root_path()
 EXPORT
 void ngenxx_release()
 {
-    if (_ngenxx_root == NULL)
+    if (_ngenxx_root == nullptr)
         return;
-    delete _ngenxx_root;
-    _ngenxx_root = NULL;
-    delete _ngenxx_http_client;
-    _ngenxx_http_client = NULL;
-    delete _ngenxx_sqlite;
-    _ngenxx_sqlite = NULL;
-    delete _ngenxx_kv;
-    _ngenxx_kv = NULL;
+    _ngenxx_root.reset();
+    _ngenxx_http_client.reset();
+    _ngenxx_sqlite.reset();
+    _ngenxx_kv.reset();
 #ifdef USE_LUA
     _ngenxx_lua_release();
 #endif
@@ -151,7 +148,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
                                     void *const cFILE, const size file_size,
                                     const size timeout)
 {
-    if (_ngenxx_http_client == NULL || url == NULL)
+    if (_ngenxx_http_client == nullptr || url == NULL)
         return NULL;
     const std::string sUrl(url);
     const std::string sParams(params ?: "");
@@ -184,7 +181,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
 EXPORT_AUTO
 void *const ngenxx_store_sqlite_open(const char *_id)
 {
-    if (_ngenxx_sqlite == NULL || _ngenxx_root == NULL || _id == NULL)
+    if (_ngenxx_sqlite == nullptr || _ngenxx_root == nullptr || _id == NULL)
         return NULL;
     std::string dbFile = *_ngenxx_root + "/" + std::string(_id) + ".db";
     return _ngenxx_sqlite->connect(dbFile);
@@ -270,7 +267,7 @@ void ngenxx_store_sqlite_close(void *const conn)
 EXPORT_AUTO
 void *const ngenxx_store_kv_open(const char *_id)
 {
-    if (_ngenxx_kv == NULL || _id == NULL)
+    if (_ngenxx_kv == nullptr || _id == NULL)
         return NULL;
     return _ngenxx_kv->open(std::string(_id));
 }
