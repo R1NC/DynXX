@@ -41,6 +41,12 @@ extern "C"
      */
     const char *ngenxx_J_call(const char *func, const char *params);
 
+    /**
+     * @brief Set JS msg callback
+     * @param callback JS msg callback
+     */
+    void ngenxx_J_set_msg_callback(const char *(*callback)(const char *msg));
+
 #ifdef __cplusplus
 }
 #endif

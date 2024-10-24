@@ -18,7 +18,7 @@ class NGenXX {
             None(4)
         }
         external fun logSetLevel(level: Int)
-        external fun logSetCallback(callback: ((level: Int, content: String) -> Unit)?)
+        external fun logSetCallback(callback: ((level: Int, content: String) -> Unit))
         external fun logPrint(level: Int, content: String)
 
         enum class HttpMethod(val value: Int) {
@@ -43,6 +43,7 @@ class NGenXX {
         external fun jLoadS(script: String, name: String): Boolean
         external fun jLoadB(bytes: ByteArray): Boolean
         external fun jCall(func: String, params: String?): String?
+        external fun jSetMsgCallback(callback: ((msg: String) -> String?))
 
         external fun storeSQLiteOpen(id: String): Long
         external fun storeSQLiteExecute(conn: Long, sql: String): Boolean

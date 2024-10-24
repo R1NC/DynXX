@@ -1,10 +1,12 @@
-declare function _buffer2Bytes(buffer: ArrayBuffer): number[]
-
-declare function _bytes2Buffer(bytes: number[]): ArrayBuffer
+/// Base
 
 declare function NGenXXGetVersion(): string
 
 declare function NGenXXRootPath(): string
+
+declare function NGenXXAskPlatform(msg: string): string
+
+/// Log
 
 const enum NGenXXLogLevel {
     Info = 0,
@@ -15,6 +17,8 @@ const enum NGenXXLogLevel {
 }
 
 declare function NGenXXLogPrint(level: NGenXXLogLevel, content: string): void
+
+/// DeviceInfo
 
 const enum NGenXXDeviceType {
     Unknown = 0,
@@ -49,6 +53,8 @@ declare function NGenXXDeviceOSVersion(): string
 
 declare function NGenXXDeviceCPUArch(): NGenXXDeviceCpuArch
 
+/// Net.Http
+
 const enum NGenXXHttpMethod {
     Get = 0,
     Post,
@@ -65,6 +71,8 @@ declare function NGenXXNetHttpRequest(
     formFieldDataArray: string[],
     timeout: number
 ): string
+
+/// Store.SQLite
 
 declare function NGenXXStoreSQLiteOpen(_id: string): number
 
@@ -83,6 +91,8 @@ declare function NGenXXStoreSQLiteQueryReadColumnFloat(query_result: number, col
 declare function NGenXXStoreSQLiteQueryDrop(query_result: number): void
 
 declare function NGenXXStoreSQLiteClose(conn: number): void
+
+/// Store.KV
 
 declare function NGenXXStoreKVOpen(_id: string): number
 
@@ -106,6 +116,8 @@ declare function NGenXXStoreKVClear(conn: number): void
 
 declare function NGenXXStoreKVClose(conn: number): void
 
+/// Coding
+
 declare function NGenXXStr2Bytes(str: string): number[]
 
 declare function NGenXXBytes2Str(bytes: number[]): string
@@ -113,6 +125,8 @@ declare function NGenXXBytes2Str(bytes: number[]): string
 declare function NGenXXCodingHexBytes2Str(bytes: number[]): string
 
 declare function NGenXXCodingHexStr2Bytes(hexStr: string): number[]
+
+/// Crypto
 
 declare function NGenXXCryptoRand(len: number): number[]
 
@@ -132,6 +146,8 @@ declare function NGenXXCryptoBase64Encode(inBytes: number[]): number[]
 
 declare function NGenXXCryptoBase64Decode(inBytes: number[]): number[]
 
+/// Zip
+
 const enum NGenXXZZipMode {
     Default = -1,
     PreferSpeed = 1,
@@ -145,26 +161,6 @@ const enum NGenXXZFormat {
 }
 
 declare const NGenXXZBufferSize: number
-
-declare function NGenXXZZipInit(mode: NGenXXZZipMode, bufferSize: number, format: NGenXXZFormat): number
-
-declare function NGenXXZZipInput(zip: number, bytes: number[], finish: boolean): number
-
-declare function NGenXXZZipProcessDo(zip: number): number[]
-
-declare function NGenXXZZipProcessFinished(zip: number): boolean
-
-declare function NGenXXZZipRelease(zip: number): void
-
-declare function NGenXXZUnZipInit(bufferSize: number, format: NGenXXZFormat): number
-
-declare function NGenXXZUnZipInput(unzip: number, bytes: number[], finish: boolean): number
-
-declare function NGenXXZUnZipProcessDo(unzip: number): number[]
-
-declare function NGenXXZUnZipProcessFinished(unzip: number): boolean
-
-declare function NGenXXZUnZipRelease(unzip: number): void
 
 declare function NGenXXZZipBytes(mode: NGenXXZZipMode, bufferSize: number, format: NGenXXZFormat, bytes: number[]): number[]
 

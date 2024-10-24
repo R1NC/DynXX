@@ -73,6 +73,11 @@ function NGenXXLogPrint(level, content) {
     ngenxx_log_printJ(inJson);
 }
 
+function NGenXXAskPlatform(msg) {
+    msg = msg || '';
+    return ngenxx_ask_platformJ(msg);
+}
+
 const NGenXXDeviceType = Object.freeze({
     Unknown: 0,
     Android: 1,
@@ -455,7 +460,7 @@ const NGenXXZFormat = Object.freeze({
     Raw: 2
 });
 
-function NGenXXZZipInit(mode, bufferSize, format) {
+function _NGenXXZZipInit(mode, bufferSize, format) {
     let inJson = JSON.stringify({
         "mode": mode,
         "bufferSize": bufferSize,
@@ -464,7 +469,7 @@ function NGenXXZZipInit(mode, bufferSize, format) {
     return ngenxx_z_zip_initJ(inJson);
 }
 
-function NGenXXZZipInput(zip, bytes, finish) {
+function _NGenXXZZipInput(zip, bytes, finish) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
         "zip": zip,
@@ -475,7 +480,7 @@ function NGenXXZZipInput(zip, bytes, finish) {
     return ngenxx_z_zip_inputJ(inJson);
 }
 
-function NGenXXZZipProcessDo(zip) {
+function _NGenXXZZipProcessDo(zip) {
     let inJson = JSON.stringify({
         "zip": zip
     });
@@ -483,21 +488,21 @@ function NGenXXZZipProcessDo(zip) {
     return _json2Array(outJson);
 }
 
-function NGenXXZZipProcessFinished(zip) {
+function _NGenXXZZipProcessFinished(zip) {
     let inJson = JSON.stringify({
         "zip": zip
     });
     return ngenxx_z_zip_process_finishedJ(inJson);
 }
 
-function NGenXXZZipRelease(zip) {
+function _NGenXXZZipRelease(zip) {
     let inJson = JSON.stringify({
         "zip": zip
     });
     ngenxx_z_zip_releaseJ(inJson);
 }
 
-function NGenXXZUnZipInit(bufferSize, format) {
+function _NGenXXZUnZipInit(bufferSize, format) {
     let inJson = JSON.stringify({
         "bufferSize": bufferSize,
         "format": format
@@ -505,7 +510,7 @@ function NGenXXZUnZipInit(bufferSize, format) {
     return ngenxx_z_unzip_initJ(inJson);
 }
 
-function NGenXXZUnZipInput(unzip, bytes, finish) {
+function _NGenXXZUnZipInput(unzip, bytes, finish) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
         "unzip": unzip,
@@ -516,7 +521,7 @@ function NGenXXZUnZipInput(unzip, bytes, finish) {
     return ngenxx_z_unzip_inputJ(inJson);
 }
 
-function NGenXXZUnZipProcessDo(unzip) {
+function _NGenXXZUnZipProcessDo(unzip) {
     let inJson = JSON.stringify({
         "unzip": unzip
     });
@@ -524,14 +529,14 @@ function NGenXXZUnZipProcessDo(unzip) {
     return _json2Array(outJson);
 }
 
-function NGenXXZUnZipProcessFinished(unzip) {
+function _NGenXXZUnZipProcessFinished(unzip) {
     let inJson = JSON.stringify({
         "unzip": unzip
     });
     return ngenxx_z_unzip_process_finishedJ(inJson);
 }
 
-function NGenXXZUnZipRelease(unzip) {
+function _NGenXXZUnZipRelease(unzip) {
     let inJson = JSON.stringify({
         "unzip": unzip
     });
@@ -564,7 +569,7 @@ function NGenXXZUnZipBytes(bufferSize, bytes, format) {
 
 let NGenXXZBufferSize = 16 * 1024;
 
-function NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,
+function _NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,
     z, inputFunc, processDoFunc, processFinishedFunc) {
     var inputFinished = false;
     var processFinished = false;
@@ -598,34 +603,34 @@ function NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,
 }
 
 function NGenXXZZipStream(mode, bufferSize, format, readFunc, writeFunc, flushFunc) {
-    let zip = NGenXXZZipInit(mode, bufferSize, format);
+    let zip = _NGenXXZZipInit(mode, bufferSize, format);
 
-    let res = NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc, zip,
+    let res = _NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc, zip,
         (z, buffer, inputFinished) => {
-            return NGenXXZZipInput(z, buffer, inputFinished);
+            return _NGenXXZZipInput(z, buffer, inputFinished);
         }, (z) => {
-            return NGenXXZZipProcessDo(z);
+            return _NGenXXZZipProcessDo(z);
         }, (z) => {
-            return NGenXXZZipProcessFinished(z);
+            return _NGenXXZZipProcessFinished(z);
         });
 
-    NGenXXZZipRelease(zip);
+    _NGenXXZZipRelease(zip);
     return res;
 }
 
 function NGenXXZUnZipStream(bufferSize, format, readFunc, writeFunc, flushFunc) {
-    let unzip = NGenXXZUnZipInit(bufferSize, format);
+    let unzip = _NGenXXZUnZipInit(bufferSize, format);
 
-    let res = NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc, unzip,
+    let res = _NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc, unzip,
         (z, buffer, inputFinished) => {
-            return NGenXXZUnZipInput(z, buffer, inputFinished);
+            return _NGenXXZUnZipInput(z, buffer, inputFinished);
         }, (z) => {
-            return NGenXXZUnZipProcessDo(z);
+            return _NGenXXZUnZipProcessDo(z);
         }, (z) => {
-            return NGenXXZUnZipProcessFinished(z);
+            return _NGenXXZUnZipProcessFinished(z);
         });
 
-    NGenXXZUnZipRelease(unzip);
+    _NGenXXZUnZipRelease(unzip);
     return res;
 }
 

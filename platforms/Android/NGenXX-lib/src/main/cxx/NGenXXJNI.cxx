@@ -4,6 +4,38 @@
 #include "../../../../../../build.Android/output/include/NGenXX.h"
 #include "JNIUtil.hxx"
 
+static JNIEnv *sEnv;
+static jobject sLogCallback;
+static jmethodID sLogCallbackMethodId;
+static jobject sJsMsgCallback;
+static jmethodID sJsMsgCallbackMethodId;
+
+#pragma mark Engine Callback
+
+static void ngenxx_jni_log_callback(int level, const char *content)
+{
+    if (sEnv && sLogCallback && sLogCallbackMethodId && content)
+    {
+        jstring jContent = sEnv->NewStringUTF(content);
+        free(static_cast<void *>(const_cast<char *>(content)));
+        sEnv->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
+    }
+}
+
+static const char *ngenxx_jni_js_msg_callback(const char *msg)
+{
+    if (sEnv && sJsMsgCallback && sJsMsgCallbackMethodId && msg)
+    {
+        jstring jMsg = sEnv->NewStringUTF(msg);
+        free(static_cast<void *>(const_cast<char *>(msg)));
+        jobject jRes = sEnv->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
+        return sEnv->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
+    }
+    return nullptr;
+}
+
+#pragma mark Engine base API
+
 jstring NGenXX_JNI_getVersion(JNIEnv *env, jobject thiz)
 {
     const char *cV = ngenxx_get_version();
@@ -28,20 +60,6 @@ void NGenXX_JNI_release(JNIEnv *env, jobject thiz)
 
 #pragma mark Log
 
-static JNIEnv *sEnv;
-static jobject sLogCallback;
-static jmethodID sLogCallbackMethodId;
-
-static void ngenxx_jni_log_callback(int level, const char *content)
-{
-    if (sEnv && sLogCallback && sLogCallbackMethodId && content)
-    {
-        jstring jContent = sEnv->NewStringUTF(content);
-        free(static_cast<void *>(const_cast<char *>(content)));
-        sEnv->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
-    }
-}
-
 void NGenXX_JNI_logSetLevel(JNIEnv *env, jobject thiz,
                             jint level)
 {
@@ -54,20 +72,12 @@ void NGenXX_JNI_logSetCallback(JNIEnv *env, jobject thiz,
     if (callback)
     {
         ngenxx_log_set_callback(ngenxx_jni_log_callback);
-        sEnv = env;
         sLogCallback = env->NewWeakGlobalRef(callback);
         jclass jcallback_class = env->GetObjectClass(callback);
         if (jcallback_class)
         {
             sLogCallbackMethodId = env->GetMethodID(jcallback_class, "invoke", "(ILjava/lang/String;)V");
         }
-    }
-    else
-    {
-        ngenxx_log_set_callback(nullptr);
-        sEnv = nullptr;
-        env->DeleteWeakGlobalRef(sLogCallback);
-        sLogCallback = nullptr;
     }
 }
 
@@ -247,15 +257,29 @@ jstring NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
     return jstr;
 }
 
+void NGenXX_JNI_jSetMsgCallback(JNIEnv *env, jobject thiz,
+                                              jobject callback) {
+    if (callback)
+    {
+        ngenxx_J_set_msg_callback(ngenxx_jni_js_msg_callback);
+        sJsMsgCallback = env->NewWeakGlobalRef(callback);
+        jclass jcallback_class = env->GetObjectClass(callback);
+        if (jcallback_class)
+        {
+            sJsMsgCallbackMethodId = env->GetMethodID(jcallback_class, "invoke", "(Ljava/lang/String;)Ljava/lang/String;");
+        }
+    }
+}
+
 #pragma mark Store.SQLite
 
 jlong NGenXX_JNI_storeSQLiteOpen(JNIEnv *env, jobject thiz,
                                  jstring id)
 {
     const char *cId = env->GetStringUTFChars(id, nullptr);
-    auto res = reinterpret_cast<jlong>(ngenxx_store_sqlite_open(cId));
+    auto res = ngenxx_store_sqlite_open(cId);
     env->ReleaseStringUTFChars(id, cId);
-    return res;
+    return reinterpret_cast<jlong>(res);
 }
 
 jboolean NGenXX_JNI_storeSQLiteExecute(JNIEnv *env, jobject thiz,
@@ -273,9 +297,9 @@ jlong NGenXX_JNI_storeSQLiteQueryDo(JNIEnv *env, jobject thiz,
                                     jstring sql)
 {
     const char *cSql = env->GetStringUTFChars(sql, nullptr);
-    auto res = reinterpret_cast<jlong>(ngenxx_store_sqlite_query_do(reinterpret_cast<void *>(conn), cSql));
+    auto res = ngenxx_store_sqlite_query_do(reinterpret_cast<void *>(conn), cSql);
     env->ReleaseStringUTFChars(sql, cSql);
-    return res;
+    return reinterpret_cast<jlong>(res);
 }
 
 jboolean NGenXX_JNI_storeSQLiteQueryReadRow(JNIEnv *env, jobject thiz,
@@ -335,9 +359,9 @@ jlong NGenXX_JNI_storeKVOpen(JNIEnv *env, jobject thiz,
                              jstring id)
 {
     const char *cId = env->GetStringUTFChars(id, nullptr);
-    auto res = reinterpret_cast<jlong>(ngenxx_store_kv_open(cId));
+    auto res = ngenxx_store_kv_open(cId);
     env->ReleaseStringUTFChars(id, cId);
-    return res;
+    return reinterpret_cast<jlong>(res);
 }
 
 jstring NGenXX_JNI_storeKVReadString(JNIEnv *env, jobject thiz,
@@ -669,9 +693,9 @@ jlong NGenXX_JNI_jsonDecoderInit(JNIEnv *env, jobject thiz,
                                  jstring json)
 {
     const char *cJson = env->GetStringUTFChars(json, nullptr);
-    auto res = reinterpret_cast<jlong>(ngenxx_json_decoder_init(cJson));
+    auto res = ngenxx_json_decoder_init(cJson);
     env->ReleaseStringUTFChars(json, cJson);
-    return res;
+    return reinterpret_cast<jlong>(res);
 }
 
 jboolean NGenXX_JNI_jsonDecoderIsArray(JNIEnv *env, jobject thiz,
@@ -694,9 +718,9 @@ jlong NGenXX_JNI_jsonDecoderReadNode(JNIEnv *env, jobject thiz,
                                      jstring k)
 {
     const char *cK = env->GetStringUTFChars(k, nullptr);
-    auto res = reinterpret_cast<jlong>(ngenxx_json_decoder_read_node(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node), cK));
+    auto res = ngenxx_json_decoder_read_node(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node), cK);
     env->ReleaseStringUTFChars(k, cK);
-    return res;
+    return reinterpret_cast<jlong>(res);
 }
 
 jstring NGenXX_JNI_jsonDecoderReadString(JNIEnv *env, jobject thiz,
@@ -872,6 +896,7 @@ static const JNINativeMethod JCFuncList[] = {
     DECLARE_JNI_FUNC("jLoadS", "(Ljava/lang/String;Ljava/lang/String;)Z", NGenXX_JNI_jLoadS),
     DECLARE_JNI_FUNC("jLoadB", "([B)Z", NGenXX_JNI_jLoadB),
     DECLARE_JNI_FUNC("jCall", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", NGenXX_JNI_jCall),
+    DECLARE_JNI_FUNC("jSetMsgCallback", "(Lkotlin/jvm/functions/Function1;)V", NGenXX_JNI_jSetMsgCallback),
 
     DECLARE_JNI_FUNC("storeSQLiteOpen", "(Ljava/lang/String;)J", NGenXX_JNI_storeSQLiteOpen),
     DECLARE_JNI_FUNC("storeSQLiteExecute", "(JLjava/lang/String;)Z", NGenXX_JNI_storeSQLiteExecute),
@@ -940,21 +965,34 @@ static const JNINativeMethod JCFuncList[] = {
 int JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     int v = JNI_VERSION_1_6;
-    JNIEnv *env = nullptr;
-    int ret = vm->GetEnv(reinterpret_cast<void **>(&env), v);
+    int ret = vm->GetEnv(reinterpret_cast<void **>(&sEnv), v);
     if (ret != JNI_OK)
     {
         return JNI_ERR;
     }
-    jclass jclazz = env->FindClass(JClassName);
+    jclass jclazz = sEnv->FindClass(JClassName);
     if (jclazz == nullptr)
     {
         return JNI_ERR;
     }
-    ret = env->RegisterNatives(jclazz, JCFuncList, sizeof(JCFuncList) / sizeof(JNINativeMethod));
+    ret = sEnv->RegisterNatives(jclazz, JCFuncList, sizeof(JCFuncList) / sizeof(JNINativeMethod));
     if (ret != JNI_OK)
     {
         return JNI_ERR;
     }
     return v;
+}
+
+void JNI_OnUnload(JavaVM *vm, void *reserved)
+{
+    ngenxx_log_set_callback(nullptr);
+    ngenxx_J_set_msg_callback(nullptr);
+    if (sEnv != nullptr)
+    {
+        sEnv->DeleteWeakGlobalRef(sLogCallback);
+        sEnv->DeleteWeakGlobalRef(sJsMsgCallback);
+        sEnv = nullptr;
+    }
+    sLogCallback = nullptr;
+    sJsMsgCallback = nullptr;
 }

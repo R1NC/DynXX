@@ -13,7 +13,10 @@ extern "C"
 #include <memory>
 
 std::shared_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
-#define BIND_LUA_FUNC(f) if (_ngenxx_lua != nullptr) _ngenxx_lua->bindFunc(std::string(#f), f);
+
+#define BIND_LUA_FUNC(f)        \
+    if (_ngenxx_lua != nullptr) \
+        _ngenxx_lua->bindFunc(std::string(#f), f);
 
 #define DEF_LUA_FUNC_VOID(fL, fS)                  \
     int fL(lua_State *L)                           \
@@ -32,13 +35,13 @@ std::shared_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
         return 1;                                  \
     }
 
-#define DEF_LUA_FUNC_INTEGER(fL, fS)               \
-    int fL(lua_State *L)                           \
-    {                                              \
-        const char *json = luaL_checkstring(L, 1); \
-        auto res = static_cast<long long>(fS(json));            \
-        lua_pushinteger(L, res);                   \
-        return 1;                                  \
+#define DEF_LUA_FUNC_INTEGER(fL, fS)                 \
+    int fL(lua_State *L)                             \
+    {                                                \
+        const char *json = luaL_checkstring(L, 1);   \
+        auto res = static_cast<long long>(fS(json)); \
+        lua_pushinteger(L, res);                     \
+        return 1;                                    \
     }
 
 #define DEF_LUA_FUNC_BOOL(fL, fS)                  \
@@ -145,7 +148,7 @@ const char *ngenxx_L_call(const char *func, const char *params)
 {
     if (_ngenxx_lua == nullptr || func == NULL)
         return NULL;
-    return str2charp(_ngenxx_lua->callFunc(std::string(func), std::string(params ? : "")));
+    return str2charp(_ngenxx_lua->callFunc(std::string(func), std::string(params ?: "")));
 }
 
 void _ngenxx_export_funcs_for_lua()

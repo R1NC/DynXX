@@ -21,21 +21,21 @@ enum NGenXXLogLevel {
  * @warning Not accessible in JS/Lua!
  * @param level Log level
  */
-void ngenxx_log_set_level(int level);
+void ngenxx_log_set_level(const int level);
 
 /**
  * @brief Set log callback
  * @warning Not accessible in JS/Lua!
  * @param callback log callback
  */
-void ngenxx_log_set_callback(void (*callback)(int level, const char *content));
+void ngenxx_log_set_callback(void (*callback)(const int level, const char *content));
 
 /**
  * @brief Print log
  * @param level Log level
  * @param content Log content
  */
-void ngenxx_log_print(int level, const char *content);
+void ngenxx_log_print(const int level, const char *content);
 
 #ifdef  __cplusplus
 }

@@ -8,7 +8,11 @@
 #include <memory>
 
 std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
-#define BIND_JS_FUNC(f) if (_ngenxx_js != nullptr) _ngenxx_js->bindFunc(#f, f);
+static const char *(*_NGenXX_J_msg_callback)(const char *);
+
+#define BIND_JS_FUNC(f)        \
+    if (_ngenxx_js != nullptr) \
+        _ngenxx_js->bindFunc(#f, f);
 
 #define DEF_JS_FUNC_VOID(fJ, fS)                                                           \
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
@@ -32,7 +36,7 @@ std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = static_cast<bool>(fS(json));                                                         \
+        auto res = static_cast<bool>(fS(json));                                            \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewBool(ctx, res);                                                       \
     }
@@ -41,7 +45,7 @@ std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = static_cast<int32_t>(fS(json));                                                      \
+        auto res = static_cast<int32_t>(fS(json));                                         \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewInt32(ctx, res);                                                      \
     }
@@ -50,7 +54,7 @@ std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = static_cast<int64_t>(fS(json));                                                      \
+        auto res = static_cast<int64_t>(fS(json));                                         \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewInt64(ctx, res);                                                      \
     }
@@ -59,10 +63,20 @@ std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = static_cast<double>(fS(json));                                                       \
+        auto res = static_cast<double>(fS(json));                                          \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewFloat64(ctx, res);                                                    \
     }
+
+const std::string ngenxx_jaguar_ask_platform(const char *msg)
+{
+    std::string s;
+    if (msg == NULL || _NGenXX_J_msg_callback == NULL)
+        return s;
+    return _NGenXX_J_msg_callback(msg);
+}
+
+DEF_JS_FUNC_STRING(ngenxx_ask_platformJ, ngenxx_jaguar_ask_platform)
 
 DEF_JS_FUNC_STRING(ngenxx_get_versionJ, ngenxx_get_versionS)
 DEF_JS_FUNC_STRING(ngenxx_root_pathJ, ngenxx_root_pathS)
@@ -159,10 +173,18 @@ const char *ngenxx_J_call(const char *func, const char *params)
     return str2charp(_ngenxx_js->callFunc(std::string(func), std::string(params ?: "")));
 }
 
+EXPORT_AUTO
+void ngenxx_jaguar_set_msg_callback(const char *(*callback)(const char *msg))
+{
+    _NGenXX_J_msg_callback = callback;
+}
+
 #pragma mark JS Module Register
 
 void registerJsModule()
 {
+    BIND_JS_FUNC(ngenxx_ask_platformJ);
+
     BIND_JS_FUNC(ngenxx_get_versionJ);
     BIND_JS_FUNC(ngenxx_root_pathJ);
 

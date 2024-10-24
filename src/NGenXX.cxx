@@ -117,19 +117,19 @@ int ngenxx_device_cpu_arch()
 #pragma mark Log
 
 EXPORT_AUTO
-void ngenxx_log_set_level(int level)
+void ngenxx_log_set_level(const int level)
 {
     NGenXX::Log::setLevel(level);
 }
 
 EXPORT_AUTO
-void ngenxx_log_set_callback(void (*callback)(int level, const char *content))
+void ngenxx_log_set_callback(void (*callback)(const int level, const char *content))
 {
     NGenXX::Log::setCallback(callback);
 }
 
 EXPORT_AUTO
-void ngenxx_log_print(int level, const char *content)
+void ngenxx_log_print(const int level, const char *content)
 {
     if (!content)
         return;
