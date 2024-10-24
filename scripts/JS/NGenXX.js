@@ -56,14 +56,6 @@ function NGenXXRootPath() {
     return ngenxx_root_pathJ();
 }
 
-const NGenXXLogLevel = Object.freeze({
-    Info: 0,
-    Debug: 1,
-    Warn: 2,
-    Error: 3,
-    None: 4
-});
-
 function NGenXXLogPrint(level, content) {
     content = content || '';
     let inJson = JSON.stringify({
@@ -77,29 +69,6 @@ function NGenXXAskPlatform(msg) {
     msg = msg || '';
     return ngenxx_ask_platformJ(msg);
 }
-
-const NGenXXDeviceType = Object.freeze({
-    Unknown: 0,
-    Android: 1,
-    ApplePhone: 2,
-    ApplePad: 3,
-    AppleMac: 4,
-    AppleWatch: 5,
-    AppleTV: 6,
-    HarmonyOS: 7,
-    Windows: 8,
-    Linux: 9,
-    Web: 10
-});
-
-const NGenXXDeviceCpuArch = Object.freeze({
-    Unknown: 0,
-    X86: 1,
-    X86_64: 2,
-    IA64: 3,
-    ARM: 4,
-    ARM_64: 5
-});
 
 function NGenXXDevicePlatform() {
     return ngenxx_device_typeJ();
@@ -120,12 +89,6 @@ function NGenXXDeviceOSVersion() {
 function NGenXXDeviceCPUArch() {
     return ngenxx_device_cpu_archJ();
 }
-
-const NGenXXHttpMethod = Object.freeze({
-    Get: 0,
-    Post: 1,
-    Put: 2
-});
 
 function NGenXXNetHttpRequest(url, paramMap, method, headerMap, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
     paramStr = _Map2UrlStr(paramMap);
@@ -448,18 +411,6 @@ function NGenXXCryptoBase64Decode(inBytes) {
     return _json2Array(outJson);
 }
 
-const NGenXXZZipMode = Object.freeze({
-    Default: -1,
-    PreferSpeed: 1,
-    PreferSize: 9
-});
-
-const NGenXXZFormat = Object.freeze({
-    ZLib: 0,
-    GZip: 1,
-    Raw: 2
-});
-
 function _NGenXXZZipInit(mode, bufferSize, format) {
     let inJson = JSON.stringify({
         "mode": mode,
@@ -566,8 +517,6 @@ function NGenXXZUnZipBytes(bufferSize, bytes, format) {
     let outJson = ngenxx_z_bytes_unzipJ(inJson);
     return _json2Array(outJson);
 }
-
-let NGenXXZBufferSize = 16 * 1024;
 
 function _NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,
     z, inputFunc, processDoFunc, processFinishedFunc) {

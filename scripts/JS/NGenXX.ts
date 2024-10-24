@@ -160,7 +160,7 @@ const enum NGenXXZFormat {
     Raw
 }
 
-declare const NGenXXZBufferSize: number
+const NGenXXZBufferSize: number = 16 * 1024
 
 declare function NGenXXZZipBytes(mode: NGenXXZZipMode, bufferSize: number, format: NGenXXZFormat, bytes: number[]): number[]
 
