@@ -74,6 +74,7 @@ void ngenxx_release()
     _ngenxx_http_client.reset();
     _ngenxx_sqlite.reset();
     _ngenxx_kv.reset();
+    ngenxx_log_set_callback(nullptr);
 #ifdef USE_LUA
     _ngenxx_lua_release();
 #endif

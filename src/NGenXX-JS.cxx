@@ -8,7 +8,7 @@
 #include <memory>
 
 std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
-static const char *(*_NGenXX_J_msg_callback)(const char *);
+static const char *(*_NGenXX_J_msg_callback)(const char *) = nullptr;
 
 #define BIND_JS_FUNC(f)        \
     if (_ngenxx_js != nullptr) \
@@ -71,7 +71,7 @@ static const char *(*_NGenXX_J_msg_callback)(const char *);
 const std::string ngenxx_jaguar_ask_platform(const char *msg)
 {
     std::string s;
-    if (msg == NULL || _NGenXX_J_msg_callback == NULL)
+    if (msg == NULL || _NGenXX_J_msg_callback == nullptr)
         return s;
     return _NGenXX_J_msg_callback(msg);
 }
@@ -174,7 +174,7 @@ const char *ngenxx_J_call(const char *func, const char *params)
 }
 
 EXPORT_AUTO
-void ngenxx_jaguar_set_msg_callback(const char *(*callback)(const char *msg))
+void ngenxx_J_set_msg_callback(const char *(*callback)(const char *msg))
 {
     _NGenXX_J_msg_callback = callback;
 }
@@ -260,4 +260,5 @@ void _ngenxx_js_release(void)
     if (_ngenxx_js == nullptr)
         return;
     _ngenxx_js.reset();
+    _NGenXX_J_msg_callback = nullptr;
 }

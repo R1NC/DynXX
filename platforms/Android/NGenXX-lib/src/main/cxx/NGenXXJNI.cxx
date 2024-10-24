@@ -5,6 +5,7 @@
 #include "JNIUtil.hxx"
 
 static JNIEnv *sEnv;
+static jclass sJClass;
 static jobject sLogCallback;
 static jmethodID sLogCallbackMethodId;
 static jobject sJsMsgCallback;
@@ -970,12 +971,12 @@ int JNI_OnLoad(JavaVM *vm, void *reserved)
     {
         return JNI_ERR;
     }
-    jclass jclazz = sEnv->FindClass(JClassName);
-    if (jclazz == nullptr)
+    sJClass = sEnv->FindClass(JClassName);
+    if (sJClass == nullptr)
     {
         return JNI_ERR;
     }
-    ret = sEnv->RegisterNatives(jclazz, JCFuncList, sizeof(JCFuncList) / sizeof(JNINativeMethod));
+    ret = sEnv->RegisterNatives(sJClass, JCFuncList, sizeof(JCFuncList) / sizeof(JNINativeMethod));
     if (ret != JNI_OK)
     {
         return JNI_ERR;
@@ -989,6 +990,7 @@ void JNI_OnUnload(JavaVM *vm, void *reserved)
     ngenxx_J_set_msg_callback(nullptr);
     if (sEnv != nullptr)
     {
+        sEnv->UnregisterNatives(sJClass);
         sEnv->DeleteWeakGlobalRef(sLogCallback);
         sEnv->DeleteWeakGlobalRef(sJsMsgCallback);
         sEnv = nullptr;

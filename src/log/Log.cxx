@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-static void (*_NGenXX_Log_callback)(const int, const char *);
+static void (*_NGenXX_Log_callback)(const int, const char *) = nullptr;
 
 static int _NGenXX_Log_level;
 
