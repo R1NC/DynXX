@@ -411,6 +411,8 @@ function NGenXXCryptoBase64Decode(inBytes) {
     return _json2Array(outJson);
 }
 
+let NGenXXZBufferSize = 16 * 1024
+
 function _NGenXXZZipInit(mode, bufferSize, format) {
     let inJson = JSON.stringify({
         "mode": mode,
