@@ -38,7 +38,7 @@ add_library(liblua STATIC IMPORTED)
 set_property(TARGET liblua PROPERTY IMPORTED_LOCATION ${luaPath})
 
 #Find quickjs
-set(quickjsPath ${libDir}/libquickjs.a)
+set(quickjsPath ${libDir}/libqjs.a)
 add_library(libquickjs STATIC IMPORTED)
 set_property(TARGET libquickjs PROPERTY IMPORTED_LOCATION ${quickjsPath})
 

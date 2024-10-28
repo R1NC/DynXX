@@ -162,12 +162,12 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     std::ifstream zipIS(NSString2CharP(sqlPath), std::ios::in);
     NSString *zipPath = [self.root stringByAppendingPathComponent:@"xxx.zip"];
     std::ofstream zipOS(NSString2CharP(zipPath), std::ios::out);
-    BOOL zipRes = ngenxx_z_cxxstream_zip(NGenXXZipCompressModeDefault, kZBufferSize, (void *)&zipIS, (void *)&zipOS);
+    BOOL zipRes = ngenxx_z_cxxstream_zip(NGenXXZipCompressModeDefault, kZBufferSize, NGenXXZFormatGZip, (void *)&zipIS, (void *)&zipOS);
     if (zipRes) {
         NSString *txtPath = [self.root stringByAppendingPathComponent:@"xxx.txt"];
         std::ifstream unzipIS(NSString2CharP(zipPath), std::ios::in);
         std::ofstream unzipOS(NSString2CharP(txtPath), std::ios::out);
-        BOOL unzipRes = ngenxx_z_cxxstream_unzip(kZBufferSize, (void *)&unzipIS, (void *)&unzipOS);
+        BOOL unzipRes = ngenxx_z_cxxstream_unzip(kZBufferSize, NGenXXZFormatGZip, (void *)&unzipIS, (void *)&unzipOS);
         if (unzipRes);
     }
 }

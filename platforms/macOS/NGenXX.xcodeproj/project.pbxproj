@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */; };
+		400DFE902CCFB26700D3FCD9 /* qjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 400DFE8F2CCFB26700D3FCD9 /* qjs.a */; };
 		401522A62C9581760010B594 /* NGenXXApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 401522A52C9581760010B594 /* NGenXXApple.mm */; };
 		40348F5C2C783CA70039639C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40348F5B2C783CA70039639C /* AppDelegate.m */; };
 		40348F612C783CA80039639C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40348F602C783CA80039639C /* Assets.xcassets */; };
@@ -26,7 +27,6 @@
 		40DC9C292CCA6DE500F264DB /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C202CCA6DE400F264DB /* lua.a */; };
 		40DC9C2A2CCA6DE500F264DB /* curl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C212CCA6DE400F264DB /* curl.a */; };
 		40DC9C2B2CCA6DE500F264DB /* mmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C222CCA6DE400F264DB /* mmkv.a */; };
-		40DC9C2C2CCA6DE500F264DB /* quickjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C232CCA6DE400F264DB /* quickjs.a */; };
 		40DC9C2D2CCA6DE500F264DB /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C242CCA6DE400F264DB /* mmkvcore.a */; };
 		40DC9C2E2CCA6DE500F264DB /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C252CCA6DE500F264DB /* cjson.a */; };
 		40DC9C2F2CCA6DE500F264DB /* crypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C262CCA6DE500F264DB /* crypto.a */; };
@@ -36,6 +36,7 @@
 		256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libapple_nghttp2.tbd; path = usr/lib/libapple_nghttp2.tbd; sourceTree = SDKROOT; };
 		25A1BBB92CAEC7C400B60E5B /* ssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ssl.a; path = ../../build.macOS/output/Release/ssl.a; sourceTree = "<group>"; };
 		25A1BBBA2CAEC7C400B60E5B /* crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = crypto.a; path = ../../build.macOS/output/Release/crypto.a; sourceTree = "<group>"; };
+		400DFE8F2CCFB26700D3FCD9 /* qjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = qjs.a; path = ../../build.macOS/output/libs/qjs.a; sourceTree = "<group>"; };
 		4015229A2C9581540010B594 /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.macOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
 		4015229B2C9581540010B594 /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../build.macOS/output/Release/mmkv.a; sourceTree = "<group>"; };
 		401522A42C9581760010B594 /* NGenXXApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NGenXXApple.h; path = ../../Apple/NGenXXApple.h; sourceTree = "<group>"; };
@@ -85,12 +86,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				400DFE902CCFB26700D3FCD9 /* qjs.a in Frameworks */,
 				40DC9C272CCA6DE500F264DB /* ssl.a in Frameworks */,
 				40DC9C282CCA6DE500F264DB /* NGenXX.a in Frameworks */,
 				40DC9C292CCA6DE500F264DB /* lua.a in Frameworks */,
 				40DC9C2A2CCA6DE500F264DB /* curl.a in Frameworks */,
 				40DC9C2B2CCA6DE500F264DB /* mmkv.a in Frameworks */,
-				40DC9C2C2CCA6DE500F264DB /* quickjs.a in Frameworks */,
 				40DC9C2D2CCA6DE500F264DB /* mmkvcore.a in Frameworks */,
 				40DC9C2E2CCA6DE500F264DB /* cjson.a in Frameworks */,
 				40DC9C2F2CCA6DE500F264DB /* crypto.a in Frameworks */,
@@ -145,6 +146,7 @@
 		40348F712C783F070039639C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				400DFE8F2CCFB26700D3FCD9 /* qjs.a */,
 				403F9F472CB8D94000F4ECE6 /* quickjs.a */,
 				25A1BBBA2CAEC7C400B60E5B /* crypto.a */,
 				40DC9C252CCA6DE500F264DB /* cjson.a */,

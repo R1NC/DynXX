@@ -1,20 +1,3 @@
-// function jTestStdOs(): void {
-//     std.puts(`Test JS std & os at ${os.now()}...\n`)
-
-//     let url: string = 'https://rinc.xyz'
-//     os.sleep(3333)
-//     std.puts(`Send HTTP req from JS async at ${os.now()}...\n`)
-    
-//     std.evalScript(`jTestNetHttpReq("${url}")`, {async: true})
-//     .then((res: string) => {
-//         std.puts(res)
-//     }, (err: string) => {
-//         std.puts(err)
-//     })
-    
-//     std.gc()
-// }
-
 function jTestDeviceInfo(): void {
     let platform: NGenXXDeviceType = NGenXXDevicePlatform()
     NGenXXLogPrint(NGenXXLogLevel.Debug, `Platform: ${platform}`)
@@ -31,18 +14,70 @@ function jTestDeviceInfo(): void {
 function jTestNetHttpReq(url: string): string {
     let method: number = NGenXXHttpMethod.Get
     let timeout: number = 55555
-    
+
     let paramMap: Map<string, number | string> = new Map()
     paramMap.set('p0', 123)
     paramMap.set('p1', 'abc')
-    
+
     let headerMap: Map<string, string> = new Map()
     headerMap.set('User-Agent', 'NGenXX')
     headerMap.set('Cache-Control', 'no-cache')
-    
+
     let rsp: string = NGenXXNetHttpRequest(url, paramMap, method, headerMap, null, null, null, timeout)
     console.log(rsp)
     return rsp
+}
+
+function testMicrotask(): void {
+    queueMicrotask(() => {
+        let rsp = jTestNetHttpReq('https://rinc.xyz')
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `rsp: ${rsp}`)
+    })
+}
+
+function jTestNetHttpReqPro(url: string): Promise<string> {
+    if (url === undefined || url.trim() === "") {
+        return Promise.reject(new Error('invalid url'))
+    } else {
+        return Promise.resolve(jTestNetHttpReq(url))
+    }
+}
+
+function testPromise(): void {
+    jTestNetHttpReqPro('https://rinc.xyz')
+        .then(res => {
+            NGenXXLogPrint(NGenXXLogLevel.Debug, `Response: ${res}`)
+            return jTestNetHttpReqPro('https://abc.xyz')
+        }, err => {
+            NGenXXLogPrint(NGenXXLogLevel.Error, `${err}`)
+        }).then(res => {
+            NGenXXLogPrint(NGenXXLogLevel.Debug, `Response: ${res}`)
+            return jTestNetHttpReqPro('https://cn.bing.com')
+        }, err => {
+            NGenXXLogPrint(NGenXXLogLevel.Error, `${err}`)
+        }).then(res => {
+            NGenXXLogPrint(NGenXXLogLevel.Debug, `Response: ${res}`)
+        }, err => {
+            NGenXXLogPrint(NGenXXLogLevel.Error, `${err}`)
+        })
+}
+
+function testPromiseAll(): void {
+    const pro0 = jTestNetHttpReqPro('https://rinc.xyz')
+    const pro1 = jTestNetHttpReqPro('https://abc.xyz')
+    const pro2 = jTestNetHttpReqPro('https://cn.bing.com')
+    Promise.all([pro0, pro1, pro2]).then((values) => {
+        console.log(values);
+    })
+}
+
+async function testAwait(): Promise<void> {
+    try {
+        const res = await jTestNetHttpReqPro('https://rinc.xyz')
+        NGenXXLogPrint(NGenXXLogLevel.Debug, `Response: ${res}`)
+    } catch (err) {
+        NGenXXLogPrint(NGenXXLogLevel.Error, `${err}`)
+    }
 }
 
 function jTestStoreKV(): void {

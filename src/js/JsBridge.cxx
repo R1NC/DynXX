@@ -5,10 +5,10 @@
 #include <sstream>
 #include <streambuf>
 
-constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'std';\n"
-                                         "import * as os from 'os';\n"
-                                         "globalThis.std = std;\n"
-                                         "globalThis.os = os;\n";
+constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
+                                        "import * as os from 'qjs:os';\n"
+                                        "globalThis.std = std;\n"
+                                        "globalThis.os = os;\n";
 
 static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
 {
@@ -45,8 +45,8 @@ NGenXX::JsBridge::JsBridge()
 
     js_std_add_helpers(this->context, 0, NULL);
     js_std_init_handlers(this->runtime);
-    js_init_module_std(this->context, "std");
-    js_init_module_os(this->context, "os");
+    js_init_module_std(this->context, "qjs:std");
+    js_init_module_os(this->context, "qjs:os");
     JSValue std_val = JS_Eval(this->context, IMPORT_STD_OS_JS, strlen(IMPORT_STD_OS_JS), "import-std-os.js", JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
     if (!JS_IsException(std_val))
     {
@@ -115,7 +115,7 @@ bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &
 bool NGenXX::JsBridge::loadBinary(NGenXX::Bytes bytes)
 {
     auto [data, len] = bytes;
-    js_std_eval_binary(this->context, data, len, JS_EVAL_BINARY_FLAG_RAW);
+    js_std_eval_binary(this->context, data, len, 0);
     return true;
 }
 
@@ -137,6 +137,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
+            js_std_loop(this->context); // Wating for async tasks
             s = std::string(JS_ToCString(this->context, jRes));
         }
         JS_FreeValue(this->context, jRes);

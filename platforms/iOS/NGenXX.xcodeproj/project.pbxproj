@@ -22,12 +22,12 @@
 		40596BA02C75BECB00AC552D /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 40596B9F2C75BECB00AC552D /* libz.1.tbd */; };
 		407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B3A2C897F48008A138C /* libsqlite3.tbd */; };
 		407D2B9E2C929A7C008A138C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 407D2B9D2C929A7C008A138C /* ViewController.m */; };
+		40A94B362CCFB31C0059C652 /* qjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40A94B352CCFB31C0059C652 /* qjs.a */; };
 		40DC9C0B2CCA6CAB00F264DB /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 40DC9C0A2CCA6CAB00F264DB /* biz.js */; };
 		40DC9C152CCA6CD300F264DB /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C0C2CCA6CD300F264DB /* NGenXX.a */; };
 		40DC9C162CCA6CD300F264DB /* curl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C0D2CCA6CD300F264DB /* curl.a */; };
 		40DC9C172CCA6CD300F264DB /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C0E2CCA6CD300F264DB /* mmkvcore.a */; };
 		40DC9C182CCA6CD300F264DB /* mmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C0F2CCA6CD300F264DB /* mmkv.a */; };
-		40DC9C192CCA6CD300F264DB /* quickjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C102CCA6CD300F264DB /* quickjs.a */; };
 		40DC9C1A2CCA6CD300F264DB /* ssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C112CCA6CD300F264DB /* ssl.a */; };
 		40DC9C1B2CCA6CD300F264DB /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C122CCA6CD300F264DB /* lua.a */; };
 		40DC9C1C2CCA6CD300F264DB /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C132CCA6CD300F264DB /* cjson.a */; };
@@ -92,6 +92,7 @@
 		407D2BA92C929C2E008A138C /* NGenXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXX.a; path = ../../../build.iOS/output/Release/NGenXX.a; sourceTree = "<group>"; };
 		407D2BAA2C929C2E008A138C /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../../build.iOS/output/Release/lua.a; sourceTree = "<group>"; };
 		407D2BAB2C929C2E008A138C /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../../build.iOS/output/Release/curl.a; sourceTree = "<group>"; };
+		40A94B352CCFB31C0059C652 /* qjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = qjs.a; path = ../../build.iOS/output/libs/qjs.a; sourceTree = "<group>"; };
 		40DC9C0A2CCA6CAB00F264DB /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../../scripts/JS/dist/biz.js; sourceTree = "<group>"; };
 		40DC9C0C2CCA6CD300F264DB /* NGenXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXX.a; path = ../../build.iOS/output/libs/NGenXX.a; sourceTree = "<group>"; };
 		40DC9C0D2CCA6CD300F264DB /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../build.iOS/output/libs/curl.a; sourceTree = "<group>"; };
@@ -109,11 +110,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40A94B362CCFB31C0059C652 /* qjs.a in Frameworks */,
 				40DC9C152CCA6CD300F264DB /* NGenXX.a in Frameworks */,
 				40DC9C162CCA6CD300F264DB /* curl.a in Frameworks */,
 				40DC9C172CCA6CD300F264DB /* mmkvcore.a in Frameworks */,
 				40DC9C182CCA6CD300F264DB /* mmkv.a in Frameworks */,
-				40DC9C192CCA6CD300F264DB /* quickjs.a in Frameworks */,
 				40DC9C1A2CCA6CD300F264DB /* ssl.a in Frameworks */,
 				40DC9C1B2CCA6CD300F264DB /* lua.a in Frameworks */,
 				40DC9C1C2CCA6CD300F264DB /* cjson.a in Frameworks */,
@@ -172,6 +173,7 @@
 		40596B982C75BC5A00AC552D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				40A94B352CCFB31C0059C652 /* qjs.a */,
 				400F054D2CB61E9D009B3260 /* quickjs.a */,
 				25D0D0232CAD4C2900F5FBFF /* crypto.a */,
 				25D0D0222CAD4C2900F5FBFF /* ssl.a */,
