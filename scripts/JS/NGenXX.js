@@ -256,6 +256,14 @@ function NGenXXStoreKVWriteFloat(conn, k, f) {
     return ngenxx_store_kv_write_floatJ(inJson);
 }
 
+function NGenXXStoreKVAllKeys(conn) {
+    let inJson = JSON.stringify({
+        "conn": conn
+    });
+    let outJson = ngenxx_store_kv_all_keysJ(inJson);
+    return _json2Array(outJson);
+}
+
 function NGenXXStoreKVContains(conn, k) {
     let inJson = JSON.stringify({
         "conn": conn,

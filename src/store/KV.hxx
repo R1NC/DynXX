@@ -33,6 +33,8 @@ namespace NGenXX
                 
                 bool write(const std::string &k, const Any &v);
 
+                const std::vector<std::string> allKeys();
+
                 bool contains(const std::string &k);
 
                 void remove(const std::string &k);

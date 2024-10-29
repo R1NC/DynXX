@@ -108,6 +108,11 @@ function jTestStoreKV(): void {
         let vF: number = NGenXXStoreKVReadFloat(conn, kF)
         NGenXXLogPrint(NGenXXLogLevel.Debug, `KV read ${kF}: ${vF}`)
 
+        let keys: string[] = NGenXXStoreKVAllKeys(conn)
+        keys.forEach((item, index, arr) => {
+            NGenXXLogPrint(NGenXXLogLevel.Debug, `KV key${index}: ${item}`)
+        })
+
         NGenXXStoreKVClose(conn)
     } else {
         NGenXXLogPrint(NGenXXLogLevel.Debug, `KV open failed!!!`)

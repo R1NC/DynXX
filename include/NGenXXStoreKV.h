@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+static const unsigned int NGENXX_STORE_KV_KEY_MAX_LENGTH = 256; /**< Max length of the KV Key */
+
 /**
  * @brief open KV Store, support to access from multiple processes
  * @param _id kv id
@@ -62,6 +64,14 @@ double ngenxx_store_kv_read_float(void *const conn, const char *k);
  * @return Successfull or not
  */
 bool ngenxx_store_kv_write_float(void *const conn, const char *k, double v);
+
+/**
+ * @brief Fetch all keys from KV Store
+ * @param conn A KV connection handle
+ * @param len A pointer to read the length of the key array
+ * @return A pointer to the key array
+ */
+const char ** ngenxx_store_kv_all_keys(void *const conn, unsigned int *len);
 
 /**
  * @brief Search key from KV Store

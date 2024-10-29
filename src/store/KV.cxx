@@ -52,6 +52,11 @@ bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v)
     }, v);
 }
 
+const std::vector<std::string> NGenXX::Store::KV::Connection::allKeys()
+{
+    return this->kv->allKeys(false);
+}
+
 bool NGenXX::Store::KV::Connection::contains(const std::string &k)
 {
     return this->kv->containsKey(k.c_str());

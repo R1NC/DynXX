@@ -110,6 +110,7 @@ DEF_JS_FUNC_INT64(ngenxx_store_kv_read_integerJ, ngenxx_store_kv_read_integerS)
 DEF_JS_FUNC_BOOL(ngenxx_store_kv_write_integerJ, ngenxx_store_kv_write_integerS)
 DEF_JS_FUNC_FLOAT(ngenxx_store_kv_read_floatJ, ngenxx_store_kv_read_floatS)
 DEF_JS_FUNC_BOOL(ngenxx_store_kv_write_floatJ, ngenxx_store_kv_write_floatS)
+DEF_JS_FUNC_STRING(ngenxx_store_kv_all_keysJ, ngenxx_store_kv_all_keysS)
 DEF_JS_FUNC_BOOL(ngenxx_store_kv_containsJ, ngenxx_store_kv_containsS)
 DEF_JS_FUNC_VOID(ngenxx_store_kv_removeJ, ngenxx_store_kv_removeS)
 DEF_JS_FUNC_VOID(ngenxx_store_kv_clearJ, ngenxx_store_kv_clearS)
@@ -172,7 +173,7 @@ const char *ngenxx_J_call(const char *func, const char *params)
 {
     if (_ngenxx_js == nullptr || func == NULL)
         return NULL;
-    return str2charp(_ngenxx_js->callFunc(std::string(func), std::string(params ?: "")));
+    return copyStr(_ngenxx_js->callFunc(std::string(func), std::string(params ?: "")));
 }
 
 EXPORT_AUTO
@@ -217,6 +218,7 @@ void registerJsModule()
     BIND_JS_FUNC(ngenxx_store_kv_write_integerJ);
     BIND_JS_FUNC(ngenxx_store_kv_read_floatJ);
     BIND_JS_FUNC(ngenxx_store_kv_write_floatJ);
+    BIND_JS_FUNC(ngenxx_store_kv_all_keysJ);
     BIND_JS_FUNC(ngenxx_store_kv_containsJ);
     BIND_JS_FUNC(ngenxx_store_kv_removeJ);
     BIND_JS_FUNC(ngenxx_store_kv_clearJ);

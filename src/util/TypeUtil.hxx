@@ -2,16 +2,28 @@
 #define NGENXX_UTIL_TYPE_H_
 
 #include <string>
+#include <vector>
 #include <tuple>
 #include <cstring>
 #include "../NGenXX-Types.hxx"
 
-static inline const char *str2charp(std::string s)
+static inline const char *copyStr(std::string s)
 {
     const char *c = s.c_str();
     char *nc = reinterpret_cast<char *>(malloc(strlen(c) + 1));
     strcpy(nc, c);
     return nc;
+}
+
+static inline const char **copyStrVector(std::vector<std::string> sv, const unsigned int strMaxLen)
+{
+    char **sArr = reinterpret_cast<char **>(malloc(sizeof(char *) * sv.size() + 1));
+    for (int i = 0; i< sv.size(); i++)
+    {
+        sArr[i] = reinterpret_cast<char *>(malloc(sizeof(char *) * strMaxLen + 1));
+        strcpy(sArr[i], sv[i].c_str());
+    }
+    return const_cast<const char **>(sArr);
 }
 
 static inline const byte *copyBytes(NGenXX::Bytes t)

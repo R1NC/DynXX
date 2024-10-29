@@ -92,6 +92,7 @@ DEF_LUA_FUNC_INTEGER(ngenxx_store_kv_read_integerL, ngenxx_store_kv_read_integer
 DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_integerL, ngenxx_store_kv_write_integerS)
 DEF_LUA_FUNC_FLOAT(ngenxx_store_kv_read_floatL, ngenxx_store_kv_read_floatS)
 DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_floatL, ngenxx_store_kv_write_floatS)
+DEF_LUA_FUNC_STRING(ngenxx_store_kv_all_keysL, ngenxx_store_kv_all_keysS)
 DEF_LUA_FUNC_BOOL(ngenxx_store_kv_containsL, ngenxx_store_kv_containsS)
 DEF_LUA_FUNC_VOID(ngenxx_store_kv_removeL, ngenxx_store_kv_removeS)
 DEF_LUA_FUNC_VOID(ngenxx_store_kv_clearL, ngenxx_store_kv_clearS)
@@ -148,7 +149,7 @@ const char *ngenxx_L_call(const char *func, const char *params)
 {
     if (_ngenxx_lua == nullptr || func == NULL)
         return NULL;
-    return str2charp(_ngenxx_lua->callFunc(std::string(func), std::string(params ?: "")));
+    return copyStr(_ngenxx_lua->callFunc(std::string(func), std::string(params ?: "")));
 }
 
 void _ngenxx_export_funcs_for_lua()
@@ -183,6 +184,7 @@ void _ngenxx_export_funcs_for_lua()
     BIND_LUA_FUNC(ngenxx_store_kv_write_integerL);
     BIND_LUA_FUNC(ngenxx_store_kv_read_floatL);
     BIND_LUA_FUNC(ngenxx_store_kv_write_floatL);
+    BIND_LUA_FUNC(ngenxx_store_kv_all_keysL);
     BIND_LUA_FUNC(ngenxx_store_kv_containsL);
     BIND_LUA_FUNC(ngenxx_store_kv_removeL);
     BIND_LUA_FUNC(ngenxx_store_kv_clearL);

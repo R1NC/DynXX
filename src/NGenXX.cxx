@@ -36,7 +36,7 @@ EXPORT_AUTO
 const char *ngenxx_get_version(void)
 {
     auto s = std::string(VERSION);
-    return str2charp(s);
+    return copyStr(s);
 }
 
 EXPORT
@@ -62,7 +62,7 @@ const char *ngenxx_root_path()
 {
     if (_ngenxx_root == nullptr)
         return NULL;
-    return str2charp(*_ngenxx_root);
+    return copyStr(*_ngenxx_root);
 }
 
 EXPORT
@@ -94,19 +94,19 @@ int ngenxx_device_type()
 EXPORT_AUTO
 const char *ngenxx_device_name()
 {
-    return str2charp(NGenXX::Device::DeviceInfo::deviceName());
+    return copyStr(NGenXX::Device::DeviceInfo::deviceName());
 }
 
 EXPORT_AUTO
 const char *ngenxx_device_manufacturer()
 {
-    return str2charp(NGenXX::Device::DeviceInfo::deviceManufacturer());
+    return copyStr(NGenXX::Device::DeviceInfo::deviceManufacturer());
 }
 
 EXPORT_AUTO
 const char *ngenxx_device_os_version()
 {
-    return str2charp(NGenXX::Device::DeviceInfo::osVersion());
+    return copyStr(NGenXX::Device::DeviceInfo::osVersion());
 }
 
 EXPORT_AUTO
@@ -174,7 +174,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
     auto s = _ngenxx_http_client->request(sUrl, sParams, method, vHeaders, vFormFields,
                                           reinterpret_cast<std::FILE *>(cFILE),
                                           file_size, timeout);
-    return str2charp(s);
+    return copyStr(s);
 }
 
 #pragma mark Store.SQLite
@@ -222,7 +222,7 @@ const char *ngenxx_store_sqlite_query_read_column_text(void *const query_result,
         return NULL;
     auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     auto a = xqr->readColumn(std::string(column));
-    return str2charp(*std::get_if<std::string>(&a));
+    return copyStr(*std::get_if<std::string>(&a));
 }
 
 EXPORT_AUTO
@@ -280,7 +280,7 @@ const char *ngenxx_store_kv_read_string(void *const conn, const char *k)
         return NULL;
     auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     auto s = xconn->readString(std::string(k));
-    return str2charp(s);
+    return copyStr(s);
 }
 
 EXPORT_AUTO
@@ -326,6 +326,17 @@ bool ngenxx_store_kv_write_float(void *const conn, const char *k, double v)
         return false;
     auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->write(std::string(k), v);
+}
+
+EXPORT_AUTO
+const char **ngenxx_store_kv_all_keys(void *const conn, unsigned int *len)
+{
+    if (conn == NULL || len == NULL)
+        return NULL;
+    auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
+    auto t = xconn->allKeys();
+    *len = t.size();
+    return copyStrVector(t, NGENXX_STORE_KV_KEY_MAX_LENGTH);
 }
 
 EXPORT_AUTO
@@ -378,7 +389,7 @@ EXPORT_AUTO
 const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, const size inLen)
 {
     auto s = NGenXX::Coding::Hex::bytes2str({inBytes, inLen});
-    return str2charp(s);
+    return copyStr(s);
 }
 
 #pragma mark Crypto
@@ -510,7 +521,7 @@ const char *ngenxx_json_decoder_read_string(void *const decoder, void *const nod
     if (decoder == NULL)
         return NULL;
     auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
-    return str2charp(xdecoder->readString(node));
+    return copyStr(xdecoder->readString(node));
 }
 
 EXPORT_AUTO

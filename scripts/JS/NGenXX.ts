@@ -108,6 +108,8 @@ declare function NGenXXStoreKVReadFloat(conn: number, k: string): number
 
 declare function NGenXXStoreKVWriteFloat(conn: number, k: string, f: number): boolean
 
+declare function NGenXXStoreKVAllKeys(conn: number): string[]
+
 declare function NGenXXStoreKVContains(conn: number, k: string): boolean
 
 declare function NGenXXStoreKVRemove(conn: number, k: string): void

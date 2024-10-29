@@ -19,6 +19,13 @@ const std::string bytes2json(const byte *bytes, const size len)
     return std::string(outJson);
 }
 
+const std::string strArray2json(const char **strArray, const unsigned int len)
+{
+    auto cj = strArray == NULL || len <= 0 ? cJSON_CreateArray() : cJSON_CreateStringArray(strArray, len);
+    const char *outJson = cJSON_Print(cj);
+    return std::string(outJson);
+}
+
 std::vector<byte> parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK, const char *lenK)
 {
     size len = decoder.readNumber(decoder.readNode(NULL, lenK));
@@ -105,7 +112,7 @@ void ngenxx_log_printS(const char *json)
         return;
     NGenXX::Json::Decoder decoder(json);
     int level = decoder.readNumber(decoder.readNode(NULL, "level"));
-    const char *content = str2charp(decoder.readString(decoder.readNode(NULL, "content")));
+    const char *content = copyStr(decoder.readString(decoder.readNode(NULL, "content")));
     if (level < 0 || content == NULL)
         return;
 
@@ -120,8 +127,8 @@ const std::string ngenxx_net_http_requestS(const char *json)
     if (json == NULL)
         return s;
     NGenXX::Json::Decoder decoder(json);
-    const char *url = str2charp(decoder.readString(decoder.readNode(NULL, "url")));
-    const char *params = str2charp(decoder.readString(decoder.readNode(NULL, "params")));
+    const char *url = copyStr(decoder.readString(decoder.readNode(NULL, "url")));
+    const char *params = copyStr(decoder.readString(decoder.readNode(NULL, "params")));
     const int method = decoder.readNumber(decoder.readNode(NULL, "method"));
 
     size header_c = decoder.readNumber(decoder.readNode(NULL, "header_c"));
@@ -180,7 +187,7 @@ const address ngenxx_store_sqlite_openS(const char *json)
     if (json == NULL)
         return 0;
     NGenXX::Json::Decoder decoder(json);
-    auto _id = str2charp(decoder.readString(decoder.readNode(NULL, "_id")));
+    auto _id = copyStr(decoder.readString(decoder.readNode(NULL, "_id")));
     if (_id == NULL)
         return 0;
 
@@ -196,7 +203,7 @@ bool ngenxx_store_sqlite_executeS(const char *json)
         return false;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *sql = str2charp(decoder.readString(decoder.readNode(NULL, "sql")));
+    const char *sql = copyStr(decoder.readString(decoder.readNode(NULL, "sql")));
     if (conn <= 0 || sql == NULL)
         return false;
 
@@ -212,7 +219,7 @@ const address ngenxx_store_sqlite_query_doS(const char *json)
         return 0;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *sql = str2charp(decoder.readString(decoder.readNode(NULL, "sql")));
+    const char *sql = copyStr(decoder.readString(decoder.readNode(NULL, "sql")));
     if (conn <= 0 || sql == NULL)
         return 0;
 
@@ -243,7 +250,7 @@ const std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
         return s;
     NGenXX::Json::Decoder decoder(json);
     auto query_result = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "query_result")));
-    auto column = str2charp(decoder.readString(decoder.readNode(NULL, "column")));
+    auto column = copyStr(decoder.readString(decoder.readNode(NULL, "column")));
     if (query_result <= 0 || column == NULL)
         return s;
 
@@ -259,7 +266,7 @@ long long ngenxx_store_sqlite_query_read_column_integerS(const char *json)
         return 0;
     NGenXX::Json::Decoder decoder(json);
     auto query_result = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "query_result")));
-    const char *column = str2charp(decoder.readString(decoder.readNode(NULL, "column")));
+    const char *column = copyStr(decoder.readString(decoder.readNode(NULL, "column")));
     if (query_result <= 0 || column == NULL)
         return 0;
 
@@ -275,7 +282,7 @@ double ngenxx_store_sqlite_query_read_column_floatS(const char *json)
         return 0;
     NGenXX::Json::Decoder decoder(json);
     auto query_result = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "query_result")));
-    const char *column = str2charp(decoder.readString(decoder.readNode(NULL, "column")));
+    const char *column = copyStr(decoder.readString(decoder.readNode(NULL, "column")));
     if (query_result <= 0 || column == NULL)
         return 0;
 
@@ -316,7 +323,7 @@ const address ngenxx_store_kv_openS(const char *json)
     if (json == NULL)
         return 0;
     NGenXX::Json::Decoder decoder(json);
-    const char *_id = str2charp(decoder.readString(decoder.readNode(NULL, "_id")));
+    const char *_id = copyStr(decoder.readString(decoder.readNode(NULL, "_id")));
     if (_id == NULL)
         return 0;
 
@@ -333,7 +340,7 @@ const std::string ngenxx_store_kv_read_stringS(const char *json)
         return s;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
+    const char *k = copyStr(decoder.readString(decoder.readNode(NULL, "k")));
     if (conn <= 0 || k == NULL)
         return s;
 
@@ -349,8 +356,8 @@ bool ngenxx_store_kv_write_stringS(const char *json)
         return false;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
-    const char *v = str2charp(decoder.readString(decoder.readNode(NULL, "v")));
+    const char *k = copyStr(decoder.readString(decoder.readNode(NULL, "k")));
+    const char *v = copyStr(decoder.readString(decoder.readNode(NULL, "v")));
     if (conn <= 0 || k == NULL)
         return false;
 
@@ -367,7 +374,7 @@ long long ngenxx_store_kv_read_integerS(const char *json)
         return 0;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
+    const char *k = copyStr(decoder.readString(decoder.readNode(NULL, "k")));
     if (conn <= 0 || k == NULL)
         return 0;
 
@@ -383,7 +390,7 @@ bool ngenxx_store_kv_write_integerS(const char *json)
         return false;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
+    const char *k = copyStr(decoder.readString(decoder.readNode(NULL, "k")));
     long long v = decoder.readNumber(decoder.readNode(NULL, "v"));
     if (conn <= 0 || k == NULL)
         return false;
@@ -400,7 +407,7 @@ double ngenxx_store_kv_read_floatS(const char *json)
         return 0;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
+    const char *k = copyStr(decoder.readString(decoder.readNode(NULL, "k")));
     if (conn <= 0 || k == NULL)
         return false;
 
@@ -416,7 +423,7 @@ bool ngenxx_store_kv_write_floatS(const char *json)
         return false;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
+    const char *k = copyStr(decoder.readString(decoder.readNode(NULL, "k")));
     double v = decoder.readNumber(decoder.readNode(NULL, "v"));
     if (conn <= 0 || k == NULL)
         return false;
@@ -427,13 +434,29 @@ bool ngenxx_store_kv_write_floatS(const char *json)
     return res;
 }
 
+const std::string ngenxx_store_kv_all_keysS(const char *json)
+{
+    std::string s;
+    if (json == NULL)
+        return s;
+    NGenXX::Json::Decoder decoder(json);
+    auto conn = static_cast<unsigned long long>(decoder.readNumber(decoder.readNode(NULL, "conn")));
+    if (conn <= 0)
+        return s;
+
+    unsigned int len;
+    auto res = ngenxx_store_kv_all_keys(reinterpret_cast<void *>(conn), &len);
+
+    return strArray2json(res, len);
+}
+
 bool ngenxx_store_kv_containsS(const char *json)
 {
     if (json == NULL)
         return false;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
+    const char *k = copyStr(decoder.readString(decoder.readNode(NULL, "k")));
     if (conn <= 0 || k == NULL)
         return false;
 
@@ -449,7 +472,7 @@ void ngenxx_store_kv_removeS(const char *json)
         return;
     NGenXX::Json::Decoder decoder(json);
     auto conn = static_cast<address>(decoder.readNumber(decoder.readNode(NULL, "conn")));
-    const char *k = str2charp(decoder.readString(decoder.readNode(NULL, "k")));
+    const char *k = copyStr(decoder.readString(decoder.readNode(NULL, "k")));
     if (conn <= 0 || k == NULL)
         return;
 
