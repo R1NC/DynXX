@@ -10,6 +10,8 @@ constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                         "globalThis.std = std;\n"
                                         "globalThis.os = os;\n";
 
+static std::vector<JSContext*> contextList;
+
 static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
 {
     const char *str = JS_ToCString(ctx, val);
@@ -38,11 +40,12 @@ static void _ngenxx_js_dump_err(JSContext *ctx)
     JS_FreeValue(ctx, exception_val);
 }
 
-static JSContext *_ngenxx_J_fNewContext(JSRuntime *rt)
+static JSContext* NGenXX_J_newContext(JSRuntime *rt)
 {
   JSContext *ctx = JS_NewContext(rt);
   if (!ctx)
     return NULL;
+  contextList.push_back(ctx);
   return ctx;
 }
 
@@ -50,27 +53,28 @@ NGenXX::JsBridge::JsBridge()
 {
     this->runtime = JS_NewRuntime();
     this->context = JS_NewContext(this->runtime);
-
-    js_std_set_worker_new_context_func(_ngenxx_J_fNewContext);
+    this->jValues.push_back(JS_GetGlobalObject(this->context));
+    
+    js_std_set_worker_new_context_func(NGenXX_J_newContext);
     js_std_add_helpers(this->context, 0, NULL);
     js_std_init_handlers(this->runtime);
     js_init_module_std(this->context, "qjs:std");
     js_init_module_os(this->context, "qjs:os");
-    JSValue std_val = JS_Eval(this->context, IMPORT_STD_OS_JS, strlen(IMPORT_STD_OS_JS), "import-std-os.js", JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
-    if (!JS_IsException(std_val))
+    JSValue jEvalRet = JS_Eval(this->context, IMPORT_STD_OS_JS, strlen(IMPORT_STD_OS_JS), "import-std-os.js", JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
+    if (!JS_IsException(jEvalRet))
     {
-        js_module_set_import_meta(this->context, std_val, 1, 1);
-        std_val = JS_EvalFunction(this->context, std_val);
+        js_module_set_import_meta(this->context, jEvalRet, 1, 1);
+        JSValue jEvalFuncRet = JS_EvalFunction(this->context, jEvalRet);
+        JSValue jAwaitRet = js_std_await(this->context, jEvalFuncRet);
+        JS_FreeValue(this->context, jAwaitRet);
+        JS_FreeValue(this->context, jEvalFuncRet);
     }
     else
     {
-        Log::print(NGenXXLogLevelError, "JS Import std/os failed ->");
+        Log::print(NGenXXLogLevelError, "J Import std/os failed ->");
         _ngenxx_js_dump_err(this->context);
     }
-    std_val = js_std_await(this->context, std_val);
-    JS_FreeValue(this->context, std_val);
-
-    this->global = JS_GetGlobalObject(this->context);
+    this->jValues.push_back(jEvalRet);
 }
 
 bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -85,7 +89,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
     }
     else
     {
-        if (!JS_DefinePropertyValueStr(this->context, this->global, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE))
+        if (!JS_DefinePropertyValueStr(this->context, this->jValues[0], funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE))
         {
             Log::print(NGenXXLogLevelError, "JS_DefinePropertyValueStr failed ->");
             _ngenxx_js_dump_err(this->context);
@@ -93,7 +97,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
         }
     }
 
-    this->cFuncs.push_back(jFunc);
+    this->jValues.push_back(jFunc);
 
     return res;
 }
@@ -132,13 +136,13 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 {
     std::string s;
 
-    JSValue jFunc = JS_GetPropertyStr(this->context, this->global, func.c_str());
+    JSValue jFunc = JS_GetPropertyStr(this->context, this->jValues[0], func.c_str());
     if (JS_IsFunction(this->context, jFunc))
     {
         JSValue jParams = JS_NewString(this->context, params.c_str());
         JSValue argv[] = {jParams};
 
-        JSValue jRes = JS_Call(this->context, jFunc, this->global, sizeof(argv), argv);
+        JSValue jRes = JS_Call(this->context, jFunc, this->jValues[0], sizeof(argv), argv);
         if (JS_IsException(jRes))
         {
             Log::print(NGenXXLogLevelError, "JS_Call failed ->");
@@ -147,7 +151,10 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         else
         {
             js_std_loop(this->context); // Wating for async tasks
-            s = std::string(JS_ToCString(this->context, jRes));
+            jRes = js_std_await(this->context, jRes);// Handle promise if needed
+            auto c = JS_ToCString(this->context, jRes);
+            s = std::string(c);
+            JS_FreeCString(this->context, c);
         }
         JS_FreeValue(this->context, jRes);
         JS_FreeValue(this->context, jParams);
@@ -162,9 +169,19 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 
 NGenXX::JsBridge::~JsBridge()
 {
-    for (auto &f : this->cFuncs)
-        JS_FreeValue(this->context, f);
-    JS_FreeValue(this->context, this->global);
+    js_std_set_worker_new_context_func(NULL);
+
+    for (auto &jc : contextList)
+        JS_FreeContext(jc);
+    
+    for (auto &jv : this->jValues)
+    {
+        uint32_t tag = JS_VALUE_GET_TAG(jv);
+        if (tag != JS_TAG_MODULE)
+            JS_FreeValue(this->context, jv);
+    }
     JS_FreeContext(this->context);
+    
+    js_std_free_handlers(this->runtime);
     JS_FreeRuntime(this->runtime);
 }

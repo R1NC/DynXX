@@ -16,8 +16,7 @@ namespace NGenXX
     private:
         JSRuntime *runtime;
         JSContext *context;
-        JSValue global;
-        std::vector<JSValue> cFuncs;
+        std::vector<JSValue> jValues;
 
     public:
         /**
