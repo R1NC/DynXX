@@ -20,7 +20,7 @@ static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
     }
 }
 
-void _ngenxx_js_dump_err(JSContext *ctx)
+static void _ngenxx_js_dump_err(JSContext *ctx)
 {
     JSValue exception_val = JS_GetException(ctx);
 
@@ -38,11 +38,20 @@ void _ngenxx_js_dump_err(JSContext *ctx)
     JS_FreeValue(ctx, exception_val);
 }
 
+static JSContext *_ngenxx_J_fNewContext(JSRuntime *rt)
+{
+  JSContext *ctx = JS_NewContext(rt);
+  if (!ctx)
+    return NULL;
+  return ctx;
+}
+
 NGenXX::JsBridge::JsBridge()
 {
     this->runtime = JS_NewRuntime();
     this->context = JS_NewContext(this->runtime);
 
+    js_std_set_worker_new_context_func(_ngenxx_J_fNewContext);
     js_std_add_helpers(this->context, 0, NULL);
     js_std_init_handlers(this->runtime);
     js_init_module_std(this->context, "qjs:std");
