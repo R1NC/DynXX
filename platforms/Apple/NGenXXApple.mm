@@ -47,10 +47,16 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
 }
 
 - (void)testHttpJ {
-    NSString *jsPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.js"];
-    NSString *jsPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
-    if (ngenxx_J_loadF(NSString2CharP(jsPath0)) && ngenxx_J_loadF(NSString2CharP(jsPath1))) {
-        auto res = ngenxx_J_call("jTestHttp", NULL);
+    NSString *jsbPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.qjsb"];
+    NSString *jsbPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.qjsb"];
+    NSData *jsbData0 = [NSData dataWithContentsOfFile:jsbPath0];
+    NSData *jsbData1 = [NSData dataWithContentsOfFile:jsbPath1];
+    auto bytes0 = reinterpret_cast<unsigned char *>(const_cast<void *>(jsbData0.bytes));
+    auto len0 = static_cast<unsigned int>(jsbData0.length);
+    auto bytes1 = reinterpret_cast<unsigned char *>(const_cast<void *>(jsbData1.bytes));
+    auto len1 = static_cast<unsigned int>(jsbData1.length);
+    if (ngenxx_J_loadB(bytes0, len0) && ngenxx_J_loadB(bytes1, len1)) {
+        auto res = ngenxx_J_call("jTestNetHttpReq", "https://rinc.xyz");
         NSLog(@"%s", res);
     }
 }
