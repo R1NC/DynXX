@@ -57,3 +57,8 @@ mv mmkv.output/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
 HEADER_OUTPUT_DIR=output/include
 mkdir -p ${HEADER_OUTPUT_DIR}
 cp -R ../include/ ${HEADER_OUTPUT_DIR}/
+
+#Copy executables
+TOOLS_OUTPUT_DIR=output/tools
+mkdir -p ${TOOLS_OUTPUT_DIR}
+mv quickjs.output/qjsc.app/Contents/MacOS/qjsc ${TOOLS_OUTPUT_DIR}/qjsc
