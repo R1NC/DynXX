@@ -120,14 +120,14 @@ function jTestStoreKV(): void {
 }
 
 let sqlPrepareData: string = `
-DROP TABLE IF EXISTS TestTable
-CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, s TEXT, i INTEGER, f FLOAT)
+DROP TABLE IF EXISTS TestTable;
+CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, s TEXT, i INTEGER, f FLOAT);
 INSERT OR IGNORE INTO TestTable (s, i, f) VALUES
 ('iOS', 1, 0.111111111),
 ('Android', 2, 0.2222222222),
-('HarmonyOS', 3, 0.3333333333)`
+('HarmonyOS', 3, 0.3333333333);`
 
-let sqlQuery: string = `SELECT * FROM TestTable`
+let sqlQuery: string = `SELECT * FROM TestTable;`
 
 function jTestStoreSQLite(): void {
     let dbId: string = 'test_db'

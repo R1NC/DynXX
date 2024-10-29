@@ -18,9 +18,9 @@ static inline const char *copyStr(std::string s)
 static inline const char **copyStrVector(std::vector<std::string> sv, const unsigned int strMaxLen)
 {
     char **sArr = reinterpret_cast<char **>(malloc(sizeof(char *) * sv.size() + 1));
-    for (int i = 0; i< sv.size(); i++)
+    for (int i = 0; i < sv.size(); i++)
     {
-        sArr[i] = reinterpret_cast<char *>(malloc(sizeof(char *) * strMaxLen + 1));
+        sArr[i] = reinterpret_cast<char *>(malloc(sizeof(char) * strMaxLen + 1));
         strcpy(sArr[i], sv[i].c_str());
     }
     return const_cast<const char **>(sArr);
