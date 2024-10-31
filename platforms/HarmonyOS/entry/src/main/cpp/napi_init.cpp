@@ -644,7 +644,7 @@ static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info) {
     
     const char *cStr = napiValue2chars(env, argv[0]);
     
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_coding_hex_str2bytes(cStr, &outLen);
     napi_value v = byteArray2NapiValue(env, cRes, outLen);
     
@@ -676,7 +676,7 @@ static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info) {
     uint32_t keyLen = napiValueArrayLen(env, argv[1]);
     const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
     
-    size outLen;
+    size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
@@ -695,7 +695,7 @@ static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info) {
     uint32_t keyLen = napiValueArrayLen(env, argv[1]);
     const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
     
-    size outLen;
+    size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_decrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
@@ -709,17 +709,17 @@ static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info) {
 static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
     napi_value *argv = readParams(env, info, 5);
 
-    size inLen = napiValueArrayLen(env, argv[0]);
+    size_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
-    size keyLen = napiValueArrayLen(env, argv[1]);
+    size_t keyLen = napiValueArrayLen(env, argv[1]);
     const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
-    size initVectorLen = napiValueArrayLen(env, argv[2]);
+    size_t initVectorLen = napiValueArrayLen(env, argv[2]);
     const byte *initVectorBytes = napiValue2byteArray(env, argv[2], initVectorLen);
-    size aadLen = napiValueArrayLen(env, argv[3]);
+    size_t aadLen = napiValueArrayLen(env, argv[3]);
     const byte *aadBytes = napiValue2byteArray(env, argv[3], aadLen);
-    size tagBits = napiValue2int(env, argv[4]);
+    size_t tagBits = napiValue2int(env, argv[4]);
     
-    size outLen;
+    size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
@@ -735,17 +735,17 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
 static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
     napi_value *argv = readParams(env, info, 5);
 
-    size inLen = napiValueArrayLen(env, argv[0]);
+    size_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
-    size keyLen = napiValueArrayLen(env, argv[1]);
+    size_t keyLen = napiValueArrayLen(env, argv[1]);
     const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
-    size initVectorLen = napiValueArrayLen(env, argv[2]);
+    size_t initVectorLen = napiValueArrayLen(env, argv[2]);
     const byte *initVectorBytes = napiValue2byteArray(env, argv[2], initVectorLen);
-    size aadLen = napiValueArrayLen(env, argv[3]);
+    size_t aadLen = napiValueArrayLen(env, argv[3]);
     const byte *aadBytes = napiValue2byteArray(env, argv[3], aadLen);
-    size tagBits = napiValue2int(env, argv[4]);
+    size_t tagBits = napiValue2int(env, argv[4]);
     
-    size outLen;
+    size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
@@ -764,7 +764,7 @@ static napi_value CryptoHashMd5(napi_env env, napi_callback_info info) {
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
     
-    size outLen;
+    size_t outLen;
     const byte *outBytes = ngenxx_crypto_hash_md5(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
@@ -780,7 +780,7 @@ static napi_value CryptoHashSha256(napi_env env, napi_callback_info info) {
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
     
-    size outLen;
+    size_t outLen;
     const byte *outBytes = ngenxx_crypto_hash_sha256(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
@@ -796,7 +796,7 @@ static napi_value CryptoBase64Encode(napi_env env, napi_callback_info info) {
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
     
-    size outLen;
+    size_t outLen;
     const byte *outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
@@ -812,7 +812,7 @@ static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info) {
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
     
-    size outLen;
+    size_t outLen;
     const byte *outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
     
@@ -902,7 +902,7 @@ static napi_value JLoadB(napi_env env, napi_callback_info info) {
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
     
-    size outLen;
+    size_t outLen;
     bool b = ngenxx_js_loadB(inBytes, inLen);
     napi_value v = bool2NapiValue(env, b);
     

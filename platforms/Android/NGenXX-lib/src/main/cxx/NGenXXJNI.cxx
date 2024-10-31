@@ -237,7 +237,7 @@ jboolean NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz,
                            jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
-    size inLen = env->GetArrayLength(bytes);
+    size_t inLen = env->GetArrayLength(bytes);
 
     bool res = ngenxx_js_loadB(reinterpret_cast<const byte *>(cIn), inLen);
 
@@ -493,7 +493,7 @@ jstring NGenXX_JNI_codingHexBytes2Str(JNIEnv *env, jobject thiz,
                                       jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
-    size inLen = env->GetArrayLength(bytes);
+    size_t inLen = env->GetArrayLength(bytes);
 
     auto cRes = ngenxx_coding_hex_bytes2str(reinterpret_cast<const byte *>(cIn), inLen);
     jstring jstr = env->NewStringUTF(cRes ?: "");
@@ -509,7 +509,7 @@ jbyteArray NGenXX_JNI_codingHexStr2Bytes(JNIEnv *env,
 {
     const char *cStr = env->GetStringUTFChars(str, nullptr);
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_coding_hex_str2bytes(cStr, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -524,7 +524,8 @@ jbyteArray NGenXX_JNI_cryptoRandom(JNIEnv *env, jobject thiz,
 {
     byte out[len];
     std::memset(out, 0, len);
-   ngenxx_crypto_rand(len, out);
+    ngenxx_crypto_rand(len, out);
+    ngenxx_crypto_rand(len, out);
     return moveToJByteArray(env, out, len, false);
 }
 
@@ -533,11 +534,11 @@ jbyteArray NGenXX_JNI_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
                                        jbyteArray key)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    size inLen = env->GetArrayLength(input);
+    size_t inLen = env->GetArrayLength(input);
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
-    size keyLen = env->GetArrayLength(key);
+    size_t keyLen = env->GetArrayLength(key);
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_crypto_aes_encrypt(reinterpret_cast<const byte *>(cIn), inLen,
                                           reinterpret_cast<const byte *>(cKey), keyLen,
                                           &outLen);
@@ -553,11 +554,11 @@ jbyteArray NGenXX_JNI_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
                                        jbyteArray key)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    size inLen = env->GetArrayLength(input);
+    size_t inLen = env->GetArrayLength(input);
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
-    size keyLen = env->GetArrayLength(key);
+    size_t keyLen = env->GetArrayLength(key);
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_crypto_aes_decrypt(reinterpret_cast<const byte *>(cIn), inLen,
                                           reinterpret_cast<const byte *>(cKey), keyLen,
                                           &outLen);
@@ -576,15 +577,15 @@ jbyteArray NGenXX_JNI_cryptoAesGcmEncrypt(JNIEnv *env, jobject thiz,
                                           jint tag_bits)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    size inLen = env->GetArrayLength(input);
+    size_t inLen = env->GetArrayLength(input);
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
-    size keyLen = env->GetArrayLength(key);
+    size_t keyLen = env->GetArrayLength(key);
     jbyte *cIv = env->GetByteArrayElements(init_vector, nullptr);
-    size ivLen = env->GetArrayLength(init_vector);
+    size_t ivLen = env->GetArrayLength(init_vector);
     jbyte *cAad = aad ? env->GetByteArrayElements(aad, nullptr) : nullptr;
     int aadLen = aad ? env->GetArrayLength(aad) : 0;
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_crypto_aes_gcm_encrypt(reinterpret_cast<const byte *>(cIn), inLen,
                                               reinterpret_cast<const byte *>(cKey), keyLen,
                                               reinterpret_cast<const byte *>(cIv), ivLen,
@@ -608,15 +609,15 @@ jbyteArray NGenXX_JNI_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
                                           jint tag_bits)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    size inLen = env->GetArrayLength(input);
+    size_t inLen = env->GetArrayLength(input);
     jbyte *cKey = env->GetByteArrayElements(key, nullptr);
-    size keyLen = env->GetArrayLength(key);
+    size_t keyLen = env->GetArrayLength(key);
     jbyte *cIv = env->GetByteArrayElements(init_vector, nullptr);
-    size ivLen = env->GetArrayLength(init_vector);
+    size_t ivLen = env->GetArrayLength(init_vector);
     jbyte *cAad = aad ? env->GetByteArrayElements(aad, nullptr) : nullptr;
     int aadLen = aad ? env->GetArrayLength(aad) : 0;
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_crypto_aes_gcm_decrypt(reinterpret_cast<const byte *>(cIn), inLen,
                                               reinterpret_cast<const byte *>(cKey), keyLen,
                                               reinterpret_cast<const byte *>(cIv), ivLen,
@@ -636,9 +637,9 @@ jbyteArray NGenXX_JNI_cryptoHashMd5(JNIEnv *env, jobject thiz,
                                     jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    size inLen = env->GetArrayLength(input);
+    size_t inLen = env->GetArrayLength(input);
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_crypto_hash_md5(reinterpret_cast<const byte *>(cIn), inLen, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -650,9 +651,9 @@ jbyteArray NGenXX_JNI_cryptoHashSha256(JNIEnv *env, jobject thiz,
                                        jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    size inLen = env->GetArrayLength(input);
+    size_t inLen = env->GetArrayLength(input);
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_crypto_hash_sha256(reinterpret_cast<const byte *>(cIn), inLen, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -664,9 +665,9 @@ jbyteArray NGenXX_JNI_cryptoBase64Encode(JNIEnv *env, jobject thiz,
                                          jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    size inLen = env->GetArrayLength(input);
+    size_t inLen = env->GetArrayLength(input);
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_crypto_base64_encode(reinterpret_cast<const byte *>(cIn), inLen, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -678,9 +679,9 @@ jbyteArray NGenXX_JNI_cryptoBase64Decode(JNIEnv *env, jobject thiz,
                                          jbyteArray input)
 {
     jbyte *cIn = env->GetByteArrayElements(input, nullptr);
-    size inLen = env->GetArrayLength(input);
+    size_t inLen = env->GetArrayLength(input);
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_crypto_base64_decode(reinterpret_cast<const byte *>(cIn), inLen, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -774,9 +775,9 @@ jlong NGenXX_JNI_zZipInput(JNIEnv *env, jobject thiz,
                            jbyteArray inBytes, jint inLen, jboolean inFinish)
 {
     jbyte *cIn = env->GetByteArrayElements(inBytes, nullptr);
-    // size inLen = env->GetArrayLength(input);
+    // size_t inLen = env->GetArrayLength(input);
 
-    size ret = ngenxx_z_zip_input(reinterpret_cast<void *>(zip), reinterpret_cast<const byte *>(cIn), inLen, inFinish);
+    size_t ret = ngenxx_z_zip_input(reinterpret_cast<void *>(zip), reinterpret_cast<const byte *>(cIn), inLen, inFinish);
 
     env->ReleaseByteArrayElements(inBytes, cIn, JNI_ABORT);
 
@@ -785,7 +786,7 @@ jlong NGenXX_JNI_zZipInput(JNIEnv *env, jobject thiz,
 
 jbyteArray NGenXX_JNI_zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
 {
-    size outLen = 0;
+    size_t outLen = 0;
     auto cRes = ngenxx_z_zip_process_do(reinterpret_cast<void *>(zip), &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -815,9 +816,9 @@ jlong NGenXX_JNI_zUnZipInput(JNIEnv *env, jobject thiz,
                              jbyteArray inBytes, jint inLen, jboolean inFinish)
 {
     jbyte *cIn = env->GetByteArrayElements(inBytes, nullptr);
-    // size inLen = env->GetArrayLength(input);
+    // size_t inLen = env->GetArrayLength(input);
 
-    size ret = ngenxx_z_unzip_input(reinterpret_cast<void *>(unzip), reinterpret_cast<const byte *>(cIn), inLen, inFinish);
+    size_t ret = ngenxx_z_unzip_input(reinterpret_cast<void *>(unzip), reinterpret_cast<const byte *>(cIn), inLen, inFinish);
 
     env->ReleaseByteArrayElements(inBytes, cIn, JNI_ABORT);
 
@@ -826,7 +827,7 @@ jlong NGenXX_JNI_zUnZipInput(JNIEnv *env, jobject thiz,
 
 jbyteArray NGenXX_JNI_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip)
 {
-    size outLen = 0;
+    size_t outLen = 0;
     auto cRes = ngenxx_z_unzip_process_do(reinterpret_cast<void *>(unzip), &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -850,9 +851,9 @@ jbyteArray NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz,
                                 jlong buffer_size, jint format, jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
-    size inLen = env->GetArrayLength(bytes);
+    size_t inLen = env->GetArrayLength(bytes);
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_z_bytes_zip(mode, buffer_size, format, reinterpret_cast<const byte *>(cIn), inLen, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -864,9 +865,9 @@ jbyteArray NGenXX_JNI_zUnZipBytes(JNIEnv *env, jobject thiz,
                                   jlong buffer_size, jint format, jbyteArray bytes)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
-    size inLen = env->GetArrayLength(bytes);
+    size_t inLen = env->GetArrayLength(bytes);
 
-    size outLen;
+    size_t outLen;
     auto cRes = ngenxx_z_bytes_unzip(buffer_size, format, reinterpret_cast<const byte *>(cIn), inLen, &outLen);
     jbyteArray jba = moveToJByteArray(env, cRes, outLen, true);
 
