@@ -18,12 +18,14 @@ const std::string NGenXX::Coding::Hex::bytes2str(const Bytes bytes)
 
 const Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
 {
-    if (str.length() == 0) return BytesEmpty;
+    if (str.length() == 0)
+        return BytesEmpty;
     size_t outLen = str.length();
     byte outBytes[outLen];
     std::memset(outBytes, 0, outLen);
     size_t j(0);
-    for (size_t i(0); i < str.length(); i += 2, j++) {
+    for (size_t i(0); i < str.length(); i += 2, j++)
+    {
         auto s = str.substr(i, 2);
         outBytes[j] = static_cast<unsigned char>(std::stoi(s.c_str(), nullptr, 16));
     }

@@ -197,7 +197,7 @@ bool ngenxx_js_loadB(const byte *bytes, const size_t len)
 }
 
 EXPORT_AUTO
-const char * ngenxx_js_call(const char *func, const char *params)
+const char *ngenxx_js_call(const char *func, const char *params)
 {
     return copyStr(ngenxxJsCall(func ?: "", params ?: ""));
 }

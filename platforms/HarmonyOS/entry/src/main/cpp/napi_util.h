@@ -1,35 +1,42 @@
 #include "napi/native_api.h"
 #include <cstdio>
 
-#define PRINT_NAPI_STATUS_ERR(env, status, errMsg)                                                                     \
-    do {                                                                                                               \
-        char msg[128];                                                                                                 \
-        sprintf(msg, "status=%d desc='%s'", status, errMsg);                                                           \
-        napi_throw_error(env, NULL, msg);                                                                              \
+#define PRINT_NAPI_STATUS_ERR(env, status, errMsg)           \
+    do                                                       \
+    {                                                        \
+        char msg[128];                                       \
+        sprintf(msg, "status=%d desc='%s'", status, errMsg); \
+        napi_throw_error(env, NULL, msg);                    \
     } while (0);
 
-#define CHECK_NAPI_STATUS_RETURN_ANY(env, status, errMsg)                                                              \
-    do {                                                                                                               \
-        if (status != napi_ok) {                                                                                       \
-            PRINT_NAPI_STATUS_ERR(env, status, errMsg);                                                                \
-            return NULL;                                                                                               \
-        }                                                                                                              \
+#define CHECK_NAPI_STATUS_RETURN_ANY(env, status, errMsg) \
+    do                                                    \
+    {                                                     \
+        if (status != napi_ok)                            \
+        {                                                 \
+            PRINT_NAPI_STATUS_ERR(env, status, errMsg);   \
+            return NULL;                                  \
+        }                                                 \
     } while (0);
 
-#define CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, errMsg)                                                       \
-    do {                                                                                                               \
-        if (status != napi_ok) {                                                                                       \
-            PRINT_NAPI_STATUS_ERR(env, status, errMsg);                                                                \
-            return int2NapiValue(env, napi_cancelled);                                                                 \
-        }                                                                                                              \
+#define CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, errMsg) \
+    do                                                           \
+    {                                                            \
+        if (status != napi_ok)                                   \
+        {                                                        \
+            PRINT_NAPI_STATUS_ERR(env, status, errMsg);          \
+            return int2NapiValue(env, napi_cancelled);           \
+        }                                                        \
     } while (0);
 
-#define CHECK_NAPI_STATUS_RETURN_VOID(env, status, errMsg)                                                             \
-    do {                                                                                                               \
-        if (status != napi_ok) {                                                                                       \
-            PRINT_NAPI_STATUS_ERR(env, status, errMsg);                                                                \
-            return;                                                                                                    \
-        }                                                                                                              \
+#define CHECK_NAPI_STATUS_RETURN_VOID(env, status, errMsg) \
+    do                                                     \
+    {                                                      \
+        if (status != napi_ok)                             \
+        {                                                  \
+            PRINT_NAPI_STATUS_ERR(env, status, errMsg);    \
+            return;                                        \
+        }                                                  \
     } while (0);
 
 napi_value *readParams(napi_env env, napi_callback_info info, size_t count);

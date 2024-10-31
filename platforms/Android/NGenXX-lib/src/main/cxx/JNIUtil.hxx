@@ -7,13 +7,16 @@
 #include <functional>
 #include <type_traits>
 
-static inline void* runInCurrentEnv(JavaVM *vm, const std::function<void*(JNIEnv *env)>& task) {
-    if (vm == nullptr) return nullptr;
+static inline void *runInCurrentEnv(JavaVM *vm, const std::function<void *(JNIEnv *env)> &task)
+{
+    if (vm == nullptr)
+        return nullptr;
     JNIEnv *env;
     vm->AttachCurrentThread(&env, nullptr);
-    if (env == nullptr) return nullptr;
-    void* t = task(env);
-    //vm->DetachCurrentThread();
+    if (env == nullptr)
+        return nullptr;
+    void *t = task(env);
+    // vm->DetachCurrentThread();
     return t;
 }
 
@@ -24,7 +27,8 @@ jbyteArray moveToJByteArray(JNIEnv *env, const unsigned char *bytes, unsigned lo
     {
         jba = env->NewByteArray(static_cast<jsize>(outLen));
         env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen), reinterpret_cast<jbyte *>(const_cast<unsigned char *>(bytes)));
-        if (needFree) free(static_cast<void *>(const_cast<unsigned  char *>(bytes)));
+        if (needFree)
+            free(static_cast<void *>(const_cast<unsigned char *>(bytes)));
     }
     else
     {

@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-/**
+    /**
      * @brief Generate random bytes
      * @param len bytes length
      * @param bytes A pointer to store the output bytes
@@ -53,10 +53,10 @@ extern "C"
      * @return output bytes data（With a tag on tail）
      */
     const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, const size_t inLen,
-                                                                  const byte *keyBytes, const size_t keyLen,
-                                                                  const byte *initVectorBytes, const size_t initVectorLen,
-                                                                  const byte *aadBytes, const size_t aadLen,
-                                                                  const size_t tagBits, size_t *outLen);
+                                              const byte *keyBytes, const size_t keyLen,
+                                              const byte *initVectorBytes, const size_t initVectorLen,
+                                              const byte *aadBytes, const size_t aadLen,
+                                              const size_t tagBits, size_t *outLen);
 
     /**
      * @brief AES GCM Decrypt
@@ -73,10 +73,10 @@ extern "C"
      * @return output bytes data（No tag on tail）
      */
     const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size_t inLen,
-                                                                  const byte *keyBytes, const size_t keyLen,
-                                                                  const byte *initVectorBytes, const size_t initVectorLen,
-                                                                  const byte *aadBytes, const size_t aadLen,
-                                                                  const size_t tagBits, size_t *outLen);
+                                              const byte *keyBytes, const size_t keyLen,
+                                              const byte *initVectorBytes, const size_t initVectorLen,
+                                              const byte *aadBytes, const size_t aadLen,
+                                              const size_t tagBits, size_t *outLen);
 
     /**
      * @brief MD5 hash

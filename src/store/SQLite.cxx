@@ -81,7 +81,7 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
     return rc == SQLITE_ROW;
 }
 
- Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column)
+Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column)
 {
     if (this->stmt == NULL)
         return {};
@@ -90,11 +90,16 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
         if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0)
         {
             int columnType = sqlite3_column_type(this->stmt, i);
-            if (columnType == SQLITE_TEXT) {
+            if (columnType == SQLITE_TEXT)
+            {
                 return std::string((const char *)sqlite3_column_text(this->stmt, i));
-            } else if (columnType == SQLITE_INTEGER) {
+            }
+            else if (columnType == SQLITE_INTEGER)
+            {
                 return sqlite3_column_int64(this->stmt, i);
-            } else if (columnType == SQLITE_FLOAT) {
+            }
+            else if (columnType == SQLITE_FLOAT)
+            {
                 return sqlite3_column_double(this->stmt, i);
             }
         }

@@ -29,7 +29,8 @@ static inline const char **copyStrVector(std::vector<std::string> sv, const size
 static inline const byte *copyBytes(Bytes t)
 {
     auto [cs, len] = t;
-    if (cs == NULL || len <= 0) return NULL;
+    if (cs == NULL || len <= 0)
+        return NULL;
     const byte *ncs = reinterpret_cast<byte *>(malloc(len + 1));
     std::memset(reinterpret_cast<void *>(const_cast<byte *>(ncs)), 0, len + 1);
     std::memcpy(reinterpret_cast<void *>(const_cast<byte *>(ncs)), cs, len);
@@ -42,7 +43,8 @@ static inline const Bytes trimBytes(Bytes bytes)
     auto fixedLen = len;
     for (auto i = len - 1; i > 0; i--)
     {
-        if (data[i] <= 0) fixedLen--;
+        if (data[i] <= 0)
+            fixedLen--;
     }
     return {data, fixedLen};
 }

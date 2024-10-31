@@ -23,7 +23,7 @@ extern "C"
      */
     enum NGenXXZFormat
     {
-        NGenXXZFormatZLib = 0,  // Default zlib header
+        NGenXXZFormatZLib = 0, // Default zlib header
         NGenXXZFormatGZip = 1, // GZip header
         NGenXXZFormatRaw = 2,  // No header
     };

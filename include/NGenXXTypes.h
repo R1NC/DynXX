@@ -3,14 +3,15 @@
 
 #include <stddef.h>
 
-#ifdef  __cplusplus
-extern "C" {
+#ifdef __cplusplus
+extern "C"
+{
 #endif
 
-typedef unsigned char byte;
-typedef unsigned long long address;
+    typedef unsigned char byte;
+    typedef unsigned long long address;
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

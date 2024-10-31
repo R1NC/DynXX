@@ -188,14 +188,14 @@ const Bytes ngenxxCryptoBase64Decode(const Bytes in)
 #pragma mark Net.Http
 
 const std::string ngenxxNetHttpRequest(const std::string &url,
-                                                              const std::string &params,
-                                                              const NGenXXHttpMethodX method,
-                                                              const std::vector<std::string> &headerV,
-                                                              const std::vector<std::string> &formFieldNameV,
-                                                              const std::vector<std::string> &formFieldMimeV,
-                                                              const std::vector<std::string> &formFieldDataV,
-                                                              const std::FILE *cFILE, const size_t fileSize,
-                                                              const size_t timeout)
+                                       const std::string &params,
+                                       const NGenXXHttpMethodX method,
+                                       const std::vector<std::string> &headerV,
+                                       const std::vector<std::string> &formFieldNameV,
+                                       const std::vector<std::string> &formFieldMimeV,
+                                       const std::vector<std::string> &formFieldDataV,
+                                       const std::FILE *cFILE, const size_t fileSize,
+                                       const size_t timeout)
 {
     std::string s;
     if (_ngenxx_http_client == nullptr || url.length() == 0)
@@ -215,14 +215,14 @@ const std::string ngenxxNetHttpRequest(const std::string &url,
 }
 
 const std::string ngenxxNetHttpRequest(const std::string &url,
-                                                              const std::unordered_map<std::string, Any> &params,
-                                                              const NGenXXHttpMethodX method,
-                                                              const std::unordered_map<std::string, std::string> &headers,
-                                                              const std::vector<std::string> &formFieldNameV,
-                                                              const std::vector<std::string> &formFieldMimeV,
-                                                              const std::vector<std::string> &formFieldDataV,
-                                                              const std::FILE *cFILE, const size_t fileSize,
-                                                              const size_t timeout)
+                                       const std::unordered_map<std::string, Any> &params,
+                                       const NGenXXHttpMethodX method,
+                                       const std::unordered_map<std::string, std::string> &headers,
+                                       const std::vector<std::string> &formFieldNameV,
+                                       const std::vector<std::string> &formFieldMimeV,
+                                       const std::vector<std::string> &formFieldDataV,
+                                       const std::FILE *cFILE, const size_t fileSize,
+                                       const size_t timeout)
 {
     std::stringstream ssParams;
     for (auto it = params.begin(); it != params.end(); ++it)
@@ -235,8 +235,8 @@ const std::string ngenxxNetHttpRequest(const std::string &url,
     }
     std::vector<std::string> headerV;
     return ngenxxNetHttpRequest(url, ssParams.str(), method, headerV,
-                                         formFieldNameV, formFieldMimeV, formFieldDataV,
-                                         cFILE, fileSize, timeout);
+                                formFieldNameV, formFieldMimeV, formFieldDataV,
+                                cFILE, fileSize, timeout);
 }
 
 #pragma mark Store.SQLite

@@ -46,9 +46,8 @@ const double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
 
 bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v)
 {
-    return std::visit([&](auto &x) {
-        return this->kv->set(x, k);
-    }, v);
+    return std::visit([&](auto &x)
+                      { return this->kv->set(x, k); }, v);
 }
 
 const std::vector<std::string> NGenXX::Store::KV::Connection::allKeys()

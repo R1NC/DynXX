@@ -79,7 +79,7 @@ function NGenXXLogPrint(level, content) {
         "level": level,
         "content": content
     });
-   ngenxx_log_printJ(inJson);
+    ngenxx_log_printJ(inJson);
 }
 
 function NGenXXAskPlatform(msg) {
@@ -188,14 +188,14 @@ function NGenXXStoreSQLiteQueryDrop(query_result) {
     let inJson = JSON.stringify({
         "query_result": query_result
     });
-   ngenxx_store_sqlite_query_dropJ(inJson);
+    ngenxx_store_sqlite_query_dropJ(inJson);
 }
 
 function NGenXXStoreSQLiteClose(conn) {
     let inJson = JSON.stringify({
         "conn": conn
     });
-   ngenxx_store_sqlite_closeJ(inJson);
+    ngenxx_store_sqlite_closeJ(inJson);
 }
 
 function NGenXXStoreKVOpen(_id) {
@@ -277,21 +277,21 @@ function NGenXXStoreKVRemove(conn, k) {
         "conn": conn,
         "k": k
     });
-   ngenxx_store_kv_removeJ(inJson);
+    ngenxx_store_kv_removeJ(inJson);
 }
 
 function NGenXXStoreKVClear(conn) {
     let inJson = JSON.stringify({
         "conn": conn
     });
-   ngenxx_store_kv_clearJ(inJson);
+    ngenxx_store_kv_clearJ(inJson);
 }
 
 function NGenXXStoreKVClose(conn) {
     let inJson = JSON.stringify({
         "conn": conn
     });
-   ngenxx_store_kv_closeJ(inJson);
+    ngenxx_store_kv_closeJ(inJson);
 }
 
 function NGenXXStr2Bytes(str) {
@@ -477,7 +477,7 @@ function _NGenXXZZipRelease(zip) {
     let inJson = JSON.stringify({
         "zip": zip
     });
-   ngenxx_z_zip_releaseJ(inJson);
+    ngenxx_z_zip_releaseJ(inJson);
 }
 
 function _NGenXXZUnZipInit(bufferSize, format) {
@@ -518,7 +518,7 @@ function _NGenXXZUnZipRelease(unzip) {
     let inJson = JSON.stringify({
         "unzip": unzip
     });
-   ngenxx_z_unzip_releaseJ(inJson);
+    ngenxx_z_unzip_releaseJ(inJson);
 }
 
 function NGenXXZZipBytes(mode, bufferSize, bytes, format) {
@@ -613,7 +613,7 @@ function NGenXXZUnZipStream(bufferSize, format, readFunc, writeFunc, flushFunc) 
 function NGenXXZZipFile(mode, bufferSize, format, inFilePath, outFilePath) {
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
-    
+
     let res = NGenXXZZipStream(mode, bufferSize, format,
         () => {
             let inBuffer = new ArrayBuffer(bufferSize);

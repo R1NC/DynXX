@@ -41,7 +41,7 @@ extern "C"
      * @param params JS function params（wrap multiple params with json）
      * @return return value of JS function
      */
-    const char * ngenxx_js_call(const char *func, const char *params);
+    const char *ngenxx_js_call(const char *func, const char *params);
 
     /**
      * @brief Set JS msg callback

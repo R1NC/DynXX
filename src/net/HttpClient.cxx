@@ -38,10 +38,10 @@ NGenXX::Net::HttpClient::~HttpClient()
 }
 
 const std::string NGenXX::Net::HttpClient::request(const std::string &url, const std::string &params, const int method,
-                                      const std::vector<std::string> &headers,
-                                      const std::vector<NGenXX::Net::HttpFormField> &formFields,
-                                      const std::FILE *cFILE, const size_t fileSize,
-                                      const size_t timeout)
+                                                   const std::vector<std::string> &headers,
+                                                   const std::vector<NGenXX::Net::HttpFormField> &formFields,
+                                                   const std::FILE *cFILE, const size_t fileSize,
+                                                   const size_t timeout)
 {
     std::string rsp;
     int _timeout = timeout;
@@ -67,7 +67,7 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
             curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_ReadCallback);
             curl_easy_setopt(curl, CURLOPT_READDATA, cFILE);
             curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, fileSize);
-        } 
+        }
         else if (formFields.size() > 0)
         {
             mime = curl_mime_init(curl);

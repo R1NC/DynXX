@@ -5,11 +5,11 @@
 
 #include "../../include/NGenXXTypes.hxx"
 
-namespace NGenXX 
+namespace NGenXX
 {
     namespace Coding
     {
-        namespace Hex 
+        namespace Hex
         {
 
             const std::string bytes2str(const Bytes bytes);

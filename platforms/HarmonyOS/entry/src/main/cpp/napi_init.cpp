@@ -5,14 +5,16 @@
 #include <string.h>
 #include <stdlib.h>
 
-static napi_value GetVersion(napi_env env, napi_callback_info info) {
+static napi_value GetVersion(napi_env env, napi_callback_info info)
+{
     const char *c = ngenxx_get_version();
     napi_value v = chars2NapiValue(env, c);
     free(static_cast<void *>(const_cast<char *>(c)));
     return v;
 }
 
-static napi_value Init(napi_env env, napi_callback_info info) {
+static napi_value Init(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     const char *root = napiValue2chars(env, argv[0]);
@@ -25,15 +27,17 @@ static napi_value Init(napi_env env, napi_callback_info info) {
     return v;
 }
 
-static napi_value Release(napi_env env, napi_callback_info info) {
-   ngenxx_release();
+static napi_value Release(napi_env env, napi_callback_info info)
+{
+    ngenxx_release();
 
     return int2NapiValue(env, napi_ok);
 }
 
 #pragma mark Log Callback
 
-typedef struct {
+typedef struct
+{
     napi_async_work tsWork;
     napi_threadsafe_function tsWorkFunc;
     int logLevel;
@@ -43,7 +47,8 @@ typedef struct {
 static napi_env sNapiEnv;
 static napi_ref sTsLogCallbackRef;
 
-static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context, void *data) {
+static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context, void *data)
+{
     if (env == NULL || ts_callback == NULL || data == NULL)
         return;
 
@@ -68,7 +73,8 @@ static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context,
     free(static_cast<void *>(tSLogWorkData));
 }
 
-static void OnLogWorkExecute(napi_env env, void *data) {
+static void OnLogWorkExecute(napi_env env, void *data)
+{
     TSLogWorkData *tSLogWorkData = (TSLogWorkData *)data;
 
     napi_status status = napi_acquire_threadsafe_function(tSLogWorkData->tsWorkFunc);
@@ -78,7 +84,8 @@ static void OnLogWorkExecute(napi_env env, void *data) {
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_call_threadsafe_function() failed");
 }
 
-static void OnLogWorkComplete(napi_env env, napi_status status, void *data) {
+static void OnLogWorkComplete(napi_env env, napi_status status, void *data)
+{
     TSLogWorkData *tSLogWorkData = (TSLogWorkData *)data;
 
     status = napi_release_threadsafe_function(tSLogWorkData->tsWorkFunc, napi_tsfn_release);
@@ -88,7 +95,8 @@ static void OnLogWorkComplete(napi_env env, napi_status status, void *data) {
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_delete_async_work() failed");
 }
 
-static void engineLogCallback(int level, const char *content) {
+static void engineLogCallback(int level, const char *content)
+{
     if (sNapiEnv == NULL || content == NULL)
         return;
 
@@ -120,49 +128,55 @@ static void engineLogCallback(int level, const char *content) {
 
 #pragma mark Log API
 
-static napi_value LogSetLevel(napi_env env, napi_callback_info info) {
+static napi_value LogSetLevel(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     int level = napiValue2int(env, argv[0]);
 
-   ngenxx_log_set_level(level);
+    ngenxx_log_set_level(level);
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
-static napi_value LogSetCallback(napi_env env, napi_callback_info info) {
+static napi_value LogSetCallback(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     napi_value vLogCallback = argv[0];
     int status;
-    if (vLogCallback == NULL) {
+    if (vLogCallback == NULL)
+    {
         sNapiEnv = NULL;
 
         status = napi_delete_reference(env, sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_delete_reference() failed");
 
-       ngenxx_log_set_callback(NULL);
-    } else {
+        ngenxx_log_set_callback(NULL);
+    }
+    else
+    {
         sNapiEnv = env;
 
         status = napi_create_reference(env, vLogCallback, 1, &sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_reference() failed");
 
-       ngenxx_log_set_callback(engineLogCallback);
+        ngenxx_log_set_callback(engineLogCallback);
     }
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
-static napi_value LogPrint(napi_env env, napi_callback_info info) {
+static napi_value LogPrint(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     int level = napiValue2int(env, argv[0]);
     const char *content = napiValue2chars(env, argv[1]);
 
-   ngenxx_log_print(level, content);
+    ngenxx_log_print(level, content);
     free(static_cast<void *>(const_cast<char *>(content)));
 
     free(static_cast<void *>(argv));
@@ -171,7 +185,8 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
 
 #pragma mark Net
 
-static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
+static napi_value NetHttpRequest(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 10);
 
     const char *cUrl = napiValue2chars(env, argv[0]);
@@ -180,43 +195,48 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info) {
 
     uint32_t header_c = napiValueArrayLen(env, argv[3]);
     const char **header_v = napiValue2charsArray(env, argv[3], header_c);
-    
+
     uint32_t form_field_count = napiValueArrayLen(env, argv[4]);
     const char **form_field_name_v = napiValue2charsArray(env, argv[4], form_field_count);
     const char **form_field_mime_v = napiValue2charsArray(env, argv[5], form_field_count);
     const char **form_field_data_v = napiValue2charsArray(env, argv[6], form_field_count);
-    
+
     const char *cFilePath = napiValue2chars(env, argv[7]);
     FILE *cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
     long fileLength = napiValue2long(env, argv[8]);
 
     long lTimeout = napiValue2long(env, argv[9]);
 
-    const char *res = ngenxx_net_http_request(cUrl, cParams, iMethod, 
-    header_v, header_c, 
-    form_field_name_v, form_field_mime_v, form_field_data_v, form_field_count,
-    static_cast<void *>(cFILE), fileLength,
-    lTimeout);
+    const char *res = ngenxx_net_http_request(cUrl, cParams, iMethod,
+                                              header_v, header_c,
+                                              form_field_name_v, form_field_mime_v, form_field_data_v, form_field_count,
+                                              static_cast<void *>(cFILE), fileLength,
+                                              lTimeout);
     napi_value nv = chars2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(res)));
-    for (int i = 0; i < header_c; i++) {
+    for (int i = 0; i < header_c; i++)
+    {
         free(static_cast<void *>(const_cast<char *>(header_v[i])));
     }
-    for (int i = 0; i < form_field_count; i++) {
+    for (int i = 0; i < form_field_count; i++)
+    {
         free(static_cast<void *>(const_cast<char *>(form_field_name_v[i])));
         free(static_cast<void *>(const_cast<char *>(form_field_mime_v[i])));
         free(static_cast<void *>(const_cast<char *>(form_field_data_v[i])));
     }
-    if (cParams) free(static_cast<void *>(const_cast<char *>(cParams)));
-    if (cUrl) free(static_cast<void *>(const_cast<char *>(cUrl)));
+    if (cParams)
+        free(static_cast<void *>(const_cast<char *>(cParams)));
+    if (cUrl)
+        free(static_cast<void *>(const_cast<char *>(cUrl)));
     free(static_cast<void *>(argv));
     return nv;
 }
 
 #pragma mark Store.SQLite
 
-static napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info) {
+static napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     const char *_id = napiValue2chars(env, argv[0]);
@@ -228,7 +248,8 @@ static napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info) {
+static napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
@@ -242,7 +263,8 @@ static napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info) {
+static napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
@@ -256,7 +278,8 @@ static napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info) {
+static napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     long query_result = napiValue2long(env, argv[0]);
@@ -268,7 +291,8 @@ static napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
     return nv;
 }
 
-static napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_info info) {
+static napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long query_result = napiValue2long(env, argv[0]);
@@ -283,7 +307,8 @@ static napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_inf
     return nv;
 }
 
-static napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info) {
+static napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long query_result = napiValue2long(env, argv[0]);
@@ -297,7 +322,8 @@ static napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_
     return nv;
 }
 
-static napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info) {
+static napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long query_result = napiValue2long(env, argv[0]);
@@ -311,21 +337,23 @@ static napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_in
     return nv;
 }
 
-static napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info) {
+static napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     long query_result = napiValue2long(env, argv[0]);
-   ngenxx_store_sqlite_query_drop(reinterpret_cast<void *>(query_result));
+    ngenxx_store_sqlite_query_drop(reinterpret_cast<void *>(query_result));
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
-static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info) {
+static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     long conn = napiValue2long(env, argv[0]);
-   ngenxx_store_sqlite_close(reinterpret_cast<void *>(conn));
+    ngenxx_store_sqlite_close(reinterpret_cast<void *>(conn));
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
@@ -333,7 +361,8 @@ static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info) {
 
 #pragma mark Store.KV
 
-static napi_value StoreKVOpen(napi_env env, napi_callback_info info) {
+static napi_value StoreKVOpen(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     const char *_id = napiValue2chars(env, argv[0]);
@@ -345,7 +374,8 @@ static napi_value StoreKVOpen(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreKVReadString(napi_env env, napi_callback_info info) {
+static napi_value StoreKVReadString(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
@@ -360,7 +390,8 @@ static napi_value StoreKVReadString(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreKVWriteString(napi_env env, napi_callback_info info) {
+static napi_value StoreKVWriteString(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 3);
 
     long conn = napiValue2long(env, argv[0]);
@@ -376,7 +407,8 @@ static napi_value StoreKVWriteString(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreKVReadInteger(napi_env env, napi_callback_info info) {
+static napi_value StoreKVReadInteger(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
@@ -390,7 +422,8 @@ static napi_value StoreKVReadInteger(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info) {
+static napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 3);
 
     long conn = napiValue2long(env, argv[0]);
@@ -405,7 +438,8 @@ static napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreKVReadFloat(napi_env env, napi_callback_info info) {
+static napi_value StoreKVReadFloat(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
@@ -419,7 +453,8 @@ static napi_value StoreKVReadFloat(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info) {
+static napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 3);
 
     long conn = napiValue2long(env, argv[0]);
@@ -434,7 +469,8 @@ static napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreKVContains(napi_env env, napi_callback_info info) {
+static napi_value StoreKVContains(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long conn = napiValue2long(env, argv[0]);
@@ -448,21 +484,23 @@ static napi_value StoreKVContains(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value StoreKVClear(napi_env env, napi_callback_info info) {
+static napi_value StoreKVClear(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     long conn = napiValue2long(env, argv[0]);
-   ngenxx_store_kv_clear(reinterpret_cast<void *>(conn));
+    ngenxx_store_kv_clear(reinterpret_cast<void *>(conn));
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
-static napi_value StoreKVClose(napi_env env, napi_callback_info info) {
+static napi_value StoreKVClose(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     long conn = napiValue2long(env, argv[0]);
-   ngenxx_store_kv_close(reinterpret_cast<void *>(conn));
+    ngenxx_store_kv_close(reinterpret_cast<void *>(conn));
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
@@ -470,34 +508,39 @@ static napi_value StoreKVClose(napi_env env, napi_callback_info info) {
 
 #pragma mark DeviceInfo
 
-static napi_value DeviceType(napi_env env, napi_callback_info info) {
+static napi_value DeviceType(napi_env env, napi_callback_info info)
+{
     int dt = ngenxx_device_type();
     napi_value v = int2NapiValue(env, dt);
     return v;
 }
 
-static napi_value DeviceName(napi_env env, napi_callback_info info) {
+static napi_value DeviceName(napi_env env, napi_callback_info info)
+{
     const char *cDN = ngenxx_device_name();
     napi_value v = chars2NapiValue(env, cDN);
     free(static_cast<void *>(const_cast<char *>(cDN)));
     return v;
 }
 
-static napi_value DeviceManufacturer(napi_env env, napi_callback_info info) {
+static napi_value DeviceManufacturer(napi_env env, napi_callback_info info)
+{
     const char *cDM = ngenxx_device_manufacturer();
     napi_value v = chars2NapiValue(env, cDM);
     free(static_cast<void *>(const_cast<char *>(cDM)));
     return v;
 }
 
-static napi_value DeviceOsVersion(napi_env env, napi_callback_info info) {
+static napi_value DeviceOsVersion(napi_env env, napi_callback_info info)
+{
     const char *cOV = ngenxx_device_name();
     napi_value v = chars2NapiValue(env, cOV);
     free(static_cast<void *>(const_cast<char *>(cOV)));
     return v;
 }
 
-static napi_value DeviceCpuArch(napi_env env, napi_callback_info info) {
+static napi_value DeviceCpuArch(napi_env env, napi_callback_info info)
+{
     int dca = ngenxx_device_cpu_arch();
     napi_value v = int2NapiValue(env, dca);
     return v;
@@ -505,11 +548,12 @@ static napi_value DeviceCpuArch(napi_env env, napi_callback_info info) {
 
 #pragma mark JsonDecoder
 
-static napi_value JsonDecoderInit(napi_env env, napi_callback_info info) {
+static napi_value JsonDecoderInit(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     const char *cJson = napiValue2chars(env, argv[0]);
-    
+
     long res = reinterpret_cast<long>(ngenxx_json_decoder_init(cJson));
     napi_value v = long2NapiValue(env, res);
 
@@ -518,39 +562,42 @@ static napi_value JsonDecoderInit(napi_env env, napi_callback_info info) {
     return v;
 }
 
-static napi_value JsonDecoderIsArray(napi_env env, napi_callback_info info) {
+static napi_value JsonDecoderIsArray(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
-    
+
     bool res = ngenxx_json_decoder_is_array(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = bool2NapiValue(env, res);
-    
+
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value JsonDecoderIsObject(napi_env env, napi_callback_info info) {
+static napi_value JsonDecoderIsObject(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
-    
+
     bool res = ngenxx_json_decoder_is_object(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = bool2NapiValue(env, res);
-    
+
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info) {
+static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 3);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
     const char *cK = napiValue2chars(env, argv[2]);
-    
+
     long res = (long)ngenxx_json_decoder_read_node(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node), cK);
     napi_value v = long2NapiValue(env, res);
 
@@ -559,95 +606,102 @@ static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info) {
     return v;
 }
 
-static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info) {
+static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
-    
+
     long res = (long)ngenxx_json_decoder_read_child(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = long2NapiValue(env, res);
-    
+
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info) {
+static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
-    
+
     long res = (long)ngenxx_json_decoder_read_next(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = long2NapiValue(env, res);
-    
+
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value JsonDecoderReadString(napi_env env, napi_callback_info info) {
+static napi_value JsonDecoderReadString(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
-    
+
     const char *cRes = ngenxx_json_decoder_read_string(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = chars2NapiValue(env, cRes);
-    
+
     free(static_cast<void *>(const_cast<char *>(cRes)));
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info) {
+static napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     long decoder = napiValue2long(env, argv[0]);
     long node = napiValue2long(env, argv[1]);
-    
+
     double res = ngenxx_json_decoder_read_number(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     napi_value v = double2NapiValue(env, res);
-    
+
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info) {
+static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     long decoder = napiValue2long(env, argv[0]);
-    
-   ngenxx_json_decoder_release(reinterpret_cast<void *>(decoder));
-    
+
+    ngenxx_json_decoder_release(reinterpret_cast<void *>(decoder));
+
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
 #pragma mark Coding
 
-static napi_value CodingHexBytes2str(napi_env env, napi_callback_info info) {
+static napi_value CodingHexBytes2str(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
-    
+
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
-    
+
     auto cRes = ngenxx_coding_hex_bytes2str(inBytes, inLen);
     napi_value v = chars2NapiValue(env, cRes);
-    
+
     free(static_cast<void *>(const_cast<char *>(cRes)));
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
     return v;
 }
 
-static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info) {
+static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
-    
+
     const char *cStr = napiValue2chars(env, argv[0]);
-    
+
     size_t outLen;
     auto cRes = ngenxx_coding_hex_str2bytes(cStr, &outLen);
     napi_value v = byteArray2NapiValue(env, cRes, outLen);
-    
+
     free(static_cast<void *>(const_cast<byte *>(cRes)));
     free(static_cast<void *>(const_cast<char *>(cStr)));
     return v;
@@ -655,31 +709,33 @@ static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info) {
 
 #pragma mark Crypto
 
-static napi_value CryptoRand(napi_env env, napi_callback_info info) {
+static napi_value CryptoRand(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
-    
+
     uint32_t len = napiValue2int(env, argv[0]);
     byte out[len];
     memset(out, 0, len);
-    
-   ngenxx_crypto_rand(len, out);
+
+    ngenxx_crypto_rand(len, out);
     napi_value v = byteArray2NapiValue(env, out, len);
-    
+
     return v;
 }
 
-static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info) {
+static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
     uint32_t keyLen = napiValueArrayLen(env, argv[1]);
     const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
-    
+
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
-    
+
     free(static_cast<void *>(const_cast<byte *>(outBytes)));
     free(static_cast<void *>(const_cast<byte *>(keyBytes)));
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
@@ -687,18 +743,19 @@ static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info) {
     return v;
 }
 
-static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info) {
+static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
     uint32_t keyLen = napiValueArrayLen(env, argv[1]);
     const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
-    
+
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_decrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
-    
+
     free(static_cast<void *>(const_cast<byte *>(outBytes)));
     free(static_cast<void *>(const_cast<byte *>(keyBytes)));
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
@@ -706,7 +763,8 @@ static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info) {
     return v;
 }
 
-static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
+static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 5);
 
     size_t inLen = napiValueArrayLen(env, argv[0]);
@@ -718,13 +776,14 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
     size_t aadLen = napiValueArrayLen(env, argv[3]);
     const byte *aadBytes = napiValue2byteArray(env, argv[3], aadLen);
     size_t tagBits = napiValue2int(env, argv[4]);
-    
+
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
-    
+
     free(static_cast<void *>(const_cast<byte *>(outBytes)));
-    if (aadBytes) free(static_cast<void *>(const_cast<byte *>(aadBytes)));
+    if (aadBytes)
+        free(static_cast<void *>(const_cast<byte *>(aadBytes)));
     free(static_cast<void *>(const_cast<byte *>(initVectorBytes)));
     free(static_cast<void *>(const_cast<byte *>(keyBytes)));
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
@@ -732,7 +791,8 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
     return v;
 }
 
-static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
+static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 5);
 
     size_t inLen = napiValueArrayLen(env, argv[0]);
@@ -744,13 +804,14 @@ static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
     size_t aadLen = napiValueArrayLen(env, argv[3]);
     const byte *aadBytes = napiValue2byteArray(env, argv[3], aadLen);
     size_t tagBits = napiValue2int(env, argv[4]);
-    
+
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
-    
+
     free(static_cast<void *>(const_cast<byte *>(outBytes)));
-    if (aadBytes) free(static_cast<void *>(const_cast<byte *>(aadBytes)));
+    if (aadBytes)
+        free(static_cast<void *>(const_cast<byte *>(aadBytes)));
     free(static_cast<void *>(const_cast<byte *>(initVectorBytes)));
     free(static_cast<void *>(const_cast<byte *>(keyBytes)));
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
@@ -758,64 +819,68 @@ static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
     return v;
 }
 
-static napi_value CryptoHashMd5(napi_env env, napi_callback_info info) {
+static napi_value CryptoHashMd5(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
-    
+
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_hash_md5(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
-    
+
     free(static_cast<void *>(const_cast<byte *>(outBytes)));
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value CryptoHashSha256(napi_env env, napi_callback_info info) {
+static napi_value CryptoHashSha256(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
-    
+
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_hash_sha256(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
-    
+
     free(static_cast<void *>(const_cast<byte *>(outBytes)));
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value CryptoBase64Encode(napi_env env, napi_callback_info info) {
+static napi_value CryptoBase64Encode(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
-    
+
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
-    
+
     free(static_cast<void *>(const_cast<byte *>(outBytes)));
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info) {
+static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
-    
+
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, &outLen);
     napi_value v = byteArray2NapiValue(env, outBytes, outLen);
-    
+
     free(static_cast<void *>(const_cast<byte *>(outBytes)));
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
     free(static_cast<void *>(argv));
@@ -824,7 +889,8 @@ static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info) {
 
 #pragma mark Lua
 
-static napi_value LLoadF(napi_env env, napi_callback_info info) {
+static napi_value LLoadF(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     const char *file = napiValue2chars(env, argv[0]);
@@ -837,7 +903,8 @@ static napi_value LLoadF(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value LLoadS(napi_env env, napi_callback_info info) {
+static napi_value LLoadS(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     const char *script = napiValue2chars(env, argv[0]);
@@ -850,7 +917,8 @@ static napi_value LLoadS(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value LCall(napi_env env, napi_callback_info info) {
+static napi_value LCall(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     const char *func = napiValue2chars(env, argv[0]);
@@ -860,7 +928,8 @@ static napi_value LCall(napi_env env, napi_callback_info info) {
     napi_value nv = chars2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(res)));
-    if (params) free(static_cast<void *>(const_cast<char *>(params)));
+    if (params)
+        free(static_cast<void *>(const_cast<char *>(params)));
     free(static_cast<void *>(const_cast<char *>(func)));
     free(static_cast<void *>(argv));
     return nv;
@@ -868,7 +937,8 @@ static napi_value LCall(napi_env env, napi_callback_info info) {
 
 #pragma mark JS
 
-static napi_value JLoadF(napi_env env, napi_callback_info info) {
+static napi_value JLoadF(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     const char *file = napiValue2chars(env, argv[0]);
@@ -881,7 +951,8 @@ static napi_value JLoadF(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value JLoadS(napi_env env, napi_callback_info info) {
+static napi_value JLoadS(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     const char *script = napiValue2chars(env, argv[0]);
@@ -896,22 +967,24 @@ static napi_value JLoadS(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-static napi_value JLoadB(napi_env env, napi_callback_info info) {
+static napi_value JLoadB(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 1);
 
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
-    
+
     size_t outLen;
     bool b = ngenxx_js_loadB(inBytes, inLen);
     napi_value v = bool2NapiValue(env, b);
-    
+
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
     free(static_cast<void *>(argv));
     return v;
 }
 
-static napi_value JCall(napi_env env, napi_callback_info info) {
+static napi_value JCall(napi_env env, napi_callback_info info)
+{
     napi_value *argv = readParams(env, info, 2);
 
     const char *func = napiValue2chars(env, argv[0]);
@@ -921,7 +994,8 @@ static napi_value JCall(napi_env env, napi_callback_info info) {
     napi_value nv = chars2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(res)));
-    if (params) free(static_cast<void *>(const_cast<char *>(params)));
+    if (params)
+        free(static_cast<void *>(const_cast<char *>(params)));
     free(static_cast<void *>(const_cast<char *>(func)));
     free(static_cast<void *>(argv));
     return nv;
@@ -930,7 +1004,8 @@ static napi_value JCall(napi_env env, napi_callback_info info) {
 #pragma mark Register Module
 
 EXTERN_C_START
-static napi_value RegisterFuncs(napi_env env, napi_value exports) {
+static napi_value RegisterFuncs(napi_env env, napi_value exports)
+{
     napi_property_descriptor desc[] = {
         {"getVersion", nullptr, GetVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"init", nullptr, Init, nullptr, nullptr, nullptr, napi_default, nullptr},

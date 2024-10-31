@@ -375,7 +375,7 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes inBytes)
     BIO_get_mem_ptr(bio, &bptr);
     BIO_set_close(bio, BIO_NOCLOSE);
 
-   Bytes outBytes = {reinterpret_cast<byte *>(bptr->data), bptr->length};
+    Bytes outBytes = {reinterpret_cast<byte *>(bptr->data), bptr->length};
     BIO_free_all(bio);
 
     return outBytes;
@@ -400,7 +400,7 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes inBytes)
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
     BIO_read(bio, outBuffer, inLen);
 
-   Bytes outBytes = {outBuffer, outLen};
+    Bytes outBytes = {outBuffer, outLen};
     BIO_free_all(bio);
 
     return trimBytes(outBytes);
