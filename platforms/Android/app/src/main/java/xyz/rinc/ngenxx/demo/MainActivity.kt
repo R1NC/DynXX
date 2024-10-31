@@ -21,6 +21,8 @@ import xyz.rinc.ngenxx.demo.ui.theme.NGenXXTheme
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
 
@@ -28,7 +30,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            testNGenXX()
+            testNGenXXAsync()
         }
     }
 
@@ -39,7 +41,7 @@ class MainActivity : ComponentActivity() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             reqPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
         } else {
-            testNGenXX()
+            testNGenXXAsync()
         }
 
         setContent {
@@ -57,6 +59,14 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         NGenXX.release()
+    }
+
+    private fun testNGenXXAsync() {
+        runBlocking {
+            launch {
+                testNGenXX()
+            }
+        }
     }
 
     private fun testNGenXX() {
