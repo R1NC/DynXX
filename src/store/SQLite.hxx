@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-#include "../NGenXX-Types.hxx"
+#include "../../include/NGenXXTypes.hxx"
 #include <string>
 #ifdef __APPLE__
 #include <sqlite3.h>

@@ -1,5 +1,5 @@
-#ifndef NGENXX_NET_HTTP_H_
-#define NGENXX_NET_HTTP_H_
+#ifndef NGENXX_INCLUDE_NET_HTTP_H_
+#define NGENXX_INCLUDE_NET_HTTP_H_
 
 #include "NGenXXTypes.h"
 
@@ -8,13 +8,13 @@ extern "C"
 {
 #endif
 
-    static const size NGENXX_HTTP_HEADER_MAX_COUNT = 100;
-    static const size NGENXX_HTTP_HEADER_MAX_LENGTH = 8190;
+    static const size_t NGENXX_HTTP_HEADER_MAX_COUNT = 100;
+    static const size_t NGENXX_HTTP_HEADER_MAX_LENGTH = 8190;
 
-    static const size NGENXX_HTTP_FORM_FIELD_MAX_COUNT = 16;
-    static const size NGENXX_HTTP_FORM_FIELD_NAME_MAX_LENGTH = 256;
-    static const size NGENXX_HTTP_FORM_FIELD_MINE_MAX_LENGTH = 256;
-    static const size NGENXX_HTTP_FORM_FIELD_DATA_MAX_LENGTH = 64 * 1024;
+    static const size_t NGENXX_HTTP_FORM_FIELD_MAX_COUNT = 16;
+    static const size_t NGENXX_HTTP_FORM_FIELD_NAME_MAX_LENGTH = 256;
+    static const size_t NGENXX_HTTP_FORM_FIELD_MINE_MAX_LENGTH = 256;
+    static const size_t NGENXX_HTTP_FORM_FIELD_DATA_MAX_LENGTH = 64 * 1024;
 
     /**
      * HTTP method
@@ -43,16 +43,16 @@ extern "C"
      * @return response
      */
     const char *ngenxx_net_http_request(const char *url, const char *params, const int method,
-                                        const char **header_v, const size header_c,
+                                        const char **header_v, const size_t header_c,
                                         const char **form_field_name_v,
                                         const char **form_field_mime_v,
                                         const char **form_field_data_v,
-                                        const size form_field_count,
-                                        void *const cFILE, const size file_size,
-                                        const size timeout);
+                                        const size_t form_field_count,
+                                        void *const cFILE, const size_t file_size,
+                                        const size_t timeout);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // NGENXX_NET_HTTP_H_
+#endif // NGENXX_INCLUDE_NET_HTTP_H_

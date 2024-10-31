@@ -1,5 +1,5 @@
-#ifndef NGENXX_H_
-#define NGENXX_H_
+#ifndef NGENXX_INCLUDE_H_
+#define NGENXX_INCLUDE_H_
 
 #include "NGenXXTypes.h"
 #include "NGenXXLog.h"
@@ -48,4 +48,4 @@ void ngenxx_release(void);
 }
 #endif
 
-#endif // NGENXX_H_
+#endif // NGENXX_INCLUDE_H_

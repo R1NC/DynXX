@@ -26,7 +26,7 @@ static napi_value Init(napi_env env, napi_callback_info info) {
 }
 
 static napi_value Release(napi_env env, napi_callback_info info) {
-    ngenxx_release();
+   ngenxx_release();
 
     return int2NapiValue(env, napi_ok);
 }
@@ -125,7 +125,7 @@ static napi_value LogSetLevel(napi_env env, napi_callback_info info) {
 
     int level = napiValue2int(env, argv[0]);
 
-    ngenxx_log_set_level(level);
+   ngenxx_log_set_level(level);
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
@@ -142,14 +142,14 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info) {
         status = napi_delete_reference(env, sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_delete_reference() failed");
 
-        ngenxx_log_set_callback(NULL);
+       ngenxx_log_set_callback(NULL);
     } else {
         sNapiEnv = env;
 
         status = napi_create_reference(env, vLogCallback, 1, &sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_reference() failed");
 
-        ngenxx_log_set_callback(engineLogCallback);
+       ngenxx_log_set_callback(engineLogCallback);
     }
 
     free(static_cast<void *>(argv));
@@ -162,7 +162,7 @@ static napi_value LogPrint(napi_env env, napi_callback_info info) {
     int level = napiValue2int(env, argv[0]);
     const char *content = napiValue2chars(env, argv[1]);
 
-    ngenxx_log_print(level, content);
+   ngenxx_log_print(level, content);
     free(static_cast<void *>(const_cast<char *>(content)));
 
     free(static_cast<void *>(argv));
@@ -315,7 +315,7 @@ static napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info) {
     napi_value *argv = readParams(env, info, 1);
 
     long query_result = napiValue2long(env, argv[0]);
-    ngenxx_store_sqlite_query_drop(reinterpret_cast<void *>(query_result));
+   ngenxx_store_sqlite_query_drop(reinterpret_cast<void *>(query_result));
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
@@ -325,7 +325,7 @@ static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info) {
     napi_value *argv = readParams(env, info, 1);
 
     long conn = napiValue2long(env, argv[0]);
-    ngenxx_store_sqlite_close(reinterpret_cast<void *>(conn));
+   ngenxx_store_sqlite_close(reinterpret_cast<void *>(conn));
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
@@ -452,7 +452,7 @@ static napi_value StoreKVClear(napi_env env, napi_callback_info info) {
     napi_value *argv = readParams(env, info, 1);
 
     long conn = napiValue2long(env, argv[0]);
-    ngenxx_store_kv_clear(reinterpret_cast<void *>(conn));
+   ngenxx_store_kv_clear(reinterpret_cast<void *>(conn));
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
@@ -462,7 +462,7 @@ static napi_value StoreKVClose(napi_env env, napi_callback_info info) {
     napi_value *argv = readParams(env, info, 1);
 
     long conn = napiValue2long(env, argv[0]);
-    ngenxx_store_kv_close(reinterpret_cast<void *>(conn));
+   ngenxx_store_kv_close(reinterpret_cast<void *>(conn));
 
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
@@ -617,7 +617,7 @@ static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info) {
 
     long decoder = napiValue2long(env, argv[0]);
     
-    ngenxx_json_decoder_release(reinterpret_cast<void *>(decoder));
+   ngenxx_json_decoder_release(reinterpret_cast<void *>(decoder));
     
     free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
@@ -662,7 +662,7 @@ static napi_value CryptoRand(napi_env env, napi_callback_info info) {
     byte out[len];
     memset(out, 0, len);
     
-    ngenxx_crypto_rand(len, out);
+   ngenxx_crypto_rand(len, out);
     napi_value v = byteArray2NapiValue(env, out, len);
     
     return v;
@@ -829,7 +829,7 @@ static napi_value LLoadF(napi_env env, napi_callback_info info) {
 
     const char *file = napiValue2chars(env, argv[0]);
 
-    bool res = ngenxx_L_loadF(file);
+    bool res = ngenxx_lua_loadF(file);
     napi_value nv = bool2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(file)));
@@ -842,7 +842,7 @@ static napi_value LLoadS(napi_env env, napi_callback_info info) {
 
     const char *script = napiValue2chars(env, argv[0]);
 
-    bool res = ngenxx_L_loadS(script);
+    bool res = ngenxx_lua_loadS(script);
     napi_value nv = bool2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(script)));
@@ -856,7 +856,7 @@ static napi_value LCall(napi_env env, napi_callback_info info) {
     const char *func = napiValue2chars(env, argv[0]);
     const char *params = napiValue2chars(env, argv[1]);
 
-    const char *res = ngenxx_L_call(func, params);
+    const char *res = ngenxx_lua_call(func, params);
     napi_value nv = chars2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(res)));
@@ -873,7 +873,7 @@ static napi_value JLoadF(napi_env env, napi_callback_info info) {
 
     const char *file = napiValue2chars(env, argv[0]);
 
-    bool res = ngenxx_J_loadF(file);
+    bool res = ngenxx_js_loadF(file);
     napi_value nv = bool2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(file)));
@@ -887,7 +887,7 @@ static napi_value JLoadS(napi_env env, napi_callback_info info) {
     const char *script = napiValue2chars(env, argv[0]);
     const char *name = napiValue2chars(env, argv[1]);
 
-    bool res = ngenxx_J_loadS(script, name);
+    bool res = ngenxx_js_loadS(script, name);
     napi_value nv = bool2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(script)));
@@ -903,7 +903,7 @@ static napi_value JLoadB(napi_env env, napi_callback_info info) {
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
     
     size outLen;
-    bool b = ngenxx_J_loadB(inBytes, inLen);
+    bool b = ngenxx_js_loadB(inBytes, inLen);
     napi_value v = bool2NapiValue(env, b);
     
     free(static_cast<void *>(const_cast<byte *>(inBytes)));
@@ -917,7 +917,7 @@ static napi_value JCall(napi_env env, napi_callback_info info) {
     const char *func = napiValue2chars(env, argv[0]);
     const char *params = napiValue2chars(env, argv[1]);
 
-    const char *res = ngenxx_J_call(func, params);
+    const char *res = ngenxx_js_call(func, params);
     napi_value nv = chars2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(res)));

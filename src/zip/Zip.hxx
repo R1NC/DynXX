@@ -10,7 +10,7 @@
 #ifdef __cplusplus
 
 #include "../../include/NGenXXZip.h"
-#include "../NGenXX-Types.hxx"
+#include "../../include/NGenXXTypes.hxx"
 #include <istream>
 #include <ostream>
 #include <cstdio>
@@ -24,7 +24,7 @@ namespace NGenXX
         private:
             byte *inBuffer;
             byte *outBuffer;
-            size bufferSize;
+            size_t bufferSize;
             int format;
             virtual void processImp() = 0;
 
@@ -36,8 +36,8 @@ namespace NGenXX
 
         public:
             ZBase() = delete;
-            ZBase(const size bufferSize, const int format);
-            const size input(const Bytes bytes, bool inFinish);
+            ZBase(const size_t bufferSize, const int format);
+            const size_t input(const Bytes bytes, bool inFinish);
             const Bytes processDo();
             const bool processFinished();
             virtual ~ZBase();
@@ -50,7 +50,7 @@ namespace NGenXX
 
         public:
             Zip() = delete;
-            Zip(int mode, const size bufferSize, const int format);
+            Zip(int mode, const size_t bufferSize, const int format);
             ~Zip();
         };
 
@@ -61,21 +61,21 @@ namespace NGenXX
 
         public:
             UnZip() = delete;
-            UnZip(const size bufferSize, const int format);
+            UnZip(const size_t bufferSize, const int format);
             ~UnZip();
         };
 
-        bool zip(int mode, const size bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
+        bool zip(int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
 
-        bool unzip(const size bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
+        bool unzip(const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
 
-        bool zip(int mode, const size bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
+        bool zip(int mode, const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
 
-        bool unzip(const size bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
+        bool unzip(const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
 
-        const Bytes zip(int mode, const size bufferSize, const int format, const Bytes bytes);
+        const Bytes zip(int mode, const size_t bufferSize, const int format, const Bytes bytes);
 
-        const Bytes unzip(const size bufferSize, const int format, const Bytes bytes);
+        const Bytes unzip(const size_t bufferSize, const int format, const Bytes bytes);
     }
 }
 

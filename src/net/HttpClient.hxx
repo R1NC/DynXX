@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-#include "../NGenXX-Types.hxx"
+#include "../../include/NGenXXTypes.hxx"
 
 #include <string>
 #include <vector>
@@ -38,8 +38,8 @@ namespace NGenXX
             const std::string request(const std::string &url, const std::string &params, const int method,
                                       const std::vector<std::string> &headers,
                                       const std::vector<HttpFormField> &formFields,
-                                      const std::FILE *cFILE, const size fileSize,
-                                      const size timeout);
+                                      const std::FILE *cFILE, const size_t fileSize,
+                                      const size_t timeout);
 
             /**
              *

@@ -32,9 +32,10 @@ set(ENGINE_FILES
     ../src/json/JsonDecoder.cxx
     ../src/zip/Zip.cxx
     ../src/coding/Coding.cxx
-    ../src/crypto/Crypto.cxx
-    ../src/NGenXX-S.cxx
-    ../src/NGenXX.cxx
+    ../src/crypto/Crypto-OpenSSL.cxx
+    ../src/NGenXX-X.cxx
+    ../src/NGenXX-Script.cxx
+    ../src/NGenXX-C.cxx
 )
 if(USE_LUA)
     set(ENGINE_FILES ${ENGINE_FILES}
@@ -45,7 +46,7 @@ endif()
 if(USE_QJS)
     set(ENGINE_FILES ${ENGINE_FILES}
         ../src/js/JsBridge.cxx
-        ../src/NGenXX-JS.cxx
+        ../src/NGenXX-Js.cxx
     )
 endif()
 
@@ -55,7 +56,7 @@ if(EMSCRIPTEN)
     set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
     # WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
     if(USE_LUA)
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_ngenxx_init','_ngenxx_release','_ngenxx_L_loadS','_ngenxx_L_call']")
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_ngenxx_init','_ngenxx_release','_ngenxx_lua_loadS','_ngenxx_lua_call']")
     else()
         set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_ngenxx_init','_ngenxx_release']")
     endif()

@@ -8,7 +8,7 @@ extern "C"
 #include "lua/LuaBridge.hxx"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
-#include "NGenXX-S.hxx"
+#include "NGenXX-Script.hxx"
 
 #include <memory>
 
@@ -126,30 +126,45 @@ DEF_LUA_FUNC_STRING(ngenxx_z_bytes_unzipL, ngenxx_z_bytes_unzipS)
 
 #pragma mark Lua
 
+bool ngenxxLuaLoadF(const std::string &f)
+{
+    if (_ngenxx_lua == nullptr || f.length() == 0)
+        return false;
+    return _ngenxx_lua->loadFile(f) == LUA_OK;
+}
+
+bool ngenxxLuaLoadS(const std::string &s)
+{
+    if (_ngenxx_lua == nullptr || s.length() == 0)
+        return false;
+    return _ngenxx_lua->loadScript(s) == LUA_OK;
+}
+
+const std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
+{
+    if (_ngenxx_lua == nullptr || f.length() == 0)
+        return NULL;
+    return _ngenxx_lua->callFunc(f, ps);
+}
+
 #ifndef __EMSCRIPTEN__
 EXPORT
-bool ngenxx_L_loadF(const char *file)
+bool ngenxx_lua_loadF(const char *file)
 {
-    if (_ngenxx_lua == nullptr || file == NULL)
-        return false;
-    return _ngenxx_lua->loadFile(std::string(file)) == LUA_OK;
+    return ngenxxLuaLoadF(file ?: "");
 }
 #endif
 
 EXPORT
-bool ngenxx_L_loadS(const char *script)
+bool ngenxx_lua_loadS(const char *script)
 {
-    if (_ngenxx_lua == nullptr || script == NULL)
-        return false;
-    return _ngenxx_lua->loadScript(std::string(script)) == LUA_OK;
+    return ngenxxLuaLoadS(script ?: "");
 }
 
 EXPORT
-const char *ngenxx_L_call(const char *func, const char *params)
+const char *ngenxx_lua_call(const char *f, const char *ps)
 {
-    if (_ngenxx_lua == nullptr || func == NULL)
-        return NULL;
-    return copyStr(_ngenxx_lua->callFunc(std::string(func), std::string(params ?: "")));
+    return copyStr(ngenxxLuaCall(f ?: "", ps ?: ""));
 }
 
 void _ngenxx_export_funcs_for_lua()

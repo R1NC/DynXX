@@ -1,9 +1,8 @@
 #include "SQLite.hxx"
-#include "../../include/NGenXXLog.h"
-#include "../log/Log.hxx"
+#include "../../include/NGenXXLog.hxx"
 #include <string.h>
 
-#define PRINT_ERR(rc, db) NGenXX::Log::print(NGenXXLogLevelError, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
+#define PRINT_ERR(rc, db) ngenxxLogPrint(NGenXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
 
 NGenXX::Store::SQLite::SQLite()
 {
@@ -82,7 +81,7 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
     return rc == SQLITE_ROW;
 }
 
-NGenXX::Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column)
+ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column)
 {
     if (this->stmt == NULL)
         return {};

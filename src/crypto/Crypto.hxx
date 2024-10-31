@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-#include "../NGenXX-Types.hxx"
+#include "../../include/NGenXXTypes.hxx"
 
 #include <tuple>
 
@@ -11,7 +11,7 @@ namespace NGenXX
 {
     namespace Crypto
     {
-        bool rand(const size len, byte *bytes);
+        bool rand(const size_t len, byte *bytes);
 
         namespace AES
         {
@@ -20,13 +20,13 @@ namespace NGenXX
 
             const Bytes decrypt(const Bytes in, const Bytes key);
 
-            static constexpr bool checkGcmParams(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size tagBits)
+            static constexpr bool checkGcmParams(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits)
             {
                 auto [inBytes, inLen] = in;
                 auto [keyBytes, keyLen] = key;
                 auto [initVectorBytes, initVectorLen] = initVector;
                 auto [aadBytes, aadLen] = aad;
-                const size tagLen = tagBits / 8;
+                const size_t tagLen = tagBits / 8;
                 if (inBytes == NULL || inLen <= 0)
                     return false;
                 if (keyBytes == NULL || (keyLen != 16 && keyLen != 24 && keyLen != 32))
@@ -42,15 +42,15 @@ namespace NGenXX
                 return true;
             }
 
-            const Bytes gcmEncrypt(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size tagBits);
+            const Bytes gcmEncrypt(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits);
 
-            const Bytes gcmDecrypt(const Bytes in, Bytes key, const Bytes initVector, const Bytes aad, const size tagBits);
+            const Bytes gcmDecrypt(const Bytes in, Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits);
         }
 
         namespace Hash
         {
-            constexpr size MD5_BYTES_LEN = 16;
-            constexpr size SHA256_BYTES_LEN = 32;
+            constexpr size_t MD5_BYTES_LEN = 16;
+            constexpr size_t SHA256_BYTES_LEN = 32;
 
             const Bytes md5(const Bytes in);
 

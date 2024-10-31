@@ -1,5 +1,5 @@
-#ifndef NGENXX_CRYPTO_H_
-#define NGENXX_CRYPTO_H_
+#ifndef NGENXX_INCLUDE_CRYPTO_H_
+#define NGENXX_INCLUDE_CRYPTO_H_
 
 #include "NGenXXTypes.h"
 
@@ -14,7 +14,7 @@ extern "C"
      * @param bytes A pointer to store the output bytes
      * @return success or not
      */
-    bool ngenxx_crypto_rand(const unsigned long len, byte *bytes);
+    bool ngenxx_crypto_rand(const size_t len, byte *bytes);
 
     /**
      * @brief AES Encrypt
@@ -25,7 +25,7 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
      */
-    const byte *ngenxx_crypto_aes_encrypt(const byte *inBytes, const size inLen, const byte *keyBytes, const size keyLen, size *outLen);
+    const byte *ngenxx_crypto_aes_encrypt(const byte *inBytes, const size_t inLen, const byte *keyBytes, const size_t keyLen, size_t *outLen);
 
     /**
      * @brief AES Decrypt
@@ -36,7 +36,7 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
      */
-    const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, const size inLen, const byte *keyBytes, const size keyLen, size *outLen);
+    const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, const size_t inLen, const byte *keyBytes, const size_t keyLen, size_t *outLen);
 
     /**
      * @brief AES GCM Encrypt
@@ -52,11 +52,11 @@ extern "C"
      * @param outLen output bytes length（include the tag）
      * @return output bytes data（With a tag on tail）
      */
-    const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, const size inLen,
-                                                                  const byte *keyBytes, const size keyLen,
-                                                                  const byte *initVectorBytes, const size initVectorLen,
-                                                                  const byte *aadBytes, const size aadLen,
-                                                                  const size tagBits, size *outLen);
+    const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, const size_t inLen,
+                                                                  const byte *keyBytes, const size_t keyLen,
+                                                                  const byte *initVectorBytes, const size_t initVectorLen,
+                                                                  const byte *aadBytes, const size_t aadLen,
+                                                                  const size_t tagBits, size_t *outLen);
 
     /**
      * @brief AES GCM Decrypt
@@ -72,11 +72,11 @@ extern "C"
      * @param outLen output bytes length（Not include the tag）
      * @return output bytes data（No tag on tail）
      */
-    const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size inLen,
-                                                                  const byte *keyBytes, const size keyLen,
-                                                                  const byte *initVectorBytes, const size initVectorLen,
-                                                                  const byte *aadBytes, const size aadLen,
-                                                                  const size tagBits, size *outLen);
+    const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size_t inLen,
+                                                                  const byte *keyBytes, const size_t keyLen,
+                                                                  const byte *initVectorBytes, const size_t initVectorLen,
+                                                                  const byte *aadBytes, const size_t aadLen,
+                                                                  const size_t tagBits, size_t *outLen);
 
     /**
      * @brief MD5 hash
@@ -85,7 +85,7 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data
      */
-    const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size inLen, size *outLen);
+    const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size_t inLen, size_t *outLen);
 
     /**
      * @brief SHA256
@@ -94,7 +94,7 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data
      */
-    const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size inLen, size *outLen);
+    const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size_t inLen, size_t *outLen);
 
     /**
      * @brief Base64 encode
@@ -103,7 +103,7 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data
      */
-    const byte *ngenxx_crypto_base64_encode(const byte *inBytes, const size inLen, size *outLen);
+    const byte *ngenxx_crypto_base64_encode(const byte *inBytes, const size_t inLen, size_t *outLen);
 
     /**
      * @brief Base64 decode
@@ -112,10 +112,10 @@ extern "C"
      * @param outLen a pointer to read output bytes length
      * @return output bytes data
      */
-    const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size inLen, size *outLen);
+    const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size_t inLen, size_t *outLen);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // NGENXX_CRYPTO_H_
+#endif // NGENXX_INCLUDE_CRYPTO_H_

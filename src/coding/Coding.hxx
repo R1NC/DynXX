@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-#include "../NGenXX-Types.hxx"
+#include "../../include/NGenXXTypes.hxx"
 
 namespace NGenXX 
 {

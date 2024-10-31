@@ -1,5 +1,5 @@
-#ifndef NGENXX_CODING_H_
-#define NGENXX_CODING_H_
+#ifndef NGENXX_INCLUDE_CODING_H_
+#define NGENXX_INCLUDE_CODING_H_
 
 #include "NGenXXTypes.h"
 
@@ -14,7 +14,7 @@ extern "C"
  * @param inLen byte array length
  * @return hex string
  */
-const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, const size inLen);
+const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, const size_t inLen);
 
 /**
  * @brief transfer hex string to byte array
@@ -22,10 +22,10 @@ const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, const size inLen);
  * @param outLen A pointer to read length of the byte array
  * @return byte array
  */
-const byte *ngenxx_coding_hex_str2bytes(const char *str, size *outLen);
+const byte *ngenxx_coding_hex_str2bytes(const char *str, size_t *outLen);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // NGENXX_CODING_H_
+#endif // NGENXX_INCLUDE_CODING_H_

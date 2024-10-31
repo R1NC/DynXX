@@ -20,7 +20,7 @@ Module['onRuntimeInitialized'] = function () {
             "rsp = ngenxx_net_http_requestL(pReq);\n" +
             "return rsp;\n" +
             "end");
-        _loadRet = Module._ngenxx_L_loadS(_luaScript);
+        _loadRet = Module._ngenxx_lua_loadS(_luaScript);
     }
 }
 
@@ -62,7 +62,7 @@ function testHttpReq() {
 function testCallLua() {
     _funcName = jstr2wasm("lNetHttpRequest");
     _funcParams = jstr2wasm('{"url":"https://rinc.xyz","params":""}');
-    _callRes = Module._ngenxx_L_call(_funcName, _funcParams);
+    _callRes = Module._ngenxx_lua_call(_funcName, _funcParams);
 
     callRes = Module.UTF8ToString(_callRes);
     window.alert("Lua running result:\n" + callRes);

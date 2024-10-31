@@ -5,7 +5,7 @@
 #include <vector>
 #include <tuple>
 #include <cstring>
-#include "../NGenXX-Types.hxx"
+#include "../../include/NGenXXTypes.hxx"
 
 static inline const char *copyStr(std::string s)
 {
@@ -15,7 +15,7 @@ static inline const char *copyStr(std::string s)
     return nc;
 }
 
-static inline const char **copyStrVector(std::vector<std::string> sv, const unsigned int strMaxLen)
+static inline const char **copyStrVector(std::vector<std::string> sv, const size_t strMaxLen)
 {
     char **sArr = reinterpret_cast<char **>(malloc(sizeof(char *) * sv.size() + 1));
     for (int i = 0; i < sv.size(); i++)
@@ -26,7 +26,7 @@ static inline const char **copyStrVector(std::vector<std::string> sv, const unsi
     return const_cast<const char **>(sArr);
 }
 
-static inline const byte *copyBytes(NGenXX::Bytes t)
+static inline const byte *copyBytes(Bytes t)
 {
     auto [cs, len] = t;
     if (cs == NULL || len <= 0) return NULL;
@@ -36,7 +36,7 @@ static inline const byte *copyBytes(NGenXX::Bytes t)
     return ncs;
 }
 
-static inline const NGenXX::Bytes trimBytes(NGenXX::Bytes bytes)
+static inline const Bytes trimBytes(Bytes bytes)
 {
     auto [data, len] = bytes;
     auto fixedLen = len;

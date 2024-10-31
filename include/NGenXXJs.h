@@ -1,5 +1,7 @@
-#ifndef NGENXX_JS_H_
-#define NGENXX_JS_H_
+#ifndef NGENXX_INCLUDE_JS_H_
+#define NGENXX_INCLUDE_JS_H_
+
+#include "NGenXXTypes.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -12,7 +14,7 @@ extern "C"
      * @param file JS file path
      * @return success or not
      */
-    bool ngenxx_J_loadF(const char *file);
+    bool ngenxx_js_loadF(const char *file);
 
     /**
      * @brief Load JS Script
@@ -21,7 +23,7 @@ extern "C"
      * @param name JS file name
      * @return success or not
      */
-    bool ngenxx_J_loadS(const char *script, const char *name);
+    bool ngenxx_js_loadS(const char *script, const char *name);
 
     /**
      * @brief Load JS ByteCode
@@ -30,7 +32,7 @@ extern "C"
      * @param len Byte array length
      * @return success or not
      */
-    bool ngenxx_J_loadB(const byte *bytes, const size len);
+    bool ngenxx_js_loadB(const byte *bytes, const size_t len);
 
     /**
      * @brief Call JS function
@@ -39,16 +41,16 @@ extern "C"
      * @param params JS function params（wrap multiple params with json）
      * @return return value of JS function
      */
-    const char *ngenxx_J_call(const char *func, const char *params);
+    const char * ngenxx_js_call(const char *func, const char *params);
 
     /**
      * @brief Set JS msg callback
      * @param callback JS msg callback
      */
-    void ngenxx_J_set_msg_callback(const char *(*callback)(const char *msg));
+    void ngenxx_js_set_msg_callback(const char *(*callback)(const char *msg));
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // NGENXX_JS_H_
+#endif // NGENXX_INCLUDE_JS_H_

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-static void (*_NGenXX_Log_callback)(const int, const char *) = nullptr;
+static std::function<void(const int level, const char *content)> _NGenXX_Log_callback = nullptr;
 
 static int _NGenXX_Log_level;
 
@@ -16,7 +16,7 @@ void NGenXX::Log::setLevel(const int level)
     _NGenXX_Log_level = level;
 }
 
-void NGenXX::Log::setCallback(void (*callback)(const int level, const char *content))
+void NGenXX::Log::setCallback(std::function<void(const int level, const char *content)> callback)
 {
     _NGenXX_Log_callback = callback;
 }

@@ -15,13 +15,13 @@
 
 int main()
 {
-    ngenxx_posix_init("D://");
+   ngenxx_posix_init("D://");
 
-    ngenxx_posix_testHttpL();
+   ngenxx_posix_testHttpL();
 
-    ngenxx_posix_testDB();
+   ngenxx_posix_testDB();
 
-    ngenxx_posix_testKV();
+   ngenxx_posix_testKV();
 
-    ngenxx_posix_release();
+   ngenxx_posix_release();
 }

@@ -1,5 +1,5 @@
-#ifndef NGENXX_LOG_LOG_H_
-#define NGENXX_LOG_LOG_H_
+#ifndef NGENXX_INCLUDE_LOG_LOG_H_
+#define NGENXX_INCLUDE_LOG_LOG_H_
 
 #ifdef  __cplusplus
 extern "C" {
@@ -41,4 +41,4 @@ void ngenxx_log_print(const int level, const char *content);
 }
 #endif
 
-#endif // NGENXX_LOG_LOG_H_
+#endif // NGENXX_INCLUDE_LOG_LOG_H_

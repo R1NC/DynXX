@@ -1,5 +1,5 @@
-#ifndef NGENXX_DEVICE_INFO_H_
-#define NGENXX_DEVICE_INFO_H_
+#ifndef NGENXX_INCLUDE_DEVICE_INFO_H_
+#define NGENXX_INCLUDE_DEVICE_INFO_H_
 
 #ifdef  __cplusplus
 extern "C" {
@@ -68,4 +68,4 @@ int ngenxx_device_cpu_arch();
 }
 #endif
 
-#endif // NGENXX_DEVICE_INFO_H_
+#endif // NGENXX_INCLUDE_DEVICE_INFO_H_

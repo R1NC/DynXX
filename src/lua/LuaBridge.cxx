@@ -2,8 +2,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "../../include/NGenXXLog.h"
-#include "../log/Log.hxx"
+#include "../../include/NGenXXLog.hxx"
 
 #define PRINT_L_ERROR(L, prefix)                                                           \
     do                                                                                     \
@@ -11,7 +10,7 @@
         const char *luaErrMsg = lua_tostring(L, -1);                                       \
         if (luaErrMsg != NULL)                                                             \
         {                                                                                  \
-            NGenXX::Log::print(NGenXXLogLevelError, std::string(prefix) + std::string(luaErrMsg)); \
+            ngenxxLogPrint(NGenXXLogLevelX::Error, std::string(prefix) + std::string(luaErrMsg)); \
         }                                                                                  \
     } while (0);
 

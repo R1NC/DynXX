@@ -1,5 +1,5 @@
-#ifndef NGENXX_JSON_DECODER_H_
-#define NGENXX_JSON_DECODER_H_
+#ifndef NGENXX_INCLUDE_JSON_DECODER_H_
+#define NGENXX_INCLUDE_JSON_DECODER_H_
 
 #ifdef __cplusplus
 extern "C"
@@ -80,4 +80,4 @@ extern "C"
 }
 #endif
 
-#endif // NGENXX_JSON_DECODER_H_
+#endif // NGENXX_INCLUDE_JSON_DECODER_H_

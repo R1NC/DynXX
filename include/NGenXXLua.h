@@ -1,5 +1,5 @@
-#ifndef NGENXX_LUA_H_
-#define NGENXX_LUA_H_
+#ifndef NGENXX_INCLUDE_LUA_H_
+#define NGENXX_INCLUDE_LUA_H_
 
 #ifdef  __cplusplus
 extern "C" {
@@ -12,7 +12,7 @@ extern "C" {
  * @param file Lua file path
  * @return success or not
  */
-bool ngenxx_L_loadF(const char *file);
+bool ngenxx_lua_loadF(const char *file);
 
 /**
  * @brief Load Lua script content
@@ -20,7 +20,7 @@ bool ngenxx_L_loadF(const char *file);
  * @param script Lua script content
  * @return success or not
  */
-bool ngenxx_L_loadS(const char *script);
+bool ngenxx_lua_loadS(const char *script);
 
 /**
  * @brief Call Lua function
@@ -29,10 +29,10 @@ bool ngenxx_L_loadS(const char *script);
  * @param params Lua function params（wrap multiple params with json）
  * @return return value of Lua function
  */
-const char *ngenxx_L_call(const char *func, const char *params);
+const char *ngenxx_lua_call(const char *func, const char *params);
 
 #ifdef  __cplusplus
 }
 #endif
 
-#endif // NGENXX_LUA_H_
+#endif // NGENXX_INCLUDE_LUA_H_

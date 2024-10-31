@@ -10,24 +10,24 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
 
 void ngenxx_posix_init(const char *root)
 {
-    ngenxx_init(root);
+   ngenxx_init(root);
 }
 
 void ngenxx_posix_testHttpL(void)
 {
-    bool loadSuccess = ngenxx_L_loadF("../Android/app/src/main/assets/biz.lua");
+    bool loadSuccess = ngenxx_lua_loadF("../Android/app/src/main/assets/biz.lua");
     if (loadSuccess)
     {
-        const char *cRsp = ngenxx_L_call("lNetHttpRequest", cParamsJson);
+        const char *cRsp = ngenxx_lua_call("lNetHttpRequest", cParamsJson);
         std::cout << cRsp << std::endl;
     }
 }
 
 void ngenxx_posix_testHttpJ(void)
 {
-    if (ngenxx_L_loadF("../Android/app/src/main/assets/NGenXX.js") && ngenxx_J_loadF("../Android/app/src/main/assets/biz.js"))
+    if (ngenxx_lua_loadF("../Android/app/src/main/assets/NGenXX.js") && ngenxx_js_loadF("../Android/app/src/main/assets/biz.js"))
     {
-        const char *cRsp = ngenxx_J_call("NGenXXHttpReq", cParamsJson);
+        const char *cRsp = ngenxx_js_call("NGenXXHttpReq", cParamsJson);
         std::cout << cRsp << std::endl;
     }
 }
@@ -55,10 +55,10 @@ void ngenxx_posix_testDB(void)
                     const char *vendor = ngenxx_store_sqlite_query_read_column_text(queryResult, "vendor");
                     std::cout << vendor << "->" << platform << std::endl;
                 }
-                ngenxx_store_sqlite_query_drop(queryResult);
+               ngenxx_store_sqlite_query_drop(queryResult);
             }
         }
-        ngenxx_store_sqlite_close(dbConn);
+       ngenxx_store_sqlite_close(dbConn);
     }
 }
 
@@ -67,16 +67,16 @@ void ngenxx_posix_testKV(void)
     void *kvConn = ngenxx_store_kv_open("test");
     if (kvConn)
     {
-        ngenxx_store_kv_write_string(kvConn, "s", "NGenXX");
+       ngenxx_store_kv_write_string(kvConn, "s", "NGenXX");
         const char *s = ngenxx_store_kv_read_string(kvConn, "s");
         std::cout << "s->" << s << std::endl;
-        ngenxx_store_kv_write_integer(kvConn, "i", 1234567890);
+       ngenxx_store_kv_write_integer(kvConn, "i", 1234567890);
         long i = ngenxx_store_kv_read_integer(kvConn, "i");
         std::cout << "i->" << i << std::endl;
-        ngenxx_store_kv_write_integer(kvConn, "f", 0.123456789);
+       ngenxx_store_kv_write_integer(kvConn, "f", 0.123456789);
         double f = ngenxx_store_kv_read_float(kvConn, "f");
         std::cout << "f->" << f << std::endl;
-        ngenxx_store_kv_close(kvConn);
+       ngenxx_store_kv_close(kvConn);
     }
 }
 
@@ -101,7 +101,7 @@ void ngenxx_posix_testCrypto(void)
     
     size ivLen = 12;
     byte ivBytes[ivLen];
-    ngenxx_crypto_rand(ivLen, ivBytes);
+   ngenxx_crypto_rand(ivLen, ivBytes);
     size aesgcmTagBits = 15 * 8;
     
     size aesgcmEncodedLen;
@@ -138,7 +138,7 @@ void ngenxx_posix_testJsonDecoder(void)
                 headerNode = ngenxx_json_decoder_read_next(jsonDecoder, headerNode);
             }
         }
-        ngenxx_json_decoder_release(jsonDecoder);
+       ngenxx_json_decoder_release(jsonDecoder);
     }
 }
 
@@ -158,5 +158,5 @@ void ngenxx_posix_testZip(void)
 
 void ngenxx_posix_release()
 {
-    ngenxx_release();
+   ngenxx_release();
 }

@@ -1,11 +1,13 @@
-#ifndef NGENXX_STORE_KV_H_
-#define NGENXX_STORE_KV_H_
+#ifndef NGENXX_INCLUDE_STORE_KV_H_
+#define NGENXX_INCLUDE_STORE_KV_H_
+
+#include "NGenXXTypes.h"
 
 #ifdef  __cplusplus
 extern "C" {
 #endif
 
-static const unsigned int NGENXX_STORE_KV_KEY_MAX_LENGTH = 256; /**< Max length of the KV Key */
+static const size_t NGENXX_STORE_KV_KEY_MAX_LENGTH = 256; /**< Max length of the KV Key */
 
 /**
  * @brief open KV Store, support to access from multiple processes
@@ -71,7 +73,7 @@ bool ngenxx_store_kv_write_float(void *const conn, const char *k, double v);
  * @param len A pointer to read the length of the key array
  * @return A pointer to the key array
  */
-const char ** ngenxx_store_kv_all_keys(void *const conn, unsigned int *len);
+const char ** ngenxx_store_kv_all_keys(void *const conn, size_t *len);
 
 /**
  * @brief Search key from KV Store
@@ -104,4 +106,4 @@ void ngenxx_store_kv_close(void *const conn);
 }
 #endif
 
-#endif // NGENXX_STORE_KV_H_
+#endif // NGENXX_INCLUDE_STORE_KV_H_

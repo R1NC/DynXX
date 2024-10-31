@@ -1,5 +1,5 @@
-#ifndef NGENXX_STORE_SQLITE_H_
-#define NGENXX_STORE_SQLITE_H_
+#ifndef NGENXX_INCLUDE_STORE_SQLITE_H_
+#define NGENXX_INCLUDE_STORE_SQLITE_H_
 
 #ifdef  __cplusplus
 extern "C" {
@@ -75,4 +75,4 @@ void ngenxx_store_sqlite_close(void *const conn);
 }
 #endif
 
-#endif // NGENXX_STORE_SQLITE_H_
+#endif // NGENXX_INCLUDE_STORE_SQLITE_H_

@@ -5,7 +5,7 @@
 
 #include <string>
 #include "../../external/mmkv/Core/MMKV.h"
-#include "../NGenXX-Types.hxx"
+#include "../../include/NGenXXTypes.hxx"
 
 namespace NGenXX
 {

@@ -1,14 +1,15 @@
-#include "NGenXX-JS.hxx"
+#include "NGenXX-Js.hxx"
 #include "../external/quickjs/quickjs.h"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
 #include "js/JsBridge.hxx"
-#include "NGenXX-S.hxx"
+#include "NGenXX-Script.hxx"
 
 #include <memory>
+#include <functional>
 
 std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
-static const char *(*_NGenXX_J_msg_callback)(const char *) = nullptr;
+static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nullptr;
 
 #define BIND_JS_FUNC(f)        \
     if (_ngenxx_js != nullptr) \
@@ -68,7 +69,7 @@ static const char *(*_NGenXX_J_msg_callback)(const char *) = nullptr;
         return JS_NewFloat64(ctx, res);                                                    \
     }
 
-const std::string ngenxx_jaguar_ask_platform(const char *msg)
+const std::string ngenxx_js_ask_platform(const char *msg)
 {
     std::string s;
     if (msg == NULL || _NGenXX_J_msg_callback == nullptr)
@@ -78,7 +79,7 @@ const std::string ngenxx_jaguar_ask_platform(const char *msg)
     return _NGenXX_J_msg_callback(cMsg);
 }
 
-DEF_JS_FUNC_STRING(ngenxx_ask_platformJ, ngenxx_jaguar_ask_platform)
+DEF_JS_FUNC_STRING(ngenxx_ask_platformJ, ngenxx_js_ask_platform)
 
 DEF_JS_FUNC_STRING(ngenxx_get_versionJ, ngenxx_get_versionS)
 DEF_JS_FUNC_STRING(ngenxx_root_pathJ, ngenxx_root_pathS)
@@ -144,42 +145,67 @@ DEF_JS_FUNC_STRING(ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
 
 #pragma mark JS
 
-EXPORT_AUTO
-bool ngenxx_J_loadF(const char *file)
+bool ngenxxJsLoadF(const std::string &file)
 {
-    if (_ngenxx_js == nullptr || file == NULL)
+    if (_ngenxx_js == nullptr || file.length() == 0)
         return false;
-    return _ngenxx_js->loadFile(std::string(file));
+    return _ngenxx_js->loadFile(file);
 }
 
-EXPORT_AUTO
-bool ngenxx_J_loadS(const char *script, const char *name)
+bool ngenxxJsLoadS(const std::string &script, const std::string &name)
 {
-    if (_ngenxx_js == nullptr || script == NULL || name == NULL)
+    if (_ngenxx_js == nullptr || script.length() == 0 || name.length() == 0)
         return false;
-    return _ngenxx_js->loadScript(std::string(script), std::string(name));
+    return _ngenxx_js->loadScript(script, name);
 }
 
-EXPORT_AUTO
-bool ngenxx_J_loadB(const byte *bytes, const size len)
+bool ngenxxJsLoadB(const Bytes bytes)
 {
-    if (_ngenxx_js == nullptr || bytes == NULL || len <= 0)
+    if (_ngenxx_js == nullptr || bytes.first == NULL || bytes.second <= 0)
         return false;
-    return _ngenxx_js->loadBinary({bytes, len});
+    return _ngenxx_js->loadBinary(bytes);
 }
 
-EXPORT_AUTO
-const char *ngenxx_J_call(const char *func, const char *params)
+const std::string ngenxxJsCall(const std::string &func, const std::string &params)
 {
-    if (_ngenxx_js == nullptr || func == NULL)
+    if (_ngenxx_js == nullptr || func.length() == 0L)
         return NULL;
-    return copyStr(_ngenxx_js->callFunc(std::string(func), std::string(params ?: "")));
+    return _ngenxx_js->callFunc(func, params);
 }
 
-EXPORT_AUTO
-void ngenxx_J_set_msg_callback(const char *(*callback)(const char *msg))
+void ngenxxJsSetMsgCallback(std::function<const char *(const char *msg)> callback)
 {
     _NGenXX_J_msg_callback = callback;
+}
+
+EXPORT_AUTO
+bool ngenxx_js_loadF(const char *file)
+{
+    return ngenxxJsLoadF(file ?: "");
+}
+
+EXPORT_AUTO
+bool ngenxx_js_loadS(const char *script, const char *name)
+{
+    return ngenxxJsLoadS(script ?: "", name ?: "");
+}
+
+EXPORT_AUTO
+bool ngenxx_js_loadB(const byte *bytes, const size_t len)
+{
+    return ngenxxJsLoadB({bytes, len});
+}
+
+EXPORT_AUTO
+const char * ngenxx_js_call(const char *func, const char *params)
+{
+    return copyStr(ngenxxJsCall(func ?: "", params ?: ""));
+}
+
+EXPORT_AUTO
+void ngenxx_js_set_msg_callback(const char *(*callback)(const char *msg))
+{
+    ngenxxJsSetMsgCallback(callback);
 }
 
 #pragma mark JS Module Register

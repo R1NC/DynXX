@@ -1,30 +1,29 @@
 #include "HttpClient.hxx"
 
 #include "../../../external/curl/include/curl/curl.h"
-#include "../../include/NGenXXLog.h"
+#include "../../include/NGenXXTypes.h"
+#include "../../include/NGenXXLog.hxx"
 #include "../../include/NGenXXNetHttp.h"
-#include "../log/Log.hxx"
 #include <algorithm>
 #include <vector>
 
-#define DEFAULT_TIMEOUT 5000L
+constexpr size_t NGENXX_DEFAULT_TIMEOUT = 5000L;
 
 size_t _NGenXX_Net_HttpClient_ReadCallback(char *ptr, size_t size, size_t nmemb, void *stream)
 {
-    size_t retcode;
-    unsigned long nread;
-    retcode = std::fread(ptr, size, nmemb, (std::FILE *)stream);
+    size_t nread;
+    size_t retcode = std::fread(ptr, size, nmemb, reinterpret_cast<std::FILE *>(stream));
     if (retcode > 0)
     {
-        nread = (unsigned long)retcode;
-        NGenXX::Log::print(NGenXXLogLevelDebug, "HttpClient read " + std::to_string(nread) + " bytes from file");
+        nread = retcode;
+        ngenxxLogPrint(NGenXXLogLevelX::Debug, "HttpClient read " + std::to_string(nread) + " bytes from file");
     }
     return retcode;
 }
 
 size_t _NGenXX_Net_HttpClient_WriteCallback(char *contents, size_t size, size_t nmemb, void *userp)
 {
-    ((std::string *)userp)->append((char *)contents, size * nmemb);
+    (reinterpret_cast<std::string *>(userp))->append(contents, size * nmemb);
     return size * nmemb;
 }
 
@@ -41,14 +40,14 @@ NGenXX::Net::HttpClient::~HttpClient()
 const std::string NGenXX::Net::HttpClient::request(const std::string &url, const std::string &params, const int method,
                                       const std::vector<std::string> &headers,
                                       const std::vector<NGenXX::Net::HttpFormField> &formFields,
-                                      const std::FILE *cFILE, const size fileSize,
-                                      const size timeout)
+                                      const std::FILE *cFILE, const size_t fileSize,
+                                      const size_t timeout)
 {
     std::string rsp;
     int _timeout = timeout;
     if (_timeout <= 0)
     {
-        _timeout = DEFAULT_TIMEOUT;
+        _timeout = NGENXX_DEFAULT_TIMEOUT;
     }
 
     CURL *curl = curl_easy_init();
@@ -56,7 +55,7 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
     curl_mimepart *part;
     if (curl)
     {
-        NGenXX::Log::print(NGenXXLogLevelDebug, "HttpClient.request url: " + url + " params: " + params);
+        ngenxxLogPrint(NGenXXLogLevelX::Debug, "HttpClient.request url: " + url + " params: " + params);
 
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
         curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
@@ -104,7 +103,7 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
         struct curl_slist *headerList = NULL;
         for (auto it = headers.begin(); it != headers.end(); ++it)
         {
-            NGenXX::Log::print(NGenXXLogLevelDebug, "HttpClient.request header: " + (*it));
+            ngenxxLogPrint(NGenXXLogLevelX::Debug, "HttpClient.request header: " + (*it));
             headerList = curl_slist_append(headerList, (*it).c_str());
         }
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
@@ -123,7 +122,7 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
         CURLcode curlCode = curl_easy_perform(curl);
         if (curlCode != CURLE_OK)
         {
-            NGenXX::Log::print(NGenXXLogLevelError, "HttpClient.request error:" + std::string(curl_easy_strerror(curlCode)));
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "HttpClient.request error:" + std::string(curl_easy_strerror(curlCode)));
         }
 
         curl_easy_cleanup(curl);

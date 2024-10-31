@@ -5,7 +5,7 @@ The params and return value are (json) strings.
 
 function lNetHttpRequest(pReq)
     pLog = '{"level":3,"content":"Send Net HTTP Req from Lua.."}';
-    ngenxx_log_printL(pLog);
+   ngenxx_log_printL(pLog);
     rsp = ngenxx_net_http_requestL(pReq);
     return rsp;
 end

@@ -56,7 +56,7 @@ jboolean NGenXX_JNI_init(JNIEnv *env, jobject thiz,
 
 void NGenXX_JNI_release(JNIEnv *env, jobject thiz)
 {
-    ngenxx_release();
+   ngenxx_release();
 }
 
 #pragma mark Log
@@ -64,7 +64,7 @@ void NGenXX_JNI_release(JNIEnv *env, jobject thiz)
 void NGenXX_JNI_logSetLevel(JNIEnv *env, jobject thiz,
                             jint level)
 {
-    ngenxx_log_set_level(level);
+   ngenxx_log_set_level(level);
 }
 
 void NGenXX_JNI_logSetCallback(JNIEnv *env, jobject thiz,
@@ -72,7 +72,7 @@ void NGenXX_JNI_logSetCallback(JNIEnv *env, jobject thiz,
 {
     if (callback)
     {
-        ngenxx_log_set_callback(ngenxx_jni_log_callback);
+       ngenxx_log_set_callback(ngenxx_jni_log_callback);
         sLogCallback = env->NewWeakGlobalRef(callback);
         jclass jcallback_class = env->GetObjectClass(callback);
         if (jcallback_class)
@@ -86,7 +86,7 @@ void NGenXX_JNI_logPrint(JNIEnv *env, jobject thiz,
                          jint level, jstring content)
 {
     const char *cContent = env->GetStringUTFChars(content, nullptr);
-    ngenxx_log_print(level, cContent);
+   ngenxx_log_print(level, cContent);
     env->ReleaseStringUTFChars(content, cContent);
 }
 
@@ -184,7 +184,7 @@ jboolean NGenXX_JNI_lLoadF(JNIEnv *env, jobject thiz,
                            jstring file)
 {
     const char *cFile = env->GetStringUTFChars(file, nullptr);
-    jboolean res = ngenxx_L_loadF(cFile);
+    jboolean res = ngenxx_lua_loadF(cFile);
     env->ReleaseStringUTFChars(file, cFile);
     return res;
 }
@@ -193,7 +193,7 @@ jboolean NGenXX_JNI_lLoadS(JNIEnv *env, jobject thiz,
                            jstring script)
 {
     const char *cScript = env->GetStringUTFChars(script, nullptr);
-    jboolean res = ngenxx_L_loadS(cScript);
+    jboolean res = ngenxx_lua_loadS(cScript);
     env->ReleaseStringUTFChars(script, cScript);
     return res;
 }
@@ -203,7 +203,7 @@ jstring NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
 {
     const char *cFunc = env->GetStringUTFChars(func, nullptr);
     const char *cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
-    const char *cRes = ngenxx_L_call(cFunc, cParams);
+    const char *cRes = ngenxx_lua_call(cFunc, cParams);
     jstring jstr = env->NewStringUTF(cRes ?: "");
     free(static_cast<void *>(const_cast<char *>(cRes)));
     if (cParams) env->ReleaseStringUTFChars(params, cParams);
@@ -217,7 +217,7 @@ jboolean NGenXX_JNI_jLoadF(JNIEnv *env, jobject thiz,
                            jstring file)
 {
     const char *cFile = env->GetStringUTFChars(file, nullptr);
-    jboolean res = ngenxx_J_loadF(cFile);
+    jboolean res = ngenxx_js_loadF(cFile);
     env->ReleaseStringUTFChars(file, cFile);
     return res;
 }
@@ -227,7 +227,7 @@ jboolean NGenXX_JNI_jLoadS(JNIEnv *env, jobject thiz,
 {
     const char *cScript = env->GetStringUTFChars(script, nullptr);
     const char *cName = env->GetStringUTFChars(name, nullptr);
-    jboolean res = ngenxx_J_loadS(cScript, cName);
+    jboolean res = ngenxx_js_loadS(cScript, cName);
     env->ReleaseStringUTFChars(script, cScript);
     env->ReleaseStringUTFChars(name, cName);
     return res;
@@ -239,7 +239,7 @@ jboolean NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz,
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size inLen = env->GetArrayLength(bytes);
 
-    bool res = ngenxx_J_loadB(reinterpret_cast<const byte *>(cIn), inLen);
+    bool res = ngenxx_js_loadB(reinterpret_cast<const byte *>(cIn), inLen);
 
     env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
     return res;
@@ -250,7 +250,7 @@ jstring NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
 {
     const char *cFunc = env->GetStringUTFChars(func, nullptr);
     const char *cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
-    const char *cRes = ngenxx_J_call(cFunc, cParams);
+    const char *cRes = ngenxx_js_call(cFunc, cParams);
     jstring jstr = env->NewStringUTF(cRes ?: "");
     free(static_cast<void *>(const_cast<char *>(cRes)));
     if (cParams) env->ReleaseStringUTFChars(params, cParams);
@@ -262,7 +262,7 @@ void NGenXX_JNI_jSetMsgCallback(JNIEnv *env, jobject thiz,
                                               jobject callback) {
     if (callback)
     {
-        ngenxx_J_set_msg_callback(ngenxx_jni_js_msg_callback);
+      ngenxx_js_set_msg_callback(ngenxx_jni_js_msg_callback);
         sJsMsgCallback = env->NewWeakGlobalRef(callback);
         jclass jcallback_class = env->GetObjectClass(callback);
         if (jcallback_class)
@@ -345,13 +345,13 @@ jdouble NGenXX_JNI_storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
 void NGenXX_JNI_storeSQLiteQueryDrop(JNIEnv *env, jobject thiz,
                                      jlong query_result)
 {
-    ngenxx_store_sqlite_query_drop(reinterpret_cast<void *>(query_result));
+   ngenxx_store_sqlite_query_drop(reinterpret_cast<void *>(query_result));
 }
 
 void NGenXX_JNI_storeSQLiteClose(JNIEnv *env, jobject thiz,
                                  jlong conn)
 {
-    ngenxx_store_sqlite_close(reinterpret_cast<void *>(conn));
+   ngenxx_store_sqlite_close(reinterpret_cast<void *>(conn));
 }
 
 #pragma mark Srore.KV
@@ -442,13 +442,13 @@ jboolean NGenXX_JNI_storeKVContains(JNIEnv *env, jobject thiz,
 void NGenXX_JNI_storeKVClear(JNIEnv *env, jobject thiz,
                              jlong conn)
 {
-    ngenxx_store_kv_clear(reinterpret_cast<void *>(conn));
+   ngenxx_store_kv_clear(reinterpret_cast<void *>(conn));
 }
 
 void NGenXX_JNI_storeKVClose(JNIEnv *env, jobject thiz,
                              jlong conn)
 {
-    ngenxx_store_kv_close(reinterpret_cast<void *>(conn));
+   ngenxx_store_kv_close(reinterpret_cast<void *>(conn));
 }
 
 #pragma mark Device
@@ -524,7 +524,7 @@ jbyteArray NGenXX_JNI_cryptoRandom(JNIEnv *env, jobject thiz,
 {
     byte out[len];
     std::memset(out, 0, len);
-    ngenxx_crypto_rand(len, out);
+   ngenxx_crypto_rand(len, out);
     return moveToJByteArray(env, out, len, false);
 }
 
@@ -758,7 +758,7 @@ jlong NGenXX_JNI_jsonDecoderReadNext(JNIEnv *env, jobject thiz,
 void NGenXX_JNI_jsonDecoderRelease(JNIEnv *env, jobject thiz,
                                    jlong decoder)
 {
-    ngenxx_json_decoder_release(reinterpret_cast<void *>(decoder));
+   ngenxx_json_decoder_release(reinterpret_cast<void *>(decoder));
 }
 
 #pragma mark Zip
@@ -801,7 +801,7 @@ jboolean NGenXX_JNI_zZipProcessFinished(JNIEnv *env, jobject thiz,
 void NGenXX_JNI_zZipRelease(JNIEnv *env, jobject thiz,
                             jlong zip)
 {
-    ngenxx_z_zip_release(reinterpret_cast<void *>(zip));
+   ngenxx_z_zip_release(reinterpret_cast<void *>(zip));
 }
 
 jlong NGenXX_JNI_zUnZipInit(JNIEnv *env, jobject thiz,
@@ -842,7 +842,7 @@ jboolean NGenXX_JNI_zUnZipProcessFinished(JNIEnv *env, jobject thiz,
 void NGenXX_JNI_zUnZipRelease(JNIEnv *env, jobject thiz,
                               jlong unzip)
 {
-    ngenxx_z_unzip_release(reinterpret_cast<void *>(unzip));
+   ngenxx_z_unzip_release(reinterpret_cast<void *>(unzip));
 }
 
 jbyteArray NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz,
@@ -986,8 +986,8 @@ int JNI_OnLoad(JavaVM *vm, void *reserved)
 
 void JNI_OnUnload(JavaVM *vm, void *reserved)
 {
-    ngenxx_log_set_callback(nullptr);
-    ngenxx_J_set_msg_callback(nullptr);
+   ngenxx_log_set_callback(nullptr);
+  ngenxx_js_set_msg_callback(nullptr);
     if (sEnv != nullptr)
     {
         sEnv->UnregisterNatives(sJClass);

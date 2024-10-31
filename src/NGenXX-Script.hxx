@@ -1,5 +1,5 @@
-#ifndef NGENXX_S_HXX_
-#define NGENXX_S_HXX_
+#ifndef NGENXX_SCRIPT_HXX_
+#define NGENXX_SCRIPT_HXX_
 
 #include "../include/NGenXXTypes.h"
 
@@ -57,12 +57,12 @@ const std::string ngenxx_crypto_base64_encodeS(const char *json);
 const std::string ngenxx_crypto_base64_decodeS(const char *json);
 
 const address ngenxx_z_zip_initS(const char *json);
-const size ngenxx_z_zip_inputS(const char *json);
+const size_t ngenxx_z_zip_inputS(const char *json);
 const std::string ngenxx_z_zip_process_doS(const char *json);
 bool ngenxx_z_zip_process_finishedS(const char *json);
 void ngenxx_z_zip_releaseS(const char *json);
 const address ngenxx_z_unzip_initS(const char *json);
-const size ngenxx_z_unzip_inputS(const char *json);
+const size_t ngenxx_z_unzip_inputS(const char *json);
 const std::string ngenxx_z_unzip_process_doS(const char *json);
 bool ngenxx_z_unzip_process_finishedS(const char *json);
 void ngenxx_z_unzip_releaseS(const char *json);
@@ -71,4 +71,4 @@ const std::string ngenxx_z_bytes_unzipS(const char *json);
 
 #endif
 
-#endif // NGENXX_S_HXX_
+#endif // NGENXX_SCRIPT_HXX_

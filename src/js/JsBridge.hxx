@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "../../external/quickjs/quickjs-libc.h"
-#include "../NGenXX-Types.hxx"
+#include "../../include/NGenXXTypes.hxx"
 
 namespace NGenXX
 {
