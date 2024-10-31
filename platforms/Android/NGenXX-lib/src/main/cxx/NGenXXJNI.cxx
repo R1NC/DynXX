@@ -4,7 +4,7 @@
 #include "../../../../../../build.Android/output/include/NGenXX.h"
 #include "JNIUtil.hxx"
 
-static JNIEnv *sEnv;
+static JavaVM *sVM;
 static jclass sJClass;
 static jobject sLogCallback;
 static jmethodID sLogCallbackMethodId;
@@ -15,24 +15,26 @@ static jmethodID sJsMsgCallbackMethodId;
 
 static void ngenxx_jni_log_callback(int level, const char *content)
 {
-    if (sEnv && sLogCallback && sLogCallbackMethodId && content)
-    {
-        jstring jContent = sEnv->NewStringUTF(content);
+    if (sVM == nullptr || sLogCallback == nullptr || sLogCallbackMethodId == nullptr || content == nullptr) return;
+    runInCurrentEnv(sVM, [level, &content](JNIEnv *env) -> void* {
+        jstring jContent = env->NewStringUTF(content);
         free(static_cast<void *>(const_cast<char *>(content)));
-        sEnv->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
-    }
+        env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
+        return nullptr;
+    });
 }
 
 static const char *ngenxx_jni_js_msg_callback(const char *msg)
 {
-    if (sEnv && sJsMsgCallback && sJsMsgCallbackMethodId && msg)
-    {
-        jstring jMsg = sEnv->NewStringUTF(msg);
+    if (sVM == nullptr || sJsMsgCallback == nullptr || sJsMsgCallbackMethodId == nullptr || msg == nullptr) return nullptr;
+    auto t = runInCurrentEnv(sVM, [&msg](JNIEnv *env) -> void* {
+        jstring jMsg = env->NewStringUTF(msg);
         free(static_cast<void *>(const_cast<char *>(msg)));
-        jobject jRes = sEnv->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
-        return sEnv->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
-    }
-    return nullptr;
+        jobject jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
+        auto c = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
+        return reinterpret_cast<void *>(const_cast<char *>(c));
+    });
+    return reinterpret_cast<const char *>(t);
 }
 
 #pragma mark Engine base API
@@ -966,18 +968,21 @@ static const JNINativeMethod JCFuncList[] = {
 
 int JNI_OnLoad(JavaVM *vm, void *reserved)
 {
+    sVM = vm;
+    JNIEnv *env;
     int v = JNI_VERSION_1_6;
-    int ret = vm->GetEnv(reinterpret_cast<void **>(&sEnv), v);
+    int ret = vm->GetEnv(reinterpret_cast<void **>(&env), v);
     if (ret != JNI_OK)
     {
         return JNI_ERR;
     }
-    sJClass = sEnv->FindClass(JClassName);
+
+    sJClass = env->FindClass(JClassName);
     if (sJClass == nullptr)
     {
         return JNI_ERR;
     }
-    ret = sEnv->RegisterNatives(sJClass, JCFuncList, sizeof(JCFuncList) / sizeof(JNINativeMethod));
+    ret = env->RegisterNatives(sJClass, JCFuncList, sizeof(JCFuncList) / sizeof(JNINativeMethod));
     if (ret != JNI_OK)
     {
         return JNI_ERR;
@@ -987,15 +992,17 @@ int JNI_OnLoad(JavaVM *vm, void *reserved)
 
 void JNI_OnUnload(JavaVM *vm, void *reserved)
 {
-   ngenxx_log_set_callback(nullptr);
-  ngenxx_js_set_msg_callback(nullptr);
-    if (sEnv != nullptr)
-    {
-        sEnv->UnregisterNatives(sJClass);
-        sEnv->DeleteWeakGlobalRef(sLogCallback);
-        sEnv->DeleteWeakGlobalRef(sJsMsgCallback);
-        sEnv = nullptr;
-    }
+    ngenxx_log_set_callback(nullptr);
+    ngenxx_js_set_msg_callback(nullptr);
+
+    runInCurrentEnv(vm, [](JNIEnv *env) -> void* {
+        env->UnregisterNatives(sJClass);
+        env->DeleteWeakGlobalRef(sLogCallback);
+        env->DeleteWeakGlobalRef(sJsMsgCallback);
+        return nullptr;
+    });
+
+    sVM = nullptr;
     sLogCallback = nullptr;
     sJsMsgCallback = nullptr;
 }

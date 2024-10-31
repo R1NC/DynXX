@@ -78,7 +78,7 @@ void ngenxx_log_set_level(const int level)
 }
 
 EXPORT_AUTO
-void ngenxx_log_set_callback(void (*callback)(const int level, const char *content))
+void ngenxx_log_set_callback(void (*const callback)(const int level, const char *content))
 {
     ngenxxLogSetCallback(callback);
 }

@@ -47,7 +47,7 @@ extern "C"
      * @brief Set JS msg callback
      * @param callback JS msg callback
      */
-    void ngenxx_js_set_msg_callback(const char *(*callback)(const char *msg));
+    void ngenxx_js_set_msg_callback(const char *(*const callback)(const char *msg));
 
 #ifdef __cplusplus
 }

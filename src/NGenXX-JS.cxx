@@ -173,7 +173,7 @@ const std::string ngenxxJsCall(const std::string &func, const std::string &param
     return _ngenxx_js->callFunc(func, params);
 }
 
-void ngenxxJsSetMsgCallback(std::function<const char *(const char *msg)> callback)
+void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback)
 {
     _NGenXX_J_msg_callback = callback;
 }
@@ -203,7 +203,7 @@ const char * ngenxx_js_call(const char *func, const char *params)
 }
 
 EXPORT_AUTO
-void ngenxx_js_set_msg_callback(const char *(*callback)(const char *msg))
+void ngenxx_js_set_msg_callback(const char *(*const callback)(const char *msg))
 {
     ngenxxJsSetMsgCallback(callback);
 }

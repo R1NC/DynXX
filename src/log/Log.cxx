@@ -16,7 +16,7 @@ void NGenXX::Log::setLevel(const int level)
     _NGenXX_Log_level = level;
 }
 
-void NGenXX::Log::setCallback(std::function<void(const int level, const char *content)> callback)
+void NGenXX::Log::setCallback(const std::function<void(const int level, const char *content)> &callback)
 {
     _NGenXX_Log_callback = callback;
 }

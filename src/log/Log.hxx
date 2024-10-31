@@ -12,7 +12,7 @@ namespace NGenXX
     {
         void setLevel(const int level);
 
-        void setCallback(std::function<void(const int level, const char *content)> callback);
+        void setCallback(const std::function<void(const int level, const char *content)> &callback);
 
         void print(const int level, const std::string &content);
     }

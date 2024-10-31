@@ -13,6 +13,6 @@ bool ngenxxJsLoadB(const Bytes bytes);
 
 const std::string ngenxxJsCall(const std::string &func, const std::string &params);
 
-void ngenxxJsSetMsgCallback(std::function<const char *(const char *msg)> callback);
+void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback);
 
 #endif //  NGENXX_INCLUDE_JS_H_

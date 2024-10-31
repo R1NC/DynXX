@@ -4,6 +4,18 @@
 #include <jni.h>
 #include <cstdlib>
 #include <string>
+#include <functional>
+#include <type_traits>
+
+static inline void* runInCurrentEnv(JavaVM *vm, const std::function<void*(JNIEnv *env)>& task) {
+    if (vm == nullptr) return nullptr;
+    JNIEnv *env;
+    vm->AttachCurrentThread(&env, nullptr);
+    if (env == nullptr) return nullptr;
+    void* t = task(env);
+    //vm->DetachCurrentThread();
+    return t;
+}
 
 jbyteArray moveToJByteArray(JNIEnv *env, const unsigned char *bytes, unsigned long outLen, bool needFree)
 {

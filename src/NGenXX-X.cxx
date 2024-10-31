@@ -116,7 +116,7 @@ void ngenxxLogSetLevel(const NGenXXLogLevelX level)
     NGenXX::Log::setLevel(static_cast<int>(level));
 }
 
-void ngenxxLogSetCallback(std::function<void(const int level, const char *content)> callback)
+void ngenxxLogSetCallback(const std::function<void(const int level, const char *content)> &callback)
 {
     NGenXX::Log::setCallback(callback);
 }
