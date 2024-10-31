@@ -5,9 +5,9 @@
 #include <streambuf>
 
 constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
-                                        "import * as os from 'qjs:os';\n"
-                                        "globalThis.std = std;\n"
-                                        "globalThis.os = os;\n";
+                                         "import * as os from 'qjs:os';\n"
+                                         "globalThis.std = std;\n"
+                                         "globalThis.os = os;\n";
 
 static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
 {
@@ -44,7 +44,7 @@ NGenXX::JsBridge::JsBridge()
 
     this->context = JS_NewContext(this->runtime);
     this->jValues.push_back(JS_GetGlobalObject(this->context));
-    
+
     js_std_add_helpers(this->context, 0, NULL);
     js_std_init_handlers(this->runtime);
     js_init_module_std(this->context, "qjs:std");
@@ -139,9 +139,9 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         else
         {
             JSValue jLoop = js_std_loop(this->context); // Wating for async tasks
-            jRes = js_std_await(this->context, jRes);// Handle promise if needed
+            jRes = js_std_await(this->context, jRes);   // Handle promise if needed
             auto c = JS_ToCString(this->context, jRes);
-            s = std::string(c);
+            s = std::string(c ?: "");
             JS_FreeCString(this->context, c);
             JS_FreeValue(this->context, jLoop);
         }
@@ -159,7 +159,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 NGenXX::JsBridge::~JsBridge()
 {
     js_std_set_worker_new_context_func(NULL);
-    
+
     for (auto &jv : this->jValues)
     {
         uint32_t tag = JS_VALUE_GET_TAG(jv);
@@ -167,7 +167,7 @@ NGenXX::JsBridge::~JsBridge()
             JS_FreeValue(this->context, jv);
     }
     JS_FreeContext(this->context);
-    
+
     js_std_free_handlers(this->runtime);
     JS_FreeRuntime(this->runtime);
 }
