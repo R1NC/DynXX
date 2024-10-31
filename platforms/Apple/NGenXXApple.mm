@@ -37,31 +37,35 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
 }
 
 - (void)testHttpL {
-    //const char * cRsp = ngenxx_net_http_request("https://rinc.xyz", "", 0, NULL, 0, 5555);
-    const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
-    if (! ngenxx_lua_loadF(cLuaPath)) {
-        NSLog(@"!!! LOAD LUA FAILED !!!");
-    }
-    const char * cRsp = ngenxx_lua_call("lNetHttpRequest", cParamsJson);
-    NSLog(@"%s", cRsp);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //const char * cRsp = ngenxx_net_http_request("https://rinc.xyz", "", 0, NULL, 0, 5555);
+        const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
+        if (! ngenxx_lua_loadF(cLuaPath)) {
+            NSLog(@"!!! LOAD LUA FAILED !!!");
+        }
+        const char * cRsp = ngenxx_lua_call("lNetHttpRequest", cParamsJson);
+        NSLog(@"%s", cRsp);
+    });
 }
 
 - (void)testHttpJ {
-    /*NSString *jsbPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.qjsb"];
-    NSString *jsbPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.qjsb"];
-    NSData *jsbData0 = [NSData dataWithContentsOfFile:jsbPath0];
-    NSData *jsbData1 = [NSData dataWithContentsOfFile:jsbPath1];
-    auto bytes0 = reinterpret_cast<unsigned char *>(const_cast<void *>(jsbData0.bytes));
-    auto len0 = static_cast<unsigned int>(jsbData0.length);
-    auto bytes1 = reinterpret_cast<unsigned char *>(const_cast<void *>(jsbData1.bytes));
-    auto len1 = static_cast<unsigned int>(jsbData1.length);
-    if (ngenxx_js_loadB(bytes0, len0) && ngenxx_js_loadB(bytes1, len1)) {*/
-    NSString *jsPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.js"];
-    NSString *jsPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
-    if (ngenxx_js_loadF(NSString2CharP(jsPath0)) && ngenxx_js_loadF(NSString2CharP(jsPath1))) {
-        auto res = ngenxx_js_call("testPromise", "https://rinc.xyz");
-        NSLog(@"%s", res);
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        /*NSString *jsbPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.qjsb"];
+        NSString *jsbPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.qjsb"];
+        NSData *jsbData0 = [NSData dataWithContentsOfFile:jsbPath0];
+        NSData *jsbData1 = [NSData dataWithContentsOfFile:jsbPath1];
+        auto bytes0 = reinterpret_cast<unsigned char *>(const_cast<void *>(jsbData0.bytes));
+        auto len0 = static_cast<unsigned int>(jsbData0.length);
+        auto bytes1 = reinterpret_cast<unsigned char *>(const_cast<void *>(jsbData1.bytes));
+        auto len1 = static_cast<unsigned int>(jsbData1.length);
+        if (ngenxx_js_loadB(bytes0, len0) && ngenxx_js_loadB(bytes1, len1)) {*/
+        NSString *jsPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.js"];
+        NSString *jsPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
+        if (ngenxx_js_loadF(NSString2CharP(jsPath0)) && ngenxx_js_loadF(NSString2CharP(jsPath1))) {
+            auto res = ngenxx_js_call("testPromise", "https://rinc.xyz");
+            NSLog(@"%s", res);
+        }
+    });
 }
 
 - (void)testDB {
