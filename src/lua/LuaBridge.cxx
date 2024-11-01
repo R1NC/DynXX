@@ -55,6 +55,7 @@ int NGenXX::LuaBridge::loadScript(const std::string &script)
 
 const std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::string &params)
 {
+    const std::lock_guard<std::mutex> lock(this->mutex);
     lua_getglobal(this->lstate, func.c_str());
     lua_pushstring(this->lstate, params.c_str());
     int ret = lua_pcall(lstate, 1, 1, 0);

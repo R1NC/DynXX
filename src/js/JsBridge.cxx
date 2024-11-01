@@ -122,6 +122,7 @@ bool NGenXX::JsBridge::loadBinary(Bytes bytes)
 
 std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params)
 {
+    const std::lock_guard<std::mutex> lock(this->mutex);
     std::string s;
 
     JSValue jFunc = JS_GetPropertyStr(this->context, this->jValues[0], func.c_str());

@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include "../../external/quickjs/quickjs-libc.h"
 #include "../../include/NGenXXTypes.hxx"
@@ -17,6 +18,7 @@ namespace NGenXX
         JSRuntime *runtime;
         JSContext *context;
         std::vector<JSValue> jValues;
+        std::mutex mutex;
 
     public:
         /**

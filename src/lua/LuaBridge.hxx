@@ -11,6 +11,7 @@ extern "C"
 #ifdef __cplusplus
 
 #include <string>
+#include <mutex>
 
 namespace NGenXX
 {
@@ -18,6 +19,7 @@ namespace NGenXX
     {
     private:
         lua_State *lstate;
+        std::mutex mutex;
 
     public:
         /**
