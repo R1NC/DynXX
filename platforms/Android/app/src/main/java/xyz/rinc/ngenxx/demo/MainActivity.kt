@@ -70,7 +70,7 @@ fun Greeting() {
     ) {
         Button(
             onClick = {
-                NGenXXTest.goAsync()
+                NGenXXTest.goAllAsync(100)
             },
         ) {
             Text("test")

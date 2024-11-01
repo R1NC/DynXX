@@ -2,8 +2,9 @@ package xyz.rinc.ngenxx.demo
 
 import android.app.Application
 import android.util.Log
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import xyz.rinc.ngenxx.NGenXX
 import xyz.rinc.ngenxx.NGenXXHelper
 import java.io.File
@@ -20,9 +21,16 @@ class NGenXXTest {
             sApplication = application
         }
 
-        fun goAsync() {
-            GlobalScope.launch {
-                go()
+        fun goAllAsync(count: Int) = runBlocking {
+            goAll(count)
+        }
+
+        private suspend fun goAll(count: Int) = coroutineScope {
+            if (count < 1) return@coroutineScope
+            for (i in 1 .. count) {
+                launch {
+                    go()
+                }
             }
         }
 
