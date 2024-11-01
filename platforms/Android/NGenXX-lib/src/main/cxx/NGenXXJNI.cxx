@@ -17,25 +17,29 @@ static void ngenxx_jni_log_callback(int level, const char *content)
 {
     if (sVM == nullptr || sLogCallback == nullptr || sLogCallbackMethodId == nullptr || content == nullptr)
         return;
-    runInCurrentEnv(sVM, [level, &content](JNIEnv *env) -> void *
-                    {
-        jstring jContent = env->NewStringUTF(content);
-        free(static_cast<void *>(const_cast<char *>(content)));
-        env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
-        return nullptr; });
+    runInCurrentEnv(
+            sVM,
+            [level, &content](JNIEnv *env) -> void * {
+                jstring jContent = env->NewStringUTF(content);
+                free(static_cast<void *>(const_cast<char *>(content)));
+                env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
+                return nullptr;
+            });
 }
 
 static const char *ngenxx_jni_js_msg_callback(const char *msg)
 {
     if (sVM == nullptr || sJsMsgCallback == nullptr || sJsMsgCallbackMethodId == nullptr || msg == nullptr)
         return nullptr;
-    auto t = runInCurrentEnv(sVM, [&msg](JNIEnv *env) -> void *
-                             {
-        jstring jMsg = env->NewStringUTF(msg);
-        free(static_cast<void *>(const_cast<char *>(msg)));
-        jobject jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
-        auto c = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
-        return reinterpret_cast<void *>(const_cast<char *>(c)); });
+    auto t = runInCurrentEnv(
+            sVM,
+            [&msg](JNIEnv *env) -> void * {
+                jstring jMsg = env->NewStringUTF(msg);
+                free(static_cast<void *>(const_cast<char *>(msg)));
+                jobject jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
+                auto c = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
+                return reinterpret_cast<void *>(const_cast<char *>(c));
+            });
     return reinterpret_cast<const char *>(t);
 }
 
@@ -1001,12 +1005,14 @@ void JNI_OnUnload(JavaVM *vm, void *reserved)
     ngenxx_log_set_callback(nullptr);
     ngenxx_js_set_msg_callback(nullptr);
 
-    runInCurrentEnv(vm, [](JNIEnv *env) -> void *
-                    {
-        env->UnregisterNatives(sJClass);
-        env->DeleteWeakGlobalRef(sLogCallback);
-        env->DeleteWeakGlobalRef(sJsMsgCallback);
-        return nullptr; });
+    runInCurrentEnv(
+            vm,
+            [](JNIEnv *env) -> void * {
+                env->UnregisterNatives(sJClass);
+                env->DeleteWeakGlobalRef(sLogCallback);
+                env->DeleteWeakGlobalRef(sJsMsgCallback);
+                return nullptr;
+            });
 
     sVM = nullptr;
     sLogCallback = nullptr;

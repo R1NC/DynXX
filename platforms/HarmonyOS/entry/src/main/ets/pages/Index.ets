@@ -17,10 +17,6 @@ struct Index {
             let root = getContext().filesDir;
             NGenXX.init(root);
 
-            NGenXX.logSetCallback((level, log) => {
-              hilog.debug(0x0000, 'NGenXX', `${level} | ${log}`);
-            });
-
             NGenXX.logPrint(1, `DeviceType: ${NGenXX.deviceType()}`);
             NGenXX.logPrint(1, `DeviceName: ${NGenXX.deviceName()}`);
             NGenXX.logPrint(1, `DeviceManufacturer: ${NGenXX.deviceManufacturer()}`);

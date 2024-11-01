@@ -38,10 +38,6 @@ class NGenXXTest {
             val dir = sApplication?.filesDir?.absolutePath ?: return
             if (!NGenXX.init(dir)) return
 
-            NGenXX.logSetCallback { level, content ->
-                Log.d("NGenXX", "$level | $content")
-            }
-
             NGenXX.jSetMsgCallback { msg ->
                 "Android->$msg@${System.currentTimeMillis()}"
             }
