@@ -16,23 +16,23 @@ enum class NGenXXHttpMethodX : int
 };
 
 const std::string ngenxxNetHttpRequest(const std::string &url,
-                                       const std::string &params,
                                        const NGenXXHttpMethodX method,
-                                       const std::vector<std::string> &headerV,
-                                       const std::vector<std::string> &formFieldNameV,
-                                       const std::vector<std::string> &formFieldMimeV,
-                                       const std::vector<std::string> &formFieldDataV,
-                                       const std::FILE *cFILE, const size_t fileSize,
-                                       const size_t timeout);
+                                       const std::string &params = "",
+                                       const std::vector<std::string> &headerV = {},
+                                       const std::vector<std::string> &formFieldNameV = {},
+                                       const std::vector<std::string> &formFieldMimeV = {},
+                                       const std::vector<std::string> &formFieldDataV = {},
+                                       const std::FILE *cFILE = nullptr, const size_t fileSize = 0,
+                                       const size_t timeout = 15000);
 
 const std::string ngenxxNetHttpRequest(const std::string &url,
-                                       const std::unordered_map<std::string, Any> &params,
                                        const NGenXXHttpMethodX method,
-                                       const std::unordered_map<std::string, std::string> &headers,
-                                       const std::vector<std::string> &formFieldNameV,
-                                       const std::vector<std::string> &formFieldMimeV,
-                                       const std::vector<std::string> &formFieldDataV,
-                                       const std::FILE *cFILE, const size_t fileSize,
-                                       const size_t timeout);
+                                       const std::unordered_map<std::string, Any> &params = {},
+                                       const std::unordered_map<std::string, std::string> &headers = {},
+                                       const std::vector<std::string> &formFieldNameV = {},
+                                       const std::vector<std::string> &formFieldMimeV = {},
+                                       const std::vector<std::string> &formFieldDataV = {},
+                                       const std::FILE *cFILE = nullptr, const size_t fileSize = 0,
+                                       const size_t timeout = 15000);
 
 #endif //  NGENXX_INCLUDE_NET_HTTP_HXX_

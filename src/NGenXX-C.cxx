@@ -230,8 +230,9 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
         vFormFieldData = std::vector<std::string>(form_field_data_v, form_field_data_v + form_field_count);
     }
 
-    auto s = ngenxxNetHttpRequest(url ?: "", params ?: "",
+    auto s = ngenxxNetHttpRequest(url ?: "",
                                   static_cast<NGenXXHttpMethodX>(method),
+                                  params ?: "",
                                   vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
                                   reinterpret_cast<std::FILE *>(cFILE), file_size, timeout);
     return copyStr(s);
@@ -392,7 +393,7 @@ bool ngenxx_json_decoder_is_object(void *const decoder, void *const node)
 EXPORT_AUTO
 void *const ngenxx_json_decoder_read_node(void *const decoder, void *const node, const char *k)
 {
-    return ngenxxJsonDecoderReadNode(decoder, node, k ?: "");
+    return ngenxxJsonDecoderReadNode(decoder, k ?: "", node);
 }
 
 EXPORT_AUTO
@@ -496,35 +497,36 @@ void ngenxx_z_unzip_release(void *const unzip)
 EXPORT_AUTO
 bool ngenxx_z_cfile_zip(const int mode, const size_t bufferSize, const int format, void *const cFILEIn, void *const cFILEOut)
 {
-    return ngenxxZCFileZip(static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format),
-                           reinterpret_cast<std::FILE *>(cFILEIn), reinterpret_cast<std::FILE *>(cFILEOut));
+    return ngenxxZCFileZip(reinterpret_cast<std::FILE *>(cFILEIn), reinterpret_cast<std::FILE *>(cFILEOut),
+                           static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
 }
 
 EXPORT_AUTO
 bool ngenxx_z_cfile_unzip(const size_t bufferSize, const int format, void *const cFILEIn, void *const cFILEOut)
 {
-    return ngenxxZCFileUnzip(bufferSize, static_cast<NGenXXZFormatX>(format),
-                             reinterpret_cast<std::FILE *>(cFILEIn), reinterpret_cast<std::FILE *>(cFILEOut));
+    return ngenxxZCFileUnzip(reinterpret_cast<std::FILE *>(cFILEIn), reinterpret_cast<std::FILE *>(cFILEOut),
+                             bufferSize, static_cast<NGenXXZFormatX>(format));
 }
 
 EXPORT_AUTO
 bool ngenxx_z_cxxstream_zip(const int mode, const size_t bufferSize, const int format, void *const cxxStreamIn, void *const cxxStreamOut)
 {
-    return ngenxxZCxxStreamZip(static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format),
-                               reinterpret_cast<std::istream *>(cxxStreamIn), reinterpret_cast<std::ostream *>(cxxStreamOut));
+    return ngenxxZCxxStreamZip(reinterpret_cast<std::istream *>(cxxStreamIn), reinterpret_cast<std::ostream *>(cxxStreamOut),
+                               static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
 }
 
 EXPORT_AUTO
 bool ngenxx_z_cxxstream_unzip(const size_t bufferSize, const int format, void *const cxxStreamIn, void *const cxxStreamOut)
 {
-    return ngenxxZCxxStreamUnzip(bufferSize, static_cast<NGenXXZFormatX>(format),
-                                 reinterpret_cast<std::istream *>(cxxStreamIn), reinterpret_cast<std::ostream *>(cxxStreamOut));
+    return ngenxxZCxxStreamUnzip(reinterpret_cast<std::istream *>(cxxStreamIn), reinterpret_cast<std::ostream *>(cxxStreamOut),
+                                 bufferSize, static_cast<NGenXXZFormatX>(format));
 }
 
 EXPORT_AUTO
 const byte *ngenxx_z_bytes_zip(const int mode, const size_t bufferSize, const int format, const byte *inBytes, const size_t inLen, size_t *outLen)
 {
-    auto t = ngenxxZBytesZip(static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format), {inBytes, inLen});
+    auto t = ngenxxZBytesZip({inBytes, inLen},
+                             static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
     *outLen = t.second;
     return copyBytes(t);
 }
@@ -532,7 +534,8 @@ const byte *ngenxx_z_bytes_zip(const int mode, const size_t bufferSize, const in
 EXPORT_AUTO
 const byte *ngenxx_z_bytes_unzip(const size_t bufferSize, const int format, const byte *inBytes, const size_t inLen, size_t *outLen)
 {
-    auto t = ngenxxZBytesUnzip(bufferSize, static_cast<NGenXXZFormatX>(format), {inBytes, inLen});
+    auto t = ngenxxZBytesUnzip({inBytes, inLen},
+                               bufferSize, static_cast<NGenXXZFormatX>(format));
     *outLen = t.second;
     return copyBytes(t);
 }

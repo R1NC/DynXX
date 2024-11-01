@@ -161,7 +161,7 @@ const std::string ngenxx_net_http_requestS(const char *json)
     if ((cFILE > 0 && fileSize <= 0) || (cFILE <= 0 && fileSize > 0))
         return s;
 
-    return ngenxxNetHttpRequest(url, params, static_cast<NGenXXHttpMethodX>(method),
+    return ngenxxNetHttpRequest(url, static_cast<NGenXXHttpMethodX>(method), params, 
                                 header_v,
                                 form_field_name_v,
                                 form_field_mime_v,
@@ -804,7 +804,7 @@ const std::string ngenxx_z_bytes_zipS(const char *json)
     if (in.second == 0)
         return s;
 
-    auto outBytes = ngenxxZBytesZip(static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format), in);
+    auto outBytes = ngenxxZBytesZip(in, static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
     return bytes2json(outBytes);
 }
 
@@ -820,6 +820,6 @@ const std::string ngenxx_z_bytes_unzipS(const char *json)
     if (in.second == 0)
         return s;
 
-    auto outBytes = ngenxxZBytesUnzip(bufferSize, static_cast<NGenXXZFormatX>(format), in);
+    auto outBytes = ngenxxZBytesUnzip(in, bufferSize, static_cast<NGenXXZFormatX>(format));
     return bytes2json(outBytes);
 }

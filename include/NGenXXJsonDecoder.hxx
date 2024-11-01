@@ -5,19 +5,19 @@
 
 void *const ngenxxJsonDecoderInit(const std::string &json);
 
-bool ngenxxJsonDecoderIsArray(void *const decoder, void *const node);
+bool ngenxxJsonDecoderIsArray(void *const decoder, void *const node = nullptr);
 
-bool ngenxxJsonDecoderIsObject(void *const decoder, void *const node);
+bool ngenxxJsonDecoderIsObject(void *const decoder, void *const node = nullptr);
 
-void *const ngenxxJsonDecoderReadNode(void *const decoder, void *const node, const std::string &k);
+void *const ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node = nullptr);
 
-const std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node);
+const std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node = nullptr);
 
-double ngenxxJsonDecoderReadNumber(void *const decoder, void *const node);
+double ngenxxJsonDecoderReadNumber(void *const decoder, void *const node = nullptr);
 
-void *const ngenxxJsonDecoderReadChild(void *const decoder, void *const node);
+void *const ngenxxJsonDecoderReadChild(void *const decoder, void *const node = nullptr);
 
-void *const ngenxxJsonDecoderReadNext(void *const decoder, void *const node);
+void *const ngenxxJsonDecoderReadNext(void *const decoder, void *const node = nullptr);
 
 void ngenxxJsonDecoderRelease(void *const decoder);
 

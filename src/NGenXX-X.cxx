@@ -188,8 +188,8 @@ const Bytes ngenxxCryptoBase64Decode(const Bytes in)
 #pragma mark Net.Http
 
 const std::string ngenxxNetHttpRequest(const std::string &url,
-                                       const std::string &params,
                                        const NGenXXHttpMethodX method,
+                                       const std::string &params,
                                        const std::vector<std::string> &headerV,
                                        const std::vector<std::string> &formFieldNameV,
                                        const std::vector<std::string> &formFieldMimeV,
@@ -215,8 +215,8 @@ const std::string ngenxxNetHttpRequest(const std::string &url,
 }
 
 const std::string ngenxxNetHttpRequest(const std::string &url,
-                                       const std::unordered_map<std::string, Any> &params,
                                        const NGenXXHttpMethodX method,
+                                       const std::unordered_map<std::string, Any> &params,
                                        const std::unordered_map<std::string, std::string> &headers,
                                        const std::vector<std::string> &formFieldNameV,
                                        const std::vector<std::string> &formFieldMimeV,
@@ -239,7 +239,7 @@ const std::string ngenxxNetHttpRequest(const std::string &url,
         );
     }
     std::vector<std::string> headerV;
-    return ngenxxNetHttpRequest(url, ssParams.str(), method, headerV,
+    return ngenxxNetHttpRequest(url, method, ssParams.str(), headerV,
                                 formFieldNameV, formFieldMimeV, formFieldDataV,
                                 cFILE, fileSize, timeout);
 }
@@ -443,7 +443,7 @@ bool ngenxxJsonDecoderIsObject(void *const decoder, void *const node)
     return xdecoder->isObject(node);
 }
 
-void *const ngenxxJsonDecoderReadNode(void *const decoder, void *const node, const std::string &k)
+void *const ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node)
 {
     if (decoder == NULL || k.length() == 0)
         return NULL;
@@ -585,7 +585,7 @@ void ngenxxZUnzipRelease(void *const unzip)
     delete xunzip;
 }
 
-bool ngenxxZCFileZip(const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format, std::FILE *cFILEIn, std::FILE *cFILEOut)
+bool ngenxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut, const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
         return false;
@@ -594,7 +594,7 @@ bool ngenxxZCFileZip(const NGenXXZipCompressModeX mode, const size_t bufferSize,
     return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), cFILEIn, cFILEOut);
 }
 
-bool ngenxxZCFileUnzip(const size_t bufferSize, const NGenXXZFormatX format, std::FILE *cFILEIn, std::FILE *cFILEOut)
+bool ngenxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
         return false;
@@ -603,7 +603,7 @@ bool ngenxxZCFileUnzip(const size_t bufferSize, const NGenXXZFormatX format, std
     return NGenXX::Z::unzip(bufferSize, static_cast<int>(format), cFILEIn, cFILEOut);
 }
 
-bool ngenxxZCxxStreamZip(const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format, std::istream *cxxStreamIn, std::ostream *cxxStreamOut)
+bool ngenxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
         return false;
@@ -612,7 +612,7 @@ bool ngenxxZCxxStreamZip(const NGenXXZipCompressModeX mode, const size_t bufferS
     return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
 }
 
-bool ngenxxZCxxStreamUnzip(const size_t bufferSize, const NGenXXZFormatX format, std::istream *cxxStreamIn, std::ostream *cxxStreamOut)
+bool ngenxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
         return false;
@@ -621,7 +621,7 @@ bool ngenxxZCxxStreamUnzip(const size_t bufferSize, const NGenXXZFormatX format,
     return NGenXX::Z::unzip(bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
 }
 
-const Bytes ngenxxZBytesZip(const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format, const Bytes inBytes)
+const Bytes ngenxxZBytesZip(const Bytes inBytes, const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
         return BytesEmpty;
@@ -630,7 +630,7 @@ const Bytes ngenxxZBytesZip(const NGenXXZipCompressModeX mode, const size_t buff
     return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), inBytes);
 }
 
-const Bytes ngenxxZBytesUnzip(const size_t bufferSize, const NGenXXZFormatX format, const Bytes inBytes)
+const Bytes ngenxxZBytesUnzip(const Bytes inBytes, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
         return BytesEmpty;
