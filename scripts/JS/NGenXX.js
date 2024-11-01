@@ -107,12 +107,13 @@ function NGenXXDeviceCPUArch() {
     return ngenxx_device_cpu_archJ();
 }
 
-function NGenXXNetHttpRequest(url, paramMap, method, headerMap, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
+function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
     paramStr = _Map2UrlStr(paramMap);
     headerArray = _Map2StrArray(headerMap);
     formFieldNameArray = formFieldNameArray || [];
     formFieldMimeArray = formFieldMimeArray || [];
     formFieldDataArray = formFieldDataArray || [];
+    timeout = timeout || 5000;
 
     let inJson = JSON.stringify({
         "url": url,

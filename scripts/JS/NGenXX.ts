@@ -63,13 +63,13 @@ const enum NGenXXHttpMethod {
 
 declare function NGenXXNetHttpRequest(
     url: string,
-    paramMap: Map<string, string | number>,
     method: NGenXXHttpMethod,
-    headerMap: Map<string, string | number>,
-    formFieldNameArray: string[],
-    formFieldMimeArray: string[],
-    formFieldDataArray: string[],
-    timeout: number
+    paramMap?: Map<string, string | number>,
+    headerMap?: Map<string, string | number>,
+    formFieldNameArray?: string[],
+    formFieldMimeArray?: string[],
+    formFieldDataArray?: string[],
+    timeout?: number
 ): string
 
 /// Store.SQLite

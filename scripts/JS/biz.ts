@@ -13,7 +13,6 @@ function jTestDeviceInfo(): void {
 
 function jTestNetHttpReq(url: string): string {
     let method: number = NGenXXHttpMethod.Get
-    let timeout: number = 55555
 
     let paramMap: Map<string, number | string> = new Map()
     paramMap.set('p0', 123)
@@ -23,7 +22,7 @@ function jTestNetHttpReq(url: string): string {
     headerMap.set('User-Agent', 'NGenXX')
     headerMap.set('Cache-Control', 'no-cache')
 
-    let rsp: string = NGenXXNetHttpRequest(url, paramMap, method, headerMap, null, null, null, timeout)
+    let rsp: string = NGenXXNetHttpRequest(url, method, paramMap, headerMap)
     console.log(rsp)
     return rsp
 }
