@@ -30,24 +30,29 @@ NGenXX::Store::KV::Connection::Connection(const std::string &_id)
 const std::string NGenXX::Store::KV::Connection::readString(const std::string &k)
 {
     std::string s;
-    this->kv->getString(k.c_str(), s, "");
+    this->kv->getString(k, s, "");
     return s;
 }
 
 const int64_t NGenXX::Store::KV::Connection::readInteger(const std::string &k)
 {
-    return this->kv->getInt64(k.c_str());
+    return this->kv->getInt64(k);
 }
 
 const double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
 {
-    return this->kv->getDouble(k.c_str());
+    return this->kv->getDouble(k);
 }
 
 bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v)
 {
-    return std::visit([&](auto &x)
-                      { return this->kv->set(x, k); }, v);
+    return std::visit(
+        [k, &kv = this->kv](auto &x)
+        { 
+            return kv->set(x, k); 
+        },
+        v
+    );
 }
 
 const std::vector<std::string> NGenXX::Store::KV::Connection::allKeys()
@@ -57,12 +62,12 @@ const std::vector<std::string> NGenXX::Store::KV::Connection::allKeys()
 
 bool NGenXX::Store::KV::Connection::contains(const std::string &k)
 {
-    return this->kv->containsKey(k.c_str());
+    return this->kv->containsKey(k);
 }
 
 void NGenXX::Store::KV::Connection::remove(const std::string &k)
 {
-    return this->kv->removeValueForKey(k.c_str());
+    return this->kv->removeValueForKey(k);
 }
 
 void NGenXX::Store::KV::Connection::clear()

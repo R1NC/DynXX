@@ -42,7 +42,7 @@ Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK, const c
         if (byte_vNode)
         {
             decoder.readChildren(byte_vNode,
-                                 [&data, &decoder, &len](int idx, void *child) -> void
+                                 [len, &data, &decoder](int idx, void *child) -> void
                                  {
                                      if (idx == len)
                                          return;
@@ -63,7 +63,7 @@ const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, con
     if (str_vNode)
     {
         decoder.readChildren(str_vNode,
-                             [&v, &decoder, &count, &maxLen](int idx, void *child) -> void
+                             [count, maxLen, &v, &decoder](int idx, void *child) -> void
                              {
                                  if (idx == count)
                                      return;

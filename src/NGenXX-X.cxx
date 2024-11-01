@@ -230,8 +230,13 @@ const std::string ngenxxNetHttpRequest(const std::string &url,
         if (ssParams.str().length() > 0)
             ssParams << "&";
         ssParams << it->first << "=";
-        std::visit([&](auto &x)
-                   { ssParams << x; }, it->second);
+        std::visit(
+            [&ssParams](auto &x)
+            { 
+                ssParams << x; 
+            }, 
+            it->second
+        );
     }
     std::vector<std::string> headerV;
     return ngenxxNetHttpRequest(url, ssParams.str(), method, headerV,
