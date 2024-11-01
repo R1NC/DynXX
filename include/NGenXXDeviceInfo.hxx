@@ -36,4 +36,4 @@ const std::string ngenxxDeviceOsVersion();
 
 NGenXXDeviceCpuArchX ngenxxDeviceCpuArch();
 
-#endif //  NGENXX_INCLUDE_DEVICE_INFO_HXX_
+#endif // NGENXX_INCLUDE_DEVICE_INFO_HXX_

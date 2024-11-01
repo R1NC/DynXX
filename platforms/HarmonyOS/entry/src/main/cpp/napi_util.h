@@ -1,6 +1,8 @@
 #include "napi/native_api.h"
 #include <cstdio>
 
+#include "../../../../../../build.HarmonyOS/output/include/NGenXXTypes.h"
+
 #define PRINT_NAPI_STATUS_ERR(env, status, errMsg)           \
     do                                                       \
     {                                                        \
@@ -41,7 +43,7 @@
 
 napi_value *readParams(napi_env env, napi_callback_info info, size_t count);
 
-const unsigned int napiValueArrayLen(napi_env env, napi_value nv);
+const size_t napiValueArrayLen(napi_env env, napi_value nv);
 
 const char *napiValue2chars(napi_env env, napi_value nv);
 
@@ -53,9 +55,9 @@ long napiValue2long(napi_env env, napi_value nv);
 
 double napiValue2double(napi_env env, napi_value nv);
 
-const unsigned char *napiValue2byteArray(napi_env env, napi_value nv, unsigned long len);
+const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len);
 
-const char **napiValue2charsArray(napi_env env, napi_value nv, unsigned long len);
+const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len);
 
 napi_value chars2NapiValue(napi_env env, const char *c);
 
@@ -67,6 +69,6 @@ napi_value bool2NapiValue(napi_env env, bool b);
 
 napi_value double2NapiValue(napi_env env, double d);
 
-napi_value byteArray2NapiValue(napi_env, const unsigned char *byteArray, unsigned long len);
+napi_value byteArray2NapiValue(napi_env, const byte *byteArray, size_t len);
 
-napi_value charsArray2NapiValue(napi_env, const char **charsArray, unsigned long len);
+napi_value charsArray2NapiValue(napi_env, const char **charsArray, size_t len);

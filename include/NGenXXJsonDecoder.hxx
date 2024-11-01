@@ -21,4 +21,4 @@ void *const ngenxxJsonDecoderReadNext(void *const decoder, void *const node = nu
 
 void ngenxxJsonDecoderRelease(void *const decoder);
 
-#endif //  NGENXX_INCLUDE_JSON_DECODER_HXX_
+#endif // NGENXX_INCLUDE_JSON_DECODER_HXX_

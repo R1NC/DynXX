@@ -23,4 +23,4 @@ const Bytes ngenxxCryptoBase64Encode(const Bytes in);
 
 const Bytes ngenxxCryptoBase64Decode(const Bytes in);
 
-#endif //  NGENXX_INCLUDE_CRYPTO_HXX_
+#endif // NGENXX_INCLUDE_CRYPTO_HXX_

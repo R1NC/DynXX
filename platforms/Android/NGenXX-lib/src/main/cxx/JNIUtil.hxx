@@ -7,6 +7,8 @@
 #include <functional>
 #include <type_traits>
 
+#include "../../../../../../build.Android/output/include/NGenXXTypes.h"
+
 static inline void *runInCurrentEnv(JavaVM *vm, const std::function<void *(JNIEnv *env)> &task)
 {
     if (vm == nullptr)
@@ -20,15 +22,15 @@ static inline void *runInCurrentEnv(JavaVM *vm, const std::function<void *(JNIEn
     return t;
 }
 
-jbyteArray moveToJByteArray(JNIEnv *env, const unsigned char *bytes, unsigned long outLen, bool needFree)
+jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, bool needFree)
 {
     jbyteArray jba;
     if (bytes && outLen > 0)
     {
         jba = env->NewByteArray(static_cast<jsize>(outLen));
-        env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen), reinterpret_cast<jbyte *>(const_cast<unsigned char *>(bytes)));
+        env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen), reinterpret_cast<jbyte *>(const_cast<byte *>(bytes)));
         if (needFree)
-            free(static_cast<void *>(const_cast<unsigned char *>(bytes)));
+            free(static_cast<void *>(const_cast<byte *>(bytes)));
     }
     else
     {

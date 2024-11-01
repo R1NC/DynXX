@@ -109,18 +109,18 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
     const char *cUrl = env->GetStringUTFChars(url, nullptr);
     const char *cParams = env->GetStringUTFChars(params, nullptr);
 
-    const unsigned int headerCount = env->GetArrayLength(headerV);
+    auto headerCount = env->GetArrayLength(headerV);
     char **cHeaderV = reinterpret_cast<char **>(malloc(headerCount * sizeof(char *)));
-    auto *jstrHeaderV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
+    auto jstrHeaderV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
     for (int i = 0; i < headerCount; i++)
     {
         jstrHeaderV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(headerV, i));
         cHeaderV[i] = const_cast<char *>(env->GetStringUTFChars(jstrHeaderV[i], nullptr));
     }
 
-    const unsigned int formFieldCount = env->GetArrayLength(formFieldNameV);
+    auto formFieldCount = env->GetArrayLength(formFieldNameV);
     char **cFormFieldNameV = reinterpret_cast<char **>(malloc(formFieldCount * sizeof(char *)));
-    auto *jstrFormFieldNameV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
+    auto jstrFormFieldNameV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
     for (int i = 0; i < formFieldCount; i++)
     {
         jstrFormFieldNameV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(formFieldNameV, i));
@@ -128,7 +128,7 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
     }
 
     char **cFormFieldMimeV = reinterpret_cast<char **>(malloc(formFieldCount * sizeof(char *)));
-    auto *jstrFormFieldMimeV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
+    auto jstrFormFieldMimeV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
     for (int i = 0; i < formFieldCount; i++)
     {
         jstrFormFieldMimeV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(formFieldMimeV, i));
@@ -136,7 +136,7 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
     }
 
     char **cFormFieldDataV = reinterpret_cast<char **>(malloc(formFieldCount * sizeof(char *)));
-    auto *jstrFormFieldDataV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
+    auto jstrFormFieldDataV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
     for (int i = 0; i < formFieldCount; i++)
     {
         jstrFormFieldDataV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(formFieldDataV, i));
@@ -153,7 +153,7 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
                                                const_cast<const char **>(cFormFieldDataV),
                                                formFieldCount,
                                                reinterpret_cast<void *>(cFILE), fileLength,
-                                               static_cast<const unsigned long>(timeout));
+                                               static_cast<const size_t>(timeout));
     jstring jstr = env->NewStringUTF(cRsp ?: "");
     free(static_cast<void *>(const_cast<char *>(cRsp)));
 

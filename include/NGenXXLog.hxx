@@ -19,4 +19,4 @@ void ngenxxLogSetCallback(const std::function<void(const int level, const char *
 
 void ngenxxLogPrint(const NGenXXLogLevelX level, const std::string &content);
 
-#endif //  NGENXX_INCLUDE_LOG_HXX_
+#endif // NGENXX_INCLUDE_LOG_HXX_

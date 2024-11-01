@@ -19,4 +19,4 @@ void ngenxxStoreSqliteQueryDrop(void *const query_result);
 
 void ngenxxStoreSqliteClose(void *const conn);
 
-#endif //  NGENXX_INCLUDE_STORE_SQLITE_HXX_
+#endif // NGENXX_INCLUDE_STORE_SQLITE_HXX_

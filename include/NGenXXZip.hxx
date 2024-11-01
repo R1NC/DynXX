@@ -69,4 +69,4 @@ const Bytes ngenxxZBytesUnzip(const Bytes inBytes,
                               const size_t bufferSize = NGenXXZDefaultBufferSize,
                               const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
 
-#endif //  NGENXX_INCLUDE_Z_HXX_
+#endif // NGENXX_INCLUDE_Z_HXX_

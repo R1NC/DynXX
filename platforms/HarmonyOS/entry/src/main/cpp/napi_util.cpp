@@ -12,7 +12,7 @@ napi_value *readParams(napi_env env, napi_callback_info info, size_t count)
     return argv;
 }
 
-const unsigned int napiValueArrayLen(napi_env env, napi_value nv)
+const size_t napiValueArrayLen(napi_env env, napi_value nv)
 {
     uint32_t len;
     int status = napi_get_array_length(env, nv, &len);
@@ -64,11 +64,11 @@ double napiValue2double(napi_env env, napi_value nv)
     return d;
 }
 
-const unsigned char *napiValue2byteArray(napi_env env, napi_value nv, unsigned long len)
+const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len)
 {
     if (len <= 0)
         return NULL;
-    unsigned char *byteArray = reinterpret_cast<unsigned char *>(malloc(len * sizeof(const unsigned char) + 1));
+    byte *byteArray = reinterpret_cast<byte *>(malloc(len * sizeof(const byte) + 1));
     int status;
     for (int i = 0; i < len; i++)
     {
@@ -80,7 +80,7 @@ const unsigned char *napiValue2byteArray(napi_env env, napi_value nv, unsigned l
     return byteArray;
 }
 
-const char **napiValue2charsArray(napi_env env, napi_value nv, unsigned long len)
+const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len)
 {
     if (len <= 0)
         return NULL;
@@ -138,7 +138,7 @@ napi_value double2NapiValue(napi_env env, double d)
     return v;
 }
 
-napi_value byteArray2NapiValue(napi_env env, const unsigned char *byteArray, unsigned long len)
+napi_value byteArray2NapiValue(napi_env env, const byte *byteArray, size_t len)
 {
     napi_value v;
     int status = napi_create_array_with_length(env, len, &v);
@@ -151,7 +151,7 @@ napi_value byteArray2NapiValue(napi_env env, const unsigned char *byteArray, uns
     return v;
 }
 
-napi_value charsArray2NapiValue(napi_env env, const char **charsArray, unsigned long len)
+napi_value charsArray2NapiValue(napi_env env, const char **charsArray, size_t len)
 {
     napi_value v;
     int status = napi_create_array_with_length(env, len, &v);

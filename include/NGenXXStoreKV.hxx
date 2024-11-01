@@ -28,4 +28,4 @@ void ngenxxStoreKvClear(void *const conn);
 
 void ngenxxStoreKvClose(void *const conn);
 
-#endif //  NGENXX_INCLUDE_STORE_KV_HXX_
+#endif // NGENXX_INCLUDE_STORE_KV_HXX_
