@@ -560,7 +560,7 @@ const std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
 
     size_t tagBits = decoder.readNumber(decoder.readNode(NULL, "tagBits"));
 
-    auto outBytes = ngenxxCryptoAesGcmEncrypt(in, key, iv, aad, tagBits);
+    auto outBytes = ngenxxCryptoAesGcmEncrypt(in, key, iv, tagBits, aad);
     return bytes2json(outBytes);
 }
 
@@ -587,7 +587,7 @@ const std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
 
     size_t tagBits = decoder.readNumber(decoder.readNode(NULL, "tagBits"));
 
-    auto outBytes = ngenxxCryptoAesGcmDecrypt(in, key, iv, aad, tagBits);
+    auto outBytes = ngenxxCryptoAesGcmDecrypt(in, key, iv, tagBits, aad);
     return bytes2json(outBytes);
 }
 

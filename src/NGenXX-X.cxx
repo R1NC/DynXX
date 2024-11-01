@@ -155,12 +155,12 @@ const Bytes ngenxxCryptoAesDecrypt(const Bytes in, const Bytes key)
     return NGenXX::Crypto::AES::decrypt(in, key);
 }
 
-const Bytes ngenxxCryptoAesGcmEncrypt(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits)
+const Bytes ngenxxCryptoAesGcmEncrypt(const Bytes in, const Bytes key, const Bytes initVector, const size_t tagBits, const Bytes aad)
 {
     return NGenXX::Crypto::AES::gcmEncrypt(in, key, initVector, aad, tagBits);
 }
 
-const Bytes ngenxxCryptoAesGcmDecrypt(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits)
+const Bytes ngenxxCryptoAesGcmDecrypt(const Bytes in, const Bytes key, const Bytes initVector, const size_t tagBits, const Bytes aad)
 {
     return NGenXX::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }

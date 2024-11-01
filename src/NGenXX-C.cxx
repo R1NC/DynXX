@@ -139,7 +139,8 @@ const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, const size_t inLe
                                           const byte *aadBytes, const size_t aadLen,
                                           const size_t tagBits, size_t *outLen)
 {
-    auto t = ngenxxCryptoAesGcmEncrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, {aadBytes, aadLen}, tagBits);
+    auto t = ngenxxCryptoAesGcmEncrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, tagBits,
+                                       {aadBytes, aadLen});
     if (outLen)
         *outLen = t.second;
     return copyBytes(t);
@@ -152,7 +153,8 @@ const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size_t inLe
                                           const byte *aadBytes, const size_t aadLen,
                                           const size_t tagBits, size_t *outLen)
 {
-    auto t = ngenxxCryptoAesGcmDecrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, {aadBytes, aadLen}, tagBits);
+    auto t = ngenxxCryptoAesGcmDecrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, tagBits,
+                                       {aadBytes, aadLen});
     if (outLen)
         *outLen = t.second;
     return copyBytes(t);

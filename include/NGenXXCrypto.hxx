@@ -9,9 +9,10 @@ const Bytes ngenxxCryptoAesEncrypt(const Bytes in, const Bytes key);
 
 const Bytes ngenxxCryptoAesDecrypt(const Bytes in, const Bytes key);
 
-const Bytes ngenxxCryptoAesGcmEncrypt(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits);
+const Bytes ngenxxCryptoAesGcmEncrypt(const Bytes in, const Bytes key, const Bytes initVector, const size_t tagBits, const Bytes aad = BytesEmpty);
 
-const Bytes ngenxxCryptoAesGcmDecrypt(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits);
+const Bytes ngenxxCryptoAesGcmDecrypt(const Bytes in, const Bytes key, const Bytes initVector, const size_t tagBits,
+                                      const Bytes aad = BytesEmpty);
 
 const Bytes ngenxxCryptoHashMd5(const Bytes in);
 

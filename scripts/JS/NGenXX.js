@@ -113,7 +113,7 @@ function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, formFieldNameAr
     formFieldNameArray = formFieldNameArray || [];
     formFieldMimeArray = formFieldMimeArray || [];
     formFieldDataArray = formFieldDataArray || [];
-    timeout = timeout || 5000;
+    timeout = timeout || 15000;
 
     let inJson = JSON.stringify({
         "url": url,
@@ -357,7 +357,7 @@ function NGenXXCryptoAesDecrypt(inBytes, keyBytes) {
     return _json2Array(outJson);
 }
 
-function NGenXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, aadBytes, tagBits) {
+function NGenXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes) {
     inBytes = inBytes || [];
     keyBytes = keyBytes || [];
     ivBytes = ivBytes || [];
@@ -377,7 +377,7 @@ function NGenXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, aadBytes, tagBits
     return _json2Array(outJson);
 }
 
-function NGenXXCryptoAesGcmDecrypt(inBytes, keyBytes, ivBytes, aadBytes, tagBits) {
+function NGenXXCryptoAesGcmDecrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes) {
     inBytes = inBytes || [];
     keyBytes = keyBytes || [];
     ivBytes = ivBytes || [];
@@ -522,7 +522,7 @@ function _NGenXXZUnZipRelease(unzip) {
     ngenxx_z_unzip_releaseJ(inJson);
 }
 
-function NGenXXZZipBytes(mode, bufferSize, bytes, format) {
+function NGenXXZZipBytes(bytes, mode, bufferSize, format) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
         "mode": mode,
@@ -535,7 +535,7 @@ function NGenXXZZipBytes(mode, bufferSize, bytes, format) {
     return _json2Array(outJson);
 }
 
-function NGenXXZUnZipBytes(bufferSize, bytes, format) {
+function NGenXXZUnZipBytes(bytes, bufferSize, format) {
     let inJson = JSON.stringify({
         "bufferSize": bufferSize,
         "format": format,
@@ -579,7 +579,7 @@ function _NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,
     return true;
 }
 
-function NGenXXZZipStream(mode, bufferSize, format, readFunc, writeFunc, flushFunc) {
+function NGenXXZZipStream(readFunc, writeFunc, flushFunc, mode, bufferSize, format) {
     let zip = _NGenXXZZipInit(mode, bufferSize, format);
 
     let res = _NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc, zip,
@@ -595,7 +595,7 @@ function NGenXXZZipStream(mode, bufferSize, format, readFunc, writeFunc, flushFu
     return res;
 }
 
-function NGenXXZUnZipStream(bufferSize, format, readFunc, writeFunc, flushFunc) {
+function NGenXXZUnZipStream(readFunc, writeFunc, flushFunc, bufferSize, format) {
     let unzip = _NGenXXZUnZipInit(bufferSize, format);
 
     let res = _NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc, unzip,
@@ -611,11 +611,11 @@ function NGenXXZUnZipStream(bufferSize, format, readFunc, writeFunc, flushFunc) 
     return res;
 }
 
-function NGenXXZZipFile(mode, bufferSize, format, inFilePath, outFilePath) {
+function NGenXXZZipFile(inFilePath, outFilePath, mode, bufferSize, format) {
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
 
-    let res = NGenXXZZipStream(mode, bufferSize, format,
+    let res = NGenXXZZipStream(
         () => {
             let inBuffer = new ArrayBuffer(bufferSize);
             inF.read(inBuffer, 0, bufferSize);
@@ -627,7 +627,10 @@ function NGenXXZZipFile(mode, bufferSize, format, inFilePath, outFilePath) {
         },
         () => {
             outF.flush();
-        }
+        },
+        mode, 
+        bufferSize, 
+        format
     );
 
     outF.close();
@@ -635,11 +638,11 @@ function NGenXXZZipFile(mode, bufferSize, format, inFilePath, outFilePath) {
     return res;
 }
 
-function NGenXXZUnZipFile(bufferSize, format, inFilePath, outFilePath) {
+function NGenXXZUnZipFile(inFilePath, outFilePath, bufferSize, format) {
     let inF = std.open(inFilePath, 'r');
     let outF = std.open(outFilePath, 'w');
 
-    let res = NGenXXZUnZipStream(bufferSize, format,
+    let res = NGenXXZUnZipStream(
         () => {
             let inBuffer = new ArrayBuffer(bufferSize);
             inF.read(inBuffer, 0, bufferSize);
@@ -651,7 +654,9 @@ function NGenXXZUnZipFile(bufferSize, format, inFilePath, outFilePath) {
         },
         () => {
             outF.flush();
-        }
+        },
+        bufferSize, 
+        format
     );
 
     outF.close();

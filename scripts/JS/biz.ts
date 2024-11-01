@@ -197,29 +197,26 @@ function jTestCryptoAesGcm(s: string): void {
     let inBytes: number[] = NGenXXStr2Bytes(s)
     let keyBytes: number[] = NGenXXStr2Bytes(AES_KEY)
     let ivBytes: number[] = NGenXXCryptoRand(12)
-    let aadBytes: number[] = []
     let tagBits: number = 96
 
-    let enBytes: number[] = NGenXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, aadBytes, tagBits)
+    let enBytes: number[] = NGenXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, tagBits)
     let enS: string = NGenXXCodingHexBytes2Str(enBytes)
     NGenXXLogPrint(NGenXXLogLevel.Debug, `AES-GCM encoded: ${enS}`)
 
-    let deBytes: number[] = NGenXXCryptoAesGcmDecrypt(enBytes, keyBytes, ivBytes, aadBytes, tagBits)
+    let deBytes: number[] = NGenXXCryptoAesGcmDecrypt(enBytes, keyBytes, ivBytes, tagBits)
     let deS: string = NGenXXBytes2Str(deBytes)
     NGenXXLogPrint(NGenXXLogLevel.Debug, `AES-GCM decoded: ${deS}`)
 }
 
 function jTestZip(): void {
-    let bufferSize: number = NGenXXZBufferSize
-    let format: number = NGenXXZFormat.GZip
     let root: string = NGenXXRootPath()
     let inFile: string = `${root}/test.js`
     let zipFile: string = `${root}/test.gzip`
-    let zipRes: boolean = NGenXXZZipFile(NGenXXZZipMode.Default, bufferSize, format, inFile, zipFile)
+    let zipRes: boolean = NGenXXZZipFile(inFile, zipFile)
     if (zipRes) {
         NGenXXLogPrint(NGenXXLogLevel.Debug, 'ZIP succeed!')
         let outFile: string = `${root}/test.txt`
-        let unzipRes: boolean = NGenXXZUnZipFile(bufferSize, format, zipFile, outFile)
+        let unzipRes: boolean = NGenXXZUnZipFile(zipFile, outFile)
         NGenXXLogPrint(NGenXXLogLevel.Debug, `UNZIP result: ${unzipRes}`)
     } else {
         NGenXXLogPrint(NGenXXLogLevel.Debug, 'ZIP failed')

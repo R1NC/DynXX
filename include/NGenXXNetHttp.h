@@ -8,6 +8,8 @@ extern "C"
 {
 #endif
 
+    static const size_t NGENXX_HTTP_DEFAULT_TIMEOUT = 15 * 1000;
+
     static const size_t NGENXX_HTTP_HEADER_MAX_COUNT = 100;
     static const size_t NGENXX_HTTP_HEADER_MAX_LENGTH = 8190;
 

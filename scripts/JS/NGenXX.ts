@@ -136,9 +136,21 @@ declare function NGenXXCryptoAesEncrypt(inBytes: number[], keyBytes: number[]): 
 
 declare function NGenXXCryptoAesDecrypt(inBytes: number[], keyBytes: number[]): number[]
 
-declare function NGenXXCryptoAesGcmEncrypt(inBytes: number[], keyBytes: number[], ivBytes: number[], aadBytes: number[], tagBits: number): number[]
+declare function NGenXXCryptoAesGcmEncrypt(
+    inBytes: number[], 
+    keyBytes: number[], 
+    ivBytes: number[], 
+    tagBits: number,
+    aadBytes?: number[]
+): number[]
 
-declare function NGenXXCryptoAesGcmDecrypt(inBytes: number[], keyBytes: number[], ivBytes: number[], aadBytes: number[], tagBits: number): number[]
+declare function NGenXXCryptoAesGcmDecrypt(
+    inBytes: number[], 
+    keyBytes: number[], 
+    ivBytes: number[], 
+    tagBits: number,
+    aadBytes?: number[]
+): number[]
 
 declare function NGenXXCryptoHashMD5(inBytes: number[]): number[]
 
@@ -164,27 +176,47 @@ const enum NGenXXZFormat {
 
 declare const NGenXXZBufferSize: number
 
-declare function NGenXXZZipBytes(mode: NGenXXZZipMode, bufferSize: number, format: NGenXXZFormat, bytes: number[]): number[]
+declare function NGenXXZZipBytes(
+    bytes: number[],
+    mode?: NGenXXZZipMode, 
+    bufferSize?: number, 
+    format?: NGenXXZFormat
+): number[]
 
-declare function NGenXXZUnZipBytes(bufferSize: number, format: NGenXXZFormat, bytes: number[]): number[]
+declare function NGenXXZUnZipBytes(
+    bytes: number[],
+    bufferSize?: number, 
+    format?: NGenXXZFormat
+): number[]
 
 declare function NGenXXZZipStream(
-    mode: NGenXXZZipMode,
-    bufferSize: number,
-    format: NGenXXZFormat,
     readFunc: () => number[],
     writeFunc: (bytes: number[]) => void,
-    flushFunc: () => void
+    flushFunc: () => void,
+    mode?: NGenXXZZipMode,
+    bufferSize?: number,
+    format?: NGenXXZFormat
 ): boolean
 
 declare function NGenXXZUnZipStream(
-    bufferSize: number,
-    format: NGenXXZFormat,
     readFunc: () => number[],
     writeFunc: (bytes: number[]) => void,
-    flushFunc: () => void
+    flushFunc: () => void,
+    bufferSize?: number,
+    format?: NGenXXZFormat
 ): boolean
 
-declare function NGenXXZZipFile(mode: number, bufferSize: number, format: NGenXXZFormat, inFilePath: string, outFilePath: string): boolean
+declare function NGenXXZZipFile(
+    inFilePath: string, 
+    outFilePath: string,
+    mode?: number, 
+    bufferSize?: number, 
+    format?: NGenXXZFormat
+): boolean
 
-declare function NGenXXZUnZipFile(bufferSize: number, format: NGenXXZFormat, inFilePath: string, outFilePath: string): boolean
+declare function NGenXXZUnZipFile(
+    inFilePath: string, 
+    outFilePath: string,
+    bufferSize?: number, 
+    format?: NGenXXZFormat
+): boolean
