@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-constexpr size_t NGENXX_DEFAULT_TIMEOUT = 5000L;
-
 size_t _NGenXX_Net_HttpClient_ReadCallback(char *ptr, size_t size, size_t nmemb, void *stream)
 {
     size_t nread;
@@ -47,7 +45,7 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
     int _timeout = timeout;
     if (_timeout <= 0)
     {
-        _timeout = NGENXX_DEFAULT_TIMEOUT;
+        _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
     }
 
     CURL *curl = curl_easy_init();
