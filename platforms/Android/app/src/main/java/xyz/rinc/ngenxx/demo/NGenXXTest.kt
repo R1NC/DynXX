@@ -7,8 +7,7 @@ import kotlinx.coroutines.runBlocking
 import xyz.rinc.ngenxx.NGenXX
 import xyz.rinc.ngenxx.NGenXXHelper
 import xyz.rinc.ngenxx.NGenXXHelper.Companion.LogLevel
-import xyz.rinc.ngenxx.NGenXXHelper.Companion.ZFormat
-import xyz.rinc.ngenxx.NGenXXHelper.Companion.ZipMode
+import xyz.rinc.ngenxx.NGenXXHelper.Companion.HttpMethod
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -85,12 +84,10 @@ class NGenXXTest {
             /*sApplication?.assets?.open("biz.lua")?.bufferedReader().use {
                 if (!NGenXX.lLoadS(it?.readText()?:"")) return
                 val rsp = NGenXX.lCall("lNetHttpRequest", jsonParams)
-                /*val rsp = NGenXX.netHttpRequest("https://rinc.xyz",
-                "p0=1&p1=2&p2=3",
-                0,
-                arrayOf("Cache-Control: no-cache"),
-                5555
-                )*/
+                val rsp = NGenXXHelper.netHttpRequest(
+                    "https://rinc.xyz",
+                    HttpMethod.Get
+                )
                 NGenXXHelper.logPrint(LogLevel.Debug, rsp!!)
             }*/
 
@@ -173,7 +170,7 @@ class NGenXXTest {
                 }
                 zipFile.createNewFile()
                 FileOutputStream(zipFile).use { zipOutStream ->
-                    val zipSuccess = NGenXXHelper.zZip(ZipMode.Default, ZFormat.ZLib, zipInStream!!, zipOutStream!!)
+                    val zipSuccess = NGenXXHelper.zZip(zipInStream!!, zipOutStream)
                     if (zipSuccess) {
                         FileInputStream(zipFile).use { unzipInStream ->
                             val unzipFile = File(sApplication?.externalCacheDir, "x.txt")
@@ -182,7 +179,7 @@ class NGenXXTest {
                             }
                             unzipFile.createNewFile()
                             FileOutputStream(unzipFile).use { unzipOutStream ->
-                                val unzipSuccess = NGenXXHelper.zUnZip(ZFormat.ZLib, unzipInStream, unzipOutStream)
+                                val unzipSuccess = NGenXXHelper.zUnZip(unzipInStream, unzipOutStream)
                             }
                         }
                     }

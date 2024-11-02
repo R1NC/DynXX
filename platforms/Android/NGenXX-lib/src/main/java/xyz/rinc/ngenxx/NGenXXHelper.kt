@@ -32,12 +32,12 @@ class NGenXXHelper {
 
         data class HttpFormField(val name: String, val mime: String, val data: String)
         fun netHttpRequest(url: String,
-                           paramMap: Map<String, String>?,
                            method: HttpMethod,
-                           headerMap: Map<String, String>?,
-                           formFieldV: Array<HttpFormField>?,
-                           file: File?,
-                           timeout: Long): String? {
+                           paramMap: Map<String, String>? = null,
+                           headerMap: Map<String, String>? = null,
+                           formFieldV: Array<HttpFormField>? = null,
+                           file: File? = null,
+                           timeout: Long = 15000): String? {
             val paramSB = StringBuilder()
             paramMap?.forEach { h ->
                 paramSB.append(if (paramSB.isEmpty()) "?" else "&")
@@ -81,7 +81,7 @@ class NGenXXHelper {
             Raw(2)
         }
 
-        private const val Z_BUFFER_SIZE = 16 * 1024
+        private const val Z_DEFAULT_BUFFER_SIZE = 16 * 1024
 
         private fun zProcess(bufferSize: Int, inStream: InputStream, outStream: OutputStream,
                              inputF: ((inBuffer: ByteArray, inLen: Int, inputFinished: Boolean) -> Long),
@@ -115,11 +115,15 @@ class NGenXXHelper {
             return true
         }
 
-        fun zZip(mode: ZipMode, format: ZFormat, inStream: InputStream, outStream: OutputStream): Boolean {
-            val zip = NGenXX.zZipInit(mode.value, Z_BUFFER_SIZE.toLong(), format.ordinal)
+        fun zZip(inStream: InputStream, outStream: OutputStream,
+                 mode: ZipMode = ZipMode.Default,
+                 bufferSize: Int = Z_DEFAULT_BUFFER_SIZE,
+                 format: ZFormat = ZFormat.ZLib
+        ): Boolean {
+            val zip = NGenXX.zZipInit(mode.value, bufferSize.toLong(), format.value)
             if (zip <= 0) return false
 
-            val success = zProcess(Z_BUFFER_SIZE, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
+            val success = zProcess(bufferSize, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
                 NGenXX.zZipInput(zip, inBuffer, inLen, inputFinished)
             }, {
                 NGenXX.zZipProcessDo(zip)
@@ -131,11 +135,14 @@ class NGenXXHelper {
             return success
         }
 
-        fun zUnZip(format: ZFormat, inStream: InputStream, outStream: OutputStream): Boolean {
-            val unzip = NGenXX.zUnZipInit(Z_BUFFER_SIZE.toLong(), format.ordinal)
+        fun zUnZip(inStream: InputStream, outStream: OutputStream,
+                   bufferSize: Int = Z_DEFAULT_BUFFER_SIZE,
+                   format: ZFormat = ZFormat.ZLib
+        ): Boolean {
+            val unzip = NGenXX.zUnZipInit(bufferSize.toLong(), format.value)
             if (unzip <= 0) return false
 
-            val success = zProcess(Z_BUFFER_SIZE, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
+            val success = zProcess(bufferSize, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
                 NGenXX.zUnZipInput(unzip, inBuffer, inLen, inputFinished)
             }, {
                 NGenXX.zUnZipProcessDo(unzip)
