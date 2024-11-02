@@ -46,23 +46,7 @@ void NGenXX::Log::print(const int level, const std::string &content)
 #elif defined(__OHOS__)
         OH_LOG_Print(LOG_APP, level, 0xC0DE, tag, "%s", cContent);
 #else
-        const char *sLevel = "";
-        switch (level)
-        {
-        case NGenXXLogLevelDebug:
-            sLevel = "DEBUG";
-            break;
-        case NGenXXLogLevelInfo:
-            sLevel = "INFO";
-            break;
-        case NGenXXLogLevelWarn:
-            sLevel = "WARN";
-            break;
-        case NGenXXLogLevelError:
-            sLevel = "ERROR";
-            break;
-        }
-        std::cout << tag << "_" << sLevel << " -> " << cContent << std::endl;
+        std::cout << tag << "_" << level << " -> " << cContent << std::endl;
 #endif
     }
 }
