@@ -1,5 +1,5 @@
 import util from '@ohos.util';
-import NGenXX, { LogLevel } from 'libngenxx.so';
+import NGenXX, { HttpMethod, LogLevel } from 'libngenxx.so';
 
 @Entry
 @Component
