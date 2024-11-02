@@ -36,8 +36,8 @@ struct Index {
             NGenXX.logPrint(LogLevel.Debug, `AES->${aesDecodedStr}`)
             let aesgcmIvBytes = NGenXX.cryptoRand(12)
             let aesgcmTagBits = 15 * 8
-            let aesgcmEncodedBytes = NGenXX.cryptoAesGcmEncrypt(inputBytes, keyBytes, aesgcmIvBytes, [], aesgcmTagBits)
-            let aesgcmDecodedBytes = NGenXX.cryptoAesGcmDecrypt(aesgcmEncodedBytes, keyBytes, aesgcmIvBytes, [], aesgcmTagBits)
+            let aesgcmEncodedBytes = NGenXX.cryptoAesGcmEncrypt(inputBytes, keyBytes, aesgcmIvBytes, aesgcmTagBits)
+            let aesgcmDecodedBytes = NGenXX.cryptoAesGcmDecrypt(aesgcmEncodedBytes, keyBytes, aesgcmIvBytes, aesgcmTagBits)
             let aesgcmDecodedStr = textDecoder.decodeToString(Uint8Array.from(aesgcmDecodedBytes))
             NGenXX.logPrint(LogLevel.Debug, `AES-GCM->${aesgcmDecodedStr}`)
             let md5Bytes = NGenXX.cryptoHashMd5(inputBytes)
@@ -107,26 +107,25 @@ struct Index {
             , "biz.js");
             let rsp = NGenXX.jCall("jNetHttpRequest", jsonParams);
             /*let rsp = NGenXX.netHttpRequest("https://rinc.xyz",
+              HttpMethod.Get,
               "p0=1&p1=2&p2=3",
-              0,
-              ["Cache-Control: no-cache"],
-              5555
+              ["Cache-Control: no-cache"]
             )*/
             NGenXX.logPrint(LogLevel.Debug, `${rsp}`);
 
             let jsonDecoder = NGenXX.jsonDecoderInit(jsonParams)
             if (jsonDecoder > 0) {
-              let urlNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "url")
+              let urlNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "url")
               if (urlNode > 0) {
                 let url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
                 NGenXX.logPrint(LogLevel.Debug, `url:${url}`)
               }
-              let headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_c")
+              let headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "header_c")
               if (headerCNode > 0) {
                 let headerC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headerCNode)
                 NGenXX.logPrint(LogLevel.Debug, `headerC:${headerC}`)
               }
-              let headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_v")
+              let headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "header_v")
               if (headerVNode > 0) {
                 let headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headerVNode)
                 while (headerNode > 0) {

@@ -190,8 +190,8 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info)
     napi_value *argv = readParams(env, info, 10);
 
     const char *cUrl = napiValue2chars(env, argv[0]);
-    const char *cParams = napiValue2chars(env, argv[1]);
-    int iMethod = napiValue2int(env, argv[2]);
+    int iMethod = napiValue2int(env, argv[1]);
+    const char *cParams = napiValue2chars(env, argv[2]);
 
     uint32_t header_c = napiValueArrayLen(env, argv[3]);
     const char **header_v = napiValue2charsArray(env, argv[3], header_c);
@@ -595,8 +595,8 @@ static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info)
     napi_value *argv = readParams(env, info, 3);
 
     long decoder = napiValue2long(env, argv[0]);
-    long node = napiValue2long(env, argv[1]);
-    const char *cK = napiValue2chars(env, argv[2]);
+    const char *cK = napiValue2chars(env, argv[1]);
+    long node = napiValue2long(env, argv[2]);
 
     long res = (long)ngenxx_json_decoder_read_node(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node), cK);
     napi_value v = long2NapiValue(env, res);
@@ -773,9 +773,9 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
     const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
     size_t initVectorLen = napiValueArrayLen(env, argv[2]);
     const byte *initVectorBytes = napiValue2byteArray(env, argv[2], initVectorLen);
-    size_t aadLen = napiValueArrayLen(env, argv[3]);
-    const byte *aadBytes = napiValue2byteArray(env, argv[3], aadLen);
-    size_t tagBits = napiValue2int(env, argv[4]);
+    size_t tagBits = napiValue2int(env, argv[3]);
+    size_t aadLen = napiValueArrayLen(env, argv[4]);
+    const byte *aadBytes = napiValue2byteArray(env, argv[4], aadLen);
 
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
@@ -801,9 +801,9 @@ static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
     const byte *keyBytes = napiValue2byteArray(env, argv[1], keyLen);
     size_t initVectorLen = napiValueArrayLen(env, argv[2]);
     const byte *initVectorBytes = napiValue2byteArray(env, argv[2], initVectorLen);
-    size_t aadLen = napiValueArrayLen(env, argv[3]);
-    const byte *aadBytes = napiValue2byteArray(env, argv[3], aadLen);
-    size_t tagBits = napiValue2int(env, argv[4]);
+    size_t tagBits = napiValue2int(env, argv[3]);
+    size_t aadLen = napiValueArrayLen(env, argv[4]);
+    const byte *aadBytes = napiValue2byteArray(env, argv[4], aadLen);
 
     size_t outLen;
     const byte *outBytes = ngenxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
