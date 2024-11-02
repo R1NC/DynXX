@@ -10,22 +10,11 @@ class NGenXX {
         external fun init(root: String): Boolean
         external fun release()
 
-        enum class LogLevel(val value: Int) {
-            Info(0),
-            Debug(1),
-            Warn(2),
-            Error(3),
-            None(4)
-        }
         external fun logSetLevel(level: Int)
         external fun logSetCallback(callback: ((level: Int, content: String) -> Unit))
         external fun logPrint(level: Int, content: String)
 
-        enum class HttpMethod(val value: Int) {
-            Get(0),
-            Post(1),
-            Put(2),
-        }
+
         external fun netHttpRequest(url: String, params: String?, method: Int,
                                     headerV: Array<String>?,
                                     formFieldNameV: Array<String>?,
@@ -95,16 +84,6 @@ class NGenXX {
         external fun jsonDecoderReadNext(decoder: Long, node: Long): Long
         external fun jsonDecoderRelease(decoder: Long)
 
-        enum class ZipMode(val value: Int) {
-            Default(-1),
-            PreferSpeed(1),
-            PreferSize(9)
-        }
-        enum class ZFormat(val value: Int) {
-            ZLib(0),
-            GZip(1),
-            Raw(2)
-        }
         external fun zZipInit(mode: Int, bufferSize: Long, format: Int): Long
         external fun zZipInput(zip: Long, inBytes: ByteArray, inLen: Int, inFinish: Boolean): Long
         external fun zZipProcessDo(zip: Long): ByteArray

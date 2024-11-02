@@ -1,6 +1,5 @@
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import util from '@ohos.util';
-import NGenXX from 'libngenxx.so';
+import NGenXX, { LogLevel } from 'libngenxx.so';
 
 @Entry
 @Component
@@ -17,11 +16,13 @@ struct Index {
             let root = getContext().filesDir;
             NGenXX.init(root);
 
-            NGenXX.logPrint(1, `DeviceType: ${NGenXX.deviceType()}`);
-            NGenXX.logPrint(1, `DeviceName: ${NGenXX.deviceName()}`);
-            NGenXX.logPrint(1, `DeviceManufacturer: ${NGenXX.deviceManufacturer()}`);
-            NGenXX.logPrint(1, `DeviceOsVersion: ${NGenXX.deviceOsVersion()}`);
-            NGenXX.logPrint(1, `DeviceCpuArch: ${NGenXX.deviceCpuArch()}`);
+            NGenXX.logSetLevel(LogLevel.Debug)
+
+            NGenXX.logPrint(LogLevel.Debug, `DeviceType: ${NGenXX.deviceType()}`);
+            NGenXX.logPrint(LogLevel.Debug, `DeviceName: ${NGenXX.deviceName()}`);
+            NGenXX.logPrint(LogLevel.Debug, `DeviceManufacturer: ${NGenXX.deviceManufacturer()}`);
+            NGenXX.logPrint(LogLevel.Debug, `DeviceOsVersion: ${NGenXX.deviceOsVersion()}`);
+            NGenXX.logPrint(LogLevel.Debug, `DeviceCpuArch: ${NGenXX.deviceCpuArch()}`);
 
             let textEncoder = new util.TextEncoder()
             let textDecoder = new util.TextDecoder()
@@ -32,23 +33,23 @@ struct Index {
             let aesEncodedBytes = NGenXX.cryptoAesEncrypt(inputBytes, keyBytes)
             let aesDecodedBytes = NGenXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
             let aesDecodedStr = textDecoder.decodeToString(Uint8Array.from(aesDecodedBytes))
-            NGenXX.logPrint(1, `AES->${aesDecodedStr}`)
+            NGenXX.logPrint(LogLevel.Debug, `AES->${aesDecodedStr}`)
             let aesgcmIvBytes = NGenXX.cryptoRand(12)
             let aesgcmTagBits = 15 * 8
             let aesgcmEncodedBytes = NGenXX.cryptoAesGcmEncrypt(inputBytes, keyBytes, aesgcmIvBytes, [], aesgcmTagBits)
             let aesgcmDecodedBytes = NGenXX.cryptoAesGcmDecrypt(aesgcmEncodedBytes, keyBytes, aesgcmIvBytes, [], aesgcmTagBits)
             let aesgcmDecodedStr = textDecoder.decodeToString(Uint8Array.from(aesgcmDecodedBytes))
-            NGenXX.logPrint(1, `AES-GCM->${aesgcmDecodedStr}`)
+            NGenXX.logPrint(LogLevel.Debug, `AES-GCM->${aesgcmDecodedStr}`)
             let md5Bytes = NGenXX.cryptoHashMd5(inputBytes)
             let md5Str = NGenXX.codingHexBytes2str(md5Bytes)
-            NGenXX.logPrint(1, `md5->${md5Str}`)
+            NGenXX.logPrint(LogLevel.Debug, `md5->${md5Str}`)
             let sha256Bytes = NGenXX.cryptoHashSha256(inputBytes)
             let sha256Str = NGenXX.codingHexBytes2str(sha256Bytes)
-            NGenXX.logPrint(1, `sha256->${sha256Str}`)
+            NGenXX.logPrint(LogLevel.Debug, `sha256->${sha256Str}`)
             let base64Encoded = NGenXX.cryptoBase64Encode(inputBytes)
             let base64Decoded = NGenXX.cryptoBase64Decode(base64Encoded)
             let base64DecodedStr = textDecoder.decodeToString(Uint8Array.from(base64Decoded))
-            NGenXX.logPrint(1, `base64->${base64DecodedStr}`)
+            NGenXX.logPrint(LogLevel.Debug, `base64->${base64DecodedStr}`)
 
             let dbConn = NGenXX.storeSQLiteOpen("test");
             if (dbConn > 0) {
@@ -64,7 +65,7 @@ struct Index {
                 if (queryResult > 0) {
                   while(NGenXX.storeSQLiteQueryReadRow(queryResult)) {
                     let platform = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
-                    NGenXX.logPrint(1, `platform->${platform}`);
+                    NGenXX.logPrint(LogLevel.Debug, `platform->${platform}`);
                   }
                   NGenXX.storeSQLiteQueryDrop(queryResult);
                 }
@@ -76,13 +77,13 @@ struct Index {
             if (kvConn > 0) {
               NGenXX.storeKVWriteString(kvConn, "s", "NGexXX");
               let s = NGenXX.storeKVReadString(kvConn, "s");
-              NGenXX.logPrint(1, `s->${s}`);
+              NGenXX.logPrint(LogLevel.Debug, `s->${s}`);
               NGenXX.storeKVWriteInteger(kvConn, "i", 1234567890);
               let i = NGenXX.storeKVReadInteger(kvConn, "i");
-              NGenXX.logPrint(1, `i->${i}`);
+              NGenXX.logPrint(LogLevel.Debug, `i->${i}`);
               NGenXX.storeKVWriteFloat(kvConn, "f", 0.123456789);
               let f = NGenXX.storeKVReadFloat(kvConn, "f");
-              NGenXX.logPrint(1, `f->${f}`);
+              NGenXX.logPrint(LogLevel.Debug, `f->${f}`);
               NGenXX.storeKVClose(kvConn);
             }
 
@@ -111,26 +112,26 @@ struct Index {
               ["Cache-Control: no-cache"],
               5555
             )*/
-            NGenXX.logPrint(1, `${rsp}`);
+            NGenXX.logPrint(LogLevel.Debug, `${rsp}`);
 
             let jsonDecoder = NGenXX.jsonDecoderInit(jsonParams)
             if (jsonDecoder > 0) {
               let urlNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "url")
               if (urlNode > 0) {
                 let url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
-                NGenXX.logPrint(1, `url:${url}`)
+                NGenXX.logPrint(LogLevel.Debug, `url:${url}`)
               }
               let headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_c")
               if (headerCNode > 0) {
                 let headerC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headerCNode)
-                NGenXX.logPrint(1, `headerC:${headerC}`)
+                NGenXX.logPrint(LogLevel.Debug, `headerC:${headerC}`)
               }
               let headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_v")
               if (headerVNode > 0) {
                 let headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headerVNode)
                 while (headerNode > 0) {
                   let header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)
-                  NGenXX.logPrint(1, `header:${header}`)
+                  NGenXX.logPrint(LogLevel.Debug, `header:${header}`)
                   headerNode = NGenXX.jsonDecoderReadNext(jsonDecoder, headerNode)
                 }
               }

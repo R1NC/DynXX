@@ -2,11 +2,24 @@ export const getVersion: () => string;
 export const init: (root: string) => boolean;
 export const release: () => void;
 
+export const enum LogLevel {
+  Debug = 3,
+  Info,
+  Warn,
+  Error,
+  Fatal,
+  None
+}
 export const logSetLevel: (level: number) => void;
 export type LogCallbackType = (level: number, log: string) => void;
 export const logSetCallback: (callback?: LogCallbackType) => void;
 export const logPrint: (level: number, content: string) => void;
 
+export const enum HttpMethod {
+  Get = 0,
+  Post,
+  Put
+}
 export const netHttpRequest: (url: string, params: string, method: number,
   headerV: string[],
   formFieldNameV: string[],

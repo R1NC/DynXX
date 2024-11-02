@@ -11,10 +11,11 @@ extern "C"
      */
     enum NGenXXLogLevel
     {
+        NGenXXLogLevelDebug = 3,
         NGenXXLogLevelInfo,
-        NGenXXLogLevelDebug,
         NGenXXLogLevelWarn,
         NGenXXLogLevelError,
+        NGenXXLogLevelFatal,
         NGenXXLogLevelNone
     };
 

@@ -6,10 +6,11 @@
 
 enum class NGenXXLogLevelX : int
 {
+    Debug = 3,
     Info,
-    Debug,
     Warn,
     Error,
+    Fatal,
     None
 };
 

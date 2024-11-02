@@ -9,10 +9,11 @@ declare function NGenXXAskPlatform(msg: string): string
 /// Log
 
 const enum NGenXXLogLevel {
-    Info = 0,
-    Debug,
+    Debug = 3,
+    Info,
     Warn,
     Error,
+    Fatal,
     None
 }
 

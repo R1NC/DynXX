@@ -1,12 +1,14 @@
 package xyz.rinc.ngenxx.demo
 
 import android.app.Application
-import android.util.Log
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import xyz.rinc.ngenxx.NGenXX
 import xyz.rinc.ngenxx.NGenXXHelper
+import xyz.rinc.ngenxx.NGenXXHelper.Companion.LogLevel
+import xyz.rinc.ngenxx.NGenXXHelper.Companion.ZFormat
+import xyz.rinc.ngenxx.NGenXXHelper.Companion.ZipMode
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -38,15 +40,17 @@ class NGenXXTest {
             val dir = sApplication?.filesDir?.absolutePath ?: return
             if (!NGenXX.init(dir)) return
 
+            NGenXXHelper.logSetLevel(LogLevel.Debug)
+
             NGenXX.jSetMsgCallback { msg ->
                 "Android->$msg@${System.currentTimeMillis()}"
             }
 
-            NGenXX.logPrint(1, "deviceType:${NGenXX.deviceType()}")
-            NGenXX.logPrint(1, "deviceName:${NGenXX.deviceName()}")
-            NGenXX.logPrint(1, "deviceManufacturer:${NGenXX.deviceManufacturer()}")
-            NGenXX.logPrint(1, "deviceOsVersion:${NGenXX.deviceOsVersion()}")
-            NGenXX.logPrint(1, "deviceCpuArch:${NGenXX.deviceCpuArch()}")
+            NGenXXHelper.logPrint(LogLevel.Debug, "deviceType:${NGenXX.deviceType()}")
+            NGenXXHelper.logPrint(LogLevel.Debug, "deviceName:${NGenXX.deviceName()}")
+            NGenXXHelper.logPrint(LogLevel.Debug, "deviceManufacturer:${NGenXX.deviceManufacturer()}")
+            NGenXXHelper.logPrint(LogLevel.Debug, "deviceOsVersion:${NGenXX.deviceOsVersion()}")
+            NGenXXHelper.logPrint(LogLevel.Debug, "deviceCpuArch:${NGenXX.deviceCpuArch()}")
 
             val inputStr = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM<>()[]{}@#$%^&*-=+~!/|_,;:'`"
             val inputBytes = inputStr.toByteArray(Charsets.UTF_8)
@@ -55,7 +59,7 @@ class NGenXXTest {
             val aesEncodedBytes = NGenXX.cryptoAesEncrypt(inputBytes, keyBytes)
             val aesDecodedBytes = NGenXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
             val aesDecodedStr = aesDecodedBytes.toString(Charsets.UTF_8)
-            NGenXX.logPrint(1,"AES->$aesDecodedStr")
+            NGenXXHelper.logPrint(LogLevel.Debug,"AES->$aesDecodedStr")
             val aesgcmIV = NGenXX.cryptoRandom(12)
             val aesgcmAad = null
             val aesgcmTagBits = 15 * 8
@@ -64,17 +68,17 @@ class NGenXXTest {
             val aesgcmDecodedBytes = NGenXX.cryptoAesGcmDecrypt(aesgcmEncodedBytes, keyBytes, aesgcmIV,
                 aesgcmAad, aesgcmTagBits)
             val aesgcmDecodedStr = aesgcmDecodedBytes.toString(Charsets.UTF_8)
-            NGenXX.logPrint(1,"AES-GCM->$aesgcmDecodedStr")
+            NGenXXHelper.logPrint(LogLevel.Debug,"AES-GCM->$aesgcmDecodedStr")
             val md5Bytes = NGenXX.cryptoHashMd5(inputBytes)
             val md5hex = NGenXX.codingHexBytes2Str(md5Bytes)
-            NGenXX.logPrint(1,"md5->$md5hex")
+            NGenXXHelper.logPrint(LogLevel.Debug,"md5->$md5hex")
             val sha256bytes = NGenXX.cryptoHashSha256(inputBytes)
             val sha256hex = NGenXX.codingHexBytes2Str(sha256bytes)
-            NGenXX.logPrint(1,"sha256->$sha256hex")
+            NGenXXHelper.logPrint(LogLevel.Debug,"sha256->$sha256hex")
             val base64Encoded = NGenXX.cryptoBase64Encode(inputBytes)
             val base64Decoded = NGenXX.cryptoBase64Decode(base64Encoded)
             val base64DecodedStr = base64Decoded.toString(Charsets.UTF_8)
-            NGenXX.logPrint(1,"base64->$base64DecodedStr")
+            NGenXXHelper.logPrint(LogLevel.Debug,"base64->$base64DecodedStr")
 
             val jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\":1, \"timeout\":6666}"
 
@@ -87,7 +91,7 @@ class NGenXXTest {
                 arrayOf("Cache-Control: no-cache"),
                 5555
                 )*/
-                NGenXX.logPrint(1, rsp!!)
+                NGenXXHelper.logPrint(LogLevel.Debug, rsp!!)
             }*/
 
             if (sJsLoaded) {
@@ -107,19 +111,19 @@ class NGenXXTest {
                 val urlNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "url")
                 if (urlNode > 0) {
                     val url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
-                    NGenXX.logPrint(1, "url:$url")
+                    NGenXXHelper.logPrint(LogLevel.Debug, "url:$url")
                 }
                 val headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_c")
                 if (headerCNode > 0) {
                     val headerC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headerCNode)
-                    NGenXX.logPrint(1, "header_c:${headerC.toInt()}")
+                    NGenXXHelper.logPrint(LogLevel.Debug, "header_c:${headerC.toInt()}")
                 }
                 val headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_v")
                 if (headerVNode > 0) {
                     var headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headerVNode)
                     while (headerNode > 0) {
                         val header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)
-                        NGenXX.logPrint(1, "header:$header")
+                        NGenXXHelper.logPrint(LogLevel.Debug, "header:$header")
                         headerNode = NGenXX.jsonDecoderReadNext(jsonDecoder, headerNode)
                     }
                 }
@@ -130,13 +134,13 @@ class NGenXXTest {
             if (kvConn > 0) {
                 NGenXX.storeKVWriteString(kvConn,"s", "NGenXX")
                 val s = NGenXX.storeKVReadString(kvConn,"s")
-                NGenXX.logPrint(1, "s->$s")
+                NGenXXHelper.logPrint(LogLevel.Debug, "s->$s")
                 NGenXX.storeKVWriteInteger(kvConn,"i", 1234567890)
                 val i = NGenXX.storeKVReadInteger(kvConn,"i")
-                NGenXX.logPrint(1, "i->$i")
+                NGenXXHelper.logPrint(LogLevel.Debug, "i->$i")
                 NGenXX.storeKVWriteFloat(kvConn,"f", 0.123456789)
                 val f = NGenXX.storeKVReadFloat(kvConn,"f")
-                NGenXX.logPrint(1, "f->$f")
+                NGenXXHelper.logPrint(LogLevel.Debug, "f->$f")
                 NGenXX.storeKVClose(kvConn)
             }
 
@@ -155,7 +159,7 @@ class NGenXXTest {
                         val s = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
                         val i = NGenXX.storeSQLiteQueryReadColumnInteger(queryResult, "i")
                         val f = NGenXX.storeSQLiteQueryReadColumnFloat(queryResult, "f")
-                        NGenXX.logPrint(1,"$s->$i->$f")
+                        NGenXXHelper.logPrint(LogLevel.Debug,"$s->$i->$f")
                     }
                     NGenXX.storeSQLiteQueryDrop(queryResult)
                 }
@@ -169,7 +173,7 @@ class NGenXXTest {
                 }
                 zipFile.createNewFile()
                 FileOutputStream(zipFile).use { zipOutStream ->
-                    val zipSuccess = NGenXXHelper.zZip(NGenXX.Companion.ZipMode.Default, NGenXX.Companion.ZFormat.ZLib, zipInStream!!, zipOutStream!!)
+                    val zipSuccess = NGenXXHelper.zZip(ZipMode.Default, ZFormat.ZLib, zipInStream!!, zipOutStream!!)
                     if (zipSuccess) {
                         FileInputStream(zipFile).use { unzipInStream ->
                             val unzipFile = File(sApplication?.externalCacheDir, "x.txt")
@@ -178,7 +182,7 @@ class NGenXXTest {
                             }
                             unzipFile.createNewFile()
                             FileOutputStream(unzipFile).use { unzipOutStream ->
-                                val unzipSuccess = NGenXXHelper.zUnZip(NGenXX.Companion.ZFormat.ZLib, unzipInStream, unzipOutStream)
+                                val unzipSuccess = NGenXXHelper.zUnZip(ZFormat.ZLib, unzipInStream, unzipOutStream)
                             }
                         }
                     }
