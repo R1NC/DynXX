@@ -44,7 +44,7 @@ void NGenXX::Log::print(const int level, const std::string &content)
 #ifdef __ANDROID__
         __android_log_print(level, tag, "%s", cContent);
 #elif defined(__OHOS__)
-        OH_LOG_Print(LOG_APP, level, 0xC0DE, tag, "%s", cContent);
+        OH_LOG_Print(LOG_APP, static_cast<LogLevel>(level), 0xC0DE, tag, "%s", cContent);
 #else
         std::cout << tag << "_" << level << " -> " << cContent << std::endl;
 #endif
