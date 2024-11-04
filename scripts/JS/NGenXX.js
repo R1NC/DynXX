@@ -314,12 +314,30 @@ function NGenXXCodingHexBytes2Str(bytes) {
     return ngenxx_coding_hex_bytes2strJ(inJson);
 }
 
-function NGenXXCodingHexStr2Bytes(hexStr) {
-    hexStr = hexStr || '';
+function NGenXXCodingHexStr2Bytes(str) {
+    str = str || '';
     let inJson = JSON.stringify({
-        "str": hexStr
+        "str": str
     });
     let outJson = ngenxx_coding_hex_str2bytesJ(inJson);
+    return _json2Array(outJson);
+}
+
+function NGenXXCodingBytes2Str(bytes) {
+    bytes = bytes || [];
+    let inJson = JSON.stringify({
+        "inBytes": bytes,
+        "inLen": bytes.length
+    });
+    return ngenxx_coding_bytes2strJ(inJson);
+}
+
+function NGenXXCodingStr2Bytes(str) {
+    str = str || '';
+    let inJson = JSON.stringify({
+        "str": str
+    });
+    let outJson = ngenxx_coding_str2bytesJ(inJson);
     return _json2Array(outJson);
 }
 

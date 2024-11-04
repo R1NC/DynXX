@@ -127,7 +127,11 @@ declare function NGenXXBytes2Str(bytes: number[]): string
 
 declare function NGenXXCodingHexBytes2Str(bytes: number[]): string
 
-declare function NGenXXCodingHexStr2Bytes(hexStr: string): number[]
+declare function NGenXXCodingHexStr2Bytes(str: string): number[]
+
+declare function NGenXXCodingBytes2Str(bytes: number[]): string
+
+declare function NGenXXCodingStr2Bytes(str: string): number[]
 
 /// Crypto
 

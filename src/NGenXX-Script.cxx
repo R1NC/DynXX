@@ -482,6 +482,36 @@ const std::string ngenxx_coding_hex_str2bytesS(const char *json)
     return bytes2json(bytes);
 }
 
+const std::string ngenxx_coding_bytes2strS(const char *json)
+{
+    std::string s;
+    if (json == NULL)
+        return s;
+    NGenXX::Json::Decoder decoder(json);
+
+    auto in = parseByteArray(decoder, "inBytes", "inLen");
+    if (in.second == 0)
+        return s;
+
+    return ngenxxCodingBytes2str(in);
+}
+
+const std::string ngenxx_coding_str2bytesS(const char *json)
+{
+    std::string s;
+    if (json == NULL)
+        return s;
+    NGenXX::Json::Decoder decoder(json);
+
+    auto str = decoder.readString(decoder.readNode(NULL, "str"));
+
+    if (str.size() == 0)
+        return s;
+
+    auto bytes = ngenxxCodingStr2bytes(str);
+    return bytes2json(bytes);
+}
+
 #pragma mark Crypto
 
 const std::string ngenxx_crypto_randS(const char *json)

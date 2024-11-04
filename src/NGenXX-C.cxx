@@ -106,6 +106,21 @@ const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, const size_t inLen)
     return copyStr(s);
 }
 
+EXPORT_AUTO
+const char *ngenxx_coding_bytes2str(const byte *inBytes, const size_t inLen)
+{
+    auto s = ngenxxCodingBytes2str({inBytes, inLen});
+    return copyStr(s);
+}
+
+EXPORT_AUTO
+const byte *ngenxx_coding_str2bytes(const char *str, size_t *outLen)
+{
+    auto t = ngenxxCodingStr2bytes(str ?: "");
+    *outLen = t.second;
+    return copyBytes(t);
+}
+
 #pragma mark Crypto
 
 EXPORT_AUTO

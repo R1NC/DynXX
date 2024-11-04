@@ -5,8 +5,7 @@
 
 const std::string NGenXX::Coding::Hex::bytes2str(const Bytes bytes)
 {
-    const byte *byt = bytes.first;
-    const size_t len = bytes.second;
+    auto [byt, len] = bytes;
     if (byt == NULL || len <= 0)
         return "";
     std::stringstream strStream;
@@ -30,4 +29,19 @@ const Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
         outBytes[j] = static_cast<byte>(std::stoi(s.c_str(), nullptr, 16));
     }
     return {outBytes, j};
+}
+
+const std::string NGenXX::Coding::bytes2str(const Bytes bytes)
+{
+    auto [data, len] = bytes;
+    return std::string(reinterpret_cast<char*>(const_cast<byte *>(data)));
+}
+
+const Bytes NGenXX::Coding::str2bytes(const std::string &str)
+{
+    if (str.length() == 0)
+        return BytesEmpty;
+    byte bytes[str.length() + 1];
+    std::strcpy(reinterpret_cast<char*>(bytes), str.c_str());
+    return {bytes, str.length()};
 }

@@ -16,6 +16,10 @@ namespace NGenXX
 
             const Bytes str2bytes(const std::string &str);
         }
+
+        const std::string bytes2str(const Bytes bytes);
+
+        const Bytes str2bytes(const std::string &str);
     }
 }
 

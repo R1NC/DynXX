@@ -138,6 +138,16 @@ const Bytes ngenxxCodingHexStr2bytes(const std::string &str)
     return NGenXX::Coding::Hex::str2bytes(str);
 }
 
+const std::string ngenxxCodingBytes2str(const Bytes bytes)
+{
+    return NGenXX::Coding::bytes2str(bytes);
+}
+
+const Bytes ngenxxCodingStr2bytes(const std::string &str)
+{
+    return NGenXX::Coding::str2bytes(str);
+}
+
 #pragma mark Crypto
 
 bool ngenxxCryptoRand(const size_t len, byte *bytes)
