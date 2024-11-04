@@ -133,6 +133,10 @@ declare function NGenXXCodingBytes2Str(bytes: number[]): string
 
 declare function NGenXXCodingStr2Bytes(str: string): number[]
 
+declare function NGenXXCodingCaseUpper(str: string): string
+
+declare function NGenXXCodingCaseLower(str: string): string
+
 /// Crypto
 
 declare function NGenXXCryptoRand(len: number): number[]

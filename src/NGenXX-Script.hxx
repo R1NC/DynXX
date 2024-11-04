@@ -47,6 +47,8 @@ const std::string ngenxx_coding_hex_bytes2strS(const char *json);
 const std::string ngenxx_coding_hex_str2bytesS(const char *json);
 const std::string ngenxx_coding_bytes2strS(const char *json);
 const std::string ngenxx_coding_str2bytesS(const char *json);
+const std::string ngenxx_coding_case_upperS(const char *json);
+const std::string ngenxx_coding_case_lowerS(const char *json);
 
 const std::string ngenxx_crypto_randS(const char *json);
 const std::string ngenxx_crypto_aes_encryptS(const char *json);

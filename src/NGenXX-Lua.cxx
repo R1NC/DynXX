@@ -100,6 +100,8 @@ DEF_LUA_FUNC_VOID(ngenxx_store_kv_closeL, ngenxx_store_kv_closeS)
 
 DEF_LUA_FUNC_STRING(ngenxx_coding_hex_bytes2strL, ngenxx_coding_hex_bytes2strS)
 DEF_LUA_FUNC_STRING(ngenxx_coding_hex_str2bytesL, ngenxx_coding_hex_str2bytesS)
+DEF_LUA_FUNC_STRING(ngenxx_coding_case_upperL, ngenxx_coding_case_upperS)
+DEF_LUA_FUNC_STRING(ngenxx_coding_case_lowerL, ngenxx_coding_case_lowerS)
 DEF_LUA_FUNC_STRING(ngenxx_coding_bytes2strL, ngenxx_coding_bytes2strS)
 DEF_LUA_FUNC_STRING(ngenxx_coding_str2bytesL, ngenxx_coding_str2bytesS)
 
@@ -209,6 +211,8 @@ void _ngenxx_export_funcs_for_lua()
 
     BIND_LUA_FUNC(ngenxx_coding_hex_bytes2strL);
     BIND_LUA_FUNC(ngenxx_coding_hex_str2bytesL);
+    BIND_LUA_FUNC(ngenxx_coding_case_upperL);
+    BIND_LUA_FUNC(ngenxx_coding_case_lowerL);
     BIND_LUA_FUNC(ngenxx_coding_bytes2strL);
     BIND_LUA_FUNC(ngenxx_coding_str2bytesL);
 

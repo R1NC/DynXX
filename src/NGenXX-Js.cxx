@@ -121,6 +121,8 @@ DEF_JS_FUNC_STRING(ngenxx_coding_hex_bytes2strJ, ngenxx_coding_hex_bytes2strS)
 DEF_JS_FUNC_STRING(ngenxx_coding_hex_str2bytesJ, ngenxx_coding_hex_str2bytesS)
 DEF_JS_FUNC_STRING(ngenxx_coding_bytes2strJ, ngenxx_coding_bytes2strS)
 DEF_JS_FUNC_STRING(ngenxx_coding_str2bytesJ, ngenxx_coding_str2bytesS)
+DEF_JS_FUNC_STRING(ngenxx_coding_case_upperJ, ngenxx_coding_case_upperS)
+DEF_JS_FUNC_STRING(ngenxx_coding_case_lowerJ, ngenxx_coding_case_lowerS)
 
 DEF_JS_FUNC_STRING(ngenxx_crypto_randJ, ngenxx_crypto_randS)
 DEF_JS_FUNC_STRING(ngenxx_crypto_aes_encryptJ, ngenxx_crypto_aes_encryptS)
@@ -256,6 +258,8 @@ void registerJsModule()
     BIND_JS_FUNC(ngenxx_coding_hex_str2bytesJ);
     BIND_JS_FUNC(ngenxx_coding_bytes2strJ);
     BIND_JS_FUNC(ngenxx_coding_str2bytesJ);
+    BIND_JS_FUNC(ngenxx_coding_case_upperJ);
+    BIND_JS_FUNC(ngenxx_coding_case_lowerJ);
 
     BIND_JS_FUNC(ngenxx_crypto_randJ);
     BIND_JS_FUNC(ngenxx_crypto_aes_encryptJ);

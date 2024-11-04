@@ -121,6 +121,20 @@ const byte *ngenxx_coding_str2bytes(const char *str, size_t *outLen)
     return copyBytes(t);
 }
 
+EXPORT_AUTO
+const char *ngenxx_coding_case_upper(const char *str)
+{
+    auto s = ngenxxCodingCaseUpper(str);
+    return copyStr(s);
+}
+
+EXPORT_AUTO
+const char *ngenxx_coding_case_lower(const char *str)
+{
+    auto s = ngenxxCodingCaseLower(str);
+    return copyStr(s);
+}
+
 #pragma mark Crypto
 
 EXPORT_AUTO

@@ -148,6 +148,16 @@ const Bytes ngenxxCodingStr2bytes(const std::string &str)
     return NGenXX::Coding::str2bytes(str);
 }
 
+const std::string ngenxxCodingCaseUpper(const std::string &str)
+{
+    return NGenXX::Coding::Case::upper(str);
+}
+
+const std::string ngenxxCodingCaseLower(const std::string &str)
+{
+    return NGenXX::Coding::Case::lower(str);
+}
+
 #pragma mark Crypto
 
 bool ngenxxCryptoRand(const size_t len, byte *bytes)

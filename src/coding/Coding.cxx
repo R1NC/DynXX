@@ -2,6 +2,8 @@
 #include <iomanip>
 #include <sstream>
 #include <cstring>
+#include <cctype>
+#include <algorithm>
 
 const std::string NGenXX::Coding::Hex::bytes2str(const Bytes bytes)
 {
@@ -29,6 +31,26 @@ const Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
         outBytes[j] = static_cast<byte>(std::stoi(s.c_str(), nullptr, 16));
     }
     return {outBytes, j};
+}
+
+const std::string NGenXX::Coding::Case::upper(const std::string &str)
+{
+    std::transform(str.begin(), str.end(), str.begin(),
+        [](unsigned char c) { 
+            return std::toupper(c); 
+        }
+    );
+    return str;
+}
+
+const std::string NGenXX::Coding::Case::lower(const std::string &str)
+{
+    std::transform(str.begin(), str.end(), str.begin(),
+        [](unsigned char c) { 
+            return std::tolower(c); 
+        }
+    );
+    return str;
 }
 
 const std::string NGenXX::Coding::bytes2str(const Bytes bytes)

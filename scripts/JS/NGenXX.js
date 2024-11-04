@@ -341,6 +341,22 @@ function NGenXXCodingStr2Bytes(str) {
     return _json2Array(outJson);
 }
 
+function NGenXXCodingCaseUpper(str) {
+    str = str || '';
+    let inJson = JSON.stringify({
+        "str": str
+    });
+    return ngenxx_coding_case_upperJ(inJson);
+}
+
+function NGenXXCodingCaseLower(str) {
+    str = str || '';
+    let inJson = JSON.stringify({
+        "str": str
+    });
+    return ngenxx_coding_case_lowerJ(inJson);
+}
+
 function NGenXXCryptoRand(len) {
     let inJson = JSON.stringify({
         "len": len
