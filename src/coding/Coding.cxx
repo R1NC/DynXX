@@ -35,22 +35,16 @@ const Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
 
 const std::string NGenXX::Coding::Case::upper(const std::string &str)
 {
-    std::transform(str.begin(), str.end(), str.begin(),
-        [](unsigned char c) { 
-            return std::toupper(c); 
-        }
-    );
-    return str;
+    std::string s(str);
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
 }
 
 const std::string NGenXX::Coding::Case::lower(const std::string &str)
 {
-    std::transform(str.begin(), str.end(), str.begin(),
-        [](unsigned char c) { 
-            return std::tolower(c); 
-        }
-    );
-    return str;
+    std::string s(str);
+    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+    return s;
 }
 
 const std::string NGenXX::Coding::bytes2str(const Bytes bytes)
