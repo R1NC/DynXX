@@ -35,13 +35,13 @@ std::shared_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
         return 1;                                  \
     }
 
-#define DEF_LUA_FUNC_INTEGER(fL, fS)                 \
-    int fL(lua_State *L)                             \
-    {                                                \
-        const char *json = luaL_checkstring(L, 1);   \
-        auto res = static_cast<long long>(fS(json)); \
-        lua_pushinteger(L, res);                     \
-        return 1;                                    \
+#define DEF_LUA_FUNC_INTEGER(fL, fS)               \
+    int fL(lua_State *L)                           \
+    {                                              \
+        const char *json = luaL_checkstring(L, 1); \
+        auto res = fS(json);                       \
+        lua_pushinteger(L, res);                   \
+        return 1;                                  \
     }
 
 #define DEF_LUA_FUNC_BOOL(fL, fS)                  \
@@ -75,9 +75,9 @@ DEF_LUA_FUNC_VOID(ngenxx_log_printL, ngenxx_log_printS)
 
 DEF_LUA_FUNC_STRING(ngenxx_net_http_requestL, ngenxx_net_http_requestS)
 
-DEF_LUA_FUNC_INTEGER(ngenxx_store_sqlite_openL, ngenxx_store_sqlite_openS)
+DEF_LUA_FUNC_STRING(ngenxx_store_sqlite_openL, ngenxx_store_sqlite_openS)
 DEF_LUA_FUNC_BOOL(ngenxx_store_sqlite_executeL, ngenxx_store_sqlite_executeS)
-DEF_LUA_FUNC_INTEGER(ngenxx_store_sqlite_query_doL, ngenxx_store_sqlite_query_doS)
+DEF_LUA_FUNC_STRING(ngenxx_store_sqlite_query_doL, ngenxx_store_sqlite_query_doS)
 DEF_LUA_FUNC_BOOL(ngenxx_store_sqlite_query_read_rowL, ngenxx_store_sqlite_query_read_rowS)
 DEF_LUA_FUNC_STRING(ngenxx_store_sqlite_query_read_column_textL, ngenxx_store_sqlite_query_read_column_textS)
 DEF_LUA_FUNC_INTEGER(ngenxx_store_sqlite_query_read_column_integerL, ngenxx_store_sqlite_query_read_column_integerS)
@@ -85,7 +85,7 @@ DEF_LUA_FUNC_FLOAT(ngenxx_store_sqlite_query_read_column_floatL, ngenxx_store_sq
 DEF_LUA_FUNC_VOID(ngenxx_store_sqlite_query_dropL, ngenxx_store_sqlite_query_dropS)
 DEF_LUA_FUNC_VOID(ngenxx_store_sqlite_closeL, ngenxx_store_sqlite_closeS)
 
-DEF_LUA_FUNC_INTEGER(ngenxx_store_kv_openL, ngenxx_store_kv_openS)
+DEF_LUA_FUNC_STRING(ngenxx_store_kv_openL, ngenxx_store_kv_openS)
 DEF_LUA_FUNC_STRING(ngenxx_store_kv_read_stringL, ngenxx_store_kv_read_stringS)
 DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_stringL, ngenxx_store_kv_write_stringS)
 DEF_LUA_FUNC_INTEGER(ngenxx_store_kv_read_integerL, ngenxx_store_kv_read_integerS)
@@ -115,12 +115,12 @@ DEF_LUA_FUNC_STRING(ngenxx_crypto_hash_sha256L, ngenxx_crypto_hash_sha256S)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_base64_encodeL, ngenxx_crypto_base64_encodeS)
 DEF_LUA_FUNC_STRING(ngenxx_crypto_base64_decodeL, ngenxx_crypto_base64_decodeS)
 
-DEF_LUA_FUNC_INTEGER(ngenxx_z_zip_initL, ngenxx_z_zip_initS)
+DEF_LUA_FUNC_STRING(ngenxx_z_zip_initL, ngenxx_z_zip_initS)
 DEF_LUA_FUNC_INTEGER(ngenxx_z_zip_inputL, ngenxx_z_zip_inputS)
 DEF_LUA_FUNC_STRING(ngenxx_z_zip_process_doL, ngenxx_z_zip_process_doS)
 DEF_LUA_FUNC_BOOL(ngenxx_z_zip_process_finishedL, ngenxx_z_zip_process_finishedS)
 DEF_LUA_FUNC_VOID(ngenxx_z_zip_releaseL, ngenxx_z_zip_releaseS)
-DEF_LUA_FUNC_INTEGER(ngenxx_z_unzip_initL, ngenxx_z_unzip_initS)
+DEF_LUA_FUNC_STRING(ngenxx_z_unzip_initL, ngenxx_z_unzip_initS)
 DEF_LUA_FUNC_INTEGER(ngenxx_z_unzip_inputL, ngenxx_z_unzip_inputS)
 DEF_LUA_FUNC_STRING(ngenxx_z_unzip_process_doL, ngenxx_z_unzip_process_doS)
 DEF_LUA_FUNC_BOOL(ngenxx_z_unzip_process_finishedL, ngenxx_z_unzip_process_finishedS)

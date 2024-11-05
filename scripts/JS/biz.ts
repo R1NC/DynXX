@@ -81,8 +81,8 @@ async function testAwait(): Promise<void> {
 
 function jTestStoreKV(): void {
     let kvId: string = 'test_kv'
-    let conn: number = NGenXXStoreKVOpen(kvId)
-    if (conn > 0) {
+    let conn: string = NGenXXStoreKVOpen(kvId)
+    if (conn) {
         let kS: string = "kS"
         if (NGenXXStoreKVContains(conn, kS)) {
             NGenXXStoreKVRemove(conn, kS)
@@ -130,11 +130,11 @@ let sqlQuery: string = `SELECT * FROM TestTable;`
 
 function jTestStoreSQLite(): void {
     let dbId: string = 'test_db'
-    let conn: number = NGenXXStoreSQLiteOpen(dbId)
-    if (conn > 0) {
+    let conn: string = NGenXXStoreSQLiteOpen(dbId)
+    if (conn) {
         if (NGenXXStoreSQLiteExecute(conn, sqlPrepareData)) {
-            let queryResult: number = NGenXXStoreSQLiteQueryDo(conn, sqlQuery)
-            if (queryResult > 0) {
+            let queryResult: string = NGenXXStoreSQLiteQueryDo(conn, sqlQuery)
+            if (queryResult) {
                 while (NGenXXStoreSQLiteQueryReadRow(queryResult)) {
                     let s: string = NGenXXStoreSQLiteQueryReadColumnText(queryResult, 's')
                     let i: number = NGenXXStoreSQLiteQueryReadColumnInteger(queryResult, 'i')

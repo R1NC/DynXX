@@ -2,6 +2,7 @@
 #define NGENXX_INCLUDE_TYPES_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -9,7 +10,7 @@ extern "C"
 #endif
 
     typedef unsigned char byte;
-    typedef unsigned long long address;
+    typedef intptr_t address;
 
 #ifdef __cplusplus
 }

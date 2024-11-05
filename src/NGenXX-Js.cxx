@@ -37,7 +37,7 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = static_cast<bool>(fS(json));                                            \
+        auto res = fS(json);                                                               \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewBool(ctx, res);                                                       \
     }
@@ -46,7 +46,7 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = static_cast<int32_t>(fS(json));                                         \
+        auto res = fS(json);                                                               \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewInt32(ctx, res);                                                      \
     }
@@ -55,7 +55,7 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = static_cast<int64_t>(fS(json));                                         \
+        auto res = fS(json);                                                               \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewInt64(ctx, res);                                                      \
     }
@@ -64,7 +64,7 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
     {                                                                                      \
         const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = static_cast<double>(fS(json));                                          \
+        auto res = fS(json);                                                               \
         JS_FreeCString(ctx, json);                                                         \
         return JS_NewFloat64(ctx, res);                                                    \
     }
@@ -94,9 +94,9 @@ DEF_JS_FUNC_VOID(ngenxx_log_printJ, ngenxx_log_printS)
 
 DEF_JS_FUNC_STRING(ngenxx_net_http_requestJ, ngenxx_net_http_requestS)
 
-DEF_JS_FUNC_INT64(ngenxx_store_sqlite_openJ, ngenxx_store_sqlite_openS)
+DEF_JS_FUNC_STRING(ngenxx_store_sqlite_openJ, ngenxx_store_sqlite_openS)
 DEF_JS_FUNC_BOOL(ngenxx_store_sqlite_executeJ, ngenxx_store_sqlite_executeS)
-DEF_JS_FUNC_INT64(ngenxx_store_sqlite_query_doJ, ngenxx_store_sqlite_query_doS)
+DEF_JS_FUNC_STRING(ngenxx_store_sqlite_query_doJ, ngenxx_store_sqlite_query_doS)
 DEF_JS_FUNC_BOOL(ngenxx_store_sqlite_query_read_rowJ, ngenxx_store_sqlite_query_read_rowS)
 DEF_JS_FUNC_STRING(ngenxx_store_sqlite_query_read_column_textJ, ngenxx_store_sqlite_query_read_column_textS)
 DEF_JS_FUNC_INT64(ngenxx_store_sqlite_query_read_column_integerJ, ngenxx_store_sqlite_query_read_column_integerS)
@@ -104,7 +104,7 @@ DEF_JS_FUNC_FLOAT(ngenxx_store_sqlite_query_read_column_floatJ, ngenxx_store_sql
 DEF_JS_FUNC_VOID(ngenxx_store_sqlite_query_dropJ, ngenxx_store_sqlite_query_dropS)
 DEF_JS_FUNC_VOID(ngenxx_store_sqlite_closeJ, ngenxx_store_sqlite_closeS)
 
-DEF_JS_FUNC_INT64(ngenxx_store_kv_openJ, ngenxx_store_kv_openS)
+DEF_JS_FUNC_STRING(ngenxx_store_kv_openJ, ngenxx_store_kv_openS)
 DEF_JS_FUNC_STRING(ngenxx_store_kv_read_stringJ, ngenxx_store_kv_read_stringS)
 DEF_JS_FUNC_BOOL(ngenxx_store_kv_write_stringJ, ngenxx_store_kv_write_stringS)
 DEF_JS_FUNC_INT64(ngenxx_store_kv_read_integerJ, ngenxx_store_kv_read_integerS)
@@ -134,12 +134,12 @@ DEF_JS_FUNC_STRING(ngenxx_crypto_hash_sha256J, ngenxx_crypto_hash_sha256S)
 DEF_JS_FUNC_STRING(ngenxx_crypto_base64_encodeJ, ngenxx_crypto_base64_encodeS)
 DEF_JS_FUNC_STRING(ngenxx_crypto_base64_decodeJ, ngenxx_crypto_base64_decodeS)
 
-DEF_JS_FUNC_INT64(ngenxx_z_zip_initJ, ngenxx_z_zip_initS)
+DEF_JS_FUNC_STRING(ngenxx_z_zip_initJ, ngenxx_z_zip_initS)
 DEF_JS_FUNC_INT64(ngenxx_z_zip_inputJ, ngenxx_z_zip_inputS)
 DEF_JS_FUNC_STRING(ngenxx_z_zip_process_doJ, ngenxx_z_zip_process_doS)
 DEF_JS_FUNC_BOOL(ngenxx_z_zip_process_finishedJ, ngenxx_z_zip_process_finishedS)
 DEF_JS_FUNC_VOID(ngenxx_z_zip_releaseJ, ngenxx_z_zip_releaseS)
-DEF_JS_FUNC_INT64(ngenxx_z_unzip_initJ, ngenxx_z_unzip_initS)
+DEF_JS_FUNC_STRING(ngenxx_z_unzip_initJ, ngenxx_z_unzip_initS)
 DEF_JS_FUNC_INT64(ngenxx_z_unzip_inputJ, ngenxx_z_unzip_inputS)
 DEF_JS_FUNC_STRING(ngenxx_z_unzip_process_doJ, ngenxx_z_unzip_process_doS)
 DEF_JS_FUNC_BOOL(ngenxx_z_unzip_process_finishedJ, ngenxx_z_unzip_process_finishedS)

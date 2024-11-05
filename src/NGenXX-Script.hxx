@@ -20,9 +20,9 @@ void ngenxx_log_printS(const char *json);
 
 const std::string ngenxx_net_http_requestS(const char *json);
 
-const address ngenxx_store_sqlite_openS(const char *json);
+const std::string ngenxx_store_sqlite_openS(const char *json);
 bool ngenxx_store_sqlite_executeS(const char *json);
-const address ngenxx_store_sqlite_query_doS(const char *json);
+const std::string ngenxx_store_sqlite_query_doS(const char *json);
 bool ngenxx_store_sqlite_query_read_rowS(const char *json);
 const std::string ngenxx_store_sqlite_query_read_column_textS(const char *json);
 long long ngenxx_store_sqlite_query_read_column_integerS(const char *json);
@@ -30,7 +30,7 @@ double ngenxx_store_sqlite_query_read_column_floatS(const char *json);
 void ngenxx_store_sqlite_query_dropS(const char *json);
 void ngenxx_store_sqlite_closeS(const char *json);
 
-const address ngenxx_store_kv_openS(const char *json);
+const std::string ngenxx_store_kv_openS(const char *json);
 const std::string ngenxx_store_kv_read_stringS(const char *json);
 bool ngenxx_store_kv_write_stringS(const char *json);
 long long ngenxx_store_kv_read_integerS(const char *json);
@@ -60,12 +60,12 @@ const std::string ngenxx_crypto_hash_sha256S(const char *json);
 const std::string ngenxx_crypto_base64_encodeS(const char *json);
 const std::string ngenxx_crypto_base64_decodeS(const char *json);
 
-const address ngenxx_z_zip_initS(const char *json);
+const std::string ngenxx_z_zip_initS(const char *json);
 const size_t ngenxx_z_zip_inputS(const char *json);
 const std::string ngenxx_z_zip_process_doS(const char *json);
 bool ngenxx_z_zip_process_finishedS(const char *json);
 void ngenxx_z_zip_releaseS(const char *json);
-const address ngenxx_z_unzip_initS(const char *json);
+const std::string ngenxx_z_unzip_initS(const char *json);
 const size_t ngenxx_z_unzip_inputS(const char *json);
 const std::string ngenxx_z_unzip_process_doS(const char *json);
 bool ngenxx_z_unzip_process_finishedS(const char *json);

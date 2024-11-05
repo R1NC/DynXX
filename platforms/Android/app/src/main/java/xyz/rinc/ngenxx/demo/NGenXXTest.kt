@@ -104,21 +104,21 @@ class NGenXXTest {
             }
 
             val jsonDecoder = NGenXX.jsonDecoderInit(jsonParams)
-            if (jsonDecoder > 0) {
+            if (jsonDecoder != 0L) {
                 val urlNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "url")
-                if (urlNode > 0) {
+                if (urlNode != 0L) {
                     val url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
                     NGenXXHelper.logPrint(LogLevel.Debug, "url:$url")
                 }
                 val headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_c")
-                if (headerCNode > 0) {
+                if (headerCNode != 0L) {
                     val headerC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headerCNode)
                     NGenXXHelper.logPrint(LogLevel.Debug, "header_c:${headerC.toInt()}")
                 }
                 val headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_v")
-                if (headerVNode > 0) {
+                if (headerVNode != 0L) {
                     var headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headerVNode)
-                    while (headerNode > 0) {
+                    while (headerNode != 0L) {
                         val header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)
                         NGenXXHelper.logPrint(LogLevel.Debug, "header:$header")
                         headerNode = NGenXX.jsonDecoderReadNext(jsonDecoder, headerNode)
@@ -128,7 +128,7 @@ class NGenXXTest {
             }
 
             val kvConn = NGenXX.storeKVOpen("test")
-            if (kvConn > 0) {
+            if (kvConn != 0L) {
                 NGenXX.storeKVWriteString(kvConn,"s", "NGenXX")
                 val s = NGenXX.storeKVReadString(kvConn,"s")
                 NGenXXHelper.logPrint(LogLevel.Debug, "s->$s")
@@ -142,7 +142,7 @@ class NGenXXTest {
             }
 
             val dbConn = NGenXX.storeSQLiteOpen("test")
-            if (dbConn > 0) {
+            if (dbConn != 0L) {
                 val prepareSQL = sApplication?.assets?.open("prepare_data.sql")?.bufferedReader().use {
                     it?.readText()
                 }
@@ -151,7 +151,7 @@ class NGenXXTest {
                     it?.readText()
                 }
                 val queryResult = NGenXX.storeSQLiteQueryDo(dbConn, querySQL!!)
-                if (queryResult > 0) {
+                if (queryResult != 0L) {
                     while (NGenXX.storeSQLiteQueryReadRow(queryResult)) {
                         val s = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
                         val i = NGenXX.storeSQLiteQueryReadColumnInteger(queryResult, "i")

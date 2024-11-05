@@ -47,9 +47,12 @@ std::string NGenXX::Json::Decoder::readString(void *const node)
 double NGenXX::Json::Decoder::readNumber(void *const node)
 {
     cJSON *cj = this->parseNode(node);
-    if (cj != NULL && cJSON_IsNumber(cj))
+    if (cj != NULL)
     {
-        return cj->valuedouble;
+        if (cJSON_IsNumber(cj))
+            return cj->valuedouble;
+        if (cJSON_IsString(cj))
+            return std::stod(cj->valuestring);
     }
     return 0;
 }

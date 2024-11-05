@@ -52,7 +52,7 @@ struct Index {
             NGenXX.logPrint(LogLevel.Debug, `base64->${base64DecodedStr}`)
 
             let dbConn = NGenXX.storeSQLiteOpen("test");
-            if (dbConn > 0) {
+            if (dbConn != 0) {
               let insertSql = "CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, vendor TEXT);\n" +
                 "INSERT OR IGNORE INTO TestTable (platform, vendor)\n" +
                 "VALUES\n" +
@@ -62,7 +62,7 @@ struct Index {
               if (NGenXX.storeSQLiteExecute(dbConn, insertSql)) {
                 let querySql = "SELECT * FROM TestTable;";
                 let queryResult = NGenXX.storeSQLiteQueryDo(dbConn, querySql);
-                if (queryResult > 0) {
+                if (queryResult != 0) {
                   while(NGenXX.storeSQLiteQueryReadRow(queryResult)) {
                     let platform = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
                     NGenXX.logPrint(LogLevel.Debug, `platform->${platform}`);
@@ -74,7 +74,7 @@ struct Index {
             }
 
             let kvConn = NGenXX.storeKVOpen("test");
-            if (kvConn > 0) {
+            if (kvConn != 0) {
               NGenXX.storeKVWriteString(kvConn, "s", "NGexXX");
               let s = NGenXX.storeKVReadString(kvConn, "s");
               NGenXX.logPrint(LogLevel.Debug, `s->${s}`);
@@ -114,21 +114,21 @@ struct Index {
             NGenXX.logPrint(LogLevel.Debug, `${rsp}`);
 
             let jsonDecoder = NGenXX.jsonDecoderInit(jsonParams)
-            if (jsonDecoder > 0) {
+            if (jsonDecoder != 0) {
               let urlNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "url")
-              if (urlNode > 0) {
+              if (urlNode != 0) {
                 let url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
                 NGenXX.logPrint(LogLevel.Debug, `url:${url}`)
               }
               let headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "header_c")
-              if (headerCNode > 0) {
+              if (headerCNode != 0) {
                 let headerC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headerCNode)
                 NGenXX.logPrint(LogLevel.Debug, `headerC:${headerC}`)
               }
               let headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "header_v")
-              if (headerVNode > 0) {
+              if (headerVNode != 0) {
                 let headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headerVNode)
-                while (headerNode > 0) {
+                while (headerNode != 0) {
                   let header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)
                   NGenXX.logPrint(LogLevel.Debug, `header:${header}`)
                   headerNode = NGenXX.jsonDecoderReadNext(jsonDecoder, headerNode)

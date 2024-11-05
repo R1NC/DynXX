@@ -75,49 +75,49 @@ declare function NGenXXNetHttpRequest(
 
 /// Store.SQLite
 
-declare function NGenXXStoreSQLiteOpen(_id: string): number
+declare function NGenXXStoreSQLiteOpen(_id: string): string
 
-declare function NGenXXStoreSQLiteExecute(conn: number, sql: string): boolean
+declare function NGenXXStoreSQLiteExecute(conn: string, sql: string): boolean
 
-declare function NGenXXStoreSQLiteQueryDo(conn: number, sql: string): number
+declare function NGenXXStoreSQLiteQueryDo(conn: string, sql: string): string
 
-declare function NGenXXStoreSQLiteQueryReadRow(query_result: number): boolean
+declare function NGenXXStoreSQLiteQueryReadRow(query_result: string): boolean
 
-declare function NGenXXStoreSQLiteQueryReadColumnText(query_result: number, column: string): string
+declare function NGenXXStoreSQLiteQueryReadColumnText(query_result: string, column: string): string
 
-declare function NGenXXStoreSQLiteQueryReadColumnInteger(query_result: number, column: string): number
+declare function NGenXXStoreSQLiteQueryReadColumnInteger(query_result: string, column: string): number
 
-declare function NGenXXStoreSQLiteQueryReadColumnFloat(query_result: number, column: string): number
+declare function NGenXXStoreSQLiteQueryReadColumnFloat(query_result: string, column: string): number
 
-declare function NGenXXStoreSQLiteQueryDrop(query_result: number): void
+declare function NGenXXStoreSQLiteQueryDrop(query_result: string): void
 
-declare function NGenXXStoreSQLiteClose(conn: number): void
+declare function NGenXXStoreSQLiteClose(conn: string): void
 
 /// Store.KV
 
-declare function NGenXXStoreKVOpen(_id: string): number
+declare function NGenXXStoreKVOpen(_id: string): string
 
-declare function NGenXXStoreKVReadString(conn: number, k: string): string
+declare function NGenXXStoreKVReadString(conn: string, k: string): string
 
-declare function NGenXXStoreKVWriteString(conn: number, k: string, s: string): boolean
+declare function NGenXXStoreKVWriteString(conn: string, k: string, s: string): boolean
 
-declare function NGenXXStoreKVReadInteger(conn: number, k: string): number
+declare function NGenXXStoreKVReadInteger(conn: string, k: string): number
 
-declare function NGenXXStoreKVWriteInteger(conn: number, k: string, i: number): boolean
+declare function NGenXXStoreKVWriteInteger(conn: string, k: string, i: number): boolean
 
-declare function NGenXXStoreKVReadFloat(conn: number, k: string): number
+declare function NGenXXStoreKVReadFloat(conn: string, k: string): number
 
-declare function NGenXXStoreKVWriteFloat(conn: number, k: string, f: number): boolean
+declare function NGenXXStoreKVWriteFloat(conn: string, k: string, f: number): boolean
 
-declare function NGenXXStoreKVAllKeys(conn: number): string[]
+declare function NGenXXStoreKVAllKeys(conn: string): string[]
 
-declare function NGenXXStoreKVContains(conn: number, k: string): boolean
+declare function NGenXXStoreKVContains(conn: string, k: string): boolean
 
-declare function NGenXXStoreKVRemove(conn: number, k: string): void
+declare function NGenXXStoreKVRemove(conn: string, k: string): void
 
-declare function NGenXXStoreKVClear(conn: number): void
+declare function NGenXXStoreKVClear(conn: string): void
 
-declare function NGenXXStoreKVClose(conn: number): void
+declare function NGenXXStoreKVClose(conn: string): void
 
 /// Coding
 

@@ -13,6 +13,7 @@ NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::str
 {
     sqlite3 *db;
     int rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+    ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.open ret:" + std::to_string(rc));
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, db);
@@ -34,9 +35,13 @@ NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db)
 bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
 {
     if (this->db == NULL)
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.execute DB NULL");
         return false;
+    }
     sqlite3_stmt *stmt;
     int rc = sqlite3_exec(this->db, sql.c_str(), NULL, NULL, NULL);
+    ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.exec ret:" + std::to_string(rc));
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -47,9 +52,13 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
 NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connection::query(const std::string &sql)
 {
     if (this->db == NULL)
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.query DB NULL");
         return NULL;
+    }
     sqlite3_stmt *stmt;
     int rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, NULL);
+    ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.query ret:" + std::to_string(rc));
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -72,8 +81,12 @@ NGenXX::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt)
 bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
 {
     if (this->stmt == NULL)
-        return false;
+    {
+         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readRow STMT NULL");
+         return false;
+    }
     int rc = sqlite3_step(this->stmt);
+    ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.step ret:" + std::to_string(rc));
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
         PRINT_ERR(rc, NULL);
@@ -84,7 +97,10 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
 Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column)
 {
     if (this->stmt == NULL)
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readColumn STMT NULL");
         return {};
+    }
     for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
     {
         if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0)
