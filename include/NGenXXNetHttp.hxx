@@ -19,7 +19,7 @@ enum class NGenXXHttpMethodX : int
 
 const std::string ngenxxNetHttpRequest(const std::string &url,
                                        const NGenXXHttpMethodX method,
-                                       const std::string &params = "",
+                                       const std::string &params,
                                        const std::vector<std::string> &headerV = {},
                                        const std::vector<std::string> &formFieldNameV = {},
                                        const std::vector<std::string> &formFieldMimeV = {},
@@ -29,7 +29,7 @@ const std::string ngenxxNetHttpRequest(const std::string &url,
 
 const std::string ngenxxNetHttpRequest(const std::string &url,
                                        const NGenXXHttpMethodX method,
-                                       const std::unordered_map<std::string, Any> &params = {},
+                                       const std::unordered_map<std::string, Any> &params,
                                        const std::unordered_map<std::string, std::string> &headers = {},
                                        const std::vector<std::string> &formFieldNameV = {},
                                        const std::vector<std::string> &formFieldMimeV = {},

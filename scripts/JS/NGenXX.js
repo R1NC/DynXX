@@ -73,6 +73,15 @@ function NGenXXRootPath() {
     return ngenxx_root_pathJ();
 }
 
+const NGenXXLogLevel = Object.freeze({
+    Debug: 3,
+    Info: 4,
+    Warn: 5,
+    Error: 6,
+    Fatal: 7,
+    None: 8
+});
+
 function NGenXXLogPrint(level, content) {
     content = content || '';
     let inJson = JSON.stringify({
