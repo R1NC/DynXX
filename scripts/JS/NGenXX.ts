@@ -72,7 +72,7 @@ declare function NGenXXNetHttpRequest(
     url: string,
     method: NGenXXHttpMethod,
     paramMap?: Map<string, string | number>,
-    headerMap?: Map<string, string | number>,
+    headerMap?: Map<string, string>,
     rawBodyBytes?: number[],
     formFieldNameArray?: string[],
     formFieldMimeArray?: string[],
