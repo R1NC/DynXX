@@ -35,7 +35,7 @@ const std::string strArray2json(const std::vector<std::string> &v)
 
 const address parseAddress(NGenXX::Json::Decoder &decoder, const char *k)
 {
-    address a;
+    address a = 0;
     auto s = decoder.readString(decoder.readNode(NULL, k));
     if (s.empty() || s == "0") 
         return a;

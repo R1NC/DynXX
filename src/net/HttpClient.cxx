@@ -139,7 +139,10 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         CURLcode curlCode = curl_easy_perform(curl);
 
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
-        curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &(rsp.contentType));
+        
+        char *contentType;
+        curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
+        rsp.contentType = contentType;
 
         if (curlCode != CURLE_OK)
         {
