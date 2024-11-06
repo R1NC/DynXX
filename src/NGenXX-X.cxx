@@ -207,9 +207,10 @@ const Bytes ngenxxCryptoBase64Decode(const Bytes in)
 
 #pragma mark Net.Http
 
-const std::string ngenxxNetHttpRequest(const std::string &url,
+const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                        const NGenXXHttpMethodX method,
                                        const std::string &params,
+                                       const Bytes &rawBody,
                                        const std::vector<std::string> &headerV,
                                        const std::vector<std::string> &formFieldNameV,
                                        const std::vector<std::string> &formFieldMimeV,
@@ -217,9 +218,9 @@ const std::string ngenxxNetHttpRequest(const std::string &url,
                                        const std::FILE *cFILE, const size_t fileSize,
                                        const size_t timeout)
 {
-    std::string s;
+    NGenXXHttpResponse rsp;
     if (_ngenxx_http_client == nullptr || url.length() == 0)
-        return s;
+        return rsp;
 
     std::vector<NGenXX::Net::HttpFormField> vFormFields;
     for (int i = 0; i < formFieldNameV.size() && i < formFieldMimeV.size() && i < formFieldDataV.size(); i++)
@@ -231,12 +232,28 @@ const std::string ngenxxNetHttpRequest(const std::string &url,
         });
     }
 
-    return _ngenxx_http_client->request(url, params, static_cast<int>(method), headerV, vFormFields, cFILE, fileSize, timeout);
+    auto t = _ngenxx_http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize, timeout);
+    rsp = {
+        .code = t.code,
+        .contentType = t.contentType,
+        .data = t.data
+    };
+    return rsp;
 }
 
-const std::string ngenxxNetHttpRequest(const std::string &url,
+const std::string NGenXXHttpResponse::toJson()
+{
+    cJSON *cj = cJSON_CreateObject();
+    cJSON_AddItemToObject(cj, "code", cJSON_CreateNumber(this->code));
+    cJSON_AddItemToObject(cj, "contentType", cJSON_CreateString(this->contentType.c_str()));
+    cJSON_AddItemToObject(cj, "data", cJSON_CreateString(this->data.c_str()));
+    return cJSON_Print(cj);
+}
+
+const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                        const NGenXXHttpMethodX method,
                                        const std::unordered_map<std::string, Any> &params,
+                                       const Bytes &rawBody,
                                        const std::unordered_map<std::string, std::string> &headers,
                                        const std::vector<std::string> &formFieldNameV,
                                        const std::vector<std::string> &formFieldMimeV,
@@ -259,7 +276,7 @@ const std::string ngenxxNetHttpRequest(const std::string &url,
         );
     }
     std::vector<std::string> headerV;
-    return ngenxxNetHttpRequest(url, method, ssParams.str(), headerV,
+    return ngenxxNetHttpRequest(url, method, ssParams.str(), rawBody, headerV,
                                 formFieldNameV, formFieldMimeV, formFieldDataV,
                                 cFILE, fileSize, timeout);
 }

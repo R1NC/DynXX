@@ -8,6 +8,7 @@
 #include <string>
 
 #include "../include/NGenXX.hxx"
+#include "../include/NGenXXTypes.hxx"
 #include "../include/NGenXXStoreKV.h"
 #include "NGenXX-inner.hxx"
 #include "util/TypeUtil.hxx"
@@ -261,12 +262,13 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
         vFormFieldData = std::vector<std::string>(form_field_data_v, form_field_data_v + form_field_count);
     }
 
-    auto s = ngenxxNetHttpRequest(url ?: "",
+    auto t = ngenxxNetHttpRequest(url ?: "",
                                   static_cast<NGenXXHttpMethodX>(method),
                                   params ?: "",
+                                  BytesEmpty,
                                   vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
                                   reinterpret_cast<std::FILE *>(cFILE), file_size, timeout);
-    return copyStr(s);
+    return copyStr(t.toJson());
 }
 
 #pragma mark Store.SQLite

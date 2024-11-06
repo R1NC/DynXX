@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../include/NGenXX.hxx"
+#include "../include/NGenXXTypes.hxx"
 #include "../include/NGenXXNetHttp.h"
 #include "NGenXX-Script.hxx"
 #include "json/JsonDecoder.hxx"
@@ -161,7 +162,7 @@ const std::string ngenxx_net_http_requestS(const char *json)
     if ((cFILE > 0 && fileSize <= 0) || (cFILE <= 0 && fileSize > 0))
         return s;
 
-    return ngenxxNetHttpRequest(url, static_cast<NGenXXHttpMethodX>(method), params, 
+    auto t = ngenxxNetHttpRequest(url, static_cast<NGenXXHttpMethodX>(method), params, BytesEmpty,
                                 header_v,
                                 form_field_name_v,
                                 form_field_mime_v,
@@ -169,6 +170,7 @@ const std::string ngenxx_net_http_requestS(const char *json)
                                 reinterpret_cast<std::FILE *>(cFILE),
                                 fileSize,
                                 timeout);
+    return t.toJson();
 }
 
 #pragma mark Store.SQLite

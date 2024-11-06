@@ -35,13 +35,15 @@ NGenXX::Net::HttpClient::~HttpClient()
     curl_global_cleanup();
 }
 
-const std::string NGenXX::Net::HttpClient::request(const std::string &url, const std::string &params, const int method,
-                                                   const std::vector<std::string> &headers,
-                                                   const std::vector<NGenXX::Net::HttpFormField> &formFields,
-                                                   const std::FILE *cFILE, const size_t fileSize,
-                                                   const size_t timeout)
+const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::string &url, const int method,
+                                      const std::vector<std::string> &headers,
+                                      const std::string &params,
+                                      const Bytes &rawBody,
+                                      const std::vector<NGenXX::Net::HttpFormField> &formFields,
+                                      const std::FILE *cFILE, const size_t fileSize,
+                                      const size_t timeout)
 {
-    std::string rsp;
+    HttpResponse rsp;
     int _timeout = timeout;
     if (_timeout <= 0)
     {
@@ -58,14 +60,14 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
         curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
-        std::string fixedUrl = url;
+        bool urlAppend = false;
         if (cFILE != NULL)
         {
             curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
             curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_ReadCallback);
             curl_easy_setopt(curl, CURLOPT_READDATA, cFILE);
             curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, fileSize);
-        }
+        } 
         else if (formFields.size() > 0)
         {
             mime = curl_mime_init(curl);
@@ -82,6 +84,28 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
         }
         else if (method == NGenXXNetHttpMethodGet)
         {
+            urlAppend = true;
+        }
+        else if (method == NGenXXNetHttpMethodPost)
+        {   
+            curl_easy_setopt(curl, CURLOPT_POST, 1L);
+            auto [rawData, rawLen] = rawBody;
+            if (rawData == nullptr || rawLen == 0) 
+            {
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, params.length());
+            }
+            else
+            {
+                urlAppend = true;
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, rawData);
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawLen);
+            }
+        }
+
+        std::string fixedUrl = url;
+        if (urlAppend)
+        {
             if (url.find("?", 0) == std::string::npos)
             {
                 fixedUrl += "?" + params;
@@ -91,11 +115,6 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
                 fixedUrl += params;
             }
         }
-        else if (method == NGenXXNetHttpMethodPost)
-        {
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
-        }
-
         curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
 
         struct curl_slist *headerList = NULL;
@@ -115,9 +134,13 @@ const std::string NGenXX::Net::HttpClient::request(const std::string &url, const
         }
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _NGenXX_Net_HttpClient_WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &rsp);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &(rsp.data));
 
         CURLcode curlCode = curl_easy_perform(curl);
+
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
+        curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &(rsp.contentType));
+
         if (curlCode != CURLE_OK)
         {
             ngenxxLogPrint(NGenXXLogLevelX::Error, "HttpClient.request error:" + std::string(curl_easy_strerror(curlCode)));

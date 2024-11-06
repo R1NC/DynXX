@@ -19,31 +19,29 @@ namespace NGenXX
             std::string mime;
             std::string data;
         };
-        typedef struct HttpFormField HttpFormField;
+        using HttpFormField = struct HttpFormField;
+
+        struct HttpResponse
+        {
+            int code;
+            std::string data;
+            std::string contentType;
+        };
+        using HttpResponse = struct HttpResponse;
 
         class HttpClient
         {
         public:
-            /**
-             *
-             */
             HttpClient();
 
-            /**
-             * @brief http request
-             * @param url URL
-             * @param params params(transfer multiple params like `v1=a&v2=b`)
-             * @return response
-             */
-            const std::string request(const std::string &url, const std::string &params, const int method,
+            const HttpResponse request(const std::string &url, const int method,
                                       const std::vector<std::string> &headers,
+                                      const std::string &params,
+                                      const Bytes &rawBody,
                                       const std::vector<HttpFormField> &formFields,
                                       const std::FILE *cFILE, const size_t fileSize,
                                       const size_t timeout);
 
-            /**
-             *
-             */
             ~HttpClient();
         };
     }
