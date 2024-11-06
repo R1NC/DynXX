@@ -5,7 +5,7 @@
 #include <cctype>
 #include <algorithm>
 
-const std::string NGenXX::Coding::Hex::bytes2str(const Bytes bytes)
+const std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
 {
     auto [byt, len] = bytes;
     if (byt == NULL || len <= 0)
@@ -47,7 +47,7 @@ const std::string NGenXX::Coding::Case::lower(const std::string &str)
     return s;
 }
 
-const std::string NGenXX::Coding::bytes2str(const Bytes bytes)
+const std::string NGenXX::Coding::bytes2str(const Bytes &bytes)
 {
     auto [data, len] = bytes;
     return std::string(reinterpret_cast<char*>(const_cast<byte *>(data)));

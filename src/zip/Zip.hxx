@@ -37,7 +37,7 @@ namespace NGenXX
         public:
             ZBase() = delete;
             ZBase(const size_t bufferSize, const int format);
-            const size_t input(const Bytes bytes, bool inFinish);
+            const size_t input(const Bytes &bytes, bool inFinish);
             const Bytes processDo();
             const bool processFinished();
             virtual ~ZBase();
@@ -73,9 +73,9 @@ namespace NGenXX
 
         bool unzip(const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
 
-        const Bytes zip(int mode, const size_t bufferSize, const int format, const Bytes bytes);
+        const Bytes zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes);
 
-        const Bytes unzip(const size_t bufferSize, const int format, const Bytes bytes);
+        const Bytes unzip(const size_t bufferSize, const int format, const Bytes &bytes);
     }
 }
 

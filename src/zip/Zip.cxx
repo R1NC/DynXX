@@ -41,7 +41,7 @@ NGenXX::Z::ZBase::ZBase(const size_t bufferSize, const int format) : bufferSize{
     this->outBuffer = reinterpret_cast<byte *>(malloc(sizeof(byte) * bufferSize + 1));
 }
 
-const size_t NGenXX::Z::ZBase::input(const Bytes bytes, bool inFinish)
+const size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
 {
     auto [in, inLen] = bytes;
     if (in == NULL || inLen <= 0)
@@ -242,7 +242,7 @@ bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::FILE *inFi
 
 #pragma mark Bytes
 
-const Bytes zProcessBytes(const size_t bufferSize, const Bytes in, NGenXX::Z::ZBase &zb)
+const Bytes zProcessBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase &zb)
 {
     size_t pos = 0;
     std::vector<byte> outBytes;
@@ -275,13 +275,13 @@ const Bytes zProcessBytes(const size_t bufferSize, const Bytes in, NGenXX::Z::ZB
     return {outBytes.data(), outBytes.size()};
 }
 
-const Bytes NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, const Bytes bytes)
+const Bytes NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes)
 {
     auto zip = Zip(mode, bufferSize, format);
     return zProcessBytes(bufferSize, bytes, zip);
 }
 
-const Bytes NGenXX::Z::unzip(const size_t bufferSize, const int format, const Bytes bytes)
+const Bytes NGenXX::Z::unzip(const size_t bufferSize, const int format, const Bytes &bytes)
 {
     auto unzip = UnZip(bufferSize, format);
     return zProcessBytes(bufferSize, bytes, unzip);

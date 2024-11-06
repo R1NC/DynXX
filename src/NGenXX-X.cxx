@@ -128,7 +128,7 @@ void ngenxxLogPrint(const NGenXXLogLevelX level, const std::string &content)
 
 #pragma mark Coding
 
-const std::string ngenxxCodingHexBytes2str(const Bytes bytes)
+const std::string ngenxxCodingHexBytes2str(const Bytes &bytes)
 {
     return NGenXX::Coding::Hex::bytes2str(bytes);
 }
@@ -138,7 +138,7 @@ const Bytes ngenxxCodingHexStr2bytes(const std::string &str)
     return NGenXX::Coding::Hex::str2bytes(str);
 }
 
-const std::string ngenxxCodingBytes2str(const Bytes bytes)
+const std::string ngenxxCodingBytes2str(const Bytes &bytes)
 {
     return NGenXX::Coding::bytes2str(bytes);
 }
@@ -165,42 +165,42 @@ bool ngenxxCryptoRand(const size_t len, byte *bytes)
     return NGenXX::Crypto::rand(len, bytes);
 }
 
-const Bytes ngenxxCryptoAesEncrypt(const Bytes in, const Bytes key)
+const Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key)
 {
     return NGenXX::Crypto::AES::encrypt(in, key);
 }
 
-const Bytes ngenxxCryptoAesDecrypt(const Bytes in, const Bytes key)
+const Bytes ngenxxCryptoAesDecrypt(const Bytes &in, const Bytes &key)
 {
     return NGenXX::Crypto::AES::decrypt(in, key);
 }
 
-const Bytes ngenxxCryptoAesGcmEncrypt(const Bytes in, const Bytes key, const Bytes initVector, const size_t tagBits, const Bytes aad)
+const Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits, const Bytes &aad)
 {
     return NGenXX::Crypto::AES::gcmEncrypt(in, key, initVector, aad, tagBits);
 }
 
-const Bytes ngenxxCryptoAesGcmDecrypt(const Bytes in, const Bytes key, const Bytes initVector, const size_t tagBits, const Bytes aad)
+const Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits, const Bytes &aad)
 {
     return NGenXX::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }
 
-const Bytes ngenxxCryptoHashMd5(const Bytes in)
+const Bytes ngenxxCryptoHashMd5(const Bytes &in)
 {
     return NGenXX::Crypto::Hash::md5(in);
 }
 
-const Bytes ngenxxCryptoHashSha256(const Bytes in)
+const Bytes ngenxxCryptoHashSha256(const Bytes &in)
 {
     return NGenXX::Crypto::Hash::sha256(in);
 }
 
-const Bytes ngenxxCryptoBase64Encode(const Bytes in)
+const Bytes ngenxxCryptoBase64Encode(const Bytes &in)
 {
     return NGenXX::Crypto::Base64::encode(in);
 }
 
-const Bytes ngenxxCryptoBase64Decode(const Bytes in)
+const Bytes ngenxxCryptoBase64Decode(const Bytes &in)
 {
     return NGenXX::Crypto::Base64::decode(in);
 }
@@ -544,7 +544,7 @@ void *const ngenxxZZipInit(const NGenXXZipCompressModeX mode, const size_t buffe
     return zip;
 }
 
-const size_t ngenxxZZipInput(void *const zip, const Bytes inBytes, const bool inFinish)
+const size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, const bool inFinish)
 {
     if (zip == NULL)
         return 0;
@@ -590,7 +590,7 @@ void *const ngenxxZUnzipInit(const size_t bufferSize, const NGenXXZFormatX forma
     return unzip;
 }
 
-const size_t ngenxxZUnzipInput(void *const unzip, const Bytes inBytes, const bool inFinish)
+const size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, const bool inFinish)
 {
     if (unzip == NULL)
         return 0;
@@ -658,7 +658,7 @@ bool ngenxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut
     return NGenXX::Z::unzip(bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
 }
 
-const Bytes ngenxxZBytesZip(const Bytes inBytes, const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format)
+const Bytes ngenxxZBytesZip(const Bytes &inBytes, const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
         return BytesEmpty;
@@ -667,7 +667,7 @@ const Bytes ngenxxZBytesZip(const Bytes inBytes, const NGenXXZipCompressModeX mo
     return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), inBytes);
 }
 
-const Bytes ngenxxZBytesUnzip(const Bytes inBytes, const size_t bufferSize, const NGenXXZFormatX format)
+const Bytes ngenxxZBytesUnzip(const Bytes &inBytes, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
         return BytesEmpty;

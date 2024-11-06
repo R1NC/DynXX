@@ -16,11 +16,11 @@ namespace NGenXX
         namespace AES
         {
 
-            const Bytes encrypt(const Bytes in, const Bytes key);
+            const Bytes encrypt(const Bytes &in, const Bytes &key);
 
-            const Bytes decrypt(const Bytes in, const Bytes key);
+            const Bytes decrypt(const Bytes &in, const Bytes &key);
 
-            static constexpr bool checkGcmParams(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits)
+            static constexpr bool checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits)
             {
                 auto [inBytes, inLen] = in;
                 auto [keyBytes, keyLen] = key;
@@ -42,9 +42,9 @@ namespace NGenXX
                 return true;
             }
 
-            const Bytes gcmEncrypt(const Bytes in, const Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits);
+            const Bytes gcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits);
 
-            const Bytes gcmDecrypt(const Bytes in, Bytes key, const Bytes initVector, const Bytes aad, const size_t tagBits);
+            const Bytes gcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits);
         }
 
         namespace Hash
@@ -52,16 +52,16 @@ namespace NGenXX
             constexpr size_t MD5_BYTES_LEN = 16;
             constexpr size_t SHA256_BYTES_LEN = 32;
 
-            const Bytes md5(const Bytes in);
+            const Bytes md5(const Bytes &in);
 
-            const Bytes sha256(const Bytes in);
+            const Bytes sha256(const Bytes &in);
         }
 
         namespace Base64
         {
-            const Bytes encode(const Bytes in);
+            const Bytes encode(const Bytes &in);
 
-            const Bytes decode(const Bytes in);
+            const Bytes decode(const Bytes &in);
         }
     }
 }

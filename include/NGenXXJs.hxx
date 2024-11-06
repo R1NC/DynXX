@@ -9,7 +9,7 @@ bool ngenxxJsLoadF(const std::string &file);
 
 bool ngenxxJsLoadS(const std::string &script, const std::string &name);
 
-bool ngenxxJsLoadB(const Bytes bytes);
+bool ngenxxJsLoadB(const Bytes &bytes);
 
 const std::string ngenxxJsCall(const std::string &func, const std::string &params);
 

@@ -26,7 +26,7 @@ static inline const char **copyStrVector(std::vector<std::string> sv, const size
     return const_cast<const char **>(sArr);
 }
 
-static inline const byte *copyBytes(Bytes t)
+static inline const byte *copyBytes(const Bytes &t)
 {
     auto [cs, len] = t;
     if (cs == NULL || len <= 0)
@@ -37,7 +37,7 @@ static inline const byte *copyBytes(Bytes t)
     return ncs;
 }
 
-static inline const Bytes trimBytes(Bytes bytes)
+static inline const Bytes trimBytes(const Bytes &bytes)
 {
     auto [data, len] = bytes;
     auto fixedLen = len;

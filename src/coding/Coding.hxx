@@ -12,7 +12,7 @@ namespace NGenXX
         namespace Hex
         {
 
-            const std::string bytes2str(const Bytes bytes);
+            const std::string bytes2str(const Bytes &bytes);
 
             const Bytes str2bytes(const std::string &str);
         }
@@ -24,7 +24,7 @@ namespace NGenXX
             const std::string lower(const std::string &str);
         }
 
-        const std::string bytes2str(const Bytes bytes);
+        const std::string bytes2str(const Bytes &bytes);
 
         const Bytes str2bytes(const std::string &str);
     }

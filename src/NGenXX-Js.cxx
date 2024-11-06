@@ -163,7 +163,7 @@ bool ngenxxJsLoadS(const std::string &script, const std::string &name)
     return _ngenxx_js->loadScript(script, name);
 }
 
-bool ngenxxJsLoadB(const Bytes bytes)
+bool ngenxxJsLoadB(const Bytes &bytes)
 {
     if (_ngenxx_js == nullptr || bytes.first == NULL || bytes.second <= 0)
         return false;
