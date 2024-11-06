@@ -175,7 +175,7 @@ const std::string ngenxx_net_http_requestS(const char *json)
         return s;
     if (form_field_count > 0 && (form_field_name_v.size() == 0 || form_field_mime_v.size() == 0 || form_field_data_v.size() == 0))
         return s;
-    if ((cFILE > 0 && fileSize <= 0) || (cFILE <= 0 && fileSize > 0))
+    if ((cFILE > 0 && fileSize <= 0) || (cFILE == 0 && fileSize > 0))
         return s;
 
     auto t = ngenxxNetHttpRequest(url, static_cast<NGenXXHttpMethodX>(method), params, rawBody,
@@ -760,7 +760,7 @@ const size_t ngenxx_z_zip_inputS(const char *json)
         return 0;
     NGenXX::Json::Decoder decoder(json);
     auto zip = parseAddress(decoder, "zip");
-    if (zip <= 0)
+    if (zip == 0)
         return 0;
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
@@ -779,7 +779,7 @@ const std::string ngenxx_z_zip_process_doS(const char *json)
         return s;
     NGenXX::Json::Decoder decoder(json);
     auto zip = parseAddress(decoder, "zip");
-    if (zip <= 0)
+    if (zip == 0)
         return s;
 
     auto outBytes = ngenxxZZipProcessDo(reinterpret_cast<void *>(zip));
@@ -792,7 +792,7 @@ bool ngenxx_z_zip_process_finishedS(const char *json)
         return false;
     NGenXX::Json::Decoder decoder(json);
     auto zip = parseAddress(decoder, "zip");
-    if (zip <= 0)
+    if (zip == 0)
         return false;
 
     return ngenxxZZipProcessFinished(reinterpret_cast<void *>(zip));
@@ -804,7 +804,7 @@ void ngenxx_z_zip_releaseS(const char *json)
         return;
     NGenXX::Json::Decoder decoder(json);
     auto zip = parseAddress(decoder, "zip");
-    if (zip <= 0)
+    if (zip == 0)
         return;
 
     ngenxxZZipRelease(reinterpret_cast<void *>(zip));
@@ -831,7 +831,7 @@ const size_t ngenxx_z_unzip_inputS(const char *json)
         return 0;
     NGenXX::Json::Decoder decoder(json);
     auto unzip = parseAddress(decoder, "unzip");
-    if (unzip <= 0)
+    if (unzip == 0)
         return 0;
 
     auto in = parseByteArray(decoder, "inBytes", "inLen");
@@ -850,7 +850,7 @@ const std::string ngenxx_z_unzip_process_doS(const char *json)
         return s;
     NGenXX::Json::Decoder decoder(json);
     auto unzip = parseAddress(decoder, "unzip");
-    if (unzip <= 0)
+    if (unzip == 0)
         return s;
 
     auto outBytes = ngenxxZUnzipProcessDo(reinterpret_cast<void *>(unzip));
@@ -863,7 +863,7 @@ bool ngenxx_z_unzip_process_finishedS(const char *json)
         return false;
     NGenXX::Json::Decoder decoder(json);
     auto unzip = parseAddress(decoder, "unzip");
-    if (unzip <= 0)
+    if (unzip == 0)
         return false;
 
     return ngenxxZUnzipProcessFinished(reinterpret_cast<void *>(unzip));
@@ -875,7 +875,7 @@ void ngenxx_z_unzip_releaseS(const char *json)
         return;
     NGenXX::Json::Decoder decoder(json);
     auto unzip = parseAddress(decoder, "unzip");
-    if (unzip <= 0)
+    if (unzip == 0)
         return;
 
     ngenxxZUnzipRelease(reinterpret_cast<void *>(unzip));
