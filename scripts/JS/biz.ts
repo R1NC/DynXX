@@ -22,9 +22,8 @@ function jTestNetHttpReq(url: string): string {
     headerMap.set('User-Agent', 'NGenXX')
     headerMap.set('Cache-Control', 'no-cache')
 
-    let rsp: string = NGenXXNetHttpRequest(url, method, paramMap, headerMap)
-    console.log(rsp)
-    return rsp
+    let rsp: NGenXXHttpResponse = NGenXXNetHttpRequest(url, method, paramMap, headerMap)
+    return JSON.stringify(rsp);
 }
 
 function testMicrotask(): void {

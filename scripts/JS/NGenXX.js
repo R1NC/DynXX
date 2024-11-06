@@ -116,9 +116,10 @@ function NGenXXDeviceCPUArch() {
     return ngenxx_device_cpu_archJ();
 }
 
-function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
+function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, rawBodyBytes, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
     paramStr = _Map2UrlStr(paramMap);
     headerArray = _Map2StrArray(headerMap);
+    rawBodyBytes = rawBodyBytes || [];
     formFieldNameArray = formFieldNameArray || [];
     formFieldMimeArray = formFieldMimeArray || [];
     formFieldDataArray = formFieldDataArray || [];
@@ -130,6 +131,8 @@ function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, formFieldNameAr
         "params": paramStr,
         "header_v": headerArray,
         "header_c": headerArray.length,
+        "rawBodyBytes": rawBodyBytes,
+        "rawBodyLen": rawBodyBytes.length,
         "form_field_name_v": formFieldNameArray,
         "form_field_mime_v": formFieldMimeArray,
         "form_field_data_v": formFieldDataArray,
@@ -137,7 +140,8 @@ function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, formFieldNameAr
         "timeout": timeout
     });
 
-    return ngenxx_net_http_requestJ(inJson);
+    let outJson = eworld_sdk_engine_net_http_requestJ(inJson);
+    return JSON.parse(outJson);
 }
 
 function NGenXXStoreSQLiteOpen(_id) {

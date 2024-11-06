@@ -62,16 +62,23 @@ const enum NGenXXHttpMethod {
     Put
 }
 
+type NGenXXHttpResponse = {
+    code: number;
+    contentType: string;
+    data: string;
+};
+
 declare function NGenXXNetHttpRequest(
     url: string,
     method: NGenXXHttpMethod,
     paramMap?: Map<string, string | number>,
     headerMap?: Map<string, string | number>,
+    rawBodyBytes?: number[],
     formFieldNameArray?: string[],
     formFieldMimeArray?: string[],
     formFieldDataArray?: string[],
     timeout?: number
-): string
+): NGenXXHttpResponse
 
 /// Store.SQLite
 
