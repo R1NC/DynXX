@@ -1,8 +1,10 @@
 #include "JsBridge.hxx"
 #include "../../include/NGenXXLog.hxx"
+
 #include <fstream>
 #include <sstream>
 #include <streambuf>
+#include <utility>
 
 constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "import * as os from 'qjs:os';\n"
@@ -142,7 +144,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
             JSValue jLoop = js_std_loop(this->context); // Wating for async tasks
             jRes = js_std_await(this->context, jRes);   // Handle promise if needed
             auto c = JS_ToCString(this->context, jRes);
-            s = std::string(c ?: "");
+            s = std::move(std::string(c ?: ""));
             JS_FreeCString(this->context, c);
             JS_FreeValue(this->context, jLoop);
         }

@@ -1,9 +1,11 @@
 #include "Coding.hxx"
+
 #include <iomanip>
 #include <sstream>
 #include <cstring>
 #include <cctype>
 #include <algorithm>
+#include <vector>
 
 const std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
 {
@@ -55,9 +57,14 @@ const std::string NGenXX::Coding::bytes2str(const Bytes &bytes)
 
 const Bytes NGenXX::Coding::str2bytes(const std::string &str)
 {
-    if (str.length() == 0)
+    size_t len = str.length();
+    if (len == 0)
         return BytesEmpty;
-    byte bytes[str.length() + 1];
-    std::strcpy(reinterpret_cast<char*>(bytes), str.c_str());
-    return {bytes, str.length()};
+    std::vector<byte> bytes(len);
+    std::transform(std::begin(str), std::end(str), std::begin(bytes),
+        [](char c) { 
+            return static_cast<byte>(c); 
+        }
+    );
+    return {bytes.data(), len};
 }
