@@ -118,8 +118,7 @@ bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &
 
 bool NGenXX::JsBridge::loadBinary(Bytes bytes)
 {
-    auto [data, len] = bytes;
-    return js_std_eval_binary(this->context, data, len, 0);
+    return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
 std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params)

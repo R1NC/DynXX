@@ -22,10 +22,8 @@ namespace NGenXX
 
             static constexpr bool checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits)
             {
-                auto [inBytes, inLen] = in;
-                auto [keyBytes, keyLen] = key;
-                auto [initVectorBytes, initVectorLen] = initVector;
-                auto [aadBytes, aadLen] = aad;
+                auto inBytes = in.data(), keyBytes = key.data(), initVectorBytes = initVector.data(), aadBytes = aad.data();
+                auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
                 const size_t tagLen = tagBits / 8;
                 if (inBytes == NULL || inLen <= 0)
                     return false;

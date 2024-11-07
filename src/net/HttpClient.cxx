@@ -89,7 +89,8 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         else if (method == NGenXXNetHttpMethodPost)
         {   
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
-            auto [rawData, rawLen] = rawBody;
+            auto rawData = rawBody.data();
+            auto rawLen = rawBody.size();
             if (rawData == nullptr || rawLen == 0) 
             {
                 curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());

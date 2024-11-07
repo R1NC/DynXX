@@ -28,7 +28,8 @@ static inline const char **copyStrVector(std::vector<std::string> sv, const size
 
 static inline const byte *copyBytes(const Bytes &t)
 {
-    auto [cs, len] = t;
+    auto cs = t.data();
+    auto len = t.size();
     if (cs == NULL || len <= 0)
         return NULL;
     const byte *ncs = reinterpret_cast<byte *>(malloc(len + 1));
@@ -39,14 +40,15 @@ static inline const byte *copyBytes(const Bytes &t)
 
 static inline const Bytes trimBytes(const Bytes &bytes)
 {
-    auto [data, len] = bytes;
+    auto data = bytes.data();
+    auto len = bytes.size();
     auto fixedLen = len;
     for (auto i = len - 1; i > 0; i--)
     {
         if (data[i] <= 0)
             fixedLen--;
     }
-    return {data, fixedLen};
+    return wrapBytes(data, fixedLen);
 }
 
 #endif // NGENXX_UTIL_TYPE_H_

@@ -165,7 +165,7 @@ bool ngenxxJsLoadS(const std::string &script, const std::string &name)
 
 bool ngenxxJsLoadB(const Bytes &bytes)
 {
-    if (_ngenxx_js == nullptr || bytes.first == NULL || bytes.second <= 0)
+    if (_ngenxx_js == nullptr || bytes.empty())
         return false;
     return _ngenxx_js->loadBinary(bytes);
 }
@@ -197,7 +197,7 @@ bool ngenxx_js_loadS(const char *script, const char *name)
 EXPORT_AUTO
 bool ngenxx_js_loadB(const byte *bytes, const size_t len)
 {
-    return ngenxxJsLoadB({bytes, len});
+    return ngenxxJsLoadB(wrapBytes(bytes, len));
 }
 
 EXPORT_AUTO

@@ -662,7 +662,7 @@ const Bytes ngenxxZBytesZip(const Bytes &inBytes, const NGenXXZipCompressModeX m
 {
     if (bufferSize <= 0)
         return BytesEmpty;
-    if (inBytes.first == NULL || inBytes.second <= 0)
+    if (inBytes.empty())
         return BytesEmpty;
     return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), inBytes);
 }
@@ -671,7 +671,7 @@ const Bytes ngenxxZBytesUnzip(const Bytes &inBytes, const size_t bufferSize, con
 {
     if (bufferSize <= 0)
         return BytesEmpty;
-    if (inBytes.first == NULL || inBytes.second <= 0)
+    if (inBytes.empty())
         return BytesEmpty;
     return NGenXX::Z::unzip(bufferSize, static_cast<int>(format), inBytes);
 }

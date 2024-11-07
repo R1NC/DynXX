@@ -5,8 +5,8 @@
 
 #ifdef __cplusplus
 
-#include <utility>
 #include <string>
+#include <vector>
 #include <variant>
 #include <limits>
 
@@ -15,10 +15,15 @@ constexpr long long kLongLongMax = std::numeric_limits<long long>::max();
 constexpr double kDoubleMin = std::numeric_limits<double>::min();
 constexpr double kDoubleMax = std::numeric_limits<double>::max();
 
-using Bytes = std::pair<const byte *, const size_t>;
-#define BytesEmpty {NULL, 0}
-
 using Any = std::variant<int64_t, double, std::string>;
+
+using Bytes = std::vector<byte>;
+#define BytesEmpty {}
+
+static inline const Bytes wrapBytes(const byte* data, const size_t len)
+{
+    return Bytes(data, data + len);
+}
 
 #endif
 

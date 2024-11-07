@@ -43,13 +43,12 @@ NGenXX::Z::ZBase::ZBase(const size_t bufferSize, const int format) : bufferSize{
 
 const size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
 {
-    auto [in, inLen] = bytes;
-    if (in == NULL || inLen <= 0)
+    if (bytes.empty())
         return 0;
-    size_t dataLen = std::min(inLen, this->bufferSize);
+    size_t dataLen = std::min(bytes.size(), this->bufferSize);
 
     std::memset(this->inBuffer, 0, this->bufferSize);
-    memcpy(this->inBuffer, in, dataLen);
+    memcpy(this->inBuffer, bytes.data(), dataLen);
 
     (this->zs).avail_in = dataLen;
     (this->zs).next_in = reinterpret_cast<Bytef *>(this->inBuffer);
@@ -74,7 +73,7 @@ const Bytes NGenXX::Z::ZBase::processDo()
     }
 
     size_t outLen = this->bufferSize - (this->zs).avail_out;
-    return {this->outBuffer, outLen};
+    return wrapBytes(this->outBuffer, outLen);
 }
 
 const bool NGenXX::Z::ZBase::processFinished()
@@ -144,7 +143,7 @@ bool zProcess(const size_t bufferSize,
     do
     {
         auto in = sReadF();
-        inputFinished = in.second < bufferSize;
+        inputFinished = in.size() < bufferSize;
         int ret = zb.input(in, inputFinished);
         if (ret == 0L)
         {
@@ -154,15 +153,14 @@ bool zProcess(const size_t bufferSize,
         bool processFinished;
         do
         {
-            auto [outData, outLen] = zb.processDo();
-            if (outData == NULL)
+            auto outData = zb.processDo();
+            if (outData.empty())
             {
                 return false;
             }
-            Bytes outBytes = {outData, outLen};
             processFinished = zb.processFinished();
 
-            sWriteF(outBytes);
+            sWriteF(outData);
         } while (!processFinished);
     } while (!inputFinished);
     sFlushF();
@@ -177,13 +175,13 @@ bool zProcessCxxStream(const size_t bufferSize, std::istream *inStream, std::ost
     return zProcess(bufferSize, 
         [bufferSize, &inStream]() -> Bytes 
         {
-            std::vector<byte> in;
+            Bytes in;
             inStream->readsome(reinterpret_cast<char *>(in.data()), bufferSize);
-            return {in.data(), in.size()}; 
+            return in; 
         }, 
         [&outStream](Bytes bytes) -> void
         { 
-            outStream->write(reinterpret_cast<char *>(const_cast<byte *>(bytes.first)), bytes.second);
+            outStream->write(reinterpret_cast<char *>(const_cast<byte *>(bytes.data())), bytes.size());
         }, 
         [&outStream]() -> void
         { 
@@ -212,13 +210,13 @@ bool zProcessCFILE(const size_t bufferSize, std::FILE *inFile, std::FILE *outFil
     return zProcess(bufferSize, 
         [bufferSize, &inFile]() -> Bytes
         {
-            std::vector<byte> in;
+            Bytes in;
             std::fread(static_cast<void *>(in.data()), sizeof(byte), bufferSize, inFile);
-            return {in.data(), in.size()};
+            return in;
         }, 
         [&outFile](Bytes bytes) -> void
         { 
-            std::fwrite(bytes.first, sizeof(byte), bytes.second, outFile);
+            std::fwrite(bytes.data(), sizeof(byte), bytes.size(), outFile);
         }, 
         [&outFile]() -> void
         { 
@@ -249,22 +247,18 @@ const Bytes zProcessBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::Z
     auto b = zProcess(bufferSize, 
         [bufferSize, &in, &pos]() -> Bytes
         {
-            auto len = std::min(bufferSize, in.second - pos);
-            byte bytes[len];
+            auto len = std::min(bufferSize, in.size() - pos);
+            Bytes bytes;
             for (auto i = 0; i < len; i++)
             {
-                bytes[i] = in.first[pos];
+                bytes.push_back(in[pos]);
                 pos++;
             }
-            return {bytes, len}; 
+            return bytes; 
         }, 
         [&outBytes](Bytes bytes) -> void
         {
-            auto [data, len] = bytes;
-            for (auto i = 0; i < len; i++)
-            {
-                outBytes.push_back(data[i]); 
-            }
+            outBytes.insert(outBytes.end(), bytes.begin(), bytes.end());
         }, 
         []() -> void {}, 
         zb
@@ -272,7 +266,7 @@ const Bytes zProcessBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::Z
 
     if (!b)
         return BytesEmpty;
-    return {outBytes.data(), outBytes.size()};
+    return outBytes;
 }
 
 const Bytes NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes)

@@ -96,21 +96,21 @@ EXPORT_AUTO
 const byte *ngenxx_coding_hex_str2bytes(const char *str, size_t *outLen)
 {
     auto t = ngenxxCodingHexStr2bytes(str ?: "");
-    *outLen = t.second;
+    *outLen = t.size();
     return copyBytes(t);
 }
 
 EXPORT_AUTO
 const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, const size_t inLen)
 {
-    auto s = ngenxxCodingHexBytes2str({inBytes, inLen});
+    auto s = ngenxxCodingHexBytes2str(wrapBytes(inBytes, inLen));
     return copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_coding_bytes2str(const byte *inBytes, const size_t inLen)
 {
-    auto s = ngenxxCodingBytes2str({inBytes, inLen});
+    auto s = ngenxxCodingBytes2str(wrapBytes(inBytes, inLen));
     return copyStr(s);
 }
 
@@ -118,7 +118,7 @@ EXPORT_AUTO
 const byte *ngenxx_coding_str2bytes(const char *str, size_t *outLen)
 {
     auto t = ngenxxCodingStr2bytes(str ?: "");
-    *outLen = t.second;
+    *outLen = t.size();
     return copyBytes(t);
 }
 
@@ -147,18 +147,18 @@ bool ngenxx_crypto_rand(const size_t len, byte *bytes)
 EXPORT_AUTO
 const byte *ngenxx_crypto_aes_encrypt(const byte *inBytes, const size_t inLen, const byte *keyBytes, const size_t keyLen, size_t *outLen)
 {
-    auto t = ngenxxCryptoAesEncrypt({inBytes, inLen}, {keyBytes, keyLen});
+    auto t = ngenxxCryptoAesEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen));
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, const size_t inLen, const byte *keyBytes, const size_t keyLen, size_t *outLen)
 {
-    auto t = ngenxxCryptoAesDecrypt({inBytes, inLen}, {keyBytes, keyLen});
+    auto t = ngenxxCryptoAesDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen));
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
@@ -169,10 +169,10 @@ const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, const size_t inLe
                                           const byte *aadBytes, const size_t aadLen,
                                           const size_t tagBits, size_t *outLen)
 {
-    auto t = ngenxxCryptoAesGcmEncrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, tagBits,
-                                       {aadBytes, aadLen});
+    auto t = ngenxxCryptoAesGcmEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen), wrapBytes(initVectorBytes, initVectorLen), tagBits,
+                                       wrapBytes(aadBytes, aadLen));
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
@@ -183,46 +183,46 @@ const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size_t inLe
                                           const byte *aadBytes, const size_t aadLen,
                                           const size_t tagBits, size_t *outLen)
 {
-    auto t = ngenxxCryptoAesGcmDecrypt({inBytes, inLen}, {keyBytes, keyLen}, {initVectorBytes, initVectorLen}, tagBits,
-                                       {aadBytes, aadLen});
+    auto t = ngenxxCryptoAesGcmDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen), wrapBytes(initVectorBytes, initVectorLen), tagBits,
+                                       wrapBytes(aadBytes, aadLen));
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size_t inLen, size_t *outLen)
 {
-    auto t = ngenxxCryptoHashMd5({inBytes, inLen});
+    auto t = ngenxxCryptoHashMd5(wrapBytes(inBytes, inLen));
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size_t inLen, size_t *outLen)
 {
-    auto t = ngenxxCryptoHashSha256({inBytes, inLen});
+    auto t = ngenxxCryptoHashSha256(wrapBytes(inBytes, inLen));
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_base64_encode(const byte *inBytes, const size_t inLen, size_t *outLen)
 {
-    auto t = ngenxxCryptoBase64Encode({inBytes, inLen});
+    auto t = ngenxxCryptoBase64Encode(wrapBytes(inBytes, inLen));
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size_t inLen, size_t *outLen)
 {
-    auto t = ngenxxCryptoBase64Decode({inBytes, inLen});
+    auto t = ngenxxCryptoBase64Decode(wrapBytes(inBytes, inLen));
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
@@ -470,7 +470,7 @@ void *const ngenxx_z_zip_init(const int mode, const size_t bufferSize, const int
 EXPORT_AUTO
 const size_t ngenxx_z_zip_input(void *const zip, const byte *inBytes, const size_t inLen, const bool inFinish)
 {
-    return ngenxxZZipInput(zip, {inBytes, inLen}, inFinish);
+    return ngenxxZZipInput(zip, wrapBytes(inBytes, inLen), inFinish);
 }
 
 EXPORT_AUTO
@@ -478,7 +478,7 @@ const byte *ngenxx_z_zip_process_do(void *const zip, size_t *outLen)
 {
     auto t = ngenxxZZipProcessDo(zip);
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
@@ -503,7 +503,7 @@ void *const ngenxx_z_unzip_init(const size_t bufferSize, const int format)
 EXPORT_AUTO
 const size_t ngenxx_z_unzip_input(void *const unzip, const byte *inBytes, const size_t inLen, const bool inFinish)
 {
-    return ngenxxZUnzipInput(unzip, {inBytes, inLen}, inFinish);
+    return ngenxxZUnzipInput(unzip, wrapBytes(inBytes, inLen), inFinish);
 }
 
 EXPORT_AUTO
@@ -511,7 +511,7 @@ const byte *ngenxx_z_unzip_process_do(void *const unzip, size_t *outLen)
 {
     auto t = ngenxxZUnzipProcessDo(unzip);
     if (outLen)
-        *outLen = t.second;
+        *outLen = t.size();
     return copyBytes(t);
 }
 
@@ -558,17 +558,17 @@ bool ngenxx_z_cxxstream_unzip(const size_t bufferSize, const int format, void *c
 EXPORT_AUTO
 const byte *ngenxx_z_bytes_zip(const int mode, const size_t bufferSize, const int format, const byte *inBytes, const size_t inLen, size_t *outLen)
 {
-    auto t = ngenxxZBytesZip({inBytes, inLen},
+    auto t = ngenxxZBytesZip(wrapBytes(inBytes, inLen),
                              static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
-    *outLen = t.second;
+    *outLen = t.size();
     return copyBytes(t);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_z_bytes_unzip(const size_t bufferSize, const int format, const byte *inBytes, const size_t inLen, size_t *outLen)
 {
-    auto t = ngenxxZBytesUnzip({inBytes, inLen},
+    auto t = ngenxxZBytesUnzip(wrapBytes(inBytes, inLen),
                                bufferSize, static_cast<NGenXXZFormatX>(format));
-    *outLen = t.second;
+    *outLen = t.size();
     return copyBytes(t);
 }

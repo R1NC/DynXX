@@ -9,13 +9,12 @@
 
 const std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
 {
-    auto [byt, len] = bytes;
-    if (byt == NULL || len <= 0)
+    if (bytes.empty())
         return "";
     std::stringstream strStream;
     strStream << std::hex;
-    for (int i(0); i < len; ++i)
-        strStream << std::setw(2) << std::setfill('0') << (int)byt[i];
+    for (byte byte : bytes)
+        strStream << std::setw(2) << std::setfill('0') << (int)byte;
     return strStream.str();
 }
 
@@ -24,47 +23,36 @@ const Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     if (str.length() == 0)
         return BytesEmpty;
     size_t outLen = str.length();
-    byte outBytes[outLen];
-    std::memset(outBytes, 0, outLen);
+    Bytes bytes;
     size_t j(0);
     for (size_t i(0); i < str.length(); i += 2, j++)
     {
         auto s = str.substr(i, 2);
-        outBytes[j] = static_cast<byte>(std::stoi(s.c_str(), nullptr, 16));
+        bytes.push_back(static_cast<byte>(std::stoi(s.c_str(), nullptr, 16)));
     }
-    return {outBytes, j};
+    return bytes;
 }
 
 const std::string NGenXX::Coding::Case::upper(const std::string &str)
-{
-    std::string s(str);
-    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-    return s;
-}
-
-const std::string NGenXX::Coding::Case::lower(const std::string &str)
 {
     std::string s(str);
     std::transform(s.begin(), s.end(), s.begin(), ::toupper);
     return s;
 }
 
+const std::string NGenXX::Coding::Case::lower(const std::string &str)
+{
+    std::string s(str);
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
+}
+
 const std::string NGenXX::Coding::bytes2str(const Bytes &bytes)
 {
-    auto [data, len] = bytes;
-    return std::string(reinterpret_cast<char*>(const_cast<byte *>(data)));
+    return std::string(bytes.begin(), bytes.end());
 }
 
 const Bytes NGenXX::Coding::str2bytes(const std::string &str)
 {
-    size_t len = str.length();
-    if (len == 0)
-        return BytesEmpty;
-    std::vector<byte> bytes(len);
-    std::transform(std::begin(str), std::end(str), std::begin(bytes),
-        [](char c) { 
-            return static_cast<byte>(c); 
-        }
-    );
-    return {bytes.data(), len};
+    return Bytes(str.begin(), str.end());
 }
