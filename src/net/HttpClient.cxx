@@ -142,7 +142,8 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         
         char *contentType;
         curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
-        rsp.contentType = contentType;
+        if (contentType)
+            rsp.contentType = contentType;
 
         if (curlCode != CURLE_OK)
         {
