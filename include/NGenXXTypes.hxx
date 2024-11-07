@@ -8,12 +8,6 @@
 #include <string>
 #include <vector>
 #include <variant>
-#include <limits>
-
-constexpr long long kLongLongMin = std::numeric_limits<long long>::min();
-constexpr long long kLongLongMax = std::numeric_limits<long long>::max();
-constexpr double kDoubleMin = std::numeric_limits<double>::min();
-constexpr double kDoubleMax = std::numeric_limits<double>::max();
 
 using Any = std::variant<int64_t, double, std::string>;
 
