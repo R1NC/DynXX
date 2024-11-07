@@ -74,7 +74,6 @@ const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, con
     std::vector<std::string> v;
     if (count <= 0)
         return v;
-    char **strV = reinterpret_cast<char **>(malloc(count * sizeof(char *)));
     void *str_vNode = decoder.readNode(NULL, strVK);
     if (str_vNode)
     {

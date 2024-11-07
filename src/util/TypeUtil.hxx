@@ -48,7 +48,7 @@ static inline const Bytes trimBytes(const Bytes &bytes)
         if (data[i] <= 0)
             fixedLen--;
     }
-    return wrapBytes(data, fixedLen);
+    return Bytes(bytes.begin(), bytes.begin() + fixedLen);
 }
 
 #endif // NGENXX_UTIL_TYPE_H_
