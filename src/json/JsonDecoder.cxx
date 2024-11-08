@@ -1,5 +1,9 @@
 #include "JsonDecoder.hxx"
 
+#include "../../include/NGenXXLog.hxx"
+
+#include <stdexcept>
+
 cJSON *NGenXX::Json::Decoder::parseNode(void *const node)
 {
     if (node == NULL)
@@ -46,15 +50,25 @@ std::string NGenXX::Json::Decoder::readString(void *const node)
 
 double NGenXX::Json::Decoder::readNumber(void *const node)
 {
+    double num = 0;
     cJSON *cj = this->parseNode(node);
     if (cj != NULL)
     {
         if (cJSON_IsNumber(cj))
-            return cj->valuedouble;
+            num = cj->valuedouble;
         if (cJSON_IsString(cj))
-            return std::stod(cj->valuestring);
+        {
+            try
+            {
+                num = std::stod(cj->valuestring);
+            }
+            catch (const std::exception &e)
+            {
+                ngenxxLogPrint(NGenXXLogLevelX::Error, "FAILED TO PARSE NUMBER FROM JSON");
+            }
+        }
     }
-    return 0;
+    return num;
 }
 
 void *const NGenXX::Json::Decoder::readChild(void *const node)
