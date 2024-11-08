@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <cstdio>
+#include <unordered_map>
 
 namespace NGenXX
 {
@@ -24,8 +25,9 @@ namespace NGenXX
         struct HttpResponse
         {
             int code;
-            std::string data;
             std::string contentType;
+            std::unordered_map<std::string, std::string> headers;
+            std::string data;
         };
         using HttpResponse = struct HttpResponse;
 

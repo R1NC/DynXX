@@ -25,6 +25,25 @@ size_t _NGenXX_Net_HttpClient_WriteCallback(char *contents, size_t size, size_t 
     return size * nmemb;
 }
 
+size_t _NGenXX_Net_HttpClient_RspHeadersCallback(char *buffer, size_t size, size_t nitems, void *userdata) {
+    auto headers = static_cast<std::unordered_map<std::string, std::string>*>(userdata);
+    std::string header(buffer, size * nitems);
+    // Split K & V
+    size_t colonPos = header.find(':');
+    if (colonPos != std::string::npos) {
+        // Skip colon and space
+        std::string k = header.substr(0, colonPos);
+        std::string v = header.substr(colonPos + 2);
+        // Trim whitespace around K & V
+        k.erase(0, k.find_first_not_of(" \t"));
+        k.erase(k.find_last_not_of(" \t") + 1);
+        k.erase(0, k.find_first_not_of(" \t"));
+        k.erase(k.find_last_not_of(" \t") + 1);
+        (*headers)[k] = v;
+    }
+    return size * nitems;
+}
+
 NGenXX::Net::HttpClient::HttpClient()
 {
     curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -136,6 +155,9 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _NGenXX_Net_HttpClient_WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &(rsp.data));
+
+        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, _NGenXX_Net_HttpClient_RspHeadersCallback);
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &(rsp.headers));
 
         CURLcode curlCode = curl_easy_perform(curl);
 

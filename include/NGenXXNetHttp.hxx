@@ -21,6 +21,7 @@ struct NGenXXHttpResponse
 {
     int code;
     std::string contentType;
+    std::unordered_map<std::string, std::string> headers;
     std::string data;
 
     const std::string toJson();
