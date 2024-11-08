@@ -27,17 +27,17 @@ int NGenXX::Device::DeviceInfo::deviceType()
 
 std::string NGenXX::Device::DeviceInfo::deviceName()
 {
-    return sysProperty(ANDROID_OS_BUILD_MODEL);
+    return sysProperty(SYS_PROPERTY_MODEL);
 }
 
 std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
 {
-    return sysProperty(ANDROID_OS_BUILD_MANUFACTURER);
+    return sysProperty(SYS_PROPERTY_MANUFACTURER);
 }
 
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
-    return sysProperty(ANDROID_OS_BUILD_VERSION_RELEASE);
+    return sysProperty(SYS_PROPERTY_VERSION_RELEASE);
 }
 
 int NGenXX::Device::DeviceInfo::cpuArch()
