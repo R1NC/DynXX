@@ -19,8 +19,8 @@ int NGenXX::Z::ZBase::windowBits()
     if (this->format == NGenXXZFormatGZip)
         return 16 + MAX_WBITS;
     if (this->format == NGenXXZFormatRaw)
-        return -15;
-    return 15;
+        return -MAX_WBITS;
+    return MAX_WBITS;
 }
 
 NGenXX::Z::ZBase::ZBase(const size_t bufferSize, const int format) : bufferSize{bufferSize}, format{format}
