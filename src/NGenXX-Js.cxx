@@ -113,7 +113,7 @@ DEF_JS_FUNC_FLOAT(ngenxx_store_kv_read_floatJ, ngenxx_store_kv_read_floatS)
 DEF_JS_FUNC_BOOL(ngenxx_store_kv_write_floatJ, ngenxx_store_kv_write_floatS)
 DEF_JS_FUNC_STRING(ngenxx_store_kv_all_keysJ, ngenxx_store_kv_all_keysS)
 DEF_JS_FUNC_BOOL(ngenxx_store_kv_containsJ, ngenxx_store_kv_containsS)
-DEF_JS_FUNC_VOID(ngenxx_store_kv_removeJ, ngenxx_store_kv_removeS)
+DEF_JS_FUNC_BOOL(ngenxx_store_kv_removeJ, ngenxx_store_kv_removeS)
 DEF_JS_FUNC_VOID(ngenxx_store_kv_clearJ, ngenxx_store_kv_clearS)
 DEF_JS_FUNC_VOID(ngenxx_store_kv_closeJ, ngenxx_store_kv_closeS)
 

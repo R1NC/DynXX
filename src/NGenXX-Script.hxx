@@ -39,7 +39,7 @@ double ngenxx_store_kv_read_floatS(const char *json);
 bool ngenxx_store_kv_write_floatS(const char *json);
 const std::string ngenxx_store_kv_all_keysS(const char *json);
 bool ngenxx_store_kv_containsS(const char *json);
-void ngenxx_store_kv_removeS(const char *json);
+bool ngenxx_store_kv_removeS(const char *json);
 void ngenxx_store_kv_clearS(const char *json);
 void ngenxx_store_kv_closeS(const char *json);
 

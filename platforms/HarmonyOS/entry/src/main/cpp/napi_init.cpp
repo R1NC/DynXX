@@ -484,6 +484,21 @@ static napi_value StoreKVContains(napi_env env, napi_callback_info info)
     return nv;
 }
 
+static napi_value StoreKVRemove(napi_env env, napi_callback_info info)
+{
+    napi_value *argv = readParams(env, info, 2);
+
+    long conn = napiValue2long(env, argv[0]);
+    const char *k = napiValue2chars(env, argv[1]);
+
+    bool res = ngenxx_store_kv_remove(reinterpret_cast<void *>(conn), k);
+    napi_value nv = bool2NapiValue(env, res);
+
+    free(static_cast<void *>(const_cast<char *>(k)));
+    free(static_cast<void *>(argv));
+    return nv;
+}
+
 static napi_value StoreKVClear(napi_env env, napi_callback_info info)
 {
     napi_value *argv = readParams(env, info, 1);
@@ -1044,6 +1059,7 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports)
         {"storeKVReadFloat", nullptr, StoreKVReadFloat, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"storeKVWriteFloat", nullptr, StoreKVWriteFloat, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"storeKVContains", nullptr, StoreKVContains, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"storeKVRemove", nullptr, StoreKVRemove, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"storeKVClear", nullptr, StoreKVClear, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"storeKVClose", nullptr, StoreKVClose, nullptr, nullptr, nullptr, napi_default, nullptr},
 

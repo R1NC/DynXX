@@ -22,7 +22,7 @@ const std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn);
 
 bool ngenxxStoreKvContains(void *const conn, const std::string &k);
 
-void ngenxxStoreKvRemove(void *const conn, const std::string &k);
+bool ngenxxStoreKvRemove(void *const conn, const std::string &k);
 
 void ngenxxStoreKvClear(void *const conn);
 

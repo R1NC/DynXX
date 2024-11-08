@@ -94,7 +94,7 @@ DEF_LUA_FUNC_FLOAT(ngenxx_store_kv_read_floatL, ngenxx_store_kv_read_floatS)
 DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_floatL, ngenxx_store_kv_write_floatS)
 DEF_LUA_FUNC_STRING(ngenxx_store_kv_all_keysL, ngenxx_store_kv_all_keysS)
 DEF_LUA_FUNC_BOOL(ngenxx_store_kv_containsL, ngenxx_store_kv_containsS)
-DEF_LUA_FUNC_VOID(ngenxx_store_kv_removeL, ngenxx_store_kv_removeS)
+DEF_LUA_FUNC_BOOL(ngenxx_store_kv_removeL, ngenxx_store_kv_removeS)
 DEF_LUA_FUNC_VOID(ngenxx_store_kv_clearL, ngenxx_store_kv_clearS)
 DEF_LUA_FUNC_VOID(ngenxx_store_kv_closeL, ngenxx_store_kv_closeS)
 

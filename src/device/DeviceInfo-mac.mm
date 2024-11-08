@@ -12,6 +12,7 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
  #import <sys/utsname.h>
+ #include <sstream>
 
 #include <stdlib.h>
 
@@ -47,12 +48,12 @@ std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
     NSOperatingSystemVersion version = NSProcessInfo.processInfo.operatingSystemVersion;
-    int major = (int32_t)(version.majorVersion);
-    int minor = (int32_t)(version.minorVersion);
-    int bugfix = (int32_t)(version.patchVersion);
-    char osv[256];                                                                                                 \
-    sprintf(osv, "%d.%d.%d", major, minor, bugfix);     
-    return std::string(osv);
+    int major = static_cast<int32_t>(version.majorVersion);
+    int minor = static_cast<int32_t>(version.minorVersion);
+    int bugfix = static_cast<int32_t>(version.patchVersion);
+    std::stringstream ss;
+    ss << major << "." << minor << "." << bugfix;  
+    return ss.str();
 }
 
 int NGenXX::Device::DeviceInfo::cpuArch()

@@ -451,6 +451,16 @@ jboolean NGenXX_JNI_storeKVContains(JNIEnv *env, jobject thiz,
     return res;
 }
 
+jboolean NGenXX_JNI_storeKVRemove(JNIEnv *env, jobject thiz,
+                                    jlong conn,
+                                    jstring k)
+{
+    const char *cK = env->GetStringUTFChars(k, nullptr);
+    jboolean res = ngenxx_store_kv_remove(reinterpret_cast<void *>(conn), cK);
+    env->ReleaseStringUTFChars(k, cK);
+    return res;
+}
+
 void NGenXX_JNI_storeKVClear(JNIEnv *env, jobject thiz,
                              jlong conn)
 {
@@ -930,6 +940,7 @@ static const JNINativeMethod JCFuncList[] = {
     DECLARE_JNI_FUNC("storeKVReadFloat", "(JLjava/lang/String;)D", NGenXX_JNI_storeKVReadFloat),
     DECLARE_JNI_FUNC("storeKVWriteFloat", "(JLjava/lang/String;D)Z", NGenXX_JNI_storeKVWriteFloat),
     DECLARE_JNI_FUNC("storeKVContains", "(JLjava/lang/String;)Z", NGenXX_JNI_storeKVContains),
+    DECLARE_JNI_FUNC("storeKVRemove", "(JLjava/lang/String;)Z", NGenXX_JNI_storeKVRemove),
     DECLARE_JNI_FUNC("storeKVClear", "(J)V", NGenXX_JNI_storeKVClear),
     DECLARE_JNI_FUNC("storeKVClose", "(J)V", NGenXX_JNI_storeKVClose),
 

@@ -443,12 +443,12 @@ bool ngenxxStoreKvContains(void *const conn, const std::string &k)
     return xconn->contains(k);
 }
 
-void ngenxxStoreKvRemove(void *const conn, const std::string &k)
+bool ngenxxStoreKvRemove(void *const conn, const std::string &k)
 {
     if (conn == NULL || k.length() == 0)
-        return;
+        return false;
     auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
-    xconn->remove(k);
+    return xconn->remove(k);
 }
 
 void ngenxxStoreKvClear(void *const conn)

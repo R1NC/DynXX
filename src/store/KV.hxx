@@ -37,7 +37,7 @@ namespace NGenXX
 
                 bool contains(const std::string &k);
 
-                void remove(const std::string &k);
+                bool remove(const std::string &k);
 
                 void clear();
 

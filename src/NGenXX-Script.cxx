@@ -440,17 +440,17 @@ bool ngenxx_store_kv_containsS(const char *json)
     return ngenxxStoreKvContains(reinterpret_cast<void *>(conn), k);
 }
 
-void ngenxx_store_kv_removeS(const char *json)
+bool ngenxx_store_kv_removeS(const char *json)
 {
     if (json == NULL)
-        return;
+        return false;
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
     auto k = decoder.readString(decoder.readNode(NULL, "k"));
     if (conn == 0 || k.length() == 0)
-        return;
+        return false;
 
-    ngenxxStoreKvRemove(reinterpret_cast<void *>(conn), k);
+    return ngenxxStoreKvRemove(reinterpret_cast<void *>(conn), k);
 }
 
 void ngenxx_store_kv_clearS(const char *json)

@@ -58,6 +58,7 @@ export const storeKVWriteInteger: (conn: number, k: string, v: number) => boolea
 export const storeKVReadFloat: (conn: number, k: string) => number;
 export const storeKVWriteFloat: (conn: number, k: string, v: number) => boolean;
 export const storeKVContains: (conn: number, k: string) => boolean;
+export const storeKVRemove: (conn: number, k: string) => boolean;
 export const storeKVClear: (conn: number) => void;
 export const storeKVClose: (conn: number) => void;
 

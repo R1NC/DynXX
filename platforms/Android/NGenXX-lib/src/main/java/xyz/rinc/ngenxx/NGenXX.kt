@@ -52,6 +52,7 @@ class NGenXX {
         external fun storeKVReadFloat(conn: Long, k: String): Double
         external fun storeKVWriteFloat(conn: Long, k: String, v: Double): Boolean
         external fun storeKVContains(conn: Long, k: String): Boolean
+        external fun storeKVRemove(conn: Long, k: String): Boolean
         external fun storeKVClear(conn: Long)
         external fun storeKVClose(conn: Long)
 
