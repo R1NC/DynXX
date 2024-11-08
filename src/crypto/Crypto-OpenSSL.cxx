@@ -19,7 +19,7 @@ bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
 {
     if (len <= 0 || bytes == NULL)
         return false;
-    int ret = RAND_bytes(bytes, len);
+    int ret = RAND_bytes(bytes, static_cast<int>(len));
     return ret != -1;
 }
 
@@ -145,7 +145,7 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
         return BytesEmpty;
     }
 
-    ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, initVectorLen, NULL);
+    ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), NULL);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:" + std::to_string(ret));
@@ -163,7 +163,7 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
 
     if (aad != NULL && aadLen > 0)
     {
-        ret = EVP_EncryptUpdate(ctx, NULL, &len, aad, aadLen);
+        ret = EVP_EncryptUpdate(ctx, NULL, &len, aad, static_cast<int>(aadLen));
         if (ret != OpenSSL_OK)
         {
             ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate aad error:" + std::to_string(ret));
@@ -171,7 +171,7 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
         }
     }
 
-    ret = EVP_EncryptUpdate(ctx, out, &len, in, inLen);
+    ret = EVP_EncryptUpdate(ctx, out, &len, in, static_cast<int>(inLen));
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate error:" + std::to_string(ret));
@@ -185,7 +185,7 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
         return BytesEmpty;
     }
 
-    EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, tagLen, tag);
+    EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:" + std::to_string(ret));
@@ -231,7 +231,7 @@ const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
         return BytesEmpty;
     }
 
-    ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, initVectorLen, NULL);
+    ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), NULL);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmdDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:" + std::to_string(ret));
@@ -249,7 +249,7 @@ const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
 
     if (aad != NULL && aadLen > 0)
     {
-        ret = EVP_DecryptUpdate(ctx, NULL, &len, aad, aadLen);
+        ret = EVP_DecryptUpdate(ctx, NULL, &len, aad, static_cast<int>(aadLen));
         if (ret != OpenSSL_OK)
         {
             ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate aad error:" + std::to_string(ret));
@@ -257,14 +257,14 @@ const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
         }
     }
 
-    ret = EVP_DecryptUpdate(ctx, out, &len, in, inLen);
+    ret = EVP_DecryptUpdate(ctx, out, &len, in, static_cast<int>(inLen));
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate error:" + std::to_string(ret));
         return BytesEmpty;
     }
 
-    ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, tagLen, tag);
+    ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG error:" + std::to_string(ret));
@@ -370,7 +370,7 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     bio = BIO_push(b64, bio);
 
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-    BIO_write(bio, in, inLen);
+    BIO_write(bio, in, static_cast<int>(inLen));
     BIO_flush(bio);
     BIO_get_mem_ptr(bio, &bptr);
     BIO_set_close(bio, BIO_NOCLOSE);
@@ -399,7 +399,7 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     bio = BIO_push(b64, bio);
 
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-    BIO_read(bio, outBuffer, inLen);
+    BIO_read(bio, outBuffer, static_cast<int>(inLen));
 
     Bytes outBytes = wrapBytes(outBuffer, outLen);
     BIO_free_all(bio);

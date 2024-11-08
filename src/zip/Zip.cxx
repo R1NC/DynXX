@@ -50,7 +50,7 @@ const size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
     std::memset(this->inBuffer, 0, this->bufferSize);
     memcpy(this->inBuffer, bytes.data(), dataLen);
 
-    (this->zs).avail_in = dataLen;
+    (this->zs).avail_in = static_cast<uint>(dataLen);
     (this->zs).next_in = reinterpret_cast<Bytef *>(this->inBuffer);
     this->inFinish = inFinish;
     return dataLen;
@@ -59,7 +59,7 @@ const size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
 const Bytes NGenXX::Z::ZBase::processDo()
 {
     std::memset(this->outBuffer, 0, this->bufferSize);
-    (this->zs).avail_out = this->bufferSize;
+    (this->zs).avail_out = static_cast<uint>(this->bufferSize);
     (this->zs).next_out = reinterpret_cast<Bytef *>(this->outBuffer);
 
     ngenxxLogPrint(NGenXXLogLevelX::Debug, "z process before avIn:" + std::to_string((this->zs).avail_in) + " avOut:" + std::to_string((this->zs).avail_out));
@@ -144,7 +144,7 @@ bool zProcess(const size_t bufferSize,
     {
         auto in = sReadF();
         inputFinished = in.size() < bufferSize;
-        int ret = zb.input(in, inputFinished);
+        auto ret = zb.input(in, inputFinished);
         if (ret == 0L)
         {
             return false;
