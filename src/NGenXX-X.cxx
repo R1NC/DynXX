@@ -257,7 +257,7 @@ const std::string NGenXXHttpResponse::toJson()
     cJSON_AddItemToObject(cj, "headers", cjHeaders);
 
     cJSON_AddItemToObject(cj, "data", cJSON_CreateString(this->data.c_str()));
-    return cJSON_Print(cj);
+    return cJSON_PrintUnformatted(cj);
 }
 
 const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,

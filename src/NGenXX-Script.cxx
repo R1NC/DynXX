@@ -19,7 +19,7 @@ const std::string bytes2json(Bytes bytes)
     for (int i = 0; i < len; i++)
         x[i] = data[i];
     auto cj = data == NULL || len <= 0 ? cJSON_CreateArray() : cJSON_CreateIntArray(x, static_cast<int>(len));
-    const char *outJson = cJSON_Print(cj);
+    const char *outJson = cJSON_PrintUnformatted(cj);
     return std::string(outJson);
 }
 
@@ -30,7 +30,7 @@ const std::string strArray2json(const std::vector<std::string> &v)
     {
         cJSON_AddItemToArray(cj, cJSON_CreateString(it->c_str()));
     }
-    const char *outJson = cJSON_Print(cj);
+    const char *outJson = cJSON_PrintUnformatted(cj);
     return std::string(outJson);
 }
 
