@@ -286,6 +286,12 @@ const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
         );
     }
     std::vector<std::string> headerV;
+    for (const auto& pair : headers) {
+        auto [k, v] = pair;
+        std::stringstream ss;
+        ss << k << ":" << v;
+        headerV.push_back(ss.str());
+    }
     return ngenxxNetHttpRequest(url, method, ssParams.str(), rawBody, headerV,
                                 formFieldNameV, formFieldMimeV, formFieldDataV,
                                 cFILE, fileSize, timeout);
