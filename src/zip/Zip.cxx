@@ -17,7 +17,7 @@
 int NGenXX::Z::ZBase::windowBits()
 {
     if (this->format == NGenXXZFormatGZip)
-        return 16 + MAX_WBITS;
+        return 16 | MAX_WBITS;
     if (this->format == NGenXXZFormatRaw)
         return -MAX_WBITS;
     return MAX_WBITS;

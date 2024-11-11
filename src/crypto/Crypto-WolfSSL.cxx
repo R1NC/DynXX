@@ -324,5 +324,5 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
         return BytesEmpty;
     }
 
-    return trimBytes(wrapBytes(outBuffer, outLen));
+    return wrapBytes(outBuffer, outLen);
 }
