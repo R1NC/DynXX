@@ -362,23 +362,27 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     if (in == NULL || inLen == 0)
         return BytesEmpty;
 
-    BIO *bio, *b64;
-    BUF_MEM *bptr;
+    BIO *b64, *bmem;
 
     b64 = BIO_new(BIO_f_base64());
-    bio = BIO_new(BIO_s_mem());
-    bio = BIO_push(b64, bio);
+    bmem = BIO_new(BIO_s_mem());
 
-    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-    BIO_write(bio, in, static_cast<int>(inLen));
-    BIO_flush(bio);
-    BIO_get_mem_ptr(bio, &bptr);
-    BIO_set_close(bio, BIO_NOCLOSE);
+    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+    b64 = BIO_push(b64, bmem);
 
-    Bytes outBytes = wrapBytes(reinterpret_cast<byte *>(bptr->data), bptr->length);
-    BIO_free_all(bio);
+    BIO_write(b64, in, static_cast<int>(inLen));
+    BIO_flush(b64);
 
-    return outBytes;
+    char *outBytes = nullptr;
+    size_t outLen = BIO_get_mem_data(bmem, &outBytes);
+    if (outLen <= 0)
+        return BytesEmpty;
+
+    auto out = wrapBytes(reinterpret_cast<byte*>(outBytes), outLen);
+
+    BIO_free_all(b64);
+
+    return out;
 }
 
 const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
@@ -389,20 +393,18 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
         return BytesEmpty;
 
     BIO *bio, *b64;
-
-    size_t outLen = inLen * 2;
-    byte outBuffer[outLen];
-    std::memset(outBuffer, 0, outLen);
-
     bio = BIO_new_mem_buf(in, -1);
     b64 = BIO_new(BIO_f_base64());
     bio = BIO_push(b64, bio);
-
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-    BIO_read(bio, outBuffer, static_cast<int>(inLen));
 
-    Bytes outBytes = wrapBytes(outBuffer, outLen);
+    byte outBytes[inLen * 2];
+    size_t outLen = BIO_read(bio, outBytes, static_cast<int>(inLen));
+    if (outLen <= 0)
+        return BytesEmpty;
+
+    auto out = wrapBytes(outBytes, outLen);
     BIO_free_all(bio);
 
-    return trimBytes(outBytes);
+    return out;
 }
