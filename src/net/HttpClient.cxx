@@ -7,7 +7,17 @@
 #include <algorithm>
 #include <vector>
 
-size_t _NGenXX_Net_HttpClient_ReadCallback(char *ptr, size_t size, size_t nmemb, void *stream)
+size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t nmemb, void *userdata) {
+    auto bytes = static_cast<Bytes*>(userdata);
+    size_t len = std::min(size * nmemb, bytes->size());
+    if (len > 0) {
+        memcpy(buffer, bytes->data(), len);
+        bytes->erase(bytes->begin(), bytes->begin() + len);
+    }
+    return len;
+}
+
+size_t _NGenXX_Net_HttpClient_UploadReadCallback(char *ptr, size_t size, size_t nmemb, void *stream)
 {
     size_t nread;
     size_t retcode = std::fread(ptr, size, nmemb, reinterpret_cast<std::FILE *>(stream));
@@ -83,7 +93,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         if (cFILE != NULL)
         {
             curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-            curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_ReadCallback);
+            curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_UploadReadCallback);
             curl_easy_setopt(curl, CURLOPT_READDATA, cFILE);
             curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, fileSize);
         } 
@@ -110,7 +120,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
             auto rawData = rawBody.data();
             auto rawLen = rawBody.size();
-            if (rawData == nullptr || rawLen == 0) 
+            if (rawBody.empty()) 
             {
                 curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
                 curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, params.length());
@@ -118,7 +128,9 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
             else
             {
                 urlAppend = true;
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, rawData);
+                curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_PostReadCallback);
+                curl_easy_setopt(curl, CURLOPT_READDATA, &rawBody);
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
                 curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawLen);
             }
         }
