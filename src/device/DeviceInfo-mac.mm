@@ -11,8 +11,8 @@
 #include <stdint.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
- #import <sys/utsname.h>
- #include <sstream>
+#import <sys/utsname.h>
+#include <sstream>
 
 #include <stdlib.h>
 
