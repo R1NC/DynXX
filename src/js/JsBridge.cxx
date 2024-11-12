@@ -150,10 +150,10 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         {
             if (await)
             {
-                JSValue jLoop = js_std_loop(this->context); // Wating for async tasks
+                //JSValue jLoop = js_std_loop(this->context); // Wating for async tasks
                 jRes = js_std_await(this->context, jRes);   // Handle promise if needed
                 s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
-                JS_FreeValue(this->context, jLoop);
+                //JS_FreeValue(this->context, jLoop);
             }
             else
             {
