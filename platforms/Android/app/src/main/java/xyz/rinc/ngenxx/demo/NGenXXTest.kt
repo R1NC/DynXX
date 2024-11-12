@@ -91,13 +91,13 @@ class NGenXXTest {
             }*/
 
             if (sJsLoaded) {
-                NGenXX.jCall("jTestBase64", "NGenXX")
+                NGenXX.jCall("jTestBase64", "NGenXX", false)
             } else {
                 sApplication?.assets?.open("NGenXX.js")?.bufferedReader().use { it0 ->
                     if (!NGenXX.jLoadS(it0?.readText() ?: "", "NGenXX.js")) return
                     sApplication?.assets?.open("biz.js")?.bufferedReader().use { it1 ->
                         if (!NGenXX.jLoadS(it1?.readText() ?: "", "biz.js")) return
-                        NGenXX.jCall("jTestBase64", "NGenXX")
+                        NGenXX.jCall("jTestBase64", "NGenXX", false)
                     }
                 }
             }

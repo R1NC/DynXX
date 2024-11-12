@@ -31,7 +31,7 @@ class NGenXX {
         external fun jLoadF(file: String): Boolean
         external fun jLoadS(script: String, name: String): Boolean
         external fun jLoadB(bytes: ByteArray): Boolean
-        external fun jCall(func: String, params: String?): String?
+        external fun jCall(func: String, params: String?, await: Boolean): String?
         external fun jSetMsgCallback(callback: ((msg: String) -> String?))
 
         external fun storeSQLiteOpen(id: String): Long

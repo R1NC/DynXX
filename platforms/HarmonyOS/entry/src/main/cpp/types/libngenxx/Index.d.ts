@@ -38,7 +38,7 @@ export const lCall: (func: string, params: string) => string;
 export const jLoadF: (file: string) => boolean;
 export const jLoadS: (script: string, name: string) => boolean;
 export const jLoadB: (bytes: number[]) => boolean;
-export const jCall: (func: string, params: string) => string;
+export const jCall: (func: string, params: string, await: boolean) => string;
 
 export const storeSQLiteOpen: (id: string) => number;
 export const storeSQLiteExecute: (conn: number, sql: string) => boolean;

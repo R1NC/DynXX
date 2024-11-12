@@ -1000,12 +1000,13 @@ static napi_value JLoadB(napi_env env, napi_callback_info info)
 
 static napi_value JCall(napi_env env, napi_callback_info info)
 {
-    napi_value *argv = readParams(env, info, 2);
+    napi_value *argv = readParams(env, info, 3);
 
     const char *func = napiValue2chars(env, argv[0]);
     const char *params = napiValue2chars(env, argv[1]);
+    const bool await = napiValue2bool(env, argv[2]);
 
-    const char *res = ngenxx_js_call(func, params);
+    const char *res = ngenxx_js_call(func, params, await);
     napi_value nv = chars2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(res)));

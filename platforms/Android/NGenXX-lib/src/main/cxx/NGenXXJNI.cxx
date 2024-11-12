@@ -256,11 +256,11 @@ jboolean NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz,
 }
 
 jstring NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
-                         jstring func, jstring params)
+                         jstring func, jstring params, jboolean await)
 {
     const char *cFunc = env->GetStringUTFChars(func, nullptr);
     const char *cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
-    const char *cRes = ngenxx_js_call(cFunc, cParams);
+    const char *cRes = ngenxx_js_call(cFunc, cParams, await);
     jstring jstr = env->NewStringUTF(cRes ?: "");
     free(static_cast<void *>(const_cast<char *>(cRes)));
     if (cParams)
@@ -919,7 +919,7 @@ static const JNINativeMethod JCFuncList[] = {
     DECLARE_JNI_FUNC("jLoadF", "(Ljava/lang/String;)Z", NGenXX_JNI_jLoadF),
     DECLARE_JNI_FUNC("jLoadS", "(Ljava/lang/String;Ljava/lang/String;)Z", NGenXX_JNI_jLoadS),
     DECLARE_JNI_FUNC("jLoadB", "([B)Z", NGenXX_JNI_jLoadB),
-    DECLARE_JNI_FUNC("jCall", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", NGenXX_JNI_jCall),
+    DECLARE_JNI_FUNC("jCall", "(Ljava/lang/String;Ljava/lang/String;Z)Ljava/lang/String;", NGenXX_JNI_jCall),
     DECLARE_JNI_FUNC("jSetMsgCallback", "(Lkotlin/jvm/functions/Function1;)V", NGenXX_JNI_jSetMsgCallback),
 
     DECLARE_JNI_FUNC("storeSQLiteOpen", "(Ljava/lang/String;)J", NGenXX_JNI_storeSQLiteOpen),

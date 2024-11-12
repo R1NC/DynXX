@@ -60,7 +60,7 @@ namespace NGenXX
          * @param func func name
          * @param params parameters(json)
          */
-        std::string callFunc(const std::string &func, const std::string &params);
+        std::string callFunc(const std::string &func, const std::string &params, const bool await);
 
         /**
          * Relase JS VM

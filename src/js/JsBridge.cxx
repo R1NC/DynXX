@@ -121,7 +121,15 @@ bool NGenXX::JsBridge::loadBinary(Bytes bytes)
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
-std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params)
+static inline const std::string _ngenxx_j_jstr2stdstr(JSContext *ctx, JSValue jstr)
+{
+    auto c = JS_ToCString(ctx, jstr);
+    auto s = std::string(c ?: "");
+    JS_FreeCString(ctx, c);
+    return s;
+}
+
+std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, const bool await)
 {
     const std::lock_guard<std::mutex> lock(this->mutex);
     std::string s;
@@ -140,12 +148,17 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
-            JSValue jLoop = js_std_loop(this->context); // Wating for async tasks
-            jRes = js_std_await(this->context, jRes);   // Handle promise if needed
-            auto c = JS_ToCString(this->context, jRes);
-            s = std::move(std::string(c ?: ""));
-            JS_FreeCString(this->context, c);
-            JS_FreeValue(this->context, jLoop);
+            if (await)
+            {
+                JSValue jLoop = js_std_loop(this->context); // Wating for async tasks
+                jRes = js_std_await(this->context, jRes);   // Handle promise if needed
+                s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
+                JS_FreeValue(this->context, jLoop);
+            }
+            else
+            {
+                s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
+            }
         }
         JS_FreeValue(this->context, jRes);
         JS_FreeValue(this->context, jParams);
