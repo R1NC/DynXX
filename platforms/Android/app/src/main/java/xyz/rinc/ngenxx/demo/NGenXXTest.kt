@@ -20,6 +20,14 @@ class NGenXXTest {
 
         fun init(application: Application) {
             sApplication = application
+            val dir = sApplication?.filesDir?.absolutePath ?: return
+            if (!NGenXX.init(dir)) return
+
+            NGenXXHelper.logSetLevel(LogLevel.Debug)
+
+            NGenXX.jSetMsgCallback { msg ->
+                "Android->$msg@${System.currentTimeMillis()}"
+            }
         }
 
         fun goAllAsync(count: Int) = runBlocking {
@@ -36,15 +44,6 @@ class NGenXXTest {
         }
 
         private fun go() {
-            val dir = sApplication?.filesDir?.absolutePath ?: return
-            if (!NGenXX.init(dir)) return
-
-            NGenXXHelper.logSetLevel(LogLevel.Debug)
-
-            NGenXX.jSetMsgCallback { msg ->
-                "Android->$msg@${System.currentTimeMillis()}"
-            }
-
             NGenXXHelper.logPrint(LogLevel.Debug, "deviceType:${NGenXX.deviceType()}")
             NGenXXHelper.logPrint(LogLevel.Debug, "deviceName:${NGenXX.deviceName()}")
             NGenXXHelper.logPrint(LogLevel.Debug, "deviceManufacturer:${NGenXX.deviceManufacturer()}")
