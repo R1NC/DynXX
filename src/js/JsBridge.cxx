@@ -102,6 +102,12 @@ bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &
 
     if (isModule)
     {
+        if (JS_VALUE_GET_TAG(jEvalRet) != JS_TAG_MODULE)
+        {
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "try to load invalid JS module");
+            JS_FreeValue(this->context, jEvalRet);
+            return false;
+        }
         js_module_set_import_meta(this->context, jEvalRet, false, true);
         JSValue jEvalFuncRet = JS_EvalFunction(this->context, jEvalRet);
         JS_FreeValue(this->context, jEvalFuncRet);
@@ -149,10 +155,10 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         {
             if (await)
             {
-                //JSValue jLoop = js_std_loop(this->context); // Wating for async tasks
+                JSValue jLoop = js_std_loop(this->context); // Wating for async tasks
                 jRes = js_std_await(this->context, jRes);   // Handle promise if needed
                 s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
-                //JS_FreeValue(this->context, jLoop);
+                JS_FreeValue(this->context, jLoop);
             }
             else
             {
