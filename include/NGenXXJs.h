@@ -12,27 +12,30 @@ extern "C"
      * @brief Load JS file
      * @warning Not accessible in JS/Lua!
      * @param file JS file path
+     * @param is_module Whether the js import modules or not 
      * @return success or not
      */
-    bool ngenxx_js_loadF(const char *file);
+    bool ngenxx_js_loadF(const char *file, const bool is_module);
 
     /**
      * @brief Load JS Script
      * @warning Not accessible in JS/Lua!
      * @param script JS script
      * @param name JS file name
+     * @param is_module Whether the js import modules or not 
      * @return success or not
      */
-    bool ngenxx_js_loadS(const char *script, const char *name);
+    bool ngenxx_js_loadS(const char *script, const char *name, const bool is_module);
 
     /**
      * @brief Load JS ByteCode
      * @warning Not accessible in JS/Lua!
      * @param bytes Byte array data
      * @param len Byte array length
+     * @param is_module Whether the js import modules or not 
      * @return success or not
      */
-    bool ngenxx_js_loadB(const byte *bytes, const size_t len);
+    bool ngenxx_js_loadB(const byte *bytes, const size_t len, const bool is_module);
 
     /**
      * @brief Call JS function

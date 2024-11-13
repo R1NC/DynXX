@@ -954,11 +954,12 @@ static napi_value LCall(napi_env env, napi_callback_info info)
 
 static napi_value JLoadF(napi_env env, napi_callback_info info)
 {
-    napi_value *argv = readParams(env, info, 1);
+    napi_value *argv = readParams(env, info, 2);
 
     const char *file = napiValue2chars(env, argv[0]);
+    const bool isModule = napiValue2bool(env, argv[1]);
 
-    bool res = ngenxx_js_loadF(file);
+    bool res = ngenxx_js_loadF(file, isModule);
     napi_value nv = bool2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(file)));
@@ -968,12 +969,13 @@ static napi_value JLoadF(napi_env env, napi_callback_info info)
 
 static napi_value JLoadS(napi_env env, napi_callback_info info)
 {
-    napi_value *argv = readParams(env, info, 2);
+    napi_value *argv = readParams(env, info, 3);
 
     const char *script = napiValue2chars(env, argv[0]);
     const char *name = napiValue2chars(env, argv[1]);
+    const bool isModule = napiValue2bool(env, argv[2]);
 
-    bool res = ngenxx_js_loadS(script, name);
+    bool res = ngenxx_js_loadS(script, name, isModule);
     napi_value nv = bool2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(script)));
@@ -984,13 +986,14 @@ static napi_value JLoadS(napi_env env, napi_callback_info info)
 
 static napi_value JLoadB(napi_env env, napi_callback_info info)
 {
-    napi_value *argv = readParams(env, info, 1);
+    napi_value *argv = readParams(env, info, 2);
 
     uint32_t inLen = napiValueArrayLen(env, argv[0]);
     const byte *inBytes = napiValue2byteArray(env, argv[0], inLen);
+    const bool isModule = napiValue2bool(env, argv[1]);
 
     size_t outLen;
-    bool b = ngenxx_js_loadB(inBytes, inLen);
+    bool b = ngenxx_js_loadB(inBytes, inLen, isModule);
     napi_value v = bool2NapiValue(env, b);
 
     free(static_cast<void *>(const_cast<byte *>(inBytes)));

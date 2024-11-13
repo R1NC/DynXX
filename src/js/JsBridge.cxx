@@ -51,21 +51,8 @@ NGenXX::JsBridge::JsBridge()
     js_std_init_handlers(this->runtime);
     js_init_module_std(this->context, "qjs:std");
     js_init_module_os(this->context, "qjs:os");
-    JSValue jEvalRet = JS_Eval(this->context, IMPORT_STD_OS_JS, strlen(IMPORT_STD_OS_JS), "import-std-os.js", JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY);
-    if (!JS_IsException(jEvalRet))
-    {
-        js_module_set_import_meta(this->context, jEvalRet, false, true);
-        JSValue jEvalFuncRet = JS_EvalFunction(this->context, jEvalRet);
-        JSValue jAwaitRet = js_std_await(this->context, jEvalFuncRet);
-        JS_FreeValue(this->context, jAwaitRet);
-        JS_FreeValue(this->context, jEvalFuncRet);
-    }
-    else
-    {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "J Import std/os failed ->");
-        _ngenxx_js_dump_err(this->context);
-    }
-    this->jValues.push_back(jEvalRet);
+
+    this->loadScript(IMPORT_STD_OS_JS, "import-std-os.js", true);
 }
 
 bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -93,30 +80,42 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
     return res;
 }
 
-bool NGenXX::JsBridge::loadFile(const std::string &file)
+bool NGenXX::JsBridge::loadFile(const std::string &file, const bool isModule)
 {
     std::ifstream ifs(file.c_str());
     std::stringstream ss;
     ss << ifs.rdbuf();
-    return this->loadScript(ss.str(), file);
+    return this->loadScript(ss.str(), file, isModule);
 }
 
-bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name)
+bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name, const bool isModule)
 {
     bool res = true;
-    JSValue jRes = JS_Eval(this->context, script.c_str(), script.length(), name.c_str(), JS_EVAL_TYPE_GLOBAL);
-    if (JS_IsException(jRes))
+    int flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
+    JSValue jEvalRet = JS_Eval(this->context, script.c_str(), script.length(), name.c_str(), flags);
+    if (JS_IsException(jEvalRet))
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_Eval failed ->");
         _ngenxx_js_dump_err(this->context);
-        res = false;
+        return false;
     }
 
-    JS_FreeValue(this->context, jRes);
+    if (isModule)
+    {
+        js_module_set_import_meta(this->context, jEvalRet, false, true);
+        JSValue jEvalFuncRet = JS_EvalFunction(this->context, jEvalRet);
+        JS_FreeValue(this->context, jEvalFuncRet);
+        this->jValues.push_back(jEvalRet);//Can not free immediatelly, or qjs will crash
+    }
+    else
+    {
+        JS_FreeValue(this->context, jEvalRet);
+    }
+
     return res;
 }
 
-bool NGenXX::JsBridge::loadBinary(Bytes bytes)
+bool NGenXX::JsBridge::loadBinary(Bytes bytes, const bool isModule)
 {
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }

@@ -28,9 +28,9 @@ class NGenXX {
         external fun lLoadS(script: String): Boolean
         external fun lCall(func: String, params: String?): String?
 
-        external fun jLoadF(file: String): Boolean
-        external fun jLoadS(script: String, name: String): Boolean
-        external fun jLoadB(bytes: ByteArray): Boolean
+        external fun jLoadF(file: String, isModule: Boolean): Boolean
+        external fun jLoadS(script: String, name: String, isModule: Boolean): Boolean
+        external fun jLoadB(bytes: ByteArray, isModule: Boolean): Boolean
         external fun jCall(func: String, params: String?, await: Boolean): String?
         external fun jSetMsgCallback(callback: ((msg: String) -> String?))
 

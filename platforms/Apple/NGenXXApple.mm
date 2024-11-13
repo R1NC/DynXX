@@ -61,8 +61,8 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
         if (ngenxx_js_loadB(bytes0, len0) && ngenxx_js_loadB(bytes1, len1)) {*/
         NSString *jsPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.js"];
         NSString *jsPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
-        if (ngenxx_js_loadF(NSString2CharP(jsPath0)) && ngenxx_js_loadF(NSString2CharP(jsPath1))) {
-            auto res = ngenxx_js_call("testPromise", "https://rinc.xyz");
+        if (ngenxx_js_loadF(NSString2CharP(jsPath0), false) && ngenxx_js_loadF(NSString2CharP(jsPath1), false)) {
+            auto res = ngenxx_js_call("testPromise", "https://rinc.xyz", false);
             NSLog(@"%s", res);
         }
     });

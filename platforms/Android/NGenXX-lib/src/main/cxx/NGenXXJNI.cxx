@@ -224,32 +224,32 @@ jstring NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
 #pragma mark JS
 
 jboolean NGenXX_JNI_jLoadF(JNIEnv *env, jobject thiz,
-                           jstring file)
+                           jstring file, jboolean is_module)
 {
     const char *cFile = env->GetStringUTFChars(file, nullptr);
-    jboolean res = ngenxx_js_loadF(cFile);
+    jboolean res = ngenxx_js_loadF(cFile, is_module);
     env->ReleaseStringUTFChars(file, cFile);
     return res;
 }
 
 jboolean NGenXX_JNI_jLoadS(JNIEnv *env, jobject thiz,
-                           jstring script, jstring name)
+                           jstring script, jstring name, jboolean is_module)
 {
     const char *cScript = env->GetStringUTFChars(script, nullptr);
     const char *cName = env->GetStringUTFChars(name, nullptr);
-    jboolean res = ngenxx_js_loadS(cScript, cName);
+    jboolean res = ngenxx_js_loadS(cScript, cName, is_module);
     env->ReleaseStringUTFChars(script, cScript);
     env->ReleaseStringUTFChars(name, cName);
     return res;
 }
 
 jboolean NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz,
-                           jbyteArray bytes)
+                           jbyteArray bytes, jboolean is_module)
 {
     jbyte *cIn = env->GetByteArrayElements(bytes, nullptr);
     size_t inLen = env->GetArrayLength(bytes);
 
-    bool res = ngenxx_js_loadB(reinterpret_cast<const byte *>(cIn), inLen);
+    bool res = ngenxx_js_loadB(reinterpret_cast<const byte *>(cIn), inLen, is_module);
 
     env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
     return res;
@@ -916,9 +916,9 @@ static const JNINativeMethod JCFuncList[] = {
     DECLARE_JNI_FUNC("lLoadS", "(Ljava/lang/String;)Z", NGenXX_JNI_lLoadS),
     DECLARE_JNI_FUNC("lCall", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", NGenXX_JNI_lCall),
 
-    DECLARE_JNI_FUNC("jLoadF", "(Ljava/lang/String;)Z", NGenXX_JNI_jLoadF),
-    DECLARE_JNI_FUNC("jLoadS", "(Ljava/lang/String;Ljava/lang/String;)Z", NGenXX_JNI_jLoadS),
-    DECLARE_JNI_FUNC("jLoadB", "([B)Z", NGenXX_JNI_jLoadB),
+    DECLARE_JNI_FUNC("jLoadF", "(Ljava/lang/String;Z)Z", NGenXX_JNI_jLoadF),
+    DECLARE_JNI_FUNC("jLoadS", "(Ljava/lang/String;Ljava/lang/String;Z)Z", NGenXX_JNI_jLoadS),
+    DECLARE_JNI_FUNC("jLoadB", "([BZ)Z", NGenXX_JNI_jLoadB),
     DECLARE_JNI_FUNC("jCall", "(Ljava/lang/String;Ljava/lang/String;Z)Ljava/lang/String;", NGenXX_JNI_jCall),
     DECLARE_JNI_FUNC("jSetMsgCallback", "(Lkotlin/jvm/functions/Function1;)V", NGenXX_JNI_jSetMsgCallback),
 

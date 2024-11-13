@@ -94,9 +94,9 @@ class NGenXXTest {
                 NGenXX.jCall("jTestBase64", "NGenXX", false)
             } else {
                 sApplication?.assets?.open("NGenXX.js")?.bufferedReader().use { it0 ->
-                    if (!NGenXX.jLoadS(it0?.readText() ?: "", "NGenXX.js")) return
+                    if (!NGenXX.jLoadS(it0?.readText() ?: "", "NGenXX.js", false)) return
                     sApplication?.assets?.open("biz.js")?.bufferedReader().use { it1 ->
-                        if (!NGenXX.jLoadS(it1?.readText() ?: "", "biz.js")) return
+                        if (!NGenXX.jLoadS(it1?.readText() ?: "", "biz.js", false)) return
                         NGenXX.jCall("jTestBase64", "NGenXX", false)
                     }
                 }

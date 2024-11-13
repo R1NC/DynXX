@@ -35,9 +35,9 @@ export const lLoadF: (file: string) => boolean;
 export const lLoadS: (script: string) => boolean;
 export const lCall: (func: string, params: string) => string;
 
-export const jLoadF: (file: string) => boolean;
-export const jLoadS: (script: string, name: string) => boolean;
-export const jLoadB: (bytes: number[]) => boolean;
+export const jLoadF: (file: string, isModule: boolean) => boolean;
+export const jLoadS: (script: string, name: string, isModule: boolean) => boolean;
+export const jLoadB: (bytes: number[], isModule: boolean) => boolean;
 export const jCall: (func: string, params: string, await: boolean) => string;
 
 export const storeSQLiteOpen: (id: string) => number;

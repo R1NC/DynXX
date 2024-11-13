@@ -149,25 +149,25 @@ DEF_JS_FUNC_STRING(ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
 
 #pragma mark JS
 
-bool ngenxxJsLoadF(const std::string &file)
+bool ngenxxJsLoadF(const std::string &file, const bool isModule)
 {
     if (_ngenxx_js == nullptr || file.length() == 0)
         return false;
-    return _ngenxx_js->loadFile(file);
+    return _ngenxx_js->loadFile(file, isModule);
 }
 
-bool ngenxxJsLoadS(const std::string &script, const std::string &name)
+bool ngenxxJsLoadS(const std::string &script, const std::string &name, const bool isModule)
 {
     if (_ngenxx_js == nullptr || script.length() == 0 || name.length() == 0)
         return false;
-    return _ngenxx_js->loadScript(script, name);
+    return _ngenxx_js->loadScript(script, name, isModule);
 }
 
-bool ngenxxJsLoadB(const Bytes &bytes)
+bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule)
 {
     if (_ngenxx_js == nullptr || bytes.empty())
         return false;
-    return _ngenxx_js->loadBinary(bytes);
+    return _ngenxx_js->loadBinary(bytes, isModule);
 }
 
 const std::string ngenxxJsCall(const std::string &func, const std::string &params, const bool await)
@@ -183,21 +183,21 @@ void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &
 }
 
 EXPORT_AUTO
-bool ngenxx_js_loadF(const char *file)
+bool ngenxx_js_loadF(const char *file, const bool is_module)
 {
-    return ngenxxJsLoadF(file ?: "");
+    return ngenxxJsLoadF(file ?: "", is_module);
 }
 
 EXPORT_AUTO
-bool ngenxx_js_loadS(const char *script, const char *name)
+bool ngenxx_js_loadS(const char *script, const char *name, const bool is_module)
 {
-    return ngenxxJsLoadS(script ?: "", name ?: "");
+    return ngenxxJsLoadS(script ?: "", name ?: "", is_module);
 }
 
 EXPORT_AUTO
-bool ngenxx_js_loadB(const byte *bytes, const size_t len)
+bool ngenxx_js_loadB(const byte *bytes, const size_t len, const bool is_module)
 {
-    return ngenxxJsLoadB(wrapBytes(bytes, len));
+    return ngenxxJsLoadB(wrapBytes(bytes, len), is_module);
 }
 
 EXPORT_AUTO
