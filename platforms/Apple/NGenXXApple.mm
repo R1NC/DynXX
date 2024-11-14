@@ -22,6 +22,7 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
         if (!ngenxx_init(NSString2CharP(self.root))) {
             NSLog(@"!!! SDK INIT FAILED !!!");
         }
+        ngenxx_log_set_level(NGenXXLogLevelDebug);
     }
     return self;
 }

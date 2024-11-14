@@ -140,7 +140,7 @@ function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, rawBodyBytes, f
         "timeout": timeout
     });
 
-    let outJson = eworld_sdk_engine_net_http_requestJ(inJson);
+    let outJson = ngenxx_net_http_requestJ(inJson);
     return JSON.parse(outJson);
 }
 

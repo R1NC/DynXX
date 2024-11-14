@@ -54,7 +54,7 @@
 		403F9F822CBCB5E600F4ECE6 /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../../scripts/Lua/biz.lua; sourceTree = "<group>"; };
 		403F9F8C2CBF480F00F4ECE6 /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
 		403F9F8D2CBF480F00F4ECE6 /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
-		40596B782C75AAD700AC552D /* NGenXX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NGenXX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		40596B782C75AAD700AC552D /* NGenXX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = NGenXX.app; path = "NGenXX-Wrapper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		40596B7B2C75AAD700AC552D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		40596B7C2C75AAD700AC552D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		40596B7E2C75AAD700AC552D /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
@@ -229,9 +229,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		40596B772C75AAD700AC552D /* NGenXX */ = {
+		40596B772C75AAD700AC552D /* NGenXX-Wrapper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 40596B912C75AAD800AC552D /* Build configuration list for PBXNativeTarget "NGenXX" */;
+			buildConfigurationList = 40596B912C75AAD800AC552D /* Build configuration list for PBXNativeTarget "NGenXX-Wrapper" */;
 			buildPhases = (
 				40596B742C75AAD700AC552D /* Sources */,
 				40596B752C75AAD700AC552D /* Frameworks */,
@@ -241,8 +241,8 @@
 			);
 			dependencies = (
 			);
-			name = NGenXX;
-			productName = NGenXX;
+			name = "NGenXX-Wrapper";
+			productName = "NGenXX-Wrapper";
 			productReference = 40596B782C75AAD700AC552D /* NGenXX.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -260,7 +260,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 40596B732C75AAD700AC552D /* Build configuration list for PBXProject "NGenXX" */;
+			buildConfigurationList = 40596B732C75AAD700AC552D /* Build configuration list for PBXProject "NGenXX-wrapper" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -273,7 +273,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				40596B772C75AAD700AC552D /* NGenXX */,
+				40596B772C75AAD700AC552D /* NGenXX-Wrapper */,
 			);
 		};
 /* End PBXProject section */
@@ -506,7 +506,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		40596B732C75AAD700AC552D /* Build configuration list for PBXProject "NGenXX" */ = {
+		40596B732C75AAD700AC552D /* Build configuration list for PBXProject "NGenXX-wrapper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				40596B8F2C75AAD800AC552D /* Debug */,
@@ -515,7 +515,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		40596B912C75AAD800AC552D /* Build configuration list for PBXNativeTarget "NGenXX" */ = {
+		40596B912C75AAD800AC552D /* Build configuration list for PBXNativeTarget "NGenXX-Wrapper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				40596B922C75AAD800AC552D /* Debug */,
