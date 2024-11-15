@@ -96,16 +96,31 @@ static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
 /// 1. Normal JS function does not depend on the event loop，but `promise` & `setTimeout()`/`setInterval()` do；
 /// 2. The event loop should be created only once in a daemon thread to handle the coming events without blocking；
 /// 3. `js_std_loop()` will check pending jobs triggered by `promise` and timer events triggered by `select` system call.
+
+static bool _ngenxx_js_loop_working = false;
+
 static JSValue _ngenxx_js_loop(JSContext *ctx)
 {
-    static JSValue _ngenxx_js_loop_jsv = js_std_loop(ctx);
+    _ngenxx_js_loop_working = true;
+    JSValue jLoop = js_std_loop(ctx);
+    JS_FreeValue(ctx, jLoop);
+    _ngenxx_js_loop_working = false;
 }
 
 static std::thread *_ngenxx_js_loopThread = nullptr;
 
 static void _ngenxx_js_checkMainLoop(JSContext *ctx)
 {
-    if (!_ngenxx_js_loopThread)
+    if (_ngenxx_js_loopThread != nullptr && !_ngenxx_js_loop_working)
+    {
+        if (_ngenxx_js_loopThread->joinable())
+        {
+            _ngenxx_js_loopThread->join();
+        }
+        delete _ngenxx_js_loopThread;
+        _ngenxx_js_loopThread = nullptr;
+    }
+    if (_ngenxx_js_loopThread == nullptr)
     {
         _ngenxx_js_loopThread = new std::thread(_ngenxx_js_loop, ctx);
     }
@@ -221,6 +236,12 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 
 NGenXX::JsBridge::~JsBridge()
 {
+    if (_ngenxx_js_loopThread != nullptr && _ngenxx_js_loopThread->joinable())
+    {
+        _ngenxx_js_loopThread->join();
+        delete _ngenxx_js_loopThread;
+    }
+    
     js_std_set_worker_new_context_func(NULL);
 
     for (auto &jv : this->jValues)
