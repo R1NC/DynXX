@@ -34,6 +34,7 @@ void NGenXX::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)
 #ifndef __EMSCRIPTEN__
 int NGenXX::LuaBridge::loadFile(const std::string &file)
 {
+    const std::lock_guard<std::mutex> lock(this->mutex);
     int ret = luaL_dofile(this->lstate, file.c_str());
     if (ret != LUA_OK)
     {
@@ -45,6 +46,7 @@ int NGenXX::LuaBridge::loadFile(const std::string &file)
 
 int NGenXX::LuaBridge::loadScript(const std::string &script)
 {
+    const std::lock_guard<std::mutex> lock(this->mutex);
     int ret = luaL_dostring(this->lstate, script.c_str());
     if (ret != LUA_OK)
     {

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <streambuf>
 #include <utility>
+#include <thread>
 
 constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "import * as os from 'qjs:os';\n"
@@ -39,18 +40,87 @@ static void _ngenxx_js_dump_err(JSContext *ctx)
     JS_FreeValue(ctx, exception_val);
 }
 
+bool _ngenxx_js_loadScript(JSContext * ctx, const std::string &script, const std::string &name, const bool isModule)
+{
+    bool res = true;
+    int flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
+    JSValue jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
+    if (JS_IsException(jEvalRet))
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_Eval failed ->");
+        _ngenxx_js_dump_err(ctx);
+        return false;
+    }
+
+    if (isModule)
+    {
+        if (JS_VALUE_GET_TAG(jEvalRet) != JS_TAG_MODULE)
+        {// Check whether it's a JS Module or not，or QJS may crash
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS try to load invalid module");
+            JS_FreeValue(ctx, jEvalRet);
+            return false;
+        }
+        js_module_set_import_meta(ctx, jEvalRet, false, true);
+        JSValue jEvalFuncRet = JS_EvalFunction(ctx, jEvalRet);
+        JS_FreeValue(ctx, jEvalFuncRet);
+        //this->jValues.push_back(jEvalRet);//Can not free here, or QJS may crash
+    }
+    else
+    {
+        JS_FreeValue(ctx, jEvalRet);
+    }
+
+    return res;
+}
+
+
+/// A JS Worker created a all new independent `JSContext`，so we should load the js files and modules again.
+/// By default, we just load the built-in modules.
+static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
+{
+    JSContext *ctx;
+    ctx = JS_NewContext(rt);
+    if (!ctx)
+        return NULL;
+    
+    js_std_add_helpers(ctx, 0, NULL);
+    js_init_module_std(ctx, "qjs:std");
+    js_init_module_os(ctx, "qjs:os");
+    
+    _ngenxx_js_loadScript(ctx, IMPORT_STD_OS_JS, "import-std-os.js", true);
+
+    return ctx;
+}
+
+/// About JS event loop：
+/// 1. Normal JS function does not depend on the event loop，but `promise` & `setTimeout()`/`setInterval()` do；
+/// 2. The event loop should be created only once in a daemon thread to handle the coming events without blocking；
+/// 3. `js_std_loop()` will check pending jobs triggered by `promise` and timer events triggered by `select` system call.
+static JSValue _ngenxx_js_loop(JSContext *ctx)
+{
+    static JSValue _ngenxx_js_loop_jsv = js_std_loop(ctx);
+}
+
+static std::thread *_ngenxx_js_loopThread = nullptr;
+
+static void _ngenxx_js_checkMainLoop(JSContext *ctx)
+{
+    if (!_ngenxx_js_loopThread)
+    {
+        _ngenxx_js_loopThread = new std::thread(_ngenxx_js_loop, ctx);
+    }
+}
+
+
 NGenXX::JsBridge::JsBridge()
 {
     this->runtime = JS_NewRuntime();
-    JS_SetModuleLoaderFunc(this->runtime, NULL, js_module_loader, NULL);
-
-    this->context = JS_NewContext(this->runtime);
-    this->jValues.push_back(JS_GetGlobalObject(this->context));
-
-    js_std_add_helpers(this->context, 0, NULL);
     js_std_init_handlers(this->runtime);
-    js_init_module_std(this->context, "qjs:std");
-    js_init_module_os(this->context, "qjs:os");
+    JS_SetModuleLoaderFunc(this->runtime, NULL, js_module_loader, NULL);
+    js_std_set_worker_new_context_func(_ngenxx_js_newContext);
+
+    this->context = _ngenxx_js_newContext(this->runtime);
+    this->jValues.push_back(JS_GetGlobalObject(this->context));
 
     this->loadScript(IMPORT_STD_OS_JS, "import-std-os.js", true);
 }
@@ -75,7 +145,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
         }
     }
 
-    this->jValues.push_back(jFunc);
+    this->jValues.push_back(jFunc);//Can not free here, will be called in future
 
     return res;
 }
@@ -90,39 +160,13 @@ bool NGenXX::JsBridge::loadFile(const std::string &file, const bool isModule)
 
 bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name, const bool isModule)
 {
-    bool res = true;
-    int flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
-    JSValue jEvalRet = JS_Eval(this->context, script.c_str(), script.length(), name.c_str(), flags);
-    if (JS_IsException(jEvalRet))
-    {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_Eval failed ->");
-        _ngenxx_js_dump_err(this->context);
-        return false;
-    }
-
-    if (isModule)
-    {
-        if (JS_VALUE_GET_TAG(jEvalRet) != JS_TAG_MODULE)
-        {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "try to load invalid JS module");
-            JS_FreeValue(this->context, jEvalRet);
-            return false;
-        }
-        js_module_set_import_meta(this->context, jEvalRet, false, true);
-        JSValue jEvalFuncRet = JS_EvalFunction(this->context, jEvalRet);
-        JS_FreeValue(this->context, jEvalFuncRet);
-        this->jValues.push_back(jEvalRet);//Can not free immediatelly, or qjs will crash
-    }
-    else
-    {
-        JS_FreeValue(this->context, jEvalRet);
-    }
-
-    return res;
+    const std::lock_guard<std::mutex> lock(this->mutex);
+    return _ngenxx_js_loadScript(this->context, script, name, isModule);
 }
 
 bool NGenXX::JsBridge::loadBinary(Bytes bytes, const bool isModule)
 {
+    const std::lock_guard<std::mutex> lock(this->mutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
@@ -153,12 +197,11 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
+            _ngenxx_js_checkMainLoop(this->context);
             if (await)
             {
-                JSValue jLoop = js_std_loop(this->context); // Wating for async tasks
                 jRes = js_std_await(this->context, jRes);   // Handle promise if needed
                 s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
-                JS_FreeValue(this->context, jLoop);
             }
             else
             {
