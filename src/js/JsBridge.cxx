@@ -91,18 +91,32 @@ static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
     return ctx;
 }
 
-/// About JS event loop：
-/// 1. Normal JS function does not depend on the event loop，but `promise` & `setTimeout()`/`setInterval()` do；
-/// 2. The event loop should be created only once in a daemon thread to handle the coming events without blocking；
-/// 3. `js_std_loop()` will check pending jobs triggered by `promise` and timer events triggered by `select` system call.
+/// About JS event loop:
+/// 1. Normal JS function does not depend on the event loop，but `promise` & `setTimeout()`/`setInterval()` do;
+/// 2. The event loop should be created only once in a daemon thread to handle the coming events without blocking;
+/// 3. `js_std_loop()` will check pending jobs triggered by `promise` and timer events triggered by `select` system call;
+/// 4. We handle pending jobs & timer events in two independent threads to avoid affecting each other.
 void NGenXX::JsBridge::checkLoop()
 {
-    if (!this->needLoop || this->loopThread.joinable())
+    if (!this->needLoop)
         return;
-    this->loopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
+    if (this->promiseLoopThread.joinable())
+        return;
+    this->promiseLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
         for (;;)
         {
-            JSValue jLoop = js_std_loop(ctx);
+            JSValue jLoop = js_std_loop_promise(ctx);
+            JS_FreeValue(ctx, jLoop);
+            if (!needLoop)
+                break;
+        }
+    }));
+    if (this->timerLoopThread.joinable())
+        return;
+    this->timerLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
+        for (;;)
+        {
+            JSValue jLoop = js_std_loop_timer(ctx);
             JS_FreeValue(ctx, jLoop);
             if (!needLoop)
                 break;
@@ -223,9 +237,13 @@ NGenXX::JsBridge::~JsBridge()
 {
     js_std_loop_cancel(this->runtime);
     this->needLoop = false;
-    if (this->loopThread.joinable())
+    if (this->promiseLoopThread.joinable())
     {
-        this->loopThread.join();
+        this->promiseLoopThread.join();
+    }
+    if (this->timerLoopThread.joinable())
+    {
+        this->timerLoopThread.join();
     }
     
     js_std_set_worker_new_context_func(NULL);

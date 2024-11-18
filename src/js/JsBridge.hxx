@@ -20,7 +20,8 @@ namespace NGenXX
         JSContext *context;
         std::vector<JSValue> jValues;
         std::mutex mutex;
-        std::thread loopThread;
+        std::thread promiseLoopThread;
+        std::thread timerLoopThread;
         volatile bool needLoop;
 
         void checkLoop();
