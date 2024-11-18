@@ -30,7 +30,9 @@ void NGenXX::Store::KV::closeAll()
     for (auto it = this->conns.begin(); it != this->conns.end(); ++it)
     {
         delete it->second;
+        it->second = nullptr;
     }
+    this->conns.clear();
 }
 
 NGenXX::Store::KV::~KV()
