@@ -5,7 +5,6 @@
 #include <sstream>
 #include <streambuf>
 #include <utility>
-#include <thread>
 
 constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "import * as os from 'qjs:os';\n"
@@ -96,36 +95,20 @@ static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
 /// 1. Normal JS function does not depend on the event loop，but `promise` & `setTimeout()`/`setInterval()` do；
 /// 2. The event loop should be created only once in a daemon thread to handle the coming events without blocking；
 /// 3. `js_std_loop()` will check pending jobs triggered by `promise` and timer events triggered by `select` system call.
-
-static bool _ngenxx_js_loop_working = false;
-
-static JSValue _ngenxx_js_loop(JSContext *ctx)
+void NGenXX::JsBridge::checkLoop()
 {
-    _ngenxx_js_loop_working = true;
-    JSValue jLoop = js_std_loop(ctx);
-    JS_FreeValue(ctx, jLoop);
-    _ngenxx_js_loop_working = false;
-}
-
-static std::thread *_ngenxx_js_loopThread = nullptr;
-
-static void _ngenxx_js_checkMainLoop(JSContext *ctx)
-{
-    if (_ngenxx_js_loopThread != nullptr && !_ngenxx_js_loop_working)
-    {
-        if (_ngenxx_js_loopThread->joinable())
+    if (!this->needLoop || this->loopThread.joinable())
+        return;
+    this->loopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
+        for (;;)
         {
-            _ngenxx_js_loopThread->join();
+            JSValue jLoop = js_std_loop(ctx);
+            JS_FreeValue(ctx, jLoop);
+            if (!needLoop)
+                break;
         }
-        delete _ngenxx_js_loopThread;
-        _ngenxx_js_loopThread = nullptr;
-    }
-    if (_ngenxx_js_loopThread == nullptr)
-    {
-        _ngenxx_js_loopThread = new std::thread(_ngenxx_js_loop, ctx);
-    }
+    }));
 }
-
 
 NGenXX::JsBridge::JsBridge()
 {
@@ -138,6 +121,8 @@ NGenXX::JsBridge::JsBridge()
     this->jValues.push_back(JS_GetGlobalObject(this->context));
 
     this->loadScript(IMPORT_STD_OS_JS, "import-std-os.js", true);
+        
+    this->needLoop = true;
 }
 
 bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -212,7 +197,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
-            _ngenxx_js_checkMainLoop(this->context);
+            this->checkLoop();
             if (await)
             {
                 jRes = js_std_await(this->context, jRes);   // Handle promise if needed
@@ -236,10 +221,11 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 
 NGenXX::JsBridge::~JsBridge()
 {
-    if (_ngenxx_js_loopThread != nullptr && _ngenxx_js_loopThread->joinable())
+    js_std_loop_cancel(this->runtime);
+    this->needLoop = false;
+    if (this->loopThread.joinable())
     {
-        _ngenxx_js_loopThread->join();
-        delete _ngenxx_js_loopThread;
+        this->loopThread.join();
     }
     
     js_std_set_worker_new_context_func(NULL);

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <thread>
 
 #include "../../external/quickjs/quickjs-libc.h"
 #include "../../include/NGenXXTypes.hxx"
@@ -19,6 +20,10 @@ namespace NGenXX
         JSContext *context;
         std::vector<JSValue> jValues;
         std::mutex mutex;
+        std::thread loopThread;
+        volatile bool needLoop;
+
+        void checkLoop();
 
     public:
         /**
