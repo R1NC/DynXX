@@ -55,6 +55,7 @@ bool ngenxxInit(const std::string &root)
     _ngenxx_root = std::make_shared<const std::string>(root);
     _ngenxx_sqlite = std::make_shared<NGenXX::Store::SQLite>();
     _ngenxx_kv = std::make_shared<NGenXX::Store::KV>(*_ngenxx_root);
+    _ngenxx_kv->closeAll();
     _ngenxx_http_client = std::make_shared<NGenXX::Net::HttpClient>();
 #ifdef USE_LUA
     _ngenxx_lua_init();
@@ -378,9 +379,9 @@ void ngenxxStoreSqliteClose(void *const conn)
 
 void *const ngenxxStoreKvOpen(const std::string &_id)
 {
-    if (_ngenxx_kv == nullptr || _id.length() == 0)
+    /*if (_ngenxx_kv == nullptr || _id.length() == 0)
         return NULL;
-    return _ngenxx_kv->open(_id);
+    return _ngenxx_kv->open(_id);*/
 }
 
 const std::string ngenxxStoreKvReadString(void *const conn, const std::string &k)

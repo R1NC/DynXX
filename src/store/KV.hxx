@@ -4,6 +4,11 @@
 #ifdef __cplusplus
 
 #include <string>
+#include <map>
+#include <unordered_map>
+#include <mutex>
+#include <shared_mutex>
+
 #include "../../external/mmkv/Core/MMKV.h"
 #include "../../include/NGenXXTypes.hxx"
 
@@ -21,6 +26,7 @@ namespace NGenXX
             {
             private:
                 MMKV *kv;
+                mutable std::shared_mutex mutex;
 
             public:
                 Connection(const std::string &_id);
@@ -46,7 +52,13 @@ namespace NGenXX
 
             Connection *open(const std::string &_id);
 
+            void closeAll();
+
             ~KV();
+
+        private:
+            std::unordered_map<std::string, Connection*> conns;
+            std::mutex mutex;
         };
     }
 }
