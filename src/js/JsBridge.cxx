@@ -98,30 +98,29 @@ static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
 /// 4. We handle pending jobs & timer events in two independent threads to avoid affecting each other.
 void NGenXX::JsBridge::checkLoop()
 {
-    if (!this->needLoop)
-        return;
-    if (this->promiseLoopThread.joinable())
-        return;
-    this->promiseLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
-        for (;;)
-        {
-            static JSValue jsPromiseLoop = js_std_loop_promise(ctx);
-            JS_FreeValue(ctx, jsPromiseLoop);
-            if (!needLoop)
-                break;
-        }
-    }));
-    if (this->timerLoopThread.joinable())
-        return;
-    this->timerLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
-        for (;;)
-        {
-            static JSValue jsTimerLoop = js_std_loop_timer(ctx);
-            JS_FreeValue(ctx, jsTimerLoop);
-            if (!needLoop)
-                break;
-        }
-    }));
+   if (!this->promiseLoopThread.joinable())
+    {
+        this->promiseLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
+            for (;needLoop;)
+            {
+                JSValue jPromiseLoop = js_std_loop_promise(ctx);
+                JS_FreeValue(ctx, jPromiseLoop);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+        }));
+    }
+    
+    if (!this->timerLoopThread.joinable())
+    {
+        this->timerLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
+            for (;needLoop;)
+            {
+                JSValue jTimerLoop = js_std_loop_timer(ctx);
+                JS_FreeValue(ctx, jTimerLoop);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+        }));
+    }
 }
 
 NGenXX::JsBridge::JsBridge()
