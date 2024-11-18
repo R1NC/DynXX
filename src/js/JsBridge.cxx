@@ -105,8 +105,8 @@ void NGenXX::JsBridge::checkLoop()
     this->promiseLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
         for (;;)
         {
-            JSValue jLoop = js_std_loop_promise(ctx);
-            JS_FreeValue(ctx, jLoop);
+            static JSValue jsPromiseLoop = js_std_loop_promise(ctx);
+            JS_FreeValue(ctx, jsPromiseLoop);
             if (!needLoop)
                 break;
         }
@@ -116,8 +116,8 @@ void NGenXX::JsBridge::checkLoop()
     this->timerLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
         for (;;)
         {
-            JSValue jLoop = js_std_loop_timer(ctx);
-            JS_FreeValue(ctx, jLoop);
+            static JSValue jsTimerLoop = js_std_loop_timer(ctx);
+            JS_FreeValue(ctx, jsTimerLoop);
             if (!needLoop)
                 break;
         }
