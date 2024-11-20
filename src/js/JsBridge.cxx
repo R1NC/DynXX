@@ -49,7 +49,7 @@ static void _ngenxx_js_uv_loop_stop(uv_timer_t* uv_timer) {
 
 static void _ngenxx_js_loop_start(JSContext *ctx) {
     uv_loop_t *loop = uv_default_loop();
-    if (loop->stop_flag != 0)
+    if (uv_loop_alive(loop))
         return;
     
     _ngenxx_js_uv_loop_start(ctx, _ngenxx_js_uv_timer_p, _ngenxx_js_uv_timer_cb_p);
