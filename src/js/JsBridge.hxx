@@ -5,7 +5,6 @@
 
 #include <string>
 #include <vector>
-#include <mutex>
 #include <thread>
 
 #include "../../external/quickjs/quickjs-libc.h"
@@ -19,10 +18,7 @@ namespace NGenXX
         JSRuntime *runtime;
         JSContext *context;
         std::vector<JSValue> jValues;
-        std::mutex mutex;
-        std::thread promiseLoopThread;
-        std::thread timerLoopThread;
-        volatile bool needLoop;
+        std::thread loopThread;
 
         void checkLoop();
 

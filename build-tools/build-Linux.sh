@@ -29,6 +29,7 @@ mv openssl.output/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
 mv openssl.output/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
 mv lua.output/liblua.a ${LIB_OUTPUT_DIR}/lua.a
 mv quickjs.output/libqjs.a ${LIB_OUTPUT_DIR}/qjs.a
+mv libuv.output/libuv.a ${LIB_OUTPUT_DIR}/uv.a
 mv cjson.output/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
 mv sqlite.output/libsqlite3.a ${LIB_OUTPUT_DIR}/sqlite3.a
 mv mmkv.output/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a

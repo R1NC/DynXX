@@ -1,10 +1,75 @@
 #include "JsBridge.hxx"
 #include "../../include/NGenXXLog.hxx"
+#include "../../external/libuv/include/uv.h"
 
 #include <fstream>
 #include <sstream>
 #include <streambuf>
 #include <utility>
+#include <mutex>
+
+static uv_timer_t *_ngenxx_js_uv_timer_p = nullptr;
+static uv_timer_t *_ngenxx_js_uv_timer_t = nullptr;
+static std::mutex *_ngenxx_js_mutex = nullptr;
+
+static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer) {
+    JSContext *ctx = reinterpret_cast<JSContext*>(timer->data);
+    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+    js_std_loop_promise(ctx);
+}
+
+static void _ngenxx_js_uv_timer_cb_t(uv_timer_t *timer) {
+    JSContext *ctx = reinterpret_cast<JSContext*>(timer->data);
+    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+    js_std_loop_timer(ctx);
+}
+
+static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_timer_t* uv_timer, uv_timer_cb cb) {
+    if (uv_timer == nullptr)
+    {
+        uv_timer = reinterpret_cast<uv_timer_t*>(malloc(sizeof(uv_timer_t)));
+        uv_timer_init(uv_default_loop(), uv_timer);
+        uv_timer->data = ctx;
+        uv_timer_start(uv_timer, cb, 1, 1);
+    }
+    else
+    {
+        uv_timer_stop(uv_timer);
+        uv_timer_again(uv_timer);
+    }
+}
+
+static void _ngenxx_js_uv_loop_stop(uv_timer_t* uv_timer) {
+    if (uv_timer != nullptr)
+    {
+        uv_timer_stop(uv_timer);
+        free(uv_timer);
+    }
+}
+
+static void _ngenxx_js_loop_start(JSContext *ctx) {
+    uv_loop_t *loop = uv_default_loop();
+    if (loop->stop_flag != 0)
+        return;
+    
+    _ngenxx_js_uv_loop_start(ctx, _ngenxx_js_uv_timer_p, _ngenxx_js_uv_timer_cb_p);
+    _ngenxx_js_uv_loop_start(ctx, _ngenxx_js_uv_timer_t, _ngenxx_js_uv_timer_cb_t);
+
+    uv_run(loop, UV_RUN_DEFAULT);
+}
+
+static void _ngenxx_js_loop_stop(JSRuntime *rt) {
+    _ngenxx_js_uv_loop_stop(_ngenxx_js_uv_timer_p);
+    _ngenxx_js_uv_loop_stop(_ngenxx_js_uv_timer_t);
+    
+    uv_loop_t *loop = uv_default_loop();
+    if (uv_loop_alive(loop))
+    {
+        uv_loop_close(loop);
+    }
+    
+    js_std_loop_cancel(rt);
+}
 
 constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "import * as os from 'qjs:os';\n"
@@ -91,40 +156,10 @@ static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
     return ctx;
 }
 
-/// About JS event loop:
-/// 1. Normal JS function does not depend on the event loop，but `promise` & `setTimeout()`/`setInterval()` do;
-/// 2. The event loop should be created only once in a daemon thread to handle the coming events without blocking;
-/// 3. `js_std_loop()` will check pending jobs triggered by `promise` and timer events triggered by `select` system call;
-/// 4. We handle pending jobs & timer events in two independent threads to avoid affecting each other.
-void NGenXX::JsBridge::checkLoop()
-{
-   if (!this->promiseLoopThread.joinable())
-    {
-        this->promiseLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
-            for (;needLoop;)
-            {
-                JSValue jPromiseLoop = js_std_loop_promise(ctx);
-                JS_FreeValue(ctx, jPromiseLoop);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            }
-        }));
-    }
-    
-    if (!this->timerLoopThread.joinable())
-    {
-        this->timerLoopThread = std::move(std::thread([&needLoop = this->needLoop, &ctx = this->context]() {
-            for (;needLoop;)
-            {
-                JSValue jTimerLoop = js_std_loop_timer(ctx);
-                JS_FreeValue(ctx, jTimerLoop);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            }
-        }));
-    }
-}
-
 NGenXX::JsBridge::JsBridge()
 {
+    _ngenxx_js_mutex = new std::mutex();
+
     this->runtime = JS_NewRuntime();
     js_std_init_handlers(this->runtime);
     JS_SetModuleLoaderFunc(this->runtime, NULL, js_module_loader, NULL);
@@ -135,7 +170,9 @@ NGenXX::JsBridge::JsBridge()
 
     this->loadScript(IMPORT_STD_OS_JS, "import-std-os.js", true);
         
-    this->needLoop = true;
+    this->loopThread = std::thread([&ctx = this->context]() {
+        _ngenxx_js_loop_start(ctx);
+    });
 }
 
 bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -173,13 +210,13 @@ bool NGenXX::JsBridge::loadFile(const std::string &file, const bool isModule)
 
 bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name, const bool isModule)
 {
-    const std::lock_guard<std::mutex> lock(this->mutex);
+    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
     return _ngenxx_js_loadScript(this->context, script, name, isModule);
 }
 
 bool NGenXX::JsBridge::loadBinary(Bytes bytes, const bool isModule)
 {
-    const std::lock_guard<std::mutex> lock(this->mutex);
+    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
@@ -193,7 +230,7 @@ static inline const std::string _ngenxx_j_jstr2stdstr(JSContext *ctx, JSValue js
 
 std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, const bool await)
 {
-    const std::lock_guard<std::mutex> lock(this->mutex);
+    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
     std::string s;
 
     JSValue jFunc = JS_GetPropertyStr(this->context, this->jValues[0], func.c_str());
@@ -210,7 +247,6 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
-            this->checkLoop();
             if (await)
             {
                 jRes = js_std_await(this->context, jRes);   // Handle promise if needed
@@ -234,15 +270,10 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 
 NGenXX::JsBridge::~JsBridge()
 {
-    js_std_loop_cancel(this->runtime);
-    this->needLoop = false;
-    if (this->promiseLoopThread.joinable())
+    _ngenxx_js_loop_stop(this->runtime);
+    if (this->loopThread.joinable())
     {
-        this->promiseLoopThread.join();
-    }
-    if (this->timerLoopThread.joinable())
-    {
-        this->timerLoopThread.join();
+        this->loopThread.join();
     }
     
     js_std_set_worker_new_context_func(NULL);
@@ -257,4 +288,6 @@ NGenXX::JsBridge::~JsBridge()
 
     js_std_free_handlers(this->runtime);
     JS_FreeRuntime(this->runtime);
+
+    delete _ngenxx_js_mutex;
 }

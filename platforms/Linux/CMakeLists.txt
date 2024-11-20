@@ -18,6 +18,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${LIB_PATH}/NGenXX.a
     ${LIB_PATH}/cjson.a
     ${LIB_PATH}/lua.a
+    ${LIB_PATH}/quickjs.a
+    ${LIB_PATH}/uv.a
     ${LIB_PATH}/sqlite3.a
     ${LIB_PATH}/curl.a
     ${LIB_PATH}/ssl.a

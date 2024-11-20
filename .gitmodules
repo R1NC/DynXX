@@ -25,3 +25,6 @@
 [submodule "external/zlib"]
 	path = external/zlib
 	url = git@github.com:R1NC/zlib.git
+[submodule "external/libuv"]
+	path = external/libuv
+	url = git@github.com:R1NC/libuv.git

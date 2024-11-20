@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2569810E2C763BD2008E8472 /* libapple_nghttp2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2569810D2C763BD2008E8472 /* libapple_nghttp2.tbd */; };
+		4011029B2CED7FB10004CCA3 /* uv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4011029A2CED7FB10004CCA3 /* uv.a */; };
 		4015228C2C9580C00010B594 /* NGenXXApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4015228A2C9580C00010B594 /* NGenXXApple.mm */; };
 		403F9F802CBCB5DB00F4ECE6 /* NGenXX.js in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F7E2CBCB5DB00F4ECE6 /* NGenXX.js */; };
 		403F9F832CBCB5E600F4ECE6 /* biz.lua in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F822CBCB5E600F4ECE6 /* biz.lua */; };
@@ -47,6 +48,7 @@
 		25D0D0222CAD4C2900F5FBFF /* ssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ssl.a; path = ../../build.iOS/output/Release/ssl.a; sourceTree = "<group>"; };
 		25D0D0232CAD4C2900F5FBFF /* crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = crypto.a; path = ../../build.iOS/output/Release/crypto.a; sourceTree = "<group>"; };
 		400F054D2CB61E9D009B3260 /* quickjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = quickjs.a; path = ../../build.iOS/output/Release/quickjs.a; sourceTree = "<group>"; };
+		4011029A2CED7FB10004CCA3 /* uv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = uv.a; path = ../../build.iOS/output/libs/uv.a; sourceTree = "<group>"; };
 		4015228A2C9580C00010B594 /* NGenXXApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NGenXXApple.mm; path = ../../Apple/NGenXXApple.mm; sourceTree = "<group>"; };
 		4015228B2C9580C00010B594 /* NGenXXApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NGenXXApple.h; path = ../../Apple/NGenXXApple.h; sourceTree = "<group>"; };
 		401522932C9580E70010B594 /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../build.iOS/output/Release/mmkv.a; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4011029B2CED7FB10004CCA3 /* uv.a in Frameworks */,
 				40A94B362CCFB31C0059C652 /* qjs.a in Frameworks */,
 				40DC9C152CCA6CD300F264DB /* NGenXX.a in Frameworks */,
 				40DC9C162CCA6CD300F264DB /* curl.a in Frameworks */,
@@ -173,6 +176,7 @@
 		40596B982C75BC5A00AC552D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4011029A2CED7FB10004CCA3 /* uv.a */,
 				40A94B352CCFB31C0059C652 /* qjs.a */,
 				400F054D2CB61E9D009B3260 /* quickjs.a */,
 				25D0D0232CAD4C2900F5FBFF /* crypto.a */,

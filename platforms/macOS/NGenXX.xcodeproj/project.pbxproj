@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */; };
 		400DFE902CCFB26700D3FCD9 /* qjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 400DFE8F2CCFB26700D3FCD9 /* qjs.a */; };
+		4011029D2CED7FDA0004CCA3 /* uv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4011029C2CED7FDA0004CCA3 /* uv.a */; };
 		401522A62C9581760010B594 /* NGenXXApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 401522A52C9581760010B594 /* NGenXXApple.mm */; };
 		40348F5C2C783CA70039639C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40348F5B2C783CA70039639C /* AppDelegate.m */; };
 		40348F612C783CA80039639C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40348F602C783CA80039639C /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 		25A1BBB92CAEC7C400B60E5B /* ssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ssl.a; path = ../../build.macOS/output/Release/ssl.a; sourceTree = "<group>"; };
 		25A1BBBA2CAEC7C400B60E5B /* crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = crypto.a; path = ../../build.macOS/output/Release/crypto.a; sourceTree = "<group>"; };
 		400DFE8F2CCFB26700D3FCD9 /* qjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = qjs.a; path = ../../build.macOS/output/libs/qjs.a; sourceTree = "<group>"; };
+		4011029C2CED7FDA0004CCA3 /* uv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = uv.a; path = ../../build.macOS/output/libs/uv.a; sourceTree = "<group>"; };
 		4015229A2C9581540010B594 /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.macOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
 		4015229B2C9581540010B594 /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../build.macOS/output/Release/mmkv.a; sourceTree = "<group>"; };
 		401522A42C9581760010B594 /* NGenXXApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NGenXXApple.h; path = ../../Apple/NGenXXApple.h; sourceTree = "<group>"; };
@@ -86,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4011029D2CED7FDA0004CCA3 /* uv.a in Frameworks */,
 				400DFE902CCFB26700D3FCD9 /* qjs.a in Frameworks */,
 				40DC9C272CCA6DE500F264DB /* ssl.a in Frameworks */,
 				40DC9C282CCA6DE500F264DB /* NGenXX.a in Frameworks */,
@@ -146,6 +149,7 @@
 		40348F712C783F070039639C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4011029C2CED7FDA0004CCA3 /* uv.a */,
 				400DFE8F2CCFB26700D3FCD9 /* qjs.a */,
 				403F9F472CB8D94000F4ECE6 /* quickjs.a */,
 				25A1BBBA2CAEC7C400B60E5B /* crypto.a */,
