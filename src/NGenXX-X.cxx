@@ -55,7 +55,6 @@ bool ngenxxInit(const std::string &root)
     _ngenxx_root = std::make_shared<const std::string>(root);
     _ngenxx_sqlite = std::make_shared<NGenXX::Store::SQLite>();
     _ngenxx_kv = std::make_shared<NGenXX::Store::KV>(*_ngenxx_root);
-    _ngenxx_kv->closeAll();
     _ngenxx_http_client = std::make_shared<NGenXX::Net::HttpClient>();
 #ifdef USE_LUA
     _ngenxx_lua_init();
@@ -72,7 +71,9 @@ void ngenxxRelease()
         return;
     _ngenxx_root.reset();
     _ngenxx_http_client.reset();
+    _ngenxx_sqlite->closeAll();
     _ngenxx_sqlite.reset();
+    _ngenxx_kv->closeAll();
     _ngenxx_kv.reset();
     ngenxxLogSetCallback(nullptr);
 #ifdef USE_LUA
@@ -369,19 +370,19 @@ void ngenxxStoreSqliteQueryDrop(void *const query_result)
 
 void ngenxxStoreSqliteClose(void *const conn)
 {
-    if (conn == NULL)
+    /*if (conn == NULL)
         return;
     auto xconn = reinterpret_cast<NGenXX::Store::SQLite::Connection *>(conn);
-    delete xconn;
+    delete xconn;*/
 }
 
 #pragma mark Store.KV
 
 void *const ngenxxStoreKvOpen(const std::string &_id)
 {
-    /*if (_ngenxx_kv == nullptr || _id.length() == 0)
+    if (_ngenxx_kv == nullptr || _id.length() == 0)
         return NULL;
-    return _ngenxx_kv->open(_id);*/
+    return _ngenxx_kv->open(_id);
 }
 
 const std::string ngenxxStoreKvReadString(void *const conn, const std::string &k)
@@ -468,10 +469,10 @@ void ngenxxStoreKvClear(void *const conn)
 
 void ngenxxStoreKvClose(void *const conn)
 {
-    if (conn == NULL)
+    /*if (conn == NULL)
         return;
     auto xconn = reinterpret_cast<NGenXX::Store::KV::Connection *>(conn);
-    delete xconn;
+    delete xconn;*/
 }
 
 #pragma mark Json.Decoder

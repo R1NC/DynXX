@@ -11,6 +11,11 @@
 #include "../../../external/sqlite/sqlite3.h"
 #endif
 
+#include <map>
+#include <unordered_map>
+#include <mutex>
+#include <shared_mutex>
+
 namespace NGenXX
 {
     namespace Store
@@ -27,6 +32,7 @@ namespace NGenXX
             {
             private:
                 struct sqlite3 *db;
+                mutable std::shared_mutex mutex;
 
             public:
                 /**
@@ -38,6 +44,7 @@ namespace NGenXX
                 {
                 private:
                     sqlite3_stmt *stmt;
+                    mutable std::shared_mutex mutex;
 
                 public:
                     /**
@@ -91,10 +98,16 @@ namespace NGenXX
              */
             Connection *connect(const std::string &file);
 
+            void closeAll();
+
             /**
              * @brief Release SQLite process
              */
             ~SQLite();
+
+        private:
+            std::unordered_map<std::string, Connection*> conns;
+            std::mutex mutex;
         };
     }
 }

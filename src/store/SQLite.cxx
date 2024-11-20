@@ -11,15 +11,33 @@ NGenXX::Store::SQLite::SQLite()
 
 NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::string &file)
 {
-    sqlite3 *db;
-    int rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-    ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.open ret:" + std::to_string(rc));
-    if (rc != SQLITE_OK)
+    const std::lock_guard<std::mutex> lock(this->mutex);
+    auto conn = this->conns[file];
+    if (conn == nullptr)
     {
-        PRINT_ERR(rc, db);
-        return nullptr;
+        sqlite3 *db;
+        int rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+        ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.open ret:" + std::to_string(rc));
+        if (rc != SQLITE_OK)
+        {
+            PRINT_ERR(rc, db);
+            return nullptr;
+        }
+        conn = new NGenXX::Store::SQLite::Connection(db);
+        this->conns[file] = conn;
     }
-    return new NGenXX::Store::SQLite::Connection(db);
+    return conn;
+}
+
+void NGenXX::Store::SQLite::closeAll()
+{
+    const std::lock_guard<std::mutex> lock(this->mutex);
+    for (auto it = this->conns.begin(); it != this->conns.end(); ++it)
+    {
+        delete it->second;
+        it->second = nullptr;
+    }
+    this->conns.clear();
 }
 
 NGenXX::Store::SQLite::~SQLite()
@@ -34,6 +52,7 @@ NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db)
 
 bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
 {
+    std::unique_lock lock(this->mutex);
     if (this->db == NULL)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.execute DB NULL");
@@ -51,6 +70,7 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
 
 NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connection::query(const std::string &sql)
 {
+    std::shared_lock lock(this->mutex);
     if (this->db == NULL)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.query DB NULL");
@@ -80,6 +100,7 @@ NGenXX::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt)
 
 bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
 {
+    std::unique_lock lock(this->mutex);
     if (this->stmt == NULL)
     {
          ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readRow STMT NULL");
@@ -96,6 +117,7 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
 
 Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column)
 {
+    std::shared_lock lock(this->mutex);
     if (this->stmt == NULL)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readColumn STMT NULL");
