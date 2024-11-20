@@ -8,6 +8,8 @@
 #include <utility>
 #include <mutex>
 
+static uv_loop_t *_ngenxx_js_uv_loop_p = nullptr;
+static uv_loop_t *_ngenxx_js_uv_loop_t = nullptr;
 static uv_timer_t *_ngenxx_js_uv_timer_p = nullptr;
 static uv_timer_t *_ngenxx_js_uv_timer_t = nullptr;
 static std::mutex *_ngenxx_js_mutex = nullptr;
@@ -24,11 +26,22 @@ static void _ngenxx_js_uv_timer_cb_t(uv_timer_t *timer) {
     js_std_loop_timer(ctx);
 }
 
-static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_timer_t* uv_timer, uv_timer_cb cb) {
+static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_timer_t* uv_timer, uv_timer_cb cb) {
+    if (uv_loop == nullptr)
+    {
+        uv_loop = reinterpret_cast<uv_loop_t*>(malloc(sizeof(uv_loop_t)));
+        uv_loop_init(uv_loop);
+    }
+    else
+    {
+        if (uv_loop_alive(uv_loop))
+            return;
+    }
+
     if (uv_timer == nullptr)
     {
         uv_timer = reinterpret_cast<uv_timer_t*>(malloc(sizeof(uv_timer_t)));
-        uv_timer_init(uv_default_loop(), uv_timer);
+        uv_timer_init(uv_loop, uv_timer);
         uv_timer->data = ctx;
         uv_timer_start(uv_timer, cb, 1, 1);
     }
@@ -37,37 +50,35 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_timer_t* uv_timer, uv_ti
         uv_timer_stop(uv_timer);
         uv_timer_again(uv_timer);
     }
+
+    uv_run(uv_loop, UV_RUN_DEFAULT);
 }
 
-static void _ngenxx_js_uv_loop_stop(uv_timer_t* uv_timer) {
-    if (uv_timer != nullptr)
-    {
-        uv_timer_stop(uv_timer);
-        free(uv_timer);
-    }
-}
-
-static void _ngenxx_js_loop_start(JSContext *ctx) {
-    uv_loop_t *loop = uv_default_loop();
-    if (uv_loop_alive(loop))
+static void _ngenxx_js_uv_loop_stop(uv_loop_t *uv_loop, uv_timer_t* uv_timer) {
+    if (uv_loop == nullptr || uv_timer == nullptr || !uv_loop_alive(uv_loop))
         return;
-    
-    _ngenxx_js_uv_loop_start(ctx, _ngenxx_js_uv_timer_p, _ngenxx_js_uv_timer_cb_p);
-    _ngenxx_js_uv_loop_start(ctx, _ngenxx_js_uv_timer_t, _ngenxx_js_uv_timer_cb_t);
 
-    uv_run(loop, UV_RUN_DEFAULT);
+    uv_timer_stop(uv_timer);
+    free(uv_timer);
+    uv_timer = nullptr;
+
+    uv_stop(uv_loop);
+    uv_loop_close(uv_loop);
+    free(uv_loop);
+    uv_loop = nullptr;
+}
+
+static void _ngenxx_js_loop_startP(JSContext *ctx) {
+    _ngenxx_js_uv_loop_start(ctx, _ngenxx_js_uv_loop_p, _ngenxx_js_uv_timer_p, _ngenxx_js_uv_timer_cb_p);
+}
+
+static void _ngenxx_js_loop_startT(JSContext *ctx) {
+    _ngenxx_js_uv_loop_start(ctx, _ngenxx_js_uv_loop_t, _ngenxx_js_uv_timer_t, _ngenxx_js_uv_timer_cb_t);
 }
 
 static void _ngenxx_js_loop_stop(JSRuntime *rt) {
-    _ngenxx_js_uv_loop_stop(_ngenxx_js_uv_timer_p);
-    _ngenxx_js_uv_loop_stop(_ngenxx_js_uv_timer_t);
-    
-    uv_loop_t *loop = uv_default_loop();
-    if (uv_loop_alive(loop))
-    {
-        uv_stop(loop);
-        uv_loop_close(loop);
-    }
+    _ngenxx_js_uv_loop_stop(_ngenxx_js_uv_loop_p, _ngenxx_js_uv_timer_p);
+    _ngenxx_js_uv_loop_stop(_ngenxx_js_uv_loop_t, _ngenxx_js_uv_timer_t);
     
     js_std_loop_cancel(rt);
 }
@@ -171,8 +182,11 @@ NGenXX::JsBridge::JsBridge()
 
     this->loadScript(IMPORT_STD_OS_JS, "import-std-os.js", true);
         
-    this->loopThread = std::thread([&ctx = this->context]() {
-        _ngenxx_js_loop_start(ctx);
+    this->loopThreadP = std::thread([&ctx = this->context]() {
+        _ngenxx_js_loop_startP(ctx);
+    });
+    this->loopThreadT = std::thread([&ctx = this->context]() {
+        _ngenxx_js_loop_startT(ctx);
     });
 }
 
@@ -272,9 +286,13 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 NGenXX::JsBridge::~JsBridge()
 {
     _ngenxx_js_loop_stop(this->runtime);
-    if (this->loopThread.joinable())
+    if (this->loopThreadP.joinable())
     {
-        this->loopThread.join();
+        this->loopThreadP.join();
+    }
+    if (this->loopThreadT.joinable())
+    {
+        this->loopThreadT.join();
     }
     
     js_std_set_worker_new_context_func(NULL);

@@ -18,7 +18,8 @@ namespace NGenXX
         JSRuntime *runtime;
         JSContext *context;
         std::vector<JSValue> jValues;
-        std::thread loopThread;
+        std::thread loopThreadP;
+        std::thread loopThreadT;
 
         void checkLoop();
 
