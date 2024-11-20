@@ -65,6 +65,7 @@ static void _ngenxx_js_loop_stop(JSRuntime *rt) {
     uv_loop_t *loop = uv_default_loop();
     if (uv_loop_alive(loop))
     {
+        uv_stop(loop);
         uv_loop_close(loop);
     }
     
