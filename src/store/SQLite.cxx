@@ -45,9 +45,9 @@ NGenXX::Store::SQLite::~SQLite()
     sqlite3_shutdown();
 }
 
-NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db)
+NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
 {
-    this->db = db;
+    this->execute("PRAGMA journal_mode=WAL;");
 }
 
 bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
@@ -93,9 +93,8 @@ NGenXX::Store::SQLite::Connection::~Connection()
         sqlite3_close_v2(this->db);
 }
 
-NGenXX::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt)
+NGenXX::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) : stmt{stmt}
 {
-    this->stmt = stmt;
 }
 
 bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
