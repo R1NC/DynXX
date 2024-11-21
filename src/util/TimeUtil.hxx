@@ -5,11 +5,22 @@
 
 #include <chrono>
 
+using namespace std::chrono;
+
+template<typename timePointT, typename durationT>
+static inline const uint64_t castNow(timePointT now)
+{
+    return duration_cast<durationT>(now.time_since_epoch()).count();
+}
+
+static inline const uint64_t nowInMicroSecs()
+{
+    return castNow<system_clock::time_point, microseconds>(system_clock::now());
+}
+
 static inline const uint64_t nowInNanoSecs()
 {
-    using namespace std::chrono;
-    auto now = high_resolution_clock::now();
-    return duration_cast<nanoseconds>(now.time_since_epoch()).count();
+    return castNow<high_resolution_clock::time_point, nanoseconds>(high_resolution_clock::now());
 }
 
 #endif
