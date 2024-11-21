@@ -5,10 +5,11 @@
 
 #include <chrono>
 
-static inline const uint64_t timeStampInMicroSecs()
+static inline const uint64_t nowInNanoSecs()
 {
     using namespace std::chrono;
-    return duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+    auto now = high_resolution_clock::now();
+    return duration_cast<nanoseconds>(now.time_since_epoch()).count();
 }
 
 #endif
