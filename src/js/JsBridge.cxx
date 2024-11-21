@@ -264,7 +264,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         {
             if (await)
             {
-                jRes = js_std_await(this->context, jRes);   // Handle promise if needed
+                jRes = js_std_await_fix(this->context, jRes);   // Handle promise if needed
                 s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
             }
             else
