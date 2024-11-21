@@ -1,5 +1,5 @@
-#ifndef NGENXX_JS_BRIDGE_HXX_
-#define NGENXX_JS_BRIDGE_HXX_
+#ifndef NGENXX_SRC_JS_BRIDGE_HXX_
+#define NGENXX_SRC_JS_BRIDGE_HXX_
 
 #ifdef __cplusplus
 
@@ -74,4 +74,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_JS_BRIDGE_HXX_
+#endif // NGENXX_SRC_JS_BRIDGE_HXX_

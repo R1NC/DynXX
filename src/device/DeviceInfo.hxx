@@ -1,5 +1,5 @@
-#ifndef NGENXX_DEVICE_INFO_HXX_
-#define NGENXX_DEVICE_INFO_HXX_
+#ifndef NGENXX_SRC_DEVICE_INFO_HXX_
+#define NGENXX_SRC_DEVICE_INFO_HXX_
 
 #ifdef __cplusplus
 
@@ -57,4 +57,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_DEVICE_INFO_HXX_
+#endif // NGENXX_SRC_DEVICE_INFO_HXX_

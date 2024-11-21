@@ -1,5 +1,5 @@
-#ifndef NGENXX_UTIL_TYPE_H_
-#define NGENXX_UTIL_TYPE_H_
+#ifndef NGENXX_SRC_UTIL_TYPE_HXX_
+#define NGENXX_SRC_UTIL_TYPE_HXX_
 
 #include <string>
 #include <vector>
@@ -51,4 +51,4 @@ static inline const Bytes trimBytes(const Bytes &bytes)
     return Bytes(bytes.begin(), bytes.begin() + fixedLen);
 }
 
-#endif // NGENXX_UTIL_TYPE_H_
+#endif // NGENXX_SRC_UTIL_TYPE_HXX_

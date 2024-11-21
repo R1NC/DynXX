@@ -1,5 +1,5 @@
-#ifndef NGENXX_JSON_DECODER_HXX_
-#define NGENXX_JSON_DECODER_HXX_
+#ifndef NGENXX_SRC_JSON_DECODER_HXX_
+#define NGENXX_SRC_JSON_DECODER_HXX_
 
 #include "../../external/cjson/cJSON.h"
 
@@ -47,4 +47,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_JSON_DECODER_HXX_
+#endif // NGENXX_SRC_JSON_DECODER_HXX_

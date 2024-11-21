@@ -1,5 +1,5 @@
-#ifndef NGENXX_ZIP_HXX_
-#define NGENXX_ZIP_HXX_
+#ifndef NGENXX_SRC_ZIP_HXX_
+#define NGENXX_SRC_ZIP_HXX_
 
 #ifdef __EMSCRIPTEN__
 #include "../../../external/zlib/zlib.h"
@@ -81,4 +81,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_ZIP_HXX_
+#endif // NGENXX_SRC_ZIP_HXX_

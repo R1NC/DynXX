@@ -1,5 +1,5 @@
-#ifndef NGENXX_INNER_HXX_
-#define NGENXX_INNER_HXX_
+#ifndef NGENXX_SRC_INNER_HXX_
+#define NGENXX_SRC_INNER_HXX_
 
 #ifdef __cplusplus
 
@@ -14,4 +14,4 @@
 
 #endif
 
-#endif // NGENXX_INNER_HXX_
+#endif // NGENXX_SRC_INNER_HXX_

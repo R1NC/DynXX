@@ -1,5 +1,5 @@
-#ifndef NGENXX_STORE_KV_HXX_
-#define NGENXX_STORE_KV_HXX_
+#ifndef NGENXX_SRC_STORE_KV_HXX_
+#define NGENXX_SRC_STORE_KV_HXX_
 
 #ifdef __cplusplus
 
@@ -65,4 +65,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_STORE_KV_HXX_
+#endif // NGENXX_SRC_STORE_KV_HXX_

@@ -1,5 +1,5 @@
-#ifndef NGENXX_NET_HTTP_CLIENT_HXX_
-#define NGENXX_NET_HTTP_CLIENT_HXX_
+#ifndef NGENXX_SRC_NET_HTTP_CLIENT_HXX_
+#define NGENXX_SRC_NET_HTTP_CLIENT_HXX_
 
 #ifdef __cplusplus
 
@@ -51,4 +51,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_NET_HTTP_CLIENT_HXX_
+#endif // NGENXX_SRC_NET_HTTP_CLIENT_HXX_

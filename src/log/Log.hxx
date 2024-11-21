@@ -1,5 +1,5 @@
-#ifndef NGENXX_LOG_HXX_
-#define NGENXX_LOG_HXX_
+#ifndef NGENXX_SRC_LOG_HXX_
+#define NGENXX_SRC_LOG_HXX_
 
 #ifdef __cplusplus
 
@@ -19,4 +19,4 @@ namespace NGenXX
 }
 
 #endif
-#endif // NGENXX_LOG_HXX_
+#endif // NGENXX_SRC_LOG_HXX_

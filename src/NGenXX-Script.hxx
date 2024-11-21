@@ -1,5 +1,5 @@
-#ifndef NGENXX_SCRIPT_HXX_
-#define NGENXX_SCRIPT_HXX_
+#ifndef NGENXX_SRC_SCRIPT_HXX_
+#define NGENXX_SRC_SCRIPT_HXX_
 
 #include "../include/NGenXXTypes.h"
 
@@ -75,4 +75,4 @@ const std::string ngenxx_z_bytes_unzipS(const char *json);
 
 #endif
 
-#endif // NGENXX_SCRIPT_HXX_
+#endif // NGENXX_SRC_SCRIPT_HXX_

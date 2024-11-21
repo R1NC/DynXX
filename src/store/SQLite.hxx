@@ -1,5 +1,5 @@
-#ifndef NGENXX_STORE_DB_HXX_
-#define NGENXX_STORE_DB_HXX_
+#ifndef NGENXX_SRC_STORE_SQLITE_HXX_
+#define NGENXX_SRC_STORE_SQLITE_HXX_
 
 #ifdef __cplusplus
 
@@ -114,4 +114,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_STORE_DB_HXX_
+#endif // NGENXX_SRC_STORE_SQLITE_HXX_

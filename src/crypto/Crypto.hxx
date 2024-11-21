@@ -1,5 +1,5 @@
-#ifndef NGENXX_CRYPTO_HXX_
-#define NGENXX_CRYPTO_HXX_
+#ifndef NGENXX_SRC_CRYPTO_HXX_
+#define NGENXX_SRC_CRYPTO_HXX_
 
 #ifdef __cplusplus
 
@@ -66,4 +66,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_CRYPTO_HXX_
+#endif // NGENXX_SRC_CRYPTO_HXX_

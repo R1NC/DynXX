@@ -1,5 +1,5 @@
-#ifndef NGENXX_LUA_BRIDGE_HXX_
-#define NGENXX_LUA_BRIDGE_HXX_
+#ifndef NGENXX_SRC_LUA_BRIDGE_HXX_
+#define NGENXX_SRC_LUA_BRIDGE_HXX_
 
 extern "C"
 {
@@ -66,4 +66,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_LUA_BRIDGE_HXX_
+#endif // NGENXX_SRC_LUA_BRIDGE_HXX_

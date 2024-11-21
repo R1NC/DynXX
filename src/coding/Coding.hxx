@@ -1,5 +1,5 @@
-#ifndef NGENXX_CODING_HXX_
-#define NGENXX_CODING_HXX_
+#ifndef NGENXX_SRC_CODING_HXX_
+#define NGENXX_SRC_CODING_HXX_
 
 #ifdef __cplusplus
 
@@ -32,4 +32,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_CODING_HXX_
+#endif // NGENXX_SRC_CODING_HXX_
