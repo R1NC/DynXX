@@ -102,11 +102,11 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
             mime = curl_mime_init(curl);
             part = curl_mime_addpart(mime);
 
-            for (auto it = formFields.begin(); it != formFields.end(); it++)
+            for (auto& it : formFields)
             {
-                curl_mime_name(part, it->name.c_str());
-                curl_mime_type(part, it->mime.c_str());
-                curl_mime_data(part, it->data.c_str(), CURL_ZERO_TERMINATED);
+                curl_mime_name(part, it.name.c_str());
+                curl_mime_type(part, it.mime.c_str());
+                curl_mime_data(part, it.data.c_str(), CURL_ZERO_TERMINATED);
             }
 
             curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
@@ -150,10 +150,10 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
 
         struct curl_slist *headerList = NULL;
-        for (auto it = headers.begin(); it != headers.end(); ++it)
+        for (auto& it : headers)
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Debug, "HttpClient.request header: " + (*it));
-            headerList = curl_slist_append(headerList, (*it).c_str());
+            ngenxxLogPrint(NGenXXLogLevelX::Debug, "HttpClient.request header: " + it);
+            headerList = curl_slist_append(headerList, it.c_str());
         }
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
 

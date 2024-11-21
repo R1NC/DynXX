@@ -26,9 +26,9 @@ const std::string bytes2json(Bytes bytes)
 const std::string strArray2json(const std::vector<std::string> &v)
 {
     auto cj = cJSON_CreateArray();
-    for (auto it = v.begin(); it != v.end(); ++it)
+    for (auto& it : v)
     {
-        cJSON_AddItemToArray(cj, cJSON_CreateString(it->c_str()));
+        cJSON_AddItemToArray(cj, cJSON_CreateString(it.c_str()));
     }
     const char *outJson = cJSON_PrintUnformatted(cj);
     return std::string(outJson);

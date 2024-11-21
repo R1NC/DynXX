@@ -32,10 +32,10 @@ NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::str
 void NGenXX::Store::SQLite::closeAll()
 {
     const std::lock_guard<std::mutex> lock(this->mutex);
-    for (auto it = this->conns.begin(); it != this->conns.end(); ++it)
+    for (auto& it : this->conns)
     {
-        delete it->second;
-        it->second = nullptr;
+        delete it.second;
+        it.second = nullptr;
     }
     this->conns.clear();
 }

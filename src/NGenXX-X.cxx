@@ -274,17 +274,17 @@ const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                        const size_t timeout)
 {
     std::stringstream ssParams;
-    for (auto it = params.begin(); it != params.end(); ++it)
+    for (auto& it : params)
     {
         if (ssParams.str().length() > 0)
             ssParams << "&";
-        ssParams << it->first << "=";
+        ssParams << it.first << "=";
         std::visit(
             [&ssParams](auto &x)
             { 
                 ssParams << x; 
             }, 
-            it->second
+            it.second
         );
     }
     std::vector<std::string> headerV;
