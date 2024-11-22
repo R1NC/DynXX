@@ -243,7 +243,7 @@ static inline const std::string _ngenxx_j_jstr2stdstr(JSContext *ctx, JSValue js
     return s;
 }
 
-std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, const bool await)
+std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params)
 {
     const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
     std::string s;
@@ -262,15 +262,8 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
-            if (await)
-            {
-                jRes = js_std_await_fix(this->context, jRes);   // Handle promise if needed
-                s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
-            }
-            else
-            {
-                s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
-            }
+            jRes = js_std_await_fix(this->context, jRes);   // Handle promise if needed
+            s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
         }
         JS_FreeValue(this->context, jRes);
         JS_FreeValue(this->context, jParams);

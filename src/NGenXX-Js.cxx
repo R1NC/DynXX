@@ -170,11 +170,11 @@ bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule)
     return _ngenxx_js->loadBinary(bytes, isModule);
 }
 
-const std::string ngenxxJsCall(const std::string &func, const std::string &params, const bool await)
+const std::string ngenxxJsCall(const std::string &func, const std::string &params)
 {
     if (_ngenxx_js == nullptr || func.length() == 0L)
         return NULL;
-    return _ngenxx_js->callFunc(func, params, await);
+    return _ngenxx_js->callFunc(func, params);
 }
 
 void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback)
@@ -201,9 +201,9 @@ bool ngenxx_js_loadB(const byte *bytes, const size_t len, const bool is_module)
 }
 
 EXPORT_AUTO
-const char *ngenxx_js_call(const char *func, const char *params, const bool await)
+const char *ngenxx_js_call(const char *func, const char *params)
 {
-    return copyStr(ngenxxJsCall(func ?: "", params ?: "", await));
+    return copyStr(ngenxxJsCall(func ?: "", params ?: ""));
 }
 
 EXPORT_AUTO
