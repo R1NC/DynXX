@@ -4,9 +4,6 @@
 
 #ifdef __cplusplus
 
-#include <vector>
-#include <string>
-
 #include "../include/NGenXX.hxx"
 #include "../include/NGenXXTypes.hxx"
 #include "../include/NGenXXStoreKV.h"

@@ -3,9 +3,6 @@
 
 #include "NGenXXTypes.hxx"
 
-#include <string>
-#include <vector>
-#include <map>
 #include <unordered_map>
 
 constexpr size_t NGenXXHttpDefaultTimeout = 15 * 1000;

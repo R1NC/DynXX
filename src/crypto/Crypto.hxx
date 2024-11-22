@@ -5,8 +5,6 @@
 
 #include "../../include/NGenXXTypes.hxx"
 
-#include <tuple>
-
 namespace NGenXX
 {
     namespace Crypto

@@ -4,14 +4,13 @@
 #ifdef __cplusplus
 
 #include "../../include/NGenXXTypes.hxx"
-#include <string>
+
 #ifdef __APPLE__
 #include <sqlite3.h>
 #else
 #include "../../../external/sqlite/sqlite3.h"
 #endif
 
-#include <map>
 #include <unordered_map>
 #include <mutex>
 #include <shared_mutex>

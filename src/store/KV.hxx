@@ -3,8 +3,6 @@
 
 #ifdef __cplusplus
 
-#include <string>
-#include <map>
 #include <unordered_map>
 #include <mutex>
 #include <shared_mutex>

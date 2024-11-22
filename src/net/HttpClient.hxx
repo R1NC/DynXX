@@ -5,8 +5,6 @@
 
 #include "../../include/NGenXXTypes.hxx"
 
-#include <string>
-#include <vector>
 #include <cstdio>
 #include <unordered_map>
 
