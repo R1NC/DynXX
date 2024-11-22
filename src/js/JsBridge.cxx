@@ -283,6 +283,46 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     return s;
 }
 
+JSValue NGenXX::JsBridge::newPromiseS(JSValue jThis, std::function<const std::string()> f)
+{
+    JSValue funcs[2];
+    JSValue promise = JS_NewPromiseCapability(this->context, funcs);
+    if (JS_IsException(promise))
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewPromise failed ->");
+        _ngenxx_js_dump_err(this->context);
+        JS_FreeValue(this->context, promise);
+        return JS_EXCEPTION;
+    }
+    
+    this->promiseSFV.push_back(f);
+    
+    JS_DupValue(this->context, funcs[0]);
+    
+    this->promiseThreadV.emplace_back([&ctx = this->context, &jThis = jThis, &promise = promise, &resolve = funcs[0], &reject = funcs[1], cb = f]() {
+        auto ret = cb();
+        
+        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+        
+        JSValue jRet = JS_NewString(ctx, ret.c_str() ? : "");
+        JSValue jCallRet = JS_Call(ctx, resolve, jThis, 1, &jRet);
+        
+        if (JS_IsException(jCallRet))
+        {
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_CallPromise failed ->");
+            _ngenxx_js_dump_err(ctx);
+        }
+        
+        JS_FreeValue(ctx, jCallRet);
+        JS_FreeValue(ctx, jRet);
+        JS_FreeValue(ctx, resolve);
+        JS_FreeValue(ctx, reject);
+        JS_FreeValue(ctx, promise);
+    });
+
+    return promise;
+}
+
 NGenXX::JsBridge::~JsBridge()
 {
     _ngenxx_js_loop_stop(this->runtime);
@@ -309,4 +349,8 @@ NGenXX::JsBridge::~JsBridge()
     JS_FreeRuntime(this->runtime);
 
     delete _ngenxx_js_mutex;
+
+    for (auto& thread : this->promiseThreadV) {
+        thread.join();
+    }
 }

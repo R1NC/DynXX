@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <functional>
 
 #include "../../external/quickjs/quickjs-libc.h"
 #include "../../include/NGenXXTypes.hxx"
@@ -20,8 +21,9 @@ namespace NGenXX
         std::vector<JSValue> jValues;
         std::thread loopThreadP;
         std::thread loopThreadT;
-
-        void checkLoop();
+        std::vector<std::thread> promiseThreadV;
+        std::vector<std::function<std::string()>> promiseSFV;
+        
 
     public:
         /**
@@ -64,6 +66,9 @@ namespace NGenXX
          * @param params parameters(json)
          */
         std::string callFunc(const std::string &func, const std::string &params, const bool await);
+
+                
+        JSValue newPromiseS(JSValue jThis, std::function<const std::string()> f);
 
         /**
          * Relase JS VM
