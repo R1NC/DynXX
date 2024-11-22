@@ -82,7 +82,7 @@ const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, con
                              {
                                  if (idx == count)
                                      return;
-                                 v.push_back(decoder.readString(child));
+                                 v.push_back(std::move(decoder.readString(child)));
                              });
     }
     return v;
