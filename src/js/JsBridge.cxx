@@ -295,8 +295,6 @@ JSValue NGenXX::JsBridge::newPromiseS(JSValue jThis, std::function<const std::st
         return JS_EXCEPTION;
     }
     
-    this->promiseSFV.push_back(f);
-    
     JS_DupValue(this->context, funcs[0]);
     
     this->promiseThreadV.emplace_back([&ctx = this->context, &jThis = jThis, &promise = promise, &resolve = funcs[0], &reject = funcs[1], cb = f]() {
