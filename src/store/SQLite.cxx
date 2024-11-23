@@ -32,7 +32,7 @@ NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::str
 void NGenXX::Store::SQLite::closeAll()
 {
     const std::lock_guard<std::mutex> lock(this->mutex);
-    for (auto& it : this->conns)
+    for (auto &it : this->conns)
     {
         delete it.second;
         it.second = nullptr;
@@ -90,7 +90,9 @@ NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connectio
 NGenXX::Store::SQLite::Connection::~Connection()
 {
     if (this->db != NULL)
+    {
         sqlite3_close_v2(this->db);
+    }
 }
 
 NGenXX::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) : stmt{stmt}
@@ -147,5 +149,7 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
 NGenXX::Store::SQLite::Connection::QueryResult::~QueryResult()
 {
     if (this->stmt != NULL)
+    {
         sqlite3_finalize(this->stmt);
+    }
 }

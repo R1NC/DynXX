@@ -17,9 +17,13 @@
 int NGenXX::Z::ZBase::windowBits()
 {
     if (this->format == NGenXXZFormatGZip)
+    {
         return 16 | MAX_WBITS;
+    }
     if (this->format == NGenXXZFormatRaw)
+    {
         return -MAX_WBITS;
+    }
     return MAX_WBITS;
 }
 
@@ -36,7 +40,8 @@ NGenXX::Z::ZBase::ZBase(const size_t bufferSize, const int format) : bufferSize{
     this->zs = {
         .zalloc = Z_NULL,
         .zfree = Z_NULL,
-        .opaque = Z_NULL};
+        .opaque = Z_NULL
+    };
     this->inBuffer = reinterpret_cast<byte *>(malloc(sizeof(byte) * bufferSize + 1));
     this->outBuffer = reinterpret_cast<byte *>(malloc(sizeof(byte) * bufferSize + 1));
 }
@@ -44,7 +49,9 @@ NGenXX::Z::ZBase::ZBase(const size_t bufferSize, const int format) : bufferSize{
 const size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
 {
     if (bytes.empty())
+    {
         return 0;
+    }
     size_t dataLen = std::min(bytes.size(), this->bufferSize);
 
     std::memset(this->inBuffer, 0, this->bufferSize);
@@ -265,7 +272,9 @@ const Bytes zProcessBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::Z
     );
 
     if (!b)
+    {
         return BytesEmpty;
+    }
     return outBytes;
 }
 

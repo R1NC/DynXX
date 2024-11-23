@@ -73,7 +73,9 @@ const std::string ngenxx_js_ask_platform(const char *msg)
 {
     std::string s;
     if (msg == NULL || _NGenXX_J_msg_callback == nullptr)
+    {
         return s;
+    }
     char *cMsg = reinterpret_cast<char *>(malloc(strlen(msg) + 1));
     strcpy(cMsg, msg);
     return _NGenXX_J_msg_callback(cMsg);
@@ -152,28 +154,36 @@ DEF_JS_FUNC_STRING(ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
 bool ngenxxJsLoadF(const std::string &file, const bool isModule)
 {
     if (_ngenxx_js == nullptr || file.length() == 0)
+    {
         return false;
+    }
     return _ngenxx_js->loadFile(file, isModule);
 }
 
 bool ngenxxJsLoadS(const std::string &script, const std::string &name, const bool isModule)
 {
     if (_ngenxx_js == nullptr || script.length() == 0 || name.length() == 0)
+    {
         return false;
+    }
     return _ngenxx_js->loadScript(script, name, isModule);
 }
 
 bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule)
 {
     if (_ngenxx_js == nullptr || bytes.empty())
+    {
         return false;
+    }
     return _ngenxx_js->loadBinary(bytes, isModule);
 }
 
 const std::string ngenxxJsCall(const std::string &func, const std::string &params)
 {
     if (_ngenxx_js == nullptr || func.length() == 0L)
+    {
         return NULL;
+    }
     return _ngenxx_js->callFunc(func, params);
 }
 
@@ -288,7 +298,9 @@ void registerJsModule()
 void _ngenxx_js_init(void)
 {
     if (_ngenxx_js != nullptr)
+    {
         return;
+    }
     _ngenxx_js = std::make_shared<NGenXX::JsBridge>();
     registerJsModule();
 }
@@ -296,7 +308,9 @@ void _ngenxx_js_init(void)
 void _ngenxx_js_release(void)
 {
     if (_ngenxx_js == nullptr)
+    {
         return;
+    }
     _ngenxx_js.reset();
     _NGenXX_J_msg_callback = nullptr;
 }

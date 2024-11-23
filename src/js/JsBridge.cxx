@@ -8,39 +8,49 @@
 #include <utility>
 #include <mutex>
 
+constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
+                                         "import * as os from 'qjs:os';\n"
+                                         "globalThis.std = std;\n"
+                                         "globalThis.os = os;\n";
+
 static uv_loop_t *_ngenxx_js_uv_loop_p = nullptr;
 static uv_loop_t *_ngenxx_js_uv_loop_t = nullptr;
 static uv_timer_t *_ngenxx_js_uv_timer_p = nullptr;
 static uv_timer_t *_ngenxx_js_uv_timer_t = nullptr;
 static std::mutex *_ngenxx_js_mutex = nullptr;
 
-static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer) {
-    JSContext *ctx = reinterpret_cast<JSContext*>(timer->data);
+static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer)
+{
+    JSContext *ctx = reinterpret_cast<JSContext *>(timer->data);
     const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
     js_std_loop_promise(ctx);
 }
 
-static void _ngenxx_js_uv_timer_cb_t(uv_timer_t *timer) {
-    JSContext *ctx = reinterpret_cast<JSContext*>(timer->data);
+static void _ngenxx_js_uv_timer_cb_t(uv_timer_t *timer)
+{
+    JSContext *ctx = reinterpret_cast<JSContext *>(timer->data);
     const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
     js_std_loop_timer(ctx);
 }
 
-static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_timer_t* uv_timer, uv_timer_cb cb) {
+static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_timer_t *uv_timer, uv_timer_cb cb)
+{
     if (uv_loop == nullptr)
     {
-        uv_loop = reinterpret_cast<uv_loop_t*>(malloc(sizeof(uv_loop_t)));
+        uv_loop = reinterpret_cast<uv_loop_t *>(malloc(sizeof(uv_loop_t)));
         uv_loop_init(uv_loop);
     }
     else
     {
         if (uv_loop_alive(uv_loop))
+        {
             return;
+        }
     }
 
     if (uv_timer == nullptr)
     {
-        uv_timer = reinterpret_cast<uv_timer_t*>(malloc(sizeof(uv_timer_t)));
+        uv_timer = reinterpret_cast<uv_timer_t *>(malloc(sizeof(uv_timer_t)));
         uv_timer_init(uv_loop, uv_timer);
         uv_timer->data = ctx;
         uv_timer_start(uv_timer, cb, 1, 1);
@@ -54,9 +64,12 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_time
     uv_run(uv_loop, UV_RUN_DEFAULT);
 }
 
-static void _ngenxx_js_uv_loop_stop(uv_loop_t *uv_loop, uv_timer_t* uv_timer) {
+static void _ngenxx_js_uv_loop_stop(uv_loop_t *uv_loop, uv_timer_t *uv_timer)
+{
     if (uv_loop == nullptr || uv_timer == nullptr || !uv_loop_alive(uv_loop))
+    {
         return;
+    }
 
     uv_timer_stop(uv_timer);
     free(uv_timer);
@@ -68,25 +81,23 @@ static void _ngenxx_js_uv_loop_stop(uv_loop_t *uv_loop, uv_timer_t* uv_timer) {
     uv_loop = nullptr;
 }
 
-static void _ngenxx_js_loop_startP(JSContext *ctx) {
+static void _ngenxx_js_loop_startP(JSContext *ctx)
+{
     _ngenxx_js_uv_loop_start(ctx, _ngenxx_js_uv_loop_p, _ngenxx_js_uv_timer_p, _ngenxx_js_uv_timer_cb_p);
 }
 
-static void _ngenxx_js_loop_startT(JSContext *ctx) {
+static void _ngenxx_js_loop_startT(JSContext *ctx)
+{
     _ngenxx_js_uv_loop_start(ctx, _ngenxx_js_uv_loop_t, _ngenxx_js_uv_timer_t, _ngenxx_js_uv_timer_cb_t);
 }
 
-static void _ngenxx_js_loop_stop(JSRuntime *rt) {
+static void _ngenxx_js_loop_stop(JSRuntime *rt)
+{
     _ngenxx_js_uv_loop_stop(_ngenxx_js_uv_loop_p, _ngenxx_js_uv_timer_p);
     _ngenxx_js_uv_loop_stop(_ngenxx_js_uv_loop_t, _ngenxx_js_uv_timer_t);
-    
+
     js_std_loop_cancel(rt);
 }
-
-constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
-                                         "import * as os from 'qjs:os';\n"
-                                         "globalThis.std = std;\n"
-                                         "globalThis.os = os;\n";
 
 static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
 {
@@ -116,7 +127,7 @@ static void _ngenxx_js_dump_err(JSContext *ctx)
     JS_FreeValue(ctx, exception_val);
 }
 
-bool _ngenxx_js_loadScript(JSContext * ctx, const std::string &script, const std::string &name, const bool isModule)
+bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std::string &name, const bool isModule)
 {
     bool res = true;
     int flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
@@ -131,7 +142,7 @@ bool _ngenxx_js_loadScript(JSContext * ctx, const std::string &script, const std
     if (isModule)
     {
         if (JS_VALUE_GET_TAG(jEvalRet) != JS_TAG_MODULE)
-        {// Check whether it's a JS Module or not，or QJS may crash
+        { // Check whether it's a JS Module or not，or QJS may crash
             ngenxxLogPrint(NGenXXLogLevelX::Error, "JS try to load invalid module");
             JS_FreeValue(ctx, jEvalRet);
             return false;
@@ -139,7 +150,7 @@ bool _ngenxx_js_loadScript(JSContext * ctx, const std::string &script, const std
         js_module_set_import_meta(ctx, jEvalRet, false, true);
         JSValue jEvalFuncRet = JS_EvalFunction(ctx, jEvalRet);
         JS_FreeValue(ctx, jEvalFuncRet);
-        //this->jValues.push_back(jEvalRet);//Can not free here, or QJS may crash
+        // this->jValues.push_back(jEvalRet);//Can not free here, or QJS may crash
     }
     else
     {
@@ -149,7 +160,6 @@ bool _ngenxx_js_loadScript(JSContext * ctx, const std::string &script, const std
     return res;
 }
 
-
 /// A JS Worker created a all new independent `JSContext`，so we should load the js files and modules again.
 /// By default, we just load the built-in modules.
 static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
@@ -157,12 +167,14 @@ static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
     JSContext *ctx;
     ctx = JS_NewContext(rt);
     if (!ctx)
+    {
         return NULL;
-    
+    }
+
     js_std_add_helpers(ctx, 0, NULL);
     js_init_module_std(ctx, "qjs:std");
     js_init_module_os(ctx, "qjs:os");
-    
+
     _ngenxx_js_loadScript(ctx, IMPORT_STD_OS_JS, "import-std-os.js", true);
 
     return ctx;
@@ -179,12 +191,14 @@ NGenXX::JsBridge::JsBridge()
 
     this->context = _ngenxx_js_newContext(this->runtime);
     this->jValues.push_back(JS_GetGlobalObject(this->context));
-        
-    this->loopThreadP = std::thread([&ctx = this->context]() {
-        _ngenxx_js_loop_startP(ctx);
+
+    this->loopThreadP = std::thread([&ctx = this->context]() 
+    { 
+        _ngenxx_js_loop_startP(ctx); 
     });
-    this->loopThreadT = std::thread([&ctx = this->context]() {
-        _ngenxx_js_loop_startT(ctx);
+    this->loopThreadT = std::thread([&ctx = this->context]() 
+    { 
+        _ngenxx_js_loop_startT(ctx); 
     });
 }
 
@@ -208,7 +222,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
         }
     }
 
-    this->jValues.push_back(jFunc);//Can not free here, will be called in future
+    this->jValues.push_back(jFunc); // Can not free here, will be called in future
 
     return res;
 }
@@ -260,7 +274,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
-            jRes = js_std_await_fix(this->context, jRes);   // Handle promise if needed
+            jRes = js_std_await_fix(this->context, jRes); // Handle promise if needed
             s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
         }
         JS_FreeValue(this->context, jRes);
@@ -285,10 +299,11 @@ JSValue NGenXX::JsBridge::newPromiseS(JSValue jThis, std::function<const std::st
         JS_FreeValue(this->context, promise);
         return JS_EXCEPTION;
     }
-    
+
     JS_DupValue(this->context, funcs[0]);
-    
-    this->promiseThreadV.emplace_back([&ctx = this->context, &jThis = jThis, &promise = promise, &resolve = funcs[0], &reject = funcs[1], cb = f]() {
+
+    this->promiseThreadV.emplace_back([&ctx = this->context, &jThis = jThis, &promise = promise, &resolve = funcs[0], &reject = funcs[1], cb = f]() 
+    {
         auto ret = cb();
         
         const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
@@ -306,7 +321,7 @@ JSValue NGenXX::JsBridge::newPromiseS(JSValue jThis, std::function<const std::st
         JS_FreeValue(ctx, jRet);
         JS_FreeValue(ctx, resolve);
         JS_FreeValue(ctx, reject);
-        JS_FreeValue(ctx, promise);
+        JS_FreeValue(ctx, promise); 
     });
 
     return promise;
@@ -323,17 +338,20 @@ NGenXX::JsBridge::~JsBridge()
     {
         this->loopThreadT.join();
     }
-    for (auto& thread : this->promiseThreadV) {
+    for (auto &thread : this->promiseThreadV)
+    {
         thread.join();
     }
-    
+
     js_std_set_worker_new_context_func(NULL);
 
     for (auto &jv : this->jValues)
     {
         uint32_t tag = JS_VALUE_GET_TAG(jv);
         if (tag != JS_TAG_MODULE)
+        {
             JS_FreeValue(this->context, jv);
+        }
     }
     JS_FreeContext(this->context);
 

@@ -24,17 +24,29 @@ namespace NGenXX
                 auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
                 const size_t tagLen = tagBits / 8;
                 if (inBytes == NULL || inLen <= 0)
+                {
                     return false;
+                }
                 if (keyBytes == NULL || (keyLen != 16 && keyLen != 24 && keyLen != 32))
+                {
                     return false;
+                }
                 if (initVectorBytes == NULL || initVectorLen != 12)
+                {
                     return false;
+                }
                 if (aadLen > 16 || (aadLen > 0 && aadBytes == NULL))
+                {
                     return false;
+                }
                 if (tagBits != 96 && tagBits != 104 && tagBits != 112 && tagBits != 120 && tagBits != 128)
+                {
                     return false;
+                }
                 if (inLen <= tagLen)
+                {
                     return false;
+                }
                 return true;
             }
 

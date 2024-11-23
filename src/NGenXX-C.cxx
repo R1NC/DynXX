@@ -146,7 +146,9 @@ const byte *ngenxx_crypto_aes_encrypt(const byte *inBytes, const size_t inLen, c
 {
     auto t = ngenxxCryptoAesEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen));
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -155,7 +157,9 @@ const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, const size_t inLen, c
 {
     auto t = ngenxxCryptoAesDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen));
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -169,7 +173,9 @@ const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, const size_t inLe
     auto t = ngenxxCryptoAesGcmEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen), wrapBytes(initVectorBytes, initVectorLen), tagBits,
                                        wrapBytes(aadBytes, aadLen));
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -183,7 +189,9 @@ const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size_t inLe
     auto t = ngenxxCryptoAesGcmDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen), wrapBytes(initVectorBytes, initVectorLen), tagBits,
                                        wrapBytes(aadBytes, aadLen));
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -192,7 +200,9 @@ const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size_t inLen, size
 {
     auto t = ngenxxCryptoHashMd5(wrapBytes(inBytes, inLen));
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -201,7 +211,9 @@ const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size_t inLen, s
 {
     auto t = ngenxxCryptoHashSha256(wrapBytes(inBytes, inLen));
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -210,7 +222,9 @@ const byte *ngenxx_crypto_base64_encode(const byte *inBytes, const size_t inLen,
 {
     auto t = ngenxxCryptoBase64Encode(wrapBytes(inBytes, inLen));
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -219,7 +233,9 @@ const byte *ngenxx_crypto_base64_decode(const byte *inBytes, const size_t inLen,
 {
     auto t = ngenxxCryptoBase64Decode(wrapBytes(inBytes, inLen));
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -372,7 +388,10 @@ EXPORT_AUTO
 const char **ngenxx_store_kv_all_keys(void *const conn, size_t *len)
 {
     auto t = ngenxxStoreKvAllKeys(conn);
-    *len = t.size();
+    if (len)
+    {
+        *len = t.size();
+    }
     return copyStrVector(t, NGENXX_STORE_KV_KEY_MAX_LENGTH);
 }
 
@@ -475,7 +494,9 @@ const byte *ngenxx_z_zip_process_do(void *const zip, size_t *outLen)
 {
     auto t = ngenxxZZipProcessDo(zip);
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -508,7 +529,9 @@ const byte *ngenxx_z_unzip_process_do(void *const unzip, size_t *outLen)
 {
     auto t = ngenxxZUnzipProcessDo(unzip);
     if (outLen)
+    {
         *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -557,7 +580,10 @@ const byte *ngenxx_z_bytes_zip(const int mode, const size_t bufferSize, const in
 {
     auto t = ngenxxZBytesZip(wrapBytes(inBytes, inLen),
                              static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
-    *outLen = t.size();
+    if (outLen)
+    {
+        *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -566,6 +592,9 @@ const byte *ngenxx_z_bytes_unzip(const size_t bufferSize, const int format, cons
 {
     auto t = ngenxxZBytesUnzip(wrapBytes(inBytes, inLen),
                                bufferSize, static_cast<NGenXXZFormatX>(format));
-    *outLen = t.size();
+    if (outLen)
+    {
+        *outLen = t.size();
+    }
     return copyBytes(t);
 }

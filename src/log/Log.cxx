@@ -18,7 +18,9 @@ static int _NGenXX_Log_level = NGenXXLogLevelNone;
 void NGenXX::Log::setLevel(const int level)
 {
     if (level < NGenXXLogLevelDebug || level > NGenXXLogLevelNone)
+    {
         return;
+    }
     _NGenXX_Log_level = level;
 }
 
@@ -30,7 +32,9 @@ void NGenXX::Log::setCallback(const std::function<void(const int level, const ch
 void NGenXX::Log::print(const int level, const std::string &content)
 {
     if (level < _NGenXX_Log_level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone)
+    {
         return;
+    }
     const char *cContent = content.c_str();
     if (_NGenXX_Log_callback)
     {

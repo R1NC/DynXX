@@ -27,7 +27,7 @@ NGenXX::Store::KV::Connection *NGenXX::Store::KV::open(const std::string &_id)
 void NGenXX::Store::KV::closeAll()
 {
     const std::lock_guard<std::mutex> lock(this->mutex);
-    for (auto& it : this->conns)
+    for (auto &it : this->conns)
     {
         delete it.second;
         it.second = nullptr;

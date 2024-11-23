@@ -150,7 +150,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
 
         struct curl_slist *headerList = NULL;
-        for (auto& it : headers)
+        for (auto &it : headers)
         {
             ngenxxLogPrint(NGenXXLogLevelX::Debug, "HttpClient.request header: " + it);
             headerList = curl_slist_append(headerList, it.c_str());
@@ -178,7 +178,9 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         char *contentType;
         curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
         if (contentType)
+        {
             rsp.contentType = contentType;
+        }
 
         if (curlCode != CURLE_OK)
         {

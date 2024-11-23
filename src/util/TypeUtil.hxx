@@ -28,7 +28,9 @@ static inline const byte *copyBytes(const Bytes &t)
     auto cs = t.data();
     auto len = t.size();
     if (cs == NULL || len <= 0)
+    {
         return NULL;
+    }
     const byte *ncs = reinterpret_cast<byte *>(malloc(len + 1));
     std::memset(reinterpret_cast<void *>(const_cast<byte *>(ncs)), 0, len + 1);
     std::memcpy(reinterpret_cast<void *>(const_cast<byte *>(ncs)), cs, len);
@@ -43,7 +45,9 @@ static inline const Bytes trimBytes(const Bytes &bytes)
     for (auto i = len - 1; i > 0; i--)
     {
         if (data[i] <= 0)
+        {
             fixedLen--;
+        }
     }
     return Bytes(bytes.begin(), bytes.begin() + fixedLen);
 }

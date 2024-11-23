@@ -18,7 +18,9 @@ constexpr int OpenSSL_AES_Key_BITS = 128;
 bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
 {
     if (len <= 0 || bytes == NULL)
+    {
         return false;
+    }
     int ret = RAND_bytes(bytes, static_cast<int>(len));
     return ret != -1;
 }
@@ -28,7 +30,9 @@ const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
+    {
         return BytesEmpty;
+    }
     // keyLen = AES_BLOCK_SIZE * 8;
     size_t outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
@@ -65,7 +69,9 @@ const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
+    {
         return BytesEmpty;
+    }
     // keyLen = AES_BLOCK_SIZE * 8;
     size_t outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
@@ -104,11 +110,17 @@ const EVP_CIPHER *aesGcmCipher(const Bytes &keyBytes)
     if (key != NULL && keyLen > 0)
     {
         if (keyLen == 16)
+        {
             return EVP_aes_128_gcm();
+        }
         if (keyLen == 24)
+        {
             return EVP_aes_256_gcm();
+        }
         if (keyLen == 32)
+        {
             return EVP_aes_128_gcm();
+        }
     }
     return NULL;
 }
@@ -116,7 +128,9 @@ const EVP_CIPHER *aesGcmCipher(const Bytes &keyBytes)
 const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
+    {
         return BytesEmpty;
+    }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
     const size_t tagLen = tagBits / 8;
@@ -201,7 +215,9 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
 const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
+    {
         return BytesEmpty;
+    }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen_ = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
     const size_t tagLen = tagBits / 8;
@@ -288,7 +304,9 @@ const Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     auto in = inBytes.data();
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0)
+    {
         return BytesEmpty;
+    }
     size_t outLen = MD5_BYTES_LEN;
     byte out[outLen];
     std::memset(out, 0, outLen);
@@ -324,7 +342,9 @@ const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     auto in = inBytes.data();
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0)
+    {
         return BytesEmpty;
+    }
     size_t outLen = SHA256_BYTES_LEN;
     byte out[outLen];
     std::memset(out, 0, outLen);
@@ -360,7 +380,9 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     auto in = inBytes.data();
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0)
+    {
         return BytesEmpty;
+    }
 
     BIO *b64, *bmem;
 
@@ -376,7 +398,9 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     char *outBytes = nullptr;
     size_t outLen = BIO_get_mem_data(bmem, &outBytes);
     if (outLen <= 0)
+    {
         return BytesEmpty;
+    }
 
     auto out = wrapBytes(reinterpret_cast<byte*>(outBytes), outLen);
 
@@ -390,7 +414,9 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     auto in = inBytes.data();
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0)
+    {
         return BytesEmpty;
+    }
 
     BIO *bio, *b64;
     bio = BIO_new_mem_buf(in, -1);
@@ -401,7 +427,9 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     byte outBytes[inLen * 2];
     size_t outLen = BIO_read(bio, outBytes, static_cast<int>(inLen));
     if (outLen <= 0)
+    {
         return BytesEmpty;
+    }
 
     auto out = wrapBytes(outBytes, outLen);
     BIO_free_all(bio);

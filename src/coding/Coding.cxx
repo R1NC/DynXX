@@ -10,18 +10,24 @@
 const std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
 {
     if (bytes.empty())
+    {
         return "";
+    }
     std::stringstream strStream;
     strStream << std::hex;
     for (byte byte : bytes)
+    {
         strStream << std::setw(2) << std::setfill('0') << (int)byte;
+    }
     return strStream.str();
 }
 
 const Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
 {
     if (str.length() == 0)
+    {
         return BytesEmpty;
+    }
     size_t outLen = str.length();
     Bytes bytes;
     size_t j(0);

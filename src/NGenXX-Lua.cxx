@@ -133,21 +133,27 @@ DEF_LUA_FUNC_STRING(ngenxx_z_bytes_unzipL, ngenxx_z_bytes_unzipS)
 bool ngenxxLuaLoadF(const std::string &f)
 {
     if (_ngenxx_lua == nullptr || f.length() == 0)
+    {
         return false;
+    }
     return _ngenxx_lua->loadFile(f) == LUA_OK;
 }
 
 bool ngenxxLuaLoadS(const std::string &s)
 {
     if (_ngenxx_lua == nullptr || s.length() == 0)
+    {
         return false;
+    }
     return _ngenxx_lua->loadScript(s) == LUA_OK;
 }
 
 const std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
 {
     if (_ngenxx_lua == nullptr || f.length() == 0)
+    {
         return NULL;
+    }
     return _ngenxx_lua->callFunc(f, ps);
 }
 
@@ -243,7 +249,9 @@ void _ngenxx_export_funcs_for_lua()
 void _ngenxx_lua_init(void)
 {
     if (_ngenxx_lua != nullptr)
+    {
         return;
+    }
     _ngenxx_lua = std::make_shared<NGenXX::LuaBridge>();
     _ngenxx_export_funcs_for_lua();
 }
@@ -251,6 +259,8 @@ void _ngenxx_lua_init(void)
 void _ngenxx_lua_release(void)
 {
     if (_ngenxx_lua == nullptr)
+    {
         return;
+    }
     _ngenxx_lua.reset();
 }
