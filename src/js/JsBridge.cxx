@@ -179,8 +179,6 @@ NGenXX::JsBridge::JsBridge()
 
     this->context = _ngenxx_js_newContext(this->runtime);
     this->jValues.push_back(JS_GetGlobalObject(this->context));
-
-    this->loadScript(IMPORT_STD_OS_JS, "import-std-os.js", true);
         
     this->loopThreadP = std::thread([&ctx = this->context]() {
         _ngenxx_js_loop_startP(ctx);
@@ -325,6 +323,9 @@ NGenXX::JsBridge::~JsBridge()
     {
         this->loopThreadT.join();
     }
+    for (auto& thread : this->promiseThreadV) {
+        thread.join();
+    }
     
     js_std_set_worker_new_context_func(NULL);
 
@@ -340,8 +341,4 @@ NGenXX::JsBridge::~JsBridge()
     JS_FreeRuntime(this->runtime);
 
     delete _ngenxx_js_mutex;
-
-    for (auto& thread : this->promiseThreadV) {
-        thread.join();
-    }
 }
