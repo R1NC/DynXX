@@ -261,7 +261,8 @@ const std::string NGenXXHttpResponse::toJson()
 
     cJSON *cjHeaders = cJSON_CreateObject();
     std::for_each(this->headers.begin(), this->headers.end(), 
-        [&cjHeaders](const auto& pair) {
+        [&cjHeaders](const auto& pair) 
+        {
             auto [k, v] = pair;
             cJSON_AddItemToObject(cjHeaders, k.c_str(), cJSON_CreateString(v.c_str()));
         }

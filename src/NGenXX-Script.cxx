@@ -56,7 +56,7 @@ Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK, const c
     Bytes data;
     if (len > 0)
     {
-        void *byte_vNode = decoder.readNode(NULL, bytesK);
+        auto byte_vNode = decoder.readNode(NULL, bytesK);
         if (byte_vNode)
         {
             decoder.readChildren(byte_vNode,
@@ -80,7 +80,7 @@ const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, con
     {
         return v;
     }
-    void *str_vNode = decoder.readNode(NULL, strVK);
+    auto str_vNode = decoder.readNode(NULL, strVK);
     if (str_vNode)
     {
         decoder.readChildren(str_vNode,
@@ -227,7 +227,7 @@ const std::string ngenxx_store_sqlite_openS(const char *json)
         return s;
     }
 
-    void *db = ngenxxStoreSqliteOpen(_id);
+    auto db = ngenxxStoreSqliteOpen(_id);
     if (db == nullptr)
     {
         return s;
@@ -267,7 +267,7 @@ const std::string ngenxx_store_sqlite_query_doS(const char *json)
         return s;
     }
 
-    void *res = ngenxxStoreSqliteQueryDo(reinterpret_cast<void *>(conn), sql);
+    auto res = ngenxxStoreSqliteQueryDo(reinterpret_cast<void *>(conn), sql);
     if (res == nullptr)
     {
         return s;
@@ -391,7 +391,7 @@ const std::string ngenxx_store_kv_openS(const char *json)
         return s;
     }
 
-    void *res = ngenxxStoreKvOpen(_id);
+    auto res = ngenxxStoreKvOpen(_id);
     if (res == nullptr)
     {
         return s;
@@ -934,7 +934,7 @@ const std::string ngenxx_z_zip_initS(const char *json)
     size_t bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
     int format = decoder.readNumber(decoder.readNode(NULL, "format"));
 
-    void *zip = ngenxxZZipInit(static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
+    auto zip = ngenxxZZipInit(static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
     if (zip == nullptr)
     {
         return s;
@@ -1027,7 +1027,7 @@ const std::string ngenxx_z_unzip_initS(const char *json)
     size_t bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
     int format = decoder.readNumber(decoder.readNode(NULL, "format"));
 
-    void *unzip = ngenxxZUnzipInit(bufferSize, static_cast<NGenXXZFormatX>(format));
+    auto unzip = ngenxxZUnzipInit(bufferSize, static_cast<NGenXXZFormatX>(format));
     if (unzip == nullptr)
     {
         return s;

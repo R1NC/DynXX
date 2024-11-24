@@ -250,18 +250,14 @@ bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::FILE *inFi
 const Bytes zProcessBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase &zb)
 {
     size_t pos = 0;
-    std::vector<byte> outBytes;
+    Bytes outBytes;
     auto b = zProcess(bufferSize, 
         [bufferSize, &in, &pos]() -> Bytes
         {
             auto len = std::min(bufferSize, in.size() - pos);
-            Bytes bytes;
-            for (auto i = 0; i < len; i++)
-            {
-                bytes.push_back(in[pos]);
-                pos++;
-            }
-            return bytes; 
+            Bytes bytes(in.begin() + pos, in.begin() + pos + len);
+            pos += len;
+            return bytes;
         }, 
         [&outBytes](Bytes bytes) -> void
         {
@@ -270,7 +266,6 @@ const Bytes zProcessBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::Z
         []() -> void {}, 
         zb
     );
-
     if (!b)
     {
         return BytesEmpty;

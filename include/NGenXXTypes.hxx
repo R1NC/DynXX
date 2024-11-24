@@ -10,6 +10,7 @@
 #include <variant>
 
 using Any = std::variant<int64_t, double, std::string>;
+#define AnyEmpty {}
 
 using Bytes = std::vector<byte>;
 #define BytesEmpty {}

@@ -122,7 +122,7 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
     if (this->stmt == NULL)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readColumn STMT NULL");
-        return {};
+        return AnyEmpty;
     }
     for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
     {
@@ -143,7 +143,7 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
             }
         }
     }
-    return {};
+    return AnyEmpty;
 }
 
 NGenXX::Store::SQLite::Connection::QueryResult::~QueryResult()

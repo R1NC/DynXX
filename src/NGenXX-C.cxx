@@ -93,7 +93,10 @@ EXPORT_AUTO
 const byte *ngenxx_coding_hex_str2bytes(const char *str, size_t *outLen)
 {
     auto t = ngenxxCodingHexStr2bytes(str ?: "");
-    *outLen = t.size();
+    if (outLen)
+    {
+        *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
@@ -115,7 +118,10 @@ EXPORT_AUTO
 const byte *ngenxx_coding_str2bytes(const char *str, size_t *outLen)
 {
     auto t = ngenxxCodingStr2bytes(str ?: "");
-    *outLen = t.size();
+    if (outLen)
+    {
+        *outLen = t.size();
+    }
     return copyBytes(t);
 }
 
