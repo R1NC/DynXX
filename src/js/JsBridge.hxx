@@ -64,8 +64,12 @@ namespace NGenXX
          */
         std::string callFunc(const std::string &func, const std::string &params);
 
-                
-        JSValue newPromiseS(JSValue jThis, std::function<const std::string()> f);
+        /**
+         * @brief New JS promise
+         * @param f Callback to do work in background
+         * @return JSValue of the promise
+         */        
+        JSValue newPromiseS(std::function<const std::string()> f);
 
         /**
          * Relase JS VM

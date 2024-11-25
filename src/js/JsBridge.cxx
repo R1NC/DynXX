@@ -13,6 +13,11 @@ constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
+typedef struct JS_Promise {
+    JSValue p;
+    JSValue f[2];
+}JS_Promise;
+
 static uv_loop_t *_ngenxx_js_uv_loop_p = nullptr;
 static uv_loop_t *_ngenxx_js_uv_loop_t = nullptr;
 static uv_timer_t *_ngenxx_js_uv_timer_p = nullptr;
@@ -288,29 +293,26 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     return s;
 }
 
-JSValue NGenXX::JsBridge::newPromiseS(JSValue jThis, std::function<const std::string()> f)
+JSValue NGenXX::JsBridge::newPromiseS(std::function<const std::string()> f)
 {
+    auto jPromise = new JS_Promise();
     JSValue funcs[2];
-    JSValue promise = JS_NewPromiseCapability(this->context, funcs);
-    if (JS_IsException(promise))
+    jPromise->p = JS_NewPromiseCapability(this->context, jPromise->f);
+    if (JS_IsException(jPromise->p))
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewPromise failed ->");
         _ngenxx_js_dump_err(this->context);
-        JS_FreeValue(this->context, promise);
+        JS_FreeValue(this->context, jPromise->p);
         return JS_EXCEPTION;
     }
-
-    JS_DupValue(this->context, funcs[0]);
-
-    this->promiseThreadV.emplace_back([&ctx = this->context, &jThis = jThis, &promise = promise, &resolve = funcs[0], &reject = funcs[1], cb = f]() 
-    {
+    
+    this->promiseThreadV.emplace_back([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
         
         const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
         
         JSValue jRet = JS_NewString(ctx, ret.c_str() ? : "");
-        JSValue jCallRet = JS_Call(ctx, resolve, jThis, 1, &jRet);
-        
+        JSValue jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
         if (JS_IsException(jCallRet))
         {
             ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_CallPromise failed ->");
@@ -319,12 +321,13 @@ JSValue NGenXX::JsBridge::newPromiseS(JSValue jThis, std::function<const std::st
         
         JS_FreeValue(ctx, jCallRet);
         JS_FreeValue(ctx, jRet);
-        JS_FreeValue(ctx, resolve);
-        JS_FreeValue(ctx, reject);
-        JS_FreeValue(ctx, promise); 
+        JS_FreeValue(ctx, jPromise->f[0]);
+        JS_FreeValue(ctx, jPromise->f[1]);
+//        JS_FreeValue(ctx, jPromise->p);
+        delete(jPromise);
     });
 
-    return promise;
+    return jPromise->p;
 }
 
 NGenXX::JsBridge::~JsBridge()
