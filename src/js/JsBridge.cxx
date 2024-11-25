@@ -293,16 +293,43 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     return s;
 }
 
-JSValue NGenXX::JsBridge::newPromiseS(std::function<const std::string()> f)
+JS_Promise* _ngenxx_js_promise_new(JSContext *ctx)
 {
     auto jPromise = new JS_Promise();
     JSValue funcs[2];
-    jPromise->p = JS_NewPromiseCapability(this->context, jPromise->f);
+    jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
     if (JS_IsException(jPromise->p))
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewPromise failed ->");
-        _ngenxx_js_dump_err(this->context);
-        JS_FreeValue(this->context, jPromise->p);
+        _ngenxx_js_dump_err(ctx);
+        JS_FreeValue(ctx, jPromise->p);
+        return nullptr;
+    }
+    return jPromise;
+}
+
+void _ngenxx_js_promise_callback(JSContext *ctx, JS_Promise* jPromise, JSValue jRet)
+{
+    JSValue jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
+    if (JS_IsException(jCallRet))
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_CallPromise failed ->");
+        _ngenxx_js_dump_err(ctx);
+    }
+
+    JS_FreeValue(ctx, jCallRet);
+    JS_FreeValue(ctx, jRet);
+    JS_FreeValue(ctx, jPromise->f[0]);
+    JS_FreeValue(ctx, jPromise->f[1]);
+    //JS_FreeValue(ctx, jPromise->p);
+    delete (jPromise);
+}
+
+JSValue NGenXX::JsBridge::newPromiseB(std::function<const bool()> f)
+{
+    auto jPromise = _ngenxx_js_promise_new(this->context);
+    if (jPromise == nullptr)
+    {
         return JS_EXCEPTION;
     }
     
@@ -310,21 +337,31 @@ JSValue NGenXX::JsBridge::newPromiseS(std::function<const std::string()> f)
         auto ret = cb();
         
         const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
-        
+
+        JSValue jRet = JS_NewBool(ctx, ret);
+
+        _ngenxx_js_promise_callback(ctx, jPromise, jRet);
+    });
+
+    return jPromise->p;
+}
+
+JSValue NGenXX::JsBridge::newPromiseS(std::function<const std::string()> f)
+{
+    auto jPromise = _ngenxx_js_promise_new(this->context);
+    if (jPromise == nullptr)
+    {
+        return JS_EXCEPTION;
+    }
+    
+    this->promiseThreadV.emplace_back([&ctx = this->context, jPromise = jPromise, cb = f]() {
+        auto ret = cb();
+
+        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+
         JSValue jRet = JS_NewString(ctx, ret.c_str() ? : "");
-        JSValue jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
-        if (JS_IsException(jCallRet))
-        {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_CallPromise failed ->");
-            _ngenxx_js_dump_err(ctx);
-        }
-        
-        JS_FreeValue(ctx, jCallRet);
-        JS_FreeValue(ctx, jRet);
-        JS_FreeValue(ctx, jPromise->f[0]);
-        JS_FreeValue(ctx, jPromise->f[1]);
-//        JS_FreeValue(ctx, jPromise->p);
-        delete(jPromise);
+
+        _ngenxx_js_promise_callback(ctx, jPromise, jRet);
     });
 
     return jPromise->p;

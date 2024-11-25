@@ -65,9 +65,16 @@ namespace NGenXX
         std::string callFunc(const std::string &func, const std::string &params);
 
         /**
-         * @brief New JS promise
+         * @brief New JS `Promise<boolean>`
          * @param f Callback to do work in background
-         * @return JSValue of the promise
+         * @return JSValue of the `Promise<boolean>`
+         */        
+        JSValue newPromiseB(std::function<const bool()> f);
+
+        /**
+         * @brief New JS `Promise<string>`
+         * @param f Callback to do work in background
+         * @return JSValue of the `Promise<string>`
          */        
         JSValue newPromiseS(std::function<const std::string()> f);
 

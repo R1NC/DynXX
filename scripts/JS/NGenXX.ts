@@ -78,15 +78,15 @@ declare function NGenXXNetHttpRequest(
     formFieldMimeArray?: string[],
     formFieldDataArray?: string[],
     timeout?: number
-): NGenXXHttpResponse
+): Promise<NGenXXHttpResponse>
 
 /// Store.SQLite
 
 declare function NGenXXStoreSQLiteOpen(_id: string): string
 
-declare function NGenXXStoreSQLiteExecute(conn: string, sql: string): boolean
+declare function NGenXXStoreSQLiteExecute(conn: string, sql: string): Promise<boolean>
 
-declare function NGenXXStoreSQLiteQueryDo(conn: string, sql: string): string
+declare function NGenXXStoreSQLiteQueryDo(conn: string, sql: string): Promise<string>
 
 declare function NGenXXStoreSQLiteQueryReadRow(query_result: string): boolean
 

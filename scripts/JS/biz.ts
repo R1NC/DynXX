@@ -11,7 +11,7 @@ function jTestDeviceInfo(): void {
     NGenXXLogPrint(NGenXXLogLevel.Debug, `CPU Arch: ${cpuArch}`)
 }
 
-function jTestNetHttpReq(url: string): string {
+async function jTestNetHttpReq(url: string): Promise<string> {
     let method: number = NGenXXHttpMethod.Get
 
     let paramMap: Map<string, number | string> = new Map()
@@ -22,7 +22,7 @@ function jTestNetHttpReq(url: string): string {
     headerMap.set('User-Agent', 'NGenXX')
     headerMap.set('Cache-Control', 'no-cache')
 
-    let rsp: NGenXXHttpResponse = NGenXXNetHttpRequest(url, method, paramMap, headerMap)
+    let rsp: NGenXXHttpResponse = await NGenXXNetHttpRequest(url, method, paramMap, headerMap)
     return JSON.stringify(rsp);
 }
 
@@ -127,12 +127,12 @@ INSERT OR IGNORE INTO TestTable (s, i, f) VALUES
 
 let sqlQuery: string = `SELECT * FROM TestTable;`
 
-function jTestStoreSQLite(): void {
+async function jTestStoreSQLite(): Promise<void> {
     let dbId: string = 'test_db'
     let conn: string = NGenXXStoreSQLiteOpen(dbId)
     if (conn) {
-        if (NGenXXStoreSQLiteExecute(conn, sqlPrepareData)) {
-            let queryResult: string = NGenXXStoreSQLiteQueryDo(conn, sqlQuery)
+        if (await NGenXXStoreSQLiteExecute(conn, sqlPrepareData)) {
+            let queryResult: string = await NGenXXStoreSQLiteQueryDo(conn, sqlQuery)
             if (queryResult) {
                 while (NGenXXStoreSQLiteQueryReadRow(queryResult)) {
                     let s: string = NGenXXStoreSQLiteQueryReadColumnText(queryResult, 's')

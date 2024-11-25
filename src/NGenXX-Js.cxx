@@ -69,6 +69,13 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
         return JS_NewFloat64(ctx, res);                                                    \
     }
 
+#define DEF_JS_FUNC_BOOL_ASYNC(fJ, fS)                                                \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
+    {                                                                                 \
+        std::string json = JS_ToCString(ctx, argv[0]);                                \
+        return _ngenxx_js->newPromiseB([arg = json]() { return fS(arg.c_str()); });   \
+    }
+
 #define DEF_JS_FUNC_STRING_ASYNC(fJ, fS)                                              \
     static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
     {                                                                                 \
@@ -104,7 +111,7 @@ DEF_JS_FUNC_VOID(ngenxx_log_printJ, ngenxx_log_printS)
 DEF_JS_FUNC_STRING_ASYNC(ngenxx_net_http_requestJ, ngenxx_net_http_requestS)
 
 DEF_JS_FUNC_STRING(ngenxx_store_sqlite_openJ, ngenxx_store_sqlite_openS)
-DEF_JS_FUNC_BOOL(ngenxx_store_sqlite_executeJ, ngenxx_store_sqlite_executeS)
+DEF_JS_FUNC_BOOL_ASYNC(ngenxx_store_sqlite_executeJ, ngenxx_store_sqlite_executeS)
 DEF_JS_FUNC_STRING_ASYNC(ngenxx_store_sqlite_query_doJ, ngenxx_store_sqlite_query_doS)
 DEF_JS_FUNC_BOOL(ngenxx_store_sqlite_query_read_rowJ, ngenxx_store_sqlite_query_read_rowS)
 DEF_JS_FUNC_STRING(ngenxx_store_sqlite_query_read_column_textJ, ngenxx_store_sqlite_query_read_column_textS)
