@@ -65,6 +65,7 @@ const enum NGenXXHttpMethod {
 type NGenXXHttpResponse = {
     code: number;
     contentType: string;
+    headers: any;
     data: string;
 };
 
