@@ -14,6 +14,8 @@ constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
+constexpr size_t NGenXX_JS_Sleep_Interval = 1;
+
 typedef struct NGenXX_JS_Promise
 {
     JSValue p;
@@ -68,7 +70,7 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_time
         uv_timer = reinterpret_cast<uv_timer_t *>(malloc(sizeof(uv_timer_t)));
         uv_timer_init(uv_loop, uv_timer);
         uv_timer->data = ctx;
-        uv_timer_start(uv_timer, cb, 1, 1);
+        uv_timer_start(uv_timer, cb, NGenXX_JS_Sleep_Interval, NGenXX_JS_Sleep_Interval);
     }
     else
     {
@@ -273,13 +275,12 @@ static inline const std::string _ngenxx_js_jstr2stdstr(JSContext *ctx, JSValue j
 JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
 {
     JSValue ret;
-    constexpr size_t SleepInterval = 10;
     for (;;)
     {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
         if (!_ngenxx_js_mutex->try_lock())
         {
-            sleepForMicroSecs(SleepInterval);
+            sleepForMicroSecs(NGenXX_JS_Sleep_Interval);
             continue;
         }
         int state = JS_PromiseState(ctx, obj);
@@ -299,7 +300,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
         {
             /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
             _ngenxx_js_mutex->unlock();
-            sleepForMicroSecs(SleepInterval);
+            sleepForMicroSecs(NGenXX_JS_Sleep_Interval);
         }
         else
         {
