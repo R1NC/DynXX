@@ -13,10 +13,11 @@ constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
-typedef struct JS_Promise {
+typedef struct JS_Promise
+{
     JSValue p;
     JSValue f[2];
-}JS_Promise;
+} JS_Promise;
 
 static uv_loop_t *_ngenxx_js_uv_loop_p = nullptr;
 static uv_loop_t *_ngenxx_js_uv_loop_t = nullptr;
@@ -28,7 +29,8 @@ static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer)
 {
     JSContext *ctx = reinterpret_cast<JSContext *>(timer->data);
     /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-    if (_ngenxx_js_mutex->try_lock()) {
+    if (_ngenxx_js_mutex->try_lock())
+    {
         js_std_loop_promise(ctx);
         _ngenxx_js_mutex->unlock();
     }
@@ -38,7 +40,8 @@ static void _ngenxx_js_uv_timer_cb_t(uv_timer_t *timer)
 {
     JSContext *ctx = reinterpret_cast<JSContext *>(timer->data);
     /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-    if (_ngenxx_js_mutex->try_lock()) {
+    if (_ngenxx_js_mutex->try_lock())
+    {
         js_std_loop_timer(ctx);
         _ngenxx_js_mutex->unlock();
     }
@@ -269,7 +272,8 @@ static inline const std::string _ngenxx_j_jstr2stdstr(JSContext *ctx, JSValue js
 JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
 {
     JSValue ret;
-    for(;;) {
+    for (;;)
+    {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
         if (!_ngenxx_js_mutex->try_lock())
         {
@@ -277,19 +281,26 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
             continue;
         }
         int state = JS_PromiseState(ctx, obj);
-        if (state == JS_PROMISE_FULFILLED) {
+        if (state == JS_PROMISE_FULFILLED)
+        {
             ret = JS_PromiseResult(ctx, obj);
             JS_FreeValue(ctx, obj);
             break;
-        } else if (state == JS_PROMISE_REJECTED) {
+        }
+        else if (state == JS_PROMISE_REJECTED)
+        {
             ret = JS_Throw(ctx, JS_PromiseResult(ctx, obj));
             JS_FreeValue(ctx, obj);
             break;
-        } else if (state == JS_PROMISE_PENDING) {
+        }
+        else if (state == JS_PROMISE_PENDING)
+        {
             /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
             _ngenxx_js_mutex->unlock();
             std::this_thread::sleep_for(std::chrono::microseconds(10));
-        } else {
+        }
+        else
+        {
             /// Not a Promise: release the lock, return the result immediately.
             _ngenxx_js_mutex->unlock();
             ret = obj;
