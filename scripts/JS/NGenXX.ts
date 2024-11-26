@@ -197,13 +197,13 @@ declare function NGenXXZZipBytes(
     mode?: NGenXXZZipMode, 
     bufferSize?: number, 
     format?: NGenXXZFormat
-): number[]
+): Promise<number[]>
 
 declare function NGenXXZUnZipBytes(
     bytes: number[],
     bufferSize?: number, 
     format?: NGenXXZFormat
-): number[]
+): Promise<number[]>
 
 declare function NGenXXZZipStream(
     readFunc: () => number[],

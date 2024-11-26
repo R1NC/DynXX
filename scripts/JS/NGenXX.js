@@ -140,8 +140,11 @@ function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, rawBodyBytes, f
         "timeout": timeout
     });
 
-    let outJson = ngenxx_net_http_requestJ(inJson);
-    return JSON.parse(outJson);
+    return new Promise((resolve, reject)=>{
+        ngenxx_net_http_requestJ(inJson).then((outJson)=>{
+            resolve(JSON.parse(outJson));
+        });
+    });
 }
 
 function NGenXXStoreSQLiteOpen(_id) {
@@ -578,8 +581,11 @@ function NGenXXZZipBytes(bytes, mode, bufferSize, format) {
         "inBytes": bytes,
         "inLen": bytes.length
     });
-    let outJson = ngenxx_z_bytes_zipJ(inJson);
-    return _json2Array(outJson);
+    return new Promise((resolve, reject)=>{
+        ngenxx_z_bytes_zipJ(inJson).then((outJson)=>{
+            resolve(_json2Array(outJson));
+        });
+    });
 }
 
 function NGenXXZUnZipBytes(bytes, bufferSize, format) {
@@ -589,8 +595,11 @@ function NGenXXZUnZipBytes(bytes, bufferSize, format) {
         "inBytes": bytes,
         "inLen": bytes.length
     });
-    let outJson = ngenxx_z_bytes_unzipJ(inJson);
-    return _json2Array(outJson);
+    return new Promise((resolve, reject)=>{
+        ngenxx_z_bytes_unzipJ(inJson).then((outJson)=>{
+            resolve(_json2Array(outJson));
+        });
+    });
 }
 
 function _NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,

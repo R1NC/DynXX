@@ -11,34 +11,34 @@ function jTestDeviceInfo(): void {
     NGenXXLogPrint(NGenXXLogLevel.Debug, `CPU Arch: ${cpuArch}`)
 }
 
-async function jTestNetHttpReq(url: string): Promise<string> {
-    let method: number = NGenXXHttpMethod.Get
-
-    let paramMap: Map<string, number | string> = new Map()
-    paramMap.set('p0', 123)
-    paramMap.set('p1', 'abc')
-
-    let headerMap: Map<string, string> = new Map()
-    headerMap.set('User-Agent', 'NGenXX')
-    headerMap.set('Cache-Control', 'no-cache')
-
-    let rsp: NGenXXHttpResponse = await NGenXXNetHttpRequest(url, method, paramMap, headerMap)
-    return JSON.stringify(rsp);
-}
-
 function testMicrotask(): void {
     queueMicrotask(() => {
-        let rsp = jTestNetHttpReq('https://rinc.xyz')
-        NGenXXLogPrint(NGenXXLogLevel.Debug, `rsp: ${rsp}`)
+        jTestNetHttpReqPro('https://rinc.xyz').then((rsp)=>{
+            NGenXXLogPrint(NGenXXLogLevel.Debug, `rsp: ${rsp}`)
+        })
     })
 }
 
 function jTestNetHttpReqPro(url: string): Promise<string> {
-    if (url === undefined || url.trim() === "") {
-        return Promise.reject(new Error('invalid url'))
-    } else {
-        return Promise.resolve(jTestNetHttpReq(url))
-    }
+    return new Promise((resolve, reject) => {
+        if (url === undefined || url.trim() === "") {
+            reject(new Error('invalid url'))
+        }
+
+        let method: number = NGenXXHttpMethod.Get
+
+        let paramMap: Map<string, number | string> = new Map()
+        paramMap.set('p0', 123)
+        paramMap.set('p1', 'abc')
+
+        let headerMap: Map<string, string> = new Map()
+        headerMap.set('User-Agent', 'NGenXX')
+        headerMap.set('Cache-Control', 'no-cache')
+
+        NGenXXNetHttpRequest(url, method, paramMap, headerMap).then((rsp) => {
+            resolve(JSON.stringify(rsp))
+        })
+    })
 }
 
 function testPromise(): void {
@@ -127,28 +127,30 @@ INSERT OR IGNORE INTO TestTable (s, i, f) VALUES
 
 let sqlQuery: string = `SELECT * FROM TestTable;`
 
-async function jTestStoreSQLite(): Promise<void> {
+function jTestStoreSQLite(): void {
     let dbId: string = 'test_db'
     let conn: string = NGenXXStoreSQLiteOpen(dbId)
     if (conn) {
-        if (await NGenXXStoreSQLiteExecute(conn, sqlPrepareData)) {
-            let queryResult: string = await NGenXXStoreSQLiteQueryDo(conn, sqlQuery)
-            if (queryResult) {
-                while (NGenXXStoreSQLiteQueryReadRow(queryResult)) {
-                    let s: string = NGenXXStoreSQLiteQueryReadColumnText(queryResult, 's')
-                    let i: number = NGenXXStoreSQLiteQueryReadColumnInteger(queryResult, 'i')
-                    let f: number = NGenXXStoreSQLiteQueryReadColumnFloat(queryResult, 'f')
-                    NGenXXLogPrint(NGenXXLogLevel.Debug, `s:${s} i:${i} f:${f}`)
-                }
-
-                NGenXXStoreSQLiteQueryDrop(queryResult)
+        NGenXXStoreSQLiteExecute(conn, sqlPrepareData).then((exeSuccess)=>{
+            if (exeSuccess) {
+                NGenXXStoreSQLiteQueryDo(conn, sqlQuery).then((queryResult)=>{
+                    if (queryResult) {
+                        while (NGenXXStoreSQLiteQueryReadRow(queryResult)) {
+                            let s: string = NGenXXStoreSQLiteQueryReadColumnText(queryResult, 's')
+                            let i: number = NGenXXStoreSQLiteQueryReadColumnInteger(queryResult, 'i')
+                            let f: number = NGenXXStoreSQLiteQueryReadColumnFloat(queryResult, 'f')
+                            NGenXXLogPrint(NGenXXLogLevel.Debug, `s:${s} i:${i} f:${f}`)
+                        }
+                        NGenXXStoreSQLiteQueryDrop(queryResult)
+                    } else {
+                        NGenXXLogPrint(NGenXXLogLevel.Debug, `SQLite query failed!!!`)
+                    }
+                })
             } else {
-                NGenXXLogPrint(NGenXXLogLevel.Debug, `SQLite query failed!!!`)
+                NGenXXLogPrint(NGenXXLogLevel.Debug, `SQLite execute failed!!!`)
             }
-        } else {
-            NGenXXLogPrint(NGenXXLogLevel.Debug, `SQLite execute failed!!!`)
-        }
-        NGenXXStoreSQLiteClose(conn)
+            NGenXXStoreSQLiteClose(conn)
+        })
     } else {
         NGenXXLogPrint(NGenXXLogLevel.Debug, `SQLite open failed!!!`)
     }
