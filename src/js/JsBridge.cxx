@@ -261,7 +261,7 @@ bool NGenXX::JsBridge::loadBinary(Bytes bytes, const bool isModule)
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
-static inline const std::string _ngenxx_j_jstr2stdstr(JSContext *ctx, JSValue jstr)
+static inline const std::string _ngenxx_js_jstr2stdstr(JSContext *ctx, JSValue jstr)
 {
     auto c = JS_ToCString(ctx, jstr);
     auto s = std::string(c ?: "");
@@ -334,7 +334,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         else
         {
             jRes = _ngenxx_js_await(this->context, jRes); // Handle promise if needed
-            s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
+            s = std::move(_ngenxx_js_jstr2stdstr(this->context, jRes));
         }
         JS_FreeValue(this->context, jRes);
         JS_FreeValue(this->context, jParams);
