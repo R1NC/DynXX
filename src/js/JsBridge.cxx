@@ -27,15 +27,21 @@ static std::mutex *_ngenxx_js_mutex = nullptr;
 static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer)
 {
     JSContext *ctx = reinterpret_cast<JSContext *>(timer->data);
-    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
-    js_std_loop_promise(ctx);
+    /// Do not force to acquire the lock, to avoid blocking the JS event loop.
+    if (_ngenxx_js_mutex->try_lock()) {
+        js_std_loop_promise(ctx);
+        _ngenxx_js_mutex->unlock();
+    }
 }
 
 static void _ngenxx_js_uv_timer_cb_t(uv_timer_t *timer)
 {
     JSContext *ctx = reinterpret_cast<JSContext *>(timer->data);
-    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
-    js_std_loop_timer(ctx);
+    /// Do not force to acquire the lock, to avoid blocking the JS event loop.
+    if (_ngenxx_js_mutex->try_lock()) {
+        js_std_loop_timer(ctx);
+        _ngenxx_js_mutex->unlock();
+    }
 }
 
 static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_timer_t *uv_timer, uv_timer_cb cb)
@@ -260,6 +266,39 @@ static inline const std::string _ngenxx_j_jstr2stdstr(JSContext *ctx, JSValue js
     return s;
 }
 
+JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
+{
+    JSValue ret;
+    for(;;) {
+        /// Do not force to acquire the lock, to avoid blocking the JS event loop.
+        if (!_ngenxx_js_mutex->try_lock())
+        {
+            std::this_thread::sleep_for(std::chrono::microseconds(10));
+            continue;
+        }
+        int state = JS_PromiseState(ctx, obj);
+        if (state == JS_PROMISE_FULFILLED) {
+            ret = JS_PromiseResult(ctx, obj);
+            JS_FreeValue(ctx, obj);
+            break;
+        } else if (state == JS_PROMISE_REJECTED) {
+            ret = JS_Throw(ctx, JS_PromiseResult(ctx, obj));
+            JS_FreeValue(ctx, obj);
+            break;
+        } else if (state == JS_PROMISE_PENDING) {
+            /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
+            _ngenxx_js_mutex->unlock();
+            std::this_thread::sleep_for(std::chrono::microseconds(10));
+        } else {
+            /// Not a Promise: release the lock, return the result immediately.
+            _ngenxx_js_mutex->unlock();
+            ret = obj;
+            break;
+        }
+    }
+    return ret;
+}
+
 std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params)
 {
     const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
@@ -272,6 +311,10 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         JSValue argv[] = {jParams};
 
         JSValue jRes = JS_Call(this->context, jFunc, this->jValues[0], sizeof(argv), argv);
+
+        /// Release the lock imediately, to avoid blocking the JS event loop.
+        _ngenxx_js_mutex->unlock();
+
         if (JS_IsException(jRes))
         {
             ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_Call failed ->");
@@ -279,7 +322,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
-            jRes = js_std_await_fix(this->context, jRes); // Handle promise if needed
+            jRes = _ngenxx_js_await(this->context, jRes); // Handle promise if needed
             s = std::move(_ngenxx_j_jstr2stdstr(this->context, jRes));
         }
         JS_FreeValue(this->context, jRes);
