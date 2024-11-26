@@ -13,7 +13,7 @@ constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
-typedef struct JS_Promise
+typedef struct NGenXX_JS_Promise
 {
     JSValue p;
     JSValue f[2];
