@@ -333,6 +333,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
+            /// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
             jRes = _ngenxx_js_await(this->context, jRes); // Handle promise if needed
             s = std::move(_ngenxx_js_jstr2stdstr(this->context, jRes));
         }
