@@ -21,6 +21,7 @@ namespace NGenXX
         std::thread loopThreadT;
         std::vector<std::thread> promiseThreadV;
         
+        void addPromiseThread(std::function<void()> f);
 
     public:
         /**
