@@ -279,7 +279,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
         if (!_ngenxx_js_mutex->try_lock())
         {
-            sleep(SleepInterval);
+            sleepForMicroSecs(SleepInterval);
             continue;
         }
         int state = JS_PromiseState(ctx, obj);
@@ -299,7 +299,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
         {
             /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
             _ngenxx_js_mutex->unlock();
-            sleep(SleepInterval);
+            sleepForMicroSecs(SleepInterval);
         }
         else
         {
