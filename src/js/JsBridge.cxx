@@ -273,12 +273,13 @@ static inline const std::string _ngenxx_js_jstr2stdstr(JSContext *ctx, JSValue j
 JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
 {
     JSValue ret;
+    constexpr size_t SleepInterval = 10;
     for (;;)
     {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
         if (!_ngenxx_js_mutex->try_lock())
         {
-            sleep(10);
+            sleep(SleepInterval);
             continue;
         }
         int state = JS_PromiseState(ctx, obj);
@@ -298,7 +299,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
         {
             /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
             _ngenxx_js_mutex->unlock();
-            sleep(10);
+            sleep(SleepInterval);
         }
         else
         {
