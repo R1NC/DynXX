@@ -65,18 +65,16 @@ namespace NGenXX
         std::string callFunc(const std::string &func, const std::string &params);
 
         /**
-         * @brief New JS `Promise<boolean>`
+         * @brief New JS `Promise`
          * @param f Callback to do work in background
-         * @return JSValue of the `Promise<boolean>`
+         * @return JSValue of the `Promise`
          */        
-        JSValue newPromiseB(std::function<const bool()> f);
-
-        /**
-         * @brief New JS `Promise<string>`
-         * @param f Callback to do work in background
-         * @return JSValue of the `Promise<string>`
-         */        
-        JSValue newPromiseS(std::function<const std::string()> f);
+        JSValue newPromiseVoid(std::function<void()> f);
+        JSValue newPromiseBool(std::function<const bool()> f);
+        JSValue newPromiseInt32(std::function<const int()> f);
+        JSValue newPromiseInt64(std::function<const long long()> f);
+        JSValue newPromiseFloat(std::function<const double()> f);
+        JSValue newPromiseString(std::function<const std::string()> f);
 
         /**
          * Relase JS VM

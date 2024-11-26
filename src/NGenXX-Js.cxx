@@ -69,18 +69,46 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
         return JS_NewFloat64(ctx, res);                                                    \
     }
 
-#define DEF_JS_FUNC_BOOL_ASYNC(fJ, fS)                                                \
-    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
-    {                                                                                 \
-        std::string json = JS_ToCString(ctx, argv[0]);                                \
-        return _ngenxx_js->newPromiseB([arg = json]() { return fS(arg.c_str()); });   \
+#define DEF_JS_FUNC_VOID_ASYNC(fJ, fS)                                                 \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)  \
+    {                                                                                  \
+        std::string json = JS_ToCString(ctx, argv[0]);                                 \
+        return _ngenxx_js->newPromiseVoid([arg = json]() { return fS(arg.c_str()); }); \
     }
 
-#define DEF_JS_FUNC_STRING_ASYNC(fJ, fS)                                              \
-    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
-    {                                                                                 \
-        std::string json = JS_ToCString(ctx, argv[0]);                                \
-        return _ngenxx_js->newPromiseS([arg = json]() { return fS(arg.c_str()); });   \
+#define DEF_JS_FUNC_BOOL_ASYNC(fJ, fS)                                                 \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)  \
+    {                                                                                  \
+        std::string json = JS_ToCString(ctx, argv[0]);                                 \
+        return _ngenxx_js->newPromiseBool([arg = json]() { return fS(arg.c_str()); }); \
+    }
+
+#define DEF_JS_FUNC_INT32_ASYNC(fJ, fS)                                                 \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)   \
+    {                                                                                   \
+        std::string json = JS_ToCString(ctx, argv[0]);                                  \
+        return _ngenxx_js->newPromiseInt32([arg = json]() { return fS(arg.c_str()); }); \
+    }
+
+#define DEF_JS_FUNC_INT64_ASYNC(fJ, fS)                                                 \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)   \
+    {                                                                                   \
+        std::string json = JS_ToCString(ctx, argv[0]);                                  \
+        return _ngenxx_js->newPromiseInt64([arg = json]() { return fS(arg.c_str()); }); \
+    }
+
+#define DEF_JS_FUNC_FLOAT_ASYNC(fJ, fS)                                                 \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)   \
+    {                                                                                   \
+        std::string json = JS_ToCString(ctx, argv[0]);                                  \
+        return _ngenxx_js->newPromiseFloat([arg = json]() { return fS(arg.c_str()); }); \
+    }
+
+#define DEF_JS_FUNC_STRING_ASYNC(fJ, fS)                                                 \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)    \
+    {                                                                                    \
+        std::string json = JS_ToCString(ctx, argv[0]);                                   \
+        return _ngenxx_js->newPromiseString([arg = json]() { return fS(arg.c_str()); }); \
     }
 
 const std::string ngenxx_js_ask_platform(const char *msg)

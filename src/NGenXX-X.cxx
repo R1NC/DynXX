@@ -248,6 +248,7 @@ const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     rsp = {
         .code = t.code,
         .contentType = t.contentType,
+        .headers = t.headers,
         .data = t.data
     };
     return rsp;

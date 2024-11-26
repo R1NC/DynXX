@@ -325,7 +325,28 @@ void _ngenxx_js_promise_callback(JSContext *ctx, JS_Promise* jPromise, JSValue j
     delete (jPromise);
 }
 
-JSValue NGenXX::JsBridge::newPromiseB(std::function<const bool()> f)
+JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> f)
+{
+    auto jPromise = _ngenxx_js_promise_new(this->context);
+    if (jPromise == nullptr)
+    {
+        return JS_EXCEPTION;
+    }
+    
+    this->promiseThreadV.emplace_back([&ctx = this->context, jPromise = jPromise, cb = f]() {
+        cb();
+        
+        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+
+        JSValue jRet = JS_UNDEFINED;
+
+        _ngenxx_js_promise_callback(ctx, jPromise, jRet);
+    });
+
+    return jPromise->p;
+}
+
+JSValue NGenXX::JsBridge::newPromiseBool(std::function<const bool()> f)
 {
     auto jPromise = _ngenxx_js_promise_new(this->context);
     if (jPromise == nullptr)
@@ -346,7 +367,70 @@ JSValue NGenXX::JsBridge::newPromiseB(std::function<const bool()> f)
     return jPromise->p;
 }
 
-JSValue NGenXX::JsBridge::newPromiseS(std::function<const std::string()> f)
+JSValue NGenXX::JsBridge::newPromiseInt32(std::function<const int()> f)
+{
+    auto jPromise = _ngenxx_js_promise_new(this->context);
+    if (jPromise == nullptr)
+    {
+        return JS_EXCEPTION;
+    }
+    
+    this->promiseThreadV.emplace_back([&ctx = this->context, jPromise = jPromise, cb = f]() {
+        auto ret = cb();
+        
+        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+
+        JSValue jRet = JS_NewInt32(ctx, ret);
+
+        _ngenxx_js_promise_callback(ctx, jPromise, jRet);
+    });
+
+    return jPromise->p;
+}
+
+JSValue NGenXX::JsBridge::newPromiseInt64(std::function<const long long()> f)
+{
+    auto jPromise = _ngenxx_js_promise_new(this->context);
+    if (jPromise == nullptr)
+    {
+        return JS_EXCEPTION;
+    }
+    
+    this->promiseThreadV.emplace_back([&ctx = this->context, jPromise = jPromise, cb = f]() {
+        auto ret = cb();
+        
+        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+
+        JSValue jRet = JS_NewInt64(ctx, ret);
+
+        _ngenxx_js_promise_callback(ctx, jPromise, jRet);
+    });
+
+    return jPromise->p;
+}
+
+JSValue NGenXX::JsBridge::newPromiseFloat(std::function<const double()> f)
+{
+    auto jPromise = _ngenxx_js_promise_new(this->context);
+    if (jPromise == nullptr)
+    {
+        return JS_EXCEPTION;
+    }
+    
+    this->promiseThreadV.emplace_back([&ctx = this->context, jPromise = jPromise, cb = f]() {
+        auto ret = cb();
+        
+        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+
+        JSValue jRet = JS_NewFloat64(ctx, ret);
+
+        _ngenxx_js_promise_callback(ctx, jPromise, jRet);
+    });
+
+    return jPromise->p;
+}
+
+JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> f)
 {
     auto jPromise = _ngenxx_js_promise_new(this->context);
     if (jPromise == nullptr)
