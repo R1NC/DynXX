@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 
 #include <chrono>
+#include <thread>
 
 using namespace std::chrono;
 
@@ -21,6 +22,11 @@ static inline const uint64_t nowInMicroSecs()
 static inline const uint64_t nowInNanoSecs()
 {
     return castNow<high_resolution_clock, nanoseconds>();
+}
+
+static inline void sleep(size_t microSecs)
+{
+    std::this_thread::sleep_for(microseconds(microSecs));
 }
 
 #endif

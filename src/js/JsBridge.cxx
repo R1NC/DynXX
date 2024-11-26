@@ -1,6 +1,7 @@
 #include "JsBridge.hxx"
 #include "../../include/NGenXXLog.hxx"
 #include "../../external/libuv/include/uv.h"
+#include "../util/TimeUtil.hxx"
 
 #include <fstream>
 #include <sstream>
@@ -277,7 +278,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
         if (!_ngenxx_js_mutex->try_lock())
         {
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
+            sleep(10);
             continue;
         }
         int state = JS_PromiseState(ctx, obj);
@@ -297,7 +298,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
         {
             /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
             _ngenxx_js_mutex->unlock();
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
+            sleep(10);
         }
         else
         {
