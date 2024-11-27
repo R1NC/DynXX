@@ -73,6 +73,11 @@ function NGenXXRootPath() {
     return ngenxx_root_pathJ();
 }
 
+function NGenXXAskPlatform(msg) {
+    msg = msg || '';
+    return ngenxx_ask_platformJ(msg);
+}
+
 const NGenXXLogLevel = Object.freeze({
     Debug: 3,
     Info: 4,
@@ -89,11 +94,6 @@ function NGenXXLogPrint(level, content) {
         "content": content
     });
     ngenxx_log_printJ(inJson);
-}
-
-function NGenXXAskPlatform(msg) {
-    msg = msg || '';
-    return ngenxx_ask_platformJ(msg);
 }
 
 function NGenXXDevicePlatform() {

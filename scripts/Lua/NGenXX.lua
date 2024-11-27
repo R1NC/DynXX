@@ -1,5 +1,15 @@
 NGenXX = {}
 
+local InJsonVoid = ''
+
+function NGenXX.version()
+    return ngenxx_get_versionL()
+end
+
+function NGenXX.root()
+    return ngenxx_root_pathL()
+end
+
 
 
 NGenXX.Log = {}
@@ -23,9 +33,9 @@ end
 
 
 
-NGenXX.DeviceInfo = {}
+NGenXX.Device = {}
 
-NGenXX.DeviceInfo.Platform = {
+NGenXX.Device.Platform = {
     Unknown = 0,
     Android = 1,
     ApplePhone = 2,
@@ -39,7 +49,7 @@ NGenXX.DeviceInfo.Platform = {
     Web = 10
 }
 
-NGenXX.DeviceInfo.CpuArch = {
+NGenXX.Device.CpuArch = {
     Unknown = 0,
     X86 = 1,
     X86_64 = 2,
@@ -47,6 +57,26 @@ NGenXX.DeviceInfo.CpuArch = {
     ARM = 4,
     ARM_6 = 5
 }
+
+function NGenXX.Device.platform()
+    return ngenxx_device_typeL(InJsonVoid)
+end
+
+function NGenXX.Device.name()
+    return ngenxx_device_nameL(InJsonVoid)
+end
+
+function NGenXX.Device.manufacturer()
+    return ngenxx_device_manufacturerL(InJsonVoid)
+end
+
+function NGenXX.Device.osVersion()
+    return ngenxx_device_os_versionL(InJsonVoid)
+end
+
+function NGenXX.Device.cpuArch()
+    return ngenxx_device_cpu_archL(InJsonVoid)
+end
 
 
 
