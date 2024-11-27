@@ -1,5 +1,7 @@
 --local NGenXX = require 'NGenXX.lua'
 
 function TestNetHttpRequest(url)
-    return NGenXX.NetHttpRequest(url, 0, 10000)
+    method = NGenXX.Net.Http.Method.Get
+    timeout = 10 * 1000
+    return NGenXX.Net.Http.request(url, method, timeout)
 end

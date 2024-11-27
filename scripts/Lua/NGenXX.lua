@@ -2,7 +2,18 @@
 
 --[[local]] NGenXX = {}
 
-function NGenXX.LogPrint(_level, _content)
+--[[local]] NGenXX.Log = {}
+
+--[[local]] NGenXX.Log.Level = {
+    Debug = 3,
+    Info = 4,
+    Warn = 5,
+    Error = 6,
+    Fatal = 7,
+    None = 8
+}
+
+function NGenXX.Log.print(_level, _content)
     inJson = json.stringify({
         level = _level,
         content = _content
@@ -10,8 +21,17 @@ function NGenXX.LogPrint(_level, _content)
     ngenxx_log_printL(inJson)
 end
 
-function NGenXX.NetHttpRequest(_url, _method, _timeout)
-    NGenXX.LogPrint(3, 'Send Net HTTP Req from Lua..')
+--[[local]] NGenXX.Net = {}
+--[[local]] NGenXX.Net.Http = {}
+
+--[[local]] NGenXX.Net.Http.Method = {
+    Get = 0,
+    Post = 1,
+    Put = 2
+}
+
+function NGenXX.Net.Http.request(_url, _method, _timeout)
+    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Send Net HTTP Req from Lua..')
     inJson = json.stringify({
         url = _url,
         method = _method,
