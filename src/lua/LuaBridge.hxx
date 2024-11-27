@@ -33,14 +33,14 @@ namespace NGenXX
          * @param file Lua file path
          * @return success or not
          */
-        int loadFile(const std::string &file);
+        bool loadFile(const std::string &file);
 
         /**
          * @brief Load Lua script content
          * @param script Lua script content
          * @return success or not
          */
-        int loadScript(const std::string &script);
+        bool loadScript(const std::string &script);
 
         /**
          * @brief export C function to Lua environment

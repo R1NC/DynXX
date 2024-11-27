@@ -136,7 +136,7 @@ bool ngenxxLuaLoadF(const std::string &f)
     {
         return false;
     }
-    return _ngenxx_lua->loadFile(f) == LUA_OK;
+    return _ngenxx_lua->loadFile(f);
 }
 
 bool ngenxxLuaLoadS(const std::string &s)
@@ -145,7 +145,7 @@ bool ngenxxLuaLoadS(const std::string &s)
     {
         return false;
     }
-    return _ngenxx_lua->loadScript(s) == LUA_OK;
+    return _ngenxx_lua->loadScript(s);
 }
 
 const std::string ngenxxLuaCall(const std::string &f, const std::string &ps)

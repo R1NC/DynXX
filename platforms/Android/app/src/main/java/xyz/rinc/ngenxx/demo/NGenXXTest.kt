@@ -81,15 +81,11 @@ class NGenXXTest {
 
             val jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\":1, \"timeout\":6666}"
 
-            /*sApplication?.assets?.open("biz.lua")?.bufferedReader().use {
+            sApplication?.assets?.open("biz.lua")?.bufferedReader().use {
                 if (!NGenXX.lLoadS(it?.readText()?:"")) return
-                val rsp = NGenXX.lCall("lNetHttpRequest", jsonParams)
-                val rsp = NGenXXHelper.netHttpRequest(
-                    "https://rinc.xyz",
-                    HttpMethod.Get
-                )
+                val rsp = NGenXX.lCall("lTestNetHttpRequest", "https://rinc.xyz")
                 NGenXXHelper.logPrint(LogLevel.Debug, rsp!!)
-            }*/
+            }
 
             if (sJsLoaded) {
                 NGenXX.jCall("jTestBase64", "NGenXX", false)

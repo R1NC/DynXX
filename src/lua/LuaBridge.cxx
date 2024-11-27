@@ -32,31 +32,34 @@ void NGenXX::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)
 }
 
 #ifndef __EMSCRIPTEN__
-int NGenXX::LuaBridge::loadFile(const std::string &file)
+bool NGenXX::LuaBridge::loadFile(const std::string &file)
 {
     const std::lock_guard<std::mutex> lock(this->mutex);
     int ret = luaL_dofile(this->lstate, file.c_str());
     if (ret != LUA_OK)
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dofile` error:");
+        return false;
     }
-    return ret;
+    return true;
 }
 #endif
 
-int NGenXX::LuaBridge::loadScript(const std::string &script)
+bool NGenXX::LuaBridge::loadScript(const std::string &script)
 {
     const std::lock_guard<std::mutex> lock(this->mutex);
     int ret = luaL_dostring(this->lstate, script.c_str());
     if (ret != LUA_OK)
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dostring` error:");
+        return false;
     }
-    return ret;
+    return true;
 }
 
 const std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::string &params)
 {
+    std::string s;
     const std::lock_guard<std::mutex> lock(this->mutex);
     lua_getglobal(this->lstate, func.c_str());
     lua_pushstring(this->lstate, params.c_str());
@@ -64,10 +67,11 @@ const std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std
     if (ret != LUA_OK)
     {
         PRINT_L_ERROR(this->lstate, "`lua_pcall` error:");
-        return NULL;
+        return s;
     }
     const char *res = lua_tostring(this->lstate, -1);
+    s = std::move(std::string(res ?: ""));
 
     lua_pop(this->lstate, 1);
-    return std::string(res ?: "");
+    return s;
 }

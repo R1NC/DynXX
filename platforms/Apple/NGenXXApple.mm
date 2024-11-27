@@ -39,12 +39,16 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
 
 - (void)testHttpL {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        //const char * cRsp = ngenxx_net_http_request("https://rinc.xyz", "", 0, NULL, 0, 5555);
-        const char *cLuaPath = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
-        if (! ngenxx_lua_loadF(cLuaPath)) {
+        const char *cLuaPath0 = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"json.lua"]);
+        const char *cLuaPath1 = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"NGenXX.lua"]);
+        const char *cLuaPath2 = NSString2CharP([NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.lua"]);
+        if (!ngenxx_lua_loadF(cLuaPath0)
+            || !ngenxx_lua_loadF(cLuaPath1)
+            || !ngenxx_lua_loadF(cLuaPath2)) {
             NSLog(@"!!! LOAD LUA FAILED !!!");
+            return;
         }
-        const char * cRsp = ngenxx_lua_call("lNetHttpRequest", cParamsJson);
+        const char * cRsp = ngenxx_lua_call("TestNetHttpRequest", "http://rinc.xyz");
         NSLog(@"%s", cRsp);
     });
 }

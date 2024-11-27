@@ -29,9 +29,9 @@ class MainActivity : ComponentActivity() {
     private val reqPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) {
+        //if (isGranted) {
             NGenXXTest.init(application)
-        }
+        //}
     }
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

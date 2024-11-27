@@ -24,6 +24,8 @@
 		407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B3A2C897F48008A138C /* libsqlite3.tbd */; };
 		407D2B9E2C929A7C008A138C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 407D2B9D2C929A7C008A138C /* ViewController.m */; };
 		40A94B362CCFB31C0059C652 /* qjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40A94B352CCFB31C0059C652 /* qjs.a */; };
+		40D5FDA52CF6F6A700D6E313 /* NGenXX.lua in Resources */ = {isa = PBXBuildFile; fileRef = 40D5FDA32CF6F6A700D6E313 /* NGenXX.lua */; };
+		40D5FDA62CF6F6A700D6E313 /* json.lua in Resources */ = {isa = PBXBuildFile; fileRef = 40D5FDA42CF6F6A700D6E313 /* json.lua */; };
 		40DC9C0B2CCA6CAB00F264DB /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 40DC9C0A2CCA6CAB00F264DB /* biz.js */; };
 		40DC9C152CCA6CD300F264DB /* NGenXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C0C2CCA6CD300F264DB /* NGenXX.a */; };
 		40DC9C162CCA6CD300F264DB /* curl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C0D2CCA6CD300F264DB /* curl.a */; };
@@ -95,6 +97,8 @@
 		407D2BAA2C929C2E008A138C /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../../build.iOS/output/Release/lua.a; sourceTree = "<group>"; };
 		407D2BAB2C929C2E008A138C /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../../build.iOS/output/Release/curl.a; sourceTree = "<group>"; };
 		40A94B352CCFB31C0059C652 /* qjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = qjs.a; path = ../../build.iOS/output/libs/qjs.a; sourceTree = "<group>"; };
+		40D5FDA32CF6F6A700D6E313 /* NGenXX.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = NGenXX.lua; path = ../../scripts/Lua/NGenXX.lua; sourceTree = "<group>"; };
+		40D5FDA42CF6F6A700D6E313 /* json.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = json.lua; path = ../../scripts/Lua/json.lua; sourceTree = "<group>"; };
 		40DC9C0A2CCA6CAB00F264DB /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../../scripts/JS/dist/biz.js; sourceTree = "<group>"; };
 		40DC9C0C2CCA6CD300F264DB /* NGenXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXX.a; path = ../../build.iOS/output/libs/NGenXX.a; sourceTree = "<group>"; };
 		40DC9C0D2CCA6CD300F264DB /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../build.iOS/output/libs/curl.a; sourceTree = "<group>"; };
@@ -134,6 +138,8 @@
 		40596B6F2C75AAD700AC552D = {
 			isa = PBXGroup;
 			children = (
+				40D5FDA42CF6F6A700D6E313 /* json.lua */,
+				40D5FDA32CF6F6A700D6E313 /* NGenXX.lua */,
 				40DC9C0A2CCA6CAB00F264DB /* biz.js */,
 				403F9F8C2CBF480F00F4ECE6 /* prepare_data.sql */,
 				403F9F8D2CBF480F00F4ECE6 /* query.sql */,
@@ -287,6 +293,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40D5FDA52CF6F6A700D6E313 /* NGenXX.lua in Resources */,
+				40D5FDA62CF6F6A700D6E313 /* json.lua in Resources */,
 				40DC9C0B2CCA6CAB00F264DB /* biz.js in Resources */,
 				403F9F8E2CBF480F00F4ECE6 /* prepare_data.sql in Resources */,
 				403F9F8F2CBF480F00F4ECE6 /* query.sql in Resources */,
