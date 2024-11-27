@@ -90,7 +90,6 @@ NGenXX.Net.Http.Method = {
 }
 
 function NGenXX.Net.Http.request(_url, _method, _timeout)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Send Net HTTP Req from Lua..')
     inJson = JSON.stringify({
         url = _url,
         method = _method,
