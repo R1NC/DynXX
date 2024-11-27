@@ -179,16 +179,16 @@ declare function NGenXXCryptoBase64Decode(inBytes: number[]): number[]
 
 /// Zip
 
-const enum NGenXXZZipMode {
-    Default = -1,
-    PreferSpeed = 1,
-    PreferSize = 9
-}
-
 const enum NGenXXZFormat {
     ZLib = 0,
     GZip,
     Raw
+}
+
+const enum NGenXXZZipMode {
+    Default = -1,
+    PreferSpeed = 1,
+    PreferSize = 9
 }
 
 declare const NGenXXZBufferSize: number

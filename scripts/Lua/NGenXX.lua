@@ -1,5 +1,7 @@
 NGenXX = {}
 
+
+
 NGenXX.Log = {}
 
 NGenXX.Log.Level = {
@@ -19,6 +21,35 @@ function NGenXX.Log.print(_level, _content)
     ngenxx_log_printL(inJson)
 end
 
+
+
+NGenXX.DeviceInfo = {}
+
+NGenXX.DeviceInfo.Platform = {
+    Unknown = 0,
+    Android = 1,
+    ApplePhone = 2,
+    ApplePad = 3,
+    AppleMac = 4,
+    AppleWatch = 5,
+    AppleTV = 6,
+    HarmonyOS = 7,
+    Windows = 8,
+    Linux = 9,
+    Web = 10
+}
+
+NGenXX.DeviceInfo.CpuArch = {
+    Unknown = 0,
+    X86 = 1,
+    X86_64 = 2,
+    IA64 = 3,
+    ARM = 4,
+    ARM_6 = 5
+}
+
+
+
 NGenXX.Net = {}
 NGenXX.Net.Http = {}
 
@@ -37,3 +68,39 @@ function NGenXX.Net.Http.request(_url, _method, _timeout)
     })
     return ngenxx_net_http_requestL(inJson)
 end
+
+
+
+NGenXX.Coding = {}
+
+
+
+NGenXX.Crypto = {}
+
+
+
+NGenXX.Store = {}
+
+NGenXX.Store.SQLite = {}
+
+
+
+NGenXX.Store.KV = {}
+
+
+
+NGenXX.Z = {}
+
+NGenXX.Z.Format = {
+    ZLib = 0,
+    GZip = 1,
+    Raw = 2
+}
+
+NGenXX.Z.ZipMode = {
+    Default = -1,
+    PreferSpeed = 1,
+    PreferSize = 9
+}
+
+
