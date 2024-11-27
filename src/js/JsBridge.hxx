@@ -62,8 +62,9 @@ namespace NGenXX
          * @brief call JS func
          * @param func func name
          * @param params parameters(json)
+         * @param await Whether wait for the promise result or not
          */
-        std::string callFunc(const std::string &func, const std::string &params);
+        std::string callFunc(const std::string &func, const std::string &params, const bool await);
 
         /**
          * @brief New JS `Promise`

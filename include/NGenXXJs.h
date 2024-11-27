@@ -42,9 +42,10 @@ extern "C"
      * @warning Not accessible in JS/Lua!
      * @param func JS function name
      * @param params JS function params（wrap multiple params with json）
+     * @param await Whether wait for the promise result or not
      * @return return value of JS function
      */
-    const char *ngenxx_js_call(const char *func, const char *params);
+    const char *ngenxx_js_call(const char *func, const char *params, const bool await);
 
     /**
      * @brief Set JS msg callback

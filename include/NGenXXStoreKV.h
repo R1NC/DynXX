@@ -88,8 +88,9 @@ extern "C"
      * @brief Remove key-value from KV Store
      * @param conn A KV connection handle
      * @param k key
+     * @return Success or not
      */
-    void ngenxx_store_kv_remove(void *const conn, const char *k);
+    bool ngenxx_store_kv_remove(void *const conn, const char *k);
 
     /**
      * @brief Clear a KV Store

@@ -313,7 +313,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
     return ret;
 }
 
-std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params)
+std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, const bool await)
 {
     const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
     std::string s;
@@ -336,8 +336,10 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         }
         else
         {
-            /// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
-            jRes = _ngenxx_js_await(this->context, jRes); // Handle promise if needed
+            if (await)
+            {/// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
+                jRes = _ngenxx_js_await(this->context, jRes); // Handle promise if needed
+            }
             s = std::move(_ngenxx_js_jstr2stdstr(this->context, jRes));
         }
         JS_FreeValue(this->context, jRes);

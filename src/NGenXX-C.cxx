@@ -408,9 +408,9 @@ bool ngenxx_store_kv_contains(void *const conn, const char *k)
 }
 
 EXPORT_AUTO
-void ngenxx_store_kv_remove(void *const conn, const char *k)
+bool ngenxx_store_kv_remove(void *const conn, const char *k)
 {
-    ngenxxStoreKvRemove(conn, k ?: "");
+    return ngenxxStoreKvRemove(conn, k ?: "");
 }
 
 EXPORT_AUTO

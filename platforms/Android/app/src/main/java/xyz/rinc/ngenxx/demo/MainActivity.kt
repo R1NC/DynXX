@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import xyz.rinc.ngenxx.NGenXX
-import xyz.rinc.ngenxx.demo.ui.theme.NGenXXTheme
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -47,10 +46,8 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            NGenXXTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) {
-                    Greeting()
-                }
+            Scaffold(modifier = Modifier.fillMaxSize()) {
+                Greeting()
             }
         }
     }
@@ -81,7 +78,5 @@ fun Greeting() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    NGenXXTheme {
-        Greeting()
-    }
+    Greeting()
 }

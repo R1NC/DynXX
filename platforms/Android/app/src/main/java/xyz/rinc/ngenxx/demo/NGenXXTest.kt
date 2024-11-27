@@ -44,6 +44,7 @@ class NGenXXTest {
         }
 
         private fun go() {
+            NGenXXHelper.logSetLevel(LogLevel.Debug)
             NGenXXHelper.logPrint(LogLevel.Debug, "deviceType:${NGenXX.deviceType()}")
             NGenXXHelper.logPrint(LogLevel.Debug, "deviceName:${NGenXX.deviceName()}")
             NGenXXHelper.logPrint(LogLevel.Debug, "deviceManufacturer:${NGenXX.deviceManufacturer()}")
