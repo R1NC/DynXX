@@ -132,8 +132,7 @@ NGenXX::LuaBridge::~LuaBridge()
 
 void NGenXX::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *))
 {
-    lua_pushcfunction(this->lstate, funcPointer);
-    lua_setglobal(this->lstate, funcName.c_str());
+    lua_register(this->lstate, funcName.c_str(), funcPointer);
 }
 
 #ifndef __EMSCRIPTEN__
