@@ -24,7 +24,7 @@ NGenXX.Log.Level = {
 }
 
 function NGenXX.Log.print(_level, _content)
-    inJson = JSON.stringify({
+    local inJson = JSON.stringify({
         level = _level,
         content = _content
     })
@@ -90,7 +90,7 @@ NGenXX.Net.Http.Method = {
 }
 
 function NGenXX.Net.Http.request(_url, _method, _timeout)
-    inJson = JSON.stringify({
+    local inJson = JSON.stringify({
         url = _url,
         method = _method,
         timeout = _timeout
@@ -112,9 +112,175 @@ NGenXX.Store = {}
 
 NGenXX.Store.SQLite = {}
 
+function NGenXX.Store.SQLite.open(id)
+    local inJson = JSON.stringify({
+        _id = id
+    })
+    return ngenxx_store_sqlite_openL(inJson)
+end
+
+function NGenXX.Store.SQLite.execute(_conn, _sql)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        sql = _sql
+    })
+    return ngenxx_store_sqlite_executeL(inJson)
+end
+
+NGenXX.Store.SQLite.Query = {}
+
+function NGenXX.Store.SQLite.Query.create(_conn, _sql)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        sql = _sql
+    })
+    return ngenxx_store_sqlite_query_doL(inJson)
+end
+
+function NGenXX.Store.SQLite.Query.readRow(_query_result)
+    local inJson = JSON.stringify({
+        query_result = _query_result
+    })
+    return ngenxx_store_sqlite_query_read_rowL(inJson)
+end
+
+function NGenXX.Store.SQLite.Query.readColumnText(_query_result, _column)
+    local inJson = JSON.stringify({
+        query_result = _query_result,
+        column = _column
+    })
+    return ngenxx_store_sqlite_query_read_column_textL(inJson)
+end
+
+function NGenXX.Store.SQLite.Query.readColumnInteger(_query_result, _column)
+    local inJson = JSON.stringify({
+        query_result = _query_result,
+        column = _column
+    })
+    return ngenxx_store_sqlite_query_read_column_integerL(inJson)
+end
+
+function NGenXX.Store.SQLite.Query.readColumnFloat(_query_result, _column)
+    local inJson = JSON.stringify({
+        query_result = _query_result,
+        column = _column
+    })
+    return ngenxx_store_sqlite_query_read_column_floatL(inJson)
+end
+
+function NGenXX.Store.SQLite.query.drop(_query_result)
+    local inJson = JSON.stringify({
+        query_result = _query_result
+    })
+    ngenxx_store_sqlite_query_dropL(inJson)
+end
+
+function NGenXX.Store.SQLite.close(_conn)
+    local inJson = JSON.stringify({
+        conn = _conn
+    })
+    ngenxx_store_sqlite_closeL(inJson)
+end
+
 
 
 NGenXX.Store.KV = {}
+
+function NGenXX.Store.KV.open(id)
+    local inJson = JSON.stringify({
+        _id = id
+    })
+    return ngenxx_store_kv_openL(inJson)
+end
+
+function NGenXX.Store.KV.readString(_conn, _k)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        k = _k
+    })
+    return ngenxx_store_kv_read_stringL(inJson)
+end
+
+function NGenXX.Store.KV.writeString(_conn, _k, s)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        k = _k,
+        v = s
+    })
+    return ngenxx_store_kv_write_stringL(inJson)
+end
+
+function NGenXX.Store.KV.readInteger(_conn, _k)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        k = _k
+    })
+    return ngenxx_store_kv_read_integerL(inJson)
+end
+
+function NGenXX.Store.KV.writeInteger(_conn, _k, i)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        k = _k,
+        v = i
+    })
+    return ngenxx_store_kv_write_integerL(inJson)
+end
+
+function NGenXX.Store.KV.readFloat(_conn, _k)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        k = _k
+    })
+    return ngenxx_store_kv_read_floatL(inJson)
+end
+
+function NGenXX.Store.KV.writeFloat(_conn, _k, f)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        k = _k,
+        v = f
+    })
+    return ngenxx_store_kv_write_floatL(inJson)
+end
+
+function NGenXX.Store.KV.allKeys(_conn)
+    local inJson = JSON.stringify({
+        conn = _conn
+    })
+    local outJson = ngenxx_store_kv_all_keysL(inJson)
+    return JSON.parse(outJson);
+end
+
+function NGenXX.Store.KV.contains(_conn, _k)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        k = _k
+    })
+    return ngenxx_store_kv_containsL(inJson)
+end
+
+function NGenXX.Store.KV.remove(_conn, _k)
+    local inJson = JSON.stringify({
+        conn = _conn,
+        k = _k
+    })
+    ngenxx_store_kv_removeL(inJson)
+end
+
+function NGenXX.Store.KV.clear(_conn)
+    local inJson = JSON.stringify({
+        conn = _conn
+    })
+    ngenxx_store_kv_clearL(inJson)
+end
+
+function NGenXX.Store.KV.close(_conn)
+    local inJson = JSON.stringify({
+        conn = _conn
+    })
+    ngenxx_store_kv_closeL(inJson)
+end
 
 
 
