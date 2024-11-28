@@ -3,7 +3,6 @@
 
 #ifdef __cplusplus
 
-#include <thread>
 #include <functional>
 
 #include "../../external/quickjs/quickjs-libc.h"
@@ -17,11 +16,6 @@ namespace NGenXX
         JSRuntime *runtime;
         JSContext *context;
         std::vector<JSValue> jValues;
-        std::thread loopThreadP;
-        std::thread loopThreadT;
-        std::vector<std::thread> promiseThreadV;
-        
-        void addPromiseThread(std::function<void()> f);
 
     public:
         /**

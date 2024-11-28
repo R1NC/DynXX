@@ -8,6 +8,7 @@
 #include <streambuf>
 #include <utility>
 #include <mutex>
+#include <thread>
 
 constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "import * as os from 'qjs:os';\n"
@@ -209,14 +210,14 @@ NGenXX::JsBridge::JsBridge()
     this->context = _ngenxx_js_newContext(this->runtime);
     this->jValues.push_back(JS_GetGlobalObject(this->context));
 
-    this->loopThreadP = std::thread([&ctx = this->context]() 
-    { 
+    std::thread([&ctx = this->context]()
+    {
         _ngenxx_js_loop_startP(ctx); 
-    });
-    this->loopThreadT = std::thread([&ctx = this->context]() 
-    { 
+    }).detach();
+    std::thread([&ctx = this->context]()
+    {
         _ngenxx_js_loop_startT(ctx); 
-    });
+    }).detach();
 }
 
 bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -385,11 +386,6 @@ void _ngenxx_js_promise_callback(JSContext *ctx, JS_Promise* jPromise, JSValue j
     delete (jPromise);
 }
 
-void NGenXX::JsBridge::addPromiseThread(std::function<void()> f)
-{
-    this->promiseThreadV.emplace_back(f);
-}
-
 JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> f)
 {
     auto jPromise = _ngenxx_js_promise_new(this->context);
@@ -398,7 +394,7 @@ JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> f)
         return JS_EXCEPTION;
     }
     
-    this->addPromiseThread([&ctx = this->context, jPromise = jPromise, cb = f]() {
+    std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         cb();
         
         const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
@@ -406,7 +402,7 @@ JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> f)
         JSValue jRet = JS_UNDEFINED;
 
         _ngenxx_js_promise_callback(ctx, jPromise, jRet);
-    });
+    }).detach();
 
     return jPromise->p;
 }
@@ -419,7 +415,7 @@ JSValue NGenXX::JsBridge::newPromiseBool(std::function<const bool()> f)
         return JS_EXCEPTION;
     }
     
-    this->addPromiseThread([&ctx = this->context, jPromise = jPromise, cb = f]() {
+    std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
         
         const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
@@ -427,7 +423,7 @@ JSValue NGenXX::JsBridge::newPromiseBool(std::function<const bool()> f)
         JSValue jRet = JS_NewBool(ctx, ret);
 
         _ngenxx_js_promise_callback(ctx, jPromise, jRet);
-    });
+    }).detach();
 
     return jPromise->p;
 }
@@ -440,7 +436,7 @@ JSValue NGenXX::JsBridge::newPromiseInt32(std::function<const int()> f)
         return JS_EXCEPTION;
     }
     
-    this->addPromiseThread([&ctx = this->context, jPromise = jPromise, cb = f]() {
+    std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
         
         const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
@@ -448,7 +444,7 @@ JSValue NGenXX::JsBridge::newPromiseInt32(std::function<const int()> f)
         JSValue jRet = JS_NewInt32(ctx, ret);
 
         _ngenxx_js_promise_callback(ctx, jPromise, jRet);
-    });
+    }).detach();
 
     return jPromise->p;
 }
@@ -461,7 +457,7 @@ JSValue NGenXX::JsBridge::newPromiseInt64(std::function<const long long()> f)
         return JS_EXCEPTION;
     }
     
-    this->addPromiseThread([&ctx = this->context, jPromise = jPromise, cb = f]() {
+    std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
         
         const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
@@ -469,7 +465,7 @@ JSValue NGenXX::JsBridge::newPromiseInt64(std::function<const long long()> f)
         JSValue jRet = JS_NewInt64(ctx, ret);
 
         _ngenxx_js_promise_callback(ctx, jPromise, jRet);
-    });
+    }).detach();
 
     return jPromise->p;
 }
@@ -482,7 +478,7 @@ JSValue NGenXX::JsBridge::newPromiseFloat(std::function<const double()> f)
         return JS_EXCEPTION;
     }
     
-    this->addPromiseThread([&ctx = this->context, jPromise = jPromise, cb = f]() {
+    std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
         
         const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
@@ -490,7 +486,7 @@ JSValue NGenXX::JsBridge::newPromiseFloat(std::function<const double()> f)
         JSValue jRet = JS_NewFloat64(ctx, ret);
 
         _ngenxx_js_promise_callback(ctx, jPromise, jRet);
-    });
+    }).detach();
 
     return jPromise->p;
 }
@@ -503,7 +499,7 @@ JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> f)
         return JS_EXCEPTION;
     }
     
-    this->addPromiseThread([&ctx = this->context, jPromise = jPromise, cb = f]() {
+    std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
 
         const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
@@ -511,7 +507,7 @@ JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> f)
         JSValue jRet = JS_NewString(ctx, ret.c_str() ? : "");
 
         _ngenxx_js_promise_callback(ctx, jPromise, jRet);
-    });
+    }).detach();
 
     return jPromise->p;
 }
@@ -519,18 +515,6 @@ JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> f)
 NGenXX::JsBridge::~JsBridge()
 {
     _ngenxx_js_loop_stop(this->runtime);
-    if (this->loopThreadP.joinable())
-    {
-        this->loopThreadP.join();
-    }
-    if (this->loopThreadT.joinable())
-    {
-        this->loopThreadT.join();
-    }
-    for (auto &thread : this->promiseThreadV)
-    {
-        thread.join();
-    }
 
     js_std_set_worker_new_context_func(NULL);
 
