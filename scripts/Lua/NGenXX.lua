@@ -191,6 +191,7 @@ end
 NGenXX.Crypto.Aes.Gcm = {}
 
 function NGenXX.Crypto.Aes.Gcm.encrypt(in_bytes, key_bytes, iv_bytes, tag_bits, aad_bytes)
+    aad_bytes = aad_bytes or {}
     local inJson = JSON.stringify({
         inBytes = in_bytes,
         inLen = #in_bytes,
@@ -207,6 +208,7 @@ function NGenXX.Crypto.Aes.Gcm.encrypt(in_bytes, key_bytes, iv_bytes, tag_bits, 
 end
 
 function NGenXX.Crypto.Aes.Gcm.decrypt(in_bytes, key_bytes, iv_bytes, tag_bits, aad_bytes)
+    aad_bytes = aad_bytes or {}
     local inJson = JSON.stringify({
         inBytes = in_bytes,
         inLen = #in_bytes,

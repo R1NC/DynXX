@@ -53,3 +53,22 @@ function TestCrypto(s)
     local aesDecodedStr = NGenXX.Coding.bytes2Str(aesDecodedBytes)
     NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Aes.decrypt: ' .. aesDecodedStr)
 end
+
+function TestStoreKV()
+    local conn = NGenXX.Store.KV.open('test4lua')
+    NGenXX.Store.KV.writeString(conn, 's', 'NGenXX')
+    NGenXX.Store.KV.writeInteger(conn, 'i', 1234567890)
+    NGenXX.Store.KV.writeFloat(conn, 'f', 0.987654321)
+    local keys = NGenXX.Store.KV.allKeys(conn)
+    for _, k in ipairs(keys) do
+        local v = NGenXX.Store.KV.readString(conn, k)
+        if k == 's' then
+            NGenXX.Log.print(NGenXX.Log.Level.Debug, k .. ': ' .. NGenXX.Store.KV.readString(conn, k))
+        elseif k == 'i' then
+            NGenXX.Log.print(NGenXX.Log.Level.Debug, k .. ': ' .. NGenXX.Store.KV.readInteger(conn, k))
+        elseif k == 'f' then
+            NGenXX.Log.print(NGenXX.Log.Level.Debug, k .. ': ' .. NGenXX.Store.KV.readFloat(conn, k))
+        end
+    end
+    NGenXX.Store.KV.close(conn)
+end
