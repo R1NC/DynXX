@@ -102,6 +102,18 @@ static int ngenxx_lua_util_timer_remove(lua_State *L)
     return 0;
 }
 
+static const luaL_Reg ngenxx_lua_lib_timer_funcs[] = {
+    {"add", ngenxx_lua_util_timer_add},
+    {"remove", ngenxx_lua_util_timer_remove},
+    {NULL, NULL} /* sentinel */
+};
+
+#define ngenxx_lua_register_lib(L, lib, funcs) \
+    {                                          \
+        luaL_newlib(L, funcs);                 \
+        lua_setglobal(L, lib);                 \
+    }
+
 #define PRINT_L_ERROR(L, prefix)                                                                  \
     do                                                                                            \
     {                                                                                             \
@@ -117,8 +129,7 @@ NGenXX::LuaBridge::LuaBridge()
     this->lstate = luaL_newstate();
     luaL_openlibs(this->lstate);
     
-    this->bindFunc("ngenxx_lua_util_timer_add", ngenxx_lua_util_timer_add);
-    this->bindFunc("ngenxx_lua_util_timer_remove", ngenxx_lua_util_timer_remove);
+    ngenxx_lua_register_lib(this->lstate, "Timer", ngenxx_lua_lib_timer_funcs);
     
     ngenxx_lua_uv_loop_init();
 }

@@ -123,9 +123,9 @@ function TestTimer()
     local timerF = function()
         count  = count + 1
         TestStoreSQLite()
-        if count == 10 then
-            NGenXX.Util.Timer.remove(timer)
+        if count == 3 then
+            Timer.remove(timer)
         end
     end
-    timer = NGenXX.Util.Timer.add(1234, 1, timerF)
+    timer = Timer.add(1234, 1, timerF)
 end
