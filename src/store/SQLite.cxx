@@ -17,7 +17,7 @@ NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::str
     {
         sqlite3 *db;
         int rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-        ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.open ret:" + std::to_string(rc));
+        //ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.open ret:" + std::to_string(rc));
         if (rc != SQLITE_OK)
         {
             PRINT_ERR(rc, db);
@@ -60,7 +60,7 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
     }
     sqlite3_stmt *stmt;
     int rc = sqlite3_exec(this->db, sql.c_str(), NULL, NULL, NULL);
-    ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.exec ret:" + std::to_string(rc));
+    //ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.exec ret:" + std::to_string(rc));
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -78,7 +78,7 @@ NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connectio
     }
     sqlite3_stmt *stmt;
     int rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, NULL);
-    ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.query ret:" + std::to_string(rc));
+    //ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.query ret:" + std::to_string(rc));
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -108,7 +108,7 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
          return false;
     }
     int rc = sqlite3_step(this->stmt);
-    ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.step ret:" + std::to_string(rc));
+    //ngenxxLogPrint(NGenXXLogLevelX::Debug, "SQLite.step ret:" + std::to_string(rc));
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
         PRINT_ERR(rc, NULL);

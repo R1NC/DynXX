@@ -72,3 +72,27 @@ function TestStoreKV()
     end
     NGenXX.Store.KV.close(conn)
 end
+
+function TestStoreSQLite()
+    local sqlPrepareData = [[
+        DROP TABLE IF EXISTS TestTable;
+        CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, s TEXT, i INTEGER, f FLOAT);
+        INSERT OR IGNORE INTO TestTable (s, i, f) VALUES
+        ('iOS', 1, 0.111111111),
+        ('Android', 2, 0.2222222222),
+        ('HarmonyOS', 3, 0.3333333333);
+    ]]
+    local sqlQuery = 'SELECT * FROM TestTable;'
+    
+    local conn = NGenXX.Store.SQLite.open('test.lua')
+    NGenXX.Store.SQLite.execute(conn, sqlPrepareData)
+    local query = NGenXX.Store.SQLite.Query.create(conn, sqlQuery)
+    while(NGenXX.Store.SQLite.Query.readRow(query)) do
+        local s = NGenXX.Store.SQLite.Query.readColumnText(query, 's')
+        local i = NGenXX.Store.SQLite.Query.readColumnInteger(query, 'i')
+        local f = NGenXX.Store.SQLite.Query.readColumnFloat(query, 'f')
+        NGenXX.Log.print(NGenXX.Log.Level.Debug, s .. ' | ' .. i .. ' | ' .. f)
+    end
+    NGenXX.Store.SQLite.Query.drop(query)
+    NGenXX.Store.SQLite.close(conn)
+end
