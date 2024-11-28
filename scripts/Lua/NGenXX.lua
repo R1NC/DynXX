@@ -102,9 +102,165 @@ end
 
 NGenXX.Coding = {}
 
+NGenXX.Coding.Case = {}
+
+function NGenXX.Coding.Case.upper(s)
+    local inJson = JSON.stringify({
+        str = s
+    })
+    return ngenxx_coding_case_upperL(inJson)
+end
+
+function NGenXX.Coding.Case.lower(s)
+    local inJson = JSON.stringify({
+        str = s
+    })
+    return ngenxx_coding_case_lowerL(inJson)
+end
+
+NGenXX.Coding.Hex = {}
+
+function NGenXX.Coding.Hex.bytes2Str(bytes)
+    local inJson = JSON.stringify({
+        inBytes = bytes,
+        inLen = #bytes
+    })
+    return ngenxx_coding_hex_bytes2strL(inJson)
+end
+
+function NGenXX.Coding.Hex.str2Bytes(s)
+    local inJson = JSON.stringify({
+        str = s
+    })
+    local outJson = ngenxx_coding_hex_str2bytesL(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Coding.bytes2Str(bytes)
+    local inJson = JSON.stringify({
+        inBytes = bytes,
+        inLen = #bytes
+    })
+    return ngenxx_coding_bytes2strL(inJson)
+end
+
+function NGenXX.Coding.str2Bytes(s)
+    local inJson = JSON.stringify({
+        str = s
+    })
+    local outJson = ngenxx_coding_str2bytesL(inJson)
+    return JSON.parse(outJson)
+end
+
 
 
 NGenXX.Crypto = {}
+
+function NGenXX.Crypto.rand(_len)
+    local inJson = JSON.stringify({
+        len = _len
+    })
+    local outJson = ngenxx_crypto_randL(inJson)
+    return JSON.parse(outJson)
+end
+
+NGenXX.Crypto.Aes = {}
+
+function NGenXX.Crypto.Aes.encrypt(in_bytes, key_bytes)
+    local inJson = JSON.stringify({
+        inBytes = in_bytes,
+        inLen = #in_bytes,
+        keyBytes = key_bytes,
+        keyLen = #key_bytes
+    })
+    local outJson = ngenxx_crypto_aes_encryptL(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Crypto.Aes.decrypt(in_bytes, key_bytes)
+    local inJson = JSON.stringify({
+        inBytes = in_bytes,
+        inLen = #in_bytes,
+        keyBytes = key_bytes,
+        keyLen = #key_bytes
+    })
+    local outJson = ngenxx_crypto_aes_decryptL(inJson)
+    return JSON.parse(outJson)
+end
+
+NGenXX.Crypto.Aes.Gcm = {}
+
+function NGenXX.Crypto.Aes.Gcm.encrypt(in_bytes, key_bytes, iv_bytes, tag_bits, aad_bytes)
+    local inJson = JSON.stringify({
+        inBytes = in_bytes,
+        inLen = #in_bytes,
+        keyBytes = key_bytes,
+        keyLen = #key_bytes,
+        initVectorBytes = iv_bytes,
+        initVectorLen = #iv_bytes,
+        aadBytes = aad_bytes,
+        aadLen = #aad_bytes,
+        tagBits = tag_bits
+    })
+    local outJson = ngenxx_crypto_aes_gcm_encryptL(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Crypto.Aes.Gcm.decrypt(in_bytes, key_bytes, iv_bytes, tag_bits, aad_bytes)
+    local inJson = JSON.stringify({
+        inBytes = in_bytes,
+        inLen = #in_bytes,
+        keyBytes = key_bytes,
+        keyLen = #key_bytes,
+        initVectorBytes = iv_bytes,
+        initVectorLen = #iv_bytes,
+        aadBytes = aad_bytes,
+        aadLen = #aad_bytes,
+        tagBits = tag_bits
+    })
+    local outJson = ngenxx_crypto_aes_gcm_decryptL(inJson)
+    return JSON.parse(outJson)
+end
+
+NGenXX.Crypto.Hash = {}
+
+function NGenXX.Crypto.Hash.md5(in_bytes)
+    local inJson = JSON.stringify({
+        inBytes = in_bytes,
+        inLen = #in_bytes,
+    })
+    local outJson = ngenxx_crypto_hash_md5L(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Crypto.Hash.sha256(in_bytes)
+    local inJson = JSON.stringify({
+        inBytes = in_bytes,
+        inLen = #in_bytes,
+    })
+    local outJson = ngenxx_crypto_hash_sha256L(inJson)
+    return JSON.parse(outJson)
+end
+
+NGenXX.Crypto.Base64 = {}
+
+function NGenXX.Crypto.Base64.encode(in_bytes)
+    local inJson = JSON.stringify({
+        inBytes = in_bytes,
+        inLen = #in_bytes,
+    })
+    local outJson = ngenxx_crypto_base64_encodeL(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Crypto.Base64.decode(in_bytes)
+    local inJson = JSON.stringify({
+        inBytes = in_bytes,
+        inLen = #in_bytes,
+    })
+    local outJson = ngenxx_crypto_base64_decodeL(inJson)
+    return JSON.parse(outJson)
+end
 
 
 
@@ -168,7 +324,7 @@ function NGenXX.Store.SQLite.Query.readColumnFloat(_query_result, _column)
     return ngenxx_store_sqlite_query_read_column_floatL(inJson)
 end
 
-function NGenXX.Store.SQLite.query.drop(_query_result)
+function NGenXX.Store.SQLite.Query.drop(_query_result)
     local inJson = JSON.stringify({
         query_result = _query_result
     })
@@ -249,7 +405,7 @@ function NGenXX.Store.KV.allKeys(_conn)
         conn = _conn
     })
     local outJson = ngenxx_store_kv_all_keysL(inJson)
-    return JSON.parse(outJson);
+    return JSON.parse(outJson)
 end
 
 function NGenXX.Store.KV.contains(_conn, _k)
