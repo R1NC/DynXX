@@ -229,7 +229,7 @@ NGenXX.Crypto.Hash = {}
 function NGenXX.Crypto.Hash.md5(in_bytes)
     local inJson = JSON.stringify({
         inBytes = in_bytes,
-        inLen = #in_bytes,
+        inLen = #in_bytes
     })
     local outJson = ngenxx_crypto_hash_md5L(inJson)
     return JSON.parse(outJson)
@@ -238,7 +238,7 @@ end
 function NGenXX.Crypto.Hash.sha256(in_bytes)
     local inJson = JSON.stringify({
         inBytes = in_bytes,
-        inLen = #in_bytes,
+        inLen = #in_bytes
     })
     local outJson = ngenxx_crypto_hash_sha256L(inJson)
     return JSON.parse(outJson)
@@ -249,7 +249,7 @@ NGenXX.Crypto.Base64 = {}
 function NGenXX.Crypto.Base64.encode(in_bytes)
     local inJson = JSON.stringify({
         inBytes = in_bytes,
-        inLen = #in_bytes,
+        inLen = #in_bytes
     })
     local outJson = ngenxx_crypto_base64_encodeL(inJson)
     return JSON.parse(outJson)
@@ -258,7 +258,7 @@ end
 function NGenXX.Crypto.Base64.decode(in_bytes)
     local inJson = JSON.stringify({
         inBytes = in_bytes,
-        inLen = #in_bytes,
+        inLen = #in_bytes
     })
     local outJson = ngenxx_crypto_base64_decodeL(inJson)
     return JSON.parse(outJson)
@@ -456,4 +456,30 @@ NGenXX.Z.ZipMode = {
     PreferSize = 9
 }
 
+NGenXX.Z.DefaultBufferSize = 16 * 1024
 
+function NGenXX.Z.zipBytes(in_bytes, _format, _mode)
+    _format = _format or NGenXX.Z.Format.ZLib
+    _mode = _mode or NGenXX.Z.ZipMode.Default
+    local inJson = JSON.stringify({
+        mode = _mode,
+        bufferSize = NGenXX.Z.DefaultBufferSize,
+        format = _format,
+        inBytes = in_bytes,
+        inLen = #in_bytes
+    })
+    local outJson = ngenxx_z_bytes_unzipL(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Z.unZipBytes(in_bytes, _format)
+    _format = _format or NGenXX.Z.Format.ZLib
+    local inJson = JSON.stringify({
+        bufferSize = NGenXX.Z.DefaultBufferSize,
+        format = _format,
+        inBytes = in_bytes,
+        inLen = #in_bytes
+    })
+    local outJson = ngenxx_z_bytes_unzipL(inJson)
+    return JSON.parse(outJson)
+end
