@@ -1,11 +1,20 @@
 function TestNetHttpRequest(url)
-    method = NGenXX.Net.Http.Method.Get
-    timeout = 10 * 1000
-    return NGenXX.Net.Http.request(url, method, timeout)
+    local method = NGenXX.Net.Http.Method.Post
+    local paramMap = {
+        p0 = 123,
+        p1 = 'abc'
+    }
+    local headerMap = {
+        ['User-Agent'] = 'NGenXX',
+        ['Cache-Control'] = 'no-cache',
+    }
+    local rawNodyBytes = {}
+    local timeout = 10 * 1000
+    return NGenXX.Net.Http.request(url, method, paramMap, headerMap, rawNodyBytes, timeout)
 end
 
 function TestDeviceInfo()
-    deviceInfo = {
+    local deviceInfo = {
         platform = NGenXX.Device.platform(),
         manufacturer = NGenXX.Device.manufacturer(),
         name = NGenXX.Device.name(),

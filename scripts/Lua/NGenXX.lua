@@ -89,10 +89,35 @@ NGenXX.Net.Http.Method = {
     Put = 2
 }
 
-function NGenXX.Net.Http.request(_url, _method, _timeout)
+function NGenXX.Net.Http.request(_url, _method, param_map, header_map, raw_body_bytes, _timeout)
+    param_map = param_map or {}
+    local paramStr = ""
+    for k, v in pairs(param_map) do
+        if string.len(paramStr) == 0 then
+            paramStr = paramStr .. '?'
+        else
+            paramStr = paramStr .. '&'
+        end
+        paramStr = paramStr .. k .. '=' .. v
+    end
+
+    local headerArray = {}
+    header_map = header_map or {}
+    for k, v in pairs(header_map) do
+        table.insert(headerArray, k .. '=' .. v)
+    end
+
+    raw_body_bytes = raw_body_bytes or {}
+    _timeout = _timeout or 15 * 1000
+
     local inJson = JSON.stringify({
         url = _url,
         method = _method,
+        params = paramStr,
+        header_v = headerArray,
+        header_c = #headerArray,
+        rawBodyBytes = raw_body_bytes,
+        rawBodyLen = #raw_body_bytes,
         timeout = _timeout
     })
     return ngenxx_net_http_requestL(inJson)
