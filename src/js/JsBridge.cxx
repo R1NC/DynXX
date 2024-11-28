@@ -17,11 +17,11 @@ constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
 
 constexpr size_t NGenXXJsSleepMicroSecs = 1;
 
-typedef struct NGenXX_JS_Promise
+typedef struct
 {
     JSValue p;
     JSValue f[2];
-} JS_Promise;
+} NGenXX_JS_Promise;
 
 static uv_loop_t *_ngenxx_js_uv_loop_p = nullptr;
 static uv_loop_t *_ngenxx_js_uv_loop_t = nullptr;
@@ -354,9 +354,9 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     return s;
 }
 
-JS_Promise* _ngenxx_js_promise_new(JSContext *ctx)
+NGenXX_JS_Promise* _ngenxx_js_promise_new(JSContext *ctx)
 {
-    auto jPromise = new JS_Promise();
+    auto jPromise = new NGenXX_JS_Promise();
     JSValue funcs[2];
     jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
     if (JS_IsException(jPromise->p))
@@ -369,7 +369,7 @@ JS_Promise* _ngenxx_js_promise_new(JSContext *ctx)
     return jPromise;
 }
 
-void _ngenxx_js_promise_callback(JSContext *ctx, JS_Promise* jPromise, JSValue jRet)
+void _ngenxx_js_promise_callback(JSContext *ctx, NGenXX_JS_Promise* jPromise, JSValue jRet)
 {
     JSValue jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
     if (JS_IsException(jCallRet))

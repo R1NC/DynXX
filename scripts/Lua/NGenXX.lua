@@ -12,6 +12,20 @@ end
 
 
 
+NGenXX.Util = {}
+
+NGenXX.Util.Timer = {}
+
+function NGenXX.Util.Timer.add(timeout, _repeat, f)
+    return ngenxx_lua_util_timer_add(timeout, _repeat, f)
+end
+
+function NGenXX.Util.Timer.remove(timer)
+    ngenxx_lua_util_timer_remove(timer)
+end
+
+
+
 NGenXX.Log = {}
 
 NGenXX.Log.Level = {

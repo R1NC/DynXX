@@ -116,3 +116,16 @@ function TestCoroutine(url)
     local code, res = coroutine.resume(co, url)
     return res
 end
+
+function TestTimer()
+    local count = 0
+    local timer
+    local timerF = function()
+        count  = count + 1
+        TestStoreSQLite()
+        if count == 10 then
+            NGenXX.Util.Timer.remove(timer)
+        end
+    end
+    timer = NGenXX.Util.Timer.add(1234, 1, timerF)
+end
