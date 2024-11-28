@@ -8,6 +8,102 @@
 #include "../../external/quickjs/quickjs-libc.h"
 #include "../../include/NGenXXTypes.hxx"
 
+#define DEF_JS_FUNC_VOID(fJ, fS)                                                           \
+    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
+    {                                                                                      \
+        const char *json = JS_ToCString(ctx, argv[0]);                                     \
+        fS(json);                                                                          \
+        JS_FreeCString(ctx, json);                                                         \
+        return JS_UNDEFINED;                                                               \
+    }
+
+#define DEF_JS_FUNC_STRING(fJ, fS)                                                         \
+    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
+    {                                                                                      \
+        const char *json = JS_ToCString(ctx, argv[0]);                                     \
+        const std::string res = fS(json);                                                  \
+        JS_FreeCString(ctx, json);                                                         \
+        return JS_NewString(ctx, res.c_str());                                             \
+    }
+
+#define DEF_JS_FUNC_BOOL(fJ, fS)                                                           \
+    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
+    {                                                                                      \
+        const char *json = JS_ToCString(ctx, argv[0]);                                     \
+        auto res = fS(json);                                                               \
+        JS_FreeCString(ctx, json);                                                         \
+        return JS_NewBool(ctx, res);                                                       \
+    }
+
+#define DEF_JS_FUNC_INT32(fJ, fS)                                                          \
+    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
+    {                                                                                      \
+        const char *json = JS_ToCString(ctx, argv[0]);                                     \
+        auto res = fS(json);                                                               \
+        JS_FreeCString(ctx, json);                                                         \
+        return JS_NewInt32(ctx, res);                                                      \
+    }
+
+#define DEF_JS_FUNC_INT64(fJ, fS)                                                          \
+    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
+    {                                                                                      \
+        const char *json = JS_ToCString(ctx, argv[0]);                                     \
+        auto res = fS(json);                                                               \
+        JS_FreeCString(ctx, json);                                                         \
+        return JS_NewInt64(ctx, res);                                                      \
+    }
+
+#define DEF_JS_FUNC_FLOAT(fJ, fS)                                                          \
+    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
+    {                                                                                      \
+        const char *json = JS_ToCString(ctx, argv[0]);                                     \
+        auto res = fS(json);                                                               \
+        JS_FreeCString(ctx, json);                                                         \
+        return JS_NewFloat64(ctx, res);                                                    \
+    }
+
+#define DEF_JS_FUNC_VOID_ASYNC(bridge, fJ, fS)                                        \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
+    {                                                                                 \
+        std::string json = JS_ToCString(ctx, argv[0]);                                \
+        return bridge->newPromiseVoid([arg = json]() { return fS(arg.c_str()); });    \
+    }
+
+#define DEF_JS_FUNC_BOOL_ASYNC(bridge, fJ, fS)                                        \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
+    {                                                                                 \
+        std::string json = JS_ToCString(ctx, argv[0]);                                \
+        return bridge->newPromiseBool([arg = json]() { return fS(arg.c_str()); });    \
+    }
+
+#define DEF_JS_FUNC_INT32_ASYNC(bridge, fJ, fS)                                       \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
+    {                                                                                 \
+        std::string json = JS_ToCString(ctx, argv[0]);                                \
+        return bridge->newPromiseInt32([arg = json]() { return fS(arg.c_str()); });   \
+    }
+
+#define DEF_JS_FUNC_INT64_ASYNC(bridge, fJ, fS)                                       \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
+    {                                                                                 \
+        std::string json = JS_ToCString(ctx, argv[0]);                                \
+        return bridge->newPromiseInt64([arg = json]() { return fS(arg.c_str()); });   \
+    }
+
+#define DEF_JS_FUNC_FLOAT_ASYNC(bridge, fJ, fS)                                       \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
+    {                                                                                 \
+        std::string json = JS_ToCString(ctx, argv[0]);                                \
+        return bridge->newPromiseFloat([arg = json]() { return fS(arg.c_str()); });   \
+    }
+
+#define DEF_JS_FUNC_STRING_ASYNC(bridge, fJ, fS)                                      \
+    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
+    {                                                                                 \
+        std::string json = JS_ToCString(ctx, argv[0]);                                \
+        return bridge->newPromiseString([arg = json]() { return fS(arg.c_str()); });  \
+    }
+
 namespace NGenXX
 {
     class JsBridge

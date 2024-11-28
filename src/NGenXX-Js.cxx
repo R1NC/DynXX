@@ -1,5 +1,4 @@
 #include "NGenXX-Js.hxx"
-#include "../external/quickjs/quickjs.h"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
 #include "js/JsBridge.hxx"
@@ -14,102 +13,6 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
 #define BIND_JS_FUNC(f)        \
     if (_ngenxx_js != nullptr) \
         _ngenxx_js->bindFunc(#f, f);
-
-#define DEF_JS_FUNC_VOID(fJ, fS)                                                           \
-    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
-    {                                                                                      \
-        const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        fS(json);                                                                          \
-        JS_FreeCString(ctx, json);                                                         \
-        return JS_UNDEFINED;                                                               \
-    }
-
-#define DEF_JS_FUNC_STRING(fJ, fS)                                                         \
-    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
-    {                                                                                      \
-        const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        const std::string res = fS(json);                                                  \
-        JS_FreeCString(ctx, json);                                                         \
-        return JS_NewString(ctx, res.c_str());                                             \
-    }
-
-#define DEF_JS_FUNC_BOOL(fJ, fS)                                                           \
-    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
-    {                                                                                      \
-        const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = fS(json);                                                               \
-        JS_FreeCString(ctx, json);                                                         \
-        return JS_NewBool(ctx, res);                                                       \
-    }
-
-#define DEF_JS_FUNC_INT32(fJ, fS)                                                          \
-    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
-    {                                                                                      \
-        const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = fS(json);                                                               \
-        JS_FreeCString(ctx, json);                                                         \
-        return JS_NewInt32(ctx, res);                                                      \
-    }
-
-#define DEF_JS_FUNC_INT64(fJ, fS)                                                          \
-    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
-    {                                                                                      \
-        const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = fS(json);                                                               \
-        JS_FreeCString(ctx, json);                                                         \
-        return JS_NewInt64(ctx, res);                                                      \
-    }
-
-#define DEF_JS_FUNC_FLOAT(fJ, fS)                                                          \
-    static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \
-    {                                                                                      \
-        const char *json = JS_ToCString(ctx, argv[0]);                                     \
-        auto res = fS(json);                                                               \
-        JS_FreeCString(ctx, json);                                                         \
-        return JS_NewFloat64(ctx, res);                                                    \
-    }
-
-#define DEF_JS_FUNC_VOID_ASYNC(fJ, fS)                                                 \
-    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)  \
-    {                                                                                  \
-        std::string json = JS_ToCString(ctx, argv[0]);                                 \
-        return _ngenxx_js->newPromiseVoid([arg = json]() { return fS(arg.c_str()); }); \
-    }
-
-#define DEF_JS_FUNC_BOOL_ASYNC(fJ, fS)                                                 \
-    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)  \
-    {                                                                                  \
-        std::string json = JS_ToCString(ctx, argv[0]);                                 \
-        return _ngenxx_js->newPromiseBool([arg = json]() { return fS(arg.c_str()); }); \
-    }
-
-#define DEF_JS_FUNC_INT32_ASYNC(fJ, fS)                                                 \
-    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)   \
-    {                                                                                   \
-        std::string json = JS_ToCString(ctx, argv[0]);                                  \
-        return _ngenxx_js->newPromiseInt32([arg = json]() { return fS(arg.c_str()); }); \
-    }
-
-#define DEF_JS_FUNC_INT64_ASYNC(fJ, fS)                                                 \
-    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)   \
-    {                                                                                   \
-        std::string json = JS_ToCString(ctx, argv[0]);                                  \
-        return _ngenxx_js->newPromiseInt64([arg = json]() { return fS(arg.c_str()); }); \
-    }
-
-#define DEF_JS_FUNC_FLOAT_ASYNC(fJ, fS)                                                 \
-    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)   \
-    {                                                                                   \
-        std::string json = JS_ToCString(ctx, argv[0]);                                  \
-        return _ngenxx_js->newPromiseFloat([arg = json]() { return fS(arg.c_str()); }); \
-    }
-
-#define DEF_JS_FUNC_STRING_ASYNC(fJ, fS)                                                 \
-    static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv)    \
-    {                                                                                    \
-        std::string json = JS_ToCString(ctx, argv[0]);                                   \
-        return _ngenxx_js->newPromiseString([arg = json]() { return fS(arg.c_str()); }); \
-    }
 
 const std::string ngenxx_js_ask_platform(const char *msg)
 {
@@ -136,11 +39,11 @@ DEF_JS_FUNC_INT32(ngenxx_device_cpu_archJ, ngenxx_device_cpu_archS)
 
 DEF_JS_FUNC_VOID(ngenxx_log_printJ, ngenxx_log_printS)
 
-DEF_JS_FUNC_STRING_ASYNC(ngenxx_net_http_requestJ, ngenxx_net_http_requestS)
+DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_net_http_requestJ, ngenxx_net_http_requestS)
 
 DEF_JS_FUNC_STRING(ngenxx_store_sqlite_openJ, ngenxx_store_sqlite_openS)
-DEF_JS_FUNC_BOOL_ASYNC(ngenxx_store_sqlite_executeJ, ngenxx_store_sqlite_executeS)
-DEF_JS_FUNC_STRING_ASYNC(ngenxx_store_sqlite_query_doJ, ngenxx_store_sqlite_query_doS)
+DEF_JS_FUNC_BOOL_ASYNC(_ngenxx_js, ngenxx_store_sqlite_executeJ, ngenxx_store_sqlite_executeS)
+DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_store_sqlite_query_doJ, ngenxx_store_sqlite_query_doS)
 DEF_JS_FUNC_BOOL(ngenxx_store_sqlite_query_read_rowJ, ngenxx_store_sqlite_query_read_rowS)
 DEF_JS_FUNC_STRING(ngenxx_store_sqlite_query_read_column_textJ, ngenxx_store_sqlite_query_read_column_textS)
 DEF_JS_FUNC_INT64(ngenxx_store_sqlite_query_read_column_integerJ, ngenxx_store_sqlite_query_read_column_integerS)
@@ -188,8 +91,8 @@ DEF_JS_FUNC_INT64(ngenxx_z_unzip_inputJ, ngenxx_z_unzip_inputS)
 DEF_JS_FUNC_STRING(ngenxx_z_unzip_process_doJ, ngenxx_z_unzip_process_doS)
 DEF_JS_FUNC_BOOL(ngenxx_z_unzip_process_finishedJ, ngenxx_z_unzip_process_finishedS)
 DEF_JS_FUNC_VOID(ngenxx_z_unzip_releaseJ, ngenxx_z_unzip_releaseS)
-DEF_JS_FUNC_STRING_ASYNC(ngenxx_z_bytes_zipJ, ngenxx_z_bytes_zipS)
-DEF_JS_FUNC_STRING_ASYNC(ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
+DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_z_bytes_zipJ, ngenxx_z_bytes_zipS)
+DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
 
 #pragma mark JS
 

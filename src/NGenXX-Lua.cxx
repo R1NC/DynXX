@@ -1,10 +1,5 @@
 #include "NGenXX-Lua.hxx"
 
-extern "C"
-{
-#include "../../../external/lua/lauxlib.h"
-}
-
 #include "lua/LuaBridge.hxx"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
@@ -17,50 +12,6 @@ std::shared_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
 #define BIND_LUA_FUNC(f)        \
     if (_ngenxx_lua != nullptr) \
         _ngenxx_lua->bindFunc(std::string(#f), f);
-
-#define DEF_LUA_FUNC_VOID(fL, fS)                  \
-    int fL(lua_State *L)                           \
-    {                                              \
-        const char *json = luaL_checkstring(L, 1); \
-        fS(json);                                  \
-        return 1;                                  \
-    }
-
-#define DEF_LUA_FUNC_STRING(fL, fS)                \
-    int fL(lua_State *L)                           \
-    {                                              \
-        const char *json = luaL_checkstring(L, 1); \
-        const std::string res = fS(json);          \
-        lua_pushstring(L, res.c_str());            \
-        return 1;                                  \
-    }
-
-#define DEF_LUA_FUNC_INTEGER(fL, fS)               \
-    int fL(lua_State *L)                           \
-    {                                              \
-        const char *json = luaL_checkstring(L, 1); \
-        auto res = fS(json);                       \
-        lua_pushinteger(L, res);                   \
-        return 1;                                  \
-    }
-
-#define DEF_LUA_FUNC_BOOL(fL, fS)                  \
-    int fL(lua_State *L)                           \
-    {                                              \
-        const char *json = luaL_checkstring(L, 1); \
-        bool res = fS(json);                       \
-        lua_pushboolean(L, res);                   \
-        return 1;                                  \
-    }
-
-#define DEF_LUA_FUNC_FLOAT(fL, fS)                 \
-    int fL(lua_State *L)                           \
-    {                                              \
-        const char *json = luaL_checkstring(L, 1); \
-        double res = fS(json);                     \
-        lua_pushnumber(L, res);                    \
-        return 1;                                  \
-    }
 
 DEF_LUA_FUNC_STRING(ngenxx_get_versionL, ngenxx_get_versionS)
 DEF_LUA_FUNC_STRING(ngenxx_root_pathL, ngenxx_root_pathS)
