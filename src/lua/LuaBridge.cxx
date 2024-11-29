@@ -12,7 +12,7 @@
 typedef struct
 {
     lua_State *lState;
-    int lFunc;
+    int lFuncRef;
     size_t timeout;
     bool repeat;
     bool finished;
@@ -41,7 +41,7 @@ void ngenxx_lua_uv_loop_stop()
 void ngenxx_lua_uv_timer_cb(uv_timer_t *timer)
 {
     auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(timer->data);
-    lua_rawgeti(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFunc);
+    lua_rawgeti(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
     lua_pcall(timer_data->lState, 0, 0, 0);
 }
 
@@ -63,6 +63,7 @@ uv_timer_t* ngenxx_lua_uv_timer_start(ngenxx_lua_timer_data *timer_data)
 void ngenxx_lua_uv_timer_stop(uv_timer_t *timer, bool release)
 {
     auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(timer->data);
+    luaL_unref(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
     if (!timer_data->finished)
     {
         uv_timer_set_repeat(timer, 0);
@@ -81,7 +82,7 @@ static int ngenxx_lua_util_timer_add(lua_State *L)
     size_t timeout = luaL_checkinteger(L, 1);
     size_t repeat = luaL_checkinteger(L, 2);
     auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(malloc(sizeof(ngenxx_lua_timer_data)));
-    timer_data->lFunc = luaL_ref(L, LUA_REGISTRYINDEX);
+    timer_data->lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX);
     timer_data->lState = L;
     timer_data->timeout = timeout;
     timer_data->repeat = repeat != 0;

@@ -48,7 +48,7 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
             NSLog(@"!!! LOAD LUA FAILED !!!");
             return;
         }
-        const char * cRsp = ngenxx_lua_call("TestCoroutine", "http://rinc.xyz");
+        const char * cRsp = ngenxx_lua_call("TestTimer", "http://rinc.xyz");
         NSLog(@"%s", cRsp);
     });
 }
