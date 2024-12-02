@@ -114,14 +114,14 @@ static const luaL_Reg ngenxx_lua_lib_timer_funcs[] = {
         lua_setglobal(L, lib);                 \
     }
 
-#define PRINT_L_ERROR(L, prefix)                                                                  \
-    do                                                                                            \
-    {                                                                                             \
-        const char *luaErrMsg = lua_tostring(L, -1);                                              \
-        if (luaErrMsg != NULL)                                                                    \
-        {                                                                                         \
-            ngenxxLogPrint(NGenXXLogLevelX::Error, std::string(prefix) + std::string(luaErrMsg)); \
-        }                                                                                         \
+#define PRINT_L_ERROR(L, prefix)                                                \
+    do                                                                          \
+    {                                                                           \
+        const char *luaErrMsg = lua_tostring(L, -1);                            \
+        if (luaErrMsg != NULL)                                                  \
+        {                                                                       \
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "{}{}", prefix, luaErrMsg); \
+        }                                                                       \
     } while (0);
 
 NGenXX::LuaBridge::LuaBridge()

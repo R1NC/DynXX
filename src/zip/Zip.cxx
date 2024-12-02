@@ -69,13 +69,13 @@ const Bytes NGenXX::Z::ZBase::processDo()
     (this->zs).avail_out = static_cast<uint>(this->bufferSize);
     (this->zs).next_out = reinterpret_cast<Bytef *>(this->outBuffer);
 
-    ngenxxLogPrint(NGenXXLogLevelX::Debug, "z process before avIn:" + std::to_string((this->zs).avail_in) + " avOut:" + std::to_string((this->zs).avail_out));
+    //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
     this->processImp();
-    ngenxxLogPrint(NGenXXLogLevelX::Debug, "z process after avIn:" + std::to_string((this->zs).avail_in) + " avOut:" + std::to_string((this->zs).avail_out));
+    //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
 
     if (this->ret != Z_OK && ret != Z_STREAM_END)
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "z process error:" + std::to_string(this->ret));
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "z process error:{}", this->ret);
         return BytesEmpty;
     }
 
@@ -103,7 +103,7 @@ NGenXX::Z::Zip::Zip(int mode, const size_t bufferSize, const int format) : ZBase
     this->ret = deflateInit2(&(this->zs), mode, Z_DEFLATED, this->windowBits(), 8, Z_DEFAULT_STRATEGY);
     if (this->ret != Z_OK)
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "deflateInit error:" + std::to_string(this->ret));
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "deflateInit error:{}", this->ret);
         throw std::runtime_error("deflateInit failed");
     }
 }
@@ -123,7 +123,7 @@ NGenXX::Z::UnZip::UnZip(const size_t bufferSize, const int format) : ZBase(buffe
     this->ret = inflateInit2(&(this->zs), this->windowBits());
     if (this->ret != Z_OK)
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "inflateInit error:" + std::to_string(this->ret));
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "inflateInit error:{}", this->ret);
         throw std::runtime_error("inflateInit failed");
     }
 }

@@ -24,7 +24,7 @@ size_t _NGenXX_Net_HttpClient_UploadReadCallback(char *ptr, size_t size, size_t 
     if (retcode > 0)
     {
         nread = retcode;
-        ngenxxLogPrint(NGenXXLogLevelX::Debug, "HttpClient read " + std::to_string(nread) + " bytes from file");
+        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient read {} bytes from file", nread);
     }
     return retcode;
 }
@@ -73,7 +73,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
                                       const size_t timeout)
 {
     HttpResponse rsp;
-    int _timeout = timeout;
+    size_t _timeout = timeout;
     if (_timeout <= 0)
     {
         _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
@@ -84,7 +84,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
     curl_mimepart *part;
     if (curl)
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Debug, "HttpClient.request url: " + url + " params: " + params);
+        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request url: {} params: {}", url, params);
 
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
         curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
@@ -152,7 +152,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         struct curl_slist *headerList = NULL;
         for (auto &it : headers)
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Debug, "HttpClient.request header: " + it);
+            ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request header: {}", it);
             headerList = curl_slist_append(headerList, it.c_str());
         }
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
@@ -184,7 +184,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
 
         if (curlCode != CURLE_OK)
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "HttpClient.request error:" + std::string(curl_easy_strerror(curlCode)));
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.request error:{}", curl_easy_strerror(curlCode));
         }
 
         curl_easy_cleanup(curl);

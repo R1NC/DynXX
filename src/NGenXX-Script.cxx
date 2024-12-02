@@ -45,7 +45,7 @@ const address parseAddress(NGenXX::Json::Decoder &decoder, const char *k)
     try {
         a = std::stoll(s);
     } catch (const std::exception& e) {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "parseAddress failed s:" + s);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "parseAddress failed s:{}", s);
     }
     return a;
 }
