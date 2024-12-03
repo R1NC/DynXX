@@ -152,7 +152,7 @@ void NGenXX::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)
     lua_register(this->lstate, funcName.c_str(), funcPointer);
 }
 
-#ifndef __EMSCRIPTEN__
+#if !defined(__EMSCRIPTEN__)
 bool NGenXX::LuaBridge::loadFile(const std::string &file)
 {
     const std::lock_guard<std::mutex> lock(this->mutex);

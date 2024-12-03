@@ -1,4 +1,4 @@
-#ifdef __OHOS__
+#if defined(__OHOS__)
 
 #include "DeviceInfo.hxx"
 #include "../../include/NGenXXDeviceInfo.h"

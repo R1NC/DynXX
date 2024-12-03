@@ -1,5 +1,4 @@
-#ifdef __APPLE__
-#ifdef __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__
+#if defined(__APPLE__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 
 #include "DeviceInfo.hxx"
 #include "../../include/NGenXXDeviceInfo.h"
@@ -67,5 +66,4 @@ int NGenXX::Device::DeviceInfo::cpuArch()
 #endif
 }
 
-#endif
 #endif

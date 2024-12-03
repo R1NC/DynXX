@@ -1,7 +1,7 @@
 #ifndef NGENXX_SRC_STORE_KV_HXX_
 #define NGENXX_SRC_STORE_KV_HXX_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include <unordered_map>
 #include <mutex>

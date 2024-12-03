@@ -1,4 +1,4 @@
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
 
 #include "DeviceInfo.hxx"
 #include "../../include/NGenXXDeviceInfo.h"

@@ -1,7 +1,7 @@
 #ifndef NGENXX_SRC_CRYPTO_HXX_
 #define NGENXX_SRC_CRYPTO_HXX_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include "../../include/NGenXXTypes.hxx"
 

@@ -1,11 +1,11 @@
 #ifndef NGENXX_SRC_STORE_SQLITE_HXX_
 #define NGENXX_SRC_STORE_SQLITE_HXX_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include "../../include/NGenXXTypes.hxx"
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
 #include <sqlite3.h>
 #else
 #include "../../../external/sqlite/sqlite3.h"

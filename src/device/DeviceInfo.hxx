@@ -1,7 +1,7 @@
 #ifndef NGENXX_SRC_DEVICE_INFO_HXX_
 #define NGENXX_SRC_DEVICE_INFO_HXX_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include <string>
 
@@ -21,7 +21,7 @@ namespace NGenXX
 
             int cpuArch();
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
             char const *const SYS_PROPERTY_VERSION_RELEASE = "ro.build.version.release";
             char const *const SYS_PROPERTY_VERSION_INCREMENTAL = "ro.build.version.incremental";
             char const *const SYS_PROPERTY_VERSION_CODENAME = "ro.build.version.codename";

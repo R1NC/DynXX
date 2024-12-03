@@ -3,7 +3,7 @@
 
 #include "../include/NGenXXTypes.h"
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include <string>
 

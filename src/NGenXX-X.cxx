@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include <vector>
 #include <string>
@@ -19,10 +19,10 @@
 #include "crypto/Crypto.hxx"
 #include "device/DeviceInfo.hxx"
 #include "log/Log.hxx"
-#ifdef USE_LUA
+#if defined(USE_LUA)
 #include "NGenXX-Lua.hxx"
 #endif
-#ifdef USE_QJS
+#if defined(USE_QJS)
 #include "NGenXX-Js.hxx"
 #endif
 #endif
@@ -62,10 +62,10 @@ bool ngenxxInit(const std::string &root)
     _ngenxx_sqlite = std::make_shared<NGenXX::Store::SQLite>();
     _ngenxx_kv = std::make_shared<NGenXX::Store::KV>(*_ngenxx_root);
     _ngenxx_http_client = std::make_shared<NGenXX::Net::HttpClient>();
-#ifdef USE_LUA
+#if defined(USE_LUA)
     _ngenxx_lua_init();
 #endif
-#ifdef USE_QJS
+#if defined(USE_QJS)
     _ngenxx_js_init();
 #endif
     return true;
@@ -84,10 +84,10 @@ void ngenxxRelease()
     _ngenxx_kv->closeAll();
     _ngenxx_kv.reset();
     ngenxxLogSetCallback(nullptr);
-#ifdef USE_LUA
+#if defined(USE_LUA)
     _ngenxx_lua_release();
 #endif
-#ifdef USE_QJS
+#if defined(USE_QJS)
     _ngenxx_js_release();
 #endif
 }

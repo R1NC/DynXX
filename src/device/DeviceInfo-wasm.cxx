@@ -1,4 +1,4 @@
-#ifdef __EMSCRIPTEN__
+#if defined(__EMSCRIPTEN__)
 
 #include "DeviceInfo.hxx"
 #include "../../include/NGenXXDeviceInfo.h"

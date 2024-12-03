@@ -1,7 +1,7 @@
 #ifndef NGENXX_SRC_INNER_HXX_
 #define NGENXX_SRC_INNER_HXX_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 // WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
 #define EXPORT extern "C"
