@@ -125,9 +125,10 @@ bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule)
 
 const std::string ngenxxJsCall(const std::string &func, const std::string &params, const bool await)
 {
+    std::string s;
     if (_ngenxx_js == nullptr || func.length() == 0L)
     {
-        return NULL;
+        return s;
     }
     return _ngenxx_js->callFunc(func, params, await);
 }

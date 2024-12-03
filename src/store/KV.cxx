@@ -5,7 +5,7 @@ NGenXX::Store::KV::KV(const std::string &root)
 {
     std::string sRoot(root);
     MMKVLogLevel logLevel = MMKVLogNone;
-#ifdef _WIN32
+#if defined(_WIN32)
     MMKV::initializeMMKV(string2MMKVPath_t(sRoot), logLevel);
 #else
     MMKV::initializeMMKV(sRoot, logLevel);

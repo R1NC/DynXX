@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include "../include/NGenXX.hxx"
 #include "../include/NGenXXTypes.hxx"

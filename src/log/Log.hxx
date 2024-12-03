@@ -1,7 +1,7 @@
 #ifndef NGENXX_SRC_LOG_HXX_
 #define NGENXX_SRC_LOG_HXX_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include <string>
 #include <functional>

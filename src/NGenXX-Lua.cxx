@@ -101,14 +101,15 @@ bool ngenxxLuaLoadS(const std::string &s)
 
 const std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
 {
+    std::string s;
     if (_ngenxx_lua == nullptr || f.length() == 0)
     {
-        return NULL;
+        return s;
     }
     return _ngenxx_lua->callFunc(f, ps);
 }
 
-#ifndef __EMSCRIPTEN__
+#if !defined(__EMSCRIPTEN__)
 EXPORT
 bool ngenxx_lua_loadF(const char *file)
 {

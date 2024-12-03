@@ -3,7 +3,7 @@
 
 #include "../../external/cjson/cJSON.h"
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include <string>
 #include <functional>

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
 #include <android/log.h>
 #elif defined(__OHOS__)
 #include <hilog/log.h>
@@ -45,7 +45,7 @@ void NGenXX::Log::print(const int level, const std::string &content)
     else
     {
         const char *tag = "NGENXX";
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
         __android_log_print(level, tag, "%s", cContent);
 #elif defined(__OHOS__)
         OH_LOG_Print(LOG_APP, static_cast<LogLevel>(level), 0xC0DE, tag, "%s", cContent);

@@ -8,7 +8,7 @@ extern "C"
 #include "../../../external/lua/lauxlib.h"
 }
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 #include <string>
 #include <mutex>
