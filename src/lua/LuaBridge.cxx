@@ -4,7 +4,12 @@
 #include <stdlib.h>
 
 #include "../../include/NGenXXLog.hxx"
+
+#if defined(__OHOS__)
+#include "uv.h"
+#else
 #include "../../external/libuv/include/uv.h"
+#endif
 
 #include <thread>
 #include <functional>

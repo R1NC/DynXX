@@ -68,7 +68,7 @@ endif()
 # 1). The buillt-in sqlite in iOS/macOS is available，no need to compile；
 # 2). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
 # 3). WASM has no built-in zlib;
-add_subdirectory(../external/libuv libuv.output)
+# 4). HarmonyOS has built-in libuv;
 add_subdirectory(../external/cjson cjson.output)
 add_subdirectory(../external/mmkv/POSIX/src mmkv.output)
 add_subdirectory(../external/openssl openssl.output)
@@ -85,9 +85,11 @@ endif()
 if(EMSCRIPTEN)
     add_subdirectory(../external/zlib zlib.output)
 endif()
+if(NOT OHOS)
+    add_subdirectory(../external/libuv libuv.output)
+endif()
 
 set(LINK_LIBS
-    libuv
     mmkv
     cjson
     OpenSSL::SSL 
@@ -116,6 +118,11 @@ endif()
 if(EMSCRIPTEN)
     set(LINK_LIBS ${LINK_LIBS}
         zlib
+    )
+endif()
+if(NOT OHOS)
+    set(LINK_LIBS ${LINK_LIBS}
+        libuv
     )
 endif()
 

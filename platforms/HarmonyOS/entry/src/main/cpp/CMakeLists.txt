@@ -42,11 +42,6 @@ set(quickjsPath ${libDir}/libqjs.a)
 add_library(libquickjs STATIC IMPORTED)
 set_property(TARGET libquickjs PROPERTY IMPORTED_LOCATION ${quickjsPath})
 
-#Find libuv
-set(libuvPath ${libDir}/libuv.a)
-add_library(libuv STATIC IMPORTED)
-set_property(TARGET libuv PROPERTY IMPORTED_LOCATION ${libuvPath})
-
 #Find cjson
 set(cjsonPath ${libDir}/libcjson.a)
 add_library(libcjson STATIC IMPORTED)
@@ -78,11 +73,13 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     libcurl
     liblua
     libquickjs
-    libuv
     libcjson
     libsqlite
     libmmkvcore
     libmmkv
     libNGenXX
     z
-libace_napi.z.so)
+    uv
+    libace_napi.z.so
+    libhilog_ndk.z.so
+)
