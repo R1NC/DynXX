@@ -104,7 +104,7 @@ struct Index {
               + "ngenxx_log_printJ(pLog);\n"
               + "return ngenxx_net_http_requestJ(params);\n"
               + "}\n"
-            , "biz.js");
+            , "biz.js", false);
             let rsp = NGenXX.jCall("jNetHttpRequest", jsonParams);
             /*let rsp = NGenXX.netHttpRequest("https://rinc.xyz",
               HttpMethod.Get,
