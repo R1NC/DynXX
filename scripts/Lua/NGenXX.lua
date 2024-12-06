@@ -23,10 +23,10 @@ NGenXX.Log.Level = {
     None = 8
 }
 
-function NGenXX.Log.print(_level, _content)
+function NGenXX.Log.print(level, content)
     local inJson = JSON.stringify({
-        level = _level,
-        content = _content
+        ["level"] = level,
+        ["content"] = content
     })
     ngenxx_log_printL(inJson)
 end
@@ -42,7 +42,7 @@ NGenXX.Device.Platform = {
     ApplePad = 3,
     AppleMac = 4,
     AppleWatch = 5,
-    AppleTV = 6,
+    ApplocalV = 6,
     HarmonyOS = 7,
     Windows = 8,
     Linux = 9,
@@ -89,7 +89,7 @@ NGenXX.Net.Http.Method = {
     Put = 2
 }
 
-function NGenXX.Net.Http.request(_url, _method, param_map, header_map, raw_body_bytes, _timeout)
+function NGenXX.Net.Http.request(url, method, param_map, header_map, raw_body_bytes, timeout)
     param_map = param_map or {}
     local paramStr = ""
     for k, v in pairs(param_map) do
@@ -111,14 +111,14 @@ function NGenXX.Net.Http.request(_url, _method, param_map, header_map, raw_body_
     _timeout = _timeout or 15 * 1000
 
     local inJson = JSON.stringify({
-        url = _url,
-        method = _method,
-        params = paramStr,
-        header_v = headerArray,
-        header_c = #headerArray,
-        rawBodyBytes = raw_body_bytes,
-        rawBodyLen = #raw_body_bytes,
-        timeout = _timeout
+        ["url"] = url,
+        ["method"] = method,
+        ["params"] = paramStr,
+        ["header_v"] = headerArray,
+        ["header_c"] = #headerArray,
+        ["rawBodyBytes"] = raw_body_bytes,
+        ["rawBodyLen"] = #raw_body_bytes,
+        ["timeout"] = timeout
     })
     return ngenxx_net_http_requestL(inJson)
 end
@@ -129,16 +129,16 @@ NGenXX.Coding = {}
 
 NGenXX.Coding.Case = {}
 
-function NGenXX.Coding.Case.upper(s)
+function NGenXX.Coding.Case.upper(str)
     local inJson = JSON.stringify({
-        str = s
+        ["str"] = str
     })
     return ngenxx_coding_case_upperL(inJson)
 end
 
-function NGenXX.Coding.Case.lower(s)
+function NGenXX.Coding.Case.lower(str)
     local inJson = JSON.stringify({
-        str = s
+        ["str"] = str
     })
     return ngenxx_coding_case_lowerL(inJson)
 end
@@ -147,15 +147,15 @@ NGenXX.Coding.Hex = {}
 
 function NGenXX.Coding.Hex.bytes2Str(bytes)
     local inJson = JSON.stringify({
-        inBytes = bytes,
-        inLen = #bytes
+        ["inBytes"] = bytes,
+        ["inLen"] = #bytes
     })
     return ngenxx_coding_hex_bytes2strL(inJson)
 end
 
-function NGenXX.Coding.Hex.str2Bytes(s)
+function NGenXX.Coding.Hex.str2Bytes(str)
     local inJson = JSON.stringify({
-        str = s
+        ["str"] = str
     })
     local outJson = ngenxx_coding_hex_str2bytesL(inJson)
     return JSON.parse(outJson)
@@ -163,15 +163,15 @@ end
 
 function NGenXX.Coding.bytes2Str(bytes)
     local inJson = JSON.stringify({
-        inBytes = bytes,
-        inLen = #bytes
+        ["inBytes"] = bytes,
+        ["inLen"] = #bytes
     })
     return ngenxx_coding_bytes2strL(inJson)
 end
 
-function NGenXX.Coding.str2Bytes(s)
+function NGenXX.Coding.str2Bytes(str)
     local inJson = JSON.stringify({
-        str = s
+        ["str"] = str
     })
     local outJson = ngenxx_coding_str2bytesL(inJson)
     return JSON.parse(outJson)
@@ -181,9 +181,9 @@ end
 
 NGenXX.Crypto = {}
 
-function NGenXX.Crypto.rand(_len)
+function NGenXX.Crypto.rand(len)
     local inJson = JSON.stringify({
-        len = _len
+        ["len"] = len
     })
     local outJson = ngenxx_crypto_randL(inJson)
     return JSON.parse(outJson)
@@ -191,23 +191,23 @@ end
 
 NGenXX.Crypto.Aes = {}
 
-function NGenXX.Crypto.Aes.encrypt(in_bytes, key_bytes)
+function NGenXX.Crypto.Aes.encrypt(inBytes, keyBytes)
     local inJson = JSON.stringify({
-        inBytes = in_bytes,
-        inLen = #in_bytes,
-        keyBytes = key_bytes,
-        keyLen = #key_bytes
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes,
+        ["keyBytes"] = keyBytes,
+        ["keyLen"] = #keyBytes
     })
     local outJson = ngenxx_crypto_aes_encryptL(inJson)
     return JSON.parse(outJson)
 end
 
-function NGenXX.Crypto.Aes.decrypt(in_bytes, key_bytes)
+function NGenXX.Crypto.Aes.decrypt(inBytes, keyBytes)
     local inJson = JSON.stringify({
-        inBytes = in_bytes,
-        inLen = #in_bytes,
-        keyBytes = key_bytes,
-        keyLen = #key_bytes
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes,
+        ["keyBytes"] = keyBytes,
+        ["keyLen"] = #keyBytes
     })
     local outJson = ngenxx_crypto_aes_decryptL(inJson)
     return JSON.parse(outJson)
@@ -215,35 +215,35 @@ end
 
 NGenXX.Crypto.Aes.Gcm = {}
 
-function NGenXX.Crypto.Aes.Gcm.encrypt(in_bytes, key_bytes, iv_bytes, tag_bits, aad_bytes)
+function NGenXX.Crypto.Aes.Gcm.encrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes)
     aad_bytes = aad_bytes or {}
     local inJson = JSON.stringify({
-        inBytes = in_bytes,
-        inLen = #in_bytes,
-        keyBytes = key_bytes,
-        keyLen = #key_bytes,
-        initVectorBytes = iv_bytes,
-        initVectorLen = #iv_bytes,
-        aadBytes = aad_bytes,
-        aadLen = #aad_bytes,
-        tagBits = tag_bits
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes,
+        ["keyBytes"] = keyBytes,
+        ["keyLen"] = #keyBytes,
+        ["initVectorBytes"] = ivBytes,
+        ["initVectorLen"] = #ivBytes,
+        ["aadBytes"] = aadBytes,
+        ["aadLen"] = #aadBytes,
+        ["tagBits"] = tagBits
     })
     local outJson = ngenxx_crypto_aes_gcm_encryptL(inJson)
     return JSON.parse(outJson)
 end
 
-function NGenXX.Crypto.Aes.Gcm.decrypt(in_bytes, key_bytes, iv_bytes, tag_bits, aad_bytes)
+function NGenXX.Crypto.Aes.Gcm.decrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes)
     aad_bytes = aad_bytes or {}
     local inJson = JSON.stringify({
-        inBytes = in_bytes,
-        inLen = #in_bytes,
-        keyBytes = key_bytes,
-        keyLen = #key_bytes,
-        initVectorBytes = iv_bytes,
-        initVectorLen = #iv_bytes,
-        aadBytes = aad_bytes,
-        aadLen = #aad_bytes,
-        tagBits = tag_bits
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes,
+        ["keyBytes"] = keyBytes,
+        ["keyLen"] = #keyBytes,
+        ["initVectorBytes"] = ivBytes,
+        ["initVectorLen"] = #ivBytes,
+        ["aadBytes"] = aadBytes,
+        ["aadLen"] = #aadBytes,
+        ["tagBits"] = tagBits
     })
     local outJson = ngenxx_crypto_aes_gcm_decryptL(inJson)
     return JSON.parse(outJson)
@@ -251,19 +251,19 @@ end
 
 NGenXX.Crypto.Hash = {}
 
-function NGenXX.Crypto.Hash.md5(in_bytes)
+function NGenXX.Crypto.Hash.md5(inBytes)
     local inJson = JSON.stringify({
-        inBytes = in_bytes,
-        inLen = #in_bytes
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes
     })
     local outJson = ngenxx_crypto_hash_md5L(inJson)
     return JSON.parse(outJson)
 end
 
-function NGenXX.Crypto.Hash.sha256(in_bytes)
+function NGenXX.Crypto.Hash.sha256(inBytes)
     local inJson = JSON.stringify({
-        inBytes = in_bytes,
-        inLen = #in_bytes
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes
     })
     local outJson = ngenxx_crypto_hash_sha256L(inJson)
     return JSON.parse(outJson)
@@ -271,19 +271,19 @@ end
 
 NGenXX.Crypto.Base64 = {}
 
-function NGenXX.Crypto.Base64.encode(in_bytes)
+function NGenXX.Crypto.Base64.encode(inBytes)
     local inJson = JSON.stringify({
-        inBytes = in_bytes,
-        inLen = #in_bytes
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes
     })
     local outJson = ngenxx_crypto_base64_encodeL(inJson)
     return JSON.parse(outJson)
 end
 
-function NGenXX.Crypto.Base64.decode(in_bytes)
+function NGenXX.Crypto.Base64.decode(inBytes)
     local inJson = JSON.stringify({
-        inBytes = in_bytes,
-        inLen = #in_bytes
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes
     })
     local outJson = ngenxx_crypto_base64_decodeL(inJson)
     return JSON.parse(outJson)
@@ -297,70 +297,70 @@ NGenXX.Store.SQLite = {}
 
 function NGenXX.Store.SQLite.open(id)
     local inJson = JSON.stringify({
-        _id = id
+        ["_id"] = id
     })
     return ngenxx_store_sqlite_openL(inJson)
 end
 
-function NGenXX.Store.SQLite.execute(_conn, _sql)
+function NGenXX.Store.SQLite.execute(conn, sql)
     local inJson = JSON.stringify({
-        conn = _conn,
-        sql = _sql
+        ["conn"] = conn,
+        ["sql"] = sql
     })
     return ngenxx_store_sqlite_executeL(inJson)
 end
 
 NGenXX.Store.SQLite.Query = {}
 
-function NGenXX.Store.SQLite.Query.create(_conn, _sql)
+function NGenXX.Store.SQLite.Query.create(conn, sql)
     local inJson = JSON.stringify({
-        conn = _conn,
-        sql = _sql
+        ["conn"] = conn,
+        ["sql"] = sql
     })
     return ngenxx_store_sqlite_query_doL(inJson)
 end
 
-function NGenXX.Store.SQLite.Query.readRow(_query_result)
+function NGenXX.Store.SQLite.Query.readRow(query_result)
     local inJson = JSON.stringify({
-        query_result = _query_result
+        ["query_result"] = query_result
     })
     return ngenxx_store_sqlite_query_read_rowL(inJson)
 end
 
-function NGenXX.Store.SQLite.Query.readColumnText(_query_result, _column)
+function NGenXX.Store.SQLite.Query.readColumnText(query_result, column)
     local inJson = JSON.stringify({
-        query_result = _query_result,
-        column = _column
+        ["query_result"] = query_result,
+        ["column"] = column
     })
     return ngenxx_store_sqlite_query_read_column_textL(inJson)
 end
 
-function NGenXX.Store.SQLite.Query.readColumnInteger(_query_result, _column)
+function NGenXX.Store.SQLite.Query.readColumnInteger(query_result, column)
     local inJson = JSON.stringify({
-        query_result = _query_result,
-        column = _column
+        ["query_result"] = query_result,
+        ["column"] = column
     })
     return ngenxx_store_sqlite_query_read_column_integerL(inJson)
 end
 
-function NGenXX.Store.SQLite.Query.readColumnFloat(_query_result, _column)
+function NGenXX.Store.SQLite.Query.readColumnFloat(query_result, column)
     local inJson = JSON.stringify({
-        query_result = _query_result,
-        column = _column
+        ["query_result"] = query_result,
+        ["column"] = column
     })
     return ngenxx_store_sqlite_query_read_column_floatL(inJson)
 end
 
-function NGenXX.Store.SQLite.Query.drop(_query_result)
+function NGenXX.Store.SQLite.Query.drop(query_result)
     local inJson = JSON.stringify({
-        query_result = _query_result
+        ["query_result"] = query_result
     })
     ngenxx_store_sqlite_query_dropL(inJson)
 end
 
-function NGenXX.Store.SQLite.close(_conn)
+function NGenXX.Store.SQLite.close(conn)
     local inJson = JSON.stringify({
-        conn = _conn
+        ["conn"] = conn
     })
     ngenxx_store_sqlite_closeL(inJson)
 end
@@ -371,96 +371,96 @@ NGenXX.Store.KV = {}
 
 function NGenXX.Store.KV.open(id)
     local inJson = JSON.stringify({
-        _id = id
+        ["_id"] = id
     })
     return ngenxx_store_kv_openL(inJson)
 end
 
-function NGenXX.Store.KV.readString(_conn, _k)
+function NGenXX.Store.KV.readString(conn, k)
     local inJson = JSON.stringify({
-        conn = _conn,
-        k = _k
+        ["conn"] = conn,
+        ["k"] = k
     })
     return ngenxx_store_kv_read_stringL(inJson)
 end
 
-function NGenXX.Store.KV.writeString(_conn, _k, s)
+function NGenXX.Store.KV.writeString(conn, k, s)
     local inJson = JSON.stringify({
-        conn = _conn,
-        k = _k,
-        v = s
+        ["conn"] = conn,
+        ["k"] = k,
+        ["v"] = s
     })
     return ngenxx_store_kv_write_stringL(inJson)
 end
 
-function NGenXX.Store.KV.readInteger(_conn, _k)
+function NGenXX.Store.KV.readInteger(conn, k)
     local inJson = JSON.stringify({
-        conn = _conn,
-        k = _k
+        ["conn"] = conn,
+        ["k"] = k
     })
     return ngenxx_store_kv_read_integerL(inJson)
 end
 
-function NGenXX.Store.KV.writeInteger(_conn, _k, i)
+function NGenXX.Store.KV.writeInteger(conn, k, i)
     local inJson = JSON.stringify({
-        conn = _conn,
-        k = _k,
-        v = i
+        ["conn"] = conn,
+        ["k"] = k,
+        ["v"] = i
     })
     return ngenxx_store_kv_write_integerL(inJson)
 end
 
-function NGenXX.Store.KV.readFloat(_conn, _k)
+function NGenXX.Store.KV.readFloat(conn, k)
     local inJson = JSON.stringify({
-        conn = _conn,
-        k = _k
+        ["conn"] = conn,
+        ["k"] = k
     })
     return ngenxx_store_kv_read_floatL(inJson)
 end
 
-function NGenXX.Store.KV.writeFloat(_conn, _k, f)
+function NGenXX.Store.KV.writeFloat(conn, k, f)
     local inJson = JSON.stringify({
-        conn = _conn,
-        k = _k,
-        v = f
+        ["conn"] = conn,
+        ["k"] = k,
+        ["v"] = f
     })
     return ngenxx_store_kv_write_floatL(inJson)
 end
 
-function NGenXX.Store.KV.allKeys(_conn)
+function NGenXX.Store.KV.allKeys(conn)
     local inJson = JSON.stringify({
-        conn = _conn
+        ["conn"] = conn
     })
     local outJson = ngenxx_store_kv_all_keysL(inJson)
     return JSON.parse(outJson)
 end
 
-function NGenXX.Store.KV.contains(_conn, _k)
+function NGenXX.Store.KV.contains(conn, k)
     local inJson = JSON.stringify({
-        conn = _conn,
-        k = _k
+        ["conn"] = conn,
+        ["k"] = k
     })
     return ngenxx_store_kv_containsL(inJson)
 end
 
-function NGenXX.Store.KV.remove(_conn, _k)
+function NGenXX.Store.KV.remove(conn, k)
     local inJson = JSON.stringify({
-        conn = _conn,
-        k = _k
+        ["conn"] = conn,
+        ["k"] = k
     })
     ngenxx_store_kv_removeL(inJson)
 end
 
-function NGenXX.Store.KV.clear(_conn)
+function NGenXX.Store.KV.clear(conn)
     local inJson = JSON.stringify({
-        conn = _conn
+        ["conn"] = conn
     })
     ngenxx_store_kv_clearL(inJson)
 end
 
-function NGenXX.Store.KV.close(_conn)
+function NGenXX.Store.KV.close(conn)
     local inJson = JSON.stringify({
-        conn = _conn
+        ["conn"] = conn
     })
     ngenxx_store_kv_closeL(inJson)
 end
@@ -483,28 +483,112 @@ NGenXX.Z.ZipMode = {
 
 NGenXX.Z.DefaultBufferSize = 16 * 1024
 
-function NGenXX.Z.zipBytes(in_bytes, _format, _mode)
-    _format = _format or NGenXX.Z.Format.ZLib
-    _mode = _mode or NGenXX.Z.ZipMode.Default
+function NGenXX.Z.zipBytes(inBytes, format, mode)
+    format = format or NGenXX.Z.Format.ZLib
+    mode = mode or NGenXX.Z.ZipMode.Default
     local inJson = JSON.stringify({
-        mode = _mode,
-        bufferSize = NGenXX.Z.DefaultBufferSize,
-        format = _format,
-        inBytes = in_bytes,
-        inLen = #in_bytes
+        ["mode"] = mode,
+        ["bufferSize"] = NGenXX.Z.DefaultBufferSize,
+        ["format"] = format,
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes
     })
     local outJson = ngenxx_z_bytes_unzipL(inJson)
     return JSON.parse(outJson)
 end
 
-function NGenXX.Z.unZipBytes(in_bytes, _format)
-    _format = _format or NGenXX.Z.Format.ZLib
+function NGenXX.Z.unZipBytes(inBytes, format)
+    format = format or NGenXX.Z.Format.ZLib
     local inJson = JSON.stringify({
-        bufferSize = NGenXX.Z.DefaultBufferSize,
-        format = _format,
-        inBytes = in_bytes,
-        inLen = #in_bytes
+        ["bufferSize"] = NGenXX.Z.DefaultBufferSize,
+        ["format"] = format,
+        ["inBytes"] = inBytes,
+        ["inLen"] = #inBytes
     })
     local outJson = ngenxx_z_bytes_unzipL(inJson)
     return JSON.parse(outJson)
+end
+
+NGenXX.Z._ = {}
+
+function NGenXX.Z._.ZipInit(mode, bufferSize, format)
+    local inJson = JSON.stringify({
+        ["mode"] = mode,
+        ["bufferSize"] = bufferSize,
+        ["format"] = format
+    })
+    return ngenxx_z_zip_initL(inJson)
+end
+
+function NGenXX.Z._.ZipInput(zip, bytes, finish)
+    local inJson = JSON.stringify({
+        ["zip"] = zip,
+        ["inBytes"] = bytes,
+        ["inLen"] = #bytes,
+        ["inFinish"] = finish and 1 or 0
+    })
+    return ngenxx_z_zip_inputL(inJson)
+end
+
+function NGenXX.Z._.ZipProcessDo(zip)
+    local inJson = JSON.stringify({
+        ["zip"] = zip
+    })
+    local outJson = ngenxx_z_zip_process_doL(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Z._.ZipProcessFinished(zip)
+    local inJson = JSON.stringify({
+        ["zip"] = zip
+    })
+    return ngenxx_z_zip_process_finishedL(inJson)
+end
+
+function NGenXX.Z._.ZipRelease(zip)
+    local inJson = JSON.stringify({
+        ["zip"] = zip
+    })
+    ngenxx_z_zip_releaseL(inJson)
+end
+
+function NGenXX.Z._.UnZipInit(bufferSize, format)
+    local inJson = JSON.stringify({
+        ["bufferSize"] = bufferSize,
+        ["format"] = format
+    })
+    return ngenxx_z_unzip_initL(inJson)
+end
+
+function NGenXX.Z._.UnZipInput(unzip, bytes, finish)
+    bytes = bytes or {};
+    local inJson = JSON.stringify({
+        ["unzip"] = unzip,
+        ["inBytes"] = bytes,
+        ["inLen"] = #bytes,
+        ["inFinish"] = finish and 1 or 0
+    })
+    return ngenxx_z_unzip_inputL(inJson)
+end
+
+function NGenXX.Z._.UnZipProcessDo(unzip)
+    local inJson = JSON.stringify({
+        ["unzip"] = unzip
+    })
+    local outJson = ngenxx_z_unzip_process_doL(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Z._.UnZipProcessFinished(unzip)
+    local inJson = JSON.stringify({
+        ["unzip"] = unzip
+    })
+    return ngenxx_z_unzip_process_finishedL(inJson)
+end
+
+function NGenXX.Z._.UnZipRelease(unzip)
+    local inJson = JSON.stringify({
+        ["unzip"] = unzip
+    })
+    ngenxx_z_unzip_releaseL(inJson)
 end
