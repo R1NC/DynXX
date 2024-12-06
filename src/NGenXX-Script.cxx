@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <ranges>
+#include <functional>
 
 #include "../include/NGenXX.hxx"
 #include "../include/NGenXXTypes.hxx"
@@ -11,14 +13,11 @@
 
 const std::string bytes2json(Bytes bytes)
 {
-    auto data = bytes.data();
-    auto len = bytes.size();
-    int x[len];
-    for (int i = 0; i < len; i++)
-    {
-        x[i] = data[i];
-    }
-    auto cj = data == NULL || len <= 0 ? cJSON_CreateArray() : cJSON_CreateIntArray(x, static_cast<int>(len));
+    std::vector<int> intV;
+    std::ranges::transform(bytes, std::back_inserter(intV), [](auto& b) { 
+        return static_cast<int>(b); 
+    });
+    auto cj = bytes.empty() ? cJSON_CreateArray() : cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));
     const char *outJson = cJSON_PrintUnformatted(cj);
     return std::string(outJson);
 }
@@ -72,11 +71,10 @@ Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK, const c
             decoder.readChildren(byte_vNode,
                                  [len, &data, &decoder](int idx, void *child) -> void
                                  {
-                                     if (idx >= len)
+                                     if (idx < len)
                                      {
-                                         return;
+                                         data.push_back(decoder.readNumber(child));
                                      }
-                                     data.push_back(decoder.readNumber(child));
                                  });
         }
     }
@@ -96,11 +94,10 @@ const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, con
         decoder.readChildren(str_vNode,
                              [count, maxLen, &v, &decoder](int idx, void *child) -> void
                              {
-                                 if (idx >= count)
+                                 if (idx < count)
                                  {
-                                     return;
+                                     v.push_back(std::move(decoder.readString(child)));
                                  }
-                                 v.push_back(std::move(decoder.readString(child)));
                              });
     }
     return v;
