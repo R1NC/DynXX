@@ -511,7 +511,7 @@ end
 
 NGenXX.Z._ = {}
 
-function NGenXX.Z._.ZipInit(mode, bufferSize, format)
+function NGenXX.Z._.zipInit(mode, bufferSize, format)
     local inJson = JSON.stringify({
         ["mode"] = mode,
         ["bufferSize"] = bufferSize,
@@ -520,7 +520,7 @@ function NGenXX.Z._.ZipInit(mode, bufferSize, format)
     return ngenxx_z_zip_initL(inJson)
 end
 
-function NGenXX.Z._.ZipInput(zip, bytes, finish)
+function NGenXX.Z._.zipInput(zip, bytes, finish)
     local inJson = JSON.stringify({
         ["zip"] = zip,
         ["inBytes"] = bytes,
@@ -530,7 +530,7 @@ function NGenXX.Z._.ZipInput(zip, bytes, finish)
     return ngenxx_z_zip_inputL(inJson)
 end
 
-function NGenXX.Z._.ZipProcessDo(zip)
+function NGenXX.Z._.zipProcessDo(zip)
     local inJson = JSON.stringify({
         ["zip"] = zip
     })
@@ -538,21 +538,21 @@ function NGenXX.Z._.ZipProcessDo(zip)
     return JSON.parse(outJson)
 end
 
-function NGenXX.Z._.ZipProcessFinished(zip)
+function NGenXX.Z._.zipProcessFinished(zip)
     local inJson = JSON.stringify({
         ["zip"] = zip
     })
     return ngenxx_z_zip_process_finishedL(inJson)
 end
 
-function NGenXX.Z._.ZipRelease(zip)
+function NGenXX.Z._.zipRelease(zip)
     local inJson = JSON.stringify({
         ["zip"] = zip
     })
     ngenxx_z_zip_releaseL(inJson)
 end
 
-function NGenXX.Z._.UnZipInit(bufferSize, format)
+function NGenXX.Z._.unZipInit(bufferSize, format)
     local inJson = JSON.stringify({
         ["bufferSize"] = bufferSize,
         ["format"] = format
@@ -560,8 +560,8 @@ function NGenXX.Z._.UnZipInit(bufferSize, format)
     return ngenxx_z_unzip_initL(inJson)
 end
 
-function NGenXX.Z._.UnZipInput(unzip, bytes, finish)
-    bytes = bytes or {};
+function NGenXX.Z._.unZipInput(unzip, bytes, finish)
+    bytes = bytes or {}
     local inJson = JSON.stringify({
         ["unzip"] = unzip,
         ["inBytes"] = bytes,
@@ -571,7 +571,7 @@ function NGenXX.Z._.UnZipInput(unzip, bytes, finish)
     return ngenxx_z_unzip_inputL(inJson)
 end
 
-function NGenXX.Z._.UnZipProcessDo(unzip)
+function NGenXX.Z._.unZipProcessDo(unzip)
     local inJson = JSON.stringify({
         ["unzip"] = unzip
     })
@@ -579,16 +579,133 @@ function NGenXX.Z._.UnZipProcessDo(unzip)
     return JSON.parse(outJson)
 end
 
-function NGenXX.Z._.UnZipProcessFinished(unzip)
+function NGenXX.Z._.unZipProcessFinished(unzip)
     local inJson = JSON.stringify({
         ["unzip"] = unzip
     })
     return ngenxx_z_unzip_process_finishedL(inJson)
 end
 
-function NGenXX.Z._.UnZipRelease(unzip)
+function NGenXX.Z._.unZipRelease(unzip)
     local inJson = JSON.stringify({
         ["unzip"] = unzip
     })
     ngenxx_z_unzip_releaseL(inJson)
+end
+
+function NGenXX.Z._.stream(bufferSize, readFunc, writeFunc, flushFunc, z, inputFunc, processDoFunc, processFinishedFunc)
+    local inputFinished = false
+    local processFinished = false
+    repeat
+        local inBytes = readFunc()
+        inputFinished = #inBytes < bufferSize
+        NGenXX.Log.print(NGenXX.Log.Level.Debug, 'z <- len:' .. #inBytes .. ' finished:' .. inputFinished)
+
+        local inputRet = inputFunc(z, inBytes, inputFinished)
+        if (inputRet <= 0) then
+            NGenXX.Log.print(NGenXX.Log.Level.Error, 'z input failed!')
+            return false
+        end
+
+        processFinished = false
+        repeat
+            local outBytes = processDoFunc(z)
+            if (#outBytes == 0) then
+                NGenXX.Log.print(NGenXX.Log.Level.Error, 'z process failed!')
+                return false
+            end
+            processFinished = processFinishedFunc(z)
+            NGenXX.Log.print(NGenXX.Log.Level.Debug, 'z -> len:' .. #outBytes .. ' finished:' .. processFinished)
+
+            writeFunc(outBytes)
+        until (~processFinished)
+    until (~inputFinished)
+
+    flushFunc()
+    return true
+end
+
+function NGenXX.Z._.zipStream(readFunc, writeFunc, flushFunc, mode, bufferSize, format)
+    local zip = NGenXX.Z._.zipInit(mode, bufferSize, format)
+
+    local res = NGenXX.Z._.Stream(bufferSize, readFunc, writeFunc, flushFunc, zip,
+        function(z, buffer, inputFinished)
+            return NGenXX.Z._.zipInput(z, buffer, inputFinished)
+        end,
+        function(z)
+            return NGenXX.Z._.zipProcessDo(z)
+        end,
+        function(z)
+            return NGenXX.Z._.zipProcessFinished(z)
+        end
+    )
+
+    NGenXX.Z._.zipRelease(zip)
+    return res
+end
+
+function NGenXX.Z._.unZipStream(readFunc, writeFunc, flushFunc, bufferSize, format)
+    local unzip = NGenXX.Z._.unZipInit(bufferSize, format)
+
+    local res = NGenXX.Z._.Stream(bufferSize, readFunc, writeFunc, flushFunc, unzip,
+        function(z, buffer, inputFinished)
+            return NGenXX.Z._.unZipInput(z, buffer, inputFinished)
+        end, 
+        function(z)
+            return NGenXX.Z._.unZipProcessDo(z)
+        end,
+        function(z)
+            return NGenXX.Z._.unZipProcessFinished(z)
+        end
+    )
+
+    NGenXX.Z._.unZipRelease(unzip)
+    return res
+end
+
+function NGenXX.Z.zipFile(inFilePath, outFilePath, mode, bufferSize, format)
+    local inF = io.open(inFilePath, 'r')
+    local outF = io.open(outFilePath, 'w')
+
+    local res = NGenXX.Z._.zipStream(
+        function()
+            return inF:read(bufferSize)
+        end,
+        function(bytes)
+            outF:write(bytes)
+        end,
+        function()
+            outF:flush()
+        end,
+        mode, 
+        bufferSize, 
+        format
+    )
+
+    outF:close()
+    inF:close()
+    return res
+end
+
+function NGenXX.Z.unZipFile(inFilePath, outFilePath, bufferSize, format)
+    local inF = io.open(inFilePath, 'r')
+    local outF = io.open(outFilePath, 'w')
+
+    local res = NGenXX.Z._.unZipStream(
+        function()
+            return inF:read(bufferSize)
+        end,
+        function(bytes)
+            outF:write(bytes)
+        end,
+        function()
+            outF:flush()
+        end,
+        bufferSize, 
+        format
+    )
+
+    outF:close()
+    inF:close()
+    return res
 end
