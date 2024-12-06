@@ -7,7 +7,9 @@
 cJSON *NGenXX::Json::Decoder::parseNode(void *const node)
 {
     if (node == NULL)
+    {
         return this->cjson;
+    }
     return reinterpret_cast<cJSON *>(const_cast<void *>(node));
 }
 
@@ -55,7 +57,9 @@ double NGenXX::Json::Decoder::readNumber(void *const node)
     if (cj != NULL)
     {
         if (cJSON_IsNumber(cj))
+        {
             num = cj->valuedouble;
+        }
         if (cJSON_IsString(cj))
         {
             try
@@ -84,13 +88,17 @@ void *const NGenXX::Json::Decoder::readChild(void *const node)
 void NGenXX::Json::Decoder::readChildren(void *const node, std::function<void(int idx, void *child)> callback)
 {
     if (!this->isArray(node) && !this->isObject(node))
+    {
         return;
+    }
     void *childNode = this->readChild(node);
     int idx = 0;
     while (childNode)
     {
-        if (callback)
+        if (callback) 
+        {
             callback(idx++, childNode);
+        }
         childNode = this->readNext(childNode);
     }
 }

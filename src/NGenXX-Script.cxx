@@ -34,10 +34,20 @@ const std::string strArray2json(const std::vector<std::string> &v)
     return std::string(outJson);
 }
 
+const double parseNum(NGenXX::Json::Decoder &decoder, const char *k)
+{
+    return decoder.readNumber(decoder.readNode(NULL, k));
+}
+
+const std::string parseStr(NGenXX::Json::Decoder &decoder, const char *k)
+{
+    return decoder.readString(decoder.readNode(NULL, k));
+}
+
 const address parseAddress(NGenXX::Json::Decoder &decoder, const char *k)
 {
     address a = 0;
-    auto s = decoder.readString(decoder.readNode(NULL, k));
+    auto s = parseStr(decoder, k);
     if (s.empty() || s == "0")
     {
         return a;
@@ -52,7 +62,7 @@ const address parseAddress(NGenXX::Json::Decoder &decoder, const char *k)
 
 Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK, const char *lenK)
 {
-    size_t len = decoder.readNumber(decoder.readNode(NULL, lenK));
+    size_t len = parseNum(decoder, lenK);
     Bytes data;
     if (len > 0)
     {
@@ -62,7 +72,7 @@ Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK, const c
             decoder.readChildren(byte_vNode,
                                  [len, &data, &decoder](int idx, void *child) -> void
                                  {
-                                     if (idx == len)
+                                     if (idx >= len)
                                      {
                                          return;
                                      }
@@ -86,7 +96,7 @@ const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, con
         decoder.readChildren(str_vNode,
                              [count, maxLen, &v, &decoder](int idx, void *child) -> void
                              {
-                                 if (idx == count)
+                                 if (idx >= count)
                                  {
                                      return;
                                  }
@@ -142,8 +152,8 @@ void ngenxx_log_printS(const char *json)
         return;
     }
     NGenXX::Json::Decoder decoder(json);
-    int level = decoder.readNumber(decoder.readNode(NULL, "level"));
-    auto content = decoder.readString(decoder.readNode(NULL, "content"));
+    int level = parseNum(decoder, "level");
+    auto content = parseStr(decoder, "content");
     if (level < 0 || content.length() == 0)
     {
         return;
@@ -162,26 +172,26 @@ const std::string ngenxx_net_http_requestS(const char *json)
         return s;
     }
     NGenXX::Json::Decoder decoder(json);
-    auto url = decoder.readString(decoder.readNode(NULL, "url"));
-    auto params = decoder.readString(decoder.readNode(NULL, "params"));
-    const int method = decoder.readNumber(decoder.readNode(NULL, "method"));
+    auto url = parseStr(decoder, "url");
+    auto params = parseStr(decoder, "params");
+    const int method = parseNum(decoder, "method");
 
     auto rawBody = parseByteArray(decoder, "rawBodyBytes", "rawBodyLen");
 
-    size_t header_c = decoder.readNumber(decoder.readNode(NULL, "header_c"));
+    size_t header_c = parseNum(decoder, "header_c");
     header_c = std::min(header_c, NGENXX_HTTP_HEADER_MAX_COUNT);
     auto header_v = parseStrArray(decoder, "header_v", header_c, NGENXX_HTTP_HEADER_MAX_LENGTH);
 
-    size_t form_field_count = decoder.readNumber(decoder.readNode(NULL, "form_field_count"));
+    size_t form_field_count = parseNum(decoder, "form_field_count");
     form_field_count = std::min(form_field_count, NGENXX_HTTP_FORM_FIELD_MAX_COUNT);
     auto form_field_name_v = parseStrArray(decoder, "form_field_name_v", form_field_count, NGENXX_HTTP_FORM_FIELD_NAME_MAX_LENGTH);
     auto form_field_mime_v = parseStrArray(decoder, "form_field_mime_v", form_field_count, NGENXX_HTTP_FORM_FIELD_MINE_MAX_LENGTH);
     auto form_field_data_v = parseStrArray(decoder, "form_field_data_v", form_field_count, NGENXX_HTTP_FORM_FIELD_DATA_MAX_LENGTH);
 
     auto cFILE = parseAddress(decoder, "cFILE");
-    const size_t fileSize = decoder.readNumber(decoder.readNode(NULL, "file_size"));
+    const size_t fileSize = parseNum(decoder, "file_size");
 
-    const size_t timeout = decoder.readNumber(decoder.readNode(NULL, "timeout"));
+    const size_t timeout = parseNum(decoder, "timeout");
 
     if (method < 0 || url.length() == 0 || header_c > NGENXX_HTTP_HEADER_MAX_COUNT)
     {
@@ -221,7 +231,7 @@ const std::string ngenxx_store_sqlite_openS(const char *json)
         return s;
     }
     NGenXX::Json::Decoder decoder(json);
-    auto _id = decoder.readString(decoder.readNode(NULL, "_id"));
+    auto _id = parseStr(decoder, "_id");
     if (_id.length() == 0)
     {
         return s;
@@ -243,7 +253,7 @@ bool ngenxx_store_sqlite_executeS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto sql = decoder.readString(decoder.readNode(NULL, "sql"));
+    auto sql = parseStr(decoder, "sql");
     if (conn == 0 || sql.length() == 0)
     {
         return false;
@@ -261,7 +271,7 @@ const std::string ngenxx_store_sqlite_query_doS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto sql = decoder.readString(decoder.readNode(NULL, "sql"));
+    auto sql = parseStr(decoder, "sql");
     if (conn == 0 || sql.length() == 0)
     {
         return s;
@@ -300,7 +310,7 @@ const std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto query_result = parseAddress(decoder, "query_result");
-    auto column = decoder.readString(decoder.readNode(NULL, "column"));
+    auto column = parseStr(decoder, "column");
     if (query_result == 0 || column.length() == 0)
     {
         return s;
@@ -317,7 +327,7 @@ long long ngenxx_store_sqlite_query_read_column_integerS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto query_result = parseAddress(decoder, "query_result");
-    auto column = decoder.readString(decoder.readNode(NULL, "column"));
+    auto column = parseStr(decoder, "column");
     if (query_result == 0 || column.length() == 0)
     {
         return 0;
@@ -334,7 +344,7 @@ double ngenxx_store_sqlite_query_read_column_floatS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto query_result = parseAddress(decoder, "query_result");
-    auto column = decoder.readString(decoder.readNode(NULL, "column"));
+    auto column = parseStr(decoder, "column");
     if (query_result == 0 || column.length() == 0)
     {
         return 0;
@@ -385,7 +395,7 @@ const std::string ngenxx_store_kv_openS(const char *json)
         return s;
     }
     NGenXX::Json::Decoder decoder(json);
-    auto _id = decoder.readString(decoder.readNode(NULL, "_id"));
+    auto _id = parseStr(decoder, "_id");
     if (_id.length() == 0)
     {
         return s;
@@ -408,7 +418,7 @@ const std::string ngenxx_store_kv_read_stringS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto k = decoder.readString(decoder.readNode(NULL, "k"));
+    auto k = parseStr(decoder, "k");
     if (conn == 0 || k.length() == 0)
     {
         return s;
@@ -425,8 +435,8 @@ bool ngenxx_store_kv_write_stringS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto k = decoder.readString(decoder.readNode(NULL, "k"));
-    auto v = decoder.readString(decoder.readNode(NULL, "v"));
+    auto k = parseStr(decoder, "k");
+    auto v = parseStr(decoder, "v");
     if (conn == 0 || k.length() == 0)
     {
         return false;
@@ -443,7 +453,7 @@ long long ngenxx_store_kv_read_integerS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto k = decoder.readString(decoder.readNode(NULL, "k"));
+    auto k = parseStr(decoder, "k");
     if (conn == 0 || k.length() == 0)
     {
         return 0;
@@ -460,8 +470,8 @@ bool ngenxx_store_kv_write_integerS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto k = decoder.readString(decoder.readNode(NULL, "k"));
-    long long v = decoder.readNumber(decoder.readNode(NULL, "v"));
+    auto k = parseStr(decoder, "k");
+    long long v = parseNum(decoder, "v");
     if (conn == 0 || k.length() == 0)
     {
         return false;
@@ -478,7 +488,7 @@ double ngenxx_store_kv_read_floatS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto k = decoder.readString(decoder.readNode(NULL, "k"));
+    auto k = parseStr(decoder, "k");
     if (conn == 0 || k.length() == 0)
     {
         return false;
@@ -495,8 +505,8 @@ bool ngenxx_store_kv_write_floatS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto k = decoder.readString(decoder.readNode(NULL, "k"));
-    double v = decoder.readNumber(decoder.readNode(NULL, "v"));
+    auto k = parseStr(decoder, "k");
+    double v = parseNum(decoder, "v");
     if (conn == 0 || k.length() == 0)
     {
         return false;
@@ -531,7 +541,7 @@ bool ngenxx_store_kv_containsS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto k = decoder.readString(decoder.readNode(NULL, "k"));
+    auto k = parseStr(decoder, "k");
     if (conn == 0 || k.length() == 0)
     {
         return false;
@@ -548,7 +558,7 @@ bool ngenxx_store_kv_removeS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
-    auto k = decoder.readString(decoder.readNode(NULL, "k"));
+    auto k = parseStr(decoder, "k");
     if (conn == 0 || k.length() == 0)
     {
         return false;
@@ -618,7 +628,7 @@ const std::string ngenxx_coding_hex_str2bytesS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
 
-    auto str = decoder.readString(decoder.readNode(NULL, "str"));
+    auto str = parseStr(decoder, "str");
 
     if (str.size() == 0)
     {
@@ -656,7 +666,7 @@ const std::string ngenxx_coding_str2bytesS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
 
-    auto str = decoder.readString(decoder.readNode(NULL, "str"));
+    auto str = parseStr(decoder, "str");
 
     if (str.size() == 0)
     {
@@ -676,7 +686,7 @@ const std::string ngenxx_coding_case_upperS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
 
-    auto str = decoder.readString(decoder.readNode(NULL, "str"));
+    auto str = parseStr(decoder, "str");
 
     if (str.size() == 0)
     {
@@ -694,7 +704,7 @@ const std::string ngenxx_coding_case_lowerS(const char *json)
     }
     NGenXX::Json::Decoder decoder(json);
 
-    auto str = decoder.readString(decoder.readNode(NULL, "str"));
+    auto str = parseStr(decoder, "str");
 
     if (str.size() == 0)
     {
@@ -713,7 +723,7 @@ const std::string ngenxx_crypto_randS(const char *json)
         return s;
     }
     NGenXX::Json::Decoder decoder(json);
-    size_t outLen = decoder.readNumber(decoder.readNode(NULL, "len"));
+    size_t outLen = parseNum(decoder, "len");
     if (outLen <= 0)
     {
         return s;
@@ -803,7 +813,7 @@ const std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
 
     auto aad = parseByteArray(decoder, "aadBytes", "aadLen");
 
-    size_t tagBits = decoder.readNumber(decoder.readNode(NULL, "tagBits"));
+    size_t tagBits = parseNum(decoder, "tagBits");
 
     auto outBytes = ngenxxCryptoAesGcmEncrypt(in, key, iv, tagBits, aad);
     return bytes2json(outBytes);
@@ -838,7 +848,7 @@ const std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
 
     auto aad = parseByteArray(decoder, "aadBytes", "aadLen");
 
-    size_t tagBits = decoder.readNumber(decoder.readNode(NULL, "tagBits"));
+    size_t tagBits = parseNum(decoder, "tagBits");
 
     auto outBytes = ngenxxCryptoAesGcmDecrypt(in, key, iv, tagBits, aad);
     return bytes2json(outBytes);
@@ -930,9 +940,9 @@ const std::string ngenxx_z_zip_initS(const char *json)
         return s;
     }
     NGenXX::Json::Decoder decoder(json);
-    int mode = decoder.readNumber(decoder.readNode(NULL, "mode"));
-    size_t bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
-    int format = decoder.readNumber(decoder.readNode(NULL, "format"));
+    int mode = parseNum(decoder, "mode");
+    size_t bufferSize = parseNum(decoder, "bufferSize");
+    int format = parseNum(decoder, "format");
 
     auto zip = ngenxxZZipInit(static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
     if (zip == nullptr)
@@ -961,7 +971,7 @@ const size_t ngenxx_z_zip_inputS(const char *json)
         return 0;
     }
 
-    auto inFinish = static_cast<bool>(decoder.readNumber(decoder.readNode(NULL, "inFinish")));
+    auto inFinish = static_cast<bool>(parseNum(decoder, "inFinish"));
 
     return ngenxxZZipInput(reinterpret_cast<void *>(zip), in, inFinish);
 }
@@ -1024,8 +1034,8 @@ const std::string ngenxx_z_unzip_initS(const char *json)
         return s;
     }
     NGenXX::Json::Decoder decoder(json);
-    size_t bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
-    int format = decoder.readNumber(decoder.readNode(NULL, "format"));
+    size_t bufferSize = parseNum(decoder, "bufferSize");
+    int format = parseNum(decoder, "format");
 
     auto unzip = ngenxxZUnzipInit(bufferSize, static_cast<NGenXXZFormatX>(format));
     if (unzip == nullptr)
@@ -1054,7 +1064,7 @@ const size_t ngenxx_z_unzip_inputS(const char *json)
         return 0;
     }
 
-    auto inFinish = static_cast<bool>(decoder.readNumber(decoder.readNode(NULL, "inFinish")));
+    auto inFinish = static_cast<bool>(parseNum(decoder, "inFinish"));
 
     return ngenxxZUnzipInput(reinterpret_cast<void *>(unzip), in, inFinish);
 }
@@ -1117,9 +1127,9 @@ const std::string ngenxx_z_bytes_zipS(const char *json)
         return s;
     }
     NGenXX::Json::Decoder decoder(json);
-    int mode = decoder.readNumber(decoder.readNode(NULL, "mode"));
-    size_t bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
-    int format = decoder.readNumber(decoder.readNode(NULL, "format"));
+    int mode = parseNum(decoder, "mode");
+    size_t bufferSize = parseNum(decoder, "bufferSize");
+    int format = parseNum(decoder, "format");
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.empty())
     {
@@ -1138,8 +1148,8 @@ const std::string ngenxx_z_bytes_unzipS(const char *json)
         return s;
     }
     NGenXX::Json::Decoder decoder(json);
-    size_t bufferSize = decoder.readNumber(decoder.readNode(NULL, "bufferSize"));
-    int format = decoder.readNumber(decoder.readNode(NULL, "format"));
+    size_t bufferSize = parseNum(decoder, "bufferSize");
+    int format = parseNum(decoder, "format");
     auto in = parseByteArray(decoder, "inBytes", "inLen");
     if (in.empty())
     {
