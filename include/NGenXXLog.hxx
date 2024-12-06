@@ -5,6 +5,10 @@
 #include <sstream>
 #include <functional>
 
+#if defined(__ANDROID__)
+#include <format>
+#endif
+
 enum class NGenXXLogLevelX : int
 {
     Debug = 3,
@@ -21,7 +25,8 @@ void ngenxxLogSetCallback(const std::function<void(const int level, const char *
 
 void ngenxxLogPrint(const NGenXXLogLevelX level, const std::string &content);
 
-inline void _ngenxxLogFormatImpl(std::ostringstream& oss, const std::string& format) 
+#if !defined(__ANDROID__)
+inline void _ngenxxLogFormatImpl(std::ostringstream &oss, const std::string &format)
 {
     oss << format;
 }
@@ -48,11 +53,16 @@ inline std::string _ngenxxLogFormat(const std::string &format, Args... args)
     _ngenxxLogFormatImpl(oss, format, args...);
     return oss.str();
 }
+#endif
 
 template <typename... Args>
 inline void ngenxxLogPrintF(const NGenXXLogLevelX level, const std::string &format, Args... args)
 {
+#if !defined(__ANDROID__)
     auto fContent = _ngenxxLogFormat(format, args...);
+#else
+    auto fContent = std::vformat(format, std::make_format_args(args...));
+#endif
     ngenxxLogPrint(level, fContent);
 }
 

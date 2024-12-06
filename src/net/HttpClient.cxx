@@ -158,8 +158,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
 
         static const std::string prefix("https://");
-        auto searchRes = std::mismatch(prefix.begin(), prefix.end(), url.begin());
-        if (searchRes.first == prefix.end())
+        if (url.starts_with(prefix))
         { // Ignore SSL cet verify
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
