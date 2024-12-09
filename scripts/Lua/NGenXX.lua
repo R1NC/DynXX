@@ -108,7 +108,7 @@ function NGenXX.Net.Http.request(url, method, param_map, header_map, raw_body_by
     end
 
     raw_body_bytes = raw_body_bytes or {}
-    _timeout = _timeout or 15 * 1000
+    timeout = timeout or (15 * 1000)
 
     local inJson = JSON.stringify({
         ["url"] = url,
@@ -216,7 +216,7 @@ end
 NGenXX.Crypto.Aes.Gcm = {}
 
 function NGenXX.Crypto.Aes.Gcm.encrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes)
-    aad_bytes = aad_bytes or {}
+    aadBytes = aadBytes or {}
     local inJson = JSON.stringify({
         ["inBytes"] = inBytes,
         ["inLen"] = #inBytes,
@@ -233,7 +233,7 @@ function NGenXX.Crypto.Aes.Gcm.encrypt(inBytes, keyBytes, ivBytes, tagBits, aadB
 end
 
 function NGenXX.Crypto.Aes.Gcm.decrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes)
-    aad_bytes = aad_bytes or {}
+    aadBytes = aadBytes or {}
     local inJson = JSON.stringify({
         ["inBytes"] = inBytes,
         ["inLen"] = #inBytes,
@@ -650,7 +650,7 @@ function NGenXX.Z._.unZipStream(readFunc, writeFunc, flushFunc, bufferSize, form
     local res = NGenXX.Z._.Stream(bufferSize, readFunc, writeFunc, flushFunc, unzip,
         function(z, buffer, inputFinished)
             return NGenXX.Z._.unZipInput(z, buffer, inputFinished)
-        end, 
+        end,
         function(z)
             return NGenXX.Z._.unZipProcessDo(z)
         end,
@@ -666,6 +666,9 @@ end
 function NGenXX.Z.zipFile(inFilePath, outFilePath, mode, bufferSize, format)
     local inF = io.open(inFilePath, 'r')
     local outF = io.open(outFilePath, 'w')
+    if (inF == nil or outF == nil) then
+        return false
+    end
 
     local res = NGenXX.Z._.zipStream(
         function()
@@ -677,8 +680,8 @@ function NGenXX.Z.zipFile(inFilePath, outFilePath, mode, bufferSize, format)
         function()
             outF:flush()
         end,
-        mode, 
-        bufferSize, 
+        mode,
+        bufferSize,
         format
     )
 
@@ -690,6 +693,9 @@ end
 function NGenXX.Z.unZipFile(inFilePath, outFilePath, bufferSize, format)
     local inF = io.open(inFilePath, 'r')
     local outF = io.open(outFilePath, 'w')
+    if (inF == nil or outF == nil) then
+        return false
+    end
 
     local res = NGenXX.Z._.unZipStream(
         function()
@@ -701,7 +707,7 @@ function NGenXX.Z.unZipFile(inFilePath, outFilePath, bufferSize, format)
         function()
             outF:flush()
         end,
-        bufferSize, 
+        bufferSize,
         format
     )
 

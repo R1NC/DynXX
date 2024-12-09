@@ -108,12 +108,12 @@ end
 
 function TestCoroutine(url)
     local co = coroutine.create(
-        function (_url) 
-            return TestNetHttpRequest(_url) 
+        function (_url)
+            return TestNetHttpRequest(_url)
         end
     )
     NGenXX.Log.print(NGenXX.Log.Level.Debug, 'sent http request on ' .. tostring(co) .. ' ...')
-    local code, res = coroutine.resume(co, url)
+    local _, res = coroutine.resume(co, url)
     return res
 end
 
