@@ -41,9 +41,10 @@ const std::string ngenxxGetVersion(void)
 
 const std::string ngenxxRootPath()
 {
+    std::string s;
     if (!_ngenxx_root)
     {
-        return NULL;
+        return s;
     }
     return std::string(*_ngenxx_root);
 }
@@ -357,9 +358,10 @@ bool ngenxxStoreSqliteQueryReadRow(void *const query_result)
 
 const std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column)
 {
+    std::string s;
     if (query_result == NULL || column.length() == 0)
     {
-        return NULL;
+        return s;
     }
     auto xqr = reinterpret_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     auto a = xqr->readColumn(column);
@@ -566,9 +568,10 @@ void *const ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k,
 
 const std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node)
 {
+    std::string s;
     if (decoder == NULL)
     {
-        return NULL;
+        return s;
     }
     auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readString(node);

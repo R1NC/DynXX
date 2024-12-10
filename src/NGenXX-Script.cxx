@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include <algorithm>
-#include <ranges>
 #include <functional>
 
 #include "../include/NGenXX.hxx"
@@ -13,8 +12,8 @@
 
 const std::string bytes2json(Bytes bytes)
 {
-    std::vector<int> intV;
-    std::ranges::transform(bytes, std::back_inserter(intV), [](auto& b) { 
+    std::vector<int> intV(bytes.size());
+    std::transform(bytes.begin(), bytes.end(), intV.begin(), [](auto& b) { 
         return static_cast<int>(b); 
     });
     auto cj = bytes.empty() ? cJSON_CreateArray() : cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));

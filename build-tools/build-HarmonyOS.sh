@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # TODO
-NDK_ROOT="~/Library/OpenHarmony/Sdk/12/native"
+NDK_ROOT="~/Library/OpenHarmony/Sdk/13/native"
 
 BUILD_DIR=../build.HarmonyOS
 rm -rf ${BUILD_DIR}
