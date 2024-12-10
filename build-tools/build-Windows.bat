@@ -1,7 +1,7 @@
 set VISUAL_STUDIO="Visual Studio 17 2022"
 
 set BUILD_DIR=%CD%\..\build.Windows
-set BUILD_TYPE="Release"
+set BUILD_TYPE=Release
 set OUTPUT_DIR=%BUILD_DIR%\output\
 set HEADER_OUTPUT_DIR=%OUTPUT_DIR%\include\
 
