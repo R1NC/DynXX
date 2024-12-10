@@ -1,9 +1,18 @@
 cmake_minimum_required(VERSION 3.6)
 
-set(CMAKE_C_COMPILER "clang")
-set(CMAKE_CXX_COMPILER "clang++")
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_CXX_STANDARD 20)
+string(
+    COMPARE EQUAL
+    "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"
+    is_top_project
+)
+message("################ is_top_project: ${is_top_project} ################")
+
+if(is_top_project)
+    set(CMAKE_C_COMPILER "clang")
+    set(CMAKE_CXX_COMPILER "clang++")
+    set(CMAKE_C_STANDARD 99)
+    set(CMAKE_CXX_STANDARD 20)
+endif()
 
 option(USE_LUA "Use Lua or not" ON)
 option(USE_QJS "Use QuickJS or not" ON)
