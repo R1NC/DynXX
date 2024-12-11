@@ -127,5 +127,5 @@ function TestTimer()
             Timer.remove(timer)
         end
     end
-    timer = Timer.add(1234, 1, timerF)
+    timer = Timer.add(1234, true, timerF)
 end

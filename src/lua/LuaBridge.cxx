@@ -84,8 +84,8 @@ void ngenxx_lua_uv_timer_stop(uv_timer_t *timer, bool release)
 
 static int ngenxx_lua_util_timer_add(lua_State *L)
 {
-    size_t timeout = luaL_checkinteger(L, 1);
-    size_t repeat = luaL_checkinteger(L, 2);
+    auto timeout = lua_tointeger(L, 1);
+    auto repeat = lua_toboolean(L, 2);
     auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(malloc(sizeof(ngenxx_lua_timer_data)));
     timer_data->lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX);
     timer_data->lState = L;
