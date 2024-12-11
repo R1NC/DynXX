@@ -93,18 +93,18 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
         double f = ngenxx_store_sqlite_query_read_column_float(qrQuery, "f");
         NSLog(@"platform:%@ i:%lld f:%f", CharP2NSString(platform), i, f);
     }
-   ngenxx_store_sqlite_query_drop(qrQuery);
+    ngenxx_store_sqlite_query_drop(qrQuery);
 }
 
 - (void)testKV {
     _kv_conn = ngenxx_store_kv_open("test");
     if (!_kv_conn) return;
     
-   ngenxx_store_kv_write_string(_kv_conn, "s", "NGenXX");
+    ngenxx_store_kv_write_string(_kv_conn, "s", "NGenXX");
     NSLog(@"%s", ngenxx_store_kv_read_string(_kv_conn, "s"));
-   ngenxx_store_kv_write_integer(_kv_conn, "i", 1234567890);
+    ngenxx_store_kv_write_integer(_kv_conn, "i", 1234567890);
     NSLog(@"%lld", ngenxx_store_kv_read_integer(_kv_conn, "i"));
-   ngenxx_store_kv_write_float(_kv_conn, "f", 3.1415926535);
+    ngenxx_store_kv_write_float(_kv_conn, "f", 3.1415926535);
     NSLog(@"%f", ngenxx_store_kv_read_float(_kv_conn, "f"));
 }
 
@@ -136,7 +136,7 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     
     size_t ivLen = 12;
     byte ivBytes[ivLen];
-   ngenxx_crypto_rand(ivLen, ivBytes);
+    ngenxx_crypto_rand(ivLen, ivBytes);
     size_t aesgcmTagBits = 15 * 8;
     
     size_t aesgcmEncodedLen;

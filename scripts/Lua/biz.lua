@@ -61,6 +61,15 @@ function TestCrypto(s)
     local aesDecodedBytes = NGenXX.Crypto.Aes.decrypt(aesEncodedBytes, keyBytes)
     local aesDecodedStr = NGenXX.Coding.bytes2Str(aesDecodedBytes)
     NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Aes.decrypt: ' .. aesDecodedStr)
+    
+    local ivBytes = NGenXX.Crypto.rand(12)
+    local tagBits = 15 * 8
+    local aesGcmEncodedBytes = NGenXX.Crypto.Aes.Gcm.encrypt(bytes, keyBytes, ivBytes, tagBits)
+    local aesGcmEncodedStr = NGenXX.Coding.Hex.bytes2Str(aesGcmEncodedBytes)
+    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Aes.Gcm.encrypt: ' .. aesGcmEncodedStr)
+    local aesGcmDecodedBytes = NGenXX.Crypto.Aes.Gcm.decrypt(aesGcmEncodedBytes, keyBytes, ivBytes, tagBits)
+    local aesGcmDecodedStr = NGenXX.Coding.bytes2Str(aesGcmDecodedBytes)
+    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Aes.Gcm.decrypt: ' .. aesGcmDecodedStr)
 end
 
 function TestStoreKV()

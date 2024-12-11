@@ -107,19 +107,23 @@ function NGenXX.Net.Http.request(url, method, param_map, header_map, raw_body_by
         table.insert(headerArray, k .. '=' .. v)
     end
 
-    raw_body_bytes = raw_body_bytes or {}
     timeout = timeout or (15 * 1000)
-
-    local inJson = JSON.stringify({
+    
+    local inDict = {
         ["url"] = url,
         ["method"] = method,
         ["params"] = paramStr,
         ["header_v"] = headerArray,
         ["header_c"] = #headerArray,
-        ["rawBodyBytes"] = raw_body_bytes,
-        ["rawBodyLen"] = #raw_body_bytes,
         ["timeout"] = timeout
-    })
+    }
+    
+    if (raw_body_bytes ~= nil and #raw_body_bytes > 0) then
+        inDict["rawBodyBytes"] = raw_body_bytes
+        inDict["rawBodyLen"] = #raw_body_bytes
+    end
+
+    local inJson = JSON.stringify(inDict)
     return ngenxx_net_http_requestL(inJson)
 end
 
@@ -216,35 +220,39 @@ end
 NGenXX.Crypto.Aes.Gcm = {}
 
 function NGenXX.Crypto.Aes.Gcm.encrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes)
-    aadBytes = aadBytes or {}
-    local inJson = JSON.stringify({
+    local inDict = {
         ["inBytes"] = inBytes,
         ["inLen"] = #inBytes,
         ["keyBytes"] = keyBytes,
         ["keyLen"] = #keyBytes,
         ["initVectorBytes"] = ivBytes,
         ["initVectorLen"] = #ivBytes,
-        ["aadBytes"] = aadBytes,
-        ["aadLen"] = #aadBytes,
         ["tagBits"] = tagBits
-    })
+    }
+    if (aadBytes ~= nil and #aadBytes > 0) then
+        inDict["aadBytes"] = aadBytes
+        inDict["aadLen"] = #aadBytes
+    end
+    local inJson = JSON.stringify(inDict)
     local outJson = ngenxx_crypto_aes_gcm_encryptL(inJson)
     return JSON.parse(outJson)
 end
 
 function NGenXX.Crypto.Aes.Gcm.decrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes)
-    aadBytes = aadBytes or {}
-    local inJson = JSON.stringify({
+    local inDict = {
         ["inBytes"] = inBytes,
         ["inLen"] = #inBytes,
         ["keyBytes"] = keyBytes,
         ["keyLen"] = #keyBytes,
         ["initVectorBytes"] = ivBytes,
         ["initVectorLen"] = #ivBytes,
-        ["aadBytes"] = aadBytes,
-        ["aadLen"] = #aadBytes,
         ["tagBits"] = tagBits
-    })
+    }
+    if (aadBytes ~= nil and #aadBytes > 0) then
+        inDict["aadBytes"] = aadBytes
+        inDict["aadLen"] = #aadBytes
+    end
+    local inJson = JSON.stringify(inDict)
     local outJson = ngenxx_crypto_aes_gcm_decryptL(inJson)
     return JSON.parse(outJson)
 end
@@ -561,7 +569,6 @@ function NGenXX.Z._.unZipInit(bufferSize, format)
 end
 
 function NGenXX.Z._.unZipInput(unzip, bytes, finish)
-    bytes = bytes or {}
     local inJson = JSON.stringify({
         ["unzip"] = unzip,
         ["inBytes"] = bytes,
