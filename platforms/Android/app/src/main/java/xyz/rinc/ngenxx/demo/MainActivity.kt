@@ -13,9 +13,7 @@ class MainActivity : ComponentActivity() {
     private val reqPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { _ ->
-        //if (isGranted) {
-            NGenXXTest.init(application)
-        //}
+        NGenXXTest.init(application)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
