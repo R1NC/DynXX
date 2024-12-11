@@ -1,29 +1,3 @@
-// function jTestStdOs() {
-//     std.puts(`Test JS std & os at ${os.now()}...\n`);
-
-//     let url = 'https://rinc.xyz'
-//     os.sleep(3333);
-//     std.puts(`Send HTTP req from JS async at ${os.now()}...\n`);
-
-//     std.evalScript(`jTestNetHttpReq("${url}")`, {async: true});
-//     .then((res) => {
-//         std.puts(res);
-//     }, (err) => {
-//         std.puts(err);
-//     });
-
-//     std.gc();
-// }
-
-function _Array2Str(array) {
-    var s = '';
-    array = array || [];
-    array.forEach((item, index, arr) => {
-        s += `${item}`;
-    });
-    return s;
-}
-
 function _Map2UrlStr(map) {
     map = map || new Map();
     var s = '';
