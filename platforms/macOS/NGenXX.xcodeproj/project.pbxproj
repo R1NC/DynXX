@@ -12,7 +12,6 @@
 		4011029D2CED7FDA0004CCA3 /* uv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4011029C2CED7FDA0004CCA3 /* uv.a */; };
 		401522A62C9581760010B594 /* NGenXXApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 401522A52C9581760010B594 /* NGenXXApple.mm */; };
 		40348F5C2C783CA70039639C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40348F5B2C783CA70039639C /* AppDelegate.m */; };
-		40348F612C783CA80039639C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40348F602C783CA80039639C /* Assets.xcassets */; };
 		40348F642C783CA80039639C /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 40348F632C783CA80039639C /* Base */; };
 		40348F662C783CA80039639C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 40348F652C783CA80039639C /* main.m */; };
 		40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F7C2C783F540039639C /* libz.1.tbd */; };
@@ -47,7 +46,6 @@
 		40348F5A2C783CA70039639C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		40348F5B2C783CA70039639C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		40348F5D2C783CA70039639C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		40348F602C783CA80039639C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40348F632C783CA80039639C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		40348F652C783CA80039639C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		40348F672C783CA80039639C /* NGenXX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NGenXX.entitlements; sourceTree = "<group>"; };
@@ -138,7 +136,6 @@
 				40348F5B2C783CA70039639C /* AppDelegate.m */,
 				40348F5D2C783CA70039639C /* ViewController.h */,
 				407D2BB92C929CC0008A138C /* ViewController.m */,
-				40348F602C783CA80039639C /* Assets.xcassets */,
 				40348F622C783CA80039639C /* Main.storyboard */,
 				40348F652C783CA80039639C /* main.m */,
 				40348F672C783CA80039639C /* NGenXX.entitlements */,
@@ -246,7 +243,6 @@
 				403F9F8B2CBF47F000F4ECE6 /* query.sql in Resources */,
 				403F9F792CBCB59500F4ECE6 /* biz.lua in Resources */,
 				403F9F762CBCB58800F4ECE6 /* NGenXX.js in Resources */,
-				40348F612C783CA80039639C /* Assets.xcassets in Resources */,
 				40348F642C783CA80039639C /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
