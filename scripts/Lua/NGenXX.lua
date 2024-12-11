@@ -10,8 +10,6 @@ function NGenXX.root()
     return ngenxx_root_pathL()
 end
 
-
-
 NGenXX.Log = {}
 
 NGenXX.Log.Level = {
@@ -30,8 +28,6 @@ function NGenXX.Log.print(level, content)
     })
     ngenxx_log_printL(inJson)
 end
-
-
 
 NGenXX.Device = {}
 
@@ -78,8 +74,6 @@ function NGenXX.Device.cpuArch()
     return ngenxx_device_cpu_archL(InJsonVoid)
 end
 
-
-
 NGenXX.Net = {}
 NGenXX.Net.Http = {}
 
@@ -108,7 +102,7 @@ function NGenXX.Net.Http.request(url, method, param_map, header_map, raw_body_by
     end
 
     timeout = timeout or (15 * 1000)
-    
+
     local inDict = {
         ["url"] = url,
         ["method"] = method,
@@ -117,7 +111,7 @@ function NGenXX.Net.Http.request(url, method, param_map, header_map, raw_body_by
         ["header_c"] = #headerArray,
         ["timeout"] = timeout
     }
-    
+
     if (raw_body_bytes ~= nil and #raw_body_bytes > 0) then
         inDict["rawBodyBytes"] = raw_body_bytes
         inDict["rawBodyLen"] = #raw_body_bytes
@@ -126,8 +120,6 @@ function NGenXX.Net.Http.request(url, method, param_map, header_map, raw_body_by
     local inJson = JSON.stringify(inDict)
     return ngenxx_net_http_requestL(inJson)
 end
-
-
 
 NGenXX.Coding = {}
 
@@ -180,8 +172,6 @@ function NGenXX.Coding.str2Bytes(str)
     local outJson = ngenxx_coding_str2bytesL(inJson)
     return JSON.parse(outJson)
 end
-
-
 
 NGenXX.Crypto = {}
 
@@ -297,8 +287,6 @@ function NGenXX.Crypto.Base64.decode(inBytes)
     return JSON.parse(outJson)
 end
 
-
-
 NGenXX.Store = {}
 
 NGenXX.Store.SQLite = {}
@@ -372,8 +360,6 @@ function NGenXX.Store.SQLite.close(conn)
     })
     ngenxx_store_sqlite_closeL(inJson)
 end
-
-
 
 NGenXX.Store.KV = {}
 
@@ -472,8 +458,6 @@ function NGenXX.Store.KV.close(conn)
     })
     ngenxx_store_kv_closeL(inJson)
 end
-
-
 
 NGenXX.Z = {}
 

@@ -61,7 +61,7 @@ function TestCrypto(s)
     local aesDecodedBytes = NGenXX.Crypto.Aes.decrypt(aesEncodedBytes, keyBytes)
     local aesDecodedStr = NGenXX.Coding.bytes2Str(aesDecodedBytes)
     NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Aes.decrypt: ' .. aesDecodedStr)
-    
+
     local ivBytes = NGenXX.Crypto.rand(12)
     local tagBits = 15 * 8
     local aesGcmEncodedBytes = NGenXX.Crypto.Aes.Gcm.encrypt(bytes, keyBytes, ivBytes, tagBits)
@@ -101,11 +101,11 @@ function TestStoreSQLite()
         ('HarmonyOS', 3, 0.3333333333);
     ]]
     local sqlQuery = 'SELECT * FROM TestTable;'
-    
+
     local conn = NGenXX.Store.SQLite.open('test.lua')
     NGenXX.Store.SQLite.execute(conn, sqlPrepareData)
     local query = NGenXX.Store.SQLite.Query.create(conn, sqlQuery)
-    while(NGenXX.Store.SQLite.Query.readRow(query)) do
+    while (NGenXX.Store.SQLite.Query.readRow(query)) do
         local s = NGenXX.Store.SQLite.Query.readColumnText(query, 's')
         local i = NGenXX.Store.SQLite.Query.readColumnInteger(query, 'i')
         local f = NGenXX.Store.SQLite.Query.readColumnFloat(query, 'f')
@@ -117,7 +117,7 @@ end
 
 function TestCoroutine(url)
     local co = coroutine.create(
-        function (_url)
+        function(_url)
             return TestNetHttpRequest(_url)
         end
     )
@@ -130,7 +130,7 @@ function TestTimer()
     local count = 0
     local timer
     local timerF = function()
-        count  = count + 1
+        count = count + 1
         TestStoreSQLite()
         if count == 3 then
             Timer.remove(timer)
