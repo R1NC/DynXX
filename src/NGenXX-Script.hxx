@@ -1,7 +1,7 @@
 #ifndef NGENXX_SRC_SCRIPT_HXX_
 #define NGENXX_SRC_SCRIPT_HXX_
 
-#include "../include/NGenXXTypes.h"
+#include <NGenXXTypes.h>
 
 #if defined(__cplusplus)
 

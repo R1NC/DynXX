@@ -1,7 +1,7 @@
 #if (!defined(__ANDROID__) && !defined(__APPLE__) && !defined(__OHOS__) && !defined(_WIN32) && !defined(__EMSCRIPTEN__))
 
 #include "DeviceInfo.hxx"
-#include "../../include/NGenXXDeviceInfo.h"
+#include <NGenXXDeviceInfo.h>
 
 int NGenXX::Device::DeviceInfo::deviceType()
 {

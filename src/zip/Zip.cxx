@@ -1,5 +1,5 @@
 #include "Zip.hxx"
-#include "../../include/NGenXXLog.hxx"
+#include <NGenXXLog.hxx>
 #include <algorithm>
 #include <stdexcept>
 #include <cstring>

@@ -1,7 +1,7 @@
 #ifndef NGENXX_SRC_JSON_DECODER_HXX_
 #define NGENXX_SRC_JSON_DECODER_HXX_
 
-#include "../../external/cjson/cJSON.h"
+#include <cJSON.h>
 
 #if defined(__cplusplus)
 

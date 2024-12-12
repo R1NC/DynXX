@@ -1,5 +1,5 @@
 #include "SQLite.hxx"
-#include "../../include/NGenXXLog.hxx"
+#include <NGenXXLog.hxx>
 #include <string.h>
 
 #define PRINT_ERR(rc, db) ngenxxLogPrint(NGenXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))

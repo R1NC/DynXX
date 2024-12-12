@@ -1,16 +1,12 @@
 #ifndef NGENXX_SRC_ZIP_HXX_
 #define NGENXX_SRC_ZIP_HXX_
 
-#if defined(__EMSCRIPTEN__)
-#include "../../../external/zlib/zlib.h"
-#else
 #include <zlib.h>
-#endif
 
 #if defined(__cplusplus)
 
-#include "../../include/NGenXXZip.h"
-#include "../../include/NGenXXTypes.hxx"
+#include <NGenXXZip.h>
+#include <NGenXXTypes.hxx>
 #include <istream>
 #include <ostream>
 #include <cstdio>

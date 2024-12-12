@@ -3,13 +3,9 @@
 
 #if defined(__cplusplus)
 
-#include "../../include/NGenXXTypes.hxx"
+#include <NGenXXTypes.hxx>
 
-#if defined(__APPLE__)
 #include <sqlite3.h>
-#else
-#include "../../../external/sqlite/sqlite3.h"
-#endif
 
 #include <unordered_map>
 #include <mutex>

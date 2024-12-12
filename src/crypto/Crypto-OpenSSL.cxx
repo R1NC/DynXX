@@ -1,16 +1,16 @@
 #include "Crypto.hxx"
-#include "../../include/NGenXXLog.hxx"
+#include <NGenXXLog.hxx>
 #include <string>
 #include <cstring>
 
 #include "../util/TypeUtil.hxx"
-#include "../../../external/openssl/include/openssl/bio.h"
-#include "../../../external/openssl/include/openssl/rand.h"
-#include "../../../external/openssl/include/openssl/evp.h"
-#include "../../../external/openssl/include/openssl/aes.h"
-#include "../../../external/openssl/include/openssl/sha.h"
-#include "../../../external/openssl/include/openssl/md5.h"
-#include "../../../external/openssl/include/openssl/buffer.h"
+#include <openssl/bio.h>
+#include <openssl/rand.h>
+#include <openssl/evp.h>
+#include <openssl/aes.h>
+#include <openssl/sha.h>
+#include <openssl/md5.h>
+#include <openssl/buffer.h>
 
 constexpr int OpenSSL_OK = 1;
 constexpr int OpenSSL_AES_Key_BITS = 128;

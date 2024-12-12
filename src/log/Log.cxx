@@ -1,5 +1,5 @@
 #include "Log.hxx"
-#include "../../include/NGenXXLog.h"
+#include <NGenXXLog.h>
 
 #include <iostream>
 #include <string.h>

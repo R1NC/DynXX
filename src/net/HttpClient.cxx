@@ -1,9 +1,9 @@
 #include "HttpClient.hxx"
 
-#include "../../../external/curl/include/curl/curl.h"
-#include "../../include/NGenXXTypes.h"
-#include "../../include/NGenXXLog.hxx"
-#include "../../include/NGenXXNetHttp.h"
+#include <curl/curl.h>
+#include <NGenXXTypes.h>
+#include <NGenXXLog.hxx>
+#include <NGenXXNetHttp.h>
 #include <algorithm>
 #include <vector>
 

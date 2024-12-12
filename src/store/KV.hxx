@@ -7,8 +7,8 @@
 #include <mutex>
 #include <shared_mutex>
 
-#include "../../external/mmkv/Core/MMKV.h"
-#include "../../include/NGenXXTypes.hxx"
+#include <MMKV.h>
+#include <NGenXXTypes.hxx>
 
 namespace NGenXX
 {

@@ -1,16 +1,17 @@
 #if defined(__APPLE__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 
 #include "DeviceInfo.hxx"
-#include "../../include/NGenXXDeviceInfo.h"
+#include <NGenXXDeviceInfo.h>
 
 #import <Foundation/Foundation.h>
+#import <sys/utsname.h>
+
 #include <mach/mach_host.h>
 #include <mach/mach_init.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
-#import <sys/utsname.h>
 #include <sstream>
 
 #include <stdlib.h>

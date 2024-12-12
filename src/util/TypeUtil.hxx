@@ -2,7 +2,7 @@
 #define NGENXX_SRC_UTIL_TYPE_HXX_
 
 #include <cstring>
-#include "../../include/NGenXXTypes.hxx"
+#include <NGenXXTypes.hxx>
 
 static inline const char *copyStr(std::string s)
 {

@@ -1,7 +1,7 @@
 #if defined(__ANDROID__)
 
 #include "DeviceInfo.hxx"
-#include "../../include/NGenXXDeviceInfo.h"
+#include <NGenXXDeviceInfo.h>
 
 #include <stddef.h>
 #include <stdint.h>

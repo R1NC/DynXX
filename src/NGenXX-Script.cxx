@@ -4,9 +4,8 @@
 #include <algorithm>
 #include <functional>
 
-#include "../include/NGenXX.hxx"
-#include "../include/NGenXXTypes.hxx"
-#include "../include/NGenXXNetHttp.h"
+#include <NGenXX.hxx>
+#include <NGenXXNetHttp.h>
 #include "NGenXX-Script.hxx"
 #include "json/JsonDecoder.hxx"
 

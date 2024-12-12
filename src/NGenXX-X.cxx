@@ -9,7 +9,7 @@
 #include <sstream>
 #include <memory>
 
-#include "../include/NGenXX.hxx"
+#include <NGenXX.hxx>
 #include "net/HttpClient.hxx"
 #include "store/SQLite.hxx"
 #include "store/KV.hxx"

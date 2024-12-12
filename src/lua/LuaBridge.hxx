@@ -3,9 +3,9 @@
 
 extern "C"
 {
-#include "../../../external/lua/lua.h"
-#include "../../../external/lua/lualib.h"
-#include "../../../external/lua/lauxlib.h"
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 }
 
 #if defined(__cplusplus)

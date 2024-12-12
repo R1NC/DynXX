@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.10)
 
 string(
     COMPARE EQUAL
@@ -58,6 +58,7 @@ if(USE_QJS)
         ../src/NGenXX-Js.cxx
     )
 endif()
+include_directories(../include)
 
 set(LIB_TYPE STATIC)
 if(EMSCRIPTEN)
@@ -78,24 +79,51 @@ endif()
 # 2). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
 # 3). WASM has no built-in zlib;
 # 4). HarmonyOS has built-in libuv;
-add_subdirectory(../external/cjson cjson.output)
-add_subdirectory(../external/mmkv/POSIX/src mmkv.output)
-add_subdirectory(../external/openssl openssl.output)
-add_subdirectory(../external/curl curl.output)
+
+set(CJSON_ROOT ../external/cjson)
+add_subdirectory(${CJSON_ROOT} cjson.output)
+include_directories(${CJSON_ROOT})
+
+set(MMKV_ROOT ../external/mmkv)
+add_subdirectory(${MMKV_ROOT}/POSIX/src mmkv.output)
+include_directories(${MMKV_ROOT}/Core)
+
+set(OPENSSL_ROOT ../external/openssl)
+add_subdirectory(${OPENSSL_ROOT} openssl.output)
+include_directories(${OPENSSL_ROOT}/include)
+
+set(CURL_ROOT ../external/curl)
+add_subdirectory(${CURL_ROOT} curl.output)
+include_directories(${CURL_ROOT}/include)
+
 if(USE_LUA)
-    add_subdirectory(../external/lua lua.output)
+    set(LUA_ROOT ../external/lua)
+    add_subdirectory(${LUA_ROOT} lua.output)
+    include_directories(${LUA_ROOT})
 endif()
+
 if(USE_QJS)
-    add_subdirectory(../external/quickjs quickjs.output)
+    set(QJS_ROOT ../external/quickjs)
+    add_subdirectory(${QJS_ROOT} quickjs.output)
+    include_directories(${QJS_ROOT})
 endif()
+
 if(NOT APPLE)
-    add_subdirectory(../external/sqlite sqlite.output)
+    set(SQLITE_ROOT ../external/sqlite)
+    add_subdirectory(${SQLITE_ROOT} sqlite.output)
+    include_directories(${SQLITE_ROOT})
 endif()
+
 if(EMSCRIPTEN)
-    add_subdirectory(../external/zlib zlib.output)
+    set(Z_ROOT ../external/zlib)
+    add_subdirectory(${Z_ROOT} zlib.output)
+    include_directories(${Z_ROOT})
 endif()
+
 if(NOT OHOS)
-    add_subdirectory(../external/libuv libuv.output)
+    set(UV_ROOT ../external/libuv)
+    add_subdirectory(${UV_ROOT} libuv.output)
+    include_directories(${UV_ROOT}/include)
 endif()
 
 set(LINK_LIBS

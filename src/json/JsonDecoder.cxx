@@ -1,6 +1,6 @@
 #include "JsonDecoder.hxx"
 
-#include "../../include/NGenXXLog.hxx"
+#include <NGenXXLog.hxx>
 
 #include <stdexcept>
 

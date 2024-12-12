@@ -5,8 +5,8 @@
 
 #include <functional>
 
-#include "../../external/quickjs/quickjs-libc.h"
-#include "../../include/NGenXXTypes.hxx"
+#include <quickjs-libc.h>
+#include <NGenXXTypes.hxx>
 
 #define DEF_JS_FUNC_VOID(fJ, fS)                                                           \
     static JSValue fJ(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) \

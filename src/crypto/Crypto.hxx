@@ -3,7 +3,7 @@
 
 #if defined(__cplusplus)
 
-#include "../../include/NGenXXTypes.hxx"
+#include <NGenXXTypes.hxx>
 
 namespace NGenXX
 {

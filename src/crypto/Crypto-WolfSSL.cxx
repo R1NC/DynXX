@@ -1,15 +1,15 @@
 #include "Crypto.hxx"
-#include "../../include/NGenXXLog.hxx"
+#include <NGenXXLog.hxx>
 #include "../util/TypeUtil.hxx"
 #include <string>
 
-#include "../../../external/wolfssl/wolfssl/ssl.h"
-#include "../../../external/wolfssl/wolfssl/wolfcrypt/aes.h"
-#include "../../../external/wolfssl/wolfssl/wolfcrypt/md5.h"
-#include "../../../external/wolfssl/wolfssl/wolfcrypt/sha.h"
-#include "../../../external/wolfssl/wolfssl/wolfcrypt/sha256.h"
-#include "../../../external/wolfssl/wolfssl/wolfcrypt/rsa.h"
-#include "../../../external/wolfssl/wolfssl/wolfcrypt/coding.h"
+#include <wolfssl/wolfssl/ssl.h>
+#include <wolfssl/wolfcrypt/aes.h>
+#include <wolfssl/wolfcrypt/md5.h>
+#include <wolfssl/wolfcrypt/sha.h>
+#include <wolfssl/wolfcrypt/sha256.h>
+#include <wolfssl/wolfcrypt/rsa.h>
+#include <wolfssl/wolfcrypt/coding.h>
 
 constexpr int WolfSSL_OK = 0;
 

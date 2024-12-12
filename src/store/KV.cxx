@@ -1,5 +1,5 @@
 #include "KV.hxx"
-#include "../../include/NGenXXLog.hxx"
+#include <NGenXXLog.hxx>
 
 NGenXX::Store::KV::KV(const std::string &root)
 {

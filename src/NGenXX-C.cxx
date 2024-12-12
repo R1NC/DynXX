@@ -4,9 +4,8 @@
 
 #if defined(__cplusplus)
 
-#include "../include/NGenXX.hxx"
-#include "../include/NGenXXTypes.hxx"
-#include "../include/NGenXXStoreKV.h"
+#include <NGenXX.hxx>
+#include <NGenXXStoreKV.h>
 #include "NGenXX-inner.hxx"
 #include "util/TypeUtil.hxx"
 #endif

@@ -1,7 +1,7 @@
 #if defined(__APPLE__) && defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__)
 
 #include "DeviceInfo.hxx"
-#include "../../include/NGenXXDeviceInfo.h"
+#include <NGenXXDeviceInfo.h>
 
 #import <UIKit/UIKit.h>
 #import <sys/utsname.h>

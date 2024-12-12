@@ -1,12 +1,8 @@
 #include "JsBridge.hxx"
-#include "../../include/NGenXXLog.hxx"
+#include <NGenXXLog.hxx>
 #include "../util/TimeUtil.hxx"
 
-#if defined(__OHOS__)
 #include <uv.h>
-#else
-#include "../../external/libuv/include/uv.h"
-#endif
 
 #include <fstream>
 #include <sstream>
