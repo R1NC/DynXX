@@ -6,7 +6,7 @@
 #include "../../include/NGenXXLog.hxx"
 
 #if defined(__OHOS__)
-#include "uv.h"
+#include <uv.h>
 #else
 #include "../../external/libuv/include/uv.h"
 #endif
