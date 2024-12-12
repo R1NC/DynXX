@@ -23,7 +23,8 @@ const std::string ngenxx_js_ask_platform(const char *msg)
     }
     char *cMsg = reinterpret_cast<char *>(malloc(strlen(msg) + 1));
     strcpy(cMsg, msg);
-    return _NGenXX_J_msg_callback(cMsg);
+    auto res = _NGenXX_J_msg_callback(cMsg);
+    return res ?: s;
 }
 
 DEF_JS_FUNC_STRING(ngenxx_ask_platformJ, ngenxx_js_ask_platform)
