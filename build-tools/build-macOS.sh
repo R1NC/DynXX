@@ -20,7 +20,7 @@ function build4macos {
         GEN_XCODE_PROJ="-GXcode"
     fi
     
-    cmake ../build-tools \
+    cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=toolchains/Apple/apple.toolchain.cmake \
     -DCMAKE_INSTALL_PREFIX=. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \

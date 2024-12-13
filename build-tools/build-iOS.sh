@@ -28,7 +28,7 @@ function build4ios {
         GEN_XCODE_PROJ="-G Xcode"
     fi
     
-    cmake ../build-tools \
+    cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=toolchains/Apple/apple.toolchain.cmake \
     -DCMAKE_SYSTEM_NAME=iOS \
     -DCMAKE_INSTALL_PREFIX=. \

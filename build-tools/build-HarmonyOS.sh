@@ -18,7 +18,7 @@ function build4harmony {
   mkdir -p ${ABI_BUILD_DIR}
   mkdir -p ${OUTPUT_DIR}
 
-  cmake ../build-tools \
+  cmake .. \
     -DOHOS_PLATFORM=OHOS \
     -DOHOS_ARCH=${ABI} \
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${OUTPUT_DIR} \

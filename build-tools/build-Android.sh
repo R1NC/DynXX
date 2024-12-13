@@ -19,7 +19,7 @@ function build4android {
   mkdir -p ${ABI_BUILD_DIR}
   mkdir -p ${OUTPUT_DIR}
 
-  cmake ../build-tools \
+  cmake .. \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     -DCMAKE_SYSTEM_NAME=Android \
     -DCMAKE_ANDROID_NDK=$NDK_ROOT \

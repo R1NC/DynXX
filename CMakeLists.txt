@@ -27,38 +27,38 @@ endif()
 project(NGenXX)
 
 set(ENGINE_FILES
-    ../src/log/Log.cxx
-    ../src/device/DeviceInfo-android.cxx
-    ../src/device/DeviceInfo-harmony.cxx
-    ../src/device/DeviceInfo-ios.mm
-    ../src/device/DeviceInfo-mac.mm
-    ../src/device/DeviceInfo-wasm.cxx
-    ../src/device/DeviceInfo-windows.cxx
-    ../src/device/DeviceInfo-linux.cxx
-    ../src/net/HttpClient.cxx
-    ../src/store/SQLite.cxx
-    ../src/store/KV.cxx
-    ../src/json/JsonDecoder.cxx
-    ../src/zip/Zip.cxx
-    ../src/coding/Coding.cxx
-    ../src/crypto/Crypto-OpenSSL.cxx
-    ../src/NGenXX-X.cxx
-    ../src/NGenXX-Script.cxx
-    ../src/NGenXX-C.cxx
+    src/log/Log.cxx
+    src/device/DeviceInfo-android.cxx
+    src/device/DeviceInfo-harmony.cxx
+    src/device/DeviceInfo-ios.mm
+    src/device/DeviceInfo-mac.mm
+    src/device/DeviceInfo-wasm.cxx
+    src/device/DeviceInfo-windows.cxx
+    src/device/DeviceInfo-linux.cxx
+    src/net/HttpClient.cxx
+    src/store/SQLite.cxx
+    src/store/KV.cxx
+    src/json/JsonDecoder.cxx
+    src/zip/Zip.cxx
+    src/coding/Coding.cxx
+    src/crypto/Crypto-OpenSSL.cxx
+    src/NGenXX-X.cxx
+    src/NGenXX-Script.cxx
+    src/NGenXX-C.cxx
 )
 if(USE_LUA)
     set(ENGINE_FILES ${ENGINE_FILES}
-        ../src/lua/LuaBridge.cxx
-        ../src/NGenXX-Lua.cxx
+        src/lua/LuaBridge.cxx
+        src/NGenXX-Lua.cxx
     )
 endif()
 if(USE_QJS)
     set(ENGINE_FILES ${ENGINE_FILES}
-        ../src/js/JsBridge.cxx
-        ../src/NGenXX-Js.cxx
+        src/js/JsBridge.cxx
+        src/NGenXX-Js.cxx
     )
 endif()
-include_directories(../include)
+include_directories(include)
 
 set(LIB_TYPE STATIC)
 if(EMSCRIPTEN)
@@ -80,48 +80,48 @@ endif()
 # 3). WASM has no built-in zlib;
 # 4). HarmonyOS has built-in libuv;
 
-set(CJSON_ROOT ../external/cjson)
+set(CJSON_ROOT external/cjson)
 add_subdirectory(${CJSON_ROOT} cjson.output)
 include_directories(${CJSON_ROOT})
 
-set(MMKV_ROOT ../external/mmkv)
+set(MMKV_ROOT external/mmkv)
 add_subdirectory(${MMKV_ROOT}/POSIX/src mmkv.output)
 include_directories(${MMKV_ROOT}/Core)
 
-set(OPENSSL_ROOT ../external/openssl)
+set(OPENSSL_ROOT external/openssl)
 add_subdirectory(${OPENSSL_ROOT} openssl.output)
 include_directories(${OPENSSL_ROOT}/include)
 
-set(CURL_ROOT ../external/curl)
+set(CURL_ROOT external/curl)
 add_subdirectory(${CURL_ROOT} curl.output)
 include_directories(${CURL_ROOT}/include)
 
 if(USE_LUA)
-    set(LUA_ROOT ../external/lua)
+    set(LUA_ROOT external/lua)
     add_subdirectory(${LUA_ROOT} lua.output)
     include_directories(${LUA_ROOT})
 endif()
 
 if(USE_QJS)
-    set(QJS_ROOT ../external/quickjs)
+    set(QJS_ROOT external/quickjs)
     add_subdirectory(${QJS_ROOT} quickjs.output)
     include_directories(${QJS_ROOT})
 endif()
 
 if(NOT APPLE)
-    set(SQLITE_ROOT ../external/sqlite)
+    set(SQLITE_ROOT external/sqlite)
     add_subdirectory(${SQLITE_ROOT} sqlite.output)
     include_directories(${SQLITE_ROOT})
 endif()
 
 if(EMSCRIPTEN)
-    set(Z_ROOT ../external/zlib)
+    set(Z_ROOT external/zlib)
     add_subdirectory(${Z_ROOT} zlib.output)
     include_directories(${Z_ROOT})
 endif()
 
 if(NOT OHOS)
-    set(UV_ROOT ../external/libuv)
+    set(UV_ROOT external/libuv)
     add_subdirectory(${UV_ROOT} libuv.output)
     include_directories(${UV_ROOT}/include)
 endif()

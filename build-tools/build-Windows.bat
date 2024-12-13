@@ -10,7 +10,7 @@ mkdir %BUILD_DIR%
 mkdir %OUTPUT_DIR%
 cd %BUILD_DIR%
 
-cmake ..\build-tools ^
+cmake .. ^
     -DCMAKE_INSTALL_PREFIX=. ^
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=%OUTPUT_DIR% ^
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=%OUTPUT_DIR% ^

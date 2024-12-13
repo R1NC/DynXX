@@ -14,7 +14,7 @@ then
     LIB_TYPE="Debug"
 fi
 
-cmake ../build-tools \
+cmake .. \
     -DCMAKE_INSTALL_PREFIX=. \
     -DCMAKE_BUILD_TYPE=${LIB_TYPE}
 

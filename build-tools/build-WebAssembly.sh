@@ -13,7 +13,7 @@ function build4wasm {
     BUILD_TYPE=$1
     ABI=$2
 
-    cmake ../build-tools \
+    cmake .. \
     -DEMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_ROOT_PATH} \
     -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
