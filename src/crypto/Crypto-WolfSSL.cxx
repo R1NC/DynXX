@@ -38,10 +38,10 @@ const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
     }
     byte fixedIn[outLen];
-    memset(fixedIn, 0, outLen);
-    memcpy(fixedIn, in, inLen);
+    std::memset(fixedIn, 0, outLen);
+    std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
     int offset = 0;
 
     Aes aes[1];
@@ -91,10 +91,10 @@ const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
     }
     byte fixedIn[outLen];
-    memset(fixedIn, 0, outLen);
-    memcpy(fixedIn, in, inLen);
+    std::memset(fixedIn, 0, outLen);
+    std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
     int offset = 0;
 
     Aes aes[1];
@@ -188,7 +188,7 @@ const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
     std::memcpy(tag, in + inLen, tagLen);
     int outLen = inLen;
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
 
     Aes aes[1];
     int ret = wc_AesInit(aes, NULL, 0);
@@ -227,7 +227,7 @@ const Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     }
     int outLen = 16;
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
 
     wc_Md5 md5;
 
@@ -267,7 +267,7 @@ const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     }
     int outLen = 32;
     byte out[outLen];
-    memset(out, 0, outLen);
+    std::memset(out, 0, outLen);
 
     wc_Sha256 sha256;
 
@@ -310,7 +310,7 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     int ret = Base64_Encode_NoNl(in, inLen, NULL, &outLen);
 
     byte outBuffer[outLen + 1];
-    memset(outBuffer, 0, outLen + 1);
+    std::memset(outBuffer, 0, outLen + 1);
 
     ret = Base64_Encode_NoNl(in, inLen, outBuffer, &outLen);
     if (ret != WolfSSL_OK)
@@ -333,7 +333,7 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
 
     word32 outLen = inLen * 2;
     byte outBuffer[outLen + 1];
-    memset(outBuffer, 0, outLen + 1);
+    std::memset(outBuffer, 0, outLen + 1);
 
     int ret = Base64_Decode(in, inLen, outBuffer, &outLen);
     if (ret != WolfSSL_OK)

@@ -11,7 +11,7 @@ size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t
     auto bytes = static_cast<Bytes*>(userdata);
     size_t len = std::min(size * nmemb, bytes->size());
     if (len > 0) {
-        memcpy(buffer, bytes->data(), len);
+        std::memcpy(buffer, bytes->data(), len);
         bytes->erase(bytes->begin(), bytes->begin() + len);
     }
     return len;

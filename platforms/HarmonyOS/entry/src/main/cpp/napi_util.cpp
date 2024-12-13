@@ -6,7 +6,7 @@ napi_value *readParams(napi_env env, napi_callback_info info, size_t count)
 {
     size_t argc = count;
     napi_value *argv = reinterpret_cast<napi_value *>(malloc(sizeof(napi_value) * count + 1));
-    memset(static_cast<void *>(argv), 0, count + 1);
+    std::memset(static_cast<void *>(argv), 0, count + 1);
     int status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_cb_info() failed");
     return argv;

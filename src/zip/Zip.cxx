@@ -55,7 +55,7 @@ const size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
     size_t dataLen = std::min(bytes.size(), this->bufferSize);
 
     std::memset(this->inBuffer, 0, this->bufferSize);
-    memcpy(this->inBuffer, bytes.data(), dataLen);
+    std::memcpy(this->inBuffer, bytes.data(), dataLen);
 
     (this->zs).avail_in = static_cast<uint>(dataLen);
     (this->zs).next_in = reinterpret_cast<Bytef *>(this->inBuffer);
