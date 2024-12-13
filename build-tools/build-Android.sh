@@ -51,6 +51,7 @@ cp -R ../include/ ${HEADER_OUTPUT_DIR}/
 ASSETS_APP_DIR=../platforms/Android/app/src/main/assets/
 mkdir -p ${ASSETS_APP_DIR}
 cp ../scripts/JS/NGenXX.js ${ASSETS_APP_DIR}
+cp -a ../scripts/Lua/. ${ASSETS_APP_DIR}
 BIZ_JS=../scripts/JS/dist/biz.js
 if test -f "$BIZ_JS"; then
   cp ${BIZ_JS} ${ASSETS_APP_DIR}
