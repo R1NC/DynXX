@@ -147,7 +147,7 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
         cFormFieldDataV[i] = const_cast<char *>(env->GetStringUTFChars(jstrFormFieldDataV[i], nullptr));
     }
 
-    const char *cFilePath = env->GetStringUTFChars(filePath, nullptr);
+    const char *cFilePath = filePath ? env->GetStringUTFChars(filePath, nullptr) : "";
     FILE *cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
 
     const char *cRsp = ngenxx_net_http_request(cUrl, cParams, (const int)method,
@@ -176,7 +176,7 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
         free(static_cast<void *>(jstrFormFieldDataV[i]));
     }
 
-    if (cFilePath)
+    if (filePath)
     {
         free(static_cast<void *>(const_cast<char *>(cFilePath)));
     }
