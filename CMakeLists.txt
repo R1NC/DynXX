@@ -3,30 +3,30 @@ cmake_minimum_required(VERSION 3.10)
 string(
     COMPARE EQUAL
     "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"
-    is_top_project
+    IS_TOP_PROJECT
 )
-message("################ is_top_project: ${is_top_project} ################")
+message("\n>>>>>>>>\n IS_TOP_PROJECT: ${IS_TOP_PROJECT} \n<<<<<<<<\n")
 
-if(is_top_project)
+if(IS_TOP_PROJECT)
     set(CMAKE_C_COMPILER "clang")
     set(CMAKE_CXX_COMPILER "clang++")
     set(CMAKE_C_STANDARD 99)
     set(CMAKE_CXX_STANDARD 20)
 endif()
 
+project(NGenXX)
+
 option(USE_LUA "Use Lua or not" ON)
 option(USE_QJS "Use QuickJS or not" ON)
-
 if(USE_LUA)
     add_definitions(-DUSE_LUA)
 endif()
 if(USE_QJS)
     add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
 endif()
+message("\n>>>>>>>>\n USE_LUA:${USE_LUA} USE_QJS:${USE_QJS} \n<<<<<<<<\n")
 
-project(NGenXX)
-
-set(ENGINE_FILES
+set(SRC_FILES
     src/log/Log.cxx
     src/device/DeviceInfo-android.cxx
     src/device/DeviceInfo-harmony.cxx
@@ -47,22 +47,23 @@ set(ENGINE_FILES
     src/NGenXX-C.cxx
 )
 if(USE_LUA)
-    set(ENGINE_FILES ${ENGINE_FILES}
+    set(SRC_FILES ${SRC_FILES}
         src/lua/LuaBridge.cxx
         src/NGenXX-Lua.cxx
     )
 endif()
 if(USE_QJS)
-    set(ENGINE_FILES ${ENGINE_FILES}
+    set(SRC_FILES ${SRC_FILES}
         src/js/JsBridge.cxx
         src/NGenXX-Js.cxx
     )
 endif()
 include_directories(include)
+message("\n>>>>>>>>\n SRC_FILES: ${SRC_FILES} \n<<<<<<<<\n")
 
 set(LIB_TYPE STATIC)
 if(EMSCRIPTEN)
-    add_executable(${PROJECT_NAME} ${ENGINE_FILES})
+    add_executable(${PROJECT_NAME} ${SRC_FILES})
     set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
     # WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
     if(USE_LUA)
@@ -71,7 +72,7 @@ if(EMSCRIPTEN)
         set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_ngenxx_init','_ngenxx_release']")
     endif()
 else()
-    add_library(${PROJECT_NAME} ${LIB_TYPE} ${ENGINE_FILES})
+    add_library(${PROJECT_NAME} ${LIB_TYPE} ${SRC_FILES})
 endif()
 
 # WARNING:
@@ -162,5 +163,6 @@ if(NOT OHOS)
         libuv
     )
 endif()
+message("\n>>>>>>>>\n LINK_LIBS: ${LINK_LIBS} \n<<<<<<<<\n")
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})

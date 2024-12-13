@@ -21,7 +21,7 @@ function build4macos {
     fi
     
     cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=toolchains/Apple/apple.toolchain.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=build-tools/toolchains/Apple/apple.toolchain.cmake \
     -DCMAKE_INSTALL_PREFIX=. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DARCHS=${ARCHS} \
