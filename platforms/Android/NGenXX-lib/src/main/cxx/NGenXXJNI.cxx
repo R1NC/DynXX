@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <cstdlib>
 #include <string>
+#include <cstring>
 #include "../../../../../../build.Android/output/include/NGenXX.h"
 #include "JNIUtil.hxx"
 

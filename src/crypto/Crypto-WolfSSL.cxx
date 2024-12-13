@@ -2,6 +2,7 @@
 #include <NGenXXLog.hxx>
 #include "../util/TypeUtil.hxx"
 #include <string>
+#include <cstring>
 
 #include <wolfssl/wolfssl/ssl.h>
 #include <wolfssl/wolfcrypt/aes.h>

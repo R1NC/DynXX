@@ -6,6 +6,7 @@
 #include <NGenXXNetHttp.h>
 #include <algorithm>
 #include <vector>
+#include <cstring>
 
 size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t nmemb, void *userdata) {
     auto bytes = static_cast<Bytes*>(userdata);
