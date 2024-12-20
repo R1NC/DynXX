@@ -5,7 +5,8 @@ string(
     "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"
     IS_TOP_PROJECT
 )
-message("\n>>>>>>>>\n IS_TOP_PROJECT: ${IS_TOP_PROJECT} \n<<<<<<<<\n")
+message("\n")
+message(STATUS "IS_TOP_PROJECT: ${IS_TOP_PROJECT}\n")
 
 if(IS_TOP_PROJECT)
     set(CMAKE_C_COMPILER "clang")
@@ -24,9 +25,11 @@ endif()
 if(USE_QJS)
     add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
 endif()
-message("\n>>>>>>>>\n USE_LUA:${USE_LUA} USE_QJS:${USE_QJS} \n<<<<<<<<\n")
+message("\n")
+message(STATUS "USE_LUA:${USE_LUA} USE_QJS:${USE_QJS}\n")
 
-set(SRC_FILES
+list(APPEND INC_DIRS include)
+list(APPEND SRC_FILES
     src/log/Log.cxx
     src/device/DeviceInfo-android.cxx
     src/device/DeviceInfo-harmony.cxx
@@ -47,19 +50,23 @@ set(SRC_FILES
     src/NGenXX-C.cxx
 )
 if(USE_LUA)
-    set(SRC_FILES ${SRC_FILES}
+    list(APPEND SRC_FILES
         src/lua/LuaBridge.cxx
         src/NGenXX-Lua.cxx
     )
 endif()
 if(USE_QJS)
-    set(SRC_FILES ${SRC_FILES}
+    list(APPEND SRC_FILES
         src/js/JsBridge.cxx
         src/NGenXX-Js.cxx
     )
 endif()
-include_directories(include)
-message("\n>>>>>>>>\n SRC_FILES: ${SRC_FILES} \n<<<<<<<<\n")
+message("\n")
+message(STATUS "SRC_FILES:")
+foreach(x IN LISTS SRC_FILES)
+    message(STATUS "  ${x}")
+endforeach()
+message("\n")
 
 set(LIB_TYPE STATIC)
 if(EMSCRIPTEN)
@@ -83,51 +90,59 @@ endif()
 
 set(CJSON_ROOT external/cjson)
 add_subdirectory(${CJSON_ROOT} cjson.output)
-include_directories(${CJSON_ROOT})
+list(APPEND INC_DIRS ${CJSON_ROOT})
 
 set(MMKV_ROOT external/mmkv)
 add_subdirectory(${MMKV_ROOT}/POSIX/src mmkv.output)
-include_directories(${MMKV_ROOT}/Core)
+list(APPEND INC_DIRS ${MMKV_ROOT}/Core)
 
 set(OPENSSL_ROOT external/openssl)
 add_subdirectory(${OPENSSL_ROOT} openssl.output)
-include_directories(${OPENSSL_ROOT}/include)
+list(APPEND INC_DIRS ${OPENSSL_ROOT}/include)
 
 set(CURL_ROOT external/curl)
 add_subdirectory(${CURL_ROOT} curl.output)
-include_directories(${CURL_ROOT}/include)
+list(APPEND INC_DIRS ${CURL_ROOT}/include)
 
 if(USE_LUA)
     set(LUA_ROOT external/lua)
     add_subdirectory(${LUA_ROOT} lua.output)
-    include_directories(${LUA_ROOT})
+    list(APPEND INC_DIRS ${LUA_ROOT})
 endif()
 
 if(USE_QJS)
     set(QJS_ROOT external/quickjs)
     add_subdirectory(${QJS_ROOT} quickjs.output)
-    include_directories(${QJS_ROOT})
+    list(APPEND INC_DIRS ${QJS_ROOT})
 endif()
 
 if(NOT APPLE)
     set(SQLITE_ROOT external/sqlite)
     add_subdirectory(${SQLITE_ROOT} sqlite.output)
-    include_directories(${SQLITE_ROOT})
+    list(APPEND INC_DIRS ${SQLITE_ROOT})
 endif()
 
 if(EMSCRIPTEN)
     set(Z_ROOT external/zlib)
     add_subdirectory(${Z_ROOT} zlib.output)
-    include_directories(${Z_ROOT})
+    list(APPEND INC_DIRS ${Z_ROOT})
 endif()
 
 if(NOT OHOS)
     set(UV_ROOT external/libuv)
     add_subdirectory(${UV_ROOT} libuv.output)
-    include_directories(${UV_ROOT}/include)
+    list(APPEND INC_DIRS ${UV_ROOT}/include)
 endif()
 
-set(LINK_LIBS
+include_directories(${INC_DIRS})
+message("\n")
+message(STATUS "INC_DIRS:")
+foreach(x IN LISTS INC_DIRS)
+    message(STATUS "  ${x}")
+endforeach()
+message("\n")
+
+list(APPEND LINK_LIBS
     mmkv
     cjson
     OpenSSL::SSL 
@@ -135,34 +150,27 @@ set(LINK_LIBS
     CURL::libcurl
 )
 if(USE_LUA)
-    set(LINK_LIBS ${LINK_LIBS}
-        lua
-    )
+    list(APPEND LINK_LIBS lua)
 endif()
 if(USE_QJS)
-    set(LINK_LIBS ${LINK_LIBS}
-        quickjs
-    )
+    list(APPEND LINK_LIBS quickjs)
 endif()
 if(APPLE)
-    set(LINK_LIBS ${LINK_LIBS}
-        sqlite3
-    )
+    list(APPEND LINK_LIBS sqlite3)
 else()
-    set(LINK_LIBS ${LINK_LIBS}
-        sqlite3-static
-    )
+    list(APPEND LINK_LIBS sqlite3-static)
 endif()
 if(EMSCRIPTEN)
-    set(LINK_LIBS ${LINK_LIBS}
-        zlib
-    )
+    list(APPEND LINK_LIBS zlib)
 endif()
 if(NOT OHOS)
-    set(LINK_LIBS ${LINK_LIBS}
-        libuv
-    )
+    list(APPEND LINK_LIBS libuv)
 endif()
-message("\n>>>>>>>>\n LINK_LIBS: ${LINK_LIBS} \n<<<<<<<<\n")
+message("\n")
+message(STATUS "LINK_LIBS:")
+foreach(x IN LISTS LINK_LIBS)
+    message(STATUS "  ${x}")
+endforeach()
+message("\n")
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
