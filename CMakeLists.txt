@@ -3,12 +3,10 @@ cmake_minimum_required(VERSION 3.10)
 string(
     COMPARE EQUAL
     "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"
-    IS_TOP_PROJECT
+    IS_ROOT
 )
-message("\n")
-message(STATUS "IS_TOP_PROJECT: ${IS_TOP_PROJECT}\n")
 
-if(IS_TOP_PROJECT)
+if(IS_ROOT)
     set(CMAKE_C_COMPILER "clang")
     set(CMAKE_CXX_COMPILER "clang++")
     set(CMAKE_C_STANDARD 99)
@@ -26,7 +24,12 @@ if(USE_QJS)
     add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
 endif()
 message("\n")
-message(STATUS "USE_LUA:${USE_LUA} USE_QJS:${USE_QJS}\n")
+message(STATUS "${PROJECT_NAME}")
+message(STATUS "  SYS_NAME: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "  IS_ROOT: ${IS_ROOT}")
+message(STATUS "  USE_LUA: ${USE_LUA}")
+message(STATUS "  USE_QJS: ${USE_QJS}")
+message("\n")
 
 list(APPEND INC_DIRS include)
 list(APPEND SRC_FILES
