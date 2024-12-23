@@ -24,6 +24,18 @@ NGenXX::Store::KV::Connection *NGenXX::Store::KV::open(const std::string &_id)
     return conn;
 }
 
+void NGenXX::Store::KV::close(const std::string &_id)
+{
+    const std::lock_guard<std::mutex> lock(this->mutex);
+    auto it = this->conns.find(_id);
+    if (it != this->conns.end())
+    {
+        delete it->second;
+        it->second = nullptr;
+        this->conns.erase(it);
+    }
+}
+
 void NGenXX::Store::KV::closeAll()
 {
     const std::lock_guard<std::mutex> lock(this->mutex);

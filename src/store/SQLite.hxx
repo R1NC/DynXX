@@ -93,6 +93,8 @@ namespace NGenXX
              */
             Connection *connect(const std::string &file);
 
+            void close(const std::string &file);
+
             void closeAll();
 
             /**

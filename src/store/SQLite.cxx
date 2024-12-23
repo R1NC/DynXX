@@ -29,6 +29,18 @@ NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::str
     return conn;
 }
 
+void NGenXX::Store::SQLite::close(const std::string &file)
+{
+    const std::lock_guard<std::mutex> lock(this->mutex);
+    auto it = this->conns.find(file);
+    if (it != this->conns.end())
+    {
+        delete it->second;
+        it->second = nullptr;
+        this->conns.erase(it);
+    }
+}
+
 void NGenXX::Store::SQLite::closeAll()
 {
     const std::lock_guard<std::mutex> lock(this->mutex);

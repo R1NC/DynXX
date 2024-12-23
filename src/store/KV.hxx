@@ -50,6 +50,8 @@ namespace NGenXX
 
             Connection *open(const std::string &_id);
 
+            void close(const std::string &_id);
+
             void closeAll();
 
             ~KV();
