@@ -30,14 +30,14 @@ void NGenXX::Log::setLevel(const int level)
 void NGenXX::Log::setCallback(const std::function<void(const int level, const char *content)> &callback)
 {
     _NGenXX_Log_callback = callback;
-    if (_ngenxx_log_mutex == nullptr)
-    {
-        _ngenxx_log_mutex = new std::mutex();
-    }
 }
 
 void NGenXX::Log::print(const int level, const std::string &content)
 {
+    if (_ngenxx_log_mutex == nullptr)
+    {
+        _ngenxx_log_mutex = new std::mutex();
+    }
     const std::lock_guard<std::mutex> lock(*_ngenxx_log_mutex);
 
     if (level < _NGenXX_Log_level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone)
