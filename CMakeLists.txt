@@ -71,7 +71,6 @@ foreach(x IN LISTS SRC_FILES)
 endforeach()
 message("\n")
 
-set(LIB_TYPE STATIC)
 if(EMSCRIPTEN)
     add_executable(${PROJECT_NAME} ${SRC_FILES})
     set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
@@ -81,8 +80,9 @@ if(EMSCRIPTEN)
     else()
         set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s EXPORTED_RUNTIME_METHODS=['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction'] -s EXPORTED_FUNCTIONS=['_malloc','_free','_ngenxx_init','_ngenxx_release']")
     endif()
+    message(STATUS "\nLINK_FLAGS:\n ${CMAKE_LINK_FLAGS}\n")
 else()
-    add_library(${PROJECT_NAME} ${LIB_TYPE} ${SRC_FILES})
+    add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 endif()
 
 # WARNING:
