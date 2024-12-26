@@ -151,7 +151,7 @@ void NGenXX::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)
 #if !defined(__EMSCRIPTEN__)
 bool NGenXX::LuaBridge::loadFile(const std::string &file)
 {
-    const std::lock_guard<std::mutex> lock(this->mutex);
+    const std::lock_guard<std::recursive_mutex> lock(this->mutex);
     int ret = luaL_dofile(this->lstate, file.c_str());
     if (ret != LUA_OK)
     {
@@ -164,7 +164,7 @@ bool NGenXX::LuaBridge::loadFile(const std::string &file)
 
 bool NGenXX::LuaBridge::loadScript(const std::string &script)
 {
-    const std::lock_guard<std::mutex> lock(this->mutex);
+    const std::lock_guard<std::recursive_mutex> lock(this->mutex);
     int ret = luaL_dostring(this->lstate, script.c_str());
     if (ret != LUA_OK)
     {
@@ -177,7 +177,7 @@ bool NGenXX::LuaBridge::loadScript(const std::string &script)
 const std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::string &params)
 {
     std::string s;
-    const std::lock_guard<std::mutex> lock(this->mutex);
+    const std::lock_guard<std::recursive_mutex> lock(this->mutex);
     lua_getglobal(this->lstate, func.c_str());
     lua_pushstring(this->lstate, params.c_str());
     int ret = lua_pcall(lstate, 1, 1, 0);

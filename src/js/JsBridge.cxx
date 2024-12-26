@@ -28,7 +28,7 @@ static uv_loop_t *_ngenxx_js_uv_loop_p = nullptr;
 static uv_loop_t *_ngenxx_js_uv_loop_t = nullptr;
 static uv_timer_t *_ngenxx_js_uv_timer_p = nullptr;
 static uv_timer_t *_ngenxx_js_uv_timer_t = nullptr;
-static std::mutex *_ngenxx_js_mutex = nullptr;
+static std::recursive_mutex *_ngenxx_js_mutex = nullptr;
 
 static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer)
 {
@@ -201,7 +201,7 @@ static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
 
 NGenXX::JsBridge::JsBridge()
 {
-    _ngenxx_js_mutex = new std::mutex();
+    _ngenxx_js_mutex = new std::recursive_mutex();
 
     this->runtime = JS_NewRuntime();
     js_std_init_handlers(this->runtime);
@@ -256,13 +256,13 @@ bool NGenXX::JsBridge::loadFile(const std::string &file, const bool isModule)
 
 bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name, const bool isModule)
 {
-    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+    const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
     return _ngenxx_js_loadScript(this->context, script, name, isModule);
 }
 
 bool NGenXX::JsBridge::loadBinary(Bytes bytes, const bool isModule)
 {
-    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+    const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
@@ -307,17 +307,17 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
         else
         {
             /// Not a Promise: release the lock, return the result immediately.
-            _ngenxx_js_mutex->unlock();
             ret = obj;
             break;
         }
     }
+    _ngenxx_js_mutex->unlock();
     return ret;
 }
 
 std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, const bool await)
 {
-    const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+    _ngenxx_js_mutex->lock();
     std::string s;
 
     JSValue jFunc = JS_GetPropertyStr(this->context, this->jValues[0], func.c_str());
@@ -349,6 +349,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     }
     else
     {
+        _ngenxx_js_mutex->unlock();
         ngenxxLogPrint(NGenXXLogLevelX::Error, ("Can not find JS func:" + func).c_str());
     }
 
@@ -398,7 +399,7 @@ JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> f)
     std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         cb();
         
-        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+        const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
 
         JSValue jRet = JS_UNDEFINED;
 
@@ -419,7 +420,7 @@ JSValue NGenXX::JsBridge::newPromiseBool(std::function<const bool()> f)
     std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
         
-        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+        const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
 
         JSValue jRet = JS_NewBool(ctx, ret);
 
@@ -440,7 +441,7 @@ JSValue NGenXX::JsBridge::newPromiseInt32(std::function<const int()> f)
     std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
         
-        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+        const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
 
         JSValue jRet = JS_NewInt32(ctx, ret);
 
@@ -461,7 +462,7 @@ JSValue NGenXX::JsBridge::newPromiseInt64(std::function<const long long()> f)
     std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
         
-        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+        const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
 
         JSValue jRet = JS_NewInt64(ctx, ret);
 
@@ -482,7 +483,7 @@ JSValue NGenXX::JsBridge::newPromiseFloat(std::function<const double()> f)
     std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
         
-        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+        const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
 
         JSValue jRet = JS_NewFloat64(ctx, ret);
 
@@ -503,7 +504,7 @@ JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> f)
     std::thread([&ctx = this->context, jPromise = jPromise, cb = f]() {
         auto ret = cb();
 
-        const std::lock_guard<std::mutex> lock(*_ngenxx_js_mutex);
+        const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
 
         JSValue jRet = JS_NewString(ctx, ret.c_str() ? : "");
 

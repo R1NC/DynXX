@@ -63,7 +63,7 @@ namespace NGenXX
     {
     private:
         lua_State *lstate;
-        std::mutex mutex;
+        std::recursive_mutex mutex;
 
     public:
         /**
