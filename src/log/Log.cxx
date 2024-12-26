@@ -1,7 +1,6 @@
 #include "Log.hxx"
 #include <NGenXXLog.h>
 
-#include <iostream>
 #include <string.h>
 #include <stdlib.h>
 
@@ -9,9 +8,13 @@
 #include <android/log.h>
 #elif defined(__OHOS__)
 #include <hilog/log.h>
+#else
+#include <iostream>
+#include <mutex>
 #endif
 
 static std::function<void(const int level, const char *content)> _NGenXX_Log_callback = nullptr;
+static std::mutex *_ngenxx_log_mutex = nullptr;
 
 static int _NGenXX_Log_level = NGenXXLogLevelNone;
 
@@ -27,10 +30,16 @@ void NGenXX::Log::setLevel(const int level)
 void NGenXX::Log::setCallback(const std::function<void(const int level, const char *content)> &callback)
 {
     _NGenXX_Log_callback = callback;
+    if (_ngenxx_log_mutex == nullptr)
+    {
+        _ngenxx_log_mutex = new std::mutex();
+    }
 }
 
 void NGenXX::Log::print(const int level, const std::string &content)
 {
+    const std::lock_guard<std::mutex> lock(*_ngenxx_log_mutex);
+
     if (level < _NGenXX_Log_level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone)
     {
         return;
