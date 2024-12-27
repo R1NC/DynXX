@@ -113,6 +113,8 @@ namespace NGenXX
         JSContext *context;
         std::vector<JSValue> jValues;
 
+        JSValue newPromise(std::function<JSValue()> jf);
+
     public:
         /**
          * Create JS VM
