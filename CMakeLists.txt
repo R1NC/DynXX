@@ -107,6 +107,10 @@ set(CURL_ROOT external/curl)
 add_subdirectory(${CURL_ROOT} curl.output)
 list(APPEND INC_DIRS ${CURL_ROOT}/include)
 
+set(ADAURL_ROOT external/AdaURL)
+add_subdirectory(${ADAURL_ROOT} AdaURL.output)
+list(APPEND INC_DIRS ${ADAURL_ROOT}/include)
+
 if(USE_LUA)
     set(LUA_ROOT external/lua)
     add_subdirectory(${LUA_ROOT} lua.output)
@@ -151,6 +155,7 @@ list(APPEND LINK_LIBS
     OpenSSL::SSL 
     OpenSSL::Crypto
     CURL::libcurl
+    ada::ada
 )
 if(USE_LUA)
     list(APPEND LINK_LIBS lua)

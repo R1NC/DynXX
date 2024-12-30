@@ -35,13 +35,13 @@ namespace NGenXX
 
                 const double readFloat(const std::string &k);
                 
-                bool write(const std::string &k, const Any &v);
+                [[nodiscard]] bool write(const std::string &k, const Any &v);
 
                 const std::vector<std::string> allKeys();
 
                 bool contains(const std::string &k);
 
-                bool remove(const std::string &k);
+                [[nodiscard]] bool remove(const std::string &k);
 
                 void clear();
 

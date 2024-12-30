@@ -31,6 +31,7 @@ mv lua.output/liblua.a ${LIB_OUTPUT_DIR}/lua.a
 mv quickjs.output/libqjs.a ${LIB_OUTPUT_DIR}/qjs.a
 mv libuv.output/libuv.a ${LIB_OUTPUT_DIR}/uv.a
 mv cjson.output/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
+mv AdaURL.output/src/libada.a ${LIB_OUTPUT_DIR}/ada.a
 mv sqlite.output/libsqlite3.a ${LIB_OUTPUT_DIR}/sqlite3.a
 mv mmkv.output/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
 mv mmkv.output/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a

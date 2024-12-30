@@ -34,6 +34,7 @@
 		40DC9C1B2CCA6CD300F264DB /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C122CCA6CD300F264DB /* lua.a */; };
 		40DC9C1C2CCA6CD300F264DB /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C132CCA6CD300F264DB /* cjson.a */; };
 		40DC9C1D2CCA6CD300F264DB /* crypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C142CCA6CD300F264DB /* crypto.a */; };
+		40EB92592D22BFF3006DEE1C /* ada.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40EB92582D22BFF3006DEE1C /* ada.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -107,6 +108,7 @@
 		40DC9C122CCA6CD300F264DB /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../build.iOS/output/libs/lua.a; sourceTree = "<group>"; };
 		40DC9C132CCA6CD300F264DB /* cjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = cjson.a; path = ../../build.iOS/output/libs/cjson.a; sourceTree = "<group>"; };
 		40DC9C142CCA6CD300F264DB /* crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = crypto.a; path = ../../build.iOS/output/libs/crypto.a; sourceTree = "<group>"; };
+		40EB92582D22BFF3006DEE1C /* ada.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ada.a; path = ../../build.iOS/output/libs/ada.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40EB92592D22BFF3006DEE1C /* ada.a in Frameworks */,
 				4011029B2CED7FB10004CCA3 /* uv.a in Frameworks */,
 				40A94B362CCFB31C0059C652 /* qjs.a in Frameworks */,
 				40DC9C152CCA6CD300F264DB /* NGenXX.a in Frameworks */,
@@ -179,6 +182,7 @@
 		40596B982C75BC5A00AC552D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				40EB92582D22BFF3006DEE1C /* ada.a */,
 				4011029A2CED7FB10004CCA3 /* uv.a */,
 				40A94B352CCFB31C0059C652 /* qjs.a */,
 				400F054D2CB61E9D009B3260 /* quickjs.a */,

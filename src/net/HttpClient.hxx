@@ -34,13 +34,13 @@ namespace NGenXX
         public:
             HttpClient();
 
-            const HttpResponse request(const std::string &url, const int method,
-                                      const std::vector<std::string> &headers,
-                                      const std::string &params,
-                                      const Bytes &rawBody,
-                                      const std::vector<HttpFormField> &formFields,
-                                      const std::FILE *cFILE, const size_t fileSize,
-                                      const size_t timeout);
+            [[nodiscard]] const HttpResponse request(const std::string &url, const int method,
+                                                     const std::vector<std::string> &headers,
+                                                     const std::string &params,
+                                                     const Bytes &rawBody,
+                                                     const std::vector<HttpFormField> &formFields,
+                                                     const std::FILE *cFILE, const size_t fileSize,
+                                                     const size_t timeout);
 
             ~HttpClient();
         };

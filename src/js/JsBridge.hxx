@@ -134,7 +134,7 @@ namespace NGenXX
          * @param file JS file path
          * @return success or not
          */
-        bool loadFile(const std::string &file, const bool isModule);
+        [[nodiscard]] bool loadFile(const std::string &file, const bool isModule);
 
         /**
          * @brief Load JS script
@@ -142,13 +142,13 @@ namespace NGenXX
          * @param name JS file name
          * @return success or not
          */
-        bool loadScript(const std::string &script, const std::string &name, const bool isModule);
+        [[nodiscard]] bool loadScript(const std::string &script, const std::string &name, const bool isModule);
 
         /**
          * @brief Load JS ByteCode
          * @param bytes JS ByteCode
          */
-        bool loadBinary(Bytes bytes, const bool isModule);
+        [[nodiscard]] bool loadBinary(Bytes bytes, const bool isModule);
 
         /**
          * @brief call JS func

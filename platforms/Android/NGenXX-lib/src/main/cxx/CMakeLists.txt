@@ -46,6 +46,11 @@ set(libsqlitePath ${libDir}/libsqlite3.a)
 add_library(libsqlite STATIC IMPORTED)
 set_property(TARGET libsqlite PROPERTY IMPORTED_LOCATION ${libsqlitePath})
 
+#Find AdaURL
+set(libadaurlPath ${libDir}/libada.a)
+add_library(libadaurl STATIC IMPORTED)
+set_property(TARGET libadaurl PROPERTY IMPORTED_LOCATION ${libadaurlPath})
+
 #Find libmmkvcore
 set(libmmkvcorePath ${libDir}/libmmkvcore.a)
 add_library(libmmkvcore STATIC IMPORTED)
@@ -70,6 +75,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         libuv
         libcjson
         libsqlite
+        libada
         libmmkvcore
         libmmkv
         libNGenXX

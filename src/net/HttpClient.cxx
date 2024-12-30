@@ -1,9 +1,12 @@
 #include "HttpClient.hxx"
 
 #include <curl/curl.h>
+#include <ada.h>
+
 #include <NGenXXTypes.h>
 #include <NGenXXLog.hxx>
 #include <NGenXXNetHttp.h>
+
 #include <algorithm>
 #include <vector>
 #include <cstring>
@@ -74,6 +77,14 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
                                       const size_t timeout)
 {
     HttpResponse rsp;
+
+    auto aUrl = ada::parse(url);
+    if (!aUrl)
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.request INVALID URL: {}", url);
+        return rsp;
+    }
+
     size_t _timeout = timeout;
     if (_timeout <= 0)
     {
@@ -158,9 +169,8 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         }
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
 
-        static const std::string prefix("https://");
-        if (url.starts_with(prefix))
-        { // Ignore SSL cet verify
+        if (aUrl->get_protocol() == "https")
+        { //TODO: verify SSL cet
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
         }

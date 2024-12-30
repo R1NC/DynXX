@@ -28,3 +28,6 @@
 [submodule "external/libuv"]
 	path = external/libuv
 	url = git@github.com:R1NC/libuv.git
+[submodule "external/AdaURL"]
+	path = external/AdaURL
+	url = git@github.com:R1NC/AdaURL.git

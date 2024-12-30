@@ -51,7 +51,7 @@ namespace NGenXX
                      * @brief Read a row from query result
                      * @return Successful or not
                      */
-                    bool readRow();
+                    [[nodiscard]] bool readRow();
 
                     /**
                      * @brief Read text column data from QueryResult

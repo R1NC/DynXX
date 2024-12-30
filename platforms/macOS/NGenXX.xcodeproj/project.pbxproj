@@ -30,6 +30,7 @@
 		40DC9C2D2CCA6DE500F264DB /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C242CCA6DE400F264DB /* mmkvcore.a */; };
 		40DC9C2E2CCA6DE500F264DB /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C252CCA6DE500F264DB /* cjson.a */; };
 		40DC9C2F2CCA6DE500F264DB /* crypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C262CCA6DE500F264DB /* crypto.a */; };
+		40EB92572D22BDBB006DEE1C /* ada.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40EB92562D22BDBB006DEE1C /* ada.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -79,6 +80,7 @@
 		40DC9C242CCA6DE400F264DB /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.macOS/output/libs/mmkvcore.a; sourceTree = "<group>"; };
 		40DC9C252CCA6DE500F264DB /* cjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = cjson.a; path = ../../build.macOS/output/libs/cjson.a; sourceTree = "<group>"; };
 		40DC9C262CCA6DE500F264DB /* crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = crypto.a; path = ../../build.macOS/output/libs/crypto.a; sourceTree = "<group>"; };
+		40EB92562D22BDBB006DEE1C /* ada.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ada.a; path = ../../build.macOS/output/libs/ada.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40EB92572D22BDBB006DEE1C /* ada.a in Frameworks */,
 				4011029D2CED7FDA0004CCA3 /* uv.a in Frameworks */,
 				400DFE902CCFB26700D3FCD9 /* qjs.a in Frameworks */,
 				40DC9C272CCA6DE500F264DB /* ssl.a in Frameworks */,
@@ -146,6 +149,7 @@
 		40348F712C783F070039639C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				40EB92562D22BDBB006DEE1C /* ada.a */,
 				4011029C2CED7FDA0004CCA3 /* uv.a */,
 				400DFE8F2CCFB26700D3FCD9 /* qjs.a */,
 				403F9F472CB8D94000F4ECE6 /* quickjs.a */,
