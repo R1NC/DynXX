@@ -10,8 +10,9 @@
 #include <hilog/log.h>
 #else
 #include <iostream>
-#include <mutex>
 #endif
+
+#include <mutex>
 
 static std::function<void(const int level, const char *content)> _NGenXX_Log_callback = nullptr;
 static std::mutex *_ngenxx_log_mutex = nullptr;

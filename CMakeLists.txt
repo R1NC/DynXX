@@ -90,6 +90,7 @@ endif()
 # 2). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
 # 3). WASM has no built-in zlib;
 # 4). HarmonyOS has built-in libuv;
+# 5). HarmonyOS can not compile AdaURL which uses the C++20 feature `std::ranges::replace`;
 
 set(CJSON_ROOT external/cjson)
 add_subdirectory(${CJSON_ROOT} cjson.output)
@@ -106,10 +107,6 @@ list(APPEND INC_DIRS ${OPENSSL_ROOT}/include)
 set(CURL_ROOT external/curl)
 add_subdirectory(${CURL_ROOT} curl.output)
 list(APPEND INC_DIRS ${CURL_ROOT}/include)
-
-set(ADAURL_ROOT external/AdaURL)
-add_subdirectory(${ADAURL_ROOT} AdaURL.output)
-list(APPEND INC_DIRS ${ADAURL_ROOT}/include)
 
 if(USE_LUA)
     set(LUA_ROOT external/lua)
@@ -139,6 +136,10 @@ if(NOT OHOS)
     set(UV_ROOT external/libuv)
     add_subdirectory(${UV_ROOT} libuv.output)
     list(APPEND INC_DIRS ${UV_ROOT}/include)
+
+    set(ADAURL_ROOT external/AdaURL)
+    add_subdirectory(${ADAURL_ROOT} AdaURL.output)
+    list(APPEND INC_DIRS ${ADAURL_ROOT}/include)
 endif()
 
 include_directories(${INC_DIRS})
@@ -155,7 +156,6 @@ list(APPEND LINK_LIBS
     OpenSSL::SSL 
     OpenSSL::Crypto
     CURL::libcurl
-    ada::ada
 )
 if(USE_LUA)
     list(APPEND LINK_LIBS lua)
@@ -172,7 +172,10 @@ if(EMSCRIPTEN)
     list(APPEND LINK_LIBS zlib)
 endif()
 if(NOT OHOS)
-    list(APPEND LINK_LIBS libuv)
+    list(APPEND LINK_LIBS 
+        libuv
+        ada::ada
+    )
 endif()
 message("\n")
 message(STATUS "LINK_LIBS:")
