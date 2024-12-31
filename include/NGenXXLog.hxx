@@ -5,7 +5,7 @@
 #include <sstream>
 #include <functional>
 
-#if !defined(__APPLE__) && !defined(__OHOS__)
+#if defined(USE_STD_FORMAT)
 #include <format>
 #endif
 
@@ -25,7 +25,7 @@ void ngenxxLogSetCallback(const std::function<void(const int level, const char *
 
 void ngenxxLogPrint(const NGenXXLogLevelX level, const std::string &content);
 
-#if defined(__APPLE__) || defined(__OHOS__)
+#if !defined(USE_STD_FORMAT)
 inline void _ngenxxLogFormatImpl(std::ostringstream &oss, const std::string &format)
 {
     oss << format;
@@ -58,7 +58,7 @@ inline std::string _ngenxxLogFormat(const std::string &format, Args... args)
 template <typename... Args>
 inline void ngenxxLogPrintF(const NGenXXLogLevelX level, const std::string &format, Args... args)
 {
-#if defined(__APPLE__) || defined(__OHOS__)
+#if !defined(USE_STD_FORMAT)
     auto fContent = _ngenxxLogFormat(format, args...);
 #else
     auto fContent = std::vformat(format, std::make_format_args(args...));

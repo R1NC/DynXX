@@ -1,3 +1,11 @@
+# WARNING:
+# 1). The buillt-in sqlite in iOS/macOS is available，no need to compile；
+# 2). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
+# 3). WASM has no built-in zlib;
+# 4). HarmonyOS has built-in libuv;
+# 5). Apple and HarmonyOS don't support some features about `std::format` in C++20 (`to_chars`);
+# 6). HarmonyOS can not compile AdaURL which uses the `std::ranges::replace` in C++20;
+
 cmake_minimum_required(VERSION 3.10)
 
 string(
@@ -15,13 +23,25 @@ endif()
 
 project(NGenXX)
 
-option(USE_LUA "Use Lua or not" ON)
-option(USE_QJS "Use QuickJS or not" ON)
+option(USE_LUA "Use Lua" ON)
+option(USE_QJS "Use QuickJS" ON)
 if(USE_LUA)
     add_definitions(-DUSE_LUA)
 endif()
 if(USE_QJS)
     add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
+endif()
+if(APPLE OR OHOS)
+    option(USE_STD_FORMAT "Use std::format" OFF)
+else()
+    option(USE_STD_FORMAT "Use std::format" ON)
+    add_definitions(-DUSE_STD_FORMAT)
+endif()
+if(OHOS)
+    option(USE_ADA_URL "Use Ada-URL" OFF)
+else()
+    option(USE_ADA_URL "Use Ada-URL" ON)
+    add_definitions(-DUSE_ADA_URL)
 endif()
 message("\n")
 message(STATUS "${PROJECT_NAME}")
@@ -29,6 +49,8 @@ message(STATUS "  SYS_NAME: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "  IS_ROOT: ${IS_ROOT}")
 message(STATUS "  USE_LUA: ${USE_LUA}")
 message(STATUS "  USE_QJS: ${USE_QJS}")
+message(STATUS "  USE_STD_FORMAT: ${USE_STD_FORMAT}")
+message(STATUS "  USE_ADA_URL: ${USE_ADA_URL}")
 message("\n")
 
 list(APPEND INC_DIRS include)
@@ -85,13 +107,6 @@ else()
     add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 endif()
 
-# WARNING:
-# 1). The buillt-in sqlite in iOS/macOS is available，no need to compile；
-# 2). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
-# 3). WASM has no built-in zlib;
-# 4). HarmonyOS has built-in libuv;
-# 5). HarmonyOS can not compile AdaURL which uses the C++20 feature `std::ranges::replace`;
-
 set(CJSON_ROOT external/cjson)
 add_subdirectory(${CJSON_ROOT} cjson.output)
 list(APPEND INC_DIRS ${CJSON_ROOT})
@@ -136,7 +151,9 @@ if(NOT OHOS)
     set(UV_ROOT external/libuv)
     add_subdirectory(${UV_ROOT} libuv.output)
     list(APPEND INC_DIRS ${UV_ROOT}/include)
+endif()
 
+if(USE_ADA_URL)
     set(ADAURL_ROOT external/AdaURL)
     add_subdirectory(${ADAURL_ROOT} AdaURL.output)
     list(APPEND INC_DIRS ${ADAURL_ROOT}/include)
@@ -172,10 +189,10 @@ if(EMSCRIPTEN)
     list(APPEND LINK_LIBS zlib)
 endif()
 if(NOT OHOS)
-    list(APPEND LINK_LIBS 
-        libuv
-        ada::ada
-    )
+    list(APPEND LINK_LIBS libuv)
+endif()
+if(USE_ADA_URL)
+    list(APPEND LINK_LIBS ada::ada)
 endif()
 message("\n")
 message(STATUS "LINK_LIBS:")

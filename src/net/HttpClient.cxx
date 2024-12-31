@@ -1,7 +1,7 @@
 #include "HttpClient.hxx"
 
 #include <curl/curl.h>
-#if !defined(__OHOS__)
+#if defined(USE_ADA_URL)
 #include <ada.h>
 #endif
 
@@ -80,7 +80,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
 {
     HttpResponse rsp;
 
-#if !defined(__OHOS__)
+#if defined(USE_ADA_URL)
     auto aUrl = ada::parse(url);
     if (!aUrl)
     {
@@ -173,7 +173,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         }
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
 
-#if !defined(__OHOS__)
+#if defined(USE_ADA_URL)
         if (aUrl->get_protocol() == "https")
 #else
         if (url.starts_with("https://"))
