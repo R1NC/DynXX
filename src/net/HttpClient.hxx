@@ -42,6 +42,8 @@ namespace NGenXX
                                                      const std::FILE *cFILE, const size_t fileSize,
                                                      const size_t timeout);
 
+            bool download(const std::string &url, const std::string &filePath, const size_t timeout);
+
             ~HttpClient();
         };
     }

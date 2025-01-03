@@ -210,3 +210,45 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
 
     return rsp;
 }
+
+bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string &filePath, const size_t timeout)
+{
+    bool res = false;
+
+    size_t _timeout = timeout;
+    if (_timeout <= 0)
+    {
+        _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
+    }
+
+    FILE *file = std::fopen(filePath.c_str(), "wb");
+    if (file)
+    {
+        CURL *curl = curl_easy_init();
+        if (curl)
+        {
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
+            curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, timeout);
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::fwrite);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+
+            CURLcode curlCode = curl_easy_perform(curl);
+            if (curlCode == CURLE_OK)
+            {
+                res = true;
+            }
+            else
+            {
+                ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.download error:{}", curl_easy_strerror(curlCode));
+            }
+
+            curl_easy_cleanup(curl);
+        }
+
+        std::fclose(file);
+    }
+
+    return res;
+}
