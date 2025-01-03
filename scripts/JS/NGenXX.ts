@@ -81,6 +81,12 @@ declare function NGenXXNetHttpRequest(
     timeout?: number
 ): Promise<NGenXXHttpResponse>
 
+declare function NGenXXNetHttpDownload(
+    url: string,
+    file: string,
+    timeout?: number
+): Promise<boolean>
+
 /// Store.SQLite
 
 declare function NGenXXStoreSQLiteOpen(_id: string): string

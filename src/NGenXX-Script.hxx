@@ -19,6 +19,7 @@ int ngenxx_device_cpu_archS(const char *json);
 void ngenxx_log_printS(const char *json);
 
 const std::string ngenxx_net_http_requestS(const char *json);
+bool ngenxx_net_http_downloadS(const char *json);
 
 const std::string ngenxx_store_sqlite_openS(const char *json);
 bool ngenxx_store_sqlite_executeS(const char *json);

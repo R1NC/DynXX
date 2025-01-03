@@ -121,6 +121,16 @@ function NGenXX.Net.Http.request(url, method, param_map, header_map, raw_body_by
     return ngenxx_net_http_requestL(inJson)
 end
 
+function NGenXX.Net.Http.download(url, file, timeout)
+    timeout = timeout or (15 * 1000)
+    local inJson = JSON.stringify({
+        ["url"] = url,
+        ["file"] = file,
+        ["timeout"] = timeout
+    })
+    return ngenxx_net_http_downloadL(inJson)
+end
+
 NGenXX.Coding = {}
 
 NGenXX.Coding.Case = {}

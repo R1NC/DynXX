@@ -216,6 +216,25 @@ const std::string ngenxx_net_http_requestS(const char *json)
     return t.toJson();
 }
 
+bool ngenxx_net_http_downloadS(const char *json)
+{
+    if (json == NULL)
+    {
+        return false;
+    }
+    NGenXX::Json::Decoder decoder(json);
+    auto url = parseStr(decoder, "url");
+    auto file = parseStr(decoder, "file");
+    const size_t timeout = parseNum(decoder, "timeout");
+
+    if (url.length() == 0 || file.length() == 0)
+    {
+        return false;
+    }
+
+    return ngenxxNetHttpDownload(url, file, timeout);
+}
+
 #pragma mark Store.SQLite
 
 const std::string ngenxx_store_sqlite_openS(const char *json)

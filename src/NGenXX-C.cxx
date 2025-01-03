@@ -289,6 +289,12 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
     return copyStr(t.toJson());
 }
 
+EXPORT_AUTO
+bool ngenxx_net_http_download(const char *url, const char *file_path, const size_t timeout)
+{
+    return ngenxxNetHttpDownload(url ?: "", file_path ?: "", timeout);
+}
+
 #pragma mark Store.SQLite
 
 EXPORT_AUTO

@@ -314,6 +314,15 @@ const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                 cFILE, fileSize, timeout);
 }
 
+bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath, const size_t timeout)
+{
+    if (_ngenxx_http_client == nullptr || url.length() == 0 || filePath.length() == 0)
+    {
+        return false;
+    }
+    return _ngenxx_http_client->download(url, filePath, timeout);
+}
+
 #pragma mark Store.SQLite
 
 void *const ngenxxStoreSqliteOpen(const std::string &_id)

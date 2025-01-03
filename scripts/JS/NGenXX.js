@@ -121,6 +121,21 @@ function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, rawBodyBytes, f
     });
 }
 
+function NGenXXNetHttpDownload(url, file, timeout) {
+    timeout = timeout || 15000;
+    let inJson = JSON.stringify({
+        "url": url,
+        "file": file,
+        "timeout": timeout
+    });
+
+    return new Promise((resolve, reject)=>{
+        ngenxx_net_http_downloadJ(inJson).then((res)=>{
+            resolve(res);
+        });
+    });
+}
+
 function NGenXXStoreSQLiteOpen(_id) {
     let inJson = JSON.stringify({
         "_id": _id

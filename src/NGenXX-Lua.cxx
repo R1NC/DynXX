@@ -25,6 +25,7 @@ DEF_LUA_FUNC_INTEGER(ngenxx_device_cpu_archL, ngenxx_device_cpu_archS)
 DEF_LUA_FUNC_VOID(ngenxx_log_printL, ngenxx_log_printS)
 
 DEF_LUA_FUNC_STRING(ngenxx_net_http_requestL, ngenxx_net_http_requestS)
+DEF_LUA_FUNC_BOOL(ngenxx_net_http_downloadL, ngenxx_net_http_downloadS)
 
 DEF_LUA_FUNC_STRING(ngenxx_store_sqlite_openL, ngenxx_store_sqlite_openS)
 DEF_LUA_FUNC_BOOL(ngenxx_store_sqlite_executeL, ngenxx_store_sqlite_executeS)
@@ -143,6 +144,7 @@ void _ngenxx_export_funcs_for_lua()
     BIND_LUA_FUNC(ngenxx_device_cpu_archL);
 
     BIND_LUA_FUNC(ngenxx_net_http_requestL);
+    BIND_LUA_FUNC(ngenxx_net_http_downloadL);
 
     BIND_LUA_FUNC(ngenxx_store_sqlite_openL);
     BIND_LUA_FUNC(ngenxx_store_sqlite_executeL);

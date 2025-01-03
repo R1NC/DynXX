@@ -41,6 +41,7 @@ DEF_JS_FUNC_INT32(ngenxx_device_cpu_archJ, ngenxx_device_cpu_archS)
 DEF_JS_FUNC_VOID(ngenxx_log_printJ, ngenxx_log_printS)
 
 DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_net_http_requestJ, ngenxx_net_http_requestS)
+DEF_JS_FUNC_BOOL_ASYNC(_ngenxx_js, ngenxx_net_http_downloadJ, ngenxx_net_http_downloadS)
 
 DEF_JS_FUNC_STRING(ngenxx_store_sqlite_openJ, ngenxx_store_sqlite_openS)
 DEF_JS_FUNC_BOOL_ASYNC(_ngenxx_js, ngenxx_store_sqlite_executeJ, ngenxx_store_sqlite_executeS)
@@ -187,6 +188,7 @@ void registerJsModule()
     BIND_JS_FUNC(ngenxx_device_cpu_archJ);
 
     BIND_JS_FUNC(ngenxx_net_http_requestJ);
+    BIND_JS_FUNC(ngenxx_net_http_downloadJ);
 
     BIND_JS_FUNC(ngenxx_store_sqlite_openJ);
     BIND_JS_FUNC(ngenxx_store_sqlite_executeJ);

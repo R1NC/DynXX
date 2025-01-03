@@ -53,6 +53,15 @@ extern "C"
                                         void *const cFILE, const size_t file_size,
                                         const size_t timeout);
 
+    /**
+     * @brief download file
+     * @param url file URL
+     * @param file_path file path
+     * @param timeout Timeout(milliseconds)
+     * @return download result
+     */
+    bool ngenxx_net_http_download(const char *url, const char *file_path, const size_t timeout);
+
 #ifdef __cplusplus
 }
 #endif
