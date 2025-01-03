@@ -1,6 +1,5 @@
 #include "HttpClient.hxx"
 
-#include <curl/curl.h>
 #if defined(USE_ADA_URL)
 #include <ada.h>
 #endif
@@ -102,6 +101,11 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request url: {} params: {}", url, params);
 
+        if (!this->handleSSL(curl, url))
+        {
+            return rsp;
+        }
+
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
         curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
@@ -173,16 +177,6 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         }
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
 
-#if defined(USE_ADA_URL)
-        if (aUrl->get_protocol() == "https")
-#else
-        if (url.starts_with("https://"))
-#endif
-        { //TODO: verify SSL cet
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-        }
-
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _NGenXX_Net_HttpClient_WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &(rsp.data));
 
@@ -227,6 +221,11 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
         CURL *curl = curl_easy_init();
         if (curl)
         {
+            if (!this->handleSSL(curl, url))
+            {
+                return res;
+            }
+
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
             curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
             curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, timeout);
@@ -251,4 +250,19 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     }
 
     return res;
+}
+
+bool NGenXX::Net::HttpClient::handleSSL(CURL *const curl, const std::string &url)
+{
+#if defined(USE_ADA_URL)
+    if (aUrl->get_protocol() == "https")
+#else
+    if (url.starts_with("https://"))
+#endif
+    { // TODO: verify SSL cet
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+    }
+
+    return true;
 }

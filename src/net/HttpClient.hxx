@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <unordered_map>
 
+#include <curl/curl.h>
+
 namespace NGenXX
 {
     namespace Net
@@ -45,6 +47,9 @@ namespace NGenXX
             [[nodiscard]] bool download(const std::string &url, const std::string &filePath, const size_t timeout);
 
             ~HttpClient();
+
+        private:
+            bool handleSSL(CURL *const curl, const std::string &url);
         };
     }
 }
