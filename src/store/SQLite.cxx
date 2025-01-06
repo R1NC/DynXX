@@ -82,7 +82,7 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
 
 NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connection::query(const std::string &sql)
 {
-    std::shared_lock lock(this->mutex);
+    std::unique_lock lock(this->mutex);
     if (this->db == NULL)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.query DB NULL");
