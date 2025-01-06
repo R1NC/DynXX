@@ -59,12 +59,13 @@ NGenXX::Store::SQLite::~SQLite()
 
 NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
 {
+    std::lock_guard lock(this->mutex);
     this->execute("PRAGMA journal_mode=WAL;");
 }
 
 bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
 {
-    std::unique_lock lock(this->mutex);
+    std::lock_guard lock(this->mutex);
     if (this->db == NULL)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.execute DB NULL");
@@ -82,7 +83,7 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
 
 NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connection::query(const std::string &sql)
 {
-    std::unique_lock lock(this->mutex);
+    std::lock_guard lock(this->mutex);
     if (this->db == NULL)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.query DB NULL");
