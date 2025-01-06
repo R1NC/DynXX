@@ -6,6 +6,7 @@
 
 NGenXX::Store::SQLite::SQLite()
 {
+    sqlite3_config(SQLITE_CONFIG_SERIALIZED);
     sqlite3_initialize();
 }
 
