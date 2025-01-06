@@ -27,7 +27,7 @@ namespace NGenXX
             {
             private:
                 struct sqlite3 *db;
-                mutable std::shared_mutex mutex;
+                mutable std::mutex mutex;
 
             public:
                 /**
