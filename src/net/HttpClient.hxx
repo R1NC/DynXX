@@ -35,6 +35,8 @@ namespace NGenXX
         {
         public:
             HttpClient();
+            HttpClient(const HttpClient&) = delete;
+            HttpClient& operator=(const HttpClient&) = delete;
 
             [[nodiscard]] const HttpResponse request(const std::string &url, const int method,
                                                      const std::vector<std::string> &headers,
@@ -49,6 +51,7 @@ namespace NGenXX
             ~HttpClient();
 
         private:
+            bool checkUrl(const std::string &url);
             bool handleSSL(CURL *const curl, const std::string &url);
         };
     }

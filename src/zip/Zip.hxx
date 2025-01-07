@@ -47,6 +47,8 @@ namespace NGenXX
         public:
             Zip() = delete;
             Zip(int mode, const size_t bufferSize, const int format);
+            Zip(const Zip&) = delete;
+            Zip& operator=(const Zip&) = delete;
             ~Zip();
         };
 
@@ -58,6 +60,8 @@ namespace NGenXX
         public:
             UnZip() = delete;
             UnZip(const size_t bufferSize, const int format);
+            UnZip(const UnZip&) = delete;
+            UnZip& operator=(const UnZip&) = delete;
             ~UnZip();
         };
 

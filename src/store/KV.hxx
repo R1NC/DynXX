@@ -19,6 +19,8 @@ namespace NGenXX
 
         public:
             KV(const std::string &root);
+            KV(const KV&) = delete;
+            KV& operator=(const KV&) = delete;
 
             class Connection
             {
@@ -28,6 +30,8 @@ namespace NGenXX
 
             public:
                 Connection(const std::string &_id);
+                Connection(const Connection&) = delete;
+                Connection& operator=(const Connection&) = delete;
 
                 const std::string readString(const std::string &k);
 

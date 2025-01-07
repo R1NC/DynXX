@@ -120,6 +120,8 @@ namespace NGenXX
          * Create JS VM
          */
         JsBridge();
+        JsBridge(const JsBridge&) = delete;
+        JsBridge& operator=(const JsBridge&) = delete;
 
         /**
          * @brief Export C func for JS

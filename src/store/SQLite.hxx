@@ -22,6 +22,8 @@ namespace NGenXX
              * @brief Initialize SQLite process
              */
             SQLite();
+            SQLite(const SQLite&) = delete;
+            SQLite& operator=(const SQLite&) = delete;
 
             class Connection
             {
@@ -34,6 +36,8 @@ namespace NGenXX
                  * @warning `Connection` can only be constructed with `SQLite::connect()`
                  */
                 Connection(sqlite3 *db);
+                Connection(const Connection&) = delete;
+                Connection& operator=(const Connection&) = delete;
 
                 class QueryResult
                 {
@@ -46,6 +50,8 @@ namespace NGenXX
                      * @warning `QueryResult` can only be constructed with `SQLite::Connection::query()`
                      */
                     QueryResult(sqlite3_stmt *stmt);
+                    QueryResult(const QueryResult&) = delete;
+                    QueryResult& operator=(const QueryResult&) = delete;
 
                     /**
                      * @brief Read a row from query result

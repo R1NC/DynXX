@@ -79,128 +79,126 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
 {
     HttpResponse rsp;
 
-#if defined(USE_ADA_URL)
-    auto aUrl = ada::parse(url);
-    if (!aUrl)
+    if (!this->checkUrl(url))
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.request INVALID URL: {}", url);
         return rsp;
     }
-#endif
+
+    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request url: {} params: {}", url, params);
+
+    CURL *curl = curl_easy_init();
+    if (!curl)
+    {
+        return rsp;
+    }
+
+    curl_mime *mime;
+    curl_mimepart *part;
+
+    if (!this->handleSSL(curl, url))
+    {
+        return rsp;
+    }
 
     size_t _timeout = timeout;
     if (_timeout <= 0)
     {
         _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
     }
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
+    curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
-    CURL *curl = curl_easy_init();
-    curl_mime *mime;
-    curl_mimepart *part;
-    if (curl)
+    bool urlAppend = false;
+    if (cFILE != NULL)
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request url: {} params: {}", url, params);
+        curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+        curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_UploadReadCallback);
+        curl_easy_setopt(curl, CURLOPT_READDATA, cFILE);
+        curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, fileSize);
+    }
+    else if (formFields.size() > 0)
+    {
+        mime = curl_mime_init(curl);
+        part = curl_mime_addpart(mime);
 
-        if (!this->handleSSL(curl, url))
+        for (auto &it : formFields)
         {
-            return rsp;
+            curl_mime_name(part, it.name.c_str());
+            curl_mime_type(part, it.mime.c_str());
+            curl_mime_data(part, it.data.c_str(), CURL_ZERO_TERMINATED);
         }
 
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
-        curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
-
-        bool urlAppend = false;
-        if (cFILE != NULL)
+        curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
+    }
+    else if (method == NGenXXNetHttpMethodGet)
+    {
+        urlAppend = true;
+    }
+    else if (method == NGenXXNetHttpMethodPost)
+    {
+        curl_easy_setopt(curl, CURLOPT_POST, 1L);
+        auto rawData = rawBody.data();
+        auto rawLen = rawBody.size();
+        if (rawBody.empty())
         {
-            curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-            curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_UploadReadCallback);
-            curl_easy_setopt(curl, CURLOPT_READDATA, cFILE);
-            curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, fileSize);
-        } 
-        else if (formFields.size() > 0)
-        {
-            mime = curl_mime_init(curl);
-            part = curl_mime_addpart(mime);
-
-            for (auto& it : formFields)
-            {
-                curl_mime_name(part, it.name.c_str());
-                curl_mime_type(part, it.mime.c_str());
-                curl_mime_data(part, it.data.c_str(), CURL_ZERO_TERMINATED);
-            }
-
-            curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, params.length());
         }
-        else if (method == NGenXXNetHttpMethodGet)
+        else
         {
             urlAppend = true;
+            curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_PostReadCallback);
+            curl_easy_setopt(curl, CURLOPT_READDATA, &rawBody);
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawLen);
         }
-        else if (method == NGenXXNetHttpMethodPost)
-        {   
-            curl_easy_setopt(curl, CURLOPT_POST, 1L);
-            auto rawData = rawBody.data();
-            auto rawLen = rawBody.size();
-            if (rawBody.empty()) 
-            {
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, params.length());
-            }
-            else
-            {
-                urlAppend = true;
-                curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_PostReadCallback);
-                curl_easy_setopt(curl, CURLOPT_READDATA, &rawBody);
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawLen);
-            }
-        }
-
-        std::string fixedUrl = url;
-        if (urlAppend)
-        {
-            if (url.find("?", 0) == std::string::npos)
-            {
-                fixedUrl += "?" + params;
-            }
-            else
-            {
-                fixedUrl += params;
-            }
-        }
-        curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
-
-        struct curl_slist *headerList = NULL;
-        for (auto &it : headers)
-        {
-            ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request header: {}", it);
-            headerList = curl_slist_append(headerList, it.c_str());
-        }
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
-
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _NGenXX_Net_HttpClient_WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &(rsp.data));
-
-        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, _NGenXX_Net_HttpClient_RspHeadersCallback);
-        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &(rsp.headers));
-
-        CURLcode curlCode = curl_easy_perform(curl);
-
-        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
-        
-        char *contentType;
-        curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
-        if (contentType)
-        {
-            rsp.contentType = contentType;
-        }
-
-        if (curlCode != CURLE_OK)
-        {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.request error:{}", curl_easy_strerror(curlCode));
-        }
-
-        curl_easy_cleanup(curl);
     }
+
+    std::string fixedUrl = url;
+    if (urlAppend)
+    {
+        if (url.find("?", 0) == std::string::npos)
+        {
+            fixedUrl += "?" + params;
+        }
+        else
+        {
+            fixedUrl += params;
+        }
+    }
+    curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
+
+    struct curl_slist *headerList = NULL;
+    for (auto &it : headers)
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request header: {}", it);
+        headerList = curl_slist_append(headerList, it.c_str());
+    }
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _NGenXX_Net_HttpClient_WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &(rsp.data));
+
+    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, _NGenXX_Net_HttpClient_RspHeadersCallback);
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &(rsp.headers));
+
+    CURLcode curlCode = curl_easy_perform(curl);
+
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
+
+    char *contentType;
+    curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
+    if (contentType)
+    {
+        rsp.contentType = contentType;
+    }
+
+    if (curlCode != CURLE_OK)
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.request error:{}", curl_easy_strerror(curlCode));
+    }
+
+    curl_easy_cleanup(curl);
 
     return rsp;
 }
@@ -209,6 +207,22 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
 {
     bool res = false;
 
+    if (!this->checkUrl(url))
+    {
+        return res;
+    }
+
+    CURL *curl = curl_easy_init();
+    if (!curl)
+    {
+        return res;
+    }
+
+    if (!this->handleSSL(curl, url))
+    {
+        return res;
+    }
+
     size_t _timeout = timeout;
     if (_timeout <= 0)
     {
@@ -216,45 +230,57 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     }
 
     FILE *file = std::fopen(filePath.c_str(), "wb");
-    if (file)
+    if (!file)
     {
-        CURL *curl = curl_easy_init();
-        if (curl)
-        {
-            if (!this->handleSSL(curl, url))
-            {
-                return res;
-            }
-
-            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
-            curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, timeout);
-            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::fwrite);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
-
-            CURLcode curlCode = curl_easy_perform(curl);
-            if (curlCode == CURLE_OK)
-            {
-                res = true;
-            }
-            else
-            {
-                ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.download error:{}", curl_easy_strerror(curlCode));
-            }
-
-            curl_easy_cleanup(curl);
-        }
-
-        std::fclose(file);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.download fopen error:{}", std::strerror(errno));
+        return res;
     }
 
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
+    curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, timeout);
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::fwrite);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+
+    CURLcode curlCode = curl_easy_perform(curl);
+    if (curlCode == CURLE_OK)
+    {
+        res = true;
+    }
+    else
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.download error:{}", curl_easy_strerror(curlCode));
+    }
+
+    curl_easy_cleanup(curl);
+
+    std::fclose(file);
+
     return res;
+}
+
+bool NGenXX::Net::HttpClient::checkUrl(const std::string &url)
+{
+    if (url.empty())
+    {
+        return false;
+    }
+#if defined(USE_ADA_URL)
+    auto aUrl = ada::parse(url);
+    if (!aUrl)
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.request INVALID URL: {}", url);
+        return false;
+    }
+#endif
+    return true;
 }
 
 bool NGenXX::Net::HttpClient::handleSSL(CURL *const curl, const std::string &url)
 {
 #if defined(USE_ADA_URL)
+    auto aUrl = ada::parse(url);
     if (aUrl->get_protocol() == "https")
 #else
     if (url.starts_with("https://"))
@@ -263,6 +289,5 @@ bool NGenXX::Net::HttpClient::handleSSL(CURL *const curl, const std::string &url
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
     }
-
     return true;
 }

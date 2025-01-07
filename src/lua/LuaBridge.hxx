@@ -70,6 +70,8 @@ namespace NGenXX
          * @brief Create Lua environment
          */
         LuaBridge();
+        LuaBridge(const LuaBridge&) = delete;
+        LuaBridge& operator=(const LuaBridge&) = delete;
 
         /**
          * @brief Load Lua file
