@@ -33,10 +33,13 @@ namespace NGenXX
         public:
             ZBase() = delete;
             ZBase(const size_t bufferSize, const int format);
+            ZBase(const ZBase&) = delete;
+            ZBase& operator=(const ZBase&) = delete;
+            virtual ~ZBase();
+
             const size_t input(const Bytes &bytes, bool inFinish);
             const Bytes processDo();
             const bool processFinished();
-            virtual ~ZBase();
         };
 
         class Zip : public ZBase
