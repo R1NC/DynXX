@@ -62,7 +62,7 @@ namespace NGenXX
     class LuaBridge
     {
     private:
-        lua_State *lstate;
+        lua_State *lstate{NULL};
         std::recursive_mutex mutex;
 
     public:

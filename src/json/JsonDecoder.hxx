@@ -15,7 +15,7 @@ namespace NGenXX
         class Decoder
         {
         private:
-            cJSON *cjson;
+            cJSON *cjson{NULL};
 
             cJSON *parseNode(void *const node);
 

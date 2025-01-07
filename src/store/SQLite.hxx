@@ -28,7 +28,7 @@ namespace NGenXX
             class Connection
             {
             private:
-                struct sqlite3 *db;
+                struct sqlite3 *db{NULL};
                 mutable std::mutex mutex;
 
             public:
@@ -42,7 +42,7 @@ namespace NGenXX
                 class QueryResult
                 {
                 private:
-                    sqlite3_stmt *stmt;
+                    sqlite3_stmt *stmt{NULL};
                     mutable std::shared_mutex mutex;
 
                 public:

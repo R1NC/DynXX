@@ -18,8 +18,8 @@ namespace NGenXX
         class ZBase
         {
         private:
-            byte *inBuffer;
-            byte *outBuffer;
+            byte *inBuffer{NULL};
+            byte *outBuffer{NULL};
             size_t bufferSize;
             int format;
             virtual void processImp() = 0;

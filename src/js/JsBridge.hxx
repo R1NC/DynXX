@@ -109,8 +109,8 @@ namespace NGenXX
     class JsBridge
     {
     private:
-        JSRuntime *runtime;
-        JSContext *context;
+        JSRuntime *runtime{NULL};
+        JSContext *context{NULL};
         std::vector<JSValue> jValues;
 
         JSValue newPromise(std::function<JSValue()> jf);

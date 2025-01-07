@@ -25,7 +25,7 @@ namespace NGenXX
             class Connection
             {
             private:
-                MMKV *kv;
+                MMKV *kv{nullptr};
                 mutable std::shared_mutex mutex;
 
             public:
