@@ -1,3 +1,4 @@
+#if defined(USE_QJS)
 #include "JsBridge.hxx"
 #include <NGenXXLog.hxx>
 #include "../util/TimeUtil.hxx"
@@ -477,3 +478,4 @@ NGenXX::JsBridge::~JsBridge()
 
     delete _ngenxx_js_mutex;
 }
+#endif

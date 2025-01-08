@@ -1,3 +1,4 @@
+#if defined(USE_LUA)
 #include "NGenXX-Lua.hxx"
 
 #include "lua/LuaBridge.hxx"
@@ -218,3 +219,4 @@ void _ngenxx_lua_release(void)
     }
     _ngenxx_lua.reset();
 }
+#endif

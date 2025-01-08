@@ -1,3 +1,4 @@
+#if defined(USE_LUA)
 #include "LuaBridge.hxx"
 
 #include <string.h>
@@ -193,3 +194,4 @@ const std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std
     lua_pop(this->lstate, 1);
     return s;
 }
+#endif

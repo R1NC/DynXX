@@ -19,6 +19,7 @@ if(IS_ROOT)
     set(CMAKE_CXX_COMPILER "clang++")
     set(CMAKE_C_STANDARD 99)
     set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED True)
 endif()
 
 project(NGenXX)
@@ -53,45 +54,9 @@ message(STATUS "  USE_STD_FORMAT: ${USE_STD_FORMAT}")
 message(STATUS "  USE_ADA_URL: ${USE_ADA_URL}")
 message("\n")
 
-list(APPEND INC_DIRS include)
-list(APPEND SRC_FILES
-    src/log/Log.cxx
-    src/device/DeviceInfo-android.cxx
-    src/device/DeviceInfo-harmony.cxx
-    src/device/DeviceInfo-ios.mm
-    src/device/DeviceInfo-mac.mm
-    src/device/DeviceInfo-wasm.cxx
-    src/device/DeviceInfo-windows.cxx
-    src/device/DeviceInfo-linux.cxx
-    src/net/HttpClient.cxx
-    src/store/SQLite.cxx
-    src/store/KV.cxx
-    src/json/JsonDecoder.cxx
-    src/zip/Zip.cxx
-    src/coding/Coding.cxx
-    src/crypto/Crypto-OpenSSL.cxx
-    src/NGenXX-X.cxx
-    src/NGenXX-Script.cxx
-    src/NGenXX-C.cxx
-)
-if(USE_LUA)
-    list(APPEND SRC_FILES
-        src/lua/LuaBridge.cxx
-        src/NGenXX-Lua.cxx
-    )
-endif()
-if(USE_QJS)
-    list(APPEND SRC_FILES
-        src/js/JsBridge.cxx
-        src/NGenXX-Js.cxx
-    )
-endif()
-message("\n")
-message(STATUS "SRC_FILES:")
-foreach(x IN LISTS SRC_FILES)
-    message(STATUS "  ${x}")
-endforeach()
-message("\n")
+## Source & Output
+
+file(GLOB_RECURSE SRC_FILES "src/*.cxx" "src/*.mm")
 
 if(EMSCRIPTEN)
     add_executable(${PROJECT_NAME} ${SRC_FILES})
@@ -106,6 +71,10 @@ if(EMSCRIPTEN)
 else()
     add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 endif()
+
+## Include Dirs
+
+list(APPEND INC_DIRS include)
 
 set(CJSON_ROOT external/cjson)
 add_subdirectory(${CJSON_ROOT} cjson.output)
@@ -160,12 +129,8 @@ if(USE_ADA_URL)
 endif()
 
 include_directories(${INC_DIRS})
-message("\n")
-message(STATUS "INC_DIRS:")
-foreach(x IN LISTS INC_DIRS)
-    message(STATUS "  ${x}")
-endforeach()
-message("\n")
+
+## Link Libs
 
 list(APPEND LINK_LIBS
     mmkv

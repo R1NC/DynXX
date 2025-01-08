@@ -1,3 +1,4 @@
+#if defined(USE_WOLF_SSL)
 #include "Crypto.hxx"
 #include <NGenXXLog.hxx>
 #include "../util/TypeUtil.hxx"
@@ -345,3 +346,4 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
 
     return wrapBytes(outBuffer, outLen);
 }
+#endif

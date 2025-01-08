@@ -1,3 +1,4 @@
+#if defined(USE_QJS)
 #include "NGenXX-Js.hxx"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
@@ -263,3 +264,4 @@ void _ngenxx_js_release(void)
     _ngenxx_js.reset();
     _NGenXX_J_msg_callback = nullptr;
 }
+#endif
