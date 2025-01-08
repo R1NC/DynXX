@@ -24,37 +24,33 @@ endif()
 
 project(NGenXX)
 
+## Definitions:
+
 option(USE_LUA "Use Lua" ON)
-option(USE_QJS "Use QuickJS" ON)
 if(USE_LUA)
     add_definitions(-DUSE_LUA)
 endif()
+
+option(USE_QJS "Use QuickJS" ON)
 if(USE_QJS)
     add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
 endif()
+
 if(APPLE OR OHOS)
     option(USE_STD_FORMAT "Use std::format" OFF)
 else()
     option(USE_STD_FORMAT "Use std::format" ON)
     add_definitions(-DUSE_STD_FORMAT)
 endif()
+
 if(OHOS)
     option(USE_ADA_URL "Use Ada-URL" OFF)
 else()
     option(USE_ADA_URL "Use Ada-URL" ON)
     add_definitions(-DUSE_ADA_URL)
 endif()
-message("\n")
-message(STATUS "${PROJECT_NAME}")
-message(STATUS "  SYS_NAME: ${CMAKE_SYSTEM_NAME}")
-message(STATUS "  IS_ROOT: ${IS_ROOT}")
-message(STATUS "  USE_LUA: ${USE_LUA}")
-message(STATUS "  USE_QJS: ${USE_QJS}")
-message(STATUS "  USE_STD_FORMAT: ${USE_STD_FORMAT}")
-message(STATUS "  USE_ADA_URL: ${USE_ADA_URL}")
-message("\n")
 
-## Source & Output
+## Source & Output:
 
 file(GLOB_RECURSE SRC_FILES "src/*.cxx" "src/*.mm")
 
@@ -72,7 +68,7 @@ else()
     add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 endif()
 
-## Include Dirs
+## Include Directories:
 
 list(APPEND INC_DIRS include)
 
@@ -130,7 +126,7 @@ endif()
 
 include_directories(${INC_DIRS})
 
-## Link Libs
+## Link Libraries:
 
 list(APPEND LINK_LIBS
     mmkv
@@ -139,31 +135,47 @@ list(APPEND LINK_LIBS
     OpenSSL::Crypto
     CURL::libcurl
 )
+
 if(USE_LUA)
     list(APPEND LINK_LIBS lua)
 endif()
+
 if(USE_QJS)
     list(APPEND LINK_LIBS quickjs)
 endif()
+
 if(APPLE)
     list(APPEND LINK_LIBS sqlite3)
 else()
     list(APPEND LINK_LIBS sqlite3-static)
 endif()
+
 if(EMSCRIPTEN)
     list(APPEND LINK_LIBS zlib)
 endif()
+
 if(NOT OHOS)
     list(APPEND LINK_LIBS libuv)
 endif()
+
 if(USE_ADA_URL)
     list(APPEND LINK_LIBS ada::ada)
 endif()
-message("\n")
-message(STATUS "LINK_LIBS:")
-foreach(x IN LISTS LINK_LIBS)
-    message(STATUS "  ${x}")
-endforeach()
-message("\n")
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
+
+## Print Messages:
+
+message("\n")
+message(STATUS "${PROJECT_NAME}")
+message(STATUS "  SYS_NAME: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "  IS_ROOT: ${IS_ROOT}")
+message(STATUS "  USE_LUA: ${USE_LUA}")
+message(STATUS "  USE_QJS: ${USE_QJS}")
+message(STATUS "  USE_STD_FORMAT: ${USE_STD_FORMAT}")
+message(STATUS "  USE_ADA_URL: ${USE_ADA_URL}")
+message(STATUS "  LINK_LIBS:")
+foreach(x IN LISTS LINK_LIBS)
+    message(STATUS "    ${x}")
+endforeach()
+message("\n")
