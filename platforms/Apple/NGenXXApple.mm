@@ -129,9 +129,14 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     size_t aesEncodedLen;
     const byte *aesEncodedBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &aesEncodedLen);
     if (aesEncodedBytes && aesEncodedLen > 0) {
+        auto aes_encoded_hex = ngenxx_coding_hex_bytes2str(aesEncodedBytes, aesEncodedLen);
+        NSLog(@"AES Encoded:%s", aes_encoded_hex);
         size_t aesDecodedLen;
         const byte *aesDecodedBytes = ngenxx_crypto_aes_decrypt(aesEncodedBytes, aesEncodedLen, keyBytes, keyLen, &aesDecodedLen);
-        if (aesDecodedBytes && aesDecodedLen > 0);
+        if (aesDecodedBytes && aesDecodedLen > 0) {
+            auto aes_decoded = ngenxx_coding_bytes2str(aesDecodedBytes, aesDecodedLen);
+            NSLog(@"AES Decoded:%s", aes_decoded);
+        }
     }
     
     size_t ivLen = 12;
@@ -142,9 +147,14 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     size_t aesgcmEncodedLen;
     const byte *aesgcmEncodedBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmEncodedLen);
     if (aesgcmEncodedBytes && aesgcmEncodedLen > 0) {
+        auto aes_gcm_encoded_hex = ngenxx_coding_hex_bytes2str(aesgcmEncodedBytes, aesgcmEncodedLen);
+        NSLog(@"AES GCM Encoded:%s", aes_gcm_encoded_hex);
         size_t aesgcmDecodedLen;
         const byte *aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmDecodedLen);
-        if (aesgcmDecodedBytes && aesgcmDecodedLen > 0);
+        if (aesgcmDecodedBytes && aesgcmDecodedLen > 0) {
+            auto aes_decoded = ngenxx_coding_bytes2str(aesgcmDecodedBytes, aesgcmDecodedLen);
+            NSLog(@"AES GCM Decoded:%s", aes_decoded);
+        }
     }
 }
 
