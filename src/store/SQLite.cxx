@@ -60,7 +60,6 @@ NGenXX::Store::SQLite::~SQLite()
 
 NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
 {
-    std::lock_guard lock(this->mutex);
     this->execute("PRAGMA journal_mode=WAL;");
 }
 
