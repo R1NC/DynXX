@@ -281,7 +281,7 @@ bool NGenXX::Net::HttpClient::handleSSL(CURL *const curl, const std::string &url
 {
 #if defined(USE_ADA_URL)
     auto aUrl = ada::parse(url);
-    if (aUrl->get_protocol() == "https")
+    if (aUrl->get_protocol() == "https:")
 #else
     if (url.starts_with("https://"))
 #endif
