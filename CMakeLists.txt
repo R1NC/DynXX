@@ -124,7 +124,7 @@ if(USE_ADA_URL)
     list(APPEND INC_DIRS ${ADAURL_ROOT}/include)
 endif()
 
-include_directories(${INC_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${INC_DIRS})
 
 ## Link Libraries:
 
