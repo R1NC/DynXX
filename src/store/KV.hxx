@@ -16,29 +16,26 @@ namespace NGenXX
     {
         class KV
         {
-
         public:
-            KV(const std::string &root);
-            KV(const KV&) = delete;
-            KV& operator=(const KV&) = delete;
+            KV() = delete;
+            explicit KV(const std::string &root);
+            KV(const KV &) = delete;
+            KV &operator=(const KV &) = delete;
 
             class Connection
             {
-            private:
-                MMKV *kv{nullptr};
-                mutable std::shared_mutex mutex;
-
             public:
-                Connection(const std::string &_id);
-                Connection(const Connection&) = delete;
-                Connection& operator=(const Connection&) = delete;
+                Connection() = delete;
+                explicit Connection(const std::string &_id);
+                Connection(const Connection &) = delete;
+                Connection &operator=(const Connection &) = delete;
 
                 const std::string readString(const std::string &k);
 
-                const int64_t readInteger(const std::string &k);
+                int64_t readInteger(const std::string &k);
 
-                const double readFloat(const std::string &k);
-                
+                double readFloat(const std::string &k);
+
                 [[nodiscard]] bool write(const std::string &k, const Any &v);
 
                 const std::vector<std::string> allKeys();
@@ -50,6 +47,10 @@ namespace NGenXX
                 void clear();
 
                 ~Connection();
+
+            private:
+                MMKV *kv{nullptr};
+                mutable std::shared_mutex mutex;
             };
 
             Connection *open(const std::string &_id);
@@ -61,7 +62,7 @@ namespace NGenXX
             ~KV();
 
         private:
-            std::unordered_map<std::string, Connection*> conns;
+            std::unordered_map<std::string, Connection *> conns;
             std::mutex mutex;
         };
     }

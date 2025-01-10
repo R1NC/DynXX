@@ -62,17 +62,17 @@ const std::string NGenXX::Store::KV::Connection::readString(const std::string &k
 {
     std::shared_lock lock(this->mutex);
     std::string s;
-    this->kv->getString(k, s, "");
+    this->kv->getString(k, s);
     return s;
 }
 
-const int64_t NGenXX::Store::KV::Connection::readInteger(const std::string &k)
+int64_t NGenXX::Store::KV::Connection::readInteger(const std::string &k)
 {
     std::shared_lock lock(this->mutex);
     return this->kv->getInt64(k);
 }
 
-const double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
+double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
 {
     std::shared_lock lock(this->mutex);
     return this->kv->getDouble(k);

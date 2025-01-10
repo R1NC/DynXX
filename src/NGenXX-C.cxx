@@ -298,7 +298,7 @@ bool ngenxx_net_http_download(const char *url, const char *file_path, const size
 #pragma mark Store.SQLite
 
 EXPORT_AUTO
-void *const ngenxx_store_sqlite_open(const char *_id)
+void *ngenxx_store_sqlite_open(const char *_id)
 {
     return ngenxxStoreSqliteOpen(_id ?: "");
 }
@@ -310,7 +310,7 @@ bool ngenxx_store_sqlite_execute(void *const conn, const char *sql)
 }
 
 EXPORT_AUTO
-void *const ngenxx_store_sqlite_query_do(void *const conn, const char *sql)
+void *ngenxx_store_sqlite_query_do(void *const conn, const char *sql)
 {
     return ngenxxStoreSqliteQueryDo(conn, sql ?: "");
 }
@@ -354,7 +354,7 @@ void ngenxx_store_sqlite_close(void *const conn)
 #pragma mark Store.KV
 
 EXPORT_AUTO
-void *const ngenxx_store_kv_open(const char *_id)
+void *ngenxx_store_kv_open(const char *_id)
 {
     return ngenxxStoreKvOpen(_id ?: "");
 }
@@ -433,7 +433,7 @@ void ngenxx_store_kv_close(void *const conn)
 #pragma mark Json.Decoder
 
 EXPORT_AUTO
-void *const ngenxx_json_decoder_init(const char *json)
+void *ngenxx_json_decoder_init(const char *json)
 {
     return json ? ngenxxJsonDecoderInit(json ?: "") : NULL;
 }
@@ -451,7 +451,7 @@ bool ngenxx_json_decoder_is_object(void *const decoder, void *const node)
 }
 
 EXPORT_AUTO
-void *const ngenxx_json_decoder_read_node(void *const decoder, void *const node, const char *k)
+void *ngenxx_json_decoder_read_node(void *const decoder, void *const node, const char *k)
 {
     return ngenxxJsonDecoderReadNode(decoder, k ?: "", node);
 }
@@ -469,13 +469,13 @@ double ngenxx_json_decoder_read_number(void *const decoder, void *const node)
 }
 
 EXPORT_AUTO
-void *const ngenxx_json_decoder_read_child(void *const decoder, void *const node)
+void *ngenxx_json_decoder_read_child(void *const decoder, void *const node)
 {
     return ngenxxJsonDecoderReadChild(decoder, node);
 }
 
 EXPORT_AUTO
-void *const ngenxx_json_decoder_read_next(void *const decoder, void *const node)
+void *ngenxx_json_decoder_read_next(void *const decoder, void *const node)
 {
     return ngenxxJsonDecoderReadNext(decoder, node);
 }
@@ -489,7 +489,7 @@ void ngenxx_json_decoder_release(void *const decoder)
 #pragma mark Zip
 
 EXPORT_AUTO
-void *const ngenxx_z_zip_init(const int mode, const size_t bufferSize, const int format)
+void *ngenxx_z_zip_init(const int mode, const size_t bufferSize, const int format)
 {
     return ngenxxZZipInit(static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
 }
@@ -524,7 +524,7 @@ void ngenxx_z_zip_release(void *const zip)
 }
 
 EXPORT_AUTO
-void *const ngenxx_z_unzip_init(const size_t bufferSize, const int format)
+void *ngenxx_z_unzip_init(const size_t bufferSize, const int format)
 {
     return ngenxxZUnzipInit(bufferSize, static_cast<NGenXXZFormatX>(format));
 }

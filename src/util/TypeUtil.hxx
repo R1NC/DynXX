@@ -4,7 +4,7 @@
 #include <cstring>
 #include <NGenXXTypes.hxx>
 
-static inline const char *copyStr(std::string s)
+static inline const char *copyStr(const std::string &s)
 {
     const char *c = s.c_str();
     char *nc = reinterpret_cast<char *>(malloc(strlen(c) + 1));
@@ -12,10 +12,10 @@ static inline const char *copyStr(std::string s)
     return nc;
 }
 
-static inline const char **copyStrVector(std::vector<std::string> sv, const size_t strMaxLen)
+static inline const char **copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen)
 {
     char **sArr = reinterpret_cast<char **>(malloc(sizeof(char *) * sv.size() + 1));
-    for (int i = 0; i < sv.size(); i++)
+    for (size_t i = 0; i < sv.size(); i++)
     {
         sArr[i] = reinterpret_cast<char *>(malloc(sizeof(char) * strMaxLen + 1));
         strcpy(sArr[i], sv[i].c_str());
@@ -27,7 +27,7 @@ static inline const byte *copyBytes(const Bytes &t)
 {
     auto cs = t.data();
     auto len = t.size();
-    if (cs == NULL || len <= 0)
+    if (cs == NULL || len == 0)
     {
         return NULL;
     }

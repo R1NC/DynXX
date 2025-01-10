@@ -17,7 +17,7 @@ constexpr int WolfSSL_OK = 0;
 
 bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
 {
-    if (len <= 0 || bytes == NULL)
+    if (len == 0 || bytes == NULL)
     {
         return false;
     }
@@ -280,14 +280,14 @@ const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
         return BytesEmpty;
     }
 
-    wc_Sha256Update(&sha256, (byte *)in, inLen);
+    ret = wc_Sha256Update(&sha256, (byte *)in, inLen);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Sha256Update error:{}", ret);
         return BytesEmpty;
     }
 
-    wc_Sha256Final(&sha256, out);
+    ret = wc_Sha256Final(&sha256, out);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Sha256Final error:{}", ret);

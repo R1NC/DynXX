@@ -61,17 +61,13 @@ namespace NGenXX
 {
     class LuaBridge
     {
-    private:
-        lua_State *lstate{NULL};
-        std::recursive_mutex mutex;
-
     public:
         /**
          * @brief Create Lua environment
          */
         LuaBridge();
-        LuaBridge(const LuaBridge&) = delete;
-        LuaBridge& operator=(const LuaBridge&) = delete;
+        LuaBridge(const LuaBridge &) = delete;
+        LuaBridge &operator=(const LuaBridge &) = delete;
 
         /**
          * @brief Load Lua file
@@ -107,6 +103,10 @@ namespace NGenXX
          * @brief Release Lua environment
          */
         ~LuaBridge();
+
+    private:
+        lua_State *lstate{NULL};
+        std::recursive_mutex mutex;
     };
 }
 

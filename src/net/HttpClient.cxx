@@ -24,14 +24,9 @@ size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t
 
 size_t _NGenXX_Net_HttpClient_UploadReadCallback(char *ptr, size_t size, size_t nmemb, void *stream)
 {
-    size_t nread;
-    size_t retcode = std::fread(ptr, size, nmemb, reinterpret_cast<std::FILE *>(stream));
-    if (retcode > 0)
-    {
-        nread = retcode;
-        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient read {} bytes from file", nread);
-    }
-    return retcode;
+    size_t ret = std::fread(ptr, size, nmemb, reinterpret_cast<std::FILE *>(stream));
+    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient read {} bytes from file", ret);
+    return ret;
 }
 
 size_t _NGenXX_Net_HttpClient_WriteCallback(char *contents, size_t size, size_t nmemb, void *userp)
@@ -92,16 +87,13 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         return rsp;
     }
 
-    curl_mime *mime;
-    curl_mimepart *part;
-
     if (!this->handleSSL(curl, url))
     {
         return rsp;
     }
 
     size_t _timeout = timeout;
-    if (_timeout <= 0)
+    if (_timeout == 0)
     {
         _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
     }
@@ -118,8 +110,8 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
     }
     else if (formFields.size() > 0)
     {
-        mime = curl_mime_init(curl);
-        part = curl_mime_addpart(mime);
+        curl_mime *mime = curl_mime_init(curl);
+        curl_mimepart *part = curl_mime_addpart(mime);
 
         for (auto &it : formFields)
         {
@@ -137,8 +129,6 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
     else if (method == NGenXXNetHttpMethodPost)
     {
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
-        auto rawData = rawBody.data();
-        auto rawLen = rawBody.size();
         if (rawBody.empty())
         {
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
@@ -150,7 +140,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
             curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_PostReadCallback);
             curl_easy_setopt(curl, CURLOPT_READDATA, &rawBody);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawLen);
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawBody.size());
         }
     }
 
@@ -169,7 +159,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
     curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
 
     struct curl_slist *headerList = NULL;
-    for (auto &it : headers)
+    for (const auto &it : headers)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request header: {}", it);
         headerList = curl_slist_append(headerList, it.c_str());
@@ -224,7 +214,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     }
 
     size_t _timeout = timeout;
-    if (_timeout <= 0)
+    if (_timeout == 0)
     {
         _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
     }
@@ -232,7 +222,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     FILE *file = std::fopen(filePath.c_str(), "wb");
     if (!file)
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.download fopen error:{}", std::strerror(errno));
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "HttpClient.download fopen error");
         return res;
     }
 

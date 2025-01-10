@@ -307,7 +307,7 @@ const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
         auto [k, v] = pair;
         std::stringstream ss;
         ss << k << ":" << v;
-        headerV.push_back(std::move(ss.str()));
+        headerV.push_back(ss.str());
     }
     return ngenxxNetHttpRequest(url, method, ssParams.str(), rawBody, headerV,
                                 formFieldNameV, formFieldMimeV, formFieldDataV,
@@ -325,7 +325,7 @@ bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath, 
 
 #pragma mark Store.SQLite
 
-void *const ngenxxStoreSqliteOpen(const std::string &_id)
+void *ngenxxStoreSqliteOpen(const std::string &_id)
 {
     if (_ngenxx_sqlite == nullptr || _ngenxx_root == nullptr || _id.length() == 0)
     {
@@ -345,7 +345,7 @@ bool ngenxxStoreSqliteExecute(void *const conn, const std::string &sql)
     return xconn->execute(sql);
 }
 
-void *const ngenxxStoreSqliteQueryDo(void *const conn, const std::string &sql)
+void *ngenxxStoreSqliteQueryDo(void *const conn, const std::string &sql)
 {
     if (conn == NULL || sql.length() == 0)
     {
@@ -419,7 +419,7 @@ void ngenxxStoreSqliteClose(void *const conn)
 
 #pragma mark Store.KV
 
-void *const ngenxxStoreKvOpen(const std::string &_id)
+void *ngenxxStoreKvOpen(const std::string &_id)
 {
     if (_ngenxx_kv == nullptr || _id.length() == 0)
     {
@@ -540,7 +540,7 @@ void ngenxxStoreKvClose(void *const conn)
 
 #pragma mark Json.Decoder
 
-void *const ngenxxJsonDecoderInit(const std::string &json)
+void *ngenxxJsonDecoderInit(const std::string &json)
 {
     return new NGenXX::Json::Decoder(json);
 }
@@ -565,7 +565,7 @@ bool ngenxxJsonDecoderIsObject(void *const decoder, void *const node)
     return xdecoder->isObject(node);
 }
 
-void *const ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node)
+void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node)
 {
     if (decoder == NULL || k.length() == 0)
     {
@@ -596,7 +596,7 @@ double ngenxxJsonDecoderReadNumber(void *const decoder, void *const node)
     return xdecoder->readNumber(node);
 }
 
-void *const ngenxxJsonDecoderReadChild(void *const decoder, void *const node)
+void *ngenxxJsonDecoderReadChild(void *const decoder, void *const node)
 {
     if (decoder == NULL)
     {
@@ -606,7 +606,7 @@ void *const ngenxxJsonDecoderReadChild(void *const decoder, void *const node)
     return xdecoder->readChild(node);
 }
 
-void *const ngenxxJsonDecoderReadNext(void *const decoder, void *const node)
+void *ngenxxJsonDecoderReadNext(void *const decoder, void *const node)
 {
     if (decoder == NULL)
     {
@@ -628,7 +628,7 @@ void ngenxxJsonDecoderRelease(void *const decoder)
 
 #pragma mark Zip
 
-void *const ngenxxZZipInit(const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format)
+void *ngenxxZZipInit(const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format)
 {
     void *zip = NULL;
     try
@@ -642,7 +642,7 @@ void *const ngenxxZZipInit(const NGenXXZipCompressModeX mode, const size_t buffe
     return zip;
 }
 
-const size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, const bool inFinish)
+size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, const bool inFinish)
 {
     if (zip == NULL)
     {
@@ -662,7 +662,7 @@ const Bytes ngenxxZZipProcessDo(void *const zip)
     return xzip->processDo();
 }
 
-const bool ngenxxZZipProcessFinished(void *const zip)
+bool ngenxxZZipProcessFinished(void *const zip)
 {
     if (zip == NULL)
     {
@@ -682,7 +682,7 @@ void ngenxxZZipRelease(void *const zip)
     delete xzip;
 }
 
-void *const ngenxxZUnzipInit(const size_t bufferSize, const NGenXXZFormatX format)
+void *ngenxxZUnzipInit(const size_t bufferSize, const NGenXXZFormatX format)
 {
     void *unzip = NULL;
     try
@@ -696,7 +696,7 @@ void *const ngenxxZUnzipInit(const size_t bufferSize, const NGenXXZFormatX forma
     return unzip;
 }
 
-const size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, const bool inFinish)
+size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, const bool inFinish)
 {
     if (unzip == NULL)
     {
@@ -716,7 +716,7 @@ const Bytes ngenxxZUnzipProcessDo(void *const unzip)
     return xunzip->processDo();
 }
 
-const bool ngenxxZUnzipProcessFinished(void *const unzip)
+bool ngenxxZUnzipProcessFinished(void *const unzip)
 {
     if (unzip == NULL)
     {

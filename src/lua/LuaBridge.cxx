@@ -52,10 +52,10 @@ uv_timer_t* ngenxx_lua_uv_timer_start(ngenxx_lua_timer_data *timer_data)
     auto timer = reinterpret_cast<uv_timer_t *>(malloc(sizeof(uv_timer_t)));
     timer->data = timer_data;
     
-    std::thread([timer = timer]() {
-        uv_timer_init(uv_default_loop(), timer);
-        auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(timer->data);
-        uv_timer_start(timer, ngenxx_lua_uv_timer_cb, timer_data->timeout, timer_data->repeat ? timer_data->timeout : 0);
+    std::thread([&tmr = timer]() {
+        uv_timer_init(uv_default_loop(), tmr);
+        auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(tmr->data);
+        uv_timer_start(tmr, ngenxx_lua_uv_timer_cb, timer_data->timeout, timer_data->repeat ? timer_data->timeout : 0);
         ngenxx_lua_uv_loop_prepare();
     }).detach();
     
@@ -189,7 +189,7 @@ const std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std
         return s;
     }
     const char *res = lua_tostring(this->lstate, -1);
-    s = std::move(std::string(res ?: ""));
+    s = std::string(res ?: "");
 
     lua_pop(this->lstate, 1);
     return s;

@@ -19,26 +19,26 @@ enum class NGenXXZFormatX : int
     Raw = 2,
 };
 
-void *const ngenxxZZipInit(const NGenXXZipCompressModeX mode = NGenXXZipCompressModeX::Default,
+void *ngenxxZZipInit(const NGenXXZipCompressModeX mode = NGenXXZipCompressModeX::Default,
                            const size_t bufferSize = NGenXXZDefaultBufferSize,
                            const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
 
-const size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, const bool inFinish);
+size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, const bool inFinish);
 
 const Bytes ngenxxZZipProcessDo(void *const zip);
 
-const bool ngenxxZZipProcessFinished(void *const zip);
+bool ngenxxZZipProcessFinished(void *const zip);
 
 void ngenxxZZipRelease(void *const zip);
 
-void *const ngenxxZUnzipInit(const size_t bufferSize = NGenXXZDefaultBufferSize,
+void *ngenxxZUnzipInit(const size_t bufferSize = NGenXXZDefaultBufferSize,
                              const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
 
-const size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, const bool inFinish);
+size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, const bool inFinish);
 
 const Bytes ngenxxZUnzipProcessDo(void *const unzip);
 
-const bool ngenxxZUnzipProcessFinished(void *const unzip);
+bool ngenxxZUnzipProcessFinished(void *const unzip);
 
 void ngenxxZUnzipRelease(void *const unzip);
 

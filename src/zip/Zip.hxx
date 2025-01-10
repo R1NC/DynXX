@@ -17,55 +17,55 @@ namespace NGenXX
     {
         class ZBase
         {
+        public:
+            ZBase() = delete;
+            explicit ZBase(const size_t bufferSize, const int format);
+            ZBase(const ZBase &) = delete;
+            ZBase &operator=(const ZBase &) = delete;
+            virtual ~ZBase();
+
+            size_t input(const Bytes &bytes, bool inFinish);
+            const Bytes processDo();
+            bool processFinished();
+
+        protected:
+            z_stream zs;
+            int ret{Z_OK};
+            bool inFinish{false};
+            int windowBits();
+
         private:
             byte *inBuffer{NULL};
             byte *outBuffer{NULL};
             size_t bufferSize;
             int format;
             virtual void processImp() = 0;
-
-        protected:
-            z_stream zs;
-            int ret;
-            bool inFinish;
-            int windowBits();
-
-        public:
-            ZBase() = delete;
-            ZBase(const size_t bufferSize, const int format);
-            ZBase(const ZBase&) = delete;
-            ZBase& operator=(const ZBase&) = delete;
-            virtual ~ZBase();
-
-            const size_t input(const Bytes &bytes, bool inFinish);
-            const Bytes processDo();
-            const bool processFinished();
         };
 
         class Zip : public ZBase
         {
-        private:
-            void processImp();
-
         public:
             Zip() = delete;
-            Zip(int mode, const size_t bufferSize, const int format);
-            Zip(const Zip&) = delete;
-            Zip& operator=(const Zip&) = delete;
-            ~Zip();
+            explicit Zip(int mode, const size_t bufferSize, const int format);
+            Zip(const Zip &) = delete;
+            Zip &operator=(const Zip &) = delete;
+            ~Zip() override;
+
+        private:
+            void processImp() override;
         };
 
         class UnZip : public ZBase
         {
-        private:
-            void processImp();
-
         public:
             UnZip() = delete;
-            UnZip(const size_t bufferSize, const int format);
-            UnZip(const UnZip&) = delete;
-            UnZip& operator=(const UnZip&) = delete;
-            ~UnZip();
+            explicit UnZip(const size_t bufferSize, const int format);
+            UnZip(const UnZip &) = delete;
+            UnZip &operator=(const UnZip &) = delete;
+            ~UnZip() override;
+
+        private:
+            void processImp() override;
         };
 
         bool zip(int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream);

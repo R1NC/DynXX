@@ -15,7 +15,7 @@ extern "C"
      * @param _id kv id
      * @return A KV connection handle
      */
-    void *const ngenxx_store_kv_open(const char *_id);
+    void *ngenxx_store_kv_open(const char *_id);
 
     /**
      * @brief Read string from KV Store

@@ -35,7 +35,7 @@ extern "C"
      * @param format header type, see `NGenXXZFormat`
      * @return a ZIP handle
      */
-    void *const ngenxx_z_zip_init(const int mode, const size_t bufferSize, const int format);
+    void *ngenxx_z_zip_init(const int mode, const size_t bufferSize, const int format);
 
     /**
      * @brief input data to ZIP process
@@ -45,7 +45,7 @@ extern "C"
      * @param inFinish Whether input is finished or not
      * @return The received data length, return `0` if error occurred
      */
-    const size_t ngenxx_z_zip_input(void *const zip, const byte *inBytes, const size_t inLen, const bool inFinish);
+    size_t ngenxx_z_zip_input(void *const zip, const byte *inBytes, const size_t inLen, const bool inFinish);
 
     /**
      * @brief process the ZIP input data
@@ -60,7 +60,7 @@ extern "C"
      * @param zip The ZIP handle
      * @return whether finished or not
      */
-    const bool ngenxx_z_zip_process_finished(void *const zip);
+    bool ngenxx_z_zip_process_finished(void *const zip);
 
     /**
      * @brief release a ZIP process
@@ -74,7 +74,7 @@ extern "C"
      * @param format header type, see `NGenXXZFormat`
      * @return a UNZIP handle
      */
-    void *const ngenxx_z_unzip_init(const size_t bufferSize, const int header);
+    void *ngenxx_z_unzip_init(const size_t bufferSize, const int header);
 
     /**
      * @brief input data to UNZIP process
@@ -84,7 +84,7 @@ extern "C"
      * @param inFinish Whether input is finished or not
      * @return The received data length, return `0` if error occurred
      */
-    const size_t ngenxx_z_unzip_input(void *const unzip, const byte *inBytes, const size_t inLen, const bool inFinish);
+    size_t ngenxx_z_unzip_input(void *const unzip, const byte *inBytes, const size_t inLen, const bool inFinish);
 
     /**
      * @brief process the UNZIP input data
@@ -99,7 +99,7 @@ extern "C"
      * @param unzip The UNZIP handle
      * @return whether finished or not
      */
-    const bool ngenxx_z_unzip_process_finished(void *const unzip);
+    bool ngenxx_z_unzip_process_finished(void *const unzip);
 
     /**
      * @brief release a unzip process

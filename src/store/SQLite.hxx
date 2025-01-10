@@ -22,36 +22,30 @@ namespace NGenXX
              * @brief Initialize SQLite process
              */
             SQLite();
-            SQLite(const SQLite&) = delete;
-            SQLite& operator=(const SQLite&) = delete;
+            SQLite(const SQLite &) = delete;
+            SQLite &operator=(const SQLite &) = delete;
 
             class Connection
             {
-            private:
-                struct sqlite3 *db{NULL};
-                mutable std::mutex mutex;
-
             public:
                 /**
                  * @warning `Connection` can only be constructed with `SQLite::connect()`
                  */
-                Connection(sqlite3 *db);
-                Connection(const Connection&) = delete;
-                Connection& operator=(const Connection&) = delete;
+                Connection() = delete;
+                explicit Connection(sqlite3 *db);
+                Connection(const Connection &) = delete;
+                Connection &operator=(const Connection &) = delete;
 
                 class QueryResult
                 {
-                private:
-                    sqlite3_stmt *stmt{NULL};
-                    mutable std::shared_mutex mutex;
-
                 public:
                     /**
                      * @warning `QueryResult` can only be constructed with `SQLite::Connection::query()`
                      */
-                    QueryResult(sqlite3_stmt *stmt);
-                    QueryResult(const QueryResult&) = delete;
-                    QueryResult& operator=(const QueryResult&) = delete;
+                    QueryResult() = delete;
+                    explicit QueryResult(sqlite3_stmt *stmt);
+                    QueryResult(const QueryResult &) = delete;
+                    QueryResult &operator=(const QueryResult &) = delete;
 
                     /**
                      * @brief Read a row from query result
@@ -70,6 +64,10 @@ namespace NGenXX
                      * @brief Release QueryResult
                      */
                     ~QueryResult();
+
+                private:
+                    sqlite3_stmt *stmt{NULL};
+                    mutable std::shared_mutex mutex;
                 };
 
                 /**
@@ -90,6 +88,10 @@ namespace NGenXX
                  * @brief Release DB resource
                  */
                 ~Connection();
+
+            private:
+                struct sqlite3 *db{NULL};
+                mutable std::mutex mutex;
             };
 
             /**
@@ -109,7 +111,7 @@ namespace NGenXX
             ~SQLite();
 
         private:
-            std::unordered_map<std::string, Connection*> conns;
+            std::unordered_map<std::string, Connection *> conns;
             std::mutex mutex;
         };
     }

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-void *const ngenxxStoreKvOpen(const std::string &_id);
+void *ngenxxStoreKvOpen(const std::string &_id);
 
 const std::string ngenxxStoreKvReadString(void *const conn, const std::string &k);
 

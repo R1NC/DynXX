@@ -261,7 +261,7 @@ bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &
     return _ngenxx_js_loadScript(this->context, script, name, isModule);
 }
 
-bool NGenXX::JsBridge::loadBinary(Bytes bytes, const bool isModule)
+bool NGenXX::JsBridge::loadBinary(const Bytes &bytes, const bool isModule)
 {
     const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
@@ -344,7 +344,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
             {/// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
                 jRes = _ngenxx_js_await(this->context, jRes); // Handle promise if needed
             }
-            s = std::move(_ngenxx_js_jstr2stdstr(this->context, jRes));
+            s = _ngenxx_js_jstr2stdstr(this->context, jRes);
         }
         JS_FreeValue(this->context, jRes);
         JS_FreeValue(this->context, jParams);
@@ -417,7 +417,7 @@ JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseBool(std::function<const bool()> f)
+JSValue NGenXX::JsBridge::newPromiseBool(std::function<bool()> f)
 {
     return this->newPromise([&ctx = this->context, cb = f]{
         auto ret = cb();
@@ -425,7 +425,7 @@ JSValue NGenXX::JsBridge::newPromiseBool(std::function<const bool()> f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseInt32(std::function<const int()> f)
+JSValue NGenXX::JsBridge::newPromiseInt32(std::function<int()> f)
 {
     return this->newPromise([&ctx = this->context, cb = f]{
         auto ret = cb();
@@ -433,7 +433,7 @@ JSValue NGenXX::JsBridge::newPromiseInt32(std::function<const int()> f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseInt64(std::function<const long long()> f)
+JSValue NGenXX::JsBridge::newPromiseInt64(std::function<long long()> f)
 {
     return this->newPromise([&ctx = this->context, cb = f]{
         auto ret = cb();
@@ -441,7 +441,7 @@ JSValue NGenXX::JsBridge::newPromiseInt64(std::function<const long long()> f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseFloat(std::function<const double()> f)
+JSValue NGenXX::JsBridge::newPromiseFloat(std::function<double()> f)
 {
     return this->newPromise([&ctx = this->context, cb = f]{
         auto ret = cb();
@@ -463,10 +463,10 @@ NGenXX::JsBridge::~JsBridge()
 
     js_std_set_worker_new_context_func(NULL);
 
-    for (auto &jv : this->jValues)
+    for (const auto &jv : this->jValues)
     {
-        uint32_t tag = JS_VALUE_GET_TAG(jv);
-        if (tag != JS_TAG_MODULE)
+        auto tag = JS_VALUE_GET_TAG(jv);
+        if (tag != static_cast<decltype(tag)>(JS_TAG_MODULE))
         {
             JS_FreeValue(this->context, jv);
         }

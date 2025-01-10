@@ -14,35 +14,34 @@ namespace NGenXX
     {
         class Decoder
         {
+        public:
+            Decoder() = delete;
+            explicit Decoder(const std::string &json);
+            Decoder(const Decoder &) = delete;
+            Decoder &operator=(const Decoder &) = delete;
+
+            bool isArray(const void *const node);
+
+            bool isObject(const void *const node);
+
+            void *readChild(const void *const node);
+
+            void *readNext(const void *const node);
+
+            void readChildren(const void *const node, const std::function<void(const size_t idx, const void *const child)> &callback);
+
+            void *readNode(const void *const node, const std::string &k);
+
+            std::string readString(const void *const node);
+
+            double readNumber(const void *const node);
+
+            ~Decoder();
+
         private:
             cJSON *cjson{NULL};
 
-            cJSON *parseNode(void *const node);
-
-        public:
-            Decoder() = delete;
-
-            Decoder(const std::string &json);
-            Decoder(const Decoder&) = delete;
-            Decoder& operator=(const Decoder&) = delete;
-
-            bool isArray(void *const node);
-
-            bool isObject(void *const node);
-
-            void *const readChild(void *const node);
-
-            void *const readNext(void *const node);
-
-            void readChildren(void *const node, std::function<void(int idx, void* child)> callback);
-
-            void *const readNode(void *const node, const std::string &k);
-
-            std::string readString(void *const node);
-
-            double readNumber(void *const node);
-
-            ~Decoder();
+            const cJSON *parseNode(const void *const node);
         };
     }
 }

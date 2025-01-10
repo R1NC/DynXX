@@ -108,20 +108,13 @@ namespace NGenXX
 {
     class JsBridge
     {
-    private:
-        JSRuntime *runtime{NULL};
-        JSContext *context{NULL};
-        std::vector<JSValue> jValues;
-
-        JSValue newPromise(std::function<JSValue()> jf);
-
     public:
         /**
          * Create JS VM
          */
         JsBridge();
-        JsBridge(const JsBridge&) = delete;
-        JsBridge& operator=(const JsBridge&) = delete;
+        JsBridge(const JsBridge &) = delete;
+        JsBridge &operator=(const JsBridge &) = delete;
 
         /**
          * @brief Export C func for JS
@@ -150,7 +143,7 @@ namespace NGenXX
          * @brief Load JS ByteCode
          * @param bytes JS ByteCode
          */
-        [[nodiscard]] bool loadBinary(Bytes bytes, const bool isModule);
+        [[nodiscard]] bool loadBinary(const Bytes &bytes, const bool isModule);
 
         /**
          * @brief call JS func
@@ -164,18 +157,25 @@ namespace NGenXX
          * @brief New JS `Promise`
          * @param f Callback to do work in background
          * @return JSValue of the `Promise`
-         */        
+         */
         JSValue newPromiseVoid(std::function<void()> f);
-        JSValue newPromiseBool(std::function<const bool()> f);
-        JSValue newPromiseInt32(std::function<const int()> f);
-        JSValue newPromiseInt64(std::function<const long long()> f);
-        JSValue newPromiseFloat(std::function<const double()> f);
+        JSValue newPromiseBool(std::function<bool()> f);
+        JSValue newPromiseInt32(std::function<int()> f);
+        JSValue newPromiseInt64(std::function<long long()> f);
+        JSValue newPromiseFloat(std::function<double()> f);
         JSValue newPromiseString(std::function<const std::string()> f);
 
         /**
          * Relase JS VM
          */
         ~JsBridge();
+
+    private:
+        JSRuntime *runtime{NULL};
+        JSContext *context{NULL};
+        std::vector<JSValue> jValues;
+
+        JSValue newPromise(std::function<JSValue()> jf);
     };
 }
 

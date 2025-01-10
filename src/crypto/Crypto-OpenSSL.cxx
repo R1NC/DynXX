@@ -17,7 +17,7 @@ constexpr int OpenSSL_AES_Key_BITS = 128;
 
 bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
 {
-    if (len <= 0 || bytes == NULL)
+    if (len == 0 || bytes == NULL)
     {
         return false;
     }
@@ -44,7 +44,7 @@ const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
     std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
     std::memset(out, 0, outLen);
-    int offset = 0;
+    size_t offset = 0;
 
     AES_KEY aes_key;
 
@@ -83,7 +83,7 @@ const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
     std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
     std::memset(out, 0, outLen);
-    int offset = 0;
+    size_t offset = 0;
 
     AES_KEY aes_key;
 
@@ -199,7 +199,7 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
         return BytesEmpty;
     }
 
-    EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag);
+    ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:{}", ret);
@@ -397,7 +397,7 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
 
     char *outBytes = nullptr;
     size_t outLen = BIO_get_mem_data(bmem, &outBytes);
-    if (outLen <= 0)
+    if (outLen == 0)
     {
         return BytesEmpty;
     }
@@ -426,7 +426,7 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
 
     byte outBytes[inLen * 2];
     size_t outLen = BIO_read(bio, outBytes, static_cast<int>(inLen));
-    if (outLen <= 0)
+    if (outLen == 0)
     {
         return BytesEmpty;
     }

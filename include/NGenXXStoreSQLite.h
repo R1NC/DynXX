@@ -11,7 +11,7 @@ extern "C"
      * @param _id DB id
      * @return DB connection handle
      */
-    void *const ngenxx_store_sqlite_open(const char *_id);
+    void *ngenxx_store_sqlite_open(const char *_id);
 
     /**
      * @brief Execute a SQL(s)
@@ -27,7 +27,7 @@ extern "C"
      * @param sql SQL
      * @return Handle of query result
      */
-    void *const ngenxx_store_sqlite_query_do(void *const conn, const char *sql);
+    void *ngenxx_store_sqlite_query_do(void *const conn, const char *sql);
 
     /**
      * @brief Read a row from query result

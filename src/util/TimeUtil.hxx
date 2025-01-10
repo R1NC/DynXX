@@ -9,17 +9,17 @@
 using namespace std::chrono;
 
 template<typename clockT, typename durationT>
-static inline const uint64_t castNow()
+static inline uint64_t castNow()
 {
     return duration_cast<durationT>(clockT::now().time_since_epoch()).count();
 }
 
-static inline const uint64_t nowInMicroSecs()
+static inline uint64_t nowInMicroSecs()
 {
     return castNow<system_clock, microseconds>();
 }
 
-static inline const uint64_t nowInNanoSecs()
+static inline uint64_t nowInNanoSecs()
 {
     return castNow<high_resolution_clock, nanoseconds>();
 }
