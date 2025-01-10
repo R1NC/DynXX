@@ -164,6 +164,12 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
 
+execute_process(
+    COMMAND git submodule update --init --recursive
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    RESULT_VARIABLE GIT_SUBMOD_RESULT
+)
+
 ## Print Messages:
 
 message("\n")
