@@ -22,7 +22,7 @@ static inline void *runInCurrentEnv(JavaVM *vm, const std::function<void *(JNIEn
     return t;
 }
 
-jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, bool needFree)
+jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, const size_t outLen, const bool needFree)
 {
     jbyteArray jba;
     if (bytes && outLen > 0)
