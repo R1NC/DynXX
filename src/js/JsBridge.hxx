@@ -151,19 +151,19 @@ namespace NGenXX
          * @param params parameters(json)
          * @param await Whether wait for the promise result or not
          */
-        std::string callFunc(const std::string &func, const std::string &params, const bool await);
+        const std::string callFunc(const std::string &func, const std::string &params, const bool await);
 
         /**
          * @brief New JS `Promise`
          * @param f Callback to do work in background
          * @return JSValue of the `Promise`
          */
-        JSValue newPromiseVoid(std::function<void()> f);
-        JSValue newPromiseBool(std::function<bool()> f);
-        JSValue newPromiseInt32(std::function<int()> f);
-        JSValue newPromiseInt64(std::function<long long()> f);
-        JSValue newPromiseFloat(std::function<double()> f);
-        JSValue newPromiseString(std::function<const std::string()> f);
+        JSValue newPromiseVoid(const std::function<void()> &f);
+        JSValue newPromiseBool(const std::function<bool()> &f);
+        JSValue newPromiseInt32(const std::function<int()> &f);
+        JSValue newPromiseInt64(const std::function<long long()> &f);
+        JSValue newPromiseFloat(const std::function<double()> &f);
+        JSValue newPromiseString(const std::function<const std::string()> &f);
 
         /**
          * Relase JS VM
@@ -175,7 +175,7 @@ namespace NGenXX
         JSContext *context{NULL};
         std::vector<JSValue> jValues;
 
-        JSValue newPromise(std::function<JSValue()> jf);
+        JSValue newPromise(const std::function<JSValue()> &jf);
     };
 }
 

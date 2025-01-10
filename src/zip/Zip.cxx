@@ -141,7 +141,7 @@ NGenXX::Z::UnZip::~UnZip()
 #pragma mark Stream
 
 bool zProcess(const size_t bufferSize,
-              std::function<Bytes()> sReadF,
+              std::function<const Bytes()> sReadF,
               std::function<void(const Bytes&)> sWriteF,
               std::function<void()> sFlushF,
               NGenXX::Z::ZBase &zb)
@@ -180,7 +180,7 @@ bool zProcess(const size_t bufferSize,
 bool zProcessCxxStream(const size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase &zb)
 {
     return zProcess(bufferSize, 
-        [bufferSize, &inStream]() -> Bytes 
+        [bufferSize, &inStream]() -> const Bytes 
         {
             Bytes in;
             inStream->readsome(reinterpret_cast<char *>(in.data()), bufferSize);
@@ -215,7 +215,7 @@ bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::istream *i
 bool zProcessCFILE(const size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase &zb)
 {
     return zProcess(bufferSize, 
-        [bufferSize, &inFile]() -> Bytes
+        [bufferSize, &inFile]() -> const Bytes
         {
             Bytes in;
             std::fread(static_cast<void *>(in.data()), sizeof(byte), bufferSize, inFile);
@@ -252,7 +252,7 @@ const Bytes zProcessBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::Z
     size_t pos = 0;
     Bytes outBytes;
     auto b = zProcess(bufferSize, 
-        [bufferSize, &in, &pos]() -> Bytes
+        [bufferSize, &in, &pos]() -> const Bytes
         {
             auto len = std::min(bufferSize, in.size() - pos);
             Bytes bytes(in.begin() + pos, in.begin() + pos + len);

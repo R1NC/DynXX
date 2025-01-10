@@ -164,10 +164,19 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
 
+
+## Custom commands
+
 execute_process(
     COMMAND git submodule update --init --recursive
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE GIT_SUBMOD_RESULT
+)
+
+execute_process(
+    COMMAND tsc
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/JS
+    RESULT_VARIABLE TSC_RESULT
 )
 
 ## Print Messages:
