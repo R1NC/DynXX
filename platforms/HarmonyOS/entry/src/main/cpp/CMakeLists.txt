@@ -54,7 +54,7 @@ set_property(TARGET libsqlite PROPERTY IMPORTED_LOCATION ${sqlitePath})
 
 #Find AdaURL
 # set(adaurlPath ${libDir}/libada.a)
-# add_library(adaurl STATIC IMPORTED)
+# add_library(libadaurl STATIC IMPORTED)
 # set_property(TARGET libadaurl PROPERTY IMPORTED_LOCATION ${adaurlPath})
 
 #Find libmmkvcore
@@ -80,7 +80,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     libquickjs
     libcjson
     libsqlite
-    #libada
+    #libadaurl
     libmmkvcore
     libmmkv
     libNGenXX

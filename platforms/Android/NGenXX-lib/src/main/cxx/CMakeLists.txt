@@ -75,7 +75,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         libuv
         libcjson
         libsqlite
-        libada
+        libadaurl
         libmmkvcore
         libmmkv
         libNGenXX
