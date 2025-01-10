@@ -40,7 +40,7 @@ void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string 
     return NULL;
 }
 
-std::string NGenXX::Json::Decoder::readString(const void *const node)
+const std::string NGenXX::Json::Decoder::readString(const void *const node)
 {
     auto cj = this->parseNode(node);
     if (cj != NULL && cJSON_IsString(cj))

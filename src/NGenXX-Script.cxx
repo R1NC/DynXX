@@ -86,7 +86,7 @@ const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, con
     {
         return v;
     }
-    auto str_vNode = decoder.readNode(NULL, strVK);
+    const auto str_vNode = decoder.readNode(NULL, strVK);
     if (str_vNode)
     {
         decoder.readChildren(str_vNode,

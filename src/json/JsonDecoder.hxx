@@ -32,7 +32,7 @@ namespace NGenXX
 
             void *readNode(const void *const node, const std::string &k);
 
-            std::string readString(const void *const node);
+            const std::string readString(const void *const node);
 
             double readNumber(const void *const node);
 
