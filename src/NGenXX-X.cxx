@@ -377,7 +377,7 @@ const std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result,
     return *std::get_if<std::string>(&a);
 }
 
-long long ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column)
+int64_t ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column)
 {
     if (query_result == NULL || column.length() == 0)
     {
@@ -449,7 +449,7 @@ bool ngenxxStoreKvWriteString(void *const conn, const std::string &k, const std:
     return xconn->write(k, v);
 }
 
-long long ngenxxStoreKvReadInteger(void *const conn, const std::string &k)
+int64_t ngenxxStoreKvReadInteger(void *const conn, const std::string &k)
 {
     if (conn == NULL || k.length() == 0)
     {
@@ -459,7 +459,7 @@ long long ngenxxStoreKvReadInteger(void *const conn, const std::string &k)
     return xconn->readInteger(k);
 }
 
-bool ngenxxStoreKvWriteInteger(void *const conn, const std::string &k, long long v)
+bool ngenxxStoreKvWriteInteger(void *const conn, const std::string &k, int64_t v)
 {
     if (conn == NULL || k.length() == 0)
     {

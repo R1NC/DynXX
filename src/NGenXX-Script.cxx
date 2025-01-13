@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -333,7 +334,7 @@ const std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
     return ngenxxStoreSqliteQueryReadColumnText(reinterpret_cast<void *>(query_result), column);
 }
 
-long long ngenxx_store_sqlite_query_read_column_integerS(const char *json)
+int64_t ngenxx_store_sqlite_query_read_column_integerS(const char *json)
 {
     if (json == NULL)
     {
@@ -459,7 +460,7 @@ bool ngenxx_store_kv_write_stringS(const char *json)
     return ngenxxStoreKvWriteString(reinterpret_cast<void *>(conn), k, v);
 }
 
-long long ngenxx_store_kv_read_integerS(const char *json)
+int64_t ngenxx_store_kv_read_integerS(const char *json)
 {
     if (json == NULL)
     {
@@ -485,7 +486,7 @@ bool ngenxx_store_kv_write_integerS(const char *json)
     NGenXX::Json::Decoder decoder(json);
     auto conn = parseAddress(decoder, "conn");
     auto k = parseStr(decoder, "k");
-    long long v = parseNum(decoder, "v");
+    int64_t v = parseNum(decoder, "v");
     if (conn == 0 || k.length() == 0)
     {
         return false;

@@ -50,7 +50,7 @@ extern "C"
      * @param column Column name
      * @return Integer column data
      */
-    long long ngenxx_store_sqlite_query_read_column_integer(void *const query_result, const char *column);
+    int64_t ngenxx_store_sqlite_query_read_column_integer(void *const query_result, const char *column);
 
     /**
      * @brief Read float column data from query result

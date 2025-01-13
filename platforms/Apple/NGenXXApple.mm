@@ -89,7 +89,7 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     
     while (ngenxx_store_sqlite_query_read_row(qrQuery)) {
         const char* platform = ngenxx_store_sqlite_query_read_column_text(qrQuery, "platform");
-        long long i = ngenxx_store_sqlite_query_read_column_integer(qrQuery, "i");
+        int64_t i = ngenxx_store_sqlite_query_read_column_integer(qrQuery, "i");
         double f = ngenxx_store_sqlite_query_read_column_float(qrQuery, "f");
         NSLog(@"platform:%@ i:%lld f:%f", CharP2NSString(platform), i, f);
     }

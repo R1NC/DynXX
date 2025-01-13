@@ -40,7 +40,7 @@ extern "C"
      * @param k key
      * @return integer value
      */
-    long long ngenxx_store_kv_read_integer(void *const conn, const char *k);
+    int64_t ngenxx_store_kv_read_integer(void *const conn, const char *k);
 
     /**
      * @brief Write integer to KV Store
@@ -49,7 +49,7 @@ extern "C"
      * @param v value
      * @return Successfull or not
      */
-    bool ngenxx_store_kv_write_integer(void *const conn, const char *k, long long v);
+    bool ngenxx_store_kv_write_integer(void *const conn, const char *k, int64_t v);
 
     /**
      * @brief Read float from KV Store

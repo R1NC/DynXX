@@ -1,3 +1,4 @@
+#include <cstdint>
 #if defined(USE_QJS)
 #include "JsBridge.hxx"
 #include <NGenXXLog.hxx>
@@ -425,7 +426,7 @@ JSValue NGenXX::JsBridge::newPromiseBool(const std::function<bool()> &f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseInt32(const std::function<int()> &f)
+JSValue NGenXX::JsBridge::newPromiseInt32(const std::function<int32_t()> &f)
 {
     return this->newPromise([&ctx = this->context, cb = f]{
         auto ret = cb();
@@ -433,7 +434,7 @@ JSValue NGenXX::JsBridge::newPromiseInt32(const std::function<int()> &f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseInt64(const std::function<long long()> &f)
+JSValue NGenXX::JsBridge::newPromiseInt64(const std::function<int64_t()> &f)
 {
     return this->newPromise([&ctx = this->context, cb = f]{
         auto ret = cb();

@@ -2,6 +2,7 @@
 #define NGENXX_SRC_SCRIPT_HXX_
 
 #include <NGenXXTypes.h>
+#include <cstdint>
 
 #if defined(__cplusplus)
 
@@ -26,7 +27,7 @@ bool ngenxx_store_sqlite_executeS(const char *json);
 const std::string ngenxx_store_sqlite_query_doS(const char *json);
 bool ngenxx_store_sqlite_query_read_rowS(const char *json);
 const std::string ngenxx_store_sqlite_query_read_column_textS(const char *json);
-long long ngenxx_store_sqlite_query_read_column_integerS(const char *json);
+int64_t ngenxx_store_sqlite_query_read_column_integerS(const char *json);
 double ngenxx_store_sqlite_query_read_column_floatS(const char *json);
 void ngenxx_store_sqlite_query_dropS(const char *json);
 void ngenxx_store_sqlite_closeS(const char *json);
@@ -34,7 +35,7 @@ void ngenxx_store_sqlite_closeS(const char *json);
 const std::string ngenxx_store_kv_openS(const char *json);
 const std::string ngenxx_store_kv_read_stringS(const char *json);
 bool ngenxx_store_kv_write_stringS(const char *json);
-long long ngenxx_store_kv_read_integerS(const char *json);
+int64_t ngenxx_store_kv_read_integerS(const char *json);
 bool ngenxx_store_kv_write_integerS(const char *json);
 double ngenxx_store_kv_read_floatS(const char *json);
 bool ngenxx_store_kv_write_floatS(const char *json);

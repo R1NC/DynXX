@@ -1,6 +1,7 @@
 #ifndef NGENXX_SRC_JS_BRIDGE_HXX_
 #define NGENXX_SRC_JS_BRIDGE_HXX_
 
+#include <cstdint>
 #if defined(__cplusplus)
 
 #include <functional>
@@ -160,8 +161,8 @@ namespace NGenXX
          */
         JSValue newPromiseVoid(const std::function<void()> &f);
         JSValue newPromiseBool(const std::function<bool()> &f);
-        JSValue newPromiseInt32(const std::function<int()> &f);
-        JSValue newPromiseInt64(const std::function<long long()> &f);
+        JSValue newPromiseInt32(const std::function<int32_t()> &f);
+        JSValue newPromiseInt64(const std::function<int64_t()> &f);
         JSValue newPromiseFloat(const std::function<double()> &f);
         JSValue newPromiseString(const std::function<const std::string()> &f);
 

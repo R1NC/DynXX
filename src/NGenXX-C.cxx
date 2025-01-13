@@ -328,7 +328,7 @@ const char *ngenxx_store_sqlite_query_read_column_text(void *const query_result,
 }
 
 EXPORT_AUTO
-long long ngenxx_store_sqlite_query_read_column_integer(void *const query_result, const char *column)
+int64_t ngenxx_store_sqlite_query_read_column_integer(void *const query_result, const char *column)
 {
     return ngenxxStoreSqliteQueryReadColumnInteger(query_result, column ?: "");
 }
@@ -372,13 +372,13 @@ bool ngenxx_store_kv_write_string(void *const conn, const char *k, const char *v
 }
 
 EXPORT_AUTO
-long long ngenxx_store_kv_read_integer(void *const conn, const char *k)
+int64_t ngenxx_store_kv_read_integer(void *const conn, const char *k)
 {
     return ngenxxStoreKvReadInteger(conn, k ?: "");
 }
 
 EXPORT_AUTO
-bool ngenxx_store_kv_write_integer(void *const conn, const char *k, long long v)
+bool ngenxx_store_kv_write_integer(void *const conn, const char *k, int64_t v)
 {
     return ngenxxStoreKvWriteInteger(conn, k ?: "", v);
 }

@@ -1,6 +1,7 @@
 #ifndef NGENXX_INCLUDE_STORE_KV_HXX_
 #define NGENXX_INCLUDE_STORE_KV_HXX_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -10,9 +11,9 @@ const std::string ngenxxStoreKvReadString(void *const conn, const std::string &k
 
 bool ngenxxStoreKvWriteString(void *const conn, const std::string &k, const std::string &v);
 
-long long ngenxxStoreKvReadInteger(void *const conn, const std::string &k);
+int64_t ngenxxStoreKvReadInteger(void *const conn, const std::string &k);
 
-bool ngenxxStoreKvWriteInteger(void *const conn, const std::string &k, long long v);
+bool ngenxxStoreKvWriteInteger(void *const conn, const std::string &k, int64_t v);
 
 double ngenxxStoreKvReadFloat(void *const conn, const std::string &k);
 

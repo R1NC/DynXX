@@ -13,7 +13,7 @@ bool ngenxxStoreSqliteQueryReadRow(void *const query_result);
 
 const std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column);
 
-long long ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column);
+int64_t ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column);
 
 double ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string &column);
 
