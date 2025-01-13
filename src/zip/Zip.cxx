@@ -1,8 +1,11 @@
 #include "Zip.hxx"
+
 #include <NGenXXLog.hxx>
+
 #include <algorithm>
 #include <stdexcept>
 #include <cstring>
+#include <cstdlib>
 #include <functional>
 #include <vector>
 
@@ -42,8 +45,8 @@ NGenXX::Z::ZBase::ZBase(const size_t bufferSize, const int format) : bufferSize{
         .zfree = Z_NULL,
         .opaque = Z_NULL
     };
-    this->inBuffer = reinterpret_cast<byte *>(malloc(sizeof(byte) * bufferSize + 1));
-    this->outBuffer = reinterpret_cast<byte *>(malloc(sizeof(byte) * bufferSize + 1));
+    this->inBuffer = reinterpret_cast<byte *>(std::malloc(sizeof(byte) * bufferSize + 1));
+    this->outBuffer = reinterpret_cast<byte *>(std::malloc(sizeof(byte) * bufferSize + 1));
 }
 
 size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)

@@ -13,6 +13,8 @@
 #endif
 
 #include <mutex>
+#include <cstring>
+#include <cstdlib>
 
 static std::function<void(const int level, const char *content)> _NGenXX_Log_callback = nullptr;
 static std::mutex *_ngenxx_log_mutex = nullptr;
@@ -48,8 +50,9 @@ void NGenXX::Log::print(const int level, const std::string &content)
     const char *cContent = content.c_str();
     if (_NGenXX_Log_callback)
     {
-        char *c = reinterpret_cast<char *>(malloc(strlen(cContent) + 1));
-        strcpy(c, content.c_str());
+        auto len = strlen(cContent);
+        char *c = reinterpret_cast<char *>(std::malloc(len + 1));
+        std::strncpy(c, content.c_str(), len);
         _NGenXX_Log_callback(level, c);
     }
     else

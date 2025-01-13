@@ -2,12 +2,12 @@
 #include "LuaBridge.hxx"
 
 #include <string.h>
-#include <stdlib.h>
 
 #include <NGenXXLog.hxx>
 
 #include <uv.h>
 
+#include <cstdlib>
 #include <thread>
 #include <functional>
 
@@ -49,7 +49,7 @@ void ngenxx_lua_uv_timer_cb(uv_timer_t *timer)
 
 uv_timer_t* ngenxx_lua_uv_timer_start(ngenxx_lua_timer_data *timer_data)
 {
-    auto timer = reinterpret_cast<uv_timer_t *>(malloc(sizeof(uv_timer_t)));
+    auto timer = reinterpret_cast<uv_timer_t *>(std::malloc(sizeof(uv_timer_t)));
     timer->data = timer_data;
     
     std::thread([tmr = timer]() {
@@ -83,7 +83,7 @@ static int ngenxx_lua_util_timer_add(lua_State *L)
 {
     auto timeout = lua_tointeger(L, 1);
     auto repeat = lua_toboolean(L, 2);
-    auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(malloc(sizeof(ngenxx_lua_timer_data)));
+    auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(std::malloc(sizeof(ngenxx_lua_timer_data)));
     timer_data->lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX);
     timer_data->lState = L;
     timer_data->timeout = timeout;

@@ -1,4 +1,3 @@
-#include <cstdint>
 #if defined(USE_QJS)
 #include "JsBridge.hxx"
 #include <NGenXXLog.hxx>
@@ -6,6 +5,8 @@
 
 #include <uv.h>
 
+#include <cstdint>
+#include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <streambuf>
@@ -58,7 +59,7 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_time
 {
     if (uv_loop == nullptr)
     {
-        uv_loop = reinterpret_cast<uv_loop_t *>(malloc(sizeof(uv_loop_t)));
+        uv_loop = reinterpret_cast<uv_loop_t *>(std::malloc(sizeof(uv_loop_t)));
         uv_loop_init(uv_loop);
     }
     else
@@ -71,7 +72,7 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_time
 
     if (uv_timer == nullptr)
     {
-        uv_timer = reinterpret_cast<uv_timer_t *>(malloc(sizeof(uv_timer_t)));
+        uv_timer = reinterpret_cast<uv_timer_t *>(std::malloc(sizeof(uv_timer_t)));
         uv_timer_init(uv_loop, uv_timer);
         uv_timer->data = ctx;
         uv_timer_start(uv_timer, cb, NGenXXJsSleepMicroSecs, NGenXXJsSleepMicroSecs);

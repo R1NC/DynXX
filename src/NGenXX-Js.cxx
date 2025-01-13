@@ -5,6 +5,8 @@
 #include "js/JsBridge.hxx"
 #include "NGenXX-Script.hxx"
 
+#include <cstring>
+#include <cstdlib>
 #include <memory>
 #include <functional>
 
@@ -22,8 +24,9 @@ const std::string ngenxx_js_ask_platform(const char *msg)
     {
         return s;
     }
-    char *cMsg = reinterpret_cast<char *>(malloc(strlen(msg) + 1));
-    strcpy(cMsg, msg);
+    auto len = strlen(msg);
+    char *cMsg = reinterpret_cast<char *>(std::malloc(len + 1));
+    std::strncpy(cMsg, msg, len);
     auto res = _NGenXX_J_msg_callback(cMsg);
     return res ?: s;
 }
