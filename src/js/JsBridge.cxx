@@ -151,7 +151,7 @@ static void _ngenxx_js_dump_err(JSContext *ctx)
 
 bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std::string &name, const bool isModule)
 {
-    bool res = true;
+    auto res = true;
     auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
     auto jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
     if (JS_IsException(jEvalRet))
