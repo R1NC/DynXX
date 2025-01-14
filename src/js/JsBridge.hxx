@@ -116,6 +116,8 @@ namespace NGenXX
         JsBridge();
         JsBridge(const JsBridge &) = delete;
         JsBridge &operator=(const JsBridge &) = delete;
+        JsBridge(JsBridge &&) = delete;
+        JsBridge &operator=(JsBridge &&) = delete;
 
         /**
          * @brief Export C func for JS

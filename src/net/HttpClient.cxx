@@ -15,7 +15,8 @@
 size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t nmemb, void *userdata) {
     auto bytes = static_cast<Bytes*>(userdata);
     size_t len = std::min(size * nmemb, bytes->size());
-    if (len > 0) {
+    if (len > 0)
+    {
         std::memcpy(buffer, bytes->data(), len);
         bytes->erase(bytes->begin(), bytes->begin() + len);
     }
@@ -40,7 +41,8 @@ size_t _NGenXX_Net_HttpClient_RspHeadersCallback(char *buffer, size_t size, size
     std::string header(buffer, size * nitems);
     // Split K & V
     size_t colonPos = header.find(':');
-    if (colonPos != std::string::npos) {
+    if (colonPos != std::string::npos)
+    {
         // Skip colon and space
         std::string k = header.substr(0, colonPos);
         std::string v = header.substr(colonPos + 2);

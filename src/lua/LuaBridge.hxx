@@ -68,6 +68,8 @@ namespace NGenXX
         LuaBridge();
         LuaBridge(const LuaBridge &) = delete;
         LuaBridge &operator=(const LuaBridge &) = delete;
+        LuaBridge(LuaBridge &&) = delete;
+        LuaBridge &operator=(LuaBridge &&) = delete;
 
         /**
          * @brief Load Lua file

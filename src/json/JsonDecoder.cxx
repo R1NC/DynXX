@@ -18,6 +18,21 @@ NGenXX::Json::Decoder::Decoder(const std::string &json)
     this->cjson = cJSON_Parse(json.c_str());
 }
 
+NGenXX::Json::Decoder::Decoder(NGenXX::Json::Decoder &&other) noexcept : cjson(other.cjson)
+{
+    other.cjson = NULL;
+}
+
+NGenXX::Json::Decoder &NGenXX::Json::Decoder::operator=(NGenXX::Json::Decoder &&other) noexcept
+{
+    if (this != &other)
+    {
+        cJSON_Delete(this->cjson);
+        *this = NGenXX::Json::Decoder(std::move(other));
+    }
+    return *this;
+}
+
 bool NGenXX::Json::Decoder::isArray(const void *const node)
 {
     auto cj = this->parseNode(node);
@@ -114,5 +129,6 @@ NGenXX::Json::Decoder::~Decoder()
     if (this->cjson != NULL)
     {
         cJSON_Delete(this->cjson);
+        this->cjson = NULL;
     }
 }

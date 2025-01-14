@@ -19,6 +19,8 @@ namespace NGenXX
             explicit Decoder(const std::string &json);
             Decoder(const Decoder &) = delete;
             Decoder &operator=(const Decoder &) = delete;
+            Decoder(Decoder &&) noexcept;
+            Decoder &operator=(Decoder &&) noexcept;
 
             bool isArray(const void *const node);
 

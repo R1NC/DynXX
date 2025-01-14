@@ -22,6 +22,8 @@ namespace NGenXX
             explicit ZBase(const size_t bufferSize, const int format);
             ZBase(const ZBase &) = delete;
             ZBase &operator=(const ZBase &) = delete;
+            ZBase(ZBase &&) = delete;
+            ZBase &operator=(ZBase &&) = delete;
             virtual ~ZBase();
 
             size_t input(const Bytes &bytes, bool inFinish);
@@ -49,6 +51,8 @@ namespace NGenXX
             explicit Zip(int mode, const size_t bufferSize, const int format);
             Zip(const Zip &) = delete;
             Zip &operator=(const Zip &) = delete;
+            Zip(Zip &&) = delete;
+            Zip &operator=(Zip &&) = delete;
             ~Zip() override;
 
         private:
@@ -62,6 +66,8 @@ namespace NGenXX
             explicit UnZip(const size_t bufferSize, const int format);
             UnZip(const UnZip &) = delete;
             UnZip &operator=(const UnZip &) = delete;
+            UnZip(UnZip &&) = delete;
+            UnZip &operator=(UnZip &&) = delete;
             ~UnZip() override;
 
         private:

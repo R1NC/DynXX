@@ -24,6 +24,8 @@ namespace NGenXX
             SQLite();
             SQLite(const SQLite &) = delete;
             SQLite &operator=(const SQLite &) = delete;
+            SQLite(SQLite &&) = delete;
+            SQLite &operator=(SQLite &&) = delete;
 
             class Connection
             {
@@ -35,6 +37,8 @@ namespace NGenXX
                 explicit Connection(sqlite3 *db);
                 Connection(const Connection &) = delete;
                 Connection &operator=(const Connection &) = delete;
+                Connection(Connection &&) = delete;
+                Connection &operator=(Connection &&) = delete;
 
                 class QueryResult
                 {
@@ -46,6 +50,8 @@ namespace NGenXX
                     explicit QueryResult(sqlite3_stmt *stmt);
                     QueryResult(const QueryResult &) = delete;
                     QueryResult &operator=(const QueryResult &) = delete;
+                    QueryResult(QueryResult &&) = delete;
+                    QueryResult &operator=(QueryResult &&) = delete;
 
                     /**
                      * @brief Read a row from query result
