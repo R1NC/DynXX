@@ -33,6 +33,10 @@ namespace NGenXX
             void readChildren(const void *const node, const std::function<void(const size_t idx, const void *const child)> &callback);
 
             void *readNode(const void *const node, const std::string &k);
+            void *operator[](const std::string &k)
+            {
+                return this->readNode(NULL, k);
+            }
 
             const std::string readString(const void *const node);
 

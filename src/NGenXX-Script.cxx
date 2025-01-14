@@ -34,12 +34,12 @@ const std::string strArray2json(const std::vector<std::string> &v)
 
 double parseNum(NGenXX::Json::Decoder &decoder, const char *k)
 {
-    return decoder.readNumber(decoder.readNode(NULL, k));
+    return decoder.readNumber(decoder[k]);
 }
 
 const std::string parseStr(NGenXX::Json::Decoder &decoder, const char *k)
 {
-    return decoder.readString(decoder.readNode(NULL, k));
+    return decoder.readString(decoder[k]);
 }
 
 address parseAddress(NGenXX::Json::Decoder &decoder, const char *k)
@@ -64,7 +64,7 @@ Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK, const c
     Bytes data;
     if (len > 0)
     {
-        auto byte_vNode = decoder.readNode(NULL, bytesK);
+        auto byte_vNode = decoder[bytesK];
         if (byte_vNode)
         {
             decoder.readChildren(byte_vNode,
@@ -87,7 +87,7 @@ const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, con
     {
         return v;
     }
-    const auto str_vNode = decoder.readNode(NULL, strVK);
+    const auto str_vNode = decoder[strVK];
     if (str_vNode)
     {
         decoder.readChildren(str_vNode,
