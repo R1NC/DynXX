@@ -24,9 +24,9 @@ static inline uint64_t nowInNanoSecs()
     return castNow<high_resolution_clock, nanoseconds>();
 }
 
-static inline void sleepForMicroSecs(size_t microSecs)
+static inline void sleepForMilliSecs(size_t milliSecs)
 {
-    std::this_thread::sleep_for(microseconds(microSecs));
+    std::this_thread::sleep_for(milliseconds(milliSecs));
 }
 
 #endif
