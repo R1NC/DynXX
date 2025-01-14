@@ -225,7 +225,7 @@ NGenXX::JsBridge::JsBridge()
 
 bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
 {
-    bool res = true;
+    auto res = true;
     auto jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
     if (JS_IsException(jFunc))
     {
@@ -278,7 +278,7 @@ static inline const std::string _ngenxx_js_jstr2stdstr(JSContext *ctx, JSValue j
 
 JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
 {
-    JSValue ret;
+    auto ret = JS_UNDEFINED;
     for (;;)
     {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
