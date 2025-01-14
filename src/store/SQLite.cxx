@@ -17,7 +17,7 @@ NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::str
     if (conn == nullptr)
     {
         sqlite3 *db;
-        int rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+        auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
         //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
         if (rc != SQLITE_OK)
         {
@@ -72,7 +72,7 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
         return false;
     }
     sqlite3_stmt *stmt;
-    int rc = sqlite3_exec(this->db, sql.c_str(), NULL, NULL, NULL);
+    auto rc = sqlite3_exec(this->db, sql.c_str(), NULL, NULL, NULL);
     //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
     if (rc != SQLITE_OK)
     {
@@ -90,7 +90,7 @@ NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connectio
         return NULL;
     }
     sqlite3_stmt *stmt;
-    int rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, NULL);
+    auto rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, NULL);
     //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.query ret:{}", rc);
     if (rc != SQLITE_OK)
     {
@@ -120,7 +120,7 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
          ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readRow STMT NULL");
          return false;
     }
-    int rc = sqlite3_step(this->stmt);
+    auto rc = sqlite3_step(this->stmt);
     //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.step ret:{}", rc);
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
@@ -141,10 +141,10 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
     {
         if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0)
         {
-            int columnType = sqlite3_column_type(this->stmt, i);
+            auto columnType = sqlite3_column_type(this->stmt, i);
             if (columnType == SQLITE_TEXT)
             {
-                return std::string((const char *)sqlite3_column_text(this->stmt, i));
+                return reinterpret_cast<const char *>(sqlite3_column_text(this->stmt, i));
             }
             else if (columnType == SQLITE_INTEGER)
             {

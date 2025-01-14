@@ -9,14 +9,14 @@ static inline const char *copyStr(const std::string &s)
 {
     const char *c = s.c_str();
     auto len = strlen(c);
-    char *nc = reinterpret_cast<char *>(std::malloc(len + 1));
+    auto nc = reinterpret_cast<char *>(std::malloc(len + 1));
     std::strncpy(nc, c, len);
     return nc;
 }
 
 static inline const char **copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen)
 {
-    char **sArr = reinterpret_cast<char **>(std::malloc(sizeof(char *) * sv.size() + 1));
+    auto sArr = reinterpret_cast<char **>(std::malloc(sizeof(char *) * sv.size() + 1));
     for (size_t i = 0; i < sv.size(); i++)
     {
         auto len = sizeof(char) * strMaxLen;
@@ -34,7 +34,7 @@ static inline const byte *copyBytes(const Bytes &t)
     {
         return NULL;
     }
-    const byte *ncs = reinterpret_cast<byte *>(std::malloc(len + 1));
+    auto ncs = reinterpret_cast<byte *>(std::malloc(len + 1));
     std::memset(reinterpret_cast<void *>(const_cast<byte *>(ncs)), 0, len + 1);
     std::memcpy(reinterpret_cast<void *>(const_cast<byte *>(ncs)), cs, len);
     return ncs;

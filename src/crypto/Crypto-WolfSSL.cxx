@@ -21,7 +21,7 @@ bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
     {
         return false;
     }
-    int ret = wolfSSL_RAND_bytes(bytes, len);
+    auto ret = wolfSSL_RAND_bytes(bytes, len);
     return ret == WOLFSSL_SUCCESS;
 }
 
@@ -34,7 +34,7 @@ const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
         return BytesEmpty;
     }
     // keyLen = AES_BLOCK_SIZE * 8;
-    int outLen = inLen;
+    auto outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
@@ -48,7 +48,7 @@ const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
 
     Aes aes[1];
 
-    int ret = wc_AesInit(aes, NULL, 0);
+    auto ret = wc_AesInit(aes, NULL, 0);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key error:{}", ret);
@@ -87,7 +87,7 @@ const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
         return BytesEmpty;
     }
     // keyLen = AES_BLOCK_SIZE * 8;
-    int outLen = inLen;
+    auto outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
@@ -101,7 +101,7 @@ const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
 
     Aes aes[1];
 
-    int ret = wc_AesInit(aes, NULL, 0);
+    auto ret = wc_AesInit(aes, NULL, 0);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
@@ -139,16 +139,16 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
     }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
-    const size_t tagLen = tagBits / 8;
+    auto tagLen = tagBits / 8;
 
     byte tag[tagLen];
     std::memset(tag, 0, tagLen);
-    int outLen = inLen + tagLen;
+    auto outLen = inLen + tagLen;
     byte out[outLen];
     std::memset(out, 0, outLen);
 
     Aes aes[1];
-    int ret = wc_AesInit(aes, NULL, 0);
+    auto ret = wc_AesInit(aes, NULL, 0);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
@@ -183,17 +183,17 @@ const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
     }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen_ = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
-    const size_t tagLen = tagBits / 8;
+    auto tagLen = tagBits / 8;
 
-    size_t inLen = inLen_ - tagLen;
+    auto inLen = inLen_ - tagLen;
     byte tag[tagLen];
     std::memcpy(tag, in + inLen, tagLen);
-    int outLen = inLen;
+    auto outLen = inLen;
     byte out[outLen];
     std::memset(out, 0, outLen);
 
     Aes aes[1];
-    int ret = wc_AesInit(aes, NULL, 0);
+    auto ret = wc_AesInit(aes, NULL, 0);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
@@ -233,7 +233,7 @@ const Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
 
     wc_Md5 md5;
 
-    int ret = wc_InitMd5(&md5);
+    auto ret = wc_InitMd5(&md5);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_InitMd5 error:{}", ret);
@@ -273,7 +273,7 @@ const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
 
     wc_Sha256 sha256;
 
-    int ret = wc_InitSha256(&sha256);
+    auto ret = wc_InitSha256(&sha256);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_InitSha256 error:{}", ret);
@@ -309,7 +309,7 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     }
 
     word32 outLen = 0;
-    int ret = Base64_Encode_NoNl(in, inLen, NULL, &outLen);
+    auto ret = Base64_Encode_NoNl(in, inLen, NULL, &outLen);
 
     byte outBuffer[outLen + 1];
     std::memset(outBuffer, 0, outLen + 1);
@@ -337,7 +337,7 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     byte outBuffer[outLen + 1];
     std::memset(outBuffer, 0, outLen + 1);
 
-    int ret = Base64_Decode(in, inLen, outBuffer, &outLen);
+    auto ret = Base64_Decode(in, inLen, outBuffer, &outLen);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "Base64_Decode error:{}", ret);

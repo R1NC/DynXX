@@ -11,10 +11,11 @@
 #include <algorithm>
 #include <vector>
 #include <cstring>
+#include <sstream>
 
 size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t nmemb, void *userdata) {
     auto bytes = static_cast<Bytes*>(userdata);
-    size_t len = std::min(size * nmemb, bytes->size());
+    auto len = std::min(size * nmemb, bytes->size());
     if (len > 0)
     {
         std::memcpy(buffer, bytes->data(), len);
@@ -25,7 +26,7 @@ size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t
 
 size_t _NGenXX_Net_HttpClient_UploadReadCallback(char *ptr, size_t size, size_t nmemb, void *stream)
 {
-    size_t ret = std::fread(ptr, size, nmemb, reinterpret_cast<std::FILE *>(stream));
+    auto ret = std::fread(ptr, size, nmemb, reinterpret_cast<std::FILE *>(stream));
     ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient read {} bytes from file", ret);
     return ret;
 }
@@ -40,12 +41,12 @@ size_t _NGenXX_Net_HttpClient_RspHeadersCallback(char *buffer, size_t size, size
     auto headers = static_cast<std::unordered_map<std::string, std::string>*>(userdata);
     std::string header(buffer, size * nitems);
     // Split K & V
-    size_t colonPos = header.find(':');
+    auto colonPos = header.find(':');
     if (colonPos != std::string::npos)
     {
         // Skip colon and space
-        std::string k = header.substr(0, colonPos);
-        std::string v = header.substr(colonPos + 2);
+        auto k = header.substr(0, colonPos);
+        auto v = header.substr(colonPos + 2);
         // Trim whitespace around K & V
         k.erase(0, k.find_first_not_of(" \t"));
         k.erase(k.find_last_not_of(" \t") + 1);
@@ -76,14 +77,14 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
 {
     HttpResponse rsp;
 
-    if (!this->checkUrl(url))
+    if (!this->checkUrlValid(url))
     {
         return rsp;
     }
 
     ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request url: {} params: {}", url, params);
 
-    CURL *curl = curl_easy_init();
+    auto curl = curl_easy_init();
     if (!curl)
     {
         return rsp;
@@ -94,7 +95,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         return rsp;
     }
 
-    size_t _timeout = timeout;
+    auto _timeout = timeout;
     if (_timeout == 0)
     {
         _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
@@ -102,7 +103,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
     curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
-    bool urlAppend = false;
+    auto urlAppend = false;
     if (cFILE != NULL)
     {
         curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
@@ -112,8 +113,8 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
     }
     else if (formFields.size() > 0)
     {
-        curl_mime *mime = curl_mime_init(curl);
-        curl_mimepart *part = curl_mime_addpart(mime);
+        auto mime = curl_mime_init(curl);
+        auto part = curl_mime_addpart(mime);
 
         for (auto &it : formFields)
         {
@@ -146,19 +147,17 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
         }
     }
 
-    std::string fixedUrl = url;
+    std::stringstream ssUrl;
+    ssUrl << url;
     if (urlAppend)
     {
-        if (url.find("?", 0) == std::string::npos)
+        if (!this->checkUrlHasSearch(url))
         {
-            fixedUrl += "?" + params;
+            ssUrl << "?";
         }
-        else
-        {
-            fixedUrl += params;
-        }
+        ssUrl << params;
     }
-    curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
+    curl_easy_setopt(curl, CURLOPT_URL, ssUrl.str().c_str());
 
     struct curl_slist *headerList = NULL;
     for (const auto &it : headers)
@@ -174,7 +173,7 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
     curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, _NGenXX_Net_HttpClient_RspHeadersCallback);
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, &(rsp.headers));
 
-    CURLcode curlCode = curl_easy_perform(curl);
+    auto curlCode = curl_easy_perform(curl);
 
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
 
@@ -197,14 +196,14 @@ const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::stri
 
 bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string &filePath, const size_t timeout)
 {
-    bool res = false;
+    auto res = false;
 
-    if (!this->checkUrl(url))
+    if (!this->checkUrlValid(url))
     {
         return res;
     }
 
-    CURL *curl = curl_easy_init();
+    auto curl = curl_easy_init();
     if (!curl)
     {
         return res;
@@ -215,13 +214,13 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
         return res;
     }
 
-    size_t _timeout = timeout;
+    auto _timeout = timeout;
     if (_timeout == 0)
     {
         _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
     }
 
-    FILE *file = std::fopen(filePath.c_str(), "wb");
+    auto file = std::fopen(filePath.c_str(), "wb");
     if (!file)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "HttpClient.download fopen error");
@@ -235,7 +234,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::fwrite);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
 
-    CURLcode curlCode = curl_easy_perform(curl);
+    auto curlCode = curl_easy_perform(curl);
     if (curlCode == CURLE_OK)
     {
         res = true;
@@ -252,7 +251,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     return res;
 }
 
-bool NGenXX::Net::HttpClient::checkUrl(const std::string &url)
+bool NGenXX::Net::HttpClient::checkUrlValid(const std::string &url)
 {
     if (url.empty())
     {
@@ -267,6 +266,16 @@ bool NGenXX::Net::HttpClient::checkUrl(const std::string &url)
     }
 #endif
     return true;
+}
+
+bool NGenXX::Net::HttpClient::checkUrlHasSearch(const std::string &url)
+{
+#if defined(USE_ADA_URL)
+    auto aUrl = ada::parse(url);
+    return !aUrl->get_search().empty();
+#else
+    return url.find("?", 0) != std::string::npos;
+#endif
 }
 
 bool NGenXX::Net::HttpClient::handleSSL(CURL *const curl, const std::string &url)

@@ -36,7 +36,7 @@ std::shared_ptr<const std::string> _ngenxx_root = nullptr;
 
 const std::string ngenxxGetVersion(void)
 {
-    return std::string(VERSION);
+    return VERSION;
 }
 
 const std::string ngenxxRootPath()
@@ -46,7 +46,7 @@ const std::string ngenxxRootPath()
     {
         return s;
     }
-    return std::string(*_ngenxx_root);
+    return *_ngenxx_root;
 }
 
 bool ngenxxInit(const std::string &root)

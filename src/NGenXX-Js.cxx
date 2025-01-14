@@ -25,7 +25,7 @@ const std::string ngenxx_js_ask_platform(const char *msg)
         return s;
     }
     auto len = strlen(msg);
-    char *cMsg = reinterpret_cast<char *>(std::malloc(len + 1));
+    auto cMsg = reinterpret_cast<char *>(std::malloc(len + 1));
     std::strncpy(cMsg, msg, len);
     auto res = _NGenXX_J_msg_callback(cMsg);
     return res ?: s;

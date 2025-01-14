@@ -53,7 +53,8 @@ namespace NGenXX
             ~HttpClient();
 
         private:
-            bool checkUrl(const std::string &url);
+            bool checkUrlValid(const std::string &url);
+            bool checkUrlHasSearch(const std::string &url);
             bool handleSSL(CURL *const curl, const std::string &url);
         };
     }

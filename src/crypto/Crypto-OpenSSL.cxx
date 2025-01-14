@@ -21,7 +21,7 @@ bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
     {
         return false;
     }
-    int ret = RAND_bytes(bytes, static_cast<int>(len));
+    auto ret = RAND_bytes(bytes, static_cast<int>(len));
     return ret != -1;
 }
 
@@ -34,7 +34,7 @@ const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
         return BytesEmpty;
     }
     // keyLen = AES_BLOCK_SIZE * 8;
-    size_t outLen = inLen;
+    auto outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
@@ -48,7 +48,7 @@ const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
 
     AES_KEY aes_key;
 
-    int ret = AES_set_encrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
+    auto ret = AES_set_encrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
     if (ret != 0)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_encrypt_key error:{}", ret);
@@ -73,7 +73,7 @@ const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
         return BytesEmpty;
     }
     // keyLen = AES_BLOCK_SIZE * 8;
-    size_t outLen = inLen;
+    auto outLen = inLen;
     if (inLen % AES_BLOCK_SIZE != 0)
     {
         outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
@@ -87,7 +87,7 @@ const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
 
     AES_KEY aes_key;
 
-    int ret = AES_set_decrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
+    auto ret = AES_set_decrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
     if (ret != 0)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key error:{}", ret);
@@ -133,11 +133,11 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
     }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
-    const size_t tagLen = tagBits / 8;
+    auto tagLen = tagBits / 8;
 
     byte tag[tagLen];
     std::memset(tag, 0, tagLen);
-    size_t outLen = inLen + tagLen;
+    auto outLen = inLen + tagLen;
     byte out[outLen];
     std::memset(out, 0, outLen);
 
@@ -152,7 +152,7 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
         return BytesEmpty;
     }
 
-    int ret = EVP_EncryptInit_ex(ctx, cipher, NULL, NULL, NULL);
+    auto ret = EVP_EncryptInit_ex(ctx, cipher, NULL, NULL, NULL);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher error:{}", ret);
@@ -220,12 +220,12 @@ const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
     }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen_ = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
-    const size_t tagLen = tagBits / 8;
+    auto tagLen = tagBits / 8;
 
-    size_t inLen = inLen_ - tagLen;
+    auto inLen = inLen_ - tagLen;
     byte tag[tagLen];
     std::memcpy(tag, in + inLen, tagLen);
-    size_t outLen = inLen;
+    auto outLen = inLen;
     byte out[outLen];
     std::memset(out, 0, outLen);
 
@@ -240,7 +240,7 @@ const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
         return BytesEmpty;
     }
 
-    int ret = EVP_DecryptInit_ex(ctx, cipher, NULL, NULL, NULL);
+    auto ret = EVP_DecryptInit_ex(ctx, cipher, NULL, NULL, NULL);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher error:{}", ret);
@@ -307,13 +307,13 @@ const Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     {
         return BytesEmpty;
     }
-    size_t outLen = MD5_BYTES_LEN;
+    auto outLen = MD5_BYTES_LEN;
     byte out[outLen];
     std::memset(out, 0, outLen);
 
     MD5_CTX md5;
 
-    int ret = MD5_Init(&md5);
+    auto ret = MD5_Init(&md5);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Init error:{}", ret);
@@ -345,13 +345,13 @@ const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     {
         return BytesEmpty;
     }
-    size_t outLen = SHA256_BYTES_LEN;
+    auto outLen = SHA256_BYTES_LEN;
     byte out[outLen];
     std::memset(out, 0, outLen);
 
     SHA256_CTX sha256;
 
-    int ret = SHA256_Init(&sha256);
+    auto ret = SHA256_Init(&sha256);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Init error:{}", ret);
@@ -396,7 +396,7 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     BIO_flush(b64);
 
     char *outBytes = nullptr;
-    size_t outLen = BIO_get_mem_data(bmem, &outBytes);
+    auto outLen = BIO_get_mem_data(bmem, &outBytes);
     if (outLen == 0)
     {
         return BytesEmpty;
@@ -425,7 +425,7 @@ const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
 
     byte outBytes[inLen * 2];
-    size_t outLen = BIO_read(bio, outBytes, static_cast<int>(inLen));
+    auto outLen = BIO_read(bio, outBytes, static_cast<int>(inLen));
     if (outLen == 0)
     {
         return BytesEmpty;

@@ -17,8 +17,7 @@ const std::string bytes2json(const Bytes &bytes)
         return static_cast<int>(b); 
     });
     auto cj = bytes.empty() ? cJSON_CreateArray() : cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));
-    const char *outJson = cJSON_PrintUnformatted(cj);
-    return std::string(outJson);
+    return cJSON_PrintUnformatted(cj);
 }
 
 const std::string strArray2json(const std::vector<std::string> &v)
@@ -28,8 +27,7 @@ const std::string strArray2json(const std::vector<std::string> &v)
     {
         cJSON_AddItemToArray(cj, cJSON_CreateString(it.c_str()));
     }
-    const char *outJson = cJSON_PrintUnformatted(cj);
-    return std::string(outJson);
+    return cJSON_PrintUnformatted(cj);
 }
 
 double parseNum(NGenXX::Json::Decoder &decoder, const char *k)
@@ -60,7 +58,7 @@ address parseAddress(NGenXX::Json::Decoder &decoder, const char *k)
 
 Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK, const char *lenK)
 {
-    size_t len = parseNum(decoder, lenK);
+    auto len = parseNum(decoder, lenK);
     Bytes data;
     if (len > 0)
     {

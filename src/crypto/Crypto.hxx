@@ -22,7 +22,7 @@ namespace NGenXX
             {
                 auto inBytes = in.data(), keyBytes = key.data(), initVectorBytes = initVector.data(), aadBytes = aad.data();
                 auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
-                const size_t tagLen = tagBits / 8;
+                auto tagLen = tagBits / 8;
                 if (inBytes == NULL || inLen <= 0)
                 {
                     return false;

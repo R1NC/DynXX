@@ -35,7 +35,7 @@ static std::recursive_mutex *_ngenxx_js_mutex = nullptr;
 
 static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer)
 {
-    JSContext *ctx = reinterpret_cast<JSContext *>(timer->data);
+    auto ctx = reinterpret_cast<JSContext *>(timer->data);
     /// Do not force to acquire the lock, to avoid blocking the JS event loop.
     if (_ngenxx_js_mutex->try_lock())
     {
@@ -46,7 +46,7 @@ static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer)
 
 static void _ngenxx_js_uv_timer_cb_t(uv_timer_t *timer)
 {
-    JSContext *ctx = reinterpret_cast<JSContext *>(timer->data);
+    auto ctx = reinterpret_cast<JSContext *>(timer->data);
     /// Do not force to acquire the lock, to avoid blocking the JS event loop.
     if (_ngenxx_js_mutex->try_lock())
     {
@@ -123,7 +123,7 @@ static void _ngenxx_js_loop_stop(JSRuntime *rt)
 
 static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
 {
-    const char *str = JS_ToCString(ctx, val);
+    auto str = JS_ToCString(ctx, val);
     if (str)
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, str);
@@ -133,12 +133,12 @@ static void _ngenxx_js_print_err(JSContext *ctx, JSValueConst val)
 
 static void _ngenxx_js_dump_err(JSContext *ctx)
 {
-    JSValue exception_val = JS_GetException(ctx);
+    auto exception_val = JS_GetException(ctx);
 
     _ngenxx_js_print_err(ctx, exception_val);
     if (JS_IsError(ctx, exception_val))
     {
-        JSValue val = JS_GetPropertyStr(ctx, exception_val, "stack");
+        auto val = JS_GetPropertyStr(ctx, exception_val, "stack");
         if (!JS_IsUndefined(val))
         {
             _ngenxx_js_print_err(ctx, val);
@@ -152,8 +152,8 @@ static void _ngenxx_js_dump_err(JSContext *ctx)
 bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std::string &name, const bool isModule)
 {
     bool res = true;
-    int flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
-    JSValue jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
+    auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
+    auto jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
     if (JS_IsException(jEvalRet))
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_Eval failed ->");
@@ -170,7 +170,7 @@ bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std:
             return false;
         }
         js_module_set_import_meta(ctx, jEvalRet, false, true);
-        JSValue jEvalFuncRet = JS_EvalFunction(ctx, jEvalRet);
+        auto jEvalFuncRet = JS_EvalFunction(ctx, jEvalRet);
         JS_FreeValue(ctx, jEvalFuncRet);
         // this->jValues.push_back(jEvalRet);//Can not free here, or QJS may crash
     }
@@ -186,8 +186,7 @@ bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std:
 /// By default, we just load the built-in modules.
 static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
 {
-    JSContext *ctx;
-    ctx = JS_NewContext(rt);
+    auto ctx = JS_NewContext(rt);
     if (!ctx)
     {
         return NULL;
@@ -227,7 +226,7 @@ NGenXX::JsBridge::JsBridge()
 bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
 {
     bool res = true;
-    JSValue jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
+    auto jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
     if (JS_IsException(jFunc))
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewCFunction failed ->");
@@ -288,7 +287,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
             sleepForMilliSecs(NGenXXJsSleepMilliSecs);
             continue;
         }
-        int state = JS_PromiseState(ctx, obj);
+        auto state = JS_PromiseState(ctx, obj);
         if (state == JS_PROMISE_FULFILLED)
         {
             ret = JS_PromiseResult(ctx, obj);
@@ -324,13 +323,13 @@ const std::string NGenXX::JsBridge::callFunc(const std::string &func, const std:
     _ngenxx_js_mutex->lock();
     std::string s;
 
-    JSValue jFunc = JS_GetPropertyStr(this->context, this->jValues[0], func.c_str());
+    auto jFunc = JS_GetPropertyStr(this->context, this->jValues[0], func.c_str());
     if (JS_IsFunction(this->context, jFunc))
     {
-        JSValue jParams = JS_NewString(this->context, params.c_str());
+        auto jParams = JS_NewString(this->context, params.c_str());
         JSValue argv[] = {jParams};
 
-        JSValue jRes = JS_Call(this->context, jFunc, this->jValues[0], sizeof(argv), argv);
+        auto jRes = JS_Call(this->context, jFunc, this->jValues[0], sizeof(argv), argv);
 
         /// Release the lock imediately, to avoid blocking the JS event loop.
         _ngenxx_js_mutex->unlock();
@@ -377,7 +376,7 @@ NGenXX_JS_Promise* _ngenxx_js_promise_new(JSContext *ctx)
 
 void _ngenxx_js_promise_callback(JSContext *ctx, NGenXX_JS_Promise* jPromise, JSValue jRet)
 {
-    JSValue jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
+    auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
     if (JS_IsException(jCallRet))
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_CallPromise failed ->");
@@ -403,7 +402,7 @@ JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
     std::thread([&ctx = this->context, jPro = jPromise, cb = jf]() {
         const std::lock_guard<std::recursive_mutex> lock(*_ngenxx_js_mutex);
 
-        JSValue jRet = cb();
+        auto jRet = cb();
 
         _ngenxx_js_promise_callback(ctx, jPro, jRet);
     }).detach();

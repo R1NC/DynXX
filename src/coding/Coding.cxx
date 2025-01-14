@@ -28,7 +28,7 @@ const Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     {
         return BytesEmpty;
     }
-    size_t outLen = str.length();
+    auto outLen = str.length();
     Bytes bytes;
     size_t j(0);
     for (size_t i(0); i < str.length(); i += 2, j++)

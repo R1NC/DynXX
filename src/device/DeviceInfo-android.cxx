@@ -17,7 +17,7 @@ const std::string NGenXX::Device::DeviceInfo::sysProperty(const std::string &k)
 {
     char v[PROP_VALUE_MAX];
     __system_property_get(k.c_str(), v);
-    return v[0] ? std::string(v) : "";
+    return v[0] ? v : "";
 }
 
 int NGenXX::Device::DeviceInfo::deviceType()

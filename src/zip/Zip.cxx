@@ -55,7 +55,7 @@ size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
     {
         return 0;
     }
-    size_t dataLen = std::min(bytes.size(), this->bufferSize);
+    auto dataLen = std::min(bytes.size(), this->bufferSize);
 
     std::memset(this->inBuffer, 0, this->bufferSize);
     std::memcpy(this->inBuffer, bytes.data(), dataLen);
@@ -82,7 +82,7 @@ const Bytes NGenXX::Z::ZBase::processDo()
         return BytesEmpty;
     }
 
-    size_t outLen = this->bufferSize - (this->zs).avail_out;
+    auto outLen = this->bufferSize - (this->zs).avail_out;
     return wrapBytes(this->outBuffer, outLen);
 }
 
@@ -149,7 +149,7 @@ bool zProcess(const size_t bufferSize,
               std::function<void()> sFlushF,
               NGenXX::Z::ZBase &zb)
 {
-    bool inputFinished;
+    auto inputFinished = false;
     do
     {
         auto in = sReadF();
@@ -160,7 +160,7 @@ bool zProcess(const size_t bufferSize,
             return false;
         }
 
-        bool processFinished;
+        auto processFinished = false;
         do
         {
             auto outData = zb.processDo();
