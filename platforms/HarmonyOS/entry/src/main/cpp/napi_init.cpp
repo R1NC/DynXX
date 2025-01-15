@@ -1,9 +1,12 @@
 #include "napi/native_api.h"
-#include "napi_util.h"
-#include "../../../../../../build.HarmonyOS/output/include/NGenXX.h"
-#include <cstring>
+
 #include <string.h>
 #include <stdlib.h>
+
+#include <cstring>
+
+#include "napi_util.h"
+#include "../../../../../../build.HarmonyOS/output/include/NGenXX.h"
 
 static napi_value GetVersion(napi_env env, napi_callback_info info)
 {
