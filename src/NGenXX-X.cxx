@@ -219,15 +219,15 @@ const Bytes ngenxxCryptoBase64Decode(const Bytes &in)
 #pragma mark Net.Http
 
 const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                       const NGenXXHttpMethodX method,
-                                       const std::string &params,
-                                       const Bytes &rawBody,
-                                       const std::vector<std::string> &headerV,
-                                       const std::vector<std::string> &formFieldNameV,
-                                       const std::vector<std::string> &formFieldMimeV,
-                                       const std::vector<std::string> &formFieldDataV,
-                                       const std::FILE *cFILE, const size_t fileSize,
-                                       const size_t timeout)
+                                              const NGenXXHttpMethodX method,
+                                              const std::string &params,
+                                              const Bytes &rawBody,
+                                              const std::vector<std::string> &headerV,
+                                              const std::vector<std::string> &formFieldNameV,
+                                              const std::vector<std::string> &formFieldMimeV,
+                                              const std::vector<std::string> &formFieldDataV,
+                                              const std::FILE *cFILE, const size_t fileSize,
+                                              const size_t timeout)
 {
     NGenXXHttpResponse rsp;
     if (_ngenxx_http_client == nullptr || url.length() == 0)
@@ -276,18 +276,18 @@ const std::string NGenXXHttpResponse::toJson()
 }
 
 const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                       const NGenXXHttpMethodX method,
-                                       const std::unordered_map<std::string, Any> &params,
-                                       const Bytes &rawBody,
-                                       const std::unordered_map<std::string, std::string> &headers,
-                                       const std::vector<std::string> &formFieldNameV,
-                                       const std::vector<std::string> &formFieldMimeV,
-                                       const std::vector<std::string> &formFieldDataV,
-                                       const std::FILE *cFILE, const size_t fileSize,
-                                       const size_t timeout)
+                                              const NGenXXHttpMethodX method,
+                                              const std::unordered_map<std::string, Any> &params,
+                                              const Bytes &rawBody,
+                                              const std::unordered_map<std::string, std::string> &headers,
+                                              const std::vector<std::string> &formFieldNameV,
+                                              const std::vector<std::string> &formFieldMimeV,
+                                              const std::vector<std::string> &formFieldDataV,
+                                              const std::FILE *cFILE, const size_t fileSize,
+                                              const size_t timeout)
 {
     std::stringstream ssParams;
-    for (auto& it : params)
+    for (auto &it : params)
     {
         if (ssParams.str().length() > 0)
         {
@@ -303,7 +303,8 @@ const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
         );
     }
     std::vector<std::string> headerV;
-    for (const auto& pair : headers) {
+    for (const auto &pair : headers)
+    {
         auto [k, v] = pair;
         std::stringstream ss;
         ss << k << ":" << v;

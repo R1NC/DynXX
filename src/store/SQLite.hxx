@@ -3,13 +3,13 @@
 
 #if defined(__cplusplus)
 
-#include <NGenXXTypes.hxx>
-
-#include <sqlite3.h>
-
 #include <unordered_map>
 #include <mutex>
 #include <shared_mutex>
+
+#include <sqlite3.h>
+
+#include <NGenXXTypes.hxx>
 
 namespace NGenXX
 {

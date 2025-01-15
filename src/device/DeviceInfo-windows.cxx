@@ -1,11 +1,11 @@
 #if (defined(_WIN32) || defined(_WIN64))
-
 #include "DeviceInfo.hxx"
-#include <NGenXXDeviceInfo.h>
 
 #include <windows.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#include <NGenXXDeviceInfo.h>
 
 int NGenXX::Device::DeviceInfo::deviceType()
 {

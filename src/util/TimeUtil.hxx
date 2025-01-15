@@ -8,7 +8,7 @@
 
 using namespace std::chrono;
 
-template<typename clockT, typename durationT>
+template <typename clockT, typename durationT>
 static inline uint64_t castNow()
 {
     return duration_cast<durationT>(clockT::now().time_since_epoch()).count();

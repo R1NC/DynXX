@@ -1,9 +1,8 @@
 #include "Crypto.hxx"
-#include <NGenXXLog.hxx>
+
 #include <string>
 #include <cstring>
 
-#include "../util/TypeUtil.hxx"
 #include <openssl/bio.h>
 #include <openssl/rand.h>
 #include <openssl/evp.h>
@@ -11,6 +10,9 @@
 #include <openssl/sha.h>
 #include <openssl/md5.h>
 #include <openssl/buffer.h>
+
+#include <NGenXXLog.hxx>
+#include "../util/TypeUtil.hxx"
 
 constexpr int OpenSSL_OK = 1;
 constexpr int OpenSSL_AES_Key_BITS = 128;
@@ -402,7 +404,7 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
         return BytesEmpty;
     }
 
-    auto out = wrapBytes(reinterpret_cast<byte*>(outBytes), outLen);
+    auto out = wrapBytes(reinterpret_cast<byte *>(outBytes), outLen);
 
     BIO_free_all(b64);
 

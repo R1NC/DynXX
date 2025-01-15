@@ -26,26 +26,26 @@ struct NGenXXHttpResponse
 using NGenXXHttpResponse = struct NGenXXHttpResponse;
 
 const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                       const NGenXXHttpMethodX method,
-                                       const std::string &params,
-                                       const Bytes &rawBody = BytesEmpty,
-                                       const std::vector<std::string> &headerV = {},
-                                       const std::vector<std::string> &formFieldNameV = {},
-                                       const std::vector<std::string> &formFieldMimeV = {},
-                                       const std::vector<std::string> &formFieldDataV = {},
-                                       const std::FILE *cFILE = nullptr, const size_t fileSize = 0,
-                                       const size_t timeout = NGenXXHttpDefaultTimeout);
+                                              const NGenXXHttpMethodX method,
+                                              const std::string &params,
+                                              const Bytes &rawBody = BytesEmpty,
+                                              const std::vector<std::string> &headerV = {},
+                                              const std::vector<std::string> &formFieldNameV = {},
+                                              const std::vector<std::string> &formFieldMimeV = {},
+                                              const std::vector<std::string> &formFieldDataV = {},
+                                              const std::FILE *cFILE = nullptr, const size_t fileSize = 0,
+                                              const size_t timeout = NGenXXHttpDefaultTimeout);
 
 const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                       const NGenXXHttpMethodX method,
-                                       const std::unordered_map<std::string, Any> &params,
-                                       const Bytes &rawBody = BytesEmpty,
-                                       const std::unordered_map<std::string, std::string> &headers = {},
-                                       const std::vector<std::string> &formFieldNameV = {},
-                                       const std::vector<std::string> &formFieldMimeV = {},
-                                       const std::vector<std::string> &formFieldDataV = {},
-                                       const std::FILE *cFILE = nullptr, const size_t fileSize = 0,
-                                       const size_t timeout = NGenXXHttpDefaultTimeout);
+                                              const NGenXXHttpMethodX method,
+                                              const std::unordered_map<std::string, Any> &params,
+                                              const Bytes &rawBody = BytesEmpty,
+                                              const std::unordered_map<std::string, std::string> &headers = {},
+                                              const std::vector<std::string> &formFieldNameV = {},
+                                              const std::vector<std::string> &formFieldMimeV = {},
+                                              const std::vector<std::string> &formFieldDataV = {},
+                                              const std::FILE *cFILE = nullptr, const size_t fileSize = 0,
+                                              const size_t timeout = NGenXXHttpDefaultTimeout);
 
 bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath, const size_t timeout = NGenXXHttpDefaultTimeout);
 

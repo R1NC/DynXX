@@ -1,14 +1,15 @@
 #if defined(USE_QJS)
 #include "NGenXX-Js.hxx"
-#include "util/TypeUtil.hxx"
-#include "NGenXX-inner.hxx"
-#include "js/JsBridge.hxx"
-#include "NGenXX-Script.hxx"
 
 #include <cstring>
 #include <cstdlib>
 #include <memory>
 #include <functional>
+
+#include "util/TypeUtil.hxx"
+#include "NGenXX-inner.hxx"
+#include "js/JsBridge.hxx"
+#include "NGenXX-Script.hxx"
 
 std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
 static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nullptr;

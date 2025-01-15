@@ -1,13 +1,13 @@
 #include "Zip.hxx"
 
-#include <NGenXXLog.hxx>
-
 #include <algorithm>
 #include <stdexcept>
 #include <cstring>
 #include <cstdlib>
 #include <functional>
 #include <vector>
+
+#include <NGenXXLog.hxx>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -72,9 +72,9 @@ const Bytes NGenXX::Z::ZBase::processDo()
     (this->zs).avail_out = static_cast<uint>(this->bufferSize);
     (this->zs).next_out = reinterpret_cast<Bytef *>(this->outBuffer);
 
-    //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
+    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
     this->processImp();
-    //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
+    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
 
     if (this->ret != Z_OK && ret != Z_STREAM_END)
     {
@@ -145,7 +145,7 @@ NGenXX::Z::UnZip::~UnZip()
 
 bool zProcess(const size_t bufferSize,
               std::function<const Bytes()> sReadF,
-              std::function<void(const Bytes&)> sWriteF,
+              std::function<void(const Bytes &)> sWriteF,
               std::function<void()> sFlushF,
               NGenXX::Z::ZBase &zb)
 {

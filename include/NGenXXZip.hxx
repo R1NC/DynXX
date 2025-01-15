@@ -20,8 +20,8 @@ enum class NGenXXZFormatX : int
 };
 
 void *ngenxxZZipInit(const NGenXXZipCompressModeX mode = NGenXXZipCompressModeX::Default,
-                           const size_t bufferSize = NGenXXZDefaultBufferSize,
-                           const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
+                     const size_t bufferSize = NGenXXZDefaultBufferSize,
+                     const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
 
 size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, const bool inFinish);
 
@@ -32,7 +32,7 @@ bool ngenxxZZipProcessFinished(void *const zip);
 void ngenxxZZipRelease(void *const zip);
 
 void *ngenxxZUnzipInit(const size_t bufferSize = NGenXXZDefaultBufferSize,
-                             const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
+                       const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
 
 size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, const bool inFinish);
 

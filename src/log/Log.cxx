@@ -1,8 +1,11 @@
 #include "Log.hxx"
-#include <NGenXXLog.h>
 
 #include <string.h>
 #include <stdlib.h>
+
+#include <mutex>
+#include <cstring>
+#include <cstdlib>
 
 #if defined(__ANDROID__)
 #include <android/log.h>
@@ -12,9 +15,7 @@
 #include <iostream>
 #endif
 
-#include <mutex>
-#include <cstring>
-#include <cstdlib>
+#include <NGenXXLog.h>
 
 static std::function<void(const int level, const char *content)> _NGenXX_Log_callback = nullptr;
 static std::mutex *_ngenxx_log_mutex = nullptr;

@@ -1,6 +1,8 @@
 #include "SQLite.hxx"
-#include <NGenXXLog.hxx>
+
 #include <string.h>
+
+#include <NGenXXLog.hxx>
 
 #define PRINT_ERR(rc, db) ngenxxLogPrint(NGenXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
 
@@ -18,7 +20,7 @@ NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::str
     {
         sqlite3 *db;
         auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-        //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
+        // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
         if (rc != SQLITE_OK)
         {
             PRINT_ERR(rc, db);
@@ -73,7 +75,7 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql)
     }
     sqlite3_stmt *stmt;
     auto rc = sqlite3_exec(this->db, sql.c_str(), NULL, NULL, NULL);
-    //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
+    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -91,7 +93,7 @@ NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connectio
     }
     sqlite3_stmt *stmt;
     auto rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, NULL);
-    //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.query ret:{}", rc);
+    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.query ret:{}", rc);
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -117,11 +119,11 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow()
     std::unique_lock lock(this->mutex);
     if (this->stmt == NULL)
     {
-         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readRow STMT NULL");
-         return false;
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readRow STMT NULL");
+        return false;
     }
     auto rc = sqlite3_step(this->stmt);
-    //ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.step ret:{}", rc);
+    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.step ret:{}", rc);
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
         PRINT_ERR(rc, NULL);

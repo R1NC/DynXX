@@ -1,6 +1,6 @@
 #if defined(__EMSCRIPTEN__)
-
 #include "DeviceInfo.hxx"
+
 #include <NGenXXDeviceInfo.h>
 
 int NGenXX::Device::DeviceInfo::deviceType()

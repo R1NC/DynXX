@@ -1,3 +1,5 @@
+#include "NGenXX-Script.hxx"
+
 #include <cstdint>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +9,6 @@
 
 #include <NGenXX.hxx>
 #include <NGenXXNetHttp.h>
-#include "NGenXX-Script.hxx"
 #include "json/JsonDecoder.hxx"
 
 const std::string bytes2json(const Bytes &bytes)
@@ -23,7 +24,7 @@ const std::string bytes2json(const Bytes &bytes)
 const std::string strArray2json(const std::vector<std::string> &v)
 {
     auto cj = cJSON_CreateArray();
-    for (const auto& it : v)
+    for (const auto &it : v)
     {
         cJSON_AddItemToArray(cj, cJSON_CreateString(it.c_str()));
     }
@@ -48,9 +49,12 @@ address parseAddress(NGenXX::Json::Decoder &decoder, const char *k)
     {
         return a;
     }
-    try {
+    try
+    {
         a = std::stoll(s);
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "parseAddress failed s:{}", s);
     }
     return a;
@@ -205,13 +209,13 @@ const std::string ngenxx_net_http_requestS(const char *json)
     }
 
     auto t = ngenxxNetHttpRequest(url, static_cast<NGenXXHttpMethodX>(method), params, rawBody,
-                                header_v,
-                                form_field_name_v,
-                                form_field_mime_v,
-                                form_field_data_v,
-                                reinterpret_cast<std::FILE *>(cFILE),
-                                fileSize,
-                                timeout);
+                                  header_v,
+                                  form_field_name_v,
+                                  form_field_mime_v,
+                                  form_field_data_v,
+                                  reinterpret_cast<std::FILE *>(cFILE),
+                                  fileSize,
+                                  timeout);
     return t.toJson();
 }
 

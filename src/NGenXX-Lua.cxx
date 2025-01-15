@@ -1,12 +1,12 @@
 #if defined(USE_LUA)
 #include "NGenXX-Lua.hxx"
 
+#include <memory>
+
 #include "lua/LuaBridge.hxx"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
 #include "NGenXX-Script.hxx"
-
-#include <memory>
 
 std::shared_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
 

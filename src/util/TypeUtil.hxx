@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <cstring>
+
 #include <NGenXXTypes.hxx>
 
 static inline const char *copyStr(const std::string &s)

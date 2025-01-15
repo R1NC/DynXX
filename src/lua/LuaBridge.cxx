@@ -3,13 +3,13 @@
 
 #include <string.h>
 
-#include <NGenXXLog.hxx>
-
-#include <uv.h>
-
 #include <cstdlib>
 #include <thread>
 #include <functional>
+
+#include <uv.h>
+
+#include <NGenXXLog.hxx>
 
 typedef struct
 {
@@ -47,7 +47,7 @@ void ngenxx_lua_uv_timer_cb(uv_timer_t *timer)
     lua_pcall(timer_data->lState, 0, 0, 0);
 }
 
-uv_timer_t* ngenxx_lua_uv_timer_start(ngenxx_lua_timer_data *timer_data)
+uv_timer_t *ngenxx_lua_uv_timer_start(ngenxx_lua_timer_data *timer_data)
 {
     auto timer = reinterpret_cast<uv_timer_t *>(std::malloc(sizeof(uv_timer_t)));
     timer->data = timer_data;
@@ -175,7 +175,7 @@ bool NGenXX::LuaBridge::loadScript(const std::string &script)
     return true;
 }
 
-/// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here! 
+/// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
 const std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::string &params)
 {
     std::string s;

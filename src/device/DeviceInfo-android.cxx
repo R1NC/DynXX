@@ -1,12 +1,12 @@
 #if defined(__ANDROID__)
-
 #include "DeviceInfo.hxx"
-#include <NGenXXDeviceInfo.h>
 
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/system_properties.h>
 #include <android/api-level.h>
+
+#include <NGenXXDeviceInfo.h>
 
 const int NGenXX::Device::DeviceInfo::apiLevel()
 {

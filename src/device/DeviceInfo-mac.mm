@@ -1,10 +1,5 @@
 #if defined(__APPLE__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
-
 #include "DeviceInfo.hxx"
-#include <NGenXXDeviceInfo.h>
-
-#import <Foundation/Foundation.h>
-#import <sys/utsname.h>
 
 #include <mach/mach_host.h>
 #include <mach/mach_init.h>
@@ -12,9 +7,14 @@
 #include <stdint.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
+#include <stdlib.h>
+#include <sys/utsname.h>
+
+#import <Foundation/Foundation.h>
+
 #include <sstream>
 
-#include <stdlib.h>
+#include <NGenXXDeviceInfo.h>
 
 #if defined(ARCH_CPU_X86_64)
 // https://developer.apple.com/documentation/apple_silicon/about_the_rosetta_translation_environment#3616845

@@ -1,7 +1,6 @@
 #if defined(USE_WOLF_SSL)
 #include "Crypto.hxx"
-#include <NGenXXLog.hxx>
-#include "../util/TypeUtil.hxx"
+
 #include <string>
 #include <cstring>
 
@@ -12,6 +11,9 @@
 #include <wolfssl/wolfcrypt/sha256.h>
 #include <wolfssl/wolfcrypt/rsa.h>
 #include <wolfssl/wolfcrypt/coding.h>
+
+#include <NGenXXLog.hxx>
+#include "../util/TypeUtil.hxx"
 
 constexpr int WolfSSL_OK = 0;
 

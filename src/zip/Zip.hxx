@@ -5,11 +5,12 @@
 
 #if defined(__cplusplus)
 
-#include <NGenXXZip.h>
-#include <NGenXXTypes.hxx>
 #include <istream>
 #include <ostream>
 #include <cstdio>
+
+#include <NGenXXZip.h>
+#include <NGenXXTypes.hxx>
 
 namespace NGenXX
 {

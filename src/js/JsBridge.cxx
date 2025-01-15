@@ -1,9 +1,5 @@
 #if defined(USE_QJS)
 #include "JsBridge.hxx"
-#include <NGenXXLog.hxx>
-#include "../util/TimeUtil.hxx"
-
-#include <uv.h>
 
 #include <cstdint>
 #include <cstdlib>
@@ -13,6 +9,11 @@
 #include <utility>
 #include <mutex>
 #include <thread>
+
+#include <uv.h>
+
+#include <NGenXXLog.hxx>
+#include "../util/TimeUtil.hxx"
 
 constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "import * as os from 'qjs:os';\n"
@@ -317,7 +318,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
     return ret;
 }
 
-/// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here! 
+/// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
 const std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, const bool await)
 {
     _ngenxx_js_mutex->lock();
@@ -359,7 +360,7 @@ const std::string NGenXX::JsBridge::callFunc(const std::string &func, const std:
     return s;
 }
 
-NGenXX_JS_Promise* _ngenxx_js_promise_new(JSContext *ctx)
+NGenXX_JS_Promise *_ngenxx_js_promise_new(JSContext *ctx)
 {
     auto jPromise = new NGenXX_JS_Promise();
     JSValue funcs[2];
@@ -374,7 +375,7 @@ NGenXX_JS_Promise* _ngenxx_js_promise_new(JSContext *ctx)
     return jPromise;
 }
 
-void _ngenxx_js_promise_callback(JSContext *ctx, NGenXX_JS_Promise* jPromise, JSValue jRet)
+void _ngenxx_js_promise_callback(JSContext *ctx, NGenXX_JS_Promise *jPromise, JSValue jRet)
 {
     auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
     if (JS_IsException(jCallRet))
@@ -387,7 +388,7 @@ void _ngenxx_js_promise_callback(JSContext *ctx, NGenXX_JS_Promise* jPromise, JS
     JS_FreeValue(ctx, jRet);
     JS_FreeValue(ctx, jPromise->f[0]);
     JS_FreeValue(ctx, jPromise->f[1]);
-    //JS_FreeValue(ctx, jPromise->p);
+    // JS_FreeValue(ctx, jPromise->p);
     delete jPromise;
 }
 

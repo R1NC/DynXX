@@ -1,8 +1,8 @@
 #include "JsonDecoder.hxx"
 
-#include <NGenXXLog.hxx>
-
 #include <stdexcept>
+
+#include <NGenXXLog.hxx>
 
 const cJSON *NGenXX::Json::Decoder::parseNode(const void *const node)
 {
@@ -111,7 +111,7 @@ void NGenXX::Json::Decoder::readChildren(const void *const node, const std::func
     auto idx = 0;
     while (childNode)
     {
-        if (callback) 
+        if (callback)
         {
             callback(idx++, childNode);
         }

@@ -8,6 +8,7 @@
 #include <shared_mutex>
 
 #include <MMKV.h>
+
 #include <NGenXXTypes.hxx>
 
 namespace NGenXX

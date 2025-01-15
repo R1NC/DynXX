@@ -3,12 +3,12 @@
 
 #if defined(__cplusplus)
 
-#include <NGenXXTypes.hxx>
-
 #include <cstdio>
 #include <unordered_map>
 
 #include <curl/curl.h>
+
+#include <NGenXXTypes.hxx>
 
 namespace NGenXX
 {
@@ -35,8 +35,8 @@ namespace NGenXX
         {
         public:
             HttpClient();
-            HttpClient(const HttpClient&) = delete;
-            HttpClient& operator=(const HttpClient&) = delete;
+            HttpClient(const HttpClient &) = delete;
+            HttpClient &operator=(const HttpClient &) = delete;
             HttpClient(HttpClient &&) = delete;
             HttpClient &operator=(HttpClient &&) = delete;
 

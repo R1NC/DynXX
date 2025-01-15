@@ -1,12 +1,13 @@
 #ifndef NGENXX_SRC_JS_BRIDGE_HXX_
 #define NGENXX_SRC_JS_BRIDGE_HXX_
 
-#include <cstdint>
 #if defined(__cplusplus)
 
+#include <cstdint>
 #include <functional>
 
 #include <quickjs-libc.h>
+
 #include <NGenXXTypes.hxx>
 
 #define DEF_JS_FUNC_VOID(fJ, fS)                                                           \

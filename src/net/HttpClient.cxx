@@ -1,5 +1,10 @@
 #include "HttpClient.hxx"
 
+#include <algorithm>
+#include <vector>
+#include <cstring>
+#include <sstream>
+
 #if defined(USE_ADA_URL)
 #include <ada.h>
 #endif
@@ -8,13 +13,9 @@
 #include <NGenXXLog.hxx>
 #include <NGenXXNetHttp.h>
 
-#include <algorithm>
-#include <vector>
-#include <cstring>
-#include <sstream>
-
-size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t nmemb, void *userdata) {
-    auto bytes = static_cast<Bytes*>(userdata);
+size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t nmemb, void *userdata)
+{
+    auto bytes = static_cast<Bytes *>(userdata);
     auto len = std::min(size * nmemb, bytes->size());
     if (len > 0)
     {
@@ -37,8 +38,9 @@ size_t _NGenXX_Net_HttpClient_WriteCallback(char *contents, size_t size, size_t 
     return size * nmemb;
 }
 
-size_t _NGenXX_Net_HttpClient_RspHeadersCallback(char *buffer, size_t size, size_t nitems, void *userdata) {
-    auto headers = static_cast<std::unordered_map<std::string, std::string>*>(userdata);
+size_t _NGenXX_Net_HttpClient_RspHeadersCallback(char *buffer, size_t size, size_t nitems, void *userdata)
+{
+    auto headers = static_cast<std::unordered_map<std::string, std::string> *>(userdata);
     std::string header(buffer, size * nitems);
     // Split K & V
     auto colonPos = header.find(':');
@@ -68,12 +70,12 @@ NGenXX::Net::HttpClient::~HttpClient()
 }
 
 const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::string &url, const int method,
-                                      const std::vector<std::string> &headers,
-                                      const std::string &params,
-                                      const Bytes &rawBody,
-                                      const std::vector<NGenXX::Net::HttpFormField> &formFields,
-                                      const std::FILE *cFILE, const size_t fileSize,
-                                      const size_t timeout)
+                                                                 const std::vector<std::string> &headers,
+                                                                 const std::string &params,
+                                                                 const Bytes &rawBody,
+                                                                 const std::vector<NGenXX::Net::HttpFormField> &formFields,
+                                                                 const std::FILE *cFILE, const size_t fileSize,
+                                                                 const size_t timeout)
 {
     HttpResponse rsp;
 

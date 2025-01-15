@@ -1,10 +1,10 @@
 #if defined(__APPLE__) && defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__)
-
 #include "DeviceInfo.hxx"
-#include <NGenXXDeviceInfo.h>
 
 #import <UIKit/UIKit.h>
 #import <sys/utsname.h>
+
+#include <NGenXXDeviceInfo.h>
 
 #define NSString2CharP(nsstr) [nsstr cStringUsingEncoding:NSUTF8StringEncoding]
 
