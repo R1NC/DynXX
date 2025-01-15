@@ -11,12 +11,14 @@
 
 static inline void *runInCurrentEnv(JavaVM *vm, const std::function<void *(JNIEnv *env)> &task)
 {
-    if (vm == nullptr)
+    if (vm == nullptr) {
         return nullptr;
+    }
     JNIEnv *env;
     vm->AttachCurrentThread(&env, nullptr);
-    if (env == nullptr)
+    if (env == nullptr) {
         return nullptr;
+    }
     void *t = task(env);
     // vm->DetachCurrentThread();
     return t;
@@ -29,8 +31,9 @@ jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, const size_t outLen,
     {
         jba = env->NewByteArray(static_cast<jsize>(outLen));
         env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen), reinterpret_cast<jbyte *>(const_cast<byte *>(bytes)));
-        if (needFree)
+        if (needFree) {
             free(static_cast<void *>(const_cast<byte *>(bytes)));
+        }
     }
     else
     {
