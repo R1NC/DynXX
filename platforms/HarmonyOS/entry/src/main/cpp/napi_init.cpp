@@ -379,7 +379,7 @@ static napi_value StoreKVOpen(napi_env env, napi_callback_info info)
     auto argv = readParams(env, info, 1);
 
     auto _id = napiValue2chars(env, argv[0]);
-    auto res = (long)ngenxx_store_kv_open(_id);
+    auto res = reinterpret_cast<long>(ngenxx_store_kv_open(_id));
     auto nv = long2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(_id)));
@@ -626,7 +626,7 @@ static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info)
     auto cK = napiValue2chars(env, argv[1]);
     auto node = napiValue2long(env, argv[2]);
 
-    auto res = (long)ngenxx_json_decoder_read_node(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node), cK);
+    auto res = reinterpret_cast<long>(ngenxx_json_decoder_read_node(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node), cK));
     auto v = long2NapiValue(env, res);
 
     free(static_cast<void *>(const_cast<char *>(cK)));
@@ -641,7 +641,7 @@ static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info)
     auto decoder = napiValue2long(env, argv[0]);
     auto node = napiValue2long(env, argv[1]);
 
-    auto res = (long)ngenxx_json_decoder_read_child(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
+    auto res = reinterpret_cast<long>(ngenxx_json_decoder_read_child(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node)));
     auto v = long2NapiValue(env, res);
 
     free(static_cast<void *>(argv));
@@ -655,7 +655,7 @@ static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info)
     auto decoder = napiValue2long(env, argv[0]);
     auto node = napiValue2long(env, argv[1]);
 
-    auto res = (long)ngenxx_json_decoder_read_next(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
+    auto res = reinterpret_cast<long>(ngenxx_json_decoder_read_next(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node)));
     auto v = long2NapiValue(env, res);
 
     free(static_cast<void *>(argv));
