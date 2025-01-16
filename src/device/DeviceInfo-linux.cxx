@@ -5,7 +5,7 @@
 
 int NGenXX::Device::DeviceInfo::deviceType()
 {
-    return NGenXXDeviceTypeWindows;
+    return NGenXXDeviceTypeLinux;
 }
 
 std::string NGenXX::Device::DeviceInfo::deviceName()
