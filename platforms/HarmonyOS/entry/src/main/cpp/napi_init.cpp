@@ -5,7 +5,8 @@
 
 #include <cstring>
 
-#include "napi_util.h"
+#include <napi_util.h>
+
 #include "../../../../../../build.HarmonyOS/output/include/NGenXX.h"
 
 static napi_value GetVersion(napi_env env, napi_callback_info info)

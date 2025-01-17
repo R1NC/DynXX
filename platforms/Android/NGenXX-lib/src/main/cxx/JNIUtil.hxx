@@ -2,6 +2,7 @@
 #define NGENXX_JNI_UTIL_HXX_
 
 #include <jni.h>
+
 #include <cstdlib>
 #include <string>
 #include <functional>

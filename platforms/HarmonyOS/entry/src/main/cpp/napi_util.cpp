@@ -1,6 +1,8 @@
 #include "napi_util.h"
+
 #include <stdlib.h>
 #include <string.h>
+
 #include <cstring>
 
 napi_value *readParams(napi_env env, napi_callback_info info, size_t count)

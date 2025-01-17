@@ -1,9 +1,11 @@
 #include <jni.h>
+
 #include <cstdlib>
 #include <string>
 #include <cstring>
-#include "../../../../../../build.Android/output/include/NGenXX.h"
+
 #include "JNIUtil.hxx"
+#include "../../../../../../build.Android/output/include/NGenXX.h"
 
 static JavaVM *sVM;
 static jclass sJClass;
@@ -859,13 +861,13 @@ jlong NGenXX_JNI_zUnZipInput(JNIEnv *env, jobject thiz,
     return ret;
 }
 
-jbyteArray NGenXX_JNI_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip)
-{
+jbyteArray NGenXX_JNI_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip) {
     size_t outLen = 0;
     auto cRes = ngenxx_z_unzip_process_do(reinterpret_cast<void *>(unzip), &outLen);
     auto jba = moveToJByteArray(env, cRes, outLen, true);
 
     return jba;
+}
 
 jboolean NGenXX_JNI_zUnZipProcessFinished(JNIEnv *env, jobject thiz,
                                           jlong unzip)

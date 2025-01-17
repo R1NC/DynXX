@@ -1,7 +1,7 @@
 #if defined(__OHOS__)
 #include "DeviceInfo.hxx"
 
-#include "deviceinfo.h"
+#include <deviceinfo.h>
 
 #include <NGenXXDeviceInfo.h>
 
