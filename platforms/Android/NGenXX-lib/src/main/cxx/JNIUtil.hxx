@@ -5,24 +5,15 @@
 
 #include <cstdlib>
 #include <string>
-#include <functional>
-#include <type_traits>
 
 #include "../../../../../../build.Android/output/include/NGenXXTypes.h"
 
-static inline void *runInCurrentEnv(JavaVM *vm, const std::function<void *(JNIEnv *env)> &task)
-{
-    if (vm == nullptr) {
-        return nullptr;
+static inline JNIEnv *currentEnv(JavaVM *vm) {
+    JNIEnv *env = NULL;
+    if (vm != nullptr) {
+        vm->AttachCurrentThread(&env, nullptr);
     }
-    JNIEnv *env;
-    vm->AttachCurrentThread(&env, nullptr);
-    if (env == nullptr) {
-        return nullptr;
-    }
-    void *t = task(env);
-    // vm->DetachCurrentThread();
-    return t;
+    return env;
 }
 
 jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, const size_t outLen, const bool needFree)
