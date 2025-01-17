@@ -20,7 +20,7 @@ static napi_value GetVersion(napi_env env, napi_callback_info info)
 
 static napi_value Init(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto root = napiValue2chars(env, argv[0]);
 
@@ -139,7 +139,7 @@ static void engineLogCallback(int level, const char *content)
 
 static napi_value LogSetLevel(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto level = napiValue2int(env, argv[0]);
 
@@ -151,9 +151,9 @@ static napi_value LogSetLevel(napi_env env, napi_callback_info info)
 
 static napi_value LogSetCallback(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
-    napi_value vLogCallback = argv[0];
+    napi_value vLogCallback = argc > 0 ? argv[0] : NULL;
     int status;
     if (vLogCallback == NULL)
     {
@@ -180,7 +180,7 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info)
 
 static napi_value LogPrint(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto level = napiValue2int(env, argv[0]);
     auto content = napiValue2chars(env, argv[1]);
@@ -196,25 +196,25 @@ static napi_value LogPrint(napi_env env, napi_callback_info info)
 
 static napi_value NetHttpRequest(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 10);
+    auto [argc, argv] = readParams(env, info);
 
     auto cUrl = napiValue2chars(env, argv[0]);
     auto iMethod = napiValue2int(env, argv[1]);
-    auto cParams = napiValue2chars(env, argv[2]);
+    auto cParams = argc > 2 ? napiValue2chars(env, argv[2]) : "";
 
-    auto header_c = napiValueArrayLen(env, argv[3]);
-    auto header_v = napiValue2charsArray(env, argv[3], header_c);
+    auto header_c = argc > 3 ? napiValueArrayLen(env, argv[3]) : 0;
+    auto header_v = argc > 3 ? napiValue2charsArray(env, argv[3], header_c) : NULL;
 
-    auto form_field_count = napiValueArrayLen(env, argv[4]);
-    auto form_field_name_v = napiValue2charsArray(env, argv[4], form_field_count);
-    auto form_field_mime_v = napiValue2charsArray(env, argv[5], form_field_count);
-    auto form_field_data_v = napiValue2charsArray(env, argv[6], form_field_count);
+    auto form_field_count = argc > 4 ? napiValueArrayLen(env, argv[4]) : 0;
+    auto form_field_name_v = argc > 4 ? napiValue2charsArray(env, argv[4], form_field_count) : NULL;
+    auto form_field_mime_v = argc > 5 ? napiValue2charsArray(env, argv[5], form_field_count) : NULL;
+    auto form_field_data_v = argc > 6 ? napiValue2charsArray(env, argv[6], form_field_count) : NULL;
 
-    auto cFilePath = napiValue2chars(env, argv[7]);
+    auto cFilePath = argc > 7 ? napiValue2chars(env, argv[7]) : NULL;
     FILE *cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
-    auto fileLength = napiValue2long(env, argv[8]);
+    auto fileLength = argc > 8 ? napiValue2long(env, argv[8]) : 0;
 
-    auto lTimeout = napiValue2long(env, argv[9]);
+    auto lTimeout = argc > 9 ? napiValue2long(env, argv[9]) : 15000;
 
     auto res = ngenxx_net_http_request(cUrl, cParams, iMethod,
                                               header_v, header_c,
@@ -254,7 +254,7 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info)
 
 static napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto _id = napiValue2chars(env, argv[0]);
     auto res = reinterpret_cast<long>(ngenxx_store_sqlite_open(_id));
@@ -267,7 +267,7 @@ static napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info)
 
 static napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     auto sql = napiValue2chars(env, argv[1]);
@@ -282,7 +282,7 @@ static napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info)
 
 static napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     auto sql = napiValue2chars(env, argv[1]);
@@ -297,7 +297,7 @@ static napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info)
 
 static napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto query_result = napiValue2long(env, argv[0]);
 
@@ -310,7 +310,7 @@ static napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
 
 static napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto query_result = napiValue2long(env, argv[0]);
     auto column = napiValue2chars(env, argv[1]);
@@ -326,7 +326,7 @@ static napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_inf
 
 static napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto query_result = napiValue2long(env, argv[0]);
     auto column = napiValue2chars(env, argv[1]);
@@ -341,7 +341,7 @@ static napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_
 
 static napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto query_result = napiValue2long(env, argv[0]);
     auto column = napiValue2chars(env, argv[1]);
@@ -356,7 +356,7 @@ static napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_in
 
 static napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto query_result = napiValue2long(env, argv[0]);
     ngenxx_store_sqlite_query_drop(reinterpret_cast<void *>(query_result));
@@ -367,7 +367,7 @@ static napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info)
 
 static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     ngenxx_store_sqlite_close(reinterpret_cast<void *>(conn));
@@ -380,7 +380,7 @@ static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVOpen(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto _id = napiValue2chars(env, argv[0]);
     auto res = reinterpret_cast<long>(ngenxx_store_kv_open(_id));
@@ -393,7 +393,7 @@ static napi_value StoreKVOpen(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVReadString(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     auto k = napiValue2chars(env, argv[1]);
@@ -409,7 +409,7 @@ static napi_value StoreKVReadString(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVWriteString(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 3);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     auto k = napiValue2chars(env, argv[1]);
@@ -426,7 +426,7 @@ static napi_value StoreKVWriteString(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVReadInteger(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     auto k = napiValue2chars(env, argv[1]);
@@ -441,7 +441,7 @@ static napi_value StoreKVReadInteger(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 3);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     auto k = napiValue2chars(env, argv[1]);
@@ -457,7 +457,7 @@ static napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVReadFloat(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     auto k = napiValue2chars(env, argv[1]);
@@ -472,7 +472,7 @@ static napi_value StoreKVReadFloat(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 3);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     auto k = napiValue2chars(env, argv[1]);
@@ -488,7 +488,7 @@ static napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVContains(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto  conn = napiValue2long(env, argv[0]);
     auto k = napiValue2chars(env, argv[1]);
@@ -503,7 +503,7 @@ static napi_value StoreKVContains(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVRemove(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     auto k = napiValue2chars(env, argv[1]);
@@ -518,7 +518,7 @@ static napi_value StoreKVRemove(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVClear(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     ngenxx_store_kv_clear(reinterpret_cast<void *>(conn));
@@ -529,7 +529,7 @@ static napi_value StoreKVClear(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVClose(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto conn = napiValue2long(env, argv[0]);
     ngenxx_store_kv_close(reinterpret_cast<void *>(conn));
@@ -582,7 +582,7 @@ static napi_value DeviceCpuArch(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderInit(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto cJson = napiValue2chars(env, argv[0]);
 
@@ -596,10 +596,10 @@ static napi_value JsonDecoderInit(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderIsArray(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto decoder = napiValue2long(env, argv[0]);
-    auto node = napiValue2long(env, argv[1]);
+    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
 
     auto res = ngenxx_json_decoder_is_array(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     auto v = bool2NapiValue(env, res);
@@ -610,10 +610,10 @@ static napi_value JsonDecoderIsArray(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderIsObject(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto decoder = napiValue2long(env, argv[0]);
-    auto node = napiValue2long(env, argv[1]);
+    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
 
     auto res = ngenxx_json_decoder_is_object(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     auto v = bool2NapiValue(env, res);
@@ -624,11 +624,11 @@ static napi_value JsonDecoderIsObject(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 3);
+    auto [argc, argv] = readParams(env, info);
 
     auto decoder = napiValue2long(env, argv[0]);
     auto cK = napiValue2chars(env, argv[1]);
-    auto node = napiValue2long(env, argv[2]);
+    auto node = argc > 2 ? napiValue2long(env, argv[2]) : 0;
 
     auto res = reinterpret_cast<long>(ngenxx_json_decoder_read_node(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node), cK));
     auto v = long2NapiValue(env, res);
@@ -640,10 +640,10 @@ static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto decoder = napiValue2long(env, argv[0]);
-    auto node = napiValue2long(env, argv[1]);
+    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
 
     auto res = reinterpret_cast<long>(ngenxx_json_decoder_read_child(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node)));
     auto v = long2NapiValue(env, res);
@@ -654,10 +654,10 @@ static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto decoder = napiValue2long(env, argv[0]);
-    auto node = napiValue2long(env, argv[1]);
+    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
 
     auto res = reinterpret_cast<long>(ngenxx_json_decoder_read_next(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node)));
     auto v = long2NapiValue(env, res);
@@ -668,10 +668,10 @@ static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderReadString(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto decoder = napiValue2long(env, argv[0]);
-    auto node = napiValue2long(env, argv[1]);
+    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
 
     auto cRes = ngenxx_json_decoder_read_string(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     auto v = chars2NapiValue(env, cRes);
@@ -683,10 +683,10 @@ static napi_value JsonDecoderReadString(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto decoder = napiValue2long(env, argv[0]);
-    auto node = napiValue2long(env, argv[1]);
+    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
 
     auto res = ngenxx_json_decoder_read_number(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     auto v = double2NapiValue(env, res);
@@ -697,7 +697,7 @@ static napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto decoder = napiValue2long(env, argv[0]);
 
@@ -711,7 +711,7 @@ static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info)
 
 static napi_value CodingHexBytes2str(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -726,7 +726,7 @@ static napi_value CodingHexBytes2str(napi_env env, napi_callback_info info)
 
 static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto cStr = napiValue2chars(env, argv[0]);
 
@@ -743,7 +743,7 @@ static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info)
 
 static napi_value CryptoRand(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto len = napiValue2int(env, argv[0]);
     byte out[len];
@@ -757,7 +757,7 @@ static napi_value CryptoRand(napi_env env, napi_callback_info info)
 
 static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -777,7 +777,7 @@ static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info)
 
 static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -797,7 +797,7 @@ static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info)
 
 static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 5);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -806,8 +806,8 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
     auto initVectorLen = napiValueArrayLen(env, argv[2]);
     auto initVectorBytes = napiValue2byteArray(env, argv[2], initVectorLen);
     auto tagBits = napiValue2int(env, argv[3]);
-    auto aadLen = napiValueArrayLen(env, argv[4]);
-    auto aadBytes = napiValue2byteArray(env, argv[4], aadLen);
+    auto aadLen = argc > 4 ? napiValueArrayLen(env, argv[4]) : 0;
+    auto aadBytes = argc > 4 ? napiValue2byteArray(env, argv[4], aadLen) : NULL;
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
@@ -826,7 +826,7 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
 
 static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 5);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -835,8 +835,8 @@ static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
     auto initVectorLen = napiValueArrayLen(env, argv[2]);
     auto initVectorBytes = napiValue2byteArray(env, argv[2], initVectorLen);
     auto tagBits = napiValue2int(env, argv[3]);
-    auto aadLen = napiValueArrayLen(env, argv[4]);
-    auto aadBytes = napiValue2byteArray(env, argv[4], aadLen);
+    auto aadLen = argc > 4 ? napiValueArrayLen(env, argv[4]) : 0;
+    auto aadBytes = argc > 4 ? napiValue2byteArray(env, argv[4], aadLen) : NULL;
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
@@ -855,7 +855,7 @@ static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
 
 static napi_value CryptoHashMd5(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -872,7 +872,7 @@ static napi_value CryptoHashMd5(napi_env env, napi_callback_info info)
 
 static napi_value CryptoHashSha256(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -889,7 +889,7 @@ static napi_value CryptoHashSha256(napi_env env, napi_callback_info info)
 
 static napi_value CryptoBase64Encode(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -906,7 +906,7 @@ static napi_value CryptoBase64Encode(napi_env env, napi_callback_info info)
 
 static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -925,7 +925,7 @@ static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info)
 
 static napi_value LLoadF(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto file = napiValue2chars(env, argv[0]);
 
@@ -939,7 +939,7 @@ static napi_value LLoadF(napi_env env, napi_callback_info info)
 
 static napi_value LLoadS(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 1);
+    auto [argc, argv] = readParams(env, info);
 
     auto script = napiValue2chars(env, argv[0]);
 
@@ -953,7 +953,7 @@ static napi_value LLoadS(napi_env env, napi_callback_info info)
 
 static napi_value LCall(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto func = napiValue2chars(env, argv[0]);
     auto params = napiValue2chars(env, argv[1]);
@@ -974,7 +974,7 @@ static napi_value LCall(napi_env env, napi_callback_info info)
 
 static napi_value JLoadF(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto file = napiValue2chars(env, argv[0]);
     auto isModule = napiValue2bool(env, argv[1]);
@@ -989,7 +989,7 @@ static napi_value JLoadF(napi_env env, napi_callback_info info)
 
 static napi_value JLoadS(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 3);
+    auto [argc, argv] = readParams(env, info);
 
     auto script = napiValue2chars(env, argv[0]);
     auto name = napiValue2chars(env, argv[1]);
@@ -1006,7 +1006,7 @@ static napi_value JLoadS(napi_env env, napi_callback_info info)
 
 static napi_value JLoadB(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 2);
+    auto [argc, argv] = readParams(env, info);
 
     auto inLen = napiValueArrayLen(env, argv[0]);
     auto inBytes = napiValue2byteArray(env, argv[0], inLen);
@@ -1023,7 +1023,7 @@ static napi_value JLoadB(napi_env env, napi_callback_info info)
 
 static napi_value JCall(napi_env env, napi_callback_info info)
 {
-    auto argv = readParams(env, info, 3);
+    auto [argc, argv] = readParams(env, info);
 
     auto func = napiValue2chars(env, argv[0]);
     auto params = napiValue2chars(env, argv[1]);

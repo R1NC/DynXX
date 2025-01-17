@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <tuple>
 
 #include <napi/native_api.h>
 
@@ -10,6 +11,16 @@
         char msg[128];                                       \
         sprintf(msg, "status=%d desc='%s'", status, errMsg); \
         napi_throw_error(env, NULL, msg);                    \
+    } while (0);
+
+#define CHECK_NAPI_STATUS_RETURN_TUPLE(env, status, errMsg) \
+    do                                                    \
+    {                                                     \
+        if (status != napi_ok)                            \
+        {                                                 \
+            PRINT_NAPI_STATUS_ERR(env, status, errMsg);   \
+            return {};                                  \
+        }                                                 \
     } while (0);
 
 #define CHECK_NAPI_STATUS_RETURN_ANY(env, status, errMsg) \
@@ -42,7 +53,8 @@
         }                                                  \
     } while (0);
 
-napi_value *readParams(napi_env env, napi_callback_info info, size_t count);
+using Params = std::tuple<size_t, napi_value*>;
+Params readParams(napi_env env, napi_callback_info info);
 
 const size_t napiValueArrayLen(napi_env env, napi_value nv);
 

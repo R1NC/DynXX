@@ -5,15 +5,19 @@
 #include <cstdlib>
 #include <cstring>
 
-napi_value *readParams(napi_env env, napi_callback_info info, size_t count)
+Params readParams(napi_env env, napi_callback_info info)
 {
-    auto argc = count;
-    auto argvLen = sizeof(napi_value) * count;
+    size_t argc = 0;
+    auto status = napi_get_cb_info(env, info, &argc, nullptr, nullptr, nullptr);
+    CHECK_NAPI_STATUS_RETURN_TUPLE(env, status, "napi_get_cb_info() failed");
+    
+    auto argvLen = sizeof(napi_value) * argc;
     auto argv = reinterpret_cast<napi_value *>(std::malloc(argvLen + 1));
     std::memset(argv, 0, argvLen + 1);
-    auto status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
-    CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_cb_info() failed");
-    return argv;
+    status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+    CHECK_NAPI_STATUS_RETURN_TUPLE(env, status, "napi_get_cb_info() failed");
+    
+    return {argc, argv};
 }
 
 const size_t napiValueArrayLen(napi_env env, napi_value nv)
