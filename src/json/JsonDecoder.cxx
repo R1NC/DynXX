@@ -1,6 +1,7 @@
 #include "JsonDecoder.hxx"
 
 #include <stdexcept>
+#include <type_traits>
 
 #include <NGenXXLog.hxx>
 
@@ -10,7 +11,7 @@ const cJSON *NGenXX::Json::Decoder::parseNode(const void *const node)
     {
         return this->cjson;
     }
-    return reinterpret_cast<cJSON *>(const_cast<void *>(node));
+    return reinterpret_cast<cJSON *>(std::decay_t<void *>(node));
 }
 
 NGenXX::Json::Decoder::Decoder(const std::string &json)

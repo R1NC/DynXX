@@ -1,15 +1,16 @@
 #include "napi_util.h"
 
-#include <stdlib.h>
 #include <string.h>
 
+#include <cstdlib>
 #include <cstring>
 
 napi_value *readParams(napi_env env, napi_callback_info info, size_t count)
 {
     auto argc = count;
-    auto argv = reinterpret_cast<napi_value *>(malloc(sizeof(napi_value) * count + 1));
-    std::memset(static_cast<void *>(argv), 0, count + 1);
+    auto argvLen = sizeof(napi_value) * count;
+    auto argv = reinterpret_cast<napi_value *>(std::malloc(argvLen + 1));
+    std::memset(argv, 0, argvLen + 1);
     auto status = napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_cb_info() failed");
     return argv;
@@ -28,7 +29,9 @@ const char *napiValue2chars(napi_env env, napi_value nv)
     size_t len;
     auto status = napi_get_value_string_utf8(env, nv, NULL, 0, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
-    auto cStr = reinterpret_cast<char *>(malloc(len + 1));
+    auto cStrLen = len * sizeof(char);
+    auto cStr = reinterpret_cast<char *>(std::malloc(cStrLen + 1));
+    std::memset(cStr, 0, cStrLen + 1);
     status = napi_get_value_string_utf8(env, nv, cStr, len + 1, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
     return cStr;
@@ -71,7 +74,9 @@ const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len)
     if (len <= 0) {
         return NULL;
     }
-    auto byteArray = reinterpret_cast<byte *>(malloc(len * sizeof(const byte) + 1));
+    auto byteArrayLen = len * sizeof(byte);
+    auto byteArray = reinterpret_cast<byte *>(std::malloc(byteArrayLen + 1));
+    std::memset(byteArray, 0, byteArrayLen + 1);
     int status;
     for (int i = 0; i < len; i++)
     {
@@ -88,7 +93,9 @@ const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len)
     if (len <= 0) {
         return NULL;
     }
-    auto charsArray = reinterpret_cast<const char **>(malloc(len * sizeof(char *) + 1));
+    auto charsArrayLen = len * sizeof(char *);
+    auto charsArray = reinterpret_cast<const char **>(std::malloc(charsArrayLen + 1));
+    std::memset(charsArray, 0, charsArrayLen + 1);
     int status;
     for (int i = 0; i < len; i++)
     {

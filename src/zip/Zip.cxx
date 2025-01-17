@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <functional>
 #include <vector>
+#include <type_traits>
 
 #include <NGenXXLog.hxx>
 
@@ -46,7 +47,9 @@ NGenXX::Z::ZBase::ZBase(const size_t bufferSize, const int format) : bufferSize{
         .opaque = Z_NULL
     };
     this->inBuffer = reinterpret_cast<byte *>(std::malloc(sizeof(byte) * bufferSize + 1));
+    std::memset(this->inBuffer, 0, bufferSize + 1);
     this->outBuffer = reinterpret_cast<byte *>(std::malloc(sizeof(byte) * bufferSize + 1));
+    std::memset(this->outBuffer, 0, bufferSize + 1);
 }
 
 size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
@@ -93,8 +96,8 @@ bool NGenXX::Z::ZBase::processFinished()
 
 NGenXX::Z::ZBase::~ZBase()
 {
-    free(inBuffer);
-    free(outBuffer);
+    std::free(inBuffer);
+    std::free(outBuffer);
 }
 
 NGenXX::Z::Zip::Zip(int mode, const size_t bufferSize, const int format) : ZBase(bufferSize, format)
@@ -191,7 +194,7 @@ bool zProcessCxxStream(const size_t bufferSize, std::istream *inStream, std::ost
         }, 
         [&outStream](const Bytes &bytes) -> void
         { 
-            outStream->write(reinterpret_cast<char *>(const_cast<byte *>(bytes.data())), bytes.size());
+            outStream->write(reinterpret_cast<char *>(std::decay_t<byte *>(bytes.data())), bytes.size());
         }, 
         [&outStream]() -> void
         { 

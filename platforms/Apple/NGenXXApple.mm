@@ -48,7 +48,7 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
             NSLog(@"!!! LOAD LUA FAILED !!!");
             return;
         }
-        const char * cRsp = ngenxx_lua_call("TestTimer", "http://rinc.xyz");
+        auto cRsp = ngenxx_lua_call("TestTimer", "http://rinc.xyz");
         NSLog(@"%s", cRsp);
     });
 }
@@ -79,18 +79,18 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     
     NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
     NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];
-    bool bPrepareData = ngenxx_store_sqlite_execute(_db_conn, NSString2CharP(sqlPrepareData));
+    auto bPrepareData = ngenxx_store_sqlite_execute(_db_conn, NSString2CharP(sqlPrepareData));
     if (!bPrepareData) return;
     
     NSString *sqlPathQuery = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"query.sql"];
     NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:NULL];
-    void *qrQuery = ngenxx_store_sqlite_query_do(_db_conn, NSString2CharP(sqlQuery));
+    auto qrQuery = ngenxx_store_sqlite_query_do(_db_conn, NSString2CharP(sqlQuery));
     if (!qrQuery) return;
     
     while (ngenxx_store_sqlite_query_read_row(qrQuery)) {
-        const char* platform = ngenxx_store_sqlite_query_read_column_text(qrQuery, "platform");
-        int64_t i = ngenxx_store_sqlite_query_read_column_integer(qrQuery, "i");
-        double f = ngenxx_store_sqlite_query_read_column_float(qrQuery, "f");
+        auto platform = ngenxx_store_sqlite_query_read_column_text(qrQuery, "platform");
+        auto i = ngenxx_store_sqlite_query_read_column_integer(qrQuery, "i");
+        auto f = ngenxx_store_sqlite_query_read_column_float(qrQuery, "f");
         NSLog(@"platform:%@ i:%lld f:%f", CharP2NSString(platform), i, f);
     }
     ngenxx_store_sqlite_query_drop(qrQuery);
@@ -109,30 +109,30 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
 }
 
 - (void)testDeviceInfo {
-    int deviceType = ngenxx_device_type();
-    const char *deviceName = ngenxx_device_name();
-    const char *osv = ngenxx_device_os_version();
-    int arch = ngenxx_device_cpu_arch();
+    auto deviceType = ngenxx_device_type();
+    auto deviceName = ngenxx_device_name();
+    auto osv = ngenxx_device_os_version();
+    auto arch = ngenxx_device_cpu_arch();
     NSLog(@"deviceType:%d deviceName:%s OS:%s arch:%d", deviceType, deviceName, osv, arch);
 }
 
 - (void)testCrypto {
     NSString* inStr = @"0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM<>()[]{}|,;:'`~!@#$%^&*-=_+/";
     NSData *inData = [inStr dataUsingEncoding:NSUTF8StringEncoding];
-    byte *inBytes = (unsigned char *) inData.bytes;
-    size_t inLen = inData.length;
+    auto inBytes = reinterpret_cast<const unsigned char *>(inData.bytes);
+    auto inLen = inData.length;
     NSString * keyStr = @"MNBVCXZLKJHGFDSA";
     NSData *keyData = [keyStr dataUsingEncoding:NSUTF8StringEncoding];
-    byte *keyBytes = (unsigned char *) keyData.bytes;
-    size_t keyLen = keyData.length;
+    auto keyBytes = (unsigned char *) keyData.bytes;
+    auto keyLen = keyData.length;
     
     size_t aesEncodedLen;
-    const byte *aesEncodedBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &aesEncodedLen);
+    auto aesEncodedBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &aesEncodedLen);
     if (aesEncodedBytes && aesEncodedLen > 0) {
         auto aes_encoded_hex = ngenxx_coding_hex_bytes2str(aesEncodedBytes, aesEncodedLen);
         NSLog(@"AES Encoded:%s", aes_encoded_hex);
         size_t aesDecodedLen;
-        const byte *aesDecodedBytes = ngenxx_crypto_aes_decrypt(aesEncodedBytes, aesEncodedLen, keyBytes, keyLen, &aesDecodedLen);
+        auto aesDecodedBytes = ngenxx_crypto_aes_decrypt(aesEncodedBytes, aesEncodedLen, keyBytes, keyLen, &aesDecodedLen);
         if (aesDecodedBytes && aesDecodedLen > 0) {
             auto aes_decoded = ngenxx_coding_bytes2str(aesDecodedBytes, aesDecodedLen);
             NSLog(@"AES Decoded:%s", aes_decoded);
@@ -145,12 +145,12 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     size_t aesgcmTagBits = 15 * 8;
     
     size_t aesgcmEncodedLen;
-    const byte *aesgcmEncodedBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmEncodedLen);
+    auto aesgcmEncodedBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmEncodedLen);
     if (aesgcmEncodedBytes && aesgcmEncodedLen > 0) {
         auto aes_gcm_encoded_hex = ngenxx_coding_hex_bytes2str(aesgcmEncodedBytes, aesgcmEncodedLen);
         NSLog(@"AES GCM Encoded:%s", aes_gcm_encoded_hex);
         size_t aesgcmDecodedLen;
-        const byte *aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmDecodedLen);
+        auto aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmDecodedLen);
         if (aesgcmDecodedBytes && aesgcmDecodedLen > 0) {
             auto aes_decoded = ngenxx_coding_bytes2str(aesgcmDecodedBytes, aesgcmDecodedLen);
             NSLog(@"AES GCM Decoded:%s", aes_decoded);
@@ -159,23 +159,23 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
 }
 
 - (void)testJsonDecoder {
-    void *jsonDecoder = ngenxx_json_decoder_init(cParamsJson);
+    auto jsonDecoder = ngenxx_json_decoder_init(cParamsJson);
     if (jsonDecoder) {
-        void *urlNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "url");
+        auto urlNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "url");
         if (urlNode) {
-            const char *url = ngenxx_json_decoder_read_string(jsonDecoder, urlNode);
+            auto url = ngenxx_json_decoder_read_string(jsonDecoder, urlNode);
             NSLog(@"url:%s", url);
         }
-        void *headerCNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_c");
+        auto headerCNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_c");
         if (headerCNode) {
-            double headerC = ngenxx_json_decoder_read_number(jsonDecoder, headerCNode);
+            auto headerC = ngenxx_json_decoder_read_number(jsonDecoder, headerCNode);
             NSLog(@"header_c:%f", headerC);
         }
-        void *headerVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_v");
+        auto headerVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_v");
         if (headerVNode) {
-            void *headerNode = ngenxx_json_decoder_read_child(jsonDecoder, headerVNode);
+            auto headerNode = ngenxx_json_decoder_read_child(jsonDecoder, headerVNode);
             while (headerNode) {
-                const char *header = ngenxx_json_decoder_read_string(jsonDecoder, headerNode);
+                auto header = ngenxx_json_decoder_read_string(jsonDecoder, headerNode);
                 NSLog(@"header:%s", header);
                 headerNode = ngenxx_json_decoder_read_next(jsonDecoder, headerNode);
             }
@@ -190,12 +190,12 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     std::ifstream zipIS(NSString2CharP(sqlPath), std::ios::in);
     NSString *zipPath = [self.root stringByAppendingPathComponent:@"xxx.zip"];
     std::ofstream zipOS(NSString2CharP(zipPath), std::ios::out);
-    BOOL zipRes = ngenxx_z_cxxstream_zip(NGenXXZipCompressModeDefault, kZBufferSize, NGenXXZFormatGZip, (void *)&zipIS, (void *)&zipOS);
+    auto zipRes = ngenxx_z_cxxstream_zip(NGenXXZipCompressModeDefault, kZBufferSize, NGenXXZFormatGZip, static_cast<void *>(&zipIS), static_cast<void *>(&zipOS));
     if (zipRes) {
         NSString *txtPath = [self.root stringByAppendingPathComponent:@"xxx.txt"];
         std::ifstream unzipIS(NSString2CharP(zipPath), std::ios::in);
         std::ofstream unzipOS(NSString2CharP(txtPath), std::ios::out);
-        BOOL unzipRes = ngenxx_z_cxxstream_unzip(kZBufferSize, NGenXXZFormatGZip, (void *)&unzipIS, (void *)&unzipOS);
+        auto unzipRes = ngenxx_z_cxxstream_unzip(kZBufferSize, NGenXXZFormatGZip, static_cast<void *>(&unzipIS), static_cast<void *>(&unzipOS));
         if (unzipRes);
     }
 }

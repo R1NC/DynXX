@@ -5,6 +5,7 @@
 
 #include <cstdlib>
 #include <string>
+#include <type_traits>
 
 #include "../../../../../../build.Android/output/include/NGenXXTypes.h"
 
@@ -22,9 +23,9 @@ jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, const size_t outLen,
     if (bytes && outLen > 0)
     {
         jba = env->NewByteArray(static_cast<jsize>(outLen));
-        env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen), reinterpret_cast<jbyte *>(const_cast<byte *>(bytes)));
+        env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen), reinterpret_cast<jbyte *>(std::decay_t<byte *>(bytes)));
         if (needFree) {
-            free(static_cast<void *>(const_cast<byte *>(bytes)));
+            std::free(static_cast<void *>(std::decay_t<byte *>(bytes)));
         }
     }
     else

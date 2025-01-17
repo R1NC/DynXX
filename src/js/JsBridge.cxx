@@ -95,12 +95,12 @@ static void _ngenxx_js_uv_loop_stop(uv_loop_t *uv_loop, uv_timer_t *uv_timer)
     }
 
     uv_timer_stop(uv_timer);
-    free(uv_timer);
+    std::free(uv_timer);
     uv_timer = nullptr;
 
     uv_stop(uv_loop);
     uv_loop_close(uv_loop);
-    free(uv_loop);
+    std::free(uv_loop);
     uv_loop = nullptr;
 }
 

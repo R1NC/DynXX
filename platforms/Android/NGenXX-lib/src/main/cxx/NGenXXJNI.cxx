@@ -23,7 +23,7 @@ static void ngenxx_jni_log_callback(int level, const char *content)
     }
     auto env = currentEnv(sVM);
     auto jContent = env->NewStringUTF(content);
-    free(static_cast<void *>(const_cast<char *>(content)));
+    std::free(static_cast<void *>(std::decay_t<char *>(content)));
     env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
 }
 
@@ -34,7 +34,7 @@ static const char *ngenxx_jni_js_msg_callback(const char *msg)
     }
     auto env = currentEnv(sVM);
     auto jMsg = env->NewStringUTF(msg);
-    free(static_cast<void *>(const_cast<char *>(msg)));
+    std::free(static_cast<void *>(std::decay_t<char *>(msg)));
     auto jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
     return env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
 }
@@ -45,7 +45,7 @@ jstring NGenXX_JNI_getVersion(JNIEnv *env, jobject thiz)
 {
     auto cV = ngenxx_get_version();
     auto jStr = env->NewStringUTF(cV ?: "");
-    free(static_cast<void *>(const_cast<char *>(cV)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cV)));
     return jStr;
 }
 
@@ -110,37 +110,63 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
     auto cParams = env->GetStringUTFChars(params, nullptr);
 
     auto headerCount = env->GetArrayLength(headerV);
-    auto cHeaderV = reinterpret_cast<char **>(malloc(headerCount * sizeof(char *)));
-    auto jStrHeaderV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
+
+    auto cHeaderVLen = headerCount * sizeof(char *);
+    auto cHeaderV = reinterpret_cast<char **>(std::malloc(cHeaderVLen + 1));
+    std::memset(cHeaderV, 0, cHeaderVLen + 1);
+
+    auto jStrHeaderVLen = headerCount * sizeof(jstring);
+    auto jStrHeaderV = reinterpret_cast<jstring *>(std::malloc(jStrHeaderVLen + 1));
+    std::memset(jStrHeaderV, 0, jStrHeaderVLen + 1);
+
     for (int i = 0; i < headerCount; i++)
     {
         jStrHeaderV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(headerV, i));
-        cHeaderV[i] = const_cast<char *>(env->GetStringUTFChars(jStrHeaderV[i], nullptr));
+        cHeaderV[i] = std::decay_t<char *>(env->GetStringUTFChars(jStrHeaderV[i], nullptr));
     }
 
     auto formFieldCount = env->GetArrayLength(formFieldNameV);
-    auto cFormFieldNameV = reinterpret_cast<char **>(malloc(formFieldCount * sizeof(char *)));
-    auto jStrFormFieldNameV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
+
+    auto cFormFieldNameVLen = formFieldCount * sizeof(char *);
+    auto cFormFieldNameV = reinterpret_cast<char **>(std::malloc(cFormFieldNameVLen + 1));
+    std::memset(cFormFieldNameV, 0, cFormFieldNameVLen + 1);
+
+    auto jStrFormFieldNameVLen = formFieldCount * sizeof(jstring);
+    auto jStrFormFieldNameV = reinterpret_cast<jstring *>(std::malloc(jStrFormFieldNameVLen + 1));
+    std::memset(jStrFormFieldNameV, 0, jStrFormFieldNameVLen + 1);
+
     for (int i = 0; i < formFieldCount; i++)
     {
         jStrFormFieldNameV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(formFieldNameV, i));
-        cFormFieldNameV[i] = const_cast<char *>(env->GetStringUTFChars(jStrFormFieldNameV[i], nullptr));
+        cFormFieldNameV[i] = std::decay_t<char *>(env->GetStringUTFChars(jStrFormFieldNameV[i], nullptr));
     }
 
-    auto cFormFieldMimeV = reinterpret_cast<char **>(malloc(formFieldCount * sizeof(char *)));
-    auto jStrFormFieldMimeV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
+    auto cFormFieldMimeVLen = formFieldCount * sizeof(char *);
+    auto cFormFieldMimeV = reinterpret_cast<char **>(std::malloc(cFormFieldMimeVLen + 1));
+    std::memset(cFormFieldMimeV, 0, cFormFieldMimeVLen + 1);
+
+    auto jStrFormFieldMimeVLen = formFieldCount * sizeof(jstring);
+    auto jStrFormFieldMimeV = reinterpret_cast<jstring *>(std::malloc(jStrFormFieldMimeVLen + 1));
+    std::memset(jStrFormFieldMimeV, 0, jStrFormFieldMimeVLen + 1);
+
     for (int i = 0; i < formFieldCount; i++)
     {
         jStrFormFieldMimeV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(formFieldMimeV, i));
-        cFormFieldMimeV[i] = const_cast<char *>(env->GetStringUTFChars(jStrFormFieldMimeV[i], nullptr));
+        cFormFieldMimeV[i] = std::decay_t<char *>(env->GetStringUTFChars(jStrFormFieldMimeV[i], nullptr));
     }
 
-    auto cFormFieldDataV = reinterpret_cast<char **>(malloc(formFieldCount * sizeof(char *)));
-    auto jStrFormFieldDataV = reinterpret_cast<jstring *>(malloc(sizeof(jstring)));
+    auto cFormFieldDataVLen = formFieldCount * sizeof(char *);
+    auto cFormFieldDataV = reinterpret_cast<char **>(std::malloc(cFormFieldDataVLen + 1));
+    std::memset(cFormFieldDataV, 0, cFormFieldDataVLen + 1);
+
+    auto jStrFormFieldDataVLen = formFieldCount * sizeof(jstring);
+    auto jStrFormFieldDataV = reinterpret_cast<jstring *>(std::malloc(jStrFormFieldDataVLen + 1));
+    std::memset(jStrFormFieldDataV, 0, jStrFormFieldDataVLen + 1);
+
     for (int i = 0; i < formFieldCount; i++)
     {
         jStrFormFieldDataV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(formFieldDataV, i));
-        cFormFieldDataV[i] = const_cast<char *>(env->GetStringUTFChars(jStrFormFieldDataV[i], nullptr));
+        cFormFieldDataV[i] = std::decay_t<char *>(env->GetStringUTFChars(jStrFormFieldDataV[i], nullptr));
     }
 
     auto cFilePath = filePath ? env->GetStringUTFChars(filePath, nullptr) : "";
@@ -155,26 +181,26 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
                                                reinterpret_cast<void *>(cFILE), fileLength,
                                                static_cast<const size_t>(timeout));
     auto jStr = env->NewStringUTF(cRsp ?: "");
-    free(static_cast<void *>(const_cast<char *>(cRsp)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cRsp)));
 
     for (int i = 0; i < headerCount; i++)
     {
         env->ReleaseStringUTFChars(jStrHeaderV[i], cHeaderV[i]);
-        free(static_cast<void *>(jStrHeaderV[i]));
+        std::free(static_cast<void *>(jStrHeaderV[i]));
     }
     for (int i = 0; i < formFieldCount; i++)
     {
         env->ReleaseStringUTFChars(jStrFormFieldNameV[i], cFormFieldNameV[i]);
-        free(static_cast<void *>(jStrFormFieldNameV[i]));
+        std::free(static_cast<void *>(jStrFormFieldNameV[i]));
         env->ReleaseStringUTFChars(jStrFormFieldMimeV[i], cFormFieldMimeV[i]);
-        free(static_cast<void *>(jStrFormFieldMimeV[i]));
+        std::free(static_cast<void *>(jStrFormFieldMimeV[i]));
         env->ReleaseStringUTFChars(jStrFormFieldDataV[i], cFormFieldDataV[i]);
-        free(static_cast<void *>(jStrFormFieldDataV[i]));
+        std::free(static_cast<void *>(jStrFormFieldDataV[i]));
     }
 
     if (filePath)
     {
-        free(static_cast<void *>(const_cast<char *>(cFilePath)));
+        std::free(static_cast<void *>(std::decay_t<char *>(cFilePath)));
     }
     if (cFILE)
     {
@@ -216,7 +242,7 @@ jstring NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
     auto cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
     auto cRes = ngenxx_lua_call(cFunc, cParams);
     auto jStr = env->NewStringUTF(cRes ?: "");
-    free(static_cast<void *>(const_cast<char *>(cRes)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cRes)));
     if (cParams) {
         env->ReleaseStringUTFChars(params, cParams);
     }
@@ -265,7 +291,7 @@ jstring NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
     auto cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
     auto cRes = ngenxx_js_call(cFunc, cParams, await);
     auto jStr = env->NewStringUTF(cRes ?: "");
-    free(static_cast<void *>(const_cast<char *>(cRes)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cRes)));
     if (cParams) {
         env->ReleaseStringUTFChars(params, cParams);
     }
@@ -332,7 +358,7 @@ jstring NGenXX_JNI_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
     auto cColumn = env->GetStringUTFChars(column, nullptr);
     auto cRes = ngenxx_store_sqlite_query_read_column_text(reinterpret_cast<void *>(query_result), cColumn);
     auto jStr = env->NewStringUTF(cRes ?: "");
-    free(static_cast<void *>(const_cast<char *>(cRes)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cRes)));
     env->ReleaseStringUTFChars(column, cColumn);
     return jStr;
 }
@@ -387,7 +413,7 @@ jstring NGenXX_JNI_storeKVReadString(JNIEnv *env, jobject thiz,
     auto cK = env->GetStringUTFChars(k, nullptr);
     auto cRes = ngenxx_store_kv_read_string(reinterpret_cast<void *>(conn), cK);
     auto jStr = env->NewStringUTF(cRes ?: "");
-    free(static_cast<void *>(const_cast<char *>(cRes)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cRes)));
     env->ReleaseStringUTFChars(k, cK);
     return jStr;
 }
@@ -487,7 +513,7 @@ jstring NGenXX_JNI_deviceName(JNIEnv *env, jobject thiz)
 {
     auto cDN = ngenxx_device_name();
     auto jStr = env->NewStringUTF(cDN ?: "");
-    free(static_cast<void *>(const_cast<char *>(cDN)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cDN)));
     return jStr;
 }
 
@@ -495,7 +521,7 @@ jstring NGenXX_JNI_deviceManufacturer(JNIEnv *env, jobject thiz)
 {
     auto cDM = ngenxx_device_manufacturer();
     auto jStr = env->NewStringUTF(cDM ?: "");
-    free(static_cast<void *>(const_cast<char *>(cDM)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cDM)));
     return jStr;
 }
 
@@ -503,7 +529,7 @@ jstring NGenXX_JNI_deviceOsVersion(JNIEnv *env, jobject thiz)
 {
     auto cDOV = ngenxx_device_os_version();
     auto jStr = env->NewStringUTF(cDOV ?: "");
-    free(static_cast<void *>(const_cast<char *>(cDOV)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cDOV)));
     return jStr;
 }
 
@@ -523,7 +549,7 @@ jstring NGenXX_JNI_codingHexBytes2Str(JNIEnv *env, jobject thiz,
     auto cRes = ngenxx_coding_hex_bytes2str(reinterpret_cast<const byte *>(cIn), inLen);
     auto jStr = env->NewStringUTF(cRes ?: "");
 
-    free(static_cast<void *>(const_cast<char *>(cRes)));
+    std::free(static_cast<void *>(std::decay_t<char *>(cRes)));
     env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
     return jStr;
 }
@@ -758,7 +784,7 @@ jstring NGenXX_JNI_jsonDecoderReadString(JNIEnv *env, jobject thiz,
 {
     auto res = ngenxx_json_decoder_read_string(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     auto jStr = env->NewStringUTF(res ?: "");
-    free(static_cast<void *>(const_cast<char *>(res)));
+    std::free(static_cast<void *>(std::decay_t<char *>(res)));
     return jStr;
 }
 

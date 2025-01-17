@@ -11,17 +11,21 @@ static inline const char *copyStr(const std::string &s)
     const char *c = s.c_str();
     auto len = strlen(c);
     auto nc = reinterpret_cast<char *>(std::malloc(len + 1));
+    std::memset(nc, 0, len + 1);
     std::strncpy(nc, c, len);
     return nc;
 }
 
 static inline const char **copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen)
 {
-    auto sArr = reinterpret_cast<char **>(std::malloc(sizeof(char *) * sv.size() + 1));
+    auto sArrLen = sizeof(char *) * sv.size();
+    auto sArr = reinterpret_cast<char **>(std::malloc(sArrLen + 1));
+    std::memset(sArr, 0, sArrLen + 1);
     for (size_t i = 0; i < sv.size(); i++)
     {
         auto len = sizeof(char) * strMaxLen;
         sArr[i] = reinterpret_cast<char *>(std::malloc(len + 1));
+        std::memset(sArr[i], 0, len + 1);
         std::strncpy(sArr[i], sv[i].c_str(), len);
     }
     return const_cast<const char **>(sArr);
@@ -36,8 +40,8 @@ static inline const byte *copyBytes(const Bytes &t)
         return NULL;
     }
     auto ncs = reinterpret_cast<byte *>(std::malloc(len + 1));
-    std::memset(reinterpret_cast<void *>(const_cast<byte *>(ncs)), 0, len + 1);
-    std::memcpy(reinterpret_cast<void *>(const_cast<byte *>(ncs)), cs, len);
+    std::memset(reinterpret_cast<void *>(ncs), 0, len + 1);
+    std::memcpy(reinterpret_cast<void *>(ncs), cs, len);
     return ncs;
 }
 

@@ -74,8 +74,8 @@ void ngenxx_lua_uv_timer_stop(uv_timer_t *timer, bool release)
     }
     if (release)
     {
-        free(timer->data);
-        free(timer);
+        std::free(timer->data);
+        std::free(timer);
     }
 }
 
