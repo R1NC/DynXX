@@ -20,15 +20,14 @@ static napi_value GetVersion(napi_env env, napi_callback_info info)
 
 static napi_value Init(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto root = napiValue2chars(env, argv[0]);
+    auto root = napiValue2chars(env, args.v[0]);
 
     auto b = ngenxx_init(root);
     auto v = bool2NapiValue(env, b);
 
     std::free(static_cast<void *>(std::decay_t<char *>(root)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
@@ -139,21 +138,20 @@ static void engineLogCallback(int level, const char *content)
 
 static napi_value LogSetLevel(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto level = napiValue2int(env, argv[0]);
+    auto level = napiValue2int(env, args.v[0]);
 
     ngenxx_log_set_level(level);
 
-    std::free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
 static napi_value LogSetCallback(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    napi_value vLogCallback = argc > 0 ? argv[0] : NULL;
+    napi_value vLogCallback = args.c > 0 ? args.v[0] : NULL;
     int status;
     if (vLogCallback == NULL)
     {
@@ -174,21 +172,19 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info)
         ngenxx_log_set_callback(engineLogCallback);
     }
 
-    std::free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
 static napi_value LogPrint(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto level = napiValue2int(env, argv[0]);
-    auto content = napiValue2chars(env, argv[1]);
+    auto level = napiValue2int(env, args.v[0]);
+    auto content = napiValue2chars(env, args.v[1]);
 
     ngenxx_log_print(level, content);
     std::free(static_cast<void *>(std::decay_t<char *>(content)));
 
-    std::free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -196,25 +192,25 @@ static napi_value LogPrint(napi_env env, napi_callback_info info)
 
 static napi_value NetHttpRequest(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto cUrl = napiValue2chars(env, argv[0]);
-    auto iMethod = napiValue2int(env, argv[1]);
-    auto cParams = argc > 2 ? napiValue2chars(env, argv[2]) : "";
+    auto cUrl = napiValue2chars(env, args.v[0]);
+    auto iMethod = napiValue2int(env, args.v[1]);
+    auto cParams = args.c > 2 ? napiValue2chars(env, args.v[2]) : "";
 
-    auto header_c = argc > 3 ? napiValueArrayLen(env, argv[3]) : 0;
-    auto header_v = argc > 3 ? napiValue2charsArray(env, argv[3], header_c) : NULL;
+    auto header_c = args.c > 3 ? napiValueArrayLen(env, args.v[3]) : 0;
+    auto header_v = args.c > 3 ? napiValue2charsArray(env, args.v[3], header_c) : NULL;
 
-    auto form_field_count = argc > 4 ? napiValueArrayLen(env, argv[4]) : 0;
-    auto form_field_name_v = argc > 4 ? napiValue2charsArray(env, argv[4], form_field_count) : NULL;
-    auto form_field_mime_v = argc > 5 ? napiValue2charsArray(env, argv[5], form_field_count) : NULL;
-    auto form_field_data_v = argc > 6 ? napiValue2charsArray(env, argv[6], form_field_count) : NULL;
+    auto form_field_count = args.c > 4 ? napiValueArrayLen(env, args.v[4]) : 0;
+    auto form_field_name_v = args.c > 4 ? napiValue2charsArray(env, args.v[4], form_field_count) : NULL;
+    auto form_field_mime_v = args.c > 5 ? napiValue2charsArray(env, args.v[5], form_field_count) : NULL;
+    auto form_field_data_v = args.c > 6 ? napiValue2charsArray(env, args.v[6], form_field_count) : NULL;
 
-    auto cFilePath = argc > 7 ? napiValue2chars(env, argv[7]) : NULL;
+    auto cFilePath = args.c > 7 ? napiValue2chars(env, args.v[7]) : NULL;
     FILE *cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
-    auto fileLength = argc > 8 ? napiValue2long(env, argv[8]) : 0;
+    auto fileLength = args.c > 8 ? napiValue2long(env, args.v[8]) : 0;
 
-    auto lTimeout = argc > 9 ? napiValue2long(env, argv[9]) : 15000;
+    auto lTimeout = args.c > 9 ? napiValue2long(env, args.v[9]) : 15000;
 
     auto res = ngenxx_net_http_request(cUrl, cParams, iMethod,
                                               header_v, header_c,
@@ -246,7 +242,6 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info)
     {
         std::free(static_cast<void *>(std::decay_t<char *>(cUrl)));
     }
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -254,125 +249,114 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info)
 
 static napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto _id = napiValue2chars(env, argv[0]);
+    auto _id = napiValue2chars(env, args.v[0]);
     auto res = reinterpret_cast<long>(ngenxx_store_sqlite_open(_id));
     auto nv = long2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(_id)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
-    auto sql = napiValue2chars(env, argv[1]);
+    auto conn = napiValue2long(env, args.v[0]);
+    auto sql = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_store_sqlite_execute(reinterpret_cast<void *>(conn), sql);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(sql)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
-    auto sql = napiValue2chars(env, argv[1]);
+    auto conn = napiValue2long(env, args.v[0]);
+    auto sql = napiValue2chars(env, args.v[1]);
 
     auto res = reinterpret_cast<long>(ngenxx_store_sqlite_query_do(reinterpret_cast<void *>(conn), sql));
     auto nv = long2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(sql)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto query_result = napiValue2long(env, argv[0]);
+    auto query_result = napiValue2long(env, args.v[0]);
 
     auto res = ngenxx_store_sqlite_query_read_row(reinterpret_cast<void *>(query_result));
-    auto nv = bool2NapiValue(env, res);
-
-    std::free(static_cast<void *>(argv));
-    return nv;
+    return bool2NapiValue(env, res);
 }
 
 static napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto query_result = napiValue2long(env, argv[0]);
-    auto column = napiValue2chars(env, argv[1]);
+    auto query_result = napiValue2long(env, args.v[0]);
+    auto column = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_store_sqlite_query_read_column_text(reinterpret_cast<void *>(query_result), column);
     auto nv = chars2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(res)));
     std::free(static_cast<void *>(std::decay_t<char *>(column)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto query_result = napiValue2long(env, argv[0]);
-    auto column = napiValue2chars(env, argv[1]);
+    auto query_result = napiValue2long(env, args.v[0]);
+    auto column = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_store_sqlite_query_read_column_integer(reinterpret_cast<void *>(query_result), column);
     auto nv = long2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(column)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto query_result = napiValue2long(env, argv[0]);
-    auto column = napiValue2chars(env, argv[1]);
+    auto query_result = napiValue2long(env, args.v[0]);
+    auto column = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_store_sqlite_query_read_column_float(reinterpret_cast<void *>(query_result), column);
     auto nv = double2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(column)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto query_result = napiValue2long(env, argv[0]);
+    auto query_result = napiValue2long(env, args.v[0]);
     ngenxx_store_sqlite_query_drop(reinterpret_cast<void *>(query_result));
 
-    std::free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
 static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
+    auto conn = napiValue2long(env, args.v[0]);
     ngenxx_store_sqlite_close(reinterpret_cast<void *>(conn));
 
-    std::free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -380,161 +364,150 @@ static napi_value StoreSQLiteClose(napi_env env, napi_callback_info info)
 
 static napi_value StoreKVOpen(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto _id = napiValue2chars(env, argv[0]);
+    auto _id = napiValue2chars(env, args.v[0]);
     auto res = reinterpret_cast<long>(ngenxx_store_kv_open(_id));
     auto nv = long2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(_id)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreKVReadString(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
-    auto k = napiValue2chars(env, argv[1]);
+    auto conn = napiValue2long(env, args.v[0]);
+    auto k = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_store_kv_read_string(reinterpret_cast<void *>(conn), k);
     auto nv = chars2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(res)));
     std::free(static_cast<void *>(std::decay_t<char *>(k)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreKVWriteString(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
-    auto k = napiValue2chars(env, argv[1]);
-    auto v = napiValue2chars(env, argv[2]);
+    auto conn = napiValue2long(env, args.v[0]);
+    auto k = napiValue2chars(env, args.v[1]);
+    auto v = napiValue2chars(env, args.v[2]);
 
     auto res = ngenxx_store_kv_write_string(reinterpret_cast<void *>(conn), k, v);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(v)));
     std::free(static_cast<void *>(std::decay_t<char *>(k)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreKVReadInteger(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
-    auto k = napiValue2chars(env, argv[1]);
+    auto conn = napiValue2long(env, args.v[0]);
+    auto k = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_store_kv_read_integer(reinterpret_cast<void *>(conn), k);
     auto nv = long2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(k)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
-    auto k = napiValue2chars(env, argv[1]);
-    auto v = napiValue2long(env, argv[2]);
+    auto conn = napiValue2long(env, args.v[0]);
+    auto k = napiValue2chars(env, args.v[1]);
+    auto v = napiValue2long(env, args.v[2]);
 
     auto res = ngenxx_store_kv_write_integer(reinterpret_cast<void *>(conn), k, v);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(k)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreKVReadFloat(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
-    auto k = napiValue2chars(env, argv[1]);
+    auto conn = napiValue2long(env, args.v[0]);
+    auto k = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_store_kv_read_integer(reinterpret_cast<void *>(conn), k);
     auto nv = double2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(k)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
-    auto k = napiValue2chars(env, argv[1]);
-    auto v = napiValue2double(env, argv[2]);
+    auto conn = napiValue2long(env, args.v[0]);
+    auto k = napiValue2chars(env, args.v[1]);
+    auto v = napiValue2double(env, args.v[2]);
 
     auto res = ngenxx_store_kv_write_integer(reinterpret_cast<void *>(conn), k, v);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(k)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreKVContains(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto  conn = napiValue2long(env, argv[0]);
-    auto k = napiValue2chars(env, argv[1]);
+    auto  conn = napiValue2long(env, args.v[0]);
+    auto k = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_store_kv_contains(reinterpret_cast<void *>(conn), k);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(k)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreKVRemove(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
-    auto k = napiValue2chars(env, argv[1]);
+    auto conn = napiValue2long(env, args.v[0]);
+    auto k = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_store_kv_remove(reinterpret_cast<void *>(conn), k);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(k)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value StoreKVClear(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
+    auto conn = napiValue2long(env, args.v[0]);
     ngenxx_store_kv_clear(reinterpret_cast<void *>(conn));
 
-    std::free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
 static napi_value StoreKVClose(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto conn = napiValue2long(env, argv[0]);
+    auto conn = napiValue2long(env, args.v[0]);
     ngenxx_store_kv_close(reinterpret_cast<void *>(conn));
 
-    std::free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -582,128 +555,109 @@ static napi_value DeviceCpuArch(napi_env env, napi_callback_info info)
 
 static napi_value JsonDecoderInit(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto cJson = napiValue2chars(env, argv[0]);
+    auto cJson = napiValue2chars(env, args.v[0]);
 
     auto res = reinterpret_cast<long>(ngenxx_json_decoder_init(cJson));
     auto v = long2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(cJson)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value JsonDecoderIsArray(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto decoder = napiValue2long(env, argv[0]);
-    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
+    auto decoder = napiValue2long(env, args.v[0]);
+    auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
     auto res = ngenxx_json_decoder_is_array(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
-    auto v = bool2NapiValue(env, res);
-
-    std::free(static_cast<void *>(argv));
-    return v;
+    return bool2NapiValue(env, res);
 }
 
 static napi_value JsonDecoderIsObject(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto decoder = napiValue2long(env, argv[0]);
-    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
+    auto decoder = napiValue2long(env, args.v[0]);
+    auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
     auto res = ngenxx_json_decoder_is_object(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
-    auto v = bool2NapiValue(env, res);
-
-    std::free(static_cast<void *>(argv));
-    return v;
+    return bool2NapiValue(env, res);
 }
 
 static napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto decoder = napiValue2long(env, argv[0]);
-    auto cK = napiValue2chars(env, argv[1]);
-    auto node = argc > 2 ? napiValue2long(env, argv[2]) : 0;
+    auto decoder = napiValue2long(env, args.v[0]);
+    auto cK = napiValue2chars(env, args.v[1]);
+    auto node = args.c > 2 ? napiValue2long(env, args.v[2]) : 0;
 
     auto res = reinterpret_cast<long>(ngenxx_json_decoder_read_node(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node), cK));
     auto v = long2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(cK)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto decoder = napiValue2long(env, argv[0]);
-    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
+    auto decoder = napiValue2long(env, args.v[0]);
+    auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
     auto res = reinterpret_cast<long>(ngenxx_json_decoder_read_child(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node)));
-    auto v = long2NapiValue(env, res);
-
-    std::free(static_cast<void *>(argv));
-    return v;
+    return long2NapiValue(env, res);
 }
 
 static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto decoder = napiValue2long(env, argv[0]);
-    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
+    auto decoder = napiValue2long(env, args.v[0]);
+    auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
     auto res = reinterpret_cast<long>(ngenxx_json_decoder_read_next(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node)));
-    auto v = long2NapiValue(env, res);
-
-    std::free(static_cast<void *>(argv));
-    return v;
+    return long2NapiValue(env, res);
 }
 
 static napi_value JsonDecoderReadString(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto decoder = napiValue2long(env, argv[0]);
-    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
+    auto decoder = napiValue2long(env, args.v[0]);
+    auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
     auto cRes = ngenxx_json_decoder_read_string(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
     auto v = chars2NapiValue(env, cRes);
 
     std::free(static_cast<void *>(std::decay_t<char *>(cRes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto decoder = napiValue2long(env, argv[0]);
-    auto node = argc > 1 ? napiValue2long(env, argv[1]) : 0;
+    auto decoder = napiValue2long(env, args.v[0]);
+    auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
     auto res = ngenxx_json_decoder_read_number(reinterpret_cast<void *>(decoder), reinterpret_cast<void *>(node));
-    auto v = double2NapiValue(env, res);
-
-    std::free(static_cast<void *>(argv));
-    return v;
+    return double2NapiValue(env, res);
 }
 
 static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto decoder = napiValue2long(env, argv[0]);
+    auto decoder = napiValue2long(env, args.v[0]);
 
     ngenxx_json_decoder_release(reinterpret_cast<void *>(decoder));
 
-    std::free(static_cast<void *>(argv));
     return int2NapiValue(env, napi_ok);
 }
 
@@ -711,10 +665,10 @@ static napi_value JsonDecoderRelease(napi_env env, napi_callback_info info)
 
 static napi_value CodingHexBytes2str(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
 
     auto cRes = ngenxx_coding_hex_bytes2str(inBytes, inLen);
     auto v = chars2NapiValue(env, cRes);
@@ -726,9 +680,9 @@ static napi_value CodingHexBytes2str(napi_env env, napi_callback_info info)
 
 static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto cStr = napiValue2chars(env, argv[0]);
+    auto cStr = napiValue2chars(env, args.v[0]);
 
     size_t outLen;
     auto cRes = ngenxx_coding_hex_str2bytes(cStr, &outLen);
@@ -743,9 +697,9 @@ static napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info)
 
 static napi_value CryptoRand(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto len = napiValue2int(env, argv[0]);
+    auto len = napiValue2int(env, args.v[0]);
     byte out[len];
     std::memset(out, 0, len);
 
@@ -757,12 +711,12 @@ static napi_value CryptoRand(napi_env env, napi_callback_info info)
 
 static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
-    auto keyLen = napiValueArrayLen(env, argv[1]);
-    auto keyBytes = napiValue2byteArray(env, argv[1], keyLen);
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+    auto keyLen = napiValueArrayLen(env, args.v[1]);
+    auto keyBytes = napiValue2byteArray(env, args.v[1], keyLen);
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
@@ -771,18 +725,17 @@ static napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info)
     std::free(static_cast<void *>(std::decay_t<byte *>(outBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(keyBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(inBytes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
-    auto keyLen = napiValueArrayLen(env, argv[1]);
-    auto keyBytes = napiValue2byteArray(env, argv[1], keyLen);
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+    auto keyLen = napiValueArrayLen(env, args.v[1]);
+    auto keyBytes = napiValue2byteArray(env, args.v[1], keyLen);
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_aes_decrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
@@ -791,23 +744,22 @@ static napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info)
     std::free(static_cast<void *>(std::decay_t<byte *>(outBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(keyBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(inBytes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
-    auto keyLen = napiValueArrayLen(env, argv[1]);
-    auto keyBytes = napiValue2byteArray(env, argv[1], keyLen);
-    auto initVectorLen = napiValueArrayLen(env, argv[2]);
-    auto initVectorBytes = napiValue2byteArray(env, argv[2], initVectorLen);
-    auto tagBits = napiValue2int(env, argv[3]);
-    auto aadLen = argc > 4 ? napiValueArrayLen(env, argv[4]) : 0;
-    auto aadBytes = argc > 4 ? napiValue2byteArray(env, argv[4], aadLen) : NULL;
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+    auto keyLen = napiValueArrayLen(env, args.v[1]);
+    auto keyBytes = napiValue2byteArray(env, args.v[1], keyLen);
+    auto initVectorLen = napiValueArrayLen(env, args.v[2]);
+    auto initVectorBytes = napiValue2byteArray(env, args.v[2], initVectorLen);
+    auto tagBits = napiValue2int(env, args.v[3]);
+    auto aadLen = args.c > 4 ? napiValueArrayLen(env, args.v[4]) : 0;
+    auto aadBytes = args.c > 4 ? napiValue2byteArray(env, args.v[4], aadLen) : NULL;
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
@@ -820,23 +772,22 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
     std::free(static_cast<void *>(std::decay_t<byte *>(initVectorBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(keyBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(inBytes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
-    auto keyLen = napiValueArrayLen(env, argv[1]);
-    auto keyBytes = napiValue2byteArray(env, argv[1], keyLen);
-    auto initVectorLen = napiValueArrayLen(env, argv[2]);
-    auto initVectorBytes = napiValue2byteArray(env, argv[2], initVectorLen);
-    auto tagBits = napiValue2int(env, argv[3]);
-    auto aadLen = argc > 4 ? napiValueArrayLen(env, argv[4]) : 0;
-    auto aadBytes = argc > 4 ? napiValue2byteArray(env, argv[4], aadLen) : NULL;
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+    auto keyLen = napiValueArrayLen(env, args.v[1]);
+    auto keyBytes = napiValue2byteArray(env, args.v[1], keyLen);
+    auto initVectorLen = napiValueArrayLen(env, args.v[2]);
+    auto initVectorBytes = napiValue2byteArray(env, args.v[2], initVectorLen);
+    auto tagBits = napiValue2int(env, args.v[3]);
+    auto aadLen = args.c > 4 ? napiValueArrayLen(env, args.v[4]) : 0;
+    auto aadBytes = args.c > 4 ? napiValue2byteArray(env, args.v[4], aadLen) : NULL;
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
@@ -849,16 +800,15 @@ static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
     std::free(static_cast<void *>(std::decay_t<byte *>(initVectorBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(keyBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(inBytes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value CryptoHashMd5(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_hash_md5(inBytes, inLen, &outLen);
@@ -866,16 +816,15 @@ static napi_value CryptoHashMd5(napi_env env, napi_callback_info info)
 
     std::free(static_cast<void *>(std::decay_t<byte *>(outBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(inBytes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value CryptoHashSha256(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_hash_sha256(inBytes, inLen, &outLen);
@@ -883,16 +832,15 @@ static napi_value CryptoHashSha256(napi_env env, napi_callback_info info)
 
     std::free(static_cast<void *>(std::decay_t<byte *>(outBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(inBytes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value CryptoBase64Encode(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, &outLen);
@@ -900,16 +848,15 @@ static napi_value CryptoBase64Encode(napi_env env, napi_callback_info info)
 
     std::free(static_cast<void *>(std::decay_t<byte *>(outBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(inBytes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, &outLen);
@@ -917,7 +864,6 @@ static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info)
 
     std::free(static_cast<void *>(std::decay_t<byte *>(outBytes)));
     std::free(static_cast<void *>(std::decay_t<byte *>(inBytes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
@@ -925,38 +871,36 @@ static napi_value CryptoBase64Decode(napi_env env, napi_callback_info info)
 
 static napi_value LLoadF(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto file = napiValue2chars(env, argv[0]);
+    auto file = napiValue2chars(env, args.v[0]);
 
     auto res = ngenxx_lua_loadF(file);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(file)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value LLoadS(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto script = napiValue2chars(env, argv[0]);
+    auto script = napiValue2chars(env, args.v[0]);
 
     auto res = ngenxx_lua_loadS(script);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(script)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value LCall(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto func = napiValue2chars(env, argv[0]);
-    auto params = napiValue2chars(env, argv[1]);
+    auto func = napiValue2chars(env, args.v[0]);
+    auto params = napiValue2chars(env, args.v[1]);
 
     auto res = ngenxx_lua_call(func, params);
     auto nv = chars2NapiValue(env, res);
@@ -966,7 +910,6 @@ static napi_value LCall(napi_env env, napi_callback_info info)
         std::free(static_cast<void *>(std::decay_t<char *>(params)));
     }
     std::free(static_cast<void *>(std::decay_t<char *>(func)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
@@ -974,60 +917,57 @@ static napi_value LCall(napi_env env, napi_callback_info info)
 
 static napi_value JLoadF(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto file = napiValue2chars(env, argv[0]);
-    auto isModule = napiValue2bool(env, argv[1]);
+    auto file = napiValue2chars(env, args.v[0]);
+    auto isModule = napiValue2bool(env, args.v[1]);
 
     auto res = ngenxx_js_loadF(file, isModule);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(file)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value JLoadS(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto script = napiValue2chars(env, argv[0]);
-    auto name = napiValue2chars(env, argv[1]);
-    auto isModule = napiValue2bool(env, argv[2]);
+    auto script = napiValue2chars(env, args.v[0]);
+    auto name = napiValue2chars(env, args.v[1]);
+    auto isModule = napiValue2bool(env, args.v[2]);
 
     auto res = ngenxx_js_loadS(script, name, isModule);
     auto nv = bool2NapiValue(env, res);
 
     std::free(static_cast<void *>(std::decay_t<char *>(script)));
     std::free(static_cast<void *>(std::decay_t<char *>(name)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 
 static napi_value JLoadB(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto inLen = napiValueArrayLen(env, argv[0]);
-    auto inBytes = napiValue2byteArray(env, argv[0], inLen);
-    auto isModule = napiValue2bool(env, argv[1]);
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+    auto isModule = napiValue2bool(env, args.v[1]);
 
     size_t outLen;
     auto b = ngenxx_js_loadB(inBytes, inLen, isModule);
     auto v = bool2NapiValue(env, b);
 
     std::free(static_cast<void *>(std::decay_t<byte *>(inBytes)));
-    std::free(static_cast<void *>(argv));
     return v;
 }
 
 static napi_value JCall(napi_env env, napi_callback_info info)
 {
-    auto [argc, argv] = readParams(env, info);
+    Args args(env, info);
 
-    auto func = napiValue2chars(env, argv[0]);
-    auto params = napiValue2chars(env, argv[1]);
-    auto await = napiValue2bool(env, argv[2]);
+    auto func = napiValue2chars(env, args.v[0]);
+    auto params = napiValue2chars(env, args.v[1]);
+    auto await = napiValue2bool(env, args.v[2]);
 
     auto res = ngenxx_js_call(func, params, await);
     auto nv = chars2NapiValue(env, res);
@@ -1037,7 +977,6 @@ static napi_value JCall(napi_env env, napi_callback_info info)
         std::free(static_cast<void *>(std::decay_t<char *>(params)));
     }
     std::free(static_cast<void *>(std::decay_t<char *>(func)));
-    std::free(static_cast<void *>(argv));
     return nv;
 }
 

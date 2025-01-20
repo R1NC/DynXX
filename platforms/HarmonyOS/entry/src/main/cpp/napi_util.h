@@ -53,8 +53,25 @@
         }                                                  \
     } while (0);
 
-using Params = std::tuple<size_t, napi_value*>;
-Params readParams(napi_env env, napi_callback_info info);
+
+class Args {
+public:
+    size_t c{0};
+    napi_value *v{NULL};
+    
+    Args() = delete;
+    Args(napi_env env, napi_callback_info info);
+    Args(const Args &) = delete;
+    Args &operator=(const Args &) = delete;
+    Args(Args &&) = delete;
+    Args &operator=(Args &&) = delete;
+    
+    ~Args();
+private:
+    napi_env env;
+    napi_callback_info info;
+};
+
 
 const size_t napiValueArrayLen(napi_env env, napi_value nv);
 
