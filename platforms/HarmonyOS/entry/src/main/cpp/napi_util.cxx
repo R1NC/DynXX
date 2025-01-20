@@ -1,4 +1,4 @@
-#include "napi_util.h"
+#include "napi_util.hxx"
 
 #include <string.h>
 

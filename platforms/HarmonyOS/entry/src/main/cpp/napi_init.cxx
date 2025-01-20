@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <type_traits>
 
-#include <napi_util.h>
+#include <napi_util.hxx>
 
 #include "../../../../../../build.HarmonyOS/output/include/NGenXX.h"
 
