@@ -1,6 +1,6 @@
 #include "SQLite.hxx"
 
-#include <string.h>
+#include <cstring>
 
 #include <NGenXXLog.hxx>
 

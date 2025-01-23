@@ -1,6 +1,6 @@
 #include "napi_util.hxx"
 
-#include <string.h>
+#include <cstring>
 
 #include <cstdlib>
 #include <cstring>

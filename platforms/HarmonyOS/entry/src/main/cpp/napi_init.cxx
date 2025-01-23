@@ -1,6 +1,6 @@
 #include "napi/native_api.h"
 
-#include <string.h>
+#include <cstring>
 
 #include <cstring>
 #include <cstdlib>

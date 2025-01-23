@@ -2,8 +2,8 @@
 #include "DeviceInfo.hxx"
 
 #include <windows.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include <NGenXXDeviceInfo.h>
 

@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #if defined(__cplusplus)
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include <NGenXX.hxx>
 #include <NGenXXStoreKV.h>

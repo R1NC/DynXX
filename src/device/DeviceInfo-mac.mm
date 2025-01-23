@@ -3,12 +3,13 @@
 
 #include <mach/mach_host.h>
 #include <mach/mach_init.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
-#include <stdlib.h>
 #include <sys/utsname.h>
+
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 
 #import <Foundation/Foundation.h>
 

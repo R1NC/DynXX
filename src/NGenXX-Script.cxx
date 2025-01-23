@@ -1,8 +1,8 @@
 #include "NGenXX-Script.hxx"
 
 #include <cstdint>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include <algorithm>
 #include <functional>

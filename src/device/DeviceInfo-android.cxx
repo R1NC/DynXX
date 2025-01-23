@@ -1,8 +1,8 @@
 #if defined(__ANDROID__)
 #include "DeviceInfo.hxx"
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <sys/system_properties.h>
 #include <android/api-level.h>
 
