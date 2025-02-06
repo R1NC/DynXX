@@ -48,7 +48,7 @@ void NGenXX::Log::print(const int level, const std::string &content)
     {
         return;
     }
-    const char *cContent = content.c_str();
+    auto cContent = content.c_str();
     if (_NGenXX_Log_callback)
     {
         auto len = strlen(cContent);

@@ -257,11 +257,11 @@ const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
 
 const std::string NGenXXHttpResponse::toJson()
 {
-    cJSON *cj = cJSON_CreateObject();
+    auto cj = cJSON_CreateObject();
     cJSON_AddItemToObject(cj, "code", cJSON_CreateNumber(this->code));
     cJSON_AddItemToObject(cj, "contentType", cJSON_CreateString(this->contentType.c_str()));
 
-    cJSON *cjHeaders = cJSON_CreateObject();
+    auto cjHeaders = cJSON_CreateObject();
     std::for_each(this->headers.begin(), this->headers.end(), 
         [&cjHeaders](const auto& pair) 
         {

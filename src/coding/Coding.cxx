@@ -17,7 +17,7 @@ const std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
     strStream << std::hex;
     for (byte byte : bytes)
     {
-        strStream << std::setw(2) << std::setfill('0') << (int)byte;
+        strStream << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
     }
     return strStream.str();
 }

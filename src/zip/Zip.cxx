@@ -147,9 +147,9 @@ NGenXX::Z::UnZip::~UnZip()
 #pragma mark Stream
 
 bool zProcess(const size_t bufferSize,
-              std::function<const Bytes()> sReadF,
-              std::function<void(const Bytes &)> sWriteF,
-              std::function<void()> sFlushF,
+              std::function<const Bytes()> &sReadF,
+              std::function<void(const Bytes &)> &sWriteF,
+              std::function<void()> &sFlushF,
               NGenXX::Z::ZBase &zb)
 {
     auto inputFinished = false;
