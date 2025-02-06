@@ -53,7 +53,7 @@ mkdir -p ${ASSETS_APP_DIR}
 cp ../scripts/JS/NGenXX.js ${ASSETS_APP_DIR}
 cp -a ../scripts/Lua/. ${ASSETS_APP_DIR}
 BIZ_JS=../scripts/JS/dist/biz.js
-if test -f "$BIZ_JS"; then
+if [ -f "$BIZ_JS" ]; then
   cp ${BIZ_JS} ${ASSETS_APP_DIR}
 else
   echo "biz.js does not exist!"

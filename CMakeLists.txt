@@ -3,8 +3,8 @@
 # 2). The buillt-in sqlite in Android is only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
 # 3). WASM has no built-in zlib;
 # 4). HarmonyOS has built-in libuv;
-# 5). HarmonyOS don't support some features about `std::format` in C++20 (`to_chars`);
-# 6). HarmonyOS can not compile AdaURL which uses the `std::ranges::replace` in C++20;
+# 5). HarmonyOS & earlier Apple(iOS 16.3-, macOS 13.3-) don't support some features about `std::format` in C++20 (`to_chars`);
+# 6). HarmonyOS & earlier Apple(iOS 16.3-, macOS 13.3-) can not compile AdaURL which uses the `std::ranges::replace` in C++20;
 
 cmake_minimum_required(VERSION 3.10)
 
@@ -36,14 +36,14 @@ if(USE_QJS)
     add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
 endif()
 
-if(OHOS)
+if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
     option(USE_STD_FORMAT "Use std::format" OFF)
 else()
     option(USE_STD_FORMAT "Use std::format" ON)
     add_definitions(-DUSE_STD_FORMAT)
 endif()
 
-if(OHOS)
+if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
     option(USE_ADA_URL "Use Ada-URL" OFF)
 else()
     option(USE_ADA_URL "Use Ada-URL" ON)

@@ -28,8 +28,7 @@ function build4wasm {
 }
 
 LIB_TYPE="Release"
-if [[ $DEBUG == 1 ]]
-then
+if [ $DEBUG == 1 ]; then
     LIB_TYPE="Debug"
 fi
 

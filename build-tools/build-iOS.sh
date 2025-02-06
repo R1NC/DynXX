@@ -2,7 +2,7 @@
 
 #TODO
 declare -i DEBUG=0
-TARGET_VERSION=16.3 #`std::format` in C++20 requires iOS 16.3+
+TARGET_VERSION=12.0
 
 BUILD_DIR=../build.iOS
 rm -rf ${BUILD_DIR}
@@ -15,8 +15,7 @@ function build4ios {
     SYSTEM_VERSION=$3
     BUILD_TYPE=$4
 
-    if [[ $PLATFORM = "sim" ]]
-    then
+    if [ $PLATFORM = "sim" ]; then
         PLATFORM="SIMULATOR64"
     else
         PLATFORM="OS64"
@@ -24,8 +23,7 @@ function build4ios {
 
     #Generate xcode project for debug
     GEN_XCODE_PROJ=""
-    if [[ $BUILD_TYPE = "Debug" ]]
-    then
+    if [ $BUILD_TYPE = "Debug" ]; then
         GEN_XCODE_PROJ="-G Xcode"
     fi
     
@@ -43,19 +41,22 @@ function build4ios {
 }
 
 LIB_TYPE="Release"
-if [[ $DEBUG == 1 ]]
-then
+if [ $DEBUG == 1 ]; then
     LIB_TYPE="Debug"
 fi
 
 build4ios phone arm64 ${TARGET_VERSION} ${LIB_TYPE}
 
+#Copy headers
+HEADER_OUTPUT_DIR=output/include
+mkdir -p ${HEADER_OUTPUT_DIR}
+cp -R ../include/ ${HEADER_OUTPUT_DIR}/
+
 #Copy libs
 LIB_DIR=""
 COMMAND="strip -x -S"
 COMMAND_ARG="-o"
-if [[ $DEBUG == 1 ]] 
-then
+if [ $DEBUG == 1 ]; then
     LIB_DIR="Debug-iphoneos/"
     COMMAND="mv"
     COMMAND_ARG=""
@@ -70,11 +71,9 @@ ${COMMAND} lua.output/${LIB_DIR}liblua.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/lua.a
 ${COMMAND} quickjs.output/${LIB_DIR}libqjs.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/qjs.a
 ${COMMAND} libuv.output/${LIB_DIR}libuv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/uv.a
 ${COMMAND} cjson.output/${LIB_DIR}libcjson.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/cjson.a
-${COMMAND} AdaURL.output/src/${LIB_DIR}libada.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ada.a
 ${COMMAND} mmkv.output/Core/${LIB_DIR}/libmmkvcore.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkvcore.a
 ${COMMAND} mmkv.output/${LIB_DIR}libmmkv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkv.a
-
-#Copy headers
-HEADER_OUTPUT_DIR=output/include
-mkdir -p ${HEADER_OUTPUT_DIR}
-cp -R ../include/ ${HEADER_OUTPUT_DIR}/
+ADA_OUT_FILE=AdaURL.output/src/${LIB_DIR}libada.a
+if [ -f "$ADA_OUT_FILE" ]; then
+    ${COMMAND} ${ADA_OUT_FILE} ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ada.a
+fi
