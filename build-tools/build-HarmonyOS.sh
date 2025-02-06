@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # TODO
-NDK_ROOT="~/Library/OpenHarmony/Sdk/13/native"
+NDK_ROOT="~/Library/OpenHarmony/Sdk/14/native"
 
 BUILD_DIR=../build.HarmonyOS
 rm -rf ${BUILD_DIR}
@@ -25,7 +25,7 @@ function build4harmony {
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${OUTPUT_DIR} \
     -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${OUTPUT_DIR} \
     -B${ABI_BUILD_DIR} \
-    -DCMAKE_TOOLCHAIN_FILE=$NDK_ROOT/build/cmake/ohos.toolchain.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=$NDK_ROOT/build/cmake/ohos.toolchain.cmake
 
   cmake --build . --config ${BUILD_TYPE}
 

@@ -17,7 +17,7 @@ function build4wasm {
     -DEMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_ROOT_PATH} \
     -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DEMSCRIPTEN_SYSTEM_PROCESSOR=${ABI} \
+    -DEMSCRIPTEN_SYSTEM_PROCESSOR=${ABI}
 
     cmake --build . --config ${BUILD_TYPE}
 

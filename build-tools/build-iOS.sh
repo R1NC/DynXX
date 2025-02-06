@@ -2,6 +2,7 @@
 
 #TODO
 declare -i DEBUG=0
+TARGET_VERSION=16.3 #`std::format` in C++20 requires iOS 16.3+
 
 BUILD_DIR=../build.iOS
 rm -rf ${BUILD_DIR}
@@ -36,7 +37,7 @@ function build4ios {
     -DARCHS=${ARCHS} \
     -DDEPLOYMENT_TARGET=${SYSTEM_VERSION} \
     -DPLATFORM=${PLATFORM} \
-    ${GEN_XCODE_PROJ} \
+    ${GEN_XCODE_PROJ}
 
     cmake --build . --config ${BUILD_TYPE}
 }
@@ -47,7 +48,7 @@ then
     LIB_TYPE="Debug"
 fi
 
-build4ios phone arm64 12.0 $LIB_TYPE
+build4ios phone arm64 ${TARGET_VERSION} ${LIB_TYPE}
 
 #Copy libs
 LIB_DIR=""

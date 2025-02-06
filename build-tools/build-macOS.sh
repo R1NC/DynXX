@@ -2,6 +2,7 @@
 
 #TODO
 declare -i DEBUG=0
+TARGET_VERSION=13.3 #`std::format` in C++20 requires macOS 13.3+
 
 BUILD_DIR=../build.macOS
 rm -rf ${BUILD_DIR}
@@ -10,8 +11,9 @@ cd ${BUILD_DIR}
 
 function build4macos {
     PLATFORM=$1
-    BUILD_TYPE=$2
-    ARCHS=$3
+    ARCHS=$2
+    SYSTEM_VERSION=$3
+    BUILD_TYPE=$4
 
     #Generate xcode project for debug
     GEN_XCODE_PROJ=""
@@ -26,7 +28,8 @@ function build4macos {
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DARCHS=${ARCHS} \
     -DPLATFORM=${PLATFORM} \
-    ${GEN_XCODE_PROJ} \
+    -DDEPLOYMENT_TARGET=${SYSTEM_VERSION} \
+    ${GEN_XCODE_PROJ}
 
     cmake --build . --config ${BUILD_TYPE}
 }
@@ -37,8 +40,8 @@ then
     LIB_TYPE="Debug"
 fi
 
-build4macos MAC_UNIVERSAL $LIB_TYPE arm64
-#build4macos MAC_UNIVERSAL $LIB_TYPE x86_64
+build4macos MAC_UNIVERSAL arm64 ${TARGET_VERSION} ${LIB_TYPE}
+#build4macos MAC_UNIVERSAL x86_64 ${TARGET_VERSION} ${LIB_TYPE}
 
 #Copy libs
 LIB_OUTPUT_DIR=output/libs
