@@ -87,7 +87,15 @@ struct Index {
               NGenXX.storeKVClose(kvConn);
             }
 
-            let jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\": 1, \"timeout\":6666}";
+            let jsonParams = `{
+              "url":"https://rinc.xyz",
+              "params":"p0=1&p1=2&p2=3",
+              "method":0,
+              "header_v":[
+                "Cache-Control: no-cache"
+              ],
+              "timeout":6666
+            }`;
             /*NGenXX.lLoadS(
               "function lNetHttpRequest(pReq)\n" +
                 "pLog = '{\"level\":1,\"content\":\"Send Net Req from Lua..\"}';\n" +
@@ -120,10 +128,10 @@ struct Index {
                 let url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
                 NGenXX.logPrint(LogLevel.Debug, `url:${url}`)
               }
-              let headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "header_c")
-              if (headerCNode != 0) {
-                let headerC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headerCNode)
-                NGenXX.logPrint(LogLevel.Debug, `headerC:${headerC}`)
+              let methodNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "method")
+              if (methodNode != 0) {
+                let method = NGenXX.jsonDecoderReadNumber(jsonDecoder, methodNode)
+                NGenXX.logPrint(LogLevel.Debug, `method:${method}`)
               }
               let headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "header_v")
               if (headerVNode != 0) {

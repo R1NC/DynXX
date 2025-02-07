@@ -85,8 +85,7 @@ class NGenXXTest {
                 "method":0,
                 "header_v": [
                     "Cache-Control: no-cache"
-                ], 
-                "header_c": 1, 
+                ],
                 "timeout": 6666
             }""".trimIndent()
 
@@ -115,10 +114,10 @@ class NGenXXTest {
                     val url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
                     NGenXXHelper.logPrint(LogLevel.Debug, "url:$url")
                 }
-                val headerCNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_c")
-                if (headerCNode != 0L) {
-                    val headerC = NGenXX.jsonDecoderReadNumber(jsonDecoder, headerCNode)
-                    NGenXXHelper.logPrint(LogLevel.Debug, "header_c:${headerC.toInt()}")
+                val methodNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "method")
+                if (methodNode != 0L) {
+                    val method = NGenXX.jsonDecoderReadNumber(jsonDecoder, methodNode)
+                    NGenXXHelper.logPrint(LogLevel.Debug, "method:${method.toInt()}")
                 }
                 val headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, 0, "header_v")
                 if (headerVNode != 0L) {

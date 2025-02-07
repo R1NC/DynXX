@@ -6,7 +6,7 @@
 #include <cstring>
 #include <functional>
 
-static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\": 1, \"timeout\":6666}";
+static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"timeout\":6666}";
 
 void ngenxx_posix_init(const char *root)
 {
@@ -124,10 +124,10 @@ void ngenxx_posix_testJsonDecoder(void)
             const char *url = ngenxx_json_decoder_read_string(jsonDecoder, urlNode);
             std::cout << "url:" << url << std::endl;
         }
-        void *headerCNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_c");
-        if (headerCNode) {
-            double headerC = ngenxx_json_decoder_read_number(jsonDecoder, headerCNode);
-            std::cout << "header_c:" << headerC << std::endl;
+        void *methodNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "method");
+        if (methodNode) {
+            double method = ngenxx_json_decoder_read_number(jsonDecoder, methodNode);
+            std::cout << "method:" << method << std::endl;
         }
         void *headerVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_v");
         if (headerVNode) {

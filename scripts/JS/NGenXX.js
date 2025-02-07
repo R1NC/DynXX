@@ -104,7 +104,6 @@ function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, rawBodyBytes, f
         "method": method,
         "params": paramStr,
         "header_v": headerArray,
-        "header_c": headerArray.length,
         "rawBodyBytes": rawBodyBytes,
         "form_field_name_v": formFieldNameArray,
         "form_field_mime_v": formFieldMimeArray,
