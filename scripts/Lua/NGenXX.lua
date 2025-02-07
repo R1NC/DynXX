@@ -108,13 +108,11 @@ function NGenXX.Net.Http.request(url, method, param_map, header_map, raw_body_by
         ["method"] = method,
         ["params"] = paramStr,
         ["header_v"] = headerArray,
-        ["header_c"] = #headerArray,
         ["timeout"] = timeout
     }
 
     if (raw_body_bytes ~= nil and #raw_body_bytes > 0) then
         inDict["rawBodyBytes"] = raw_body_bytes
-        inDict["rawBodyLen"] = #raw_body_bytes
     end
 
     local inJson = JSON.stringify(inDict)
@@ -153,8 +151,7 @@ NGenXX.Coding.Hex = {}
 
 function NGenXX.Coding.Hex.bytes2Str(bytes)
     local inJson = JSON.stringify({
-        ["inBytes"] = bytes,
-        ["inLen"] = #bytes
+        ["inBytes"] = bytes
     })
     return ngenxx_coding_hex_bytes2strL(inJson)
 end
@@ -169,8 +166,7 @@ end
 
 function NGenXX.Coding.bytes2Str(bytes)
     local inJson = JSON.stringify({
-        ["inBytes"] = bytes,
-        ["inLen"] = #bytes
+        ["inBytes"] = bytes
     })
     return ngenxx_coding_bytes2strL(inJson)
 end
@@ -198,9 +194,7 @@ NGenXX.Crypto.Aes = {}
 function NGenXX.Crypto.Aes.encrypt(inBytes, keyBytes)
     local inJson = JSON.stringify({
         ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes,
-        ["keyBytes"] = keyBytes,
-        ["keyLen"] = #keyBytes
+        ["keyBytes"] = keyBytes
     })
     local outJson = ngenxx_crypto_aes_encryptL(inJson)
     return JSON.parse(outJson)
@@ -209,9 +203,7 @@ end
 function NGenXX.Crypto.Aes.decrypt(inBytes, keyBytes)
     local inJson = JSON.stringify({
         ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes,
-        ["keyBytes"] = keyBytes,
-        ["keyLen"] = #keyBytes
+        ["keyBytes"] = keyBytes
     })
     local outJson = ngenxx_crypto_aes_decryptL(inJson)
     return JSON.parse(outJson)
@@ -222,16 +214,12 @@ NGenXX.Crypto.Aes.Gcm = {}
 function NGenXX.Crypto.Aes.Gcm.encrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes)
     local inDict = {
         ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes,
         ["keyBytes"] = keyBytes,
-        ["keyLen"] = #keyBytes,
         ["initVectorBytes"] = ivBytes,
-        ["initVectorLen"] = #ivBytes,
         ["tagBits"] = tagBits
     }
     if (aadBytes ~= nil and #aadBytes > 0) then
         inDict["aadBytes"] = aadBytes
-        inDict["aadLen"] = #aadBytes
     end
     local inJson = JSON.stringify(inDict)
     local outJson = ngenxx_crypto_aes_gcm_encryptL(inJson)
@@ -241,16 +229,12 @@ end
 function NGenXX.Crypto.Aes.Gcm.decrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes)
     local inDict = {
         ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes,
         ["keyBytes"] = keyBytes,
-        ["keyLen"] = #keyBytes,
         ["initVectorBytes"] = ivBytes,
-        ["initVectorLen"] = #ivBytes,
         ["tagBits"] = tagBits
     }
     if (aadBytes ~= nil and #aadBytes > 0) then
         inDict["aadBytes"] = aadBytes
-        inDict["aadLen"] = #aadBytes
     end
     local inJson = JSON.stringify(inDict)
     local outJson = ngenxx_crypto_aes_gcm_decryptL(inJson)
@@ -261,8 +245,7 @@ NGenXX.Crypto.Hash = {}
 
 function NGenXX.Crypto.Hash.md5(inBytes)
     local inJson = JSON.stringify({
-        ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes
+        ["inBytes"] = inBytes
     })
     local outJson = ngenxx_crypto_hash_md5L(inJson)
     return JSON.parse(outJson)
@@ -270,8 +253,7 @@ end
 
 function NGenXX.Crypto.Hash.sha256(inBytes)
     local inJson = JSON.stringify({
-        ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes
+        ["inBytes"] = inBytes
     })
     local outJson = ngenxx_crypto_hash_sha256L(inJson)
     return JSON.parse(outJson)
@@ -281,8 +263,7 @@ NGenXX.Crypto.Base64 = {}
 
 function NGenXX.Crypto.Base64.encode(inBytes)
     local inJson = JSON.stringify({
-        ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes
+        ["inBytes"] = inBytes
     })
     local outJson = ngenxx_crypto_base64_encodeL(inJson)
     return JSON.parse(outJson)
@@ -290,8 +271,7 @@ end
 
 function NGenXX.Crypto.Base64.decode(inBytes)
     local inJson = JSON.stringify({
-        ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes
+        ["inBytes"] = inBytes
     })
     local outJson = ngenxx_crypto_base64_decodeL(inJson)
     return JSON.parse(outJson)
@@ -492,8 +472,7 @@ function NGenXX.Z.zipBytes(inBytes, format, mode)
         ["mode"] = mode,
         ["bufferSize"] = NGenXX.Z.DefaultBufferSize,
         ["format"] = format,
-        ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes
+        ["inBytes"] = inBytes
     })
     local outJson = ngenxx_z_bytes_unzipL(inJson)
     return JSON.parse(outJson)
@@ -504,8 +483,7 @@ function NGenXX.Z.unZipBytes(inBytes, format)
     local inJson = JSON.stringify({
         ["bufferSize"] = NGenXX.Z.DefaultBufferSize,
         ["format"] = format,
-        ["inBytes"] = inBytes,
-        ["inLen"] = #inBytes
+        ["inBytes"] = inBytes
     })
     local outJson = ngenxx_z_bytes_unzipL(inJson)
     return JSON.parse(outJson)
@@ -526,7 +504,6 @@ function NGenXX.Z._.zipInput(zip, bytes, finish)
     local inJson = JSON.stringify({
         ["zip"] = zip,
         ["inBytes"] = bytes,
-        ["inLen"] = #bytes,
         ["inFinish"] = finish and 1 or 0
     })
     return ngenxx_z_zip_inputL(inJson)
@@ -566,7 +543,6 @@ function NGenXX.Z._.unZipInput(unzip, bytes, finish)
     local inJson = JSON.stringify({
         ["unzip"] = unzip,
         ["inBytes"] = bytes,
-        ["inLen"] = #bytes,
         ["inFinish"] = finish and 1 or 0
     })
     return ngenxx_z_unzip_inputL(inJson)

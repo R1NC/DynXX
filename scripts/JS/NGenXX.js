@@ -106,11 +106,9 @@ function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, rawBodyBytes, f
         "header_v": headerArray,
         "header_c": headerArray.length,
         "rawBodyBytes": rawBodyBytes,
-        "rawBodyLen": rawBodyBytes.length,
         "form_field_name_v": formFieldNameArray,
         "form_field_mime_v": formFieldMimeArray,
         "form_field_data_v": formFieldDataArray,
-        "form_field_count": formFieldNameArray.length,
         "timeout": timeout
     });
 
@@ -313,8 +311,7 @@ function NGenXXBytes2Str(bytes) {
 function NGenXXCodingHexBytes2Str(bytes) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
-        "inBytes": bytes,
-        "inLen": bytes.length
+        "inBytes": bytes
     });
     return ngenxx_coding_hex_bytes2strJ(inJson);
 }
@@ -331,8 +328,7 @@ function NGenXXCodingHexStr2Bytes(str) {
 function NGenXXCodingBytes2Str(bytes) {
     bytes = bytes || [];
     let inJson = JSON.stringify({
-        "inBytes": bytes,
-        "inLen": bytes.length
+        "inBytes": bytes
     });
     return ngenxx_coding_bytes2strJ(inJson);
 }
@@ -375,9 +371,7 @@ function NGenXXCryptoAesEncrypt(inBytes, keyBytes) {
     keyBytes = keyBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
-        "inLen": inBytes.length,
-        "keyBytes": keyBytes,
-        "keyLen": keyBytes.length
+        "keyBytes": keyBytes
     });
     let outJson = ngenxx_crypto_aes_encryptJ(inJson);
     return _json2Array(outJson);
@@ -388,9 +382,7 @@ function NGenXXCryptoAesDecrypt(inBytes, keyBytes) {
     keyBytes = keyBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
-        "inLen": inBytes.length,
-        "keyBytes": keyBytes,
-        "keyLen": keyBytes.length
+        "keyBytes": keyBytes
     });
     let outJson = ngenxx_crypto_aes_decryptJ(inJson);
     return _json2Array(outJson);
@@ -403,13 +395,9 @@ function NGenXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes
     aadBytes = aadBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
-        "inLen": inBytes.length,
         "keyBytes": keyBytes,
-        "keyLen": keyBytes.length,
         "initVectorBytes": ivBytes,
-        "initVectorLen": ivBytes.length,
         "aadBytes": aadBytes,
-        "aadLen": aadBytes.length,
         "tagBits": tagBits
     });
     let outJson = ngenxx_crypto_aes_gcm_encryptJ(inJson);
@@ -423,13 +411,9 @@ function NGenXXCryptoAesGcmDecrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes
     aadBytes = aadBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
-        "inLen": inBytes.length,
         "keyBytes": keyBytes,
-        "keyLen": keyBytes.length,
         "initVectorBytes": ivBytes,
-        "initVectorLen": ivBytes.length,
         "aadBytes": aadBytes,
-        "aadLen": aadBytes.length,
         "tagBits": tagBits
     });
     let outJson = ngenxx_crypto_aes_gcm_decryptJ(inJson);
@@ -439,8 +423,7 @@ function NGenXXCryptoAesGcmDecrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes
 function NGenXXCryptoHashMD5(inBytes) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({
-        "inBytes": inBytes,
-        "inLen": inBytes.length
+        "inBytes": inBytes
     });
     let outJson = ngenxx_crypto_hash_md5J(inJson);
     return _json2Array(outJson);
@@ -449,8 +432,7 @@ function NGenXXCryptoHashMD5(inBytes) {
 function NGenXXCryptoHashSHA256(inBytes) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({
-        "inBytes": inBytes,
-        "inLen": inBytes.length
+        "inBytes": inBytes
     });
     let outJson = ngenxx_crypto_hash_sha256J(inJson);
     return _json2Array(outJson);
@@ -459,8 +441,7 @@ function NGenXXCryptoHashSHA256(inBytes) {
 function NGenXXCryptoBase64Encode(inBytes) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({
-        "inBytes": inBytes,
-        "inLen": inBytes.length
+        "inBytes": inBytes
     });
     let outJson = ngenxx_crypto_base64_encodeJ(inJson);
     return _json2Array(outJson);
@@ -469,8 +450,7 @@ function NGenXXCryptoBase64Encode(inBytes) {
 function NGenXXCryptoBase64Decode(inBytes) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({
-        "inBytes": inBytes,
-        "inLen": inBytes.length
+        "inBytes": inBytes
     });
     let outJson = ngenxx_crypto_base64_decodeJ(inJson);
     return _json2Array(outJson);
@@ -492,7 +472,6 @@ function _NGenXXZZipInput(zip, bytes, finish) {
     let inJson = JSON.stringify({
         "zip": zip,
         "inBytes": bytes,
-        "inLen": bytes.length,
         "inFinish": finish ? 1 : 0
     });
     return ngenxx_z_zip_inputJ(inJson);
@@ -533,7 +512,6 @@ function _NGenXXZUnZipInput(unzip, bytes, finish) {
     let inJson = JSON.stringify({
         "unzip": unzip,
         "inBytes": bytes,
-        "inLen": bytes.length,
         "inFinish": finish ? 1 : 0
     });
     return ngenxx_z_unzip_inputJ(inJson);
@@ -567,8 +545,7 @@ function NGenXXZZipBytes(bytes, mode, bufferSize, format) {
         "mode": mode,
         "bufferSize": bufferSize,
         "format": format,
-        "inBytes": bytes,
-        "inLen": bytes.length
+        "inBytes": bytes
     });
     return new Promise((resolve, reject)=>{
         ngenxx_z_bytes_zipJ(inJson).then((outJson)=>{
@@ -581,8 +558,7 @@ function NGenXXZUnZipBytes(bytes, bufferSize, format) {
     let inJson = JSON.stringify({
         "bufferSize": bufferSize,
         "format": format,
-        "inBytes": bytes,
-        "inLen": bytes.length
+        "inBytes": bytes
     });
     return new Promise((resolve, reject)=>{
         ngenxx_z_bytes_unzipJ(inJson).then((outJson)=>{

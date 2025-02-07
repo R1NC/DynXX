@@ -79,7 +79,16 @@ class NGenXXTest {
             val base64DecodedStr = base64Decoded.toString(Charsets.UTF_8)
             NGenXXHelper.logPrint(LogLevel.Debug,"base64->$base64DecodedStr")
 
-            val jsonParams = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"header_c\":1, \"timeout\":6666}"
+            val jsonParams = """{
+                "url": "https://rinc.xyz", 
+                "params": "p0=1&p1=2&p2=3", 
+                "method":0,
+                "header_v": [
+                    "Cache-Control: no-cache"
+                ], 
+                "header_c": 1, 
+                "timeout": 6666
+            }""".trimIndent()
 
             sApplication?.assets?.open("biz.lua")?.bufferedReader().use {
                 if (!NGenXX.lLoadS(it?.readText()?:"")) return
