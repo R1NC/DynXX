@@ -17,6 +17,7 @@ class NGenXXTest {
 
         private var sApplication: Application? = null
         private var sJsLoaded: Boolean = false
+        private var sLuaLoaded: Boolean = false
 
         fun init(application: Application) {
             sApplication = application
@@ -89,20 +90,31 @@ class NGenXXTest {
                 "timeout": 6666
             }""".trimIndent()
 
-            sApplication?.assets?.open("biz.lua")?.bufferedReader().use {
-                if (!NGenXX.lLoadS(it?.readText()?:"")) return
-                val rsp = NGenXX.lCall("lTestNetHttpRequest", "https://rinc.xyz")
-                NGenXXHelper.logPrint(LogLevel.Debug, rsp!!)
+            if (sLuaLoaded) {
+                NGenXXHelper.logPrint(LogLevel.Debug, NGenXX.lCall("TestNetHttpRequest", "https://rinc.xyz")!!)
+            } else {
+                sApplication?.assets?.open("json.lua")?.bufferedReader().use { it0->
+                    if (!NGenXX.lLoadS(it0?.readText()?:"")) return
+                    sApplication?.assets?.open("NGenXX.lua")?.bufferedReader().use { it1->
+                        if (!NGenXX.lLoadS(it1?.readText()?:"")) return
+                        sApplication?.assets?.open("biz.lua")?.bufferedReader().use { it2->
+                            if (!NGenXX.lLoadS(it2?.readText()?:"")) return
+                            sLuaLoaded = true
+                            NGenXXHelper.logPrint(LogLevel.Debug, NGenXX.lCall("TestNetHttpRequest", "https://rinc.xyz")!!)
+                        }
+                    }
+                }
             }
 
             if (sJsLoaded) {
-                NGenXX.jCall("jTestBase64", "NGenXX", false)
+                NGenXX.jCall("jTestCryptoBase64", "NGenXX", false)
             } else {
                 sApplication?.assets?.open("NGenXX.js")?.bufferedReader().use { it0 ->
                     if (!NGenXX.jLoadS(it0?.readText() ?: "", "NGenXX.js", false)) return
                     sApplication?.assets?.open("biz.js")?.bufferedReader().use { it1 ->
                         if (!NGenXX.jLoadS(it1?.readText() ?: "", "biz.js", false)) return
-                        NGenXX.jCall("jTestBase64", "NGenXX", false)
+                        sJsLoaded = true
+                        NGenXX.jCall("jTestCryptoBase64", "NGenXX", false)
                     }
                 }
             }

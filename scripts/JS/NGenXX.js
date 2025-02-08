@@ -52,14 +52,14 @@ function NGenXXAskPlatform(msg) {
     return ngenxx_ask_platformJ(msg);
 }
 
-const NGenXXLogLevel = Object.freeze({
+/*const NGenXXLogLevel = Object.freeze({
     Debug: 3,
     Info: 4,
     Warn: 5,
     Error: 6,
     Fatal: 7,
     None: 8
-});
+});*/
 
 function NGenXXLogPrint(level, content) {
     content = content || '';
@@ -455,7 +455,7 @@ function NGenXXCryptoBase64Decode(inBytes) {
     return _json2Array(outJson);
 }
 
-let NGenXXZBufferSize = 16 * 1024
+//let NGenXXZBufferSize = 16 * 1024
 
 function _NGenXXZZipInit(mode, bufferSize, format) {
     let inJson = JSON.stringify({
