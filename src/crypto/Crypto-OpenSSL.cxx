@@ -490,7 +490,7 @@ const Bytes NGenXX::Crypto::RSA::encrypt(const Bytes &in, const Bytes &key, cons
     auto ret = RSA_public_encrypt(in.size(), in.data(), outBytes, rsa, padding);
     if (ret == -1)
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "RSA encrypt error:" + std::to_string(ret));
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA encrypt error:{}", ret);
         RSA_free(rsa);
         return BytesEmpty;
     }
@@ -507,7 +507,7 @@ const Bytes NGenXX::Crypto::RSA::decrypt(const Bytes &in, const Bytes &key, cons
     auto ret = RSA_private_decrypt(in.size(), in.data(), outBytes, rsa, padding);
     if (ret == -1)
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "RSA decrypt error:" + std::to_string(ret));
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA decrypt error:{}", ret);
         RSA_free(rsa);
         return BytesEmpty;
     }
