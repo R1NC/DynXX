@@ -1,7 +1,7 @@
 #if defined(__OHOS__)
 #include "DeviceInfo.hxx"
 
-//#include <deviceinfo.h>
+#include <deviceinfo.h>
 
 #include <NGenXXDeviceInfo.h>
 
@@ -12,20 +12,17 @@ int NGenXX::Device::DeviceInfo::deviceType()
 
 std::string NGenXX::Device::DeviceInfo::deviceName()
 {
-    //return OH_GetHardwareModel();
-    return "";
+    return OH_GetHardwareModel();
 }
 
 std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
 {
-    //return OH_GetManufacture();
-    return "";
+    return OH_GetManufacture();
 }
 
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
-    //return OH_GetDistributionOSVersion();
-    return "";
+    return OH_GetDistributionOSVersion();
 }
 
 int NGenXX::Device::DeviceInfo::cpuArch()

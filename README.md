@@ -16,7 +16,7 @@ A cross-platform framework based on C/C++ that also supports Lua and JS.
 | JSON |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
 | Crypto |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
 | Zip |✔️|✔️|🛠️|🛠️|✔️|✔️|🛠️|
-| Device Info |✔️|✔️|🛠️|🛠️|✔️|🛠️|❔|
+| Device Info |✔️|✔️|✔️|🛠️|✔️|🛠️|❔|
 
 - ❔ : Unknown.
 - ⭕ : Not supported.

@@ -88,4 +88,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     uv
     libace_napi.z.so
     libhilog_ndk.z.so
+    libdeviceinfo_ndk.z.so
 )
