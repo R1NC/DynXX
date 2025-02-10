@@ -55,6 +55,13 @@ namespace NGenXX
             const Bytes gcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits);
         }
 
+        namespace RSA
+        {
+            const Bytes encrypt(const Bytes &in, const Bytes &key, const int padding);
+            
+            const Bytes decrypt(const Bytes &in, const Bytes &key, const int padding);
+        }
+
         namespace Hash
         {
             constexpr size_t MD5_BYTES_LEN = 16;

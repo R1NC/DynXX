@@ -200,6 +200,28 @@ const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, const size_t inLe
     return copyBytes(t);
 }
 
+const byte *ngenxx_crypto_rsa_encrypt(const byte *inBytes, const size_t inLen,
+                                                              const byte *keyBytes, const size_t keyLen, const int padding, size_t *outLen)
+{
+    auto t = ngenxxCryptoRsaEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen), static_cast<NGenXXCryptoRSAPaddingX>(padding));
+    if (outLen)
+    {
+        *outLen = t.size();
+    }
+    return copyBytes(t);
+}
+
+const byte *ngenxx_crypto_rsa_decrypt(const byte *inBytes, const size_t inLen,
+                                                              const byte *keyBytes, const size_t keyLen, const int padding, size_t *outLen)
+{
+    auto t = ngenxxCryptoRsaDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen), static_cast<NGenXXCryptoRSAPaddingX>(padding));
+    if (outLen)
+    {
+        *outLen = t.size();
+    }
+    return copyBytes(t);
+}
+
 EXPORT_AUTO
 const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size_t inLen, size_t *outLen)
 {

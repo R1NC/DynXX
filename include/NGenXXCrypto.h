@@ -20,7 +20,7 @@ extern "C"
      * @brief AES Encrypt
      * @param inBytes input bytes data
      * @param inLen input bytes length
-     * @param keyBytes key Key bytes data
+     * @param keyBytes key bytes data
      * @param keyLen key bytes length（MUST BE 16!!）
      * @param outLen a pointer to read output bytes length
      * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
@@ -31,7 +31,7 @@ extern "C"
      * @brief AES Decrypt
      * @param inBytes input bytes data
      * @param inLen input bytes length
-     * @param keyBytes key Key bytes data
+     * @param keyBytes key bytes data
      * @param keyLen key bytes length（MUST BE 16!!）
      * @param outLen a pointer to read output bytes length
      * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
@@ -77,6 +77,44 @@ extern "C"
                                               const byte *initVectorBytes, const size_t initVectorLen,
                                               const byte *aadBytes, const size_t aadLen,
                                               const size_t tagBits, size_t *outLen);
+
+    /**
+     * @brief RSA padding
+     */
+    enum NGenXXCryptoRSAPadding {
+      NGenXXCryptoRSAPaddingPKCS1 = 1,
+      NGenXXCryptoRSAPaddingSSLV23 = 2,
+      NGenXXCryptoRSAPaddingNO = 3,
+      NGenXXCryptoRSAPaddingPKCS1_OAEP = 4,
+      NGenXXCryptoRSAPaddingX931 = 5,
+      NGenXXCryptoRSAPaddingPKCS1_PSS = 6
+    };
+
+    /**
+     * @brief RSA Encrypt
+     * @param inBytes input bytes data
+     * @param inLen input bytes length
+     * @param keyBytes Public-Key bytes data
+     * @param keyLen Public-Key bytes length
+     * @param padding see `NGenXXCryptoRSAPadding`
+     * @param outLen a pointer to read output bytes length
+     * @return output bytes data
+     */
+    const byte *ngenxx_crypto_rsa_encrypt(const byte *inBytes, const size_t inLen,
+                                                              const byte *keyBytes, const size_t keyLen, const int padding, size_t *outLen);
+
+    /**
+     * @brief RSA Decrypt
+     * @param inBytes input bytes data
+     * @param inLen input bytes length
+     * @param keyBytes Private-Key bytes data
+     * @param keyLen Private-Key bytes length
+     * @param padding see `NGenXXCryptoRSAPadding`
+     * @param outLen a pointer to read output bytes length
+     * @return output bytes data
+     */
+    const byte *ngenxx_crypto_rsa_decrypt(const byte *inBytes, const size_t inLen,
+                                                              const byte *keyBytes, const size_t keyLen, const int padding, size_t *outLen);
 
     /**
      * @brief MD5 hash

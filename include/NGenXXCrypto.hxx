@@ -15,6 +15,20 @@ const Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const B
 const Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits,
                                       const Bytes &aad = BytesEmpty);
 
+enum class NGenXXCryptoRSAPaddingX : int
+{
+    PKCS1 = 1,
+    SSLV23 = 2,
+    NO = 3,
+    PKCS1_OAEP = 4,
+    X931 = 5,
+    PKCS1_PSS = 6
+};
+
+const Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding);
+
+const Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding);
+
 const Bytes ngenxxCryptoHashMd5(const Bytes &in);
 
 const Bytes ngenxxCryptoHashSha256(const Bytes &in);

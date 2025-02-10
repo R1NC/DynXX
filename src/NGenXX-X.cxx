@@ -196,6 +196,16 @@ const Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const B
     return NGenXX::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }
 
+const Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding)
+{
+    return NGenXX::Crypto::RSA::encrypt(in, key, static_cast<int>(padding));
+}
+
+const Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding)
+{
+    return NGenXX::Crypto::RSA::decrypt(in, key, static_cast<int>(padding));
+}
+
 const Bytes ngenxxCryptoHashMd5(const Bytes &in)
 {
     return NGenXX::Crypto::Hash::md5(in);
