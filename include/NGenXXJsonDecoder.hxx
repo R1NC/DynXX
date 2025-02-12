@@ -2,6 +2,7 @@
 #define NGENXX_INCLUDE_JSON_DECODER_HXX_
 
 #include <string>
+#include <functional>
 
 void *ngenxxJsonDecoderInit(const std::string &json);
 
@@ -16,6 +17,8 @@ const std::string ngenxxJsonDecoderReadString(void *const decoder, void *const n
 double ngenxxJsonDecoderReadNumber(void *const decoder, void *const node = nullptr);
 
 void *ngenxxJsonDecoderReadChild(void *const decoder, void *const node = nullptr);
+
+void ngenxxJsonDecoderReadChildren(void *const decoder, void *const node, const std::function<void(const size_t idx, const void *const child)> &callback);
 
 void *ngenxxJsonDecoderReadNext(void *const decoder, void *const node = nullptr);
 

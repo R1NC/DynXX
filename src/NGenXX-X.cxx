@@ -617,6 +617,16 @@ void *ngenxxJsonDecoderReadChild(void *const decoder, void *const node)
     return xdecoder->readChild(node);
 }
 
+void ngenxxJsonDecoderReadChildren(void *const decoder, void *const node, const std::function<void(const size_t idx, const void *const child)> &callback)
+{
+    if (decoder == NULL)
+    {
+        return;
+    }
+    auto xdecoder = reinterpret_cast<NGenXX::Json::Decoder *>(decoder);
+    xdecoder->readChildren(node, callback);
+}
+
 void *ngenxxJsonDecoderReadNext(void *const decoder, void *const node)
 {
     if (decoder == NULL)
