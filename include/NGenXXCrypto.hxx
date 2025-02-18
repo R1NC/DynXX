@@ -31,6 +31,7 @@ const Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, const NGen
 
 const Bytes ngenxxCryptoHashMd5(const Bytes &in);
 
+const Bytes ngenxxCryptoHashSha1(const Bytes &in);
 const Bytes ngenxxCryptoHashSha256(const Bytes &in);
 
 const Bytes ngenxxCryptoBase64Encode(const Bytes &in);

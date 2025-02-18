@@ -69,6 +69,7 @@ namespace NGenXX
 
             const Bytes md5(const Bytes &in);
 
+            const Bytes sha1(const Bytes &in);
             const Bytes sha256(const Bytes &in);
         }
 

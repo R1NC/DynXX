@@ -126,13 +126,22 @@ extern "C"
     const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size_t inLen, size_t *outLen);
 
     /**
+     * @brief SHA1
+     * @param inBytes input bytes data
+     * @param inLen input bytes length
+     * @param outLen a pointer to read output bytes length
+     * @return output bytes data
+     */
+    const byte *ngenxx_crypto_hash_sha1(const byte *inBytes, const size_t inLen, size_t *outLen);
+
+    /**
      * @brief SHA256
      * @param inBytes input bytes data
      * @param inLen input bytes length
      * @param outLen a pointer to read output bytes length
      * @return output bytes data
      */
-    const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size_t inLen, size_t *outLen);
+     const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size_t inLen, size_t *outLen);
 
     /**
      * @brief Base64 encode

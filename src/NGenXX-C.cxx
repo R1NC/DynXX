@@ -234,6 +234,17 @@ const byte *ngenxx_crypto_hash_md5(const byte *inBytes, const size_t inLen, size
 }
 
 EXPORT_AUTO
+const byte *ngenxx_crypto_hash_sha1(const byte *inBytes, const size_t inLen, size_t *outLen)
+{
+    auto t = ngenxxCryptoHashSha1(wrapBytes(inBytes, inLen));
+    if (outLen)
+    {
+        *outLen = t.size();
+    }
+    return copyBytes(t);
+}
+
+EXPORT_AUTO
 const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, const size_t inLen, size_t *outLen)
 {
     auto t = ngenxxCryptoHashSha256(wrapBytes(inBytes, inLen));

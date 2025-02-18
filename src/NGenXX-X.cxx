@@ -211,6 +211,11 @@ const Bytes ngenxxCryptoHashMd5(const Bytes &in)
     return NGenXX::Crypto::Hash::md5(in);
 }
 
+const Bytes ngenxxCryptoHashSha1(const Bytes &in)
+{
+    return NGenXX::Crypto::Hash::sha1(in);
+}
+
 const Bytes ngenxxCryptoHashSha256(const Bytes &in)
 {
     return NGenXX::Crypto::Hash::sha256(in);

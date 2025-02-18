@@ -355,6 +355,44 @@ const Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
+const Bytes NGenXX::Crypto::Hash::sha1(const Bytes &inBytes)
+{
+    auto in = inBytes.data();
+    auto inLen = inBytes.size();
+    if (in == NULL || inLen == 0) return BytesEmpty;
+    unsigned int outLen = EVP_MAX_MD_SIZE;
+    byte out[outLen];
+    memset(out, 0, outLen);
+
+    auto ctx = EVP_MD_CTX_create();
+    auto md = EVP_sha1();
+
+    auto ret = EVP_DigestInit_ex(ctx, md, NULL);
+    if (ret != OpenSSL_OK)
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestInit_ex error:{}", ret);
+        return BytesEmpty;
+    }
+
+    ret = EVP_DigestUpdate(ctx, in, inLen);
+    if (ret != OpenSSL_OK)
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestUpdate error:{}", ret);
+        return BytesEmpty;
+    }
+
+    ret = EVP_DigestFinal_ex(ctx, out, &outLen);
+    if (ret != OpenSSL_OK)
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestFinal_ex error:{}", ret);
+        return BytesEmpty;
+    }
+
+    EVP_MD_CTX_destroy(ctx);
+
+    return wrapBytes(out, outLen);
+}
+
 const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
 {
     auto in = inBytes.data();
