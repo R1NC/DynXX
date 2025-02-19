@@ -5,6 +5,105 @@
 
 #include <NGenXXLog.hxx>
 
+std::string NGenXX::Json::dictAnyToJson(const std::unordered_map<std::string, Any> &dict)
+{
+    auto cjson = cJSON_CreateObject();
+    for (const auto& [k, v] : dict) 
+    {
+        cJSON *node = NULL;
+        if (std::holds_alternative<int64_t>(v)) 
+        {
+            node = cJSON_CreateNumber(std::get<int64_t>(v));
+        } 
+        else if (std::holds_alternative<double>(v)) 
+        {
+            node = cJSON_CreateNumber(std::get<double>(v));
+        } 
+        else if (std::holds_alternative<std::string>(v)) 
+        {
+            node = cJSON_CreateString(std::get<std::string>(v).c_str());
+        }
+        if (node)
+        {
+            cJSON_AddItemToObject(cjson, k.c_str(), node);
+        }
+    }
+    auto json = cJSON_PrintUnformatted(cjson);
+    cJSON_Delete(cjson);
+    return json;
+}
+
+std::unordered_map<std::string, Any> NGenXX::Json::dictAnyFromJson(const std::string &json)
+{
+    std::unordered_map<std::string, Any> dict;
+    auto cjson = cJSON_Parse(json.c_str());
+    if (!cjson)
+    {
+        return dict;
+    }
+
+    if (cJSON_IsObject(cjson))
+    {
+        auto node = cjson->child;
+        while (node)
+        {
+            std::string k(node->string);
+            if (cJSON_IsNumber(node))
+            {
+                dict[k] = node->valuedouble;
+            }
+            else if (cJSON_IsString(node))
+            {
+                dict[k] = node->valuestring;
+            }
+            node = node->next;
+        }
+    }
+
+    cJSON_Delete(cjson);
+    return dict;
+}
+
+std::string NGenXX::Json::dictToJson(const std::unordered_map<std::string, std::string> &dict)
+{
+    auto cjson = cJSON_CreateObject();
+    for (const auto& [k, v] : dict) 
+    {
+        auto node = cJSON_CreateString(v.c_str());
+        cJSON_AddItemToObject(cjson, k.c_str(), node);
+    }
+    auto json = cJSON_PrintUnformatted(cjson);
+    cJSON_Delete(cjson);
+    return json;
+}
+
+std::unordered_map<std::string, std::string> NGenXX::Json::dictFromJson(const std::string &json)
+{
+    std::unordered_map<std::string, std::string> dict;
+    auto cjson = cJSON_Parse(json.c_str());
+    if (!cjson)
+    {
+        return dict;
+    }
+
+    if (cJSON_IsObject(cjson))
+    {
+        auto node = cjson->child;
+        while (node)
+        {
+            std::string k(node->string);
+            if (cJSON_IsString(node))
+            {
+                dict[k] = node->valuestring;
+            }
+            node = node->next;
+        }
+    }
+
+    cJSON_Delete(cjson);
+    return dict;
+}
+
 void NGenXX::Json::Decoder::moveImp(Decoder&& other) noexcept
 {
     this->cjson = other.cjson;

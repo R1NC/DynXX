@@ -7,11 +7,19 @@
 
 #include <string>
 #include <functional>
+#include <unordered_map>
+
+#include <NGenXXTypes.hxx>
 
 namespace NGenXX
 {
     namespace Json
     {
+        std::unordered_map<std::string, std::string> dictFromJson(const std::string &json);
+        std::string dictToJson(const std::unordered_map<std::string, std::string> &dict);
+        std::unordered_map<std::string, Any> dictAnyFromJson(const std::string &json);
+        std::string dictAnyToJson(const std::unordered_map<std::string, Any> &dict);
+        
         class Decoder
         {
         public:
