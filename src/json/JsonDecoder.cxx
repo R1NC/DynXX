@@ -5,13 +5,19 @@
 
 #include <NGenXXLog.hxx>
 
-const cJSON *NGenXX::Json::Decoder::parseNode(const void *const node)
+void NGenXX::Json::Decoder::moveImp(Decoder&& other) noexcept
 {
-    if (node == NULL)
+    this->cjson = other.cjson;
+    other.cjson = NULL;
+}
+
+void NGenXX::Json::Decoder::cleanup()
+{
+    if (this->cjson != NULL)
     {
-        return this->cjson;
+        cJSON_Delete(this->cjson);
+        this->cjson = NULL;
     }
-    return reinterpret_cast<cJSON *>(std::decay_t<void *>(node));
 }
 
 NGenXX::Json::Decoder::Decoder(const std::string &json)
@@ -19,19 +25,33 @@ NGenXX::Json::Decoder::Decoder(const std::string &json)
     this->cjson = cJSON_Parse(json.c_str());
 }
 
-NGenXX::Json::Decoder::Decoder(NGenXX::Json::Decoder &&other) noexcept : cjson(other.cjson)
+NGenXX::Json::Decoder::~Decoder()
 {
-    other.cjson = NULL;
+    this->cleanup();
+}
+
+NGenXX::Json::Decoder::Decoder(NGenXX::Json::Decoder &&other) noexcept
+{
+    this->moveImp(std::move(other));
 }
 
 NGenXX::Json::Decoder &NGenXX::Json::Decoder::operator=(NGenXX::Json::Decoder &&other) noexcept
 {
     if (this != &other)
     {
-        cJSON_Delete(this->cjson);
-        *this = NGenXX::Json::Decoder(std::move(other));
+        this->cleanup();
+        this->moveImp(std::move(other));
     }
     return *this;
+}
+
+const cJSON *NGenXX::Json::Decoder::parseNode(const void *const node)
+{
+    if (node == NULL)
+    {
+        return this->cjson;
+    }
+    return reinterpret_cast<cJSON *>(std::decay_t<void *>(node));
 }
 
 bool NGenXX::Json::Decoder::isArray(const void *const node)
@@ -124,13 +144,4 @@ void *NGenXX::Json::Decoder::readNext(const void *const node)
 {
     auto cj = this->parseNode(node);
     return cj ? cj->next : NULL;
-}
-
-NGenXX::Json::Decoder::~Decoder()
-{
-    if (this->cjson != NULL)
-    {
-        cJSON_Delete(this->cjson);
-        this->cjson = NULL;
-    }
 }

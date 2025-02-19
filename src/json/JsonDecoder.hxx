@@ -47,6 +47,9 @@ namespace NGenXX
         private:
             cJSON *cjson{NULL};
 
+            void moveImp(Decoder&& other) noexcept;
+            void cleanup();
+
             const cJSON *parseNode(const void *const node);
         };
     }
