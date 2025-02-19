@@ -18,7 +18,8 @@
 #define SET_BINARY_MODE(file)
 #endif
 
-int NGenXX::Z::ZBase::windowBits()
+template <typename T>
+int NGenXX::Z::ZBase<T>::windowBits()
 {
     if (this->format == NGenXXZFormatGZip)
     {
@@ -31,7 +32,8 @@ int NGenXX::Z::ZBase::windowBits()
     return MAX_WBITS;
 }
 
-NGenXX::Z::ZBase::ZBase(const size_t bufferSize, const int format) : bufferSize{bufferSize}, format{format}
+template <typename T>
+NGenXX::Z::ZBase<T>::ZBase(const size_t bufferSize, const int format) : bufferSize{bufferSize}, format{format}
 {
     if (bufferSize == 0)
     {
@@ -52,7 +54,8 @@ NGenXX::Z::ZBase::ZBase(const size_t bufferSize, const int format) : bufferSize{
     std::memset(this->outBuffer, 0, bufferSize + 1);
 }
 
-size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
+template <typename T>
+size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
 {
     if (bytes.empty())
     {
@@ -69,14 +72,15 @@ size_t NGenXX::Z::ZBase::input(const Bytes &bytes, bool inFinish)
     return dataLen;
 }
 
-const Bytes NGenXX::Z::ZBase::processDo()
+template <typename T>
+const Bytes NGenXX::Z::ZBase<T>::processDo()
 {
     std::memset(this->outBuffer, 0, this->bufferSize);
     (this->zs).avail_out = static_cast<uint>(this->bufferSize);
     (this->zs).next_out = reinterpret_cast<Bytef *>(this->outBuffer);
 
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
-    this->processImp();
+    static_cast<T *>(this)->processImp();
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
 
     if (this->ret != Z_OK && ret != Z_STREAM_END)
@@ -89,12 +93,14 @@ const Bytes NGenXX::Z::ZBase::processDo()
     return wrapBytes(this->outBuffer, outLen);
 }
 
-bool NGenXX::Z::ZBase::processFinished()
+template <typename T>
+bool NGenXX::Z::ZBase<T>::processFinished()
 {
     return (this->zs).avail_out != 0;
 }
 
-NGenXX::Z::ZBase::~ZBase()
+template <typename T>
+NGenXX::Z::ZBase<T>::~ZBase()
 {
     std::free(inBuffer);
     std::free(outBuffer);
@@ -146,11 +152,12 @@ NGenXX::Z::UnZip::~UnZip()
 
 #pragma mark Stream
 
-bool zProcess(const size_t bufferSize,
+template <typename T>
+bool _ngenxx_z_process(const size_t bufferSize,
               std::function<const Bytes()> sReadF,
               std::function<void(const Bytes &)> sWriteF,
               std::function<void()> sFlushF,
-              NGenXX::Z::ZBase &zb)
+              NGenXX::Z::ZBase<T> &zb)
 {
     auto inputFinished = false;
     do
@@ -183,9 +190,10 @@ bool zProcess(const size_t bufferSize,
 
 #pragma mark Cxx stream
 
-bool zProcessCxxStream(const size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase &zb)
+template <typename T>
+bool _ngenxx_z_processCxxStream(const size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase<T> &zb)
 {
-    return zProcess(bufferSize, 
+    return _ngenxx_z_process(bufferSize, 
         [bufferSize, &inStream]() -> const Bytes 
         {
             Bytes in;
@@ -207,20 +215,21 @@ bool zProcessCxxStream(const size_t bufferSize, std::istream *inStream, std::ost
 bool NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream)
 {
     Zip zip(mode, bufferSize, format);
-    return zProcessCxxStream(bufferSize, inStream, outStream, zip);
+    return _ngenxx_z_processCxxStream(bufferSize, inStream, outStream, zip);
 }
 
 bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream)
 {
     UnZip unzip(bufferSize, format);
-    return zProcessCxxStream(bufferSize, inStream, outStream, unzip);
+    return _ngenxx_z_processCxxStream(bufferSize, inStream, outStream, unzip);
 }
 
 #pragma mark C FILE
 
-bool zProcessCFILE(const size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase &zb)
+template <typename T>
+bool _ngenxx_z_processCFILE(const size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase<T> &zb)
 {
-    return zProcess(bufferSize, 
+    return _ngenxx_z_process(bufferSize, 
         [bufferSize, &inFile]() -> const Bytes
         {
             Bytes in;
@@ -242,22 +251,23 @@ bool zProcessCFILE(const size_t bufferSize, std::FILE *inFile, std::FILE *outFil
 bool NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile)
 {
     Zip zip(mode, bufferSize, format);
-    return zProcessCFILE(bufferSize, inFile, outFile, zip);
+    return _ngenxx_z_processCFILE(bufferSize, inFile, outFile, zip);
 }
 
 bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile)
 {
     UnZip unzip(bufferSize, format);
-    return zProcessCFILE(bufferSize, inFile, outFile, unzip);
+    return _ngenxx_z_processCFILE(bufferSize, inFile, outFile, unzip);
 }
 
 #pragma mark Bytes
 
-const Bytes zProcessBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase &zb)
+template <typename T>
+const Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
 {
     size_t pos = 0;
     Bytes outBytes;
-    auto b = zProcess(bufferSize, 
+    auto b = _ngenxx_z_process(bufferSize, 
         [bufferSize, &in, &pos]() -> const Bytes
         {
             auto len = std::min(bufferSize, in.size() - pos);
@@ -282,11 +292,11 @@ const Bytes zProcessBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::Z
 const Bytes NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes)
 {
     Zip zip(mode, bufferSize, format);
-    return zProcessBytes(bufferSize, bytes, zip);
+    return _ngenxx_z_processBytes(bufferSize, bytes, zip);
 }
 
 const Bytes NGenXX::Z::unzip(const size_t bufferSize, const int format, const Bytes &bytes)
 {
     UnZip unzip(bufferSize, format);
-    return zProcessBytes(bufferSize, bytes, unzip);
+    return _ngenxx_z_processBytes(bufferSize, bytes, unzip);
 }

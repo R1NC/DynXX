@@ -16,6 +16,7 @@ namespace NGenXX
 {
     namespace Z
     {
+        template <typename T>
         class ZBase
         {
         public:
@@ -42,10 +43,9 @@ namespace NGenXX
             byte *outBuffer{NULL};
             size_t bufferSize;
             int format;
-            virtual void processImp() = 0;
         };
 
-        class Zip : public ZBase
+        class Zip : public ZBase<Zip>
         {
         public:
             Zip() = delete;
@@ -57,10 +57,11 @@ namespace NGenXX
             ~Zip() override;
 
         private:
-            void processImp() override;
+            friend class ZBase<Zip>;
+            void processImp();
         };
 
-        class UnZip : public ZBase
+        class UnZip : public ZBase<UnZip>
         {
         public:
             UnZip() = delete;
@@ -72,7 +73,8 @@ namespace NGenXX
             ~UnZip() override;
 
         private:
-            void processImp() override;
+            friend class ZBase<UnZip>;
+            void processImp();
         };
 
         bool zip(int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
