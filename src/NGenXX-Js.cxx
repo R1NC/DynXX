@@ -14,9 +14,10 @@
 std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
 static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nullptr;
 
-#define BIND_JS_FUNC(f)        \
-    if (_ngenxx_js != nullptr) \
-        _ngenxx_js->bindFunc(#f, f);
+#define BIND_JS_FUNC(f)                                                        \
+  if (_ngenxx_js != nullptr) [[unlikely]] {                                    \
+    _ngenxx_js->bindFunc(#f, f);                                               \
+  }
 
 std::string ngenxx_js_ask_platform(const char *msg)
 {
@@ -106,7 +107,7 @@ DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzip
 
 bool ngenxxJsLoadF(const std::string &file, const bool isModule)
 {
-    if (_ngenxx_js == nullptr || file.length() == 0)
+    if (_ngenxx_js == nullptr || file.length() == 0) [[unlikely]]
     {
         return false;
     }
@@ -115,7 +116,7 @@ bool ngenxxJsLoadF(const std::string &file, const bool isModule)
 
 bool ngenxxJsLoadS(const std::string &script, const std::string &name, const bool isModule)
 {
-    if (_ngenxx_js == nullptr || script.length() == 0 || name.length() == 0)
+    if (_ngenxx_js == nullptr || script.length() == 0 || name.length() == 0) [[unlikely]]
     {
         return false;
     }
@@ -124,7 +125,7 @@ bool ngenxxJsLoadS(const std::string &script, const std::string &name, const boo
 
 bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule)
 {
-    if (_ngenxx_js == nullptr || bytes.empty())
+    if (_ngenxx_js == nullptr || bytes.empty()) [[unlikely]]
     {
         return false;
     }
@@ -134,7 +135,7 @@ bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule)
 std::string ngenxxJsCall(const std::string &func, const std::string &params, const bool await)
 {
     std::string s;
-    if (_ngenxx_js == nullptr || func.length() == 0L)
+    if (_ngenxx_js == nullptr || func.length() == 0L) [[unlikely]]
     {
         return s;
     }
@@ -252,7 +253,7 @@ void registerJsModule()
 
 void _ngenxx_js_init(void)
 {
-    if (_ngenxx_js != nullptr)
+    if (_ngenxx_js != nullptr) [[unlikely]]
     {
         return;
     }
@@ -262,7 +263,7 @@ void _ngenxx_js_init(void)
 
 void _ngenxx_js_release(void)
 {
-    if (_ngenxx_js == nullptr)
+    if (_ngenxx_js == nullptr) [[unlikely]]
     {
         return;
     }

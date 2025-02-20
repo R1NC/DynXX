@@ -10,9 +10,10 @@
 
 std::shared_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
 
-#define BIND_LUA_FUNC(f)        \
-    if (_ngenxx_lua != nullptr) \
-        _ngenxx_lua->bindFunc(std::string(#f), f);
+#define BIND_LUA_FUNC(f)                                                       \
+  if (_ngenxx_lua != nullptr) [[unlikely]] {                                   \
+    _ngenxx_lua->bindFunc(std::string(#f), f);                                 \
+  }
 
 DEF_LUA_FUNC_STRING(ngenxx_get_versionL, ngenxx_get_versionS)
 DEF_LUA_FUNC_STRING(ngenxx_root_pathL, ngenxx_root_pathS)
@@ -85,7 +86,7 @@ DEF_LUA_FUNC_STRING(ngenxx_z_bytes_unzipL, ngenxx_z_bytes_unzipS)
 
 bool ngenxxLuaLoadF(const std::string &f)
 {
-    if (_ngenxx_lua == nullptr || f.length() == 0)
+    if (_ngenxx_lua == nullptr || f.length() == 0) [[unlikely]]
     {
         return false;
     }
@@ -94,7 +95,7 @@ bool ngenxxLuaLoadF(const std::string &f)
 
 bool ngenxxLuaLoadS(const std::string &s)
 {
-    if (_ngenxx_lua == nullptr || s.length() == 0)
+    if (_ngenxx_lua == nullptr || s.length() == 0) [[unlikely]]
     {
         return false;
     }
@@ -104,7 +105,7 @@ bool ngenxxLuaLoadS(const std::string &s)
 std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
 {
     std::string s;
-    if (_ngenxx_lua == nullptr || f.length() == 0)
+    if (_ngenxx_lua == nullptr || f.length() == 0) [[unlikely]]
     {
         return s;
     }
@@ -203,7 +204,7 @@ void _ngenxx_export_funcs_for_lua()
 
 void _ngenxx_lua_init(void)
 {
-    if (_ngenxx_lua != nullptr)
+    if (_ngenxx_lua != nullptr) [[unlikely]]
     {
         return;
     }
@@ -213,7 +214,7 @@ void _ngenxx_lua_init(void)
 
 void _ngenxx_lua_release(void)
 {
-    if (_ngenxx_lua == nullptr)
+    if (_ngenxx_lua == nullptr) [[unlikely]]
     {
         return;
     }
