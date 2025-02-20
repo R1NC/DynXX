@@ -469,10 +469,12 @@ NGenXX::JsBridge::~JsBridge()
     for (const auto &jv : this->jValues)
     {
         auto tag = JS_VALUE_GET_TAG(jv);
-        if (tag != static_cast<decltype(tag)>(JS_TAG_MODULE))
+        if (tag == static_cast<decltype(tag)>(JS_TAG_MODULE)) [[unlikely]]
         {
-            JS_FreeValue(this->context, jv);
+            // Free a module will cause crash in QJS
+            continue;
         }
+        JS_FreeValue(this->context, jv);
     }
     JS_FreeContext(this->context);
 
