@@ -35,21 +35,21 @@ namespace NGenXX
                 Connection(Connection &&) = delete;
                 Connection &operator=(Connection &&) = delete;
 
-                const std::string readString(const std::string &k);
+                const std::string readString(const std::string &k) const;
 
-                int64_t readInteger(const std::string &k);
+                int64_t readInteger(const std::string &k) const;
 
-                double readFloat(const std::string &k);
+                double readFloat(const std::string &k) const;
 
-                [[nodiscard]] bool write(const std::string &k, const Any &v);
+                [[nodiscard]] bool write(const std::string &k, const Any &v) const;
 
-                const std::vector<std::string> allKeys();
+                const std::vector<std::string> allKeys() const;
 
-                bool contains(const std::string &k);
+                bool contains(const std::string &k) const;
 
-                [[nodiscard]] bool remove(const std::string &k);
+                [[nodiscard]] bool remove(const std::string &k) const;
 
-                void clear();
+                void clear() const;
 
                 ~Connection();
 

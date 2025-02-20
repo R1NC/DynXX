@@ -57,14 +57,14 @@ namespace NGenXX
                      * @brief Read a row from query result
                      * @return Successful or not
                      */
-                    [[nodiscard]] bool readRow();
+                    [[nodiscard]] bool readRow() const;
 
                     /**
                      * @brief Read text column data from QueryResult
                      * @param column Column name
                      * @return column data
                      */
-                    Any readColumn(const std::string &column);
+                    Any readColumn(const std::string &column) const;
 
                     /**
                      * @brief Release QueryResult
@@ -81,14 +81,14 @@ namespace NGenXX
                  * @param sql SQL
                  * @return Successfull or not.
                  */
-                bool execute(const std::string &sql);
+                [[nodiscard]] bool execute(const std::string &sql) const;
 
                 /**
                  * @brief Query with a SQL
                  * @param sql SQL
                  * @return A QueryResult, or NULL if execute failed.
                  */
-                QueryResult *query(const std::string &sql);
+                QueryResult *query(const std::string &sql) const;
 
                 /**
                  * @brief Release DB resource

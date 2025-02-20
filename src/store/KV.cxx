@@ -59,7 +59,7 @@ NGenXX::Store::KV::Connection::Connection(const std::string &_id)
     this->kv->setLogLevel(MMKVLogNone);
 }
 
-const std::string NGenXX::Store::KV::Connection::readString(const std::string &k)
+const std::string NGenXX::Store::KV::Connection::readString(const std::string &k) const
 {
     std::shared_lock lock(this->mutex);
     std::string s;
@@ -67,19 +67,19 @@ const std::string NGenXX::Store::KV::Connection::readString(const std::string &k
     return s;
 }
 
-int64_t NGenXX::Store::KV::Connection::readInteger(const std::string &k)
+int64_t NGenXX::Store::KV::Connection::readInteger(const std::string &k) const
 {
     std::shared_lock lock(this->mutex);
     return this->kv->getInt64(k);
 }
 
-double NGenXX::Store::KV::Connection::readFloat(const std::string &k)
+double NGenXX::Store::KV::Connection::readFloat(const std::string &k) const
 {
     std::shared_lock lock(this->mutex);
     return this->kv->getDouble(k);
 }
 
-bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v)
+bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v) const
 {
     std::unique_lock lock(this->mutex);
     return std::visit(
@@ -91,25 +91,25 @@ bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v)
     );
 }
 
-const std::vector<std::string> NGenXX::Store::KV::Connection::allKeys()
+const std::vector<std::string> NGenXX::Store::KV::Connection::allKeys() const
 {
     std::shared_lock lock(this->mutex);
     return this->kv->allKeys(false);
 }
 
-bool NGenXX::Store::KV::Connection::contains(const std::string &k)
+bool NGenXX::Store::KV::Connection::contains(const std::string &k) const
 {
     std::shared_lock lock(this->mutex);
     return this->kv->containsKey(k);
 }
 
-bool NGenXX::Store::KV::Connection::remove(const std::string &k)
+bool NGenXX::Store::KV::Connection::remove(const std::string &k) const
 {
     std::unique_lock lock(this->mutex);
     return this->kv->removeValueForKey(k);
 }
 
-void NGenXX::Store::KV::Connection::clear()
+void NGenXX::Store::KV::Connection::clear() const
 {
     std::unique_lock lock(this->mutex);
     this->kv->clearAll();
