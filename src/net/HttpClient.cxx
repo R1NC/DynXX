@@ -217,7 +217,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     }
 
     auto _timeout = timeout;
-    if (_timeout == 0)
+    if (_timeout == 0) [[unlikely]]
     {
         _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
     }

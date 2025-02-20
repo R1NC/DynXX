@@ -113,7 +113,7 @@ NGenXX::Z::Zip::Zip(int mode, const size_t bufferSize, const int format) : ZBase
         throw std::invalid_argument("mode invalid");
     }
     this->ret = deflateInit2(&(this->zs), mode, Z_DEFLATED, this->windowBits(), 8, Z_DEFAULT_STRATEGY);
-    if (this->ret != Z_OK)
+    if (this->ret != Z_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "deflateInit error:{}", this->ret);
         throw std::runtime_error("deflateInit failed");
@@ -133,7 +133,7 @@ NGenXX::Z::Zip::~Zip()
 NGenXX::Z::UnZip::UnZip(const size_t bufferSize, const int format) : ZBase(bufferSize, format)
 {
     this->ret = inflateInit2(&(this->zs), this->windowBits());
-    if (this->ret != Z_OK)
+    if (this->ret != Z_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "inflateInit error:{}", this->ret);
         throw std::runtime_error("inflateInit failed");

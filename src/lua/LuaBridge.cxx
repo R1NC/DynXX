@@ -32,7 +32,7 @@ void ngenxx_lua_uv_loop_prepare()
 
 void ngenxx_lua_uv_loop_stop()
 {
-    if (!uv_loop_alive(uv_default_loop()))
+    if (!uv_loop_alive(uv_default_loop())) [[unlikely]]
     {
         return;
     }
@@ -154,7 +154,7 @@ bool NGenXX::LuaBridge::loadFile(const std::string &file)
 {
     const std::lock_guard<std::recursive_mutex> lock(this->mutex);
     auto ret = luaL_dofile(this->lstate, file.c_str());
-    if (ret != LUA_OK)
+    if (ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dofile` error:");
         return false;
@@ -167,7 +167,7 @@ bool NGenXX::LuaBridge::loadScript(const std::string &script)
 {
     const std::lock_guard<std::recursive_mutex> lock(this->mutex);
     auto ret = luaL_dostring(this->lstate, script.c_str());
-    if (ret != LUA_OK)
+    if (ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dostring` error:");
         return false;
@@ -183,7 +183,7 @@ std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::stri
     lua_getglobal(this->lstate, func.c_str());
     lua_pushstring(this->lstate, params.c_str());
     auto ret = lua_pcall(lstate, 1, 1, 0);
-    if (ret != LUA_OK)
+    if (ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`lua_pcall` error:");
         return s;

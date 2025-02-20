@@ -9,7 +9,7 @@
 
 std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
 {
-    if (bytes.empty())
+    if (bytes.empty()) [[unlikely]]
     {
         return "";
     }
@@ -24,7 +24,7 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
 
 Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
 {
-    if (str.length() == 0)
+    if (str.length() == 0) [[unlikely]]
     {
         return BytesEmpty;
     }

@@ -38,7 +38,7 @@ static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer)
 {
     auto ctx = reinterpret_cast<JSContext *>(timer->data);
     /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-    if (_ngenxx_js_mutex->try_lock())
+    if (_ngenxx_js_mutex->try_lock()) [[unlikely]]
     {
         js_std_loop_promise(ctx);
         _ngenxx_js_mutex->unlock();
@@ -49,7 +49,7 @@ static void _ngenxx_js_uv_timer_cb_t(uv_timer_t *timer)
 {
     auto ctx = reinterpret_cast<JSContext *>(timer->data);
     /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-    if (_ngenxx_js_mutex->try_lock())
+    if (_ngenxx_js_mutex->try_lock()) [[unlikely]]
     {
         js_std_loop_timer(ctx);
         _ngenxx_js_mutex->unlock();
@@ -58,27 +58,27 @@ static void _ngenxx_js_uv_timer_cb_t(uv_timer_t *timer)
 
 static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_timer_t *uv_timer, uv_timer_cb cb)
 {
-    if (uv_loop == nullptr)
+    if (uv_loop == nullptr) [[likely]]
     {
         uv_loop = reinterpret_cast<uv_loop_t *>(std::malloc(sizeof(uv_loop_t)));
         uv_loop_init(uv_loop);
     }
-    else
+    else [[unlikely]]
     {
-        if (uv_loop_alive(uv_loop))
+        if (uv_loop_alive(uv_loop)) [[unlikely]]
         {
             return;
         }
     }
 
-    if (uv_timer == nullptr)
+    if (uv_timer == nullptr) [[likely]]
     {
         uv_timer = reinterpret_cast<uv_timer_t *>(std::malloc(sizeof(uv_timer_t)));
         uv_timer_init(uv_loop, uv_timer);
         uv_timer->data = ctx;
         uv_timer_start(uv_timer, cb, NGenXXJsSleepMilliSecs, NGenXXJsSleepMilliSecs);
     }
-    else
+    else [[unlikely]]
     {
         uv_timer_stop(uv_timer);
         uv_timer_again(uv_timer);
@@ -89,7 +89,7 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_time
 
 static void _ngenxx_js_uv_loop_stop(uv_loop_t *uv_loop, uv_timer_t *uv_timer)
 {
-    if (uv_loop == nullptr || uv_timer == nullptr || !uv_loop_alive(uv_loop))
+    if (uv_loop == nullptr || uv_timer == nullptr || !uv_loop_alive(uv_loop)) [[unlikely]]
     {
         return;
     }
@@ -155,7 +155,7 @@ bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std:
     auto res = true;
     auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
     auto jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
-    if (JS_IsException(jEvalRet))
+    if (JS_IsException(jEvalRet)) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_Eval failed ->");
         _ngenxx_js_dump_err(ctx);
@@ -188,7 +188,7 @@ bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std:
 static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
 {
     auto ctx = JS_NewContext(rt);
-    if (!ctx)
+    if (!ctx) [[unlikely]]
     {
         return NULL;
     }
@@ -228,13 +228,13 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
 {
     auto res = true;
     auto jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
-    if (JS_IsException(jFunc))
+    if (JS_IsException(jFunc)) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewCFunction failed ->");
         _ngenxx_js_dump_err(this->context);
         res = false;
     }
-    else
+    else [[likely]]
     {
         if (!JS_DefinePropertyValueStr(this->context, this->jValues[0], funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE))
         {
@@ -283,7 +283,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
     for (;;)
     {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-        if (!_ngenxx_js_mutex->try_lock())
+        if (!_ngenxx_js_mutex->try_lock()) [[unlikely]]
         {
             sleepForMilliSecs(NGenXXJsSleepMilliSecs);
             continue;
@@ -325,7 +325,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     std::string s;
 
     auto jFunc = JS_GetPropertyStr(this->context, this->jValues[0], func.c_str());
-    if (JS_IsFunction(this->context, jFunc))
+    if (JS_IsFunction(this->context, jFunc)) [[likely]]
     {
         auto jParams = JS_NewString(this->context, params.c_str());
         JSValue argv[] = {jParams};
@@ -335,12 +335,12 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         /// Release the lock imediately, to avoid blocking the JS event loop.
         _ngenxx_js_mutex->unlock();
 
-        if (JS_IsException(jRes))
+        if (JS_IsException(jRes)) [[unlikely]]
         {
             ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_Call failed ->");
             _ngenxx_js_dump_err(this->context);
         }
-        else
+        else [[likely]]
         {
             if (await)
             {/// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
@@ -351,7 +351,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         JS_FreeValue(this->context, jRes);
         JS_FreeValue(this->context, jParams);
     }
-    else
+    else [[unlikely]]
     {
         _ngenxx_js_mutex->unlock();
         ngenxxLogPrint(NGenXXLogLevelX::Error, ("Can not find JS func:" + func).c_str());
@@ -365,7 +365,7 @@ NGenXX_JS_Promise *_ngenxx_js_promise_new(JSContext *ctx)
     auto jPromise = new NGenXX_JS_Promise();
     JSValue funcs[2];
     jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
-    if (JS_IsException(jPromise->p))
+    if (JS_IsException(jPromise->p)) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewPromise failed ->");
         _ngenxx_js_dump_err(ctx);
@@ -378,7 +378,7 @@ NGenXX_JS_Promise *_ngenxx_js_promise_new(JSContext *ctx)
 void _ngenxx_js_promise_callback(JSContext *ctx, NGenXX_JS_Promise *jPromise, JSValue jRet)
 {
     auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
-    if (JS_IsException(jCallRet))
+    if (JS_IsException(jCallRet)) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_CallPromise failed ->");
         _ngenxx_js_dump_err(ctx);
@@ -395,7 +395,7 @@ void _ngenxx_js_promise_callback(JSContext *ctx, NGenXX_JS_Promise *jPromise, JS
 JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
 {
     auto jPromise = _ngenxx_js_promise_new(this->context);
-    if (jPromise == nullptr)
+    if (jPromise == nullptr) [[unlikely]]
     {
         return JS_EXCEPTION;
     }

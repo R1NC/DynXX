@@ -35,7 +35,7 @@ static inline const byte *copyBytes(const Bytes &t)
 {
     auto cs = t.data();
     auto len = t.size();
-    if (cs == NULL || len == 0)
+    if (cs == NULL || len == 0) [[unlikely]]
     {
         return NULL;
     }
@@ -52,7 +52,7 @@ static inline Bytes trimBytes(const Bytes &bytes)
     auto fixedLen = len;
     for (auto i = len - 1; i > 0; i--)
     {
-        if (data[i] <= 0)
+        if (data[i] <= 0) [[unlikely]]
         {
             fixedLen--;
         }

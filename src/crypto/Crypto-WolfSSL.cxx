@@ -19,7 +19,7 @@ constexpr int WolfSSL_OK = 0;
 
 bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
 {
-    if (len == 0 || bytes == NULL)
+    if (len == 0 || bytes == NULL) [[unlikely]]
     {
         return false;
     }
@@ -31,7 +31,7 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
 {
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
-    if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
+    if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE) [[unlikely]]
     {
         return BytesEmpty;
     }
@@ -51,7 +51,7 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
     Aes aes[1];
 
     auto ret = wc_AesInit(aes, NULL, 0);
-    if (ret != WolfSSL_OK)
+    if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key error:{}", ret);
         return BytesEmpty;
@@ -84,7 +84,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
 {
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
-    if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE)
+    if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE) [[unlikely]]
     {
         return BytesEmpty;
     }
@@ -104,7 +104,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     Aes aes[1];
 
     auto ret = wc_AesInit(aes, NULL, 0);
-    if (ret != WolfSSL_OK)
+    if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
         return BytesEmpty;
@@ -135,7 +135,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
 
 Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
 {
-    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
+    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
         return BytesEmpty;
     }
@@ -151,7 +151,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
 
     Aes aes[1];
     auto ret = wc_AesInit(aes, NULL, 0);
-    if (ret != WolfSSL_OK)
+    if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
         return BytesEmpty;
@@ -179,7 +179,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
 
 Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
 {
-    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
+    if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
         return BytesEmpty;
     }
@@ -196,7 +196,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
 
     Aes aes[1];
     auto ret = wc_AesInit(aes, NULL, 0);
-    if (ret != WolfSSL_OK)
+    if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
         return BytesEmpty;
@@ -225,7 +225,7 @@ Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
-    if (in == NULL || inLen == 0)
+    if (in == NULL || inLen == 0) [[unlikely]]
     {
         return BytesEmpty;
     }
@@ -236,7 +236,7 @@ Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     wc_Md5 md5;
 
     auto ret = wc_InitMd5(&md5);
-    if (ret != WolfSSL_OK)
+    if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_InitMd5 error:{}", ret);
         return BytesEmpty;
@@ -265,7 +265,7 @@ Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
-    if (in == NULL || inLen == 0)
+    if (in == NULL || inLen == 0) [[unlikely]]
     {
         return BytesEmpty;
     }
@@ -276,7 +276,7 @@ Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     wc_Sha256 sha256;
 
     auto ret = wc_InitSha256(&sha256);
-    if (ret != WolfSSL_OK)
+    if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_InitSha256 error:{}", ret);
         return BytesEmpty;
@@ -305,7 +305,7 @@ Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
-    if (in == NULL || inLen == 0)
+    if (in == NULL || inLen == 0) [[unlikely]]
     {
         return BytesEmpty;
     }
@@ -330,7 +330,7 @@ Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
-    if (in == NULL || inLen == 0)
+    if (in == NULL || inLen == 0) [[unlikely]]
     {
         return BytesEmpty;
     }
