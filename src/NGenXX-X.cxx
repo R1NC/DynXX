@@ -277,13 +277,10 @@ std::string NGenXXHttpResponse::toJson()
     cJSON_AddItemToObject(cj, "contentType", cJSON_CreateString(this->contentType.c_str()));
 
     auto cjHeaders = cJSON_CreateObject();
-    std::for_each(this->headers.begin(), this->headers.end(), 
-        [&cjHeaders](const auto& pair) 
-        {
-            auto [k, v] = pair;
-            cJSON_AddItemToObject(cjHeaders, k.c_str(), cJSON_CreateString(v.c_str()));
-        }
-    );
+    for (const auto& [k, v] : this->headers)
+    {
+        cJSON_AddItemToObject(cjHeaders, k.c_str(), cJSON_CreateString(v.c_str()));
+    }
     cJSON_AddItemToObject(cj, "headers", cjHeaders);
 
     cJSON_AddItemToObject(cj, "data", cJSON_CreateString(this->data.c_str()));
