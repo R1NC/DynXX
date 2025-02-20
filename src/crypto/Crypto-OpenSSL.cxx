@@ -48,7 +48,6 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
     std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
     std::memset(out, 0, outLen);
-    size_t offset = 0;
 
     AES_KEY aes_key;
 
@@ -58,7 +57,8 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_encrypt_key error:{}", ret);
         return BytesEmpty;
     }
-
+    
+    decltype(inLen) offset(0);
     while (offset < inLen)
     {
         AES_encrypt(fixedIn + offset, out + offset, &aes_key);
@@ -87,7 +87,6 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
     std::memset(out, 0, outLen);
-    size_t offset = 0;
 
     AES_KEY aes_key;
 
@@ -98,6 +97,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
         return BytesEmpty;
     }
 
+    decltype(inLen) offset(0);
     while (offset < inLen)
     {
         AES_decrypt(fixedIn + offset, out + offset, &aes_key);

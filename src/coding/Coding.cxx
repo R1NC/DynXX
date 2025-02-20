@@ -14,13 +14,13 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
     {
         return "";
     }
-    std::stringstream strStream;
-    strStream << std::hex;
-    for (byte byte : bytes)
+    std::stringstream ss;
+    ss << std::hex;
+    for (const auto& b : bytes)
     {
-        strStream << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+        ss << std::setw(2) << std::setfill('0') << static_cast<int>(b);
     }
-    return strStream.str();
+    return ss.str();
 }
 
 Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
@@ -31,8 +31,7 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     }
     auto outLen = str.length();
     Bytes bytes;
-    size_t j(0);
-    for (size_t i(0); i < str.length(); i += 2, j++)
+    for (decltype(outLen) i(0), j(0); i < str.length(); i += 2, j++)
     {
         auto s = str.substr(i, 2);
         bytes.push_back(static_cast<byte>(std::stoi(s.c_str(), nullptr, 16)));

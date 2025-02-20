@@ -251,7 +251,8 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     }
 
     std::vector<NGenXX::Net::HttpFormField> vFormFields;
-    for (int i = 0; i < formFieldNameV.size() && i < formFieldMimeV.size() && i < formFieldDataV.size(); i++)
+    auto fieldNameCount = formFieldNameV.size();
+    for (decltype(fieldNameCount) i(0); i < fieldNameCount && i < formFieldMimeV.size() && i < formFieldDataV.size(); i++)
     {
         vFormFields.push_back({
             .name = formFieldNameV[i],
@@ -344,7 +345,7 @@ void *ngenxxStoreSqliteOpen(const std::string &_id)
     {
         return NULL;
     }
-    std::string dbFile = *_ngenxx_root + "/" + std::string(_id) + ".db";
+    auto dbFile = *_ngenxx_root + "/" + std::string(_id) + ".db";
     return _ngenxx_sqlite->connect(dbFile);
 }
 

@@ -269,7 +269,7 @@ bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::FILE *inFi
 template <typename T>
 Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
 {
-    size_t pos = 0;
+    std::remove_const<decltype(bufferSize)>::type pos(0);
     Bytes outBytes;
     auto b = _ngenxx_z_process(bufferSize, 
         [bufferSize, &in, &pos]() -> Bytes

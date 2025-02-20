@@ -143,7 +143,8 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readColumn STMT NULL");
         return AnyEmpty;
     }
-    for (int i = 0; i < sqlite3_column_count(this->stmt); i++)
+    auto colCount = sqlite3_column_count(this->stmt);
+    for (decltype(colCount) i(0); i < colCount; i++)
     {
         if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0)
         {
