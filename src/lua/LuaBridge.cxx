@@ -2,8 +2,8 @@
 #include "LuaBridge.hxx"
 
 #include <cstring>
-
 #include <cstdlib>
+
 #include <thread>
 #include <functional>
 

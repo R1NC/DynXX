@@ -4,8 +4,6 @@
 #include <cstdlib>
 
 #include <mutex>
-#include <cstring>
-#include <cstdlib>
 
 #if defined(__ANDROID__)
 #include <android/log.h>

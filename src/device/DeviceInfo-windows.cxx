@@ -1,9 +1,10 @@
 #if (defined(_WIN32) || defined(_WIN64))
 #include "DeviceInfo.hxx"
 
-#include <windows.h>
 #include <cstddef>
 #include <cstdint>
+
+#include <windows.h>
 
 #include <NGenXXDeviceInfo.h>
 

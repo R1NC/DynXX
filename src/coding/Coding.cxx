@@ -1,9 +1,10 @@
 #include "Coding.hxx"
 
-#include <iomanip>
-#include <sstream>
 #include <cstring>
 #include <cctype>
+
+#include <iomanip>
+#include <sstream>
 #include <algorithm>
 #include <vector>
 
