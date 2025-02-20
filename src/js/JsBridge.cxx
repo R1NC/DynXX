@@ -270,7 +270,7 @@ bool NGenXX::JsBridge::loadBinary(const Bytes &bytes, const bool isModule)
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
-static inline const std::string _ngenxx_js_jstr2stdstr(JSContext *ctx, JSValue jstr)
+static inline std::string _ngenxx_js_jstr2stdstr(JSContext *ctx, JSValue jstr)
 {
     auto c = JS_ToCString(ctx, jstr);
     auto s = std::string(c ?: "");
