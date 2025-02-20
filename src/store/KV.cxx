@@ -59,7 +59,7 @@ NGenXX::Store::KV::Connection::Connection(const std::string &_id)
     this->kv->setLogLevel(MMKVLogNone);
 }
 
-const std::string NGenXX::Store::KV::Connection::readString(const std::string &k) const
+std::string NGenXX::Store::KV::Connection::readString(const std::string &k) const
 {
     std::shared_lock lock(this->mutex);
     std::string s;
@@ -91,7 +91,7 @@ bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v) co
     );
 }
 
-const std::vector<std::string> NGenXX::Store::KV::Connection::allKeys() const
+std::vector<std::string> NGenXX::Store::KV::Connection::allKeys() const
 {
     std::shared_lock lock(this->mutex);
     return this->kv->allKeys(false);

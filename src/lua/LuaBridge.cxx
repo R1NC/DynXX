@@ -176,7 +176,7 @@ bool NGenXX::LuaBridge::loadScript(const std::string &script)
 }
 
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
-const std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::string &params)
+std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::string &params)
 {
     std::string s;
     const std::lock_guard<std::recursive_mutex> lock(this->mutex);

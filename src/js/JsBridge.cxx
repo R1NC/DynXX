@@ -319,7 +319,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
-const std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, const bool await)
+std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, const bool await)
 {
     _ngenxx_js_mutex->lock();
     std::string s;

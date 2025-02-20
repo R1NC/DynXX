@@ -34,12 +34,12 @@ std::shared_ptr<NGenXX::Store::SQLite> _ngenxx_sqlite = nullptr;
 std::shared_ptr<NGenXX::Store::KV> _ngenxx_kv = nullptr;
 std::shared_ptr<const std::string> _ngenxx_root = nullptr;
 
-const std::string ngenxxGetVersion(void)
+std::string ngenxxGetVersion(void)
 {
     return VERSION;
 }
 
-const std::string ngenxxRootPath()
+std::string ngenxxRootPath()
 {
     std::string s;
     if (!_ngenxx_root)
@@ -100,17 +100,17 @@ NGenXXDeviceTypeX ngenxxDeviceType()
     return static_cast<NGenXXDeviceTypeX>(NGenXX::Device::DeviceInfo::deviceType());
 }
 
-const std::string ngenxxDeviceName()
+std::string ngenxxDeviceName()
 {
     return NGenXX::Device::DeviceInfo::deviceName();
 }
 
-const std::string ngenxxDeviceManufacturer()
+std::string ngenxxDeviceManufacturer()
 {
     return NGenXX::Device::DeviceInfo::deviceManufacturer();
 }
 
-const std::string ngenxxDeviceOsVersion()
+std::string ngenxxDeviceOsVersion()
 {
     return NGenXX::Device::DeviceInfo::osVersion();
 }
@@ -139,32 +139,32 @@ void ngenxxLogPrint(const NGenXXLogLevelX level, const std::string &content)
 
 #pragma mark Coding
 
-const std::string ngenxxCodingHexBytes2str(const Bytes &bytes)
+std::string ngenxxCodingHexBytes2str(const Bytes &bytes)
 {
     return NGenXX::Coding::Hex::bytes2str(bytes);
 }
 
-const Bytes ngenxxCodingHexStr2bytes(const std::string &str)
+Bytes ngenxxCodingHexStr2bytes(const std::string &str)
 {
     return NGenXX::Coding::Hex::str2bytes(str);
 }
 
-const std::string ngenxxCodingBytes2str(const Bytes &bytes)
+std::string ngenxxCodingBytes2str(const Bytes &bytes)
 {
     return NGenXX::Coding::bytes2str(bytes);
 }
 
-const Bytes ngenxxCodingStr2bytes(const std::string &str)
+Bytes ngenxxCodingStr2bytes(const std::string &str)
 {
     return NGenXX::Coding::str2bytes(str);
 }
 
-const std::string ngenxxCodingCaseUpper(const std::string &str)
+std::string ngenxxCodingCaseUpper(const std::string &str)
 {
     return NGenXX::Coding::Case::upper(str);
 }
 
-const std::string ngenxxCodingCaseLower(const std::string &str)
+std::string ngenxxCodingCaseLower(const std::string &str)
 {
     return NGenXX::Coding::Case::lower(str);
 }
@@ -176,64 +176,64 @@ bool ngenxxCryptoRand(const size_t len, byte *bytes)
     return NGenXX::Crypto::rand(len, bytes);
 }
 
-const Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key)
+Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key)
 {
     return NGenXX::Crypto::AES::encrypt(in, key);
 }
 
-const Bytes ngenxxCryptoAesDecrypt(const Bytes &in, const Bytes &key)
+Bytes ngenxxCryptoAesDecrypt(const Bytes &in, const Bytes &key)
 {
     return NGenXX::Crypto::AES::decrypt(in, key);
 }
 
-const Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits, const Bytes &aad)
+Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits, const Bytes &aad)
 {
     return NGenXX::Crypto::AES::gcmEncrypt(in, key, initVector, aad, tagBits);
 }
 
-const Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits, const Bytes &aad)
+Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits, const Bytes &aad)
 {
     return NGenXX::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }
 
-const Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding)
+Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding)
 {
     return NGenXX::Crypto::RSA::encrypt(in, key, static_cast<int>(padding));
 }
 
-const Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding)
+Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding)
 {
     return NGenXX::Crypto::RSA::decrypt(in, key, static_cast<int>(padding));
 }
 
-const Bytes ngenxxCryptoHashMd5(const Bytes &in)
+Bytes ngenxxCryptoHashMd5(const Bytes &in)
 {
     return NGenXX::Crypto::Hash::md5(in);
 }
 
-const Bytes ngenxxCryptoHashSha1(const Bytes &in)
+Bytes ngenxxCryptoHashSha1(const Bytes &in)
 {
     return NGenXX::Crypto::Hash::sha1(in);
 }
 
-const Bytes ngenxxCryptoHashSha256(const Bytes &in)
+Bytes ngenxxCryptoHashSha256(const Bytes &in)
 {
     return NGenXX::Crypto::Hash::sha256(in);
 }
 
-const Bytes ngenxxCryptoBase64Encode(const Bytes &in)
+Bytes ngenxxCryptoBase64Encode(const Bytes &in)
 {
     return NGenXX::Crypto::Base64::encode(in);
 }
 
-const Bytes ngenxxCryptoBase64Decode(const Bytes &in)
+Bytes ngenxxCryptoBase64Decode(const Bytes &in)
 {
     return NGenXX::Crypto::Base64::decode(in);
 }
 
 #pragma mark Net.Http
 
-const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
+NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               const NGenXXHttpMethodX method,
                                               const std::string &params,
                                               const Bytes &rawBody,
@@ -270,7 +270,7 @@ const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     return rsp;
 }
 
-const std::string NGenXXHttpResponse::toJson()
+std::string NGenXXHttpResponse::toJson()
 {
     auto cj = cJSON_CreateObject();
     cJSON_AddItemToObject(cj, "code", cJSON_CreateNumber(this->code));
@@ -290,7 +290,7 @@ const std::string NGenXXHttpResponse::toJson()
     return cJSON_PrintUnformatted(cj);
 }
 
-const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
+NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               const NGenXXHttpMethodX method,
                                               const std::unordered_map<std::string, Any> &params,
                                               const Bytes &rawBody,
@@ -381,7 +381,7 @@ bool ngenxxStoreSqliteQueryReadRow(void *const query_result)
     return xqr->readRow();
 }
 
-const std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column)
+std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column)
 {
     std::string s;
     if (query_result == NULL || column.length() == 0)
@@ -444,7 +444,7 @@ void *ngenxxStoreKvOpen(const std::string &_id)
     return _ngenxx_kv->open(_id);
 }
 
-const std::string ngenxxStoreKvReadString(void *const conn, const std::string &k)
+std::string ngenxxStoreKvReadString(void *const conn, const std::string &k)
 {
     std::string s;
     if (conn == NULL || k.length() == 0)
@@ -591,7 +591,7 @@ void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void 
     return xdecoder->readNode(node, k);
 }
 
-const std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node)
+std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node)
 {
     std::string s;
     if (decoder == NULL)
@@ -678,7 +678,7 @@ size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, const bool inFinis
     return xzip->input(inBytes, inFinish);
 }
 
-const Bytes ngenxxZZipProcessDo(void *const zip)
+Bytes ngenxxZZipProcessDo(void *const zip)
 {
     if (zip == NULL)
     {
@@ -732,7 +732,7 @@ size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, const bool inF
     return xunzip->input(inBytes, inFinish);
 }
 
-const Bytes ngenxxZUnzipProcessDo(void *const unzip)
+Bytes ngenxxZUnzipProcessDo(void *const unzip)
 {
     if (unzip == NULL)
     {
@@ -814,7 +814,7 @@ bool ngenxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut
     return NGenXX::Z::unzip(bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
 }
 
-const Bytes ngenxxZBytesZip(const Bytes &inBytes, const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format)
+Bytes ngenxxZBytesZip(const Bytes &inBytes, const NGenXXZipCompressModeX mode, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
     {
@@ -827,7 +827,7 @@ const Bytes ngenxxZBytesZip(const Bytes &inBytes, const NGenXXZipCompressModeX m
     return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), inBytes);
 }
 
-const Bytes ngenxxZBytesUnzip(const Bytes &inBytes, const size_t bufferSize, const NGenXXZFormatX format)
+Bytes ngenxxZBytesUnzip(const Bytes &inBytes, const size_t bufferSize, const NGenXXZFormatX format)
 {
     if (bufferSize <= 0)
     {

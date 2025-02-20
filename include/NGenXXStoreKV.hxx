@@ -7,7 +7,7 @@
 
 void *ngenxxStoreKvOpen(const std::string &_id);
 
-const std::string ngenxxStoreKvReadString(void *const conn, const std::string &k);
+std::string ngenxxStoreKvReadString(void *const conn, const std::string &k);
 
 bool ngenxxStoreKvWriteString(void *const conn, const std::string &k, const std::string &v);
 

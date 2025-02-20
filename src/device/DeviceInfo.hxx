@@ -47,9 +47,9 @@ namespace NGenXX
             char const *const SYS_PROPERTY_TAGS = "ro.build.tags";
             char const *const SYS_PROPERTY_FINGERPRINT = "ro.build.fingerprint";
 
-            const std::string sysProperty(const std::string &k);
+            std::string sysProperty(const std::string &k);
 
-            const int apiLevel();
+            int apiLevel();
 #endif
         }
     }

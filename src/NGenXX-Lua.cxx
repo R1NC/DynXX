@@ -101,7 +101,7 @@ bool ngenxxLuaLoadS(const std::string &s)
     return _ngenxx_lua->loadScript(s);
 }
 
-const std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
+std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
 {
     std::string s;
     if (_ngenxx_lua == nullptr || f.length() == 0)

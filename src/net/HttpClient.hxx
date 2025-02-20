@@ -40,7 +40,7 @@ namespace NGenXX
             HttpClient(HttpClient &&) = delete;
             HttpClient &operator=(HttpClient &&) = delete;
 
-            [[nodiscard]] const HttpResponse request(const std::string &url, const int method,
+            [[nodiscard]] HttpResponse request(const std::string &url, const int method,
                                                      const std::vector<std::string> &headers,
                                                      const std::string &params,
                                                      const Bytes &rawBody,

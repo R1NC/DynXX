@@ -12,21 +12,21 @@ namespace NGenXX
         namespace Hex
         {
 
-            const std::string bytes2str(const Bytes &bytes);
+            std::string bytes2str(const Bytes &bytes);
 
-            const Bytes str2bytes(const std::string &str);
+            Bytes str2bytes(const std::string &str);
         }
 
         namespace Case
         {
-            const std::string upper(const std::string &str);
+            std::string upper(const std::string &str);
 
-            const std::string lower(const std::string &str);
+            std::string lower(const std::string &str);
         }
 
-        const std::string bytes2str(const Bytes &bytes);
+        std::string bytes2str(const Bytes &bytes);
 
-        const Bytes str2bytes(const std::string &str);
+        Bytes str2bytes(const std::string &str);
     }
 }
 

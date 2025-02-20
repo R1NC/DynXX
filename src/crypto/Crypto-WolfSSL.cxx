@@ -27,7 +27,7 @@ bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
     return ret == WOLFSSL_SUCCESS;
 }
 
-const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
+Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
 {
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -80,7 +80,7 @@ const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
+Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
 {
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -133,7 +133,7 @@ const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
     return trimBytes(wrapBytes(out, outLen));
 }
 
-const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
+Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
     {
@@ -177,7 +177,7 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
+Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
     {
@@ -221,7 +221,7 @@ const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
+Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -261,7 +261,7 @@ const Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
+Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -301,7 +301,7 @@ const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
+Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -326,7 +326,7 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     return wrapBytes(outBuffer, outLen);
 }
 
-const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
+Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();

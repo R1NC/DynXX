@@ -14,9 +14,9 @@ namespace NGenXX
         namespace AES
         {
 
-            const Bytes encrypt(const Bytes &in, const Bytes &key);
+            Bytes encrypt(const Bytes &in, const Bytes &key);
 
-            const Bytes decrypt(const Bytes &in, const Bytes &key);
+            Bytes decrypt(const Bytes &in, const Bytes &key);
 
             static constexpr bool checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits)
             {
@@ -50,16 +50,16 @@ namespace NGenXX
                 return true;
             }
 
-            const Bytes gcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits);
+            Bytes gcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits);
 
-            const Bytes gcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits);
+            Bytes gcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits);
         }
 
         namespace RSA
         {
-            const Bytes encrypt(const Bytes &in, const Bytes &key, const int padding);
+            Bytes encrypt(const Bytes &in, const Bytes &key, const int padding);
             
-            const Bytes decrypt(const Bytes &in, const Bytes &key, const int padding);
+            Bytes decrypt(const Bytes &in, const Bytes &key, const int padding);
         }
 
         namespace Hash
@@ -67,17 +67,17 @@ namespace NGenXX
             constexpr size_t MD5_BYTES_LEN = 16;
             constexpr size_t SHA256_BYTES_LEN = 32;
 
-            const Bytes md5(const Bytes &in);
+            Bytes md5(const Bytes &in);
 
-            const Bytes sha1(const Bytes &in);
-            const Bytes sha256(const Bytes &in);
+            Bytes sha1(const Bytes &in);
+            Bytes sha256(const Bytes &in);
         }
 
         namespace Base64
         {
-            const Bytes encode(const Bytes &in);
+            Bytes encode(const Bytes &in);
 
-            const Bytes decode(const Bytes &in);
+            Bytes decode(const Bytes &in);
         }
     }
 }

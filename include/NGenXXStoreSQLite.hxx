@@ -11,7 +11,7 @@ void *ngenxxStoreSqliteQueryDo(void *const conn, const std::string &sql);
 
 bool ngenxxStoreSqliteQueryReadRow(void *const query_result);
 
-const std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column);
+std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column);
 
 int64_t ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column);
 

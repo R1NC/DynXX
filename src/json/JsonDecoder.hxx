@@ -46,7 +46,7 @@ namespace NGenXX
                 return this->readNode(NULL, k);
             }
 
-            const std::string readString(const void *const node);
+            std::string readString(const void *const node);
 
             double readNumber(const void *const node);
 

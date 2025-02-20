@@ -14,11 +14,11 @@
 #include "NGenXXZip.hxx"
 #include "NGenXXDeviceInfo.hxx"
 
-const std::string ngenxxGetVersion(void);
+std::string ngenxxGetVersion(void);
 
 bool ngenxxInit(const std::string &root);
 
-const std::string ngenxxRootPath();
+std::string ngenxxRootPath();
 
 void ngenxxRelease();
 

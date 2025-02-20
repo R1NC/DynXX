@@ -263,7 +263,7 @@ bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::FILE *inFi
 #pragma mark Bytes
 
 template <typename T>
-const Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
+Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
 {
     size_t pos = 0;
     Bytes outBytes;
@@ -289,13 +289,13 @@ const Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGe
     return outBytes;
 }
 
-const Bytes NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes)
+Bytes NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes)
 {
     Zip zip(mode, bufferSize, format);
     return _ngenxx_z_processBytes(bufferSize, bytes, zip);
 }
 
-const Bytes NGenXX::Z::unzip(const size_t bufferSize, const int format, const Bytes &bytes)
+Bytes NGenXX::Z::unzip(const size_t bufferSize, const int format, const Bytes &bytes)
 {
     UnZip unzip(bufferSize, format);
     return _ngenxx_z_processBytes(bufferSize, bytes, unzip);

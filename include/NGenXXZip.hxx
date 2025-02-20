@@ -25,7 +25,7 @@ void *ngenxxZZipInit(const NGenXXZipCompressModeX mode = NGenXXZipCompressModeX:
 
 size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, const bool inFinish);
 
-const Bytes ngenxxZZipProcessDo(void *const zip);
+Bytes ngenxxZZipProcessDo(void *const zip);
 
 bool ngenxxZZipProcessFinished(void *const zip);
 
@@ -36,7 +36,7 @@ void *ngenxxZUnzipInit(const size_t bufferSize = NGenXXZDefaultBufferSize,
 
 size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, const bool inFinish);
 
-const Bytes ngenxxZUnzipProcessDo(void *const unzip);
+Bytes ngenxxZUnzipProcessDo(void *const unzip);
 
 bool ngenxxZUnzipProcessFinished(void *const unzip);
 
@@ -60,12 +60,12 @@ bool ngenxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut
                            const size_t bufferSize = NGenXXZDefaultBufferSize,
                            const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
 
-const Bytes ngenxxZBytesZip(const Bytes &inBytes,
+Bytes ngenxxZBytesZip(const Bytes &inBytes,
                             const NGenXXZipCompressModeX mode = NGenXXZipCompressModeX::Default,
                             const size_t bufferSize = NGenXXZDefaultBufferSize,
                             const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
 
-const Bytes ngenxxZBytesUnzip(const Bytes &inBytes,
+Bytes ngenxxZBytesUnzip(const Bytes &inBytes,
                               const size_t bufferSize = NGenXXZDefaultBufferSize,
                               const NGenXXZFormatX format = NGenXXZFormatX::ZLib);
 

@@ -35,7 +35,7 @@ namespace NGenXX
                 Connection(Connection &&) = delete;
                 Connection &operator=(Connection &&) = delete;
 
-                const std::string readString(const std::string &k) const;
+                std::string readString(const std::string &k) const;
 
                 int64_t readInteger(const std::string &k) const;
 
@@ -43,7 +43,7 @@ namespace NGenXX
 
                 [[nodiscard]] bool write(const std::string &k, const Any &v) const;
 
-                const std::vector<std::string> allKeys() const;
+                std::vector<std::string> allKeys() const;
 
                 bool contains(const std::string &k) const;
 

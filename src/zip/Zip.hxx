@@ -85,9 +85,9 @@ namespace NGenXX
 
         bool unzip(const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
 
-        const Bytes zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes);
+        Bytes zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes);
 
-        const Bytes unzip(const size_t bufferSize, const int format, const Bytes &bytes);
+        Bytes unzip(const size_t bufferSize, const int format, const Bytes &bytes);
     }
 }
 

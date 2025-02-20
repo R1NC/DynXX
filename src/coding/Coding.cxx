@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 
-const std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
+std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
 {
     if (bytes.empty())
     {
@@ -22,7 +22,7 @@ const std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
     return strStream.str();
 }
 
-const Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
+Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
 {
     if (str.length() == 0)
     {
@@ -39,26 +39,26 @@ const Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     return bytes;
 }
 
-const std::string NGenXX::Coding::Case::upper(const std::string &str)
+std::string NGenXX::Coding::Case::upper(const std::string &str)
 {
     std::string s(str);
     std::transform(s.begin(), s.end(), s.begin(), ::toupper);
     return s;
 }
 
-const std::string NGenXX::Coding::Case::lower(const std::string &str)
+std::string NGenXX::Coding::Case::lower(const std::string &str)
 {
     std::string s(str);
     std::transform(s.begin(), s.end(), s.begin(), ::tolower);
     return s;
 }
 
-const std::string NGenXX::Coding::bytes2str(const Bytes &bytes)
+std::string NGenXX::Coding::bytes2str(const Bytes &bytes)
 {
     return std::string(bytes.begin(), bytes.end());
 }
 
-const Bytes NGenXX::Coding::str2bytes(const std::string &str)
+Bytes NGenXX::Coding::str2bytes(const std::string &str)
 {
     return Bytes(str.begin(), str.end());
 }

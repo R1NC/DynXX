@@ -8,12 +8,12 @@
 
 #include <NGenXXDeviceInfo.h>
 
-const int NGenXX::Device::DeviceInfo::apiLevel()
+int NGenXX::Device::DeviceInfo::apiLevel()
 {
     return android_get_device_api_level();
 }
 
-const std::string NGenXX::Device::DeviceInfo::sysProperty(const std::string &k)
+std::string NGenXX::Device::DeviceInfo::sysProperty(const std::string &k)
 {
     char v[PROP_VALUE_MAX];
     __system_property_get(k.c_str(), v);

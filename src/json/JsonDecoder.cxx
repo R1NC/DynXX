@@ -175,7 +175,7 @@ void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string 
     return NULL;
 }
 
-const std::string NGenXX::Json::Decoder::readString(const void *const node)
+std::string NGenXX::Json::Decoder::readString(const void *const node)
 {
     std::string s;
     auto cj = this->parseNode(node);

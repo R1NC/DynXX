@@ -28,11 +28,11 @@ enum class NGenXXDeviceCpuArchX: int {
 
 NGenXXDeviceTypeX ngenxxDeviceType();
 
-const std::string ngenxxDeviceName();
+std::string ngenxxDeviceName();
 
-const std::string ngenxxDeviceManufacturer();
+std::string ngenxxDeviceManufacturer();
 
-const std::string ngenxxDeviceOsVersion();
+std::string ngenxxDeviceOsVersion();
 
 NGenXXDeviceCpuArchX ngenxxDeviceCpuArch();
 

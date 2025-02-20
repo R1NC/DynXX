@@ -12,7 +12,7 @@ bool ngenxxJsonDecoderIsObject(void *const decoder, void *const node = nullptr);
 
 void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node = nullptr);
 
-const std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node = nullptr);
+std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node = nullptr);
 
 double ngenxxJsonDecoderReadNumber(void *const decoder, void *const node = nullptr);
 

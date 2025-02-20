@@ -29,7 +29,7 @@ bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
     return ret != -1;
 }
 
-const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
+Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
 {
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -68,7 +68,7 @@ const Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
+Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
 {
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -129,7 +129,7 @@ const EVP_CIPHER *aesGcmCipher(const Bytes &keyBytes)
     return NULL;
 }
 
-const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
+Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
     {
@@ -223,7 +223,7 @@ const Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
+Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, const size_t tagBits)
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits))
     {
@@ -317,7 +317,7 @@ const Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
+Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -355,7 +355,7 @@ const Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::Hash::sha1(const Bytes &inBytes)
+Bytes NGenXX::Crypto::Hash::sha1(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -393,7 +393,7 @@ const Bytes NGenXX::Crypto::Hash::sha1(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
+Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -431,7 +431,7 @@ const Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
-const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
+Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -466,7 +466,7 @@ const Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     return out;
 }
 
-const Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
+Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -520,7 +520,7 @@ RSA *ngenxxCryptoCreateRSA(const Bytes &key, bool isPublic)
     return rsa;
 }
 
-const Bytes NGenXX::Crypto::RSA::encrypt(const Bytes &in, const Bytes &key, const int padding)
+Bytes NGenXX::Crypto::RSA::encrypt(const Bytes &in, const Bytes &key, const int padding)
 {
     auto rsa = ngenxxCryptoCreateRSA(key, true);
     auto outLen = RSA_size(rsa);
@@ -537,7 +537,7 @@ const Bytes NGenXX::Crypto::RSA::encrypt(const Bytes &in, const Bytes &key, cons
     return out;
 }
 
-const Bytes NGenXX::Crypto::RSA::decrypt(const Bytes &in, const Bytes &key, const int padding)
+Bytes NGenXX::Crypto::RSA::decrypt(const Bytes &in, const Bytes &key, const int padding)
 {
     auto rsa = ngenxxCryptoCreateRSA(key, false);
     auto outLen = RSA_size(rsa);

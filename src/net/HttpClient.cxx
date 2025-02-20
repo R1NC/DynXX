@@ -69,7 +69,7 @@ NGenXX::Net::HttpClient::~HttpClient()
     curl_global_cleanup();
 }
 
-const NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::string &url, const int method,
+NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::string &url, const int method,
                                                                  const std::vector<std::string> &headers,
                                                                  const std::string &params,
                                                                  const Bytes &rawBody,

@@ -21,11 +21,11 @@ struct NGenXXHttpResponse
     std::unordered_map<std::string, std::string> headers;
     std::string data;
 
-    const std::string toJson();
+    std::string toJson();
 };
 using NGenXXHttpResponse = struct NGenXXHttpResponse;
 
-const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
+NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               const NGenXXHttpMethodX method,
                                               const std::string &params,
                                               const Bytes &rawBody = BytesEmpty,
@@ -36,7 +36,7 @@ const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               const std::FILE *cFILE = nullptr, const size_t fileSize = 0,
                                               const size_t timeout = NGenXXHttpDefaultTimeout);
 
-const NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
+NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               const NGenXXHttpMethodX method,
                                               const std::unordered_map<std::string, Any> &params,
                                               const Bytes &rawBody = BytesEmpty,

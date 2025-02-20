@@ -155,7 +155,7 @@ namespace NGenXX
          * @param params parameters(json)
          * @param await Whether wait for the promise result or not
          */
-        const std::string callFunc(const std::string &func, const std::string &params, const bool await);
+        std::string callFunc(const std::string &func, const std::string &params, const bool await);
 
         /**
          * @brief New JS `Promise`

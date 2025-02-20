@@ -45,7 +45,7 @@ static inline const byte *copyBytes(const Bytes &t)
     return ncs;
 }
 
-static inline const Bytes trimBytes(const Bytes &bytes)
+static inline Bytes trimBytes(const Bytes &bytes)
 {
     auto data = bytes.data();
     auto len = bytes.size();

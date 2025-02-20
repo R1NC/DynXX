@@ -99,7 +99,7 @@ namespace NGenXX
          * @param params Lua function params（wrap multiple params with json）
          * @return return value of Lua function
          */
-        const std::string callFunc(const std::string &func, const std::string &params);
+        std::string callFunc(const std::string &func, const std::string &params);
 
         /**
          * @brief Release Lua environment

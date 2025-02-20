@@ -18,7 +18,7 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
     if (_ngenxx_js != nullptr) \
         _ngenxx_js->bindFunc(#f, f);
 
-const std::string ngenxx_js_ask_platform(const char *msg)
+std::string ngenxx_js_ask_platform(const char *msg)
 {
     std::string s;
     if (msg == NULL || _NGenXX_J_msg_callback == nullptr)
@@ -131,7 +131,7 @@ bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule)
     return _ngenxx_js->loadBinary(bytes, isModule);
 }
 
-const std::string ngenxxJsCall(const std::string &func, const std::string &params, const bool await)
+std::string ngenxxJsCall(const std::string &func, const std::string &params, const bool await)
 {
     std::string s;
     if (_ngenxx_js == nullptr || func.length() == 0L)

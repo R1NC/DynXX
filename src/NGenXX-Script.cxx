@@ -11,7 +11,7 @@
 #include <NGenXXNetHttp.h>
 #include "json/JsonDecoder.hxx"
 
-const std::string bytes2json(const Bytes &bytes)
+std::string bytes2json(const Bytes &bytes)
 {
     std::vector<int> intV(bytes.size());
     std::transform(bytes.begin(), bytes.end(), intV.begin(), [](const auto& b) { 
@@ -21,7 +21,7 @@ const std::string bytes2json(const Bytes &bytes)
     return cJSON_PrintUnformatted(cj);
 }
 
-const std::string strArray2json(const std::vector<std::string> &v)
+std::string strArray2json(const std::vector<std::string> &v)
 {
     auto cj = cJSON_CreateArray();
     for (const auto &it : v)
@@ -36,7 +36,7 @@ double parseNum(NGenXX::Json::Decoder &decoder, const char *k)
     return decoder.readNumber(decoder[k]);
 }
 
-const std::string parseStr(NGenXX::Json::Decoder &decoder, const char *k)
+std::string parseStr(NGenXX::Json::Decoder &decoder, const char *k)
 {
     return decoder.readString(decoder[k]);
 }
@@ -75,7 +75,7 @@ Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK)
     return data;
 }
 
-const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, const char *strVK)
+std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, const char *strVK)
 {
     std::vector<std::string> v;
     const auto str_vNode = decoder[strVK];
@@ -90,12 +90,12 @@ const std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, con
     return v;
 }
 
-const std::string ngenxx_get_versionS(const char *json)
+std::string ngenxx_get_versionS(const char *json)
 {
     return ngenxxGetVersion();
 }
 
-const std::string ngenxx_root_pathS(const char *json)
+std::string ngenxx_root_pathS(const char *json)
 {
     return ngenxxRootPath();
 }
@@ -107,17 +107,17 @@ int ngenxx_device_typeS(const char *json)
     return static_cast<int>(ngenxxDeviceType());
 }
 
-const std::string ngenxx_device_nameS(const char *json)
+std::string ngenxx_device_nameS(const char *json)
 {
     return ngenxxDeviceName();
 }
 
-const std::string ngenxx_device_manufacturerS(const char *json)
+std::string ngenxx_device_manufacturerS(const char *json)
 {
     return ngenxxDeviceManufacturer();
 }
 
-const std::string ngenxx_device_os_versionS(const char *json)
+std::string ngenxx_device_os_versionS(const char *json)
 {
     return ngenxxDeviceOsVersion();
 }
@@ -148,7 +148,7 @@ void ngenxx_log_printS(const char *json)
 
 #pragma mark Net.Http
 
-const std::string ngenxx_net_http_requestS(const char *json)
+std::string ngenxx_net_http_requestS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -224,7 +224,7 @@ bool ngenxx_net_http_downloadS(const char *json)
 
 #pragma mark Store.SQLite
 
-const std::string ngenxx_store_sqlite_openS(const char *json)
+std::string ngenxx_store_sqlite_openS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -263,7 +263,7 @@ bool ngenxx_store_sqlite_executeS(const char *json)
     return ngenxxStoreSqliteExecute(reinterpret_cast<void *>(conn), sql);
 }
 
-const std::string ngenxx_store_sqlite_query_doS(const char *json)
+std::string ngenxx_store_sqlite_query_doS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -302,7 +302,7 @@ bool ngenxx_store_sqlite_query_read_rowS(const char *json)
     return ngenxxStoreSqliteQueryReadRow(reinterpret_cast<void *>(query_result));
 }
 
-const std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
+std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -388,7 +388,7 @@ void ngenxx_store_sqlite_closeS(const char *json)
 
 #pragma mark Store.KV
 
-const std::string ngenxx_store_kv_openS(const char *json)
+std::string ngenxx_store_kv_openS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -410,7 +410,7 @@ const std::string ngenxx_store_kv_openS(const char *json)
     return std::to_string(reinterpret_cast<address>(res));
 }
 
-const std::string ngenxx_store_kv_read_stringS(const char *json)
+std::string ngenxx_store_kv_read_stringS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -516,7 +516,7 @@ bool ngenxx_store_kv_write_floatS(const char *json)
     return ngenxxStoreKvWriteFloat(reinterpret_cast<void *>(conn), k, v);
 }
 
-const std::string ngenxx_store_kv_all_keysS(const char *json)
+std::string ngenxx_store_kv_all_keysS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -602,7 +602,7 @@ void ngenxx_store_kv_closeS(const char *json)
 
 #pragma mark Coding
 
-const std::string ngenxx_coding_hex_bytes2strS(const char *json)
+std::string ngenxx_coding_hex_bytes2strS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -620,7 +620,7 @@ const std::string ngenxx_coding_hex_bytes2strS(const char *json)
     return ngenxxCodingHexBytes2str(in);
 }
 
-const std::string ngenxx_coding_hex_str2bytesS(const char *json)
+std::string ngenxx_coding_hex_str2bytesS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -640,7 +640,7 @@ const std::string ngenxx_coding_hex_str2bytesS(const char *json)
     return bytes2json(bytes);
 }
 
-const std::string ngenxx_coding_bytes2strS(const char *json)
+std::string ngenxx_coding_bytes2strS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -658,7 +658,7 @@ const std::string ngenxx_coding_bytes2strS(const char *json)
     return ngenxxCodingBytes2str(in);
 }
 
-const std::string ngenxx_coding_str2bytesS(const char *json)
+std::string ngenxx_coding_str2bytesS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -678,7 +678,7 @@ const std::string ngenxx_coding_str2bytesS(const char *json)
     return bytes2json(bytes);
 }
 
-const std::string ngenxx_coding_case_upperS(const char *json)
+std::string ngenxx_coding_case_upperS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -696,7 +696,7 @@ const std::string ngenxx_coding_case_upperS(const char *json)
     return ngenxxCodingCaseUpper(str);
 }
 
-const std::string ngenxx_coding_case_lowerS(const char *json)
+std::string ngenxx_coding_case_lowerS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -716,7 +716,7 @@ const std::string ngenxx_coding_case_lowerS(const char *json)
 
 #pragma mark Crypto
 
-const std::string ngenxx_crypto_randS(const char *json)
+std::string ngenxx_crypto_randS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -735,7 +735,7 @@ const std::string ngenxx_crypto_randS(const char *json)
     return bytes2json(wrapBytes(outBytes, outLen));
 }
 
-const std::string ngenxx_crypto_aes_encryptS(const char *json)
+std::string ngenxx_crypto_aes_encryptS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -760,7 +760,7 @@ const std::string ngenxx_crypto_aes_encryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-const std::string ngenxx_crypto_aes_decryptS(const char *json)
+std::string ngenxx_crypto_aes_decryptS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -785,7 +785,7 @@ const std::string ngenxx_crypto_aes_decryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-const std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
+std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -820,7 +820,7 @@ const std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-const std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
+std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -855,7 +855,7 @@ const std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-const std::string ngenxx_crypto_hash_md5S(const char *json)
+std::string ngenxx_crypto_hash_md5S(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -874,7 +874,7 @@ const std::string ngenxx_crypto_hash_md5S(const char *json)
     return bytes2json(outBytes);
 }
 
-const std::string ngenxx_crypto_hash_sha256S(const char *json)
+std::string ngenxx_crypto_hash_sha256S(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -893,7 +893,7 @@ const std::string ngenxx_crypto_hash_sha256S(const char *json)
     return bytes2json(outBytes);
 }
 
-const std::string ngenxx_crypto_base64_encodeS(const char *json)
+std::string ngenxx_crypto_base64_encodeS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -912,7 +912,7 @@ const std::string ngenxx_crypto_base64_encodeS(const char *json)
     return bytes2json(outBytes);
 }
 
-const std::string ngenxx_crypto_base64_decodeS(const char *json)
+std::string ngenxx_crypto_base64_decodeS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -933,7 +933,7 @@ const std::string ngenxx_crypto_base64_decodeS(const char *json)
 
 #pragma mark Zip
 
-const std::string ngenxx_z_zip_initS(const char *json)
+std::string ngenxx_z_zip_initS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -977,7 +977,7 @@ size_t ngenxx_z_zip_inputS(const char *json)
     return ngenxxZZipInput(reinterpret_cast<void *>(zip), in, inFinish);
 }
 
-const std::string ngenxx_z_zip_process_doS(const char *json)
+std::string ngenxx_z_zip_process_doS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -1027,7 +1027,7 @@ void ngenxx_z_zip_releaseS(const char *json)
     ngenxxZZipRelease(reinterpret_cast<void *>(zip));
 }
 
-const std::string ngenxx_z_unzip_initS(const char *json)
+std::string ngenxx_z_unzip_initS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -1070,7 +1070,7 @@ size_t ngenxx_z_unzip_inputS(const char *json)
     return ngenxxZUnzipInput(reinterpret_cast<void *>(unzip), in, inFinish);
 }
 
-const std::string ngenxx_z_unzip_process_doS(const char *json)
+std::string ngenxx_z_unzip_process_doS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -1120,7 +1120,7 @@ void ngenxx_z_unzip_releaseS(const char *json)
     ngenxxZUnzipRelease(reinterpret_cast<void *>(unzip));
 }
 
-const std::string ngenxx_z_bytes_zipS(const char *json)
+std::string ngenxx_z_bytes_zipS(const char *json)
 {
     std::string s;
     if (json == NULL)
@@ -1141,7 +1141,7 @@ const std::string ngenxx_z_bytes_zipS(const char *json)
     return bytes2json(outBytes);
 }
 
-const std::string ngenxx_z_bytes_unzipS(const char *json)
+std::string ngenxx_z_bytes_unzipS(const char *json)
 {
     std::string s;
     if (json == NULL)
