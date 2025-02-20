@@ -24,7 +24,7 @@ static int _NGenXX_Log_level = NGenXXLogLevelNone;
 
 void NGenXX::Log::setLevel(const int level)
 {
-    if (level < NGenXXLogLevelDebug || level > NGenXXLogLevelNone)
+    if (level < NGenXXLogLevelDebug || level > NGenXXLogLevelNone) [[unlikely]]
     {
         return;
     }
@@ -44,7 +44,7 @@ void NGenXX::Log::print(const int level, const std::string &content)
     }
     const std::lock_guard<std::mutex> lock(*_ngenxx_log_mutex);
 
-    if (level < _NGenXX_Log_level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone)
+    if (level < _NGenXX_Log_level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone) [[unlikely]]
     {
         return;
     }

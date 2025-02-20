@@ -35,11 +35,11 @@ int NGenXX::Z::ZBase<T>::windowBits()
 template <typename T>
 NGenXX::Z::ZBase<T>::ZBase(const size_t bufferSize, const int format) : bufferSize{bufferSize}, format{format}
 {
-    if (bufferSize == 0)
+    if (bufferSize == 0) [[unlikely]]
     {
         throw std::invalid_argument("bufferSize invalid");
     }
-    if (format != NGenXXZFormatRaw && format != NGenXXZFormatZLib && format != NGenXXZFormatGZip)
+    if (format != NGenXXZFormatRaw && format != NGenXXZFormatZLib && format != NGenXXZFormatGZip) [[unlikely]]
     {
         throw std::invalid_argument("format invalid");
     }
@@ -57,7 +57,7 @@ NGenXX::Z::ZBase<T>::ZBase(const size_t bufferSize, const int format) : bufferSi
 template <typename T>
 size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
 {
-    if (bytes.empty())
+    if (bytes.empty()) [[unlikely]]
     {
         return 0;
     }
@@ -108,7 +108,7 @@ NGenXX::Z::ZBase<T>::~ZBase()
 
 NGenXX::Z::Zip::Zip(int mode, const size_t bufferSize, const int format) : ZBase(bufferSize, format)
 {
-    if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed)
+    if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) [[unlikely]]
     {
         throw std::invalid_argument("mode invalid");
     }

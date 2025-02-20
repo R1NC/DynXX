@@ -62,9 +62,10 @@ NGenXX::Store::SQLite::~SQLite()
 
 NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
 {
-    if (!this->execute("PRAGMA journal_mode=WAL;")) [[unlikely]]
+    constexpr const char* sEnableWAL = "PRAGMA journal_mode=WAL;";
+    if (!this->execute(sEnableWAL)) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite enable WAL failed");
+        ngenxxLogPrint(NGenXXLogLevelX::Warn, "SQLite enable WAL failed");
     }
 }
 

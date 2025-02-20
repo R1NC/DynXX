@@ -87,7 +87,7 @@ NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::string &ur
     ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request url: {} params: {}", url, params);
 
     auto curl = curl_easy_init();
-    if (!curl)
+    if (!curl) [[unlikely]]
     {
         return rsp;
     }
@@ -206,7 +206,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     }
 
     auto curl = curl_easy_init();
-    if (!curl)
+    if (!curl) [[unlikely]]
     {
         return res;
     }
