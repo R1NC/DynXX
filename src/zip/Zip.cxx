@@ -7,7 +7,6 @@
 #include <stdexcept>
 #include <functional>
 #include <vector>
-#include <type_traits>
 
 #include <NGenXXLog.hxx>
 
@@ -74,7 +73,7 @@ size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
 }
 
 template <typename T>
-const Bytes NGenXX::Z::ZBase<T>::processDo()
+Bytes NGenXX::Z::ZBase<T>::processDo()
 {
     std::memset(this->outBuffer, 0, this->bufferSize);
     (this->zs).avail_out = static_cast<uint>(this->bufferSize);
@@ -106,6 +105,10 @@ NGenXX::Z::ZBase<T>::~ZBase()
     std::free(inBuffer);
     std::free(outBuffer);
 }
+
+// Explicit template instantiation
+template class NGenXX::Z::ZBase<NGenXX::Z::Zip>;
+template class NGenXX::Z::ZBase<NGenXX::Z::UnZip>;
 
 NGenXX::Z::Zip::Zip(int mode, const size_t bufferSize, const int format) : ZBase(bufferSize, format)
 {
@@ -195,7 +198,7 @@ template <typename T>
 bool _ngenxx_z_processCxxStream(const size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase<T> &zb)
 {
     return _ngenxx_z_process(bufferSize, 
-        [bufferSize, &inStream]() -> const Bytes 
+        [bufferSize, &inStream]() -> Bytes 
         {
             Bytes in;
             inStream->readsome(reinterpret_cast<char *>(in.data()), bufferSize);
@@ -231,7 +234,7 @@ template <typename T>
 bool _ngenxx_z_processCFILE(const size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase<T> &zb)
 {
     return _ngenxx_z_process(bufferSize, 
-        [bufferSize, &inFile]() -> const Bytes
+        [bufferSize, &inFile]() -> Bytes
         {
             Bytes in;
             std::fread(static_cast<void *>(in.data()), sizeof(byte), bufferSize, inFile);
@@ -269,7 +272,7 @@ Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z
     size_t pos = 0;
     Bytes outBytes;
     auto b = _ngenxx_z_process(bufferSize, 
-        [bufferSize, &in, &pos]() -> const Bytes
+        [bufferSize, &in, &pos]() -> Bytes
         {
             auto len = std::min(bufferSize, in.size() - pos);
             Bytes bytes(in.begin() + pos, in.begin() + pos + len);

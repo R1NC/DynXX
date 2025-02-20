@@ -1,7 +1,6 @@
 #include "JsonDecoder.hxx"
 
 #include <stdexcept>
-#include <type_traits>
 
 #include <NGenXXLog.hxx>
 

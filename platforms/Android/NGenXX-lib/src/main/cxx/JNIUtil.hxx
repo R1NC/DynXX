@@ -5,7 +5,6 @@
 
 #include <cstdlib>
 #include <string>
-#include <type_traits>
 
 #include "../../../../../../build.Android/output/include/NGenXXTypes.h"
 

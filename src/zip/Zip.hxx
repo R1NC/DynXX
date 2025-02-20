@@ -5,9 +5,10 @@
 
 #if defined(__cplusplus)
 
+#include <cstdio>
+
 #include <istream>
 #include <ostream>
-#include <cstdio>
 
 #include <NGenXXZip.h>
 #include <NGenXXTypes.hxx>
@@ -29,7 +30,7 @@ namespace NGenXX
             virtual ~ZBase();
 
             size_t input(const Bytes &bytes, bool inFinish);
-            const Bytes processDo();
+            Bytes processDo();
             bool processFinished();
 
         protected:

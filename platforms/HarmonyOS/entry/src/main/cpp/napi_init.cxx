@@ -4,7 +4,6 @@
 
 #include <cstring>
 #include <cstdlib>
-#include <type_traits>
 
 #include <napi_util.hxx>
 
