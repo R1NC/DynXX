@@ -109,7 +109,7 @@ void NGenXX::Json::Decoder::moveImp(Decoder&& other) noexcept
     other.cjson = NULL;
 }
 
-void NGenXX::Json::Decoder::cleanup()
+void NGenXX::Json::Decoder::cleanup() noexcept
 {
     if (this->cjson != NULL)
     {

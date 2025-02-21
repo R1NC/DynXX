@@ -56,7 +56,7 @@ namespace NGenXX
             cJSON *cjson{NULL};
 
             void moveImp(Decoder&& other) noexcept;
-            void cleanup();
+            void cleanup() noexcept;
 
             const cJSON *reinterpretNode(const void *const node) const;
         };
