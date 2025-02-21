@@ -14,7 +14,7 @@ NGenXX::Store::SQLite::SQLite()
 
 NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::string &file)
 {
-    const std::lock_guard<std::mutex> lock(this->mutex);
+    const std::lock_guard<decltype(this->mutex)> lock(this->mutex);
     auto conn = this->conns[file];
     if (conn == nullptr)
     {
@@ -34,7 +34,7 @@ NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::str
 
 void NGenXX::Store::SQLite::close(const std::string &file)
 {
-    const std::lock_guard<std::mutex> lock(this->mutex);
+    const std::lock_guard<decltype(this->mutex)> lock(this->mutex);
     auto it = this->conns.find(file);
     if (it != this->conns.end())
     {
@@ -46,7 +46,7 @@ void NGenXX::Store::SQLite::close(const std::string &file)
 
 void NGenXX::Store::SQLite::closeAll()
 {
-    const std::lock_guard<std::mutex> lock(this->mutex);
+    const std::lock_guard<decltype(this->mutex)> lock(this->mutex);
     for (auto &it : this->conns)
     {
         delete it.second;
