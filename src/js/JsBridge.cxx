@@ -266,13 +266,13 @@ bool NGenXX::JsBridge::loadFile(const std::string &file, const bool isModule)
 
 bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name, const bool isModule)
 {
-    const std::lock_guard<decltype(*_ngenxx_js_mutex)> lock(*_ngenxx_js_mutex);
+    auto lock = std::lock_guard(*_ngenxx_js_mutex);
     return _ngenxx_js_loadScript(this->context, script, name, isModule);
 }
 
 bool NGenXX::JsBridge::loadBinary(const Bytes &bytes, const bool isModule)
 {
-    const std::lock_guard<decltype(*_ngenxx_js_mutex)> lock(*_ngenxx_js_mutex);
+    auto lock = std::lock_guard(*_ngenxx_js_mutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
@@ -409,7 +409,7 @@ JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
     }
     
     std::thread([&ctx = this->context, jPro = jPromise, cb = jf]() {
-        const std::lock_guard<decltype(*_ngenxx_js_mutex)> lock(*_ngenxx_js_mutex);
+        auto lock = std::lock_guard(*_ngenxx_js_mutex);
 
         auto jRet = cb();
 

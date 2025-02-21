@@ -40,7 +40,7 @@ void NGenXX::Log::print(const int level, const std::string &content)
     {
         _ngenxx_log_mutex = new std::mutex();
     }
-    const std::lock_guard<decltype(*_ngenxx_log_mutex)> lock(*_ngenxx_log_mutex);
+    auto lock = std::lock_guard(*_ngenxx_log_mutex);
 
     if (level < _NGenXX_Log_level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone) [[unlikely]]
     {

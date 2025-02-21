@@ -15,7 +15,7 @@ NGenXX::Store::KV::KV(const std::string &root)
 
 NGenXX::Store::KV::Connection *NGenXX::Store::KV::open(const std::string &_id)
 {
-    const std::lock_guard<decltype(this->mutex)> lock(this->mutex);
+    auto lock = std::lock_guard(this->mutex);
     auto conn = this->conns[_id];
     if (conn == nullptr)
     {
@@ -27,7 +27,7 @@ NGenXX::Store::KV::Connection *NGenXX::Store::KV::open(const std::string &_id)
 
 void NGenXX::Store::KV::close(const std::string &_id)
 {
-    const std::lock_guard<decltype(this->mutex)> lock(this->mutex);
+    auto lock = std::lock_guard(this->mutex);
     auto it = this->conns.find(_id);
     if (it != this->conns.end())
     {
@@ -39,7 +39,7 @@ void NGenXX::Store::KV::close(const std::string &_id)
 
 void NGenXX::Store::KV::closeAll()
 {
-    const std::lock_guard<decltype(this->mutex)> lock(this->mutex);
+    auto lock = std::lock_guard(this->mutex);
     for (auto &it : this->conns)
     {
         delete it.second;
@@ -61,7 +61,7 @@ NGenXX::Store::KV::Connection::Connection(const std::string &_id)
 
 std::string NGenXX::Store::KV::Connection::readString(const std::string &k) const
 {
-    std::shared_lock lock(this->mutex);
+    auto lock = std::shared_lock(this->mutex);
     std::string s;
     this->kv->getString(k, s);
     return s;
@@ -69,19 +69,19 @@ std::string NGenXX::Store::KV::Connection::readString(const std::string &k) cons
 
 int64_t NGenXX::Store::KV::Connection::readInteger(const std::string &k) const
 {
-    std::shared_lock lock(this->mutex);
+    auto lock = std::shared_lock(this->mutex);
     return this->kv->getInt64(k);
 }
 
 double NGenXX::Store::KV::Connection::readFloat(const std::string &k) const
 {
-    std::shared_lock lock(this->mutex);
+    auto lock = std::shared_lock(this->mutex);
     return this->kv->getDouble(k);
 }
 
 bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v) const
 {
-    std::unique_lock lock(this->mutex);
+    auto lock = std::unique_lock(this->mutex);
     return std::visit(
         [k, &kv = this->kv](auto &x)
         { 
@@ -93,31 +93,30 @@ bool NGenXX::Store::KV::Connection::write(const std::string &k, const Any &v) co
 
 std::vector<std::string> NGenXX::Store::KV::Connection::allKeys() const
 {
-    std::shared_lock lock(this->mutex);
+    auto lock = std::shared_lock(this->mutex);
     return this->kv->allKeys(false);
 }
 
 bool NGenXX::Store::KV::Connection::contains(const std::string &k) const
 {
-    std::shared_lock lock(this->mutex);
+    auto lock = std::shared_lock(this->mutex);
     return this->kv->containsKey(k);
 }
 
 bool NGenXX::Store::KV::Connection::remove(const std::string &k) const
 {
-    std::unique_lock lock(this->mutex);
+    auto lock = std::unique_lock(this->mutex);
     return this->kv->removeValueForKey(k);
 }
 
 void NGenXX::Store::KV::Connection::clear() const
 {
-    std::unique_lock lock(this->mutex);
+    auto lock = std::unique_lock(this->mutex);
     this->kv->clearAll();
     this->kv->clearMemoryCache();
 }
 
 NGenXX::Store::KV::Connection::~Connection()
 {
-    std::unique_lock lock(this->mutex);
     this->kv->close();
 }
