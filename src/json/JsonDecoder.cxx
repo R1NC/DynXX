@@ -50,11 +50,11 @@ std::unordered_map<std::string, Any> NGenXX::Json::dictAnyFromJson(const std::st
             std::string k(node->string);
             if (cJSON_IsNumber(node))
             {
-                dict[k] = node->valuedouble;
+                dict.emplace(k, node->valuedouble);
             }
             else if (cJSON_IsString(node))
             {
-                dict[k] = node->valuestring;
+                dict.emplace(k, node->valuestring);
             }
             node = node->next;
         }
@@ -94,7 +94,7 @@ std::unordered_map<std::string, std::string> NGenXX::Json::dictFromJson(const st
             std::string k(node->string);
             if (cJSON_IsString(node)) [[likely]]
             {
-                dict[k] = node->valuestring;
+                dict.emplace(k, node->valuestring);
             }
             node = node->next;
         }

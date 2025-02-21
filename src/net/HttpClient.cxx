@@ -55,7 +55,7 @@ size_t _NGenXX_Net_HttpClient_RspHeadersCallback(char *buffer, size_t size, size
         k.erase(k.find_last_not_of(" \t") + 1);
         k.erase(0, k.find_first_not_of(" \t"));
         k.erase(k.find_last_not_of(" \t") + 1);
-        (*headers)[k] = std::move(v);
+        (*headers).emplace(k, std::move(v));
     }
     return size * nitems;
 }
