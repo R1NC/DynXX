@@ -98,7 +98,7 @@ static int ngenxx_lua_util_timer_add(lua_State *L)
 static int ngenxx_lua_util_timer_remove(lua_State *L)
 {
     auto timer = reinterpret_cast<uv_timer_t *>(lua_touserdata(L, 1));
-    if (timer != NULL)
+    if (timer != NULL) [[likely]]
     {
         ngenxx_lua_uv_timer_stop(timer, true);
     }
