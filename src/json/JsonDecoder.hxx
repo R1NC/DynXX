@@ -30,25 +30,25 @@ namespace NGenXX
             Decoder(Decoder &&) noexcept;
             Decoder &operator=(Decoder &&) noexcept;
 
-            bool isArray(const void *const node);
+            bool isArray(const void *const node) const;
 
-            bool isObject(const void *const node);
+            bool isObject(const void *const node) const;
 
-            void *readChild(const void *const node);
+            void *readChild(const void *const node) const;
 
-            void *readNext(const void *const node);
+            void *readNext(const void *const node) const;
 
-            void readChildren(const void *const node, const std::function<void(const size_t idx, const void *const child)> &callback);
+            void readChildren(const void *const node, const std::function<void(const size_t idx, const void *const child)> &callback) const;
 
-            void *readNode(const void *const node, const std::string &k);
-            void *operator[](const std::string &k)
+            void *readNode(const void *const node, const std::string &k) const;
+            void *operator[](const std::string &k) const
             {
                 return this->readNode(NULL, k);
             }
 
-            std::string readString(const void *const node);
+            std::string readString(const void *const node) const;
 
-            double readNumber(const void *const node);
+            double readNumber(const void *const node) const;
 
             ~Decoder();
 
@@ -58,7 +58,7 @@ namespace NGenXX
             void moveImp(Decoder&& other) noexcept;
             void cleanup();
 
-            const cJSON *parseNode(const void *const node);
+            const cJSON *reinterpretNode(const void *const node) const;
         };
     }
 }

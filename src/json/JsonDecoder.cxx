@@ -143,7 +143,7 @@ NGenXX::Json::Decoder &NGenXX::Json::Decoder::operator=(NGenXX::Json::Decoder &&
     return *this;
 }
 
-const cJSON *NGenXX::Json::Decoder::parseNode(const void *const node)
+const cJSON *NGenXX::Json::Decoder::reinterpretNode(const void *const node) const
 {
     if (node == NULL)
     {
@@ -152,21 +152,21 @@ const cJSON *NGenXX::Json::Decoder::parseNode(const void *const node)
     return reinterpret_cast<cJSON *>(std::decay_t<void *>(node));
 }
 
-bool NGenXX::Json::Decoder::isArray(const void *const node)
+bool NGenXX::Json::Decoder::isArray(const void *const node) const
 {
-    auto cj = this->parseNode(node);
+    auto cj = this->reinterpretNode(node);
     return cj ? cJSON_IsArray(cj) : false;
 }
 
-bool NGenXX::Json::Decoder::isObject(const void *const node)
+bool NGenXX::Json::Decoder::isObject(const void *const node) const
 {
-    auto cj = this->parseNode(node);
+    auto cj = this->reinterpretNode(node);
     return cj ? cJSON_IsObject(cj) : false;
 }
 
-void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string &k)
+void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string &k) const
 {
-    auto cj = this->parseNode(node);
+    auto cj = this->reinterpretNode(node);
     if (cj != NULL)
     {
         return cJSON_GetObjectItemCaseSensitive(cj, k.c_str());
@@ -174,10 +174,10 @@ void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string 
     return NULL;
 }
 
-std::string NGenXX::Json::Decoder::readString(const void *const node)
+std::string NGenXX::Json::Decoder::readString(const void *const node) const
 {
     std::string s;
-    auto cj = this->parseNode(node);
+    auto cj = this->reinterpretNode(node);
     if (cj != NULL && cJSON_IsString(cj) && cj->valuestring)
     {
         return cj->valuestring;
@@ -185,10 +185,10 @@ std::string NGenXX::Json::Decoder::readString(const void *const node)
     return s;
 }
 
-double NGenXX::Json::Decoder::readNumber(const void *const node)
+double NGenXX::Json::Decoder::readNumber(const void *const node) const
 {
     auto num = 0.0;
-    auto cj = this->parseNode(node);
+    auto cj = this->reinterpretNode(node);
     if (cj != NULL)
     {
         if (cJSON_IsNumber(cj))
@@ -210,9 +210,9 @@ double NGenXX::Json::Decoder::readNumber(const void *const node)
     return num;
 }
 
-void *NGenXX::Json::Decoder::readChild(const void *const node)
+void *NGenXX::Json::Decoder::readChild(const void *const node) const
 {
-    auto cj = this->parseNode(node);
+    auto cj = this->reinterpretNode(node);
     if (cj != NULL && (this->isArray(cj) || this->isObject(cj)))
     {
         return cj->child;
@@ -220,7 +220,7 @@ void *NGenXX::Json::Decoder::readChild(const void *const node)
     return NULL;
 }
 
-void NGenXX::Json::Decoder::readChildren(const void *const node, const std::function<void(const size_t idx, const void *const child)> &callback)
+void NGenXX::Json::Decoder::readChildren(const void *const node, const std::function<void(const size_t idx, const void *const child)> &callback) const
 {
     if (!this->isArray(node) && !this->isObject(node))
     {
@@ -238,8 +238,8 @@ void NGenXX::Json::Decoder::readChildren(const void *const node, const std::func
     }
 }
 
-void *NGenXX::Json::Decoder::readNext(const void *const node)
+void *NGenXX::Json::Decoder::readNext(const void *const node) const
 {
-    auto cj = this->parseNode(node);
+    auto cj = this->reinterpretNode(node);
     return cj ? cj->next : NULL;
 }
