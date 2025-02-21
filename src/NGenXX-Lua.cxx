@@ -11,7 +11,7 @@
 std::shared_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
 
 #define BIND_LUA_FUNC(f)                                                       \
-  if (_ngenxx_lua != nullptr) [[unlikely]] {                                   \
+  if (_ngenxx_lua != nullptr) [[likely]] {                                   \
     _ngenxx_lua->bindFunc(std::string(#f), f);                                 \
   }
 

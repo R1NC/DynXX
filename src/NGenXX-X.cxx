@@ -42,7 +42,7 @@ std::string ngenxxGetVersion(void)
 std::string ngenxxRootPath()
 {
     std::string s;
-    if (!_ngenxx_root)
+    if (_ngenxx_root == nullptr)
     {
         return s;
     }

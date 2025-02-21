@@ -16,7 +16,7 @@ std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
 static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nullptr;
 
 #define BIND_JS_FUNC(f)                                                        \
-  if (_ngenxx_js != nullptr) [[unlikely]] {                                    \
+  if (_ngenxx_js != nullptr) [[likely]] {                                    \
     _ngenxx_js->bindFunc(#f, f);                                               \
   }
 

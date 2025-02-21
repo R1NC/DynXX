@@ -64,44 +64,57 @@
         return JS_NewFloat64(ctx, res);                                                    \
     }
 
+#define DEF_JS_FUNC_CHECK_BRIDGE(bridge)                                       \
+  {                                                                            \
+    if (bridge == nullptr) [[unlikely]] {                                      \
+      return JS_UNDEFINED;                                                     \
+    }                                                                          \
+  }
+
 #define DEF_JS_FUNC_VOID_ASYNC(bridge, fJ, fS)                                        \
     static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
-    {                                                                                 \
+    { \                      
+        DEF_JS_FUNC_CHECK_BRIDGE(bridge);                                             \
         std::string json = JS_ToCString(ctx, argv[0]);                                \
         return bridge->newPromiseVoid([arg = json]() { return fS(arg.c_str()); });    \
     }
 
 #define DEF_JS_FUNC_BOOL_ASYNC(bridge, fJ, fS)                                        \
     static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
-    {                                                                                 \
+    { \   
+        DEF_JS_FUNC_CHECK_BRIDGE(bridge);                                             \
         std::string json = JS_ToCString(ctx, argv[0]);                                \
         return bridge->newPromiseBool([arg = json]() { return fS(arg.c_str()); });    \
     }
 
 #define DEF_JS_FUNC_INT32_ASYNC(bridge, fJ, fS)                                       \
     static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
-    {                                                                                 \
+    { \      
+        DEF_JS_FUNC_CHECK_BRIDGE(bridge);                                             \
         std::string json = JS_ToCString(ctx, argv[0]);                                \
         return bridge->newPromiseInt32([arg = json]() { return fS(arg.c_str()); });   \
     }
 
 #define DEF_JS_FUNC_INT64_ASYNC(bridge, fJ, fS)                                       \
     static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
-    {                                                                                 \
+    { \                         
+        DEF_JS_FUNC_CHECK_BRIDGE(bridge);                                             \
         std::string json = JS_ToCString(ctx, argv[0]);                                \
         return bridge->newPromiseInt64([arg = json]() { return fS(arg.c_str()); });   \
     }
 
 #define DEF_JS_FUNC_FLOAT_ASYNC(bridge, fJ, fS)                                       \
     static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
-    {                                                                                 \
+    {  \
+        DEF_JS_FUNC_CHECK_BRIDGE(bridge);                                             \
         std::string json = JS_ToCString(ctx, argv[0]);                                \
         return bridge->newPromiseFloat([arg = json]() { return fS(arg.c_str()); });   \
     }
 
 #define DEF_JS_FUNC_STRING_ASYNC(bridge, fJ, fS)                                      \
     static JSValue fJ(JSContext *ctx, JSValue this_obj, int argc, JSValueConst *argv) \
-    {                                                                                 \
+    {  \ 
+        DEF_JS_FUNC_CHECK_BRIDGE(bridge);                                             \
         std::string json = JS_ToCString(ctx, argv[0]);                                \
         return bridge->newPromiseString([arg = json]() { return fS(arg.c_str()); });  \
     }
