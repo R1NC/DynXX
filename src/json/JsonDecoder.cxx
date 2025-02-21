@@ -23,7 +23,7 @@ std::string NGenXX::Json::dictAnyToJson(const std::unordered_map<std::string, An
         {
             node = cJSON_CreateString(std::get<std::string>(v).c_str());
         }
-        if (node)
+        if (node) [[likely]]
         {
             cJSON_AddItemToObject(cjson, k.c_str(), node);
         }
@@ -37,12 +37,12 @@ std::unordered_map<std::string, Any> NGenXX::Json::dictAnyFromJson(const std::st
 {
     std::unordered_map<std::string, Any> dict;
     auto cjson = cJSON_Parse(json.c_str());
-    if (!cjson)
+    if (!cjson) [[unlikely]]
     {
         return dict;
     }
 
-    if (cJSON_IsObject(cjson))
+    if (cJSON_IsObject(cjson)) [[likely]]
     {
         auto node = cjson->child;
         while (node)
@@ -81,18 +81,18 @@ std::unordered_map<std::string, std::string> NGenXX::Json::dictFromJson(const st
 {
     std::unordered_map<std::string, std::string> dict;
     auto cjson = cJSON_Parse(json.c_str());
-    if (!cjson)
+    if (!cjson) [[unlikely]]
     {
         return dict;
     }
 
-    if (cJSON_IsObject(cjson))
+    if (cJSON_IsObject(cjson)) [[likely]]
     {
         auto node = cjson->child;
         while (node)
         {
             std::string k(node->string);
-            if (cJSON_IsString(node))
+            if (cJSON_IsString(node)) [[likely]]
             {
                 dict[k] = node->valuestring;
             }
@@ -136,7 +136,7 @@ NGenXX::Json::Decoder::Decoder(NGenXX::Json::Decoder &&other) noexcept
 
 NGenXX::Json::Decoder &NGenXX::Json::Decoder::operator=(NGenXX::Json::Decoder &&other) noexcept
 {
-    if (this != &other)
+    if (this != &other) [[likely]]
     {
         this->cleanup();
         this->moveImp(std::move(other));
@@ -168,7 +168,7 @@ bool NGenXX::Json::Decoder::isObject(const void *const node) const
 void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string &k) const
 {
     auto cj = this->reinterpretNode(node);
-    if (cj != NULL)
+    if (cj != NULL) [[likely]]
     {
         return cJSON_GetObjectItemCaseSensitive(cj, k.c_str());
     }
@@ -179,7 +179,7 @@ std::string NGenXX::Json::Decoder::readString(const void *const node) const
 {
     std::string s;
     auto cj = this->reinterpretNode(node);
-    if (cj != NULL && cJSON_IsString(cj) && cj->valuestring)
+    if (cj != NULL && cJSON_IsString(cj) && cj->valuestring) [[likely]]
     {
         return cj->valuestring;
     }
@@ -190,13 +190,13 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
 {
     auto num = 0.0;
     auto cj = this->reinterpretNode(node);
-    if (cj != NULL)
+    if (cj != NULL) [[likely]]
     {
-        if (cJSON_IsNumber(cj))
+        if (cJSON_IsNumber(cj)) [[likely]]
         {
             num = cj->valuedouble;
-        }
-        if (cJSON_IsString(cj))
+        } 
+        else if (cJSON_IsString(cj)) [[unlikely]]
         {
             try
             {
@@ -204,8 +204,12 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
             }
             catch (const std::exception &e)
             {
-                ngenxxLogPrint(NGenXXLogLevelX::Error, "FAILED TO PARSE NUMBER FROM JSON");
+                ngenxxLogPrint(NGenXXLogLevelX::Error, "FAILED TO PARSE NUMBER FROM JSON: INVALID STRING VALUE");
             }
+        }
+        else [[unlikely]]
+        {
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "FAILED TO PARSE NUMBER FROM JSON: INVALID NODE TYPE");
         }
     }
     return num;
@@ -214,7 +218,7 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
 void *NGenXX::Json::Decoder::readChild(const void *const node) const
 {
     auto cj = this->reinterpretNode(node);
-    if (cj != NULL && (this->isArray(cj) || this->isObject(cj)))
+    if (cj != NULL && (this->isArray(cj) || this->isObject(cj))) [[likely]]
     {
         return cj->child;
     }
@@ -223,7 +227,7 @@ void *NGenXX::Json::Decoder::readChild(const void *const node) const
 
 void NGenXX::Json::Decoder::readChildren(const void *const node, const std::function<void(const size_t idx, const void *const child)> &callback) const
 {
-    if (!this->isArray(node) && !this->isObject(node))
+    if (!this->isArray(node) && !this->isObject(node)) [[unlikely]]
     {
         return;
     }
