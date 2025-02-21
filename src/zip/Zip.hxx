@@ -29,7 +29,7 @@ namespace NGenXX
             ZBase &operator=(ZBase &&) = delete;
             virtual ~ZBase();
 
-            size_t input(const Bytes &bytes, bool inFinish);
+            size_t input(const Bytes &bytes, const bool inFinish);
             Bytes processDo();
             bool processFinished();
 
@@ -50,7 +50,7 @@ namespace NGenXX
         {
         public:
             Zip() = delete;
-            explicit Zip(int mode, const size_t bufferSize, const int format);
+            explicit Zip(const int mode, const size_t bufferSize, const int format);
             Zip(const Zip &) = delete;
             Zip &operator=(const Zip &) = delete;
             Zip(Zip &&) = delete;
@@ -78,15 +78,15 @@ namespace NGenXX
             void processImp();
         };
 
-        bool zip(int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
+        bool zip(const int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
 
         bool unzip(const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
 
-        bool zip(int mode, const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
+        bool zip(const int mode, const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
 
         bool unzip(const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
 
-        Bytes zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes);
+        Bytes zip(const int mode, const size_t bufferSize, const int format, const Bytes &bytes);
 
         Bytes unzip(const size_t bufferSize, const int format, const Bytes &bytes);
     }

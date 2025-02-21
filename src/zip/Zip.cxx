@@ -55,7 +55,7 @@ NGenXX::Z::ZBase<T>::ZBase(const size_t bufferSize, const int format) : bufferSi
 }
 
 template <typename T>
-size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
+size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, const bool inFinish)
 {
     if (bytes.empty()) [[unlikely]]
     {
@@ -110,7 +110,7 @@ NGenXX::Z::ZBase<T>::~ZBase()
 template class NGenXX::Z::ZBase<NGenXX::Z::Zip>;
 template class NGenXX::Z::ZBase<NGenXX::Z::UnZip>;
 
-NGenXX::Z::Zip::Zip(int mode, const size_t bufferSize, const int format) : ZBase(bufferSize, format)
+NGenXX::Z::Zip::Zip(const int mode, const size_t bufferSize, const int format) : ZBase(bufferSize, format)
 {
     if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) [[unlikely]]
     {
@@ -216,7 +216,7 @@ bool _ngenxx_z_processCxxStream(const size_t bufferSize, std::istream *inStream,
     );
 }
 
-bool NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream)
+bool NGenXX::Z::zip(const int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream)
 {
     Zip zip(mode, bufferSize, format);
     return _ngenxx_z_processCxxStream(bufferSize, inStream, outStream, zip);
@@ -252,7 +252,7 @@ bool _ngenxx_z_processCFILE(const size_t bufferSize, std::FILE *inFile, std::FIL
     );
 }
 
-bool NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile)
+bool NGenXX::Z::zip(const int mode, const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile)
 {
     Zip zip(mode, bufferSize, format);
     return _ngenxx_z_processCFILE(bufferSize, inFile, outFile, zip);
@@ -293,7 +293,7 @@ Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z
     return outBytes;
 }
 
-Bytes NGenXX::Z::zip(int mode, const size_t bufferSize, const int format, const Bytes &bytes)
+Bytes NGenXX::Z::zip(const int mode, const size_t bufferSize, const int format, const Bytes &bytes)
 {
     Zip zip(mode, bufferSize, format);
     return _ngenxx_z_processBytes(bufferSize, bytes, zip);
