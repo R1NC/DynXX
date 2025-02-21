@@ -94,7 +94,7 @@ Bytes NGenXX::Z::ZBase<T>::processDo()
 }
 
 template <typename T>
-bool NGenXX::Z::ZBase<T>::processFinished()
+bool NGenXX::Z::ZBase<T>::processFinished() const
 {
     return (this->zs).avail_out != 0;
 }

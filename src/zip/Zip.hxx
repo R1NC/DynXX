@@ -31,7 +31,7 @@ namespace NGenXX
 
             size_t input(const Bytes &bytes, const bool inFinish);
             Bytes processDo();
-            bool processFinished();
+            bool processFinished() const;
 
         protected:
             z_stream zs;
