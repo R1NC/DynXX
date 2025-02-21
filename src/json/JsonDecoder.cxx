@@ -1,6 +1,7 @@
 #include "JsonDecoder.hxx"
 
 #include <stdexcept>
+#include <utility>
 
 #include <NGenXXLog.hxx>
 
@@ -105,17 +106,17 @@ std::unordered_map<std::string, std::string> NGenXX::Json::dictFromJson(const st
 
 void NGenXX::Json::Decoder::moveImp(Decoder&& other) noexcept
 {
-    this->cjson = other.cjson;
-    other.cjson = NULL;
+    this->cjson = std::exchange(other.cjson, nullptr);
 }
 
 void NGenXX::Json::Decoder::cleanup() noexcept
 {
-    if (this->cjson != NULL)
+    if (this->cjson == NULL) [[unlikely]]
     {
-        cJSON_Delete(this->cjson);
-        this->cjson = NULL;
+        return;
     }
+    cJSON_Delete(this->cjson);
+    this->cjson = NULL;
 }
 
 NGenXX::Json::Decoder::Decoder(const std::string &json)
