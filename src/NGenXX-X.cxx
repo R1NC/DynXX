@@ -252,6 +252,10 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
 
     std::vector<NGenXX::Net::HttpFormField> vFormFields;
     auto fieldNameCount = formFieldNameV.size();
+    if (fieldNameCount > 0)
+    {
+        vFormFields.reserve(fieldNameCount);
+    }
     for (decltype(fieldNameCount) i(0); i < fieldNameCount && i < formFieldMimeV.size() && i < formFieldDataV.size(); i++)
     {
         vFormFields.push_back({
@@ -316,6 +320,11 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
         );
     }
     std::vector<std::string> headerV;
+    auto headersCount = headers.size();
+    if (headersCount > 0)
+    {
+        headerV.reserve(headersCount);
+    }
     for (const auto &pair : headers)
     {
         auto [k, v] = pair;

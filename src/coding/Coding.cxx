@@ -25,13 +25,14 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
 
 Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
 {
-    if (str.length() == 0) [[unlikely]]
+    auto sLen = str.length();
+    if (sLen < 2) [[unlikely]]
     {
         return BytesEmpty;
     }
-    auto outLen = str.length();
     Bytes bytes;
-    for (decltype(outLen) i(0), j(0); i < str.length(); i += 2, j++)
+    bytes.reserve(sLen / 2);
+    for (decltype(sLen) i(0); i < sLen; i += 2)
     {
         auto s = str.substr(i, 2);
         bytes.push_back(static_cast<byte>(std::stoi(s.c_str(), nullptr, 16)));
