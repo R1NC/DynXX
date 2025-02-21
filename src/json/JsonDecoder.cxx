@@ -196,7 +196,7 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
         {
             num = cj->valuedouble;
         } 
-        else if (cJSON_IsString(cj)) [[unlikely]]
+        else if (cJSON_IsString(cj)) [[likely]]
         {
             try
             {
