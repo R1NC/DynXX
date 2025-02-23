@@ -16,11 +16,12 @@ NGenXX::Store::KV::KV(const std::string &root)
 NGenXX::Store::KV::Connection *NGenXX::Store::KV::open(const std::string &_id)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto conn = this->conns[_id];
+    auto conn = this->conns.at(_id).get();
     if (conn == nullptr)
     {
-        conn = new NGenXX::Store::KV::Connection(_id);
-        this->conns[_id] = conn;
+        auto upConn = std::make_unique<Connection>(_id);
+        this->conns.emplace(_id, std::move(upConn));
+        conn = upConn.get();
     }
     return conn;
 }
@@ -31,8 +32,7 @@ void NGenXX::Store::KV::close(const std::string &_id)
     auto it = this->conns.find(_id);
     if (it != this->conns.end())
     {
-        delete it->second;
-        it->second = nullptr;
+        it->second.reset();
         this->conns.erase(it);
     }
 }
@@ -42,8 +42,7 @@ void NGenXX::Store::KV::closeAll()
     auto lock = std::lock_guard(this->mutex);
     for (auto &it : this->conns)
     {
-        delete it.second;
-        it.second = nullptr;
+        it.second.reset();
     }
     this->conns.clear();
 }

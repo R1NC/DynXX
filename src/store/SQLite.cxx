@@ -15,19 +15,21 @@ NGenXX::Store::SQLite::SQLite()
 NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::string &file)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto conn = this->conns[file];
+    auto conn = this->conns.at(file).get();
     if (conn == nullptr)
     {
         sqlite3 *db;
         auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
         // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
-        if (rc != SQLITE_OK)
+        if (rc != SQLITE_OK) [[unlikely]]
         {
             PRINT_ERR(rc, db);
             return nullptr;
         }
-        conn = new NGenXX::Store::SQLite::Connection(db);
-        this->conns[file] = conn;
+        
+        auto upConn = std::make_unique<Connection>(db);
+        this->conns.emplace(file, std::move(upConn));
+        conn = upConn.get();
     }
     return conn;
 }
@@ -38,8 +40,7 @@ void NGenXX::Store::SQLite::close(const std::string &file)
     auto it = this->conns.find(file);
     if (it != this->conns.end())
     {
-        delete it->second;
-        it->second = nullptr;
+        it->second.reset();
         this->conns.erase(it);
     }
 }
@@ -49,8 +50,7 @@ void NGenXX::Store::SQLite::closeAll()
     auto lock = std::lock_guard(this->mutex);
     for (auto &it : this->conns)
     {
-        delete it.second;
-        it.second = nullptr;
+        it.second.reset();
     }
     this->conns.clear();
 }

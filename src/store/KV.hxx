@@ -4,6 +4,7 @@
 #if defined(__cplusplus)
 
 #include <unordered_map>
+#include <memory>
 #include <mutex>
 #include <shared_mutex>
 
@@ -67,7 +68,7 @@ namespace NGenXX
             ~KV();
 
         private:
-            std::unordered_map<std::string, Connection *> conns;
+            std::unordered_map<std::string, std::unique_ptr<Connection>> conns;
             std::mutex mutex;
         };
     }
