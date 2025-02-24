@@ -13,17 +13,17 @@ NGenXX::Store::KV::KV(const std::string &root)
 #endif
 }
 
-NGenXX::Store::KV::Connection *NGenXX::Store::KV::open(const std::string &_id)
+std::shared_ptr<NGenXX::Store::KV::Connection> NGenXX::Store::KV::open(const std::string &_id)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto conn = this->conns.at(_id).get();
-    if (conn == nullptr)
+    auto itConn = this->conns.find(_id);
+    if (itConn == this->conns.end())
     {
-        auto upConn = std::make_unique<Connection>(_id);
+        auto upConn = std::make_shared<Connection>(_id);
         this->conns.emplace(_id, std::move(upConn));
-        conn = upConn.get();
+        return this->conns.at(_id);
     }
-    return conn;
+    return itConn->second;
 }
 
 void NGenXX::Store::KV::close(const std::string &_id)

@@ -29,10 +29,10 @@
 
 #define VERSION "0.0.1"
 
-std::shared_ptr<NGenXX::Net::HttpClient> _ngenxx_http_client = nullptr;
-std::shared_ptr<NGenXX::Store::SQLite> _ngenxx_sqlite = nullptr;
-std::shared_ptr<NGenXX::Store::KV> _ngenxx_kv = nullptr;
-std::shared_ptr<const std::string> _ngenxx_root = nullptr;
+std::unique_ptr<NGenXX::Net::HttpClient> _ngenxx_http_client = nullptr;
+std::unique_ptr<NGenXX::Store::SQLite> _ngenxx_sqlite = nullptr;
+std::unique_ptr<NGenXX::Store::KV> _ngenxx_kv = nullptr;
+std::unique_ptr<const std::string> _ngenxx_root = nullptr;
 
 std::string ngenxxGetVersion(void)
 {
@@ -59,10 +59,10 @@ bool ngenxxInit(const std::string &root)
     {
         return false;
     }
-    _ngenxx_root = std::make_shared<const std::string>(root);
-    _ngenxx_sqlite = std::make_shared<NGenXX::Store::SQLite>();
-    _ngenxx_kv = std::make_shared<NGenXX::Store::KV>(*_ngenxx_root);
-    _ngenxx_http_client = std::make_shared<NGenXX::Net::HttpClient>();
+    _ngenxx_root = std::make_unique<const std::string>(root);
+    _ngenxx_sqlite = std::make_unique<NGenXX::Store::SQLite>();
+    _ngenxx_kv = std::make_unique<NGenXX::Store::KV>(*_ngenxx_root);
+    _ngenxx_http_client = std::make_unique<NGenXX::Net::HttpClient>();
 #if defined(USE_LUA)
     _ngenxx_lua_init();
 #endif
@@ -355,7 +355,8 @@ void *ngenxxStoreSqliteOpen(const std::string &_id)
         return NULL;
     }
     auto dbFile = *_ngenxx_root + "/" + std::string(_id) + ".db";
-    return _ngenxx_sqlite->connect(dbFile);
+    auto ptrConn = _ngenxx_sqlite->connect(dbFile);
+    return ptrConn ? ptrConn.get() : NULL;
 }
 
 bool ngenxxStoreSqliteExecute(void *const conn, const std::string &sql)
@@ -448,7 +449,8 @@ void *ngenxxStoreKvOpen(const std::string &_id)
     {
         return NULL;
     }
-    return _ngenxx_kv->open(_id);
+    auto ptrConn = _ngenxx_kv->open(_id);
+    return ptrConn? ptrConn.get() : NULL;
 }
 
 std::string ngenxxStoreKvReadString(void *const conn, const std::string &k)

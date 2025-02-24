@@ -59,7 +59,7 @@ namespace NGenXX
                 mutable std::shared_mutex mutex;
             };
 
-            Connection *open(const std::string &_id);
+            std::shared_ptr<Connection> open(const std::string &_id);
 
             void close(const std::string &_id);
 
@@ -68,7 +68,7 @@ namespace NGenXX
             ~KV();
 
         private:
-            std::unordered_map<std::string, std::unique_ptr<Connection>> conns;
+            std::unordered_map<std::string, std::shared_ptr<Connection>> conns;
             std::mutex mutex;
         };
     }

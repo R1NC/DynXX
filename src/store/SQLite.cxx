@@ -12,11 +12,11 @@ NGenXX::Store::SQLite::SQLite()
     sqlite3_initialize();
 }
 
-NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::string &file)
+std::shared_ptr<NGenXX::Store::SQLite::Connection> NGenXX::Store::SQLite::connect(const std::string &file)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto conn = this->conns.at(file).get();
-    if (conn == nullptr)
+    auto itConn = this->conns.find(file);
+    if (itConn == this->conns.end())
     {
         sqlite3 *db;
         auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
@@ -27,11 +27,11 @@ NGenXX::Store::SQLite::Connection *NGenXX::Store::SQLite::connect(const std::str
             return nullptr;
         }
         
-        auto upConn = std::make_unique<Connection>(db);
+        auto upConn = std::make_shared<Connection>(db);
         this->conns.emplace(file, std::move(upConn));
-        conn = upConn.get();
+        return this->conns.at(file);
     }
-    return conn;
+    return itConn->second;
 }
 
 void NGenXX::Store::SQLite::close(const std::string &file)

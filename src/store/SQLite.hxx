@@ -106,7 +106,7 @@ namespace NGenXX
              * @param file DB file
              * @return A Connection handle
              */
-            Connection *connect(const std::string &file);
+            std::shared_ptr<Connection> connect(const std::string &file);
 
             void close(const std::string &file);
 
@@ -118,7 +118,7 @@ namespace NGenXX
             ~SQLite();
 
         private:
-            std::unordered_map<std::string, std::unique_ptr<Connection>> conns;
+            std::unordered_map<std::string, std::shared_ptr<Connection>> conns;
             std::mutex mutex;
         };
     }
