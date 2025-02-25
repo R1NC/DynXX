@@ -40,7 +40,7 @@ void NGenXX::Store::KV::closeAll()
     auto lock = std::lock_guard(this->mutex);
     for (auto &[_, v] : this->conns) 
     {
-      v.reset();
+        v.reset();
     }
     this->conns.clear();
 }
