@@ -106,7 +106,7 @@ namespace NGenXX
              * @param file DB file
              * @return A Connection handle
              */
-            std::shared_ptr<Connection> connect(const std::string &file);
+            std::weak_ptr<Connection> connect(const std::string &file);
 
             void close(const std::string &file);
 

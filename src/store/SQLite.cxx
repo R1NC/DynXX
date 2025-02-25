@@ -12,7 +12,7 @@ NGenXX::Store::SQLite::SQLite()
     sqlite3_initialize();
 }
 
-std::shared_ptr<NGenXX::Store::SQLite::Connection> NGenXX::Store::SQLite::connect(const std::string &file)
+std::weak_ptr<NGenXX::Store::SQLite::Connection> NGenXX::Store::SQLite::connect(const std::string &file)
 {
     auto lock = std::lock_guard(this->mutex);
     auto itConn = this->conns.find(file);
@@ -24,7 +24,7 @@ std::shared_ptr<NGenXX::Store::SQLite::Connection> NGenXX::Store::SQLite::connec
         if (rc != SQLITE_OK) [[unlikely]]
         {
             PRINT_ERR(rc, db);
-            return nullptr;
+            return std::weak_ptr<Connection>();
         }
         
         auto upConn = std::make_shared<Connection>(db);

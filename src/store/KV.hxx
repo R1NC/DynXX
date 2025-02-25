@@ -59,7 +59,7 @@ namespace NGenXX
                 mutable std::shared_mutex mutex;
             };
 
-            std::shared_ptr<Connection> open(const std::string &_id);
+            std::weak_ptr<Connection> open(const std::string &_id);
 
             void close(const std::string &_id);
 

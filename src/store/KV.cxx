@@ -13,7 +13,7 @@ NGenXX::Store::KV::KV(const std::string &root)
 #endif
 }
 
-std::shared_ptr<NGenXX::Store::KV::Connection> NGenXX::Store::KV::open(const std::string &_id)
+std::weak_ptr<NGenXX::Store::KV::Connection> NGenXX::Store::KV::open(const std::string &_id)
 {
     auto lock = std::lock_guard(this->mutex);
     auto itConn = this->conns.find(_id);

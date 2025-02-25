@@ -355,8 +355,11 @@ void *ngenxxStoreSqliteOpen(const std::string &_id)
         return NULL;
     }
     auto dbFile = *_ngenxx_root + "/" + std::string(_id) + ".db";
-    auto ptrConn = _ngenxx_sqlite->connect(dbFile);
-    return ptrConn ? ptrConn.get() : NULL;
+    if (auto ptr = _ngenxx_sqlite->connect(dbFile).lock()) [[likely]]
+    {
+        return ptr.get();
+    }
+    return NULL;
 }
 
 bool ngenxxStoreSqliteExecute(void *const conn, const std::string &sql)
@@ -450,8 +453,11 @@ void *ngenxxStoreKvOpen(const std::string &_id)
     {
         return NULL;
     }
-    auto ptrConn = _ngenxx_kv->open(_id);
-    return ptrConn? ptrConn.get() : NULL;
+    if (auto ptr = _ngenxx_kv->open(_id).lock()) [[likely]]
+    {
+        return ptr.get();
+    }
+    return NULL;
 }
 
 std::string ngenxxStoreKvReadString(void *const conn, const std::string &k)
