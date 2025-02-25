@@ -377,7 +377,7 @@ void *ngenxxStoreSqliteQueryDo(void *const conn, const std::string &sql)
     }
     auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
     auto ptrQr = xconn->query(sql);
-    return ptrQr? ptrQr.release() : NULL;//release ownership
+    return ptrQr? ptrQr.release() : NULL;//trans ownership to C API, not release the memory.
 }
 
 bool ngenxxStoreSqliteQueryReadRow(void *const query_result)
