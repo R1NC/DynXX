@@ -89,7 +89,7 @@ namespace NGenXX
                  * @param sql SQL
                  * @return A QueryResult, or NULL if execute failed.
                  */
-                QueryResult *query(const std::string &sql) const;
+                std::unique_ptr<QueryResult> query(const std::string &sql) const;
 
                 /**
                  * @brief Release DB resource

@@ -87,7 +87,7 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql) const
     return rc == SQLITE_OK;
 }
 
-NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connection::query(const std::string &sql) const
+std::unique_ptr<NGenXX::Store::SQLite::Connection::QueryResult> NGenXX::Store::SQLite::Connection::query(const std::string &sql) const
 {
     auto lock = std::lock_guard(this->mutex);
     if (this->db == NULL) [[unlikely]]
@@ -103,7 +103,7 @@ NGenXX::Store::SQLite::Connection::QueryResult *NGenXX::Store::SQLite::Connectio
         PRINT_ERR(rc, this->db);
         return nullptr;
     }
-    return new NGenXX::Store::SQLite::Connection::QueryResult(stmt);
+    return std::make_unique<NGenXX::Store::SQLite::Connection::QueryResult>(stmt);
 }
 
 NGenXX::Store::SQLite::Connection::~Connection()

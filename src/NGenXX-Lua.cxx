@@ -8,7 +8,7 @@
 #include "NGenXX-inner.hxx"
 #include "NGenXX-Script.hxx"
 
-std::shared_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
+std::unique_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
 
 #define BIND_LUA_FUNC(f)                                                       \
   if (_ngenxx_lua != nullptr) [[likely]] {                                   \
@@ -208,7 +208,7 @@ void _ngenxx_lua_init(void)
     {
         return;
     }
-    _ngenxx_lua = std::make_shared<NGenXX::LuaBridge>();
+    _ngenxx_lua = std::make_unique<NGenXX::LuaBridge>();
     _ngenxx_export_funcs_for_lua();
 }
 

@@ -33,10 +33,14 @@ static uv_loop_t *_ngenxx_js_uv_loop_p = nullptr;
 static uv_loop_t *_ngenxx_js_uv_loop_t = nullptr;
 static uv_timer_t *_ngenxx_js_uv_timer_p = nullptr;
 static uv_timer_t *_ngenxx_js_uv_timer_t = nullptr;
-static std::recursive_timed_mutex *_ngenxx_js_mutex = nullptr;
+static std::unique_ptr<std::recursive_timed_mutex> _ngenxx_js_mutex = nullptr;
 
 static bool _ngenxx_js_try_acquire_lock()
 {
+    if (!_ngenxx_js_mutex) [[unlikely]]
+    {
+        return false;
+    }
     auto timeout = std::chrono::steady_clock::now() + std::chrono::milliseconds(NGenXXJsSleepMilliSecs);
     return _ngenxx_js_mutex->try_lock_until(timeout);
 }
@@ -45,7 +49,7 @@ static void _ngenxx_js_uv_timer_cb_p(uv_timer_t *timer)
 {
     auto ctx = reinterpret_cast<JSContext *>(timer->data);
     /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-    if (_ngenxx_js_try_acquire_lock()) [[likely]]
+    if (_ngenxx_js_try_acquire_lock())
     {
         js_std_loop_promise(ctx);
         _ngenxx_js_mutex->unlock();
@@ -211,7 +215,7 @@ static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
 
 NGenXX::JsBridge::JsBridge()
 {
-    _ngenxx_js_mutex = new std::recursive_timed_mutex();
+    _ngenxx_js_mutex = std::make_unique<std::recursive_timed_mutex>();
 
     this->runtime = JS_NewRuntime();
     js_std_init_handlers(this->runtime);
@@ -409,6 +413,10 @@ JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
     }
     
     std::thread([&ctx = this->context, jPro = jPromise, cb = jf]() {
+        if (!_ngenxx_js_mutex) [[unlikely]]
+        {
+            return;
+        }
         auto lock = std::lock_guard(*_ngenxx_js_mutex);
 
         auto jRet = cb();
@@ -488,6 +496,6 @@ NGenXX::JsBridge::~JsBridge()
     js_std_free_handlers(this->runtime);
     JS_FreeRuntime(this->runtime);
 
-    delete _ngenxx_js_mutex;
+    _ngenxx_js_mutex.reset();
 }
 #endif

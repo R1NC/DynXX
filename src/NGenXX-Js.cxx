@@ -12,7 +12,7 @@
 #include "js/JsBridge.hxx"
 #include "NGenXX-Script.hxx"
 
-std::shared_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
+std::unique_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
 static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nullptr;
 
 #define BIND_JS_FUNC(f)                                                        \
@@ -258,7 +258,7 @@ void _ngenxx_js_init(void)
     {
         return;
     }
-    _ngenxx_js = std::make_shared<NGenXX::JsBridge>();
+    _ngenxx_js = std::make_unique<NGenXX::JsBridge>();
     registerJsModule();
 }
 
