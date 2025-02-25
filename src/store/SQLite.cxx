@@ -15,42 +15,39 @@ NGenXX::Store::SQLite::SQLite()
 std::weak_ptr<NGenXX::Store::SQLite::Connection> NGenXX::Store::SQLite::connect(const std::string &file)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto itConn = this->conns.find(file);
-    if (itConn == this->conns.end())
+    if (this->conns.contains(file))
     {
-        sqlite3 *db;
-        auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-        // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
-        if (rc != SQLITE_OK) [[unlikely]]
-        {
-            PRINT_ERR(rc, db);
-            return std::weak_ptr<Connection>();
-        }
-        
-        auto upConn = std::make_shared<Connection>(db);
-        this->conns.emplace(file, std::move(upConn));
         return this->conns.at(file);
     }
-    return itConn->second;
+    sqlite3 *db;
+    auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
+    if (rc != SQLITE_OK) [[unlikely]]
+    {
+        PRINT_ERR(rc, db);
+        return std::weak_ptr<Connection>();
+    } 
+    auto upConn = std::make_shared<Connection>(db);
+    this->conns.emplace(file, std::move(upConn));
+    return this->conns.at(file);
 }
 
 void NGenXX::Store::SQLite::close(const std::string &file)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto it = this->conns.find(file);
-    if (it != this->conns.end())
+    if (this->conns.contains(file))
     {
-        it->second.reset();
-        this->conns.erase(it);
+        this->conns.at(file).reset();
+        this->conns.erase(file);
     }
 }
 
 void NGenXX::Store::SQLite::closeAll()
 {
     auto lock = std::lock_guard(this->mutex);
-    for (auto &it : this->conns)
+    for (auto &[_, v] : this->conns)
     {
-        it.second.reset();
+        v.reset();
     }
     this->conns.clear();
 }

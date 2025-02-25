@@ -325,9 +325,8 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     {
         headerV.reserve(headersCount);
     }
-    for (const auto &pair : headers)
+    for (const auto &[k, v] : headers)
     {
-        auto [k, v] = pair;
         std::stringstream ss;
         ss << k << ":" << v;
         headerV.push_back(ss.str());

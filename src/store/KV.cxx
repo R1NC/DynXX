@@ -16,33 +16,31 @@ NGenXX::Store::KV::KV(const std::string &root)
 std::weak_ptr<NGenXX::Store::KV::Connection> NGenXX::Store::KV::open(const std::string &_id)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto itConn = this->conns.find(_id);
-    if (itConn == this->conns.end())
+    if (this->conns.contains(_id))
     {
-        auto upConn = std::make_shared<Connection>(_id);
-        this->conns.emplace(_id, std::move(upConn));
         return this->conns.at(_id);
     }
-    return itConn->second;
+    auto upConn = std::make_shared<Connection>(_id);
+    this->conns.emplace(_id, std::move(upConn));
+    return this->conns.at(_id);
 }
 
 void NGenXX::Store::KV::close(const std::string &_id)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto it = this->conns.find(_id);
-    if (it != this->conns.end())
+    if (this->conns.contains(_id))
     {
-        it->second.reset();
-        this->conns.erase(it);
+        this->conns.at(_id).reset();
+        this->conns.erase(_id);
     }
 }
 
 void NGenXX::Store::KV::closeAll()
 {
     auto lock = std::lock_guard(this->mutex);
-    for (auto &it : this->conns)
+    for (auto &[_, v] : this->conns) 
     {
-        it.second.reset();
+      v.reset();
     }
     this->conns.clear();
 }
