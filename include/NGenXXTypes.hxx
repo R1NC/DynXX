@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <variant>
+#include <unordered_map>
 #include <limits>
 
 using Any = std::variant<int64_t, double, std::string>;
@@ -41,6 +42,8 @@ static inline double Any2Float(const Any &v)
     return std::numeric_limits<double>::min();
 }
 
+using Dict = std::unordered_map<std::string, std::string>;
+using DictAny = std::unordered_map<std::string, Any>;
 
 
 using Bytes = std::vector<byte>;

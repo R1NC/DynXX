@@ -5,7 +5,7 @@
 
 #include <NGenXXLog.hxx>
 
-std::string NGenXX::Json::dictAnyToJson(const std::unordered_map<std::string, Any> &dict)
+std::string NGenXX::Json::dictAnyToJson(const DictAny &dict)
 {
     auto cjson = cJSON_CreateObject();
     for (const auto& [k, v] : dict) 
@@ -28,14 +28,14 @@ std::string NGenXX::Json::dictAnyToJson(const std::unordered_map<std::string, An
             cJSON_AddItemToObject(cjson, k.c_str(), node);
         }
     }
-    auto json = cJSON_PrintUnformatted(cjson);
+    std::string json = cJSON_PrintUnformatted(cjson);
     cJSON_Delete(cjson);
     return json;
 }
 
-std::unordered_map<std::string, Any> NGenXX::Json::dictAnyFromJson(const std::string &json)
+DictAny NGenXX::Json::dictAnyFromJson(const std::string &json)
 {
-    std::unordered_map<std::string, Any> dict;
+    DictAny dict;
     auto cjson = cJSON_Parse(json.c_str());
     if (!cjson) [[unlikely]]
     {
@@ -64,7 +64,7 @@ std::unordered_map<std::string, Any> NGenXX::Json::dictAnyFromJson(const std::st
     return dict;
 }
 
-std::string NGenXX::Json::dictToJson(const std::unordered_map<std::string, std::string> &dict)
+std::string NGenXX::Json::dictToJson(const Dict &dict)
 {
     auto cjson = cJSON_CreateObject();
     for (const auto& [k, v] : dict) 
@@ -72,14 +72,14 @@ std::string NGenXX::Json::dictToJson(const std::unordered_map<std::string, std::
         auto node = cJSON_CreateString(v.c_str());
         cJSON_AddItemToObject(cjson, k.c_str(), node);
     }
-    auto json = cJSON_PrintUnformatted(cjson);
+    std::string json = cJSON_PrintUnformatted(cjson);
     cJSON_Delete(cjson);
     return json;
 }
 
-std::unordered_map<std::string, std::string> NGenXX::Json::dictFromJson(const std::string &json)
+Dict NGenXX::Json::dictFromJson(const std::string &json)
 {
-    std::unordered_map<std::string, std::string> dict;
+    Dict dict;
     auto cjson = cJSON_Parse(json.c_str());
     if (!cjson) [[unlikely]]
     {

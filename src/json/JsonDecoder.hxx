@@ -15,10 +15,10 @@ namespace NGenXX
 {
     namespace Json
     {
-        std::unordered_map<std::string, std::string> dictFromJson(const std::string &json);
-        std::string dictToJson(const std::unordered_map<std::string, std::string> &dict);
-        std::unordered_map<std::string, Any> dictAnyFromJson(const std::string &json);
-        std::string dictAnyToJson(const std::unordered_map<std::string, Any> &dict);
+        Dict dictFromJson(const std::string &json);
+        std::string dictToJson(const Dict &dict);
+        DictAny dictAnyFromJson(const std::string &json);
+        std::string dictAnyToJson(const DictAny &dict);
         
         class Decoder
         {
