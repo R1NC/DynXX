@@ -69,7 +69,7 @@ Bytes parseByteArray(NGenXX::Json::Decoder &decoder, const char *bytesK)
         decoder.readChildren(byte_vNode, 
                             [&data, &decoder](const size_t idx, const void *const child) -> void
                             {
-                                data.emplace_back(decoder.readNumber(child));
+                                data.push_back(decoder.readNumber(child));
                             });
     }
     return data;
@@ -84,7 +84,7 @@ std::vector<std::string> parseStrArray(NGenXX::Json::Decoder &decoder, const cha
         decoder.readChildren(str_vNode,
                              [&v, &decoder](const size_t idx, const void *const child) -> void
                              {
-                                 v.emplace_back(decoder.readString(child));
+                                 v.push_back(std::move(decoder.readString(child)));
                              });
     }
     return v;

@@ -119,11 +119,11 @@ NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::string &ur
         auto mime = curl_mime_init(curl);
         auto part = curl_mime_addpart(mime);
 
-        for (auto &it : formFields)
+        for (const auto& [name, mime, data] : formFields)
         {
-            curl_mime_name(part, it.name.c_str());
-            curl_mime_type(part, it.mime.c_str());
-            curl_mime_data(part, it.data.c_str(), CURL_ZERO_TERMINATED);
+            curl_mime_name(part, name.c_str());
+            curl_mime_type(part, mime.c_str());
+            curl_mime_data(part, data.c_str(), CURL_ZERO_TERMINATED);
         }
 
         curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);

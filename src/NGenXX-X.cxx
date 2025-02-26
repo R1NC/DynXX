@@ -258,10 +258,10 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     }
     for (decltype(fieldNameCount) i(0); i < fieldNameCount && i < formFieldMimeV.size() && i < formFieldDataV.size(); i++)
     {
-        vFormFields.push_back({
-            .name = formFieldNameV[i],
-            .mime = formFieldMimeV[i],
-            .data = formFieldDataV[i],
+        vFormFields.emplace_back(NGenXX::Net::HttpFormField{
+            formFieldNameV[i],
+            formFieldMimeV[i],
+            formFieldDataV[i],
         });
     }
 
@@ -329,7 +329,7 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     {
         std::stringstream ss;
         ss << k << ":" << v;
-        headerV.push_back(ss.str());
+        headerV.push_back(std::move(ss.str()));
     }
     return ngenxxNetHttpRequest(url, method, ssParams.str(), rawBody, headerV,
                                 formFieldNameV, formFieldMimeV, formFieldDataV,
