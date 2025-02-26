@@ -61,6 +61,7 @@ int NGenXX::Device::DeviceInfo::cpuArch()
 {
 #if defined(ARCH_CPU_X86_64)
     if (!ProcessIsTranslated())
+    {
         return NGenXXDeviceCpuArchX86_64;
     }
 #else
