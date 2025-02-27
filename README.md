@@ -33,7 +33,7 @@ A cross-platform framework based on modern C++ that also supports JS and Lua.
 ## Requirements
 
 - C99, C++23;
-- Clang;
+- Clang 15+;
 - CMake;
 - Xcode, for iOS & macOS;
 - Android Studio(or IntelliJ IDEA) with NDK;
