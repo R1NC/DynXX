@@ -139,6 +139,16 @@ void ngenxxLogPrint(const NGenXXLogLevelX level, const std::string &content)
 
 #pragma mark Coding
 
+std::string ngenxxCodingCaseUpper(const std::string_view &str)
+{
+    return NGenXX::Coding::Case::upper(str);
+}
+
+std::string ngenxxCodingCaseLower(const std::string_view &str)
+{
+    return NGenXX::Coding::Case::lower(str);
+}
+
 std::string ngenxxCodingHexBytes2str(const Bytes &bytes)
 {
     return NGenXX::Coding::Hex::bytes2str(bytes);
@@ -159,14 +169,9 @@ Bytes ngenxxCodingStr2bytes(const std::string_view &str)
     return NGenXX::Coding::str2bytes(str);
 }
 
-std::string ngenxxCodingCaseUpper(const std::string_view &str)
+std::string ngenxxCodingStrTrim(const std::string_view &str)
 {
-    return NGenXX::Coding::Case::upper(str);
-}
-
-std::string ngenxxCodingCaseLower(const std::string_view &str)
-{
-    return NGenXX::Coding::Case::lower(str);
+    return NGenXX::Coding::strTrim(str);
 }
 
 #pragma mark Crypto

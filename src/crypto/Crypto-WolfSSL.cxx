@@ -15,7 +15,7 @@
 #include <NGenXXLog.hxx>
 #include "../util/TypeUtil.hxx"
 
-constexpr int WolfSSL_OK = 0;
+constexpr auto WolfSSL_OK = 0;
 
 bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
 {

@@ -285,10 +285,10 @@ bool NGenXX::Net::HttpClient::handleSSL(CURL *const curl, const std::string &url
 {
 #if defined(USE_ADA_URL)
     auto aUrl = ada::parse(url);
-    static const std::string protocolHttps = "https:";
+    static const auto protocolHttps = "https:";
     if (aUrl->get_protocol() == protocolHttps)
 #else
-    static const std::string prefixHttps = "https://";
+    static const auto prefixHttps = "https://";
     if (url.starts_with(prefixHttps))
 #endif
     { // TODO: verify SSL cet

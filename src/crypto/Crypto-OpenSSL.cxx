@@ -16,8 +16,8 @@
 #include <NGenXXLog.hxx>
 #include "../util/TypeUtil.hxx"
 
-constexpr int OpenSSL_OK = 1;
-constexpr int OpenSSL_AES_Key_BITS = 128;
+constexpr auto OpenSSL_OK = 1;
+constexpr auto OpenSSL_AES_Key_BITS = 128;
 
 bool NGenXX::Crypto::rand(const size_t len, byte *bytes)
 {

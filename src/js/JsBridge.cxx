@@ -16,12 +16,12 @@
 #include <NGenXXLog.hxx>
 #include "../util/TimeUtil.hxx"
 
-constexpr const char *IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
+constexpr auto IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
                                          "import * as os from 'qjs:os';\n"
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
-constexpr size_t NGenXXJsSleepMilliSecs = 1;
+constexpr auto NGenXXJsSleepMilliSecs = 1uz;
 
 typedef struct
 {
