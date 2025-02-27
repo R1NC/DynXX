@@ -42,19 +42,19 @@ void ngenxx_lua_uv_loop_stop()
 
 void ngenxx_lua_uv_timer_cb(uv_timer_t *timer)
 {
-    auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(timer->data);
+    auto timer_data = static_cast<ngenxx_lua_timer_data *>(timer->data);
     lua_rawgeti(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
     lua_pcall(timer_data->lState, 0, 0, 0);
 }
 
 uv_timer_t *ngenxx_lua_uv_timer_start(ngenxx_lua_timer_data *timer_data)
 {
-    auto timer = reinterpret_cast<uv_timer_t *>(std::malloc(sizeof(uv_timer_t)));
+    auto timer = static_cast<uv_timer_t *>(std::malloc(sizeof(uv_timer_t)));
     timer->data = timer_data;
     
     std::thread([tmr = timer] {
         uv_timer_init(uv_default_loop(), tmr);
-        auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(tmr->data);
+        auto timer_data = static_cast<ngenxx_lua_timer_data *>(tmr->data);
         uv_timer_start(tmr, ngenxx_lua_uv_timer_cb, timer_data->timeout, timer_data->repeat ? timer_data->timeout : 0);
         ngenxx_lua_uv_loop_prepare();
     }).detach();
@@ -64,7 +64,7 @@ uv_timer_t *ngenxx_lua_uv_timer_start(ngenxx_lua_timer_data *timer_data)
 
 void ngenxx_lua_uv_timer_stop(uv_timer_t *timer, bool release)
 {
-    auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(timer->data);
+    auto timer_data = static_cast<ngenxx_lua_timer_data *>(timer->data);
     luaL_unref(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
     if (!timer_data->finished)
     {
@@ -83,7 +83,7 @@ static int ngenxx_lua_util_timer_add(lua_State *L)
 {
     auto timeout = lua_tointeger(L, 1);
     auto repeat = lua_toboolean(L, 2);
-    auto timer_data = reinterpret_cast<ngenxx_lua_timer_data *>(std::malloc(sizeof(ngenxx_lua_timer_data)));
+    auto timer_data = static_cast<ngenxx_lua_timer_data *>(std::malloc(sizeof(ngenxx_lua_timer_data)));
     timer_data->lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX);
     timer_data->lState = L;
     timer_data->timeout = timeout;
@@ -97,7 +97,7 @@ static int ngenxx_lua_util_timer_add(lua_State *L)
 
 static int ngenxx_lua_util_timer_remove(lua_State *L)
 {
-    auto timer = reinterpret_cast<uv_timer_t *>(lua_touserdata(L, 1));
+    auto timer = static_cast<uv_timer_t *>(lua_touserdata(L, 1));
     if (timer != NULL) [[likely]]
     {
         ngenxx_lua_uv_timer_stop(timer, true);

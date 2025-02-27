@@ -56,7 +56,7 @@ static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context,
         return;
     }
 
-    auto tSLogWorkData = reinterpret_cast<TSLogWorkData *>(data);
+    auto tSLogWorkData = static_cast<TSLogWorkData *>(data);
 
     size_t argc = 2;
     napi_value argv[2];
@@ -79,7 +79,7 @@ static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context,
 
 static void OnLogWorkExecute(napi_env env, void *data)
 {
-    auto tSLogWorkData = reinterpret_cast<TSLogWorkData *>(data);
+    auto tSLogWorkData = static_cast<TSLogWorkData *>(data);
 
     auto status = napi_acquire_threadsafe_function(tSLogWorkData->tsWorkFunc);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_acquire_threadsafe_function() failed");
@@ -90,7 +90,7 @@ static void OnLogWorkExecute(napi_env env, void *data)
 
 static void OnLogWorkComplete(napi_env env, napi_status status, void *data)
 {
-    auto tSLogWorkData = reinterpret_cast<TSLogWorkData *>(data);
+    auto tSLogWorkData = static_cast<TSLogWorkData *>(data);
 
     status = napi_release_threadsafe_function(tSLogWorkData->tsWorkFunc, napi_tsfn_release);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_release_threadsafe_function() failed");
@@ -105,12 +105,12 @@ static void engineLogCallback(int level, const char *content)
         return;
     }
 
-    auto tSLogWorkData = reinterpret_cast<TSLogWorkData *>(std::malloc(sizeof(TSLogWorkData)));
+    auto tSLogWorkData = static_cast<TSLogWorkData *>(std::malloc(sizeof(TSLogWorkData)));
     tSLogWorkData->tsWork = NULL;
     tSLogWorkData->tsWorkFunc = NULL;
     tSLogWorkData->logLevel = level;
     auto len = strlen(content);
-    tSLogWorkData->logContent = reinterpret_cast<char *>(std::malloc(len + 1));
+    tSLogWorkData->logContent = static_cast<char *>(std::malloc(len + 1));
     std::memset(static_cast<void *>(std::decay_t<char *>(tSLogWorkData->logContent)), 0, len + 1);
     std::strncpy(std::decay_t<char *>(tSLogWorkData->logContent), content, len);
     std::free(static_cast<void *>(std::decay_t<char *>(content)));

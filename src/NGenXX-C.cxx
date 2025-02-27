@@ -318,7 +318,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
                                   params ?: "",
                                   BytesEmpty,
                                   vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
-                                  reinterpret_cast<std::FILE *>(cFILE), file_size, timeout);
+                                  static_cast<std::FILE *>(cFILE), file_size, timeout);
     return copyStr(t.toJson());
 }
 
@@ -594,28 +594,28 @@ void ngenxx_z_unzip_release(void *const unzip)
 EXPORT_AUTO
 bool ngenxx_z_cfile_zip(const int mode, const size_t bufferSize, const int format, void *const cFILEIn, void *const cFILEOut)
 {
-    return ngenxxZCFileZip(reinterpret_cast<std::FILE *>(cFILEIn), reinterpret_cast<std::FILE *>(cFILEOut),
+    return ngenxxZCFileZip(static_cast<std::FILE *>(cFILEIn), static_cast<std::FILE *>(cFILEOut),
                            static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
 }
 
 EXPORT_AUTO
 bool ngenxx_z_cfile_unzip(const size_t bufferSize, const int format, void *const cFILEIn, void *const cFILEOut)
 {
-    return ngenxxZCFileUnzip(reinterpret_cast<std::FILE *>(cFILEIn), reinterpret_cast<std::FILE *>(cFILEOut),
+    return ngenxxZCFileUnzip(static_cast<std::FILE *>(cFILEIn), static_cast<std::FILE *>(cFILEOut),
                              bufferSize, static_cast<NGenXXZFormatX>(format));
 }
 
 EXPORT_AUTO
 bool ngenxx_z_cxxstream_zip(const int mode, const size_t bufferSize, const int format, void *const cxxStreamIn, void *const cxxStreamOut)
 {
-    return ngenxxZCxxStreamZip(reinterpret_cast<std::istream *>(cxxStreamIn), reinterpret_cast<std::ostream *>(cxxStreamOut),
+    return ngenxxZCxxStreamZip(static_cast<std::istream *>(cxxStreamIn), static_cast<std::ostream *>(cxxStreamOut),
                                static_cast<NGenXXZipCompressModeX>(mode), bufferSize, static_cast<NGenXXZFormatX>(format));
 }
 
 EXPORT_AUTO
 bool ngenxx_z_cxxstream_unzip(const size_t bufferSize, const int format, void *const cxxStreamIn, void *const cxxStreamOut)
 {
-    return ngenxxZCxxStreamUnzip(reinterpret_cast<std::istream *>(cxxStreamIn), reinterpret_cast<std::ostream *>(cxxStreamOut),
+    return ngenxxZCxxStreamUnzip(static_cast<std::istream *>(cxxStreamIn), static_cast<std::ostream *>(cxxStreamOut),
                                  bufferSize, static_cast<NGenXXZFormatX>(format));
 }
 

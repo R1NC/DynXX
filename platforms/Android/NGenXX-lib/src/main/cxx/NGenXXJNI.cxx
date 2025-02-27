@@ -112,11 +112,11 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
     auto headerCount = env->GetArrayLength(headerV);
 
     auto cHeaderVLen = headerCount * sizeof(char *);
-    auto cHeaderV = reinterpret_cast<char **>(std::malloc(cHeaderVLen + 1));
+    auto cHeaderV = static_cast<char **>(std::malloc(cHeaderVLen * sizeof(char*) + 1));
     std::memset(cHeaderV, 0, cHeaderVLen + 1);
 
     auto jStrHeaderVLen = headerCount * sizeof(jstring);
-    auto jStrHeaderV = reinterpret_cast<jstring *>(std::malloc(jStrHeaderVLen + 1));
+    auto jStrHeaderV = static_cast<jstring *>(std::malloc(jStrHeaderVLen * sizeof(jstring) + 1));
     std::memset(jStrHeaderV, 0, jStrHeaderVLen + 1);
 
     for (int i = 0; i < headerCount; i++)
@@ -128,11 +128,11 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
     auto formFieldCount = env->GetArrayLength(formFieldNameV);
 
     auto cFormFieldNameVLen = formFieldCount * sizeof(char *);
-    auto cFormFieldNameV = reinterpret_cast<char **>(std::malloc(cFormFieldNameVLen + 1));
+    auto cFormFieldNameV = static_cast<char **>(std::malloc(cFormFieldNameVLen * sizeof(char*) + 1));
     std::memset(cFormFieldNameV, 0, cFormFieldNameVLen + 1);
 
     auto jStrFormFieldNameVLen = formFieldCount * sizeof(jstring);
-    auto jStrFormFieldNameV = reinterpret_cast<jstring *>(std::malloc(jStrFormFieldNameVLen + 1));
+    auto jStrFormFieldNameV = static_cast<jstring *>(std::malloc(jStrFormFieldNameVLen * sizeof(jstring) + 1));
     std::memset(jStrFormFieldNameV, 0, jStrFormFieldNameVLen + 1);
 
     for (int i = 0; i < formFieldCount; i++)
@@ -142,11 +142,11 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
     }
 
     auto cFormFieldMimeVLen = formFieldCount * sizeof(char *);
-    auto cFormFieldMimeV = reinterpret_cast<char **>(std::malloc(cFormFieldMimeVLen + 1));
+    auto cFormFieldMimeV = static_cast<char **>(std::malloc(cFormFieldMimeVLen * sizeof(char*) + 1));
     std::memset(cFormFieldMimeV, 0, cFormFieldMimeVLen + 1);
 
     auto jStrFormFieldMimeVLen = formFieldCount * sizeof(jstring);
-    auto jStrFormFieldMimeV = reinterpret_cast<jstring *>(std::malloc(jStrFormFieldMimeVLen + 1));
+    auto jStrFormFieldMimeV = static_cast<jstring *>(std::malloc(jStrFormFieldMimeVLen * sizeof(jstring) + 1));
     std::memset(jStrFormFieldMimeV, 0, jStrFormFieldMimeVLen + 1);
 
     for (int i = 0; i < formFieldCount; i++)
@@ -156,11 +156,11 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
     }
 
     auto cFormFieldDataVLen = formFieldCount * sizeof(char *);
-    auto cFormFieldDataV = reinterpret_cast<char **>(std::malloc(cFormFieldDataVLen + 1));
+    auto cFormFieldDataV = static_cast<char **>(std::malloc(cFormFieldDataVLen * sizeof(char*) + 1));
     std::memset(cFormFieldDataV, 0, cFormFieldDataVLen + 1);
 
     auto jStrFormFieldDataVLen = formFieldCount * sizeof(jstring);
-    auto jStrFormFieldDataV = reinterpret_cast<jstring *>(std::malloc(jStrFormFieldDataVLen + 1));
+    auto jStrFormFieldDataV = static_cast<jstring *>(std::malloc(jStrFormFieldDataVLen * sizeof(jstring) + 1));
     std::memset(jStrFormFieldDataV, 0, jStrFormFieldDataVLen + 1);
 
     for (int i = 0; i < formFieldCount; i++)
@@ -178,7 +178,7 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
                                                const_cast<const char **>(cFormFieldMimeV),
                                                const_cast<const char **>(cFormFieldDataV),
                                                formFieldCount,
-                                               reinterpret_cast<void *>(cFILE), fileLength,
+                                               static_cast<void *>(cFILE), fileLength,
                                                static_cast<const size_t>(timeout));
     auto jStr = env->NewStringUTF(cRsp ?: "");
     std::free(static_cast<void *>(std::decay_t<char *>(cRsp)));

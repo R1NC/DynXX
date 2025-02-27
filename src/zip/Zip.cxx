@@ -48,9 +48,9 @@ NGenXX::Z::ZBase<T>::ZBase(const size_t bufferSize, const int format) : bufferSi
         .zfree = Z_NULL,
         .opaque = Z_NULL
     };
-    this->inBuffer = reinterpret_cast<byte *>(std::malloc(sizeof(byte) * bufferSize + 1));
+    this->inBuffer = static_cast<byte *>(std::malloc(sizeof(byte) * bufferSize + 1));
     std::memset(this->inBuffer, 0, bufferSize + 1);
-    this->outBuffer = reinterpret_cast<byte *>(std::malloc(sizeof(byte) * bufferSize + 1));
+    this->outBuffer = static_cast<byte *>(std::malloc(sizeof(byte) * bufferSize + 1));
     std::memset(this->outBuffer, 0, bufferSize + 1);
 }
 

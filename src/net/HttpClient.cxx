@@ -28,14 +28,14 @@ size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t
 
 size_t _NGenXX_Net_HttpClient_UploadReadCallback(char *ptr, size_t size, size_t nmemb, void *stream)
 {
-    auto ret = std::fread(ptr, size, nmemb, reinterpret_cast<std::FILE *>(stream));
+    auto ret = std::fread(ptr, size, nmemb, static_cast<std::FILE *>(stream));
     ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient read {} bytes from file", ret);
     return ret;
 }
 
 size_t _NGenXX_Net_HttpClient_WriteCallback(char *contents, size_t size, size_t nmemb, void *userp)
 {
-    (reinterpret_cast<std::string *>(userp))->append(contents, size * nmemb);
+    (static_cast<std::string *>(userp))->append(contents, size * nmemb);
     return size * nmemb;
 }
 

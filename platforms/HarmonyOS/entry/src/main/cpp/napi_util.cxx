@@ -9,7 +9,7 @@ Args::Args(napi_env env, napi_callback_info info): env(env), info(info) {
     auto status = napi_get_cb_info(env, info, &this->c, nullptr, nullptr, nullptr);
     
     auto argvLen = sizeof(napi_value) * this->c;
-    this->v = reinterpret_cast<napi_value *>(std::malloc(argvLen + 1));
+    this->v = static_cast<napi_value *>(std::malloc(argvLen * sizeof(char) + 1));
     std::memset(this->v, 0, argvLen + 1);
     
     status = napi_get_cb_info(env, info, &this->c, this->v, nullptr, nullptr);
@@ -33,7 +33,7 @@ const char *napiValue2chars(napi_env env, napi_value nv)
     auto status = napi_get_value_string_utf8(env, nv, NULL, 0, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
     auto cStrLen = len * sizeof(char);
-    auto cStr = reinterpret_cast<char *>(std::malloc(cStrLen + 1));
+    auto cStr = static_cast<char *>(std::malloc(cStrLen * sizeof(char) + 1));
     std::memset(cStr, 0, cStrLen + 1);
     status = napi_get_value_string_utf8(env, nv, cStr, len + 1, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
@@ -78,7 +78,7 @@ const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len)
         return NULL;
     }
     auto byteArrayLen = len * sizeof(byte);
-    auto byteArray = reinterpret_cast<byte *>(std::malloc(byteArrayLen + 1));
+    auto byteArray = static_cast<byte *>(std::malloc(byteArrayLen * sizeof(byte) + 1));
     std::memset(byteArray, 0, byteArrayLen + 1);
     int status;
     for (int i = 0; i < len; i++)
@@ -97,7 +97,7 @@ const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len)
         return NULL;
     }
     auto charsArrayLen = len * sizeof(char *);
-    auto charsArray = reinterpret_cast<const char **>(std::malloc(charsArrayLen + 1));
+    auto charsArray = static_cast<const char **>(std::malloc(charsArrayLen * sizeof(char*) + 1));
     std::memset(charsArray, 0, charsArrayLen + 1);
     int status;
     for (int i = 0; i < len; i++)
