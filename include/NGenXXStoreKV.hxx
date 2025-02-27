@@ -3,27 +3,28 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 void *ngenxxStoreKvOpen(const std::string &_id);
 
-std::string ngenxxStoreKvReadString(void *const conn, const std::string &k);
+std::string ngenxxStoreKvReadString(void *const conn, const std::string_view &k);
 
-bool ngenxxStoreKvWriteString(void *const conn, const std::string &k, const std::string &v);
+bool ngenxxStoreKvWriteString(void *const conn, const std::string_view &k, const std::string &v);
 
-int64_t ngenxxStoreKvReadInteger(void *const conn, const std::string &k);
+int64_t ngenxxStoreKvReadInteger(void *const conn, const std::string_view &k);
 
-bool ngenxxStoreKvWriteInteger(void *const conn, const std::string &k, int64_t v);
+bool ngenxxStoreKvWriteInteger(void *const conn, const std::string_view &k, int64_t v);
 
-double ngenxxStoreKvReadFloat(void *const conn, const std::string &k);
+double ngenxxStoreKvReadFloat(void *const conn, const std::string_view &k);
 
-bool ngenxxStoreKvWriteFloat(void *const conn, const std::string &k, double v);
+bool ngenxxStoreKvWriteFloat(void *const conn, const std::string_view &k, double v);
 
 const std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn);
 
-bool ngenxxStoreKvContains(void *const conn, const std::string &k);
+bool ngenxxStoreKvContains(void *const conn, const std::string_view &k);
 
-bool ngenxxStoreKvRemove(void *const conn, const std::string &k);
+bool ngenxxStoreKvRemove(void *const conn, const std::string_view &k);
 
 void ngenxxStoreKvClear(void *const conn);
 

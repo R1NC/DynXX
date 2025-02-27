@@ -40,14 +40,14 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     return bytes;
 }
 
-std::string NGenXX::Coding::Case::upper(const std::string &str)
+std::string NGenXX::Coding::Case::upper(const std::string_view &str)
 {
     std::string s(str);
     std::transform(s.begin(), s.end(), s.begin(), ::toupper);
     return s;
 }
 
-std::string NGenXX::Coding::Case::lower(const std::string &str)
+std::string NGenXX::Coding::Case::lower(const std::string_view &str)
 {
     std::string s(str);
     std::transform(s.begin(), s.end(), s.begin(), ::tolower);
@@ -59,7 +59,7 @@ std::string NGenXX::Coding::bytes2str(const Bytes &bytes)
     return std::string(bytes.begin(), bytes.end());
 }
 
-Bytes NGenXX::Coding::str2bytes(const std::string &str)
+Bytes NGenXX::Coding::str2bytes(const std::string_view &str)
 {
     return Bytes(str.begin(), str.end());
 }

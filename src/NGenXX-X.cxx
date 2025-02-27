@@ -154,17 +154,17 @@ std::string ngenxxCodingBytes2str(const Bytes &bytes)
     return NGenXX::Coding::bytes2str(bytes);
 }
 
-Bytes ngenxxCodingStr2bytes(const std::string &str)
+Bytes ngenxxCodingStr2bytes(const std::string_view &str)
 {
     return NGenXX::Coding::str2bytes(str);
 }
 
-std::string ngenxxCodingCaseUpper(const std::string &str)
+std::string ngenxxCodingCaseUpper(const std::string_view &str)
 {
     return NGenXX::Coding::Case::upper(str);
 }
 
-std::string ngenxxCodingCaseLower(const std::string &str)
+std::string ngenxxCodingCaseLower(const std::string_view &str)
 {
     return NGenXX::Coding::Case::lower(str);
 }
@@ -459,7 +459,7 @@ void *ngenxxStoreKvOpen(const std::string &_id)
     return NULL;
 }
 
-std::string ngenxxStoreKvReadString(void *const conn, const std::string &k)
+std::string ngenxxStoreKvReadString(void *const conn, const std::string_view &k)
 {
     std::string s;
     if (conn == NULL || k.length() == 0)
@@ -470,7 +470,7 @@ std::string ngenxxStoreKvReadString(void *const conn, const std::string &k)
     return xconn->readString(k);
 }
 
-bool ngenxxStoreKvWriteString(void *const conn, const std::string &k, const std::string &v)
+bool ngenxxStoreKvWriteString(void *const conn, const std::string_view &k, const std::string &v)
 {
     if (conn == NULL || k.length() == 0)
     {
@@ -480,7 +480,7 @@ bool ngenxxStoreKvWriteString(void *const conn, const std::string &k, const std:
     return xconn->write(k, v);
 }
 
-int64_t ngenxxStoreKvReadInteger(void *const conn, const std::string &k)
+int64_t ngenxxStoreKvReadInteger(void *const conn, const std::string_view &k)
 {
     if (conn == NULL || k.length() == 0)
     {
@@ -490,7 +490,7 @@ int64_t ngenxxStoreKvReadInteger(void *const conn, const std::string &k)
     return xconn->readInteger(k);
 }
 
-bool ngenxxStoreKvWriteInteger(void *const conn, const std::string &k, int64_t v)
+bool ngenxxStoreKvWriteInteger(void *const conn, const std::string_view &k, int64_t v)
 {
     if (conn == NULL || k.length() == 0)
     {
@@ -500,7 +500,7 @@ bool ngenxxStoreKvWriteInteger(void *const conn, const std::string &k, int64_t v
     return xconn->write(k, v);
 }
 
-double ngenxxStoreKvReadFloat(void *const conn, const std::string &k)
+double ngenxxStoreKvReadFloat(void *const conn, const std::string_view &k)
 {
     if (conn == NULL || k.length() == 0)
     {
@@ -510,7 +510,7 @@ double ngenxxStoreKvReadFloat(void *const conn, const std::string &k)
     return xconn->readFloat(k);
 }
 
-bool ngenxxStoreKvWriteFloat(void *const conn, const std::string &k, double v)
+bool ngenxxStoreKvWriteFloat(void *const conn, const std::string_view &k, double v)
 {
     if (conn == NULL || k.length() == 0)
     {
@@ -531,7 +531,7 @@ const std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn)
     return xconn->allKeys();
 }
 
-bool ngenxxStoreKvContains(void *const conn, const std::string &k)
+bool ngenxxStoreKvContains(void *const conn, const std::string_view &k)
 {
     if (conn == NULL || k.length() == 0)
     {
@@ -541,7 +541,7 @@ bool ngenxxStoreKvContains(void *const conn, const std::string &k)
     return xconn->contains(k);
 }
 
-bool ngenxxStoreKvRemove(void *const conn, const std::string &k)
+bool ngenxxStoreKvRemove(void *const conn, const std::string_view &k)
 {
     if (conn == NULL || k.length() == 0)
     {

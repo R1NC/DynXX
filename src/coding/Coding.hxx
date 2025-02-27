@@ -3,6 +3,8 @@
 
 #if defined(__cplusplus)
 
+#include <string_view>
+
 #include <NGenXXTypes.hxx>
 
 namespace NGenXX
@@ -19,14 +21,14 @@ namespace NGenXX
 
         namespace Case
         {
-            std::string upper(const std::string &str);
+            std::string upper(const std::string_view &str);
 
-            std::string lower(const std::string &str);
+            std::string lower(const std::string_view &str);
         }
 
         std::string bytes2str(const Bytes &bytes);
 
-        Bytes str2bytes(const std::string &str);
+        Bytes str2bytes(const std::string_view &str);
     }
 }
 

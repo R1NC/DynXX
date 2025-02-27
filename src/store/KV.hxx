@@ -3,6 +3,7 @@
 
 #if defined(__cplusplus)
 
+#include <string_view>
 #include <unordered_map>
 #include <memory>
 #include <mutex>
@@ -36,19 +37,19 @@ namespace NGenXX
                 Connection(Connection &&) = delete;
                 Connection &operator=(Connection &&) = delete;
 
-                std::string readString(const std::string &k) const;
+                std::string readString(const std::string_view &k) const;
 
-                int64_t readInteger(const std::string &k) const;
+                int64_t readInteger(const std::string_view &k) const;
 
-                double readFloat(const std::string &k) const;
+                double readFloat(const std::string_view &k) const;
 
-                [[nodiscard]] bool write(const std::string &k, const Any &v) const;
+                [[nodiscard]] bool write(const std::string_view &k, const Any &v) const;
 
                 std::vector<std::string> allKeys() const;
 
-                bool contains(const std::string &k) const;
+                bool contains(const std::string_view &k) const;
 
-                [[nodiscard]] bool remove(const std::string &k) const;
+                [[nodiscard]] bool remove(const std::string_view &k) const;
 
                 void clear() const;
 
