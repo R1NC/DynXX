@@ -34,9 +34,9 @@ static inline T* mallocX(const size_t count)
 {
     if constexpr (std::is_same_v<T, char> || 
                  std::is_same_v<T, wchar_t> || 
+                 std::is_same_v<T, char8_t> ||
                  std::is_same_v<T, char16_t> ||
-                 std::is_same_v<T, char32_t> ||
-                 std::is_same_v<T, char8_t>)
+                 std::is_same_v<T, char32_t>)
     {
         auto len = count * sizeof(T) + 1;
         auto ptr = std::malloc(len);
