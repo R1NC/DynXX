@@ -84,10 +84,10 @@ void ngenxx_posix_testCrypto(void)
 {
     const char *inStr = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM<>()[]{}|,;:'`~!@#$%^&*-=_+/";
     byte *inBytes = (unsigned char *) inStr;
-    size inLen = strlen(inStr);
+    size inLen = std::strlen(inStr);
     const char *keyStr = "MNBVCXZLKJHGFDSA";
     byte *keyBytes = (unsigned char *) keyStr;
-    size keyLen = strlen(keyStr);
+    size keyLen = std::strlen(keyStr);
     
     size aesEncodedLen;
     const byte *aesEncodedBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &aesEncodedLen);

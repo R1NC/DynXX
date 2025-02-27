@@ -1,22 +1,18 @@
 #include "napi_util.hxx"
 
 #include <cstring>
-
 #include <cstdlib>
-#include <cstring>
 
 Args::Args(napi_env env, napi_callback_info info): env(env), info(info) {
     auto status = napi_get_cb_info(env, info, &this->c, nullptr, nullptr, nullptr);
     
-    auto argvLen = sizeof(napi_value) * this->c;
-    this->v = static_cast<napi_value *>(std::malloc(argvLen * sizeof(napi_value) + 1));
-    std::memset(this->v, 0, argvLen + 1);
+    this->v = mallocPtr<napi_value>(this->c);
     
     status = napi_get_cb_info(env, info, &this->c, this->v, nullptr, nullptr);
 }
 
 Args::~Args() {
-    std::free(static_cast<void *>(this->v));
+    freePtr(this->v);
 }
 
 const size_t napiValueArrayLen(napi_env env, napi_value nv)
@@ -32,9 +28,7 @@ const char *napiValue2chars(napi_env env, napi_value nv)
     size_t len;
     auto status = napi_get_value_string_utf8(env, nv, NULL, 0, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
-    auto cStrLen = len * sizeof(char);
-    auto cStr = static_cast<char *>(std::malloc(cStrLen * sizeof(char) + 1));
-    std::memset(cStr, 0, cStrLen + 1);
+    auto cStr = mallocPtr<char>(len);
     status = napi_get_value_string_utf8(env, nv, cStr, len + 1, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
     return cStr;
@@ -77,9 +71,7 @@ const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len)
     if (len <= 0) {
         return NULL;
     }
-    auto byteArrayLen = len * sizeof(byte);
-    auto byteArray = static_cast<byte *>(std::malloc(byteArrayLen * sizeof(byte) + 1));
-    std::memset(byteArray, 0, byteArrayLen + 1);
+    auto byteArray = mallocPtr<byte>(len);
     int status;
     for (int i = 0; i < len; i++)
     {
@@ -96,9 +88,7 @@ const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len)
     if (len <= 0) {
         return NULL;
     }
-    auto charsArrayLen = len * sizeof(char *);
-    auto charsArray = static_cast<const char **>(std::malloc(charsArrayLen * sizeof(char*) + 1));
-    std::memset(charsArray, 0, charsArrayLen + 1);
+    auto charsArray = mallocPtr<const char *>(len);
     int status;
     for (int i = 0; i < len; i++)
     {
@@ -116,7 +106,7 @@ napi_value chars2NapiValue(napi_env env, const char *c)
         c = "";
     }
     napi_value v;
-    auto status = napi_create_string_utf8(env, c, strlen(c), &v);
+    auto status = napi_create_string_utf8(env, c, std::strlen(c), &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_string_utf8() failed");
     return v;
 }

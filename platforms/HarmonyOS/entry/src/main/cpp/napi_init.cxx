@@ -1,14 +1,11 @@
 #include "napi/native_api.h"
 
 #include <cstring>
-
-#include <cstring>
 #include <cstdlib>
 
 #include <napi_util.hxx>
 
 #include "../../../../../../build.HarmonyOS/output/include/NGenXX.h"
-#include "../../../../../../build.HarmonyOS/output/include/NGenXX.hxx"
 
 static napi_value GetVersion(napi_env env, napi_callback_info info)
 {
@@ -75,7 +72,7 @@ static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context,
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_call_function() failed");
 
     freePtr(tSLogWorkData->logContent);
-    std::free(static_cast<void *>(tSLogWorkData));
+    freePtr(tSLogWorkData);
 }
 
 static void OnLogWorkExecute(napi_env env, void *data)
@@ -106,13 +103,12 @@ static void engineLogCallback(int level, const char *content)
         return;
     }
 
-    auto tSLogWorkData = static_cast<TSLogWorkData *>(std::malloc(sizeof(TSLogWorkData);
+    auto tSLogWorkData = mallocPtr<TSLogWorkData>(1);
     tSLogWorkData->tsWork = NULL;
     tSLogWorkData->tsWorkFunc = NULL;
     tSLogWorkData->logLevel = level;
-    auto len = strlen(content);
-    tSLogWorkData->logContent = static_cast<char *>(std::malloc(len * sizeof(char) + 1));
-    std::memset(static_cast<void *>(const_cast<char *>(tSLogWorkData->logContent)), 0, len + 1);
+    auto len = std::strlen(content);
+    tSLogWorkData->logContent = mallocPtr<char>(len);
     std::strncpy(const_cast<char *>(tSLogWorkData->logContent), content, len);
     freePtr(content);
 
@@ -610,7 +606,7 @@ static napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info)
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto res = ptr2addr(ngenxx_json_decoder_read_child(addr2ptr(decoder), addr2ptr(node);
+    auto res = ptr2addr(ngenxx_json_decoder_read_child(addr2ptr(decoder), addr2ptr(node)));
     return long2NapiValue(env, res);
 }
 
@@ -621,7 +617,7 @@ static napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info)
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto res = ptr2addr(ngenxx_json_decoder_read_next(addr2ptr(decoder), addr2ptr(node);
+    auto res = ptr2addr(ngenxx_json_decoder_read_next(addr2ptr(decoder), addr2ptr(node)));
     return long2NapiValue(env, res);
 }
 

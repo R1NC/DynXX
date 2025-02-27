@@ -3,7 +3,7 @@
 
 #include <napi/native_api.h>
 
-#include "../../../../../../build.HarmonyOS/output/include/NGenXXTypes.h"
+#include "../../../../../../build.HarmonyOS/output/include/NGenXXTypes.hxx"
 
 #define PRINT_NAPI_STATUS_ERR(env, status, errMsg)           \
     do                                                       \

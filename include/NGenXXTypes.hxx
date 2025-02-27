@@ -24,6 +24,15 @@ static inline address ptr2addr(const void *ptr)
 }
 
 template <typename T>
+static inline T* mallocPtr(const size_t count)
+{
+    auto len = count * sizeof(T) + 1;
+    auto ptr = static_cast<T *>(std::malloc(len));
+    std::memset(ptr, 0, len);
+    return ptr;
+}
+
+template <typename T>
 static inline void freePtr(T* &ptr)
 {
     if (!ptr) [[unlikely]]

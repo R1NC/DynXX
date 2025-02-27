@@ -14,6 +14,7 @@
 #endif
 
 #include <NGenXXLog.h>
+#include <NGenXXTypes.hxx>
 
 static std::function<void(const int level, const char *content)> _NGenXX_Log_callback = nullptr;
 static std::mutex *_ngenxx_log_mutex = nullptr;
@@ -49,9 +50,8 @@ void NGenXX::Log::print(const int level, const std::string &content)
     auto cContent = content.c_str();
     if (_NGenXX_Log_callback)
     {
-        auto len = strlen(cContent);
-        auto c = static_cast<char *>(std::malloc(len * sizeof(char) + 1));
-        std::memset(c, 0, len + 1);
+        auto len = std::strlen(cContent);
+        auto c = mallocPtr<char>(len);
         std::strncpy(c, content.c_str(), len);
         _NGenXX_Log_callback(level, c);
     }
