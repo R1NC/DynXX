@@ -39,7 +39,7 @@ static inline const byte *copyBytes(const Bytes &t)
     {
         return NULL;
     }
-    auto ncs = reinterpret_cast<byte *>(std::malloc(len + 1));
+    auto ncs = static_cast<byte *>(std::malloc(len * sizeof(byte) + 1));
     std::memset(static_cast<void *>(ncs), 0, len + 1);
     std::memcpy(static_cast<void *>(ncs), cs, len);
     return ncs;

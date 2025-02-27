@@ -9,7 +9,7 @@ Args::Args(napi_env env, napi_callback_info info): env(env), info(info) {
     auto status = napi_get_cb_info(env, info, &this->c, nullptr, nullptr, nullptr);
     
     auto argvLen = sizeof(napi_value) * this->c;
-    this->v = static_cast<napi_value *>(std::malloc(argvLen * sizeof(char) + 1));
+    this->v = static_cast<napi_value *>(std::malloc(argvLen * sizeof(napi_value) + 1));
     std::memset(this->v, 0, argvLen + 1);
     
     status = napi_get_cb_info(env, info, &this->c, this->v, nullptr, nullptr);

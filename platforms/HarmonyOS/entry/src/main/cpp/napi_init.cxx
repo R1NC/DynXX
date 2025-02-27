@@ -111,7 +111,7 @@ static void engineLogCallback(int level, const char *content)
     tSLogWorkData->tsWorkFunc = NULL;
     tSLogWorkData->logLevel = level;
     auto len = strlen(content);
-    tSLogWorkData->logContent = static_cast<char *>(std::malloc(len + 1));
+    tSLogWorkData->logContent = static_cast<char *>(std::malloc(len * sizeof(char) + 1));
     std::memset(static_cast<void *>(const_cast<char *>(tSLogWorkData->logContent)), 0, len + 1);
     std::strncpy(const_cast<char *>(tSLogWorkData->logContent), content, len);
     freePtr(content);
