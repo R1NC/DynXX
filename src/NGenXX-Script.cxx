@@ -243,7 +243,7 @@ std::string ngenxx_store_sqlite_openS(const char *json)
     {
         return s;
     }
-    return std::to_string(reinterpret_cast<address>(db));
+    return std::to_string(ptr2addr(db));
 }
 
 bool ngenxx_store_sqlite_executeS(const char *json)
@@ -260,7 +260,7 @@ bool ngenxx_store_sqlite_executeS(const char *json)
         return false;
     }
 
-    return ngenxxStoreSqliteExecute(reinterpret_cast<void *>(conn), sql);
+    return ngenxxStoreSqliteExecute(addr2ptr(conn), sql);
 }
 
 std::string ngenxx_store_sqlite_query_doS(const char *json)
@@ -278,12 +278,12 @@ std::string ngenxx_store_sqlite_query_doS(const char *json)
         return s;
     }
 
-    auto res = ngenxxStoreSqliteQueryDo(reinterpret_cast<void *>(conn), sql);
+    auto res = ngenxxStoreSqliteQueryDo(addr2ptr(conn), sql);
     if (res == nullptr)
     {
         return s;
     }
-    return std::to_string(reinterpret_cast<address>(res));
+    return std::to_string(ptr2addr(res));
 }
 
 bool ngenxx_store_sqlite_query_read_rowS(const char *json)
@@ -299,7 +299,7 @@ bool ngenxx_store_sqlite_query_read_rowS(const char *json)
         return false;
     }
 
-    return ngenxxStoreSqliteQueryReadRow(reinterpret_cast<void *>(query_result));
+    return ngenxxStoreSqliteQueryReadRow(addr2ptr(query_result));
 }
 
 std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
@@ -317,7 +317,7 @@ std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
         return s;
     }
 
-    return ngenxxStoreSqliteQueryReadColumnText(reinterpret_cast<void *>(query_result), column);
+    return ngenxxStoreSqliteQueryReadColumnText(addr2ptr(query_result), column);
 }
 
 int64_t ngenxx_store_sqlite_query_read_column_integerS(const char *json)
@@ -334,7 +334,7 @@ int64_t ngenxx_store_sqlite_query_read_column_integerS(const char *json)
         return 0;
     }
 
-    return ngenxxStoreSqliteQueryReadColumnInteger(reinterpret_cast<void *>(query_result), column);
+    return ngenxxStoreSqliteQueryReadColumnInteger(addr2ptr(query_result), column);
 }
 
 double ngenxx_store_sqlite_query_read_column_floatS(const char *json)
@@ -351,7 +351,7 @@ double ngenxx_store_sqlite_query_read_column_floatS(const char *json)
         return 0;
     }
 
-    return ngenxxStoreSqliteQueryReadColumnFloat(reinterpret_cast<void *>(query_result), column);
+    return ngenxxStoreSqliteQueryReadColumnFloat(addr2ptr(query_result), column);
 }
 
 void ngenxx_store_sqlite_query_dropS(const char *json)
@@ -367,7 +367,7 @@ void ngenxx_store_sqlite_query_dropS(const char *json)
         return;
     }
 
-    ngenxxStoreSqliteQueryDrop(reinterpret_cast<void *>(query_result));
+    ngenxxStoreSqliteQueryDrop(addr2ptr(query_result));
 }
 
 void ngenxx_store_sqlite_closeS(const char *json)
@@ -383,7 +383,7 @@ void ngenxx_store_sqlite_closeS(const char *json)
         return;
     }
 
-    ngenxxStoreSqliteClose(reinterpret_cast<void *>(conn));
+    ngenxxStoreSqliteClose(addr2ptr(conn));
 }
 
 #pragma mark Store.KV
@@ -407,7 +407,7 @@ std::string ngenxx_store_kv_openS(const char *json)
     {
         return s;
     }
-    return std::to_string(reinterpret_cast<address>(res));
+    return std::to_string(ptr2addr(res));
 }
 
 std::string ngenxx_store_kv_read_stringS(const char *json)
@@ -425,7 +425,7 @@ std::string ngenxx_store_kv_read_stringS(const char *json)
         return s;
     }
 
-    return ngenxxStoreKvReadString(reinterpret_cast<void *>(conn), k);
+    return ngenxxStoreKvReadString(addr2ptr(conn), k);
 }
 
 bool ngenxx_store_kv_write_stringS(const char *json)
@@ -443,7 +443,7 @@ bool ngenxx_store_kv_write_stringS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvWriteString(reinterpret_cast<void *>(conn), k, v);
+    return ngenxxStoreKvWriteString(addr2ptr(conn), k, v);
 }
 
 int64_t ngenxx_store_kv_read_integerS(const char *json)
@@ -460,7 +460,7 @@ int64_t ngenxx_store_kv_read_integerS(const char *json)
         return 0;
     }
 
-    return ngenxxStoreKvReadInteger(reinterpret_cast<void *>(conn), k);
+    return ngenxxStoreKvReadInteger(addr2ptr(conn), k);
 }
 
 bool ngenxx_store_kv_write_integerS(const char *json)
@@ -478,7 +478,7 @@ bool ngenxx_store_kv_write_integerS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvWriteInteger(reinterpret_cast<void *>(conn), k, v);
+    return ngenxxStoreKvWriteInteger(addr2ptr(conn), k, v);
 }
 
 double ngenxx_store_kv_read_floatS(const char *json)
@@ -495,7 +495,7 @@ double ngenxx_store_kv_read_floatS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvReadFloat(reinterpret_cast<void *>(conn), k);
+    return ngenxxStoreKvReadFloat(addr2ptr(conn), k);
 }
 
 bool ngenxx_store_kv_write_floatS(const char *json)
@@ -513,7 +513,7 @@ bool ngenxx_store_kv_write_floatS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvWriteFloat(reinterpret_cast<void *>(conn), k, v);
+    return ngenxxStoreKvWriteFloat(addr2ptr(conn), k, v);
 }
 
 std::string ngenxx_store_kv_all_keysS(const char *json)
@@ -530,7 +530,7 @@ std::string ngenxx_store_kv_all_keysS(const char *json)
         return s;
     }
 
-    auto res = ngenxxStoreKvAllKeys(reinterpret_cast<void *>(conn));
+    auto res = ngenxxStoreKvAllKeys(addr2ptr(conn));
     return strArray2json(res);
 }
 
@@ -548,7 +548,7 @@ bool ngenxx_store_kv_containsS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvContains(reinterpret_cast<void *>(conn), k);
+    return ngenxxStoreKvContains(addr2ptr(conn), k);
 }
 
 bool ngenxx_store_kv_removeS(const char *json)
@@ -565,7 +565,7 @@ bool ngenxx_store_kv_removeS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvRemove(reinterpret_cast<void *>(conn), k);
+    return ngenxxStoreKvRemove(addr2ptr(conn), k);
 }
 
 void ngenxx_store_kv_clearS(const char *json)
@@ -581,7 +581,7 @@ void ngenxx_store_kv_clearS(const char *json)
         return;
     }
 
-    ngenxxStoreKvClear(reinterpret_cast<void *>(conn));
+    ngenxxStoreKvClear(addr2ptr(conn));
 }
 
 void ngenxx_store_kv_closeS(const char *json)
@@ -597,7 +597,7 @@ void ngenxx_store_kv_closeS(const char *json)
         return;
     }
 
-    ngenxxStoreKvClose(reinterpret_cast<void *>(conn));
+    ngenxxStoreKvClose(addr2ptr(conn));
 }
 
 #pragma mark Coding
@@ -950,7 +950,7 @@ std::string ngenxx_z_zip_initS(const char *json)
     {
         return s;
     }
-    return std::to_string(reinterpret_cast<address>(zip));
+    return std::to_string(ptr2addr(zip));
 }
 
 size_t ngenxx_z_zip_inputS(const char *json)
@@ -974,7 +974,7 @@ size_t ngenxx_z_zip_inputS(const char *json)
 
     auto inFinish = static_cast<bool>(parseNum(decoder, "inFinish"));
 
-    return ngenxxZZipInput(reinterpret_cast<void *>(zip), in, inFinish);
+    return ngenxxZZipInput(addr2ptr(zip), in, inFinish);
 }
 
 std::string ngenxx_z_zip_process_doS(const char *json)
@@ -991,7 +991,7 @@ std::string ngenxx_z_zip_process_doS(const char *json)
         return s;
     }
 
-    auto outBytes = ngenxxZZipProcessDo(reinterpret_cast<void *>(zip));
+    auto outBytes = ngenxxZZipProcessDo(addr2ptr(zip));
     return bytes2json(outBytes);
 }
 
@@ -1008,7 +1008,7 @@ bool ngenxx_z_zip_process_finishedS(const char *json)
         return false;
     }
 
-    return ngenxxZZipProcessFinished(reinterpret_cast<void *>(zip));
+    return ngenxxZZipProcessFinished(addr2ptr(zip));
 }
 
 void ngenxx_z_zip_releaseS(const char *json)
@@ -1024,7 +1024,7 @@ void ngenxx_z_zip_releaseS(const char *json)
         return;
     }
 
-    ngenxxZZipRelease(reinterpret_cast<void *>(zip));
+    ngenxxZZipRelease(addr2ptr(zip));
 }
 
 std::string ngenxx_z_unzip_initS(const char *json)
@@ -1043,7 +1043,7 @@ std::string ngenxx_z_unzip_initS(const char *json)
     {
         return s;
     }
-    return std::to_string(reinterpret_cast<address>(unzip));
+    return std::to_string(ptr2addr(unzip));
 }
 
 size_t ngenxx_z_unzip_inputS(const char *json)
@@ -1067,7 +1067,7 @@ size_t ngenxx_z_unzip_inputS(const char *json)
 
     auto inFinish = static_cast<bool>(parseNum(decoder, "inFinish"));
 
-    return ngenxxZUnzipInput(reinterpret_cast<void *>(unzip), in, inFinish);
+    return ngenxxZUnzipInput(addr2ptr(unzip), in, inFinish);
 }
 
 std::string ngenxx_z_unzip_process_doS(const char *json)
@@ -1084,7 +1084,7 @@ std::string ngenxx_z_unzip_process_doS(const char *json)
         return s;
     }
 
-    auto outBytes = ngenxxZUnzipProcessDo(reinterpret_cast<void *>(unzip));
+    auto outBytes = ngenxxZUnzipProcessDo(addr2ptr(unzip));
     return bytes2json(outBytes);
 }
 
@@ -1101,7 +1101,7 @@ bool ngenxx_z_unzip_process_finishedS(const char *json)
         return false;
     }
 
-    return ngenxxZUnzipProcessFinished(reinterpret_cast<void *>(unzip));
+    return ngenxxZUnzipProcessFinished(addr2ptr(unzip));
 }
 
 void ngenxx_z_unzip_releaseS(const char *json)
@@ -1117,7 +1117,7 @@ void ngenxx_z_unzip_releaseS(const char *json)
         return;
     }
 
-    ngenxxZUnzipRelease(reinterpret_cast<void *>(unzip));
+    ngenxxZUnzipRelease(addr2ptr(unzip));
 }
 
 std::string ngenxx_z_bytes_zipS(const char *json)

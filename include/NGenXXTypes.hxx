@@ -5,11 +5,34 @@
 
 #ifdef __cplusplus
 
+#include <cstdlib>
+
 #include <string>
 #include <vector>
 #include <variant>
 #include <unordered_map>
 #include <limits>
+
+static inline void *addr2ptr(const address addr)
+{
+    return reinterpret_cast<void *>(addr);
+}
+
+static inline address ptr2addr(const void *ptr)
+{
+    return reinterpret_cast<address>(ptr);
+}
+
+template <typename T>
+static inline void freePtr(T* &ptr)
+{
+    if (!ptr) [[unlikely]]
+    {
+        return;
+    }
+    std::free(const_cast<void *>(static_cast<const void *>(ptr)));
+    ptr = nullptr;
+}
 
 using Any = std::variant<int64_t, double, std::string>;
 #define AnyEmpty {}

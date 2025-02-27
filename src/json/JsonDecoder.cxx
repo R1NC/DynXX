@@ -150,7 +150,7 @@ const cJSON *NGenXX::Json::Decoder::reinterpretNode(const void *const node) cons
     {
         return this->cjson;
     }
-    return static_cast<cJSON *>(std::decay_t<void *>(node));
+    return static_cast<const cJSON *>(node);
 }
 
 bool NGenXX::Json::Decoder::isArray(const void *const node) const

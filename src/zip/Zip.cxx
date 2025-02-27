@@ -206,7 +206,7 @@ bool _ngenxx_z_processCxxStream(const size_t bufferSize, std::istream *inStream,
         }, 
         [&outStream](const Bytes &bytes)
         { 
-            outStream->write(reinterpret_cast<char *>(std::decay_t<byte *>(bytes.data())), bytes.size());
+            outStream->write(const_cast<char *>(reinterpret_cast<const char *>(bytes.data())), bytes.size());
         }, 
         [&outStream]
         { 
