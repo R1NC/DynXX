@@ -198,17 +198,17 @@ template <typename T>
 bool _ngenxx_z_processCxxStream(const size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase<T> &zb)
 {
     return _ngenxx_z_process(bufferSize, 
-        [bufferSize, &inStream]() -> Bytes 
+        [bufferSize, &inStream] -> Bytes 
         {
             Bytes in;
             inStream->readsome(reinterpret_cast<char *>(in.data()), bufferSize);
             return in; 
         }, 
-        [&outStream](const Bytes &bytes) -> void
+        [&outStream](const Bytes &bytes)
         { 
             outStream->write(reinterpret_cast<char *>(std::decay_t<byte *>(bytes.data())), bytes.size());
         }, 
-        [&outStream]() -> void
+        [&outStream]
         { 
             outStream->flush(); 
         }, 
@@ -234,17 +234,17 @@ template <typename T>
 bool _ngenxx_z_processCFILE(const size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase<T> &zb)
 {
     return _ngenxx_z_process(bufferSize, 
-        [bufferSize, &inFile]() -> Bytes
+        [bufferSize, &inFile] -> Bytes
         {
             Bytes in;
             std::fread(static_cast<void *>(in.data()), sizeof(byte), bufferSize, inFile);
             return in;
         }, 
-        [&outFile](const Bytes &bytes) -> void
+        [&outFile](const Bytes &bytes)
         {
             std::fwrite(bytes.data(), sizeof(byte), bytes.size(), outFile);
         }, 
-        [&outFile]() -> void
+        [&outFile]
         { 
             std::fflush(outFile);
         }, 
@@ -272,18 +272,18 @@ Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z
     std::remove_const<decltype(bufferSize)>::type pos(0);
     Bytes outBytes;
     auto b = _ngenxx_z_process(bufferSize, 
-        [bufferSize, &in, &pos]() -> Bytes
+        [bufferSize, &in, &pos] -> Bytes
         {
             auto len = std::min(bufferSize, in.size() - pos);
             Bytes bytes(in.begin() + pos, in.begin() + pos + len);
             pos += len;
             return bytes;
         }, 
-        [&outBytes](const Bytes &bytes) -> void
+        [&outBytes](const Bytes &bytes)
         {
             outBytes.insert(outBytes.end(), bytes.begin(), bytes.end());
         }, 
-        []() -> void {}, 
+        [] {}, 
         zb
     );
     if (!b)

@@ -226,11 +226,11 @@ NGenXX::JsBridge::JsBridge()
     auto globalObj = JS_GetGlobalObject(this->context);
     this->jValues.push_back(&globalObj); // Can not free here, will be called in future
 
-    std::thread([&ctx = this->context]()
+    std::thread([&ctx = this->context]
     {
         _ngenxx_js_loop_startP(ctx); 
     }).detach();
-    std::thread([&ctx = this->context]()
+    std::thread([&ctx = this->context]
     {
         _ngenxx_js_loop_startT(ctx); 
     }).detach();
@@ -413,7 +413,7 @@ JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
         return JS_EXCEPTION;
     }
     
-    std::thread([&ctx = this->context, jPro = jPromise, cb = jf]() {
+    std::thread([&ctx = this->context, jPro = jPromise, cb = jf] {
         if (!_ngenxx_js_mutex) [[unlikely]]
         {
             return;
