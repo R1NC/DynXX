@@ -702,7 +702,7 @@ Bytes ngenxxZZipProcessDo(void *const zip)
 {
     if (zip == NULL)
     {
-        return BytesEmpty;
+        return {};
     }
     auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
     return xzip->processDo();
@@ -756,7 +756,7 @@ Bytes ngenxxZUnzipProcessDo(void *const unzip)
 {
     if (unzip == NULL)
     {
-        return BytesEmpty;
+        return {};
     }
     auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
     return xunzip->processDo();
@@ -838,11 +838,11 @@ Bytes ngenxxZBytesZip(const Bytes &inBytes, const NGenXXZipCompressModeX mode, c
 {
     if (bufferSize <= 0)
     {
-        return BytesEmpty;
+        return {};
     }
     if (inBytes.empty())
     {
-        return BytesEmpty;
+        return {};
     }
     return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), inBytes);
 }
@@ -851,11 +851,11 @@ Bytes ngenxxZBytesUnzip(const Bytes &inBytes, const size_t bufferSize, const NGe
 {
     if (bufferSize <= 0)
     {
-        return BytesEmpty;
+        return {};
     }
     if (inBytes.empty())
     {
-        return BytesEmpty;
+        return {};
     }
     return NGenXX::Z::unzip(bufferSize, static_cast<int>(format), inBytes);
 }

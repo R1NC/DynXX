@@ -71,7 +71,7 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_time
 {
     if (uv_loop == nullptr) [[likely]]
     {
-        uv_loop = mallocPtr<uv_loop_t>(1);
+        uv_loop = mallocX<uv_loop_t>(1);
         uv_loop_init(uv_loop);
     }
     else [[unlikely]]
@@ -84,7 +84,7 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_time
 
     if (uv_timer == nullptr) [[likely]]
     {
-        uv_timer = mallocPtr<uv_timer_t>(1);
+        uv_timer = mallocX<uv_timer_t>(1);
         uv_timer_init(uv_loop, uv_timer);
         uv_timer->data = ctx;
         uv_timer_start(uv_timer, cb, NGenXXJsSleepMilliSecs, NGenXXJsSleepMilliSecs);
@@ -106,11 +106,11 @@ static void _ngenxx_js_uv_loop_stop(uv_loop_t *uv_loop, uv_timer_t *uv_timer)
     }
 
     uv_timer_stop(uv_timer);
-    freePtr(uv_timer);
+    freeX(uv_timer);
 
     uv_stop(uv_loop);
     uv_loop_close(uv_loop);
-    freePtr(uv_loop);
+    freeX(uv_loop);
 }
 
 static void _ngenxx_js_loop_startP(JSContext *ctx)

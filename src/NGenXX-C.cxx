@@ -316,7 +316,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, const i
     auto t = ngenxxNetHttpRequest(url ?: "",
                                   static_cast<NGenXXHttpMethodX>(method),
                                   params ?: "",
-                                  BytesEmpty,
+                                  {},
                                   vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
                                   static_cast<std::FILE *>(cFILE), file_size, timeout);
     return copyStr(t.toJson());

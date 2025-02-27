@@ -35,7 +35,7 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     // keyLen = AES_BLOCK_SIZE * 8;
     auto outLen = inLen;
@@ -55,7 +55,7 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
     if (ret != 0)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_encrypt_key error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
     
     decltype(inLen) offset(0);
@@ -74,7 +74,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     // keyLen = AES_BLOCK_SIZE * 8;
     auto outLen = inLen;
@@ -94,7 +94,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     if (ret != 0)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     decltype(inLen) offset(0);
@@ -133,7 +133,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
@@ -153,7 +153,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     if (ctx == NULL) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
-        return BytesEmpty;
+        return {};
     }
 
     auto ret = EVP_EncryptInit_ex(ctx, cipher, NULL, NULL, NULL);
@@ -161,7 +161,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), NULL);
@@ -169,7 +169,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_EncryptInit_ex(ctx, NULL, NULL, key, initVector);
@@ -177,7 +177,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     int len;
@@ -189,7 +189,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate aad error:{}", ret);
             EVP_CIPHER_CTX_free(ctx);
-            return BytesEmpty;
+            return {};
         }
     }
 
@@ -198,7 +198,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_EncryptFinal_ex(ctx, out, &len);
@@ -206,7 +206,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptFinal_ex error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag);
@@ -214,7 +214,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
     std::memcpy(out + inLen, tag, tagLen);
 
@@ -227,7 +227,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen_ = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
@@ -248,7 +248,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     if (ctx == NULL) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
-        return BytesEmpty;
+        return {};
     }
 
     auto ret = EVP_DecryptInit_ex(ctx, cipher, NULL, NULL, NULL);
@@ -256,7 +256,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), NULL);
@@ -264,7 +264,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmdDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_DecryptInit_ex(ctx, NULL, NULL, key, initVector);
@@ -272,7 +272,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     int len;
@@ -284,7 +284,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate aad error:{}", ret);
             EVP_CIPHER_CTX_free(ctx);
-            return BytesEmpty;
+            return {};
         }
     }
 
@@ -293,7 +293,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag);
@@ -301,7 +301,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_DecryptFinal_ex(ctx, out, &len);
@@ -309,7 +309,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptFinal_ex error:{}", ret);
         EVP_CIPHER_CTX_free(ctx);
-        return BytesEmpty;
+        return {};
     }
 
     EVP_CIPHER_CTX_free(ctx);
@@ -323,7 +323,7 @@ Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     auto outLen = MD5_BYTES_LEN;
     byte out[outLen];
@@ -335,21 +335,21 @@ Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     if (ret != OpenSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Init error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = MD5_Update(&md5, in, inLen);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Update error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = MD5_Final(out, &md5);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Final error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     return wrapBytes(out, outLen);
@@ -361,7 +361,7 @@ Bytes NGenXX::Crypto::Hash::sha1(const Bytes &inBytes)
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0)  [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     unsigned int outLen = EVP_MAX_MD_SIZE;
     byte out[outLen];
@@ -374,21 +374,21 @@ Bytes NGenXX::Crypto::Hash::sha1(const Bytes &inBytes)
     if (ret != OpenSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestInit_ex error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_DigestUpdate(ctx, in, inLen);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestUpdate error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = EVP_DigestFinal_ex(ctx, out, &outLen);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestFinal_ex error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     EVP_MD_CTX_destroy(ctx);
@@ -402,7 +402,7 @@ Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     auto outLen = SHA256_BYTES_LEN;
     byte out[outLen];
@@ -414,21 +414,21 @@ Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     if (ret != OpenSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Init error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = SHA256_Update(&sha256, in, inLen);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Update error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = SHA256_Final(out, &sha256);
     if (ret != OpenSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Final error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     return wrapBytes(out, outLen);
@@ -440,7 +440,7 @@ Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
 
     BIO *b64, *bmem;
@@ -459,7 +459,7 @@ Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     if (outLen == 0)
     {
         BIO_free_all(b64);
-        return BytesEmpty;
+        return {};
     }
 
     auto out = wrapBytes(reinterpret_cast<byte *>(outBytes), outLen);
@@ -475,7 +475,7 @@ Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
 
     BIO *bio, *b64;
@@ -489,7 +489,7 @@ Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     if (outLen == 0)
     {
         BIO_free_all(bio);
-        return BytesEmpty;
+        return {};
     }
 
     auto out = wrapBytes(outBytes, outLen);
@@ -533,7 +533,7 @@ Bytes NGenXX::Crypto::RSA::encrypt(const Bytes &in, const Bytes &key, const int 
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA encrypt error:{}", ret);
         RSA_free(rsa);
-        return BytesEmpty;
+        return {};
     }
     auto out = wrapBytes(outBytes, outLen);
     RSA_free(rsa);
@@ -550,7 +550,7 @@ Bytes NGenXX::Crypto::RSA::decrypt(const Bytes &in, const Bytes &key, const int 
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA decrypt error:{}", ret);
         RSA_free(rsa);
-        return BytesEmpty;
+        return {};
     }
     auto out = wrapBytes(outBytes, outLen);
     RSA_free(rsa);

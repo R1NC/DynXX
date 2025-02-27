@@ -50,7 +50,7 @@ void ngenxx_lua_uv_timer_cb(uv_timer_t *timer)
 
 uv_timer_t *ngenxx_lua_uv_timer_start(ngenxx_lua_timer_data *timer_data)
 {
-    auto timer = mallocPtr<uv_timer_t>(1);
+    auto timer = mallocX<uv_timer_t>(1);
     timer->data = timer_data;
     
     std::thread([tmr = timer] {
@@ -75,8 +75,8 @@ void ngenxx_lua_uv_timer_stop(uv_timer_t *timer, bool release)
     }
     if (release)
     {
-        freePtr(timer->data);
-        freePtr(timer);
+        freeX(timer->data);
+        freeX(timer);
     }
 }
 
@@ -84,7 +84,7 @@ static int ngenxx_lua_util_timer_add(lua_State *L)
 {
     auto timeout = lua_tointeger(L, 1);
     auto repeat = lua_toboolean(L, 2);
-    auto timer_data = mallocPtr<ngenxx_lua_timer_data>(1);
+    auto timer_data = mallocX<ngenxx_lua_timer_data>(1);
     timer_data->lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX);
     timer_data->lState = L;
     timer_data->timeout = timeout;

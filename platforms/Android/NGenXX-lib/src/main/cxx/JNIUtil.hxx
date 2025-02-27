@@ -24,7 +24,7 @@ jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, const size_t outLen,
         jba = env->NewByteArray(static_cast<jsize>(outLen));
         env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen), const_cast<jbyte *>(reinterpret_cast<const jbyte *>(bytes)));
         if (needFree) {
-            freePtr(bytes);
+            freeX(bytes);
         }
     }
     else

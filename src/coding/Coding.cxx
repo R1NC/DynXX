@@ -42,7 +42,7 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     auto sLen = str.length();
     if (sLen < 2) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     Bytes bytes;
     bytes.reserve(sLen / 2);

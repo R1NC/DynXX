@@ -6,13 +6,13 @@
 Args::Args(napi_env env, napi_callback_info info): env(env), info(info) {
     auto status = napi_get_cb_info(env, info, &this->c, nullptr, nullptr, nullptr);
     
-    this->v = mallocPtr<napi_value>(this->c);
+    this->v = mallocX<napi_value>(this->c);
     
     status = napi_get_cb_info(env, info, &this->c, this->v, nullptr, nullptr);
 }
 
 Args::~Args() {
-    freePtr(this->v);
+    freeX(this->v);
 }
 
 const size_t napiValueArrayLen(napi_env env, napi_value nv)
@@ -28,7 +28,7 @@ const char *napiValue2chars(napi_env env, napi_value nv)
     size_t len;
     auto status = napi_get_value_string_utf8(env, nv, NULL, 0, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
-    auto cStr = mallocPtr<char>(len);
+    auto cStr = mallocX<char>(len);
     status = napi_get_value_string_utf8(env, nv, cStr, len + 1, &len);
     CHECK_NAPI_STATUS_RETURN_ANY(env, status, "napi_get_value_string_utf8() failed");
     return cStr;
@@ -71,7 +71,7 @@ const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len)
     if (len <= 0) {
         return NULL;
     }
-    auto byteArray = mallocPtr<byte>(len);
+    auto byteArray = mallocX<byte>(len);
     int status;
     for (int i = 0; i < len; i++)
     {
@@ -88,7 +88,7 @@ const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len)
     if (len <= 0) {
         return NULL;
     }
-    auto charsArray = mallocPtr<const char *>(len);
+    auto charsArray = mallocX<const char *>(len);
     int status;
     for (int i = 0; i < len; i++)
     {

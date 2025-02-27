@@ -33,7 +33,7 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     // keyLen = AES_BLOCK_SIZE * 8;
     auto outLen = inLen;
@@ -54,14 +54,14 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
     if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_AesSetKey(aes, key, keyLen, out, AES_ENCRYPTION);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesSetKey_AES_ENCRYPTION error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     while (offset < inLen)
@@ -70,7 +70,7 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
         if (ret != WolfSSL_OK)
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesEncryptDirect error:{}", ret);
-            return BytesEmpty;
+            return {};
         }
         offset += AES_BLOCK_SIZE;
     }
@@ -86,7 +86,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
     if (in == NULL || inLen == 0 || key == NULL || keyLen != AES_BLOCK_SIZE) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     // keyLen = AES_BLOCK_SIZE * 8;
     auto outLen = inLen;
@@ -107,14 +107,14 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_AesSetKey(aes, key, keyLen, out, AES_DECRYPTION);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesSetKey_AES_DECRYPTION error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     while (offset < inLen)
@@ -123,7 +123,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
         if (ret != WolfSSL_OK)
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesDecryptDirect error:{}", ret);
-            return BytesEmpty;
+            return {};
         }
         offset += AES_BLOCK_SIZE;
     }
@@ -137,7 +137,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
@@ -154,21 +154,21 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_AesGcmSetKey(aes, key, keyLen);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesGcmSetKey error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_AesGcmEncrypt(aes, out, in, inLen, initVector, initVectorLen, tag, tagLen, aad, aadLen);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesGcmEncrypt error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
     std::memcpy(out + inLen, tag, tagLen);
 
@@ -181,7 +181,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
 {
     if (!NGenXX::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
     auto inLen_ = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
@@ -199,21 +199,21 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_AesGcmSetKey(aes, key, keyLen);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesGcmSetKey error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_AesGcmDecrypt(aes, out, in, inLen, initVector, initVectorLen, tag, tagLen, aad, aadLen);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesGcmDecrypt error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     wc_AesFree(aes);
@@ -227,7 +227,7 @@ Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     int outLen = 16;
     byte out[outLen];
@@ -239,21 +239,21 @@ Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_InitMd5 error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_Md5Update(&md5, (byte *)in, inLen);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Md5Update error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_Md5Final(&md5, out);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Md5Final error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     wc_Md5Free(&md5);
@@ -267,7 +267,7 @@ Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
     int outLen = 32;
     byte out[outLen];
@@ -279,21 +279,21 @@ Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     if (ret != WolfSSL_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_InitSha256 error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_Sha256Update(&sha256, (byte *)in, inLen);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Sha256Update error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     ret = wc_Sha256Final(&sha256, out);
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Sha256Final error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     wc_Sha256Free(&sha256);
@@ -307,7 +307,7 @@ Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
 
     word32 outLen = 0;
@@ -320,7 +320,7 @@ Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "Base64_Encode error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     return wrapBytes(outBuffer, outLen);
@@ -332,7 +332,7 @@ Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     auto inLen = inBytes.size();
     if (in == NULL || inLen == 0) [[unlikely]]
     {
-        return BytesEmpty;
+        return {};
     }
 
     word32 outLen = inLen * 2;
@@ -343,7 +343,7 @@ Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     if (ret != WolfSSL_OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "Base64_Decode error:{}", ret);
-        return BytesEmpty;
+        return {};
     }
 
     return wrapBytes(outBuffer, outLen);

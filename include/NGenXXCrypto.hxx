@@ -10,10 +10,10 @@ Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key);
 Bytes ngenxxCryptoAesDecrypt(const Bytes &in, const Bytes &key);
 
 Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits,
-                                      const Bytes &aad = BytesEmpty);
+                                      const Bytes &aad = {});
 
 Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits,
-                                      const Bytes &aad = BytesEmpty);
+                                      const Bytes &aad = {});
 
 enum class NGenXXCryptoRSAPaddingX : int
 {

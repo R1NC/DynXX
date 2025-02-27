@@ -48,8 +48,8 @@ NGenXX::Z::ZBase<T>::ZBase(const size_t bufferSize, const int format) : bufferSi
         .zfree = Z_NULL,
         .opaque = Z_NULL
     };
-    this->inBuffer = mallocPtr<byte>(bufferSize);
-    this->outBuffer = mallocPtr<byte>(bufferSize);
+    this->inBuffer = mallocX<byte>(bufferSize);
+    this->outBuffer = mallocX<byte>(bufferSize);
 }
 
 template <typename T>
@@ -84,7 +84,7 @@ Bytes NGenXX::Z::ZBase<T>::processDo()
     if (this->ret != Z_OK && ret != Z_STREAM_END)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "z process error:{}", this->ret);
-        return BytesEmpty;
+        return {};
     }
 
     auto outLen = this->bufferSize - (this->zs).avail_out;
@@ -100,8 +100,8 @@ bool NGenXX::Z::ZBase<T>::processFinished() const
 template <typename T>
 NGenXX::Z::ZBase<T>::~ZBase()
 {
-    freePtr(inBuffer);
-    freePtr(outBuffer);
+    freeX(inBuffer);
+    freeX(outBuffer);
 }
 
 // Explicit template instantiation
@@ -286,7 +286,7 @@ Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z
     );
     if (!b)
     {
-        return BytesEmpty;
+        return {};
     }
     return outBytes;
 }

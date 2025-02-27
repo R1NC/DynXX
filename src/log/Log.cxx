@@ -51,7 +51,7 @@ void NGenXX::Log::print(const int level, const std::string &content)
     if (_NGenXX_Log_callback)
     {
         auto len = std::strlen(cContent);
-        auto c = mallocPtr<char>(len);
+        auto c = mallocX<char>(len);
         std::strncpy(c, content.c_str(), len);
         _NGenXX_Log_callback(level, c);
     }
