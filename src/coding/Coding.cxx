@@ -11,6 +11,7 @@
 std::string NGenXX::Coding::Case::upper(const std::string_view &str)
 {
     std::string s(str);
+    s.reserve(str.size());
     std::transform(s.begin(), s.end(), s.begin(), ::toupper);
     return s;
 }
@@ -18,6 +19,7 @@ std::string NGenXX::Coding::Case::upper(const std::string_view &str)
 std::string NGenXX::Coding::Case::lower(const std::string_view &str)
 {
     std::string s(str);
+    s.reserve(str.size());
     std::transform(s.begin(), s.end(), s.begin(), ::tolower);
     return s;
 }
