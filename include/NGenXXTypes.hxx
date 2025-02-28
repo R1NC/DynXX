@@ -32,11 +32,12 @@ static inline address ptr2addr(const void *ptr)
 template <typename T>
 static inline T* mallocX(const size_t count)
 {
-    if constexpr (std::is_same_v<T, char> || 
-                 std::is_same_v<T, wchar_t> || 
-                 std::is_same_v<T, char8_t> ||
-                 std::is_same_v<T, char16_t> ||
-                 std::is_same_v<T, char32_t>)
+    if constexpr (std::is_same_v<T, char> || std::is_same_v<T, wchar_t> 
+        || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> 
+#ifdef __cpp_char8_t
+        || std::is_same_v<T, char8_t>
+ #endif
+    )
     {
         auto len = count * sizeof(T) + 1;
         auto ptr = std::malloc(len);
