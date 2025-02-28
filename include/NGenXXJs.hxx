@@ -1,7 +1,7 @@
 #ifndef NGENXX_INCLUDE_JS_HXX_
 #define NGENXX_INCLUDE_JS_HXX_
 
-#include "NGenXXTypes.h"
+#include "NGenXXTypes.hxx"
 
 #include <functional>
 
