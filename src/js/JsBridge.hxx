@@ -189,7 +189,7 @@ namespace NGenXX
     private:
         JSRuntime *runtime{NULL};
         JSContext *context{NULL};
-        std::vector<JSValue*> jValues;
+        std::vector<JSValue> jValues;
 
         JSValue newPromise(const std::function<JSValue()> &jf);
     };
