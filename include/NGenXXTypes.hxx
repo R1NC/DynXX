@@ -100,7 +100,7 @@ static inline std::string Any2String(const Any &v)
     std::string s;
     if (std::holds_alternative<std::string>(v))
     {
-        s = std::move(std::get<std::string>(v));
+        s = std::get<std::string>(v);
     }
     return s;
 }
