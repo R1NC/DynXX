@@ -19,7 +19,7 @@ enum class NGenXXCryptoRSAPaddingX : int
 {
     PKCS1 = 1,
     SSLV23 = 2,
-    NO = 3,
+    NONE = 3,
     PKCS1_OAEP = 4,
     X931 = 5,
     PKCS1_PSS = 6
