@@ -16,7 +16,7 @@ enum class NGenXXHttpMethodX : int
 
 struct NGenXXHttpResponse
 {
-    int code;
+    int code{0};
     std::string contentType;
     std::unordered_map<std::string, std::string> headers;
     std::string data;

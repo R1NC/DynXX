@@ -70,7 +70,7 @@ NGenXX::Net::HttpClient::~HttpClient()
     curl_global_cleanup();
 }
 
-NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::string &url, const int method,
+NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, const int method,
                                                                  const std::vector<std::string> &headers,
                                                                  const std::string &params,
                                                                  const Bytes &rawBody,
@@ -78,7 +78,7 @@ NGenXX::Net::HttpResponse NGenXX::Net::HttpClient::request(const std::string &ur
                                                                  const std::FILE *cFILE, const size_t fileSize,
                                                                  const size_t timeout)
 {
-    HttpResponse rsp;
+    NGenXXHttpResponse rsp;
 
     if (!this->checkUrlValid(url))
     {

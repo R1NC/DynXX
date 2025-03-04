@@ -9,6 +9,7 @@
 #include <curl/curl.h>
 
 #include <NGenXXTypes.hxx>
+#include <NGenXXNetHttp.hxx>
 
 namespace NGenXX
 {
@@ -22,15 +23,6 @@ namespace NGenXX
         };
         using HttpFormField = struct HttpFormField;
 
-        struct HttpResponse
-        {
-            int code;
-            std::string contentType;
-            std::unordered_map<std::string, std::string> headers;
-            std::string data;
-        };
-        using HttpResponse = struct HttpResponse;
-
         class HttpClient
         {
         public:
@@ -40,7 +32,7 @@ namespace NGenXX
             HttpClient(HttpClient &&) = delete;
             HttpClient &operator=(HttpClient &&) = delete;
 
-            [[nodiscard]] HttpResponse request(const std::string &url, const int method,
+            [[nodiscard]] NGenXXHttpResponse request(const std::string &url, const int method,
                                                      const std::vector<std::string> &headers,
                                                      const std::string &params,
                                                      const Bytes &rawBody,
