@@ -17,7 +17,7 @@
 #include <NGenXXTypes.hxx>
 
 static std::function<void(int level, const char *content)> _NGenXX_Log_callback = nullptr;
-static std::mutex *_ngenxx_log_mutex = nullptr;
+static std::unique_ptr<std::mutex> _ngenxx_log_mutex = nullptr;
 
 static int _NGenXX_Log_level = NGenXXLogLevelNone;
 
@@ -33,20 +33,25 @@ void NGenXX::Log::setLevel(int level)
 void NGenXX::Log::setCallback(const std::function<void(int level, const char *content)> &callback)
 {
     _NGenXX_Log_callback = callback;
+    if (callback == nullptr)
+    {
+        _ngenxx_log_mutex.reset();
+    }
 }
 
 void NGenXX::Log::print(int level, const std::string &content)
 {
-    if (_ngenxx_log_mutex == nullptr)
-    {
-        _ngenxx_log_mutex = new std::mutex();
-    }
-    auto lock = std::lock_guard(*_ngenxx_log_mutex);
-
     if (level < _NGenXX_Log_level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone) [[unlikely]]
     {
         return;
     }
+
+    if (_ngenxx_log_mutex == nullptr)
+    {
+        _ngenxx_log_mutex = std::make_unique<std::mutex>();
+    }
+    auto lock = std::lock_guard(*_ngenxx_log_mutex);
+
     auto cContent = content.c_str();
     if (_NGenXX_Log_callback)
     {

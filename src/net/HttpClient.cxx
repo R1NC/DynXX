@@ -99,7 +99,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
     }
 
     auto _timeout = timeout;
-    if (_timeout == 0)
+    if (_timeout == 0) [[unlikely]]
     {
         _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
     }
@@ -256,7 +256,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
 
 bool NGenXX::Net::HttpClient::checkUrlValid(const std::string &url)
 {
-    if (url.empty())
+    if (url.empty()) [[unlikely]]
     {
         return false;
     }

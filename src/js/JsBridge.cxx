@@ -374,7 +374,6 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
 NGenXX_JS_Promise *_ngenxx_js_promise_new(JSContext *ctx)
 {
     auto jPromise = new NGenXX_JS_Promise();
-    JSValue funcs[2];
     jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
     if (JS_IsException(jPromise->p)) [[unlikely]]
     {
