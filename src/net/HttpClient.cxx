@@ -70,13 +70,13 @@ NGenXX::Net::HttpClient::~HttpClient()
     curl_global_cleanup();
 }
 
-NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, const int method,
+NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int method,
                                                                  const std::vector<std::string> &headers,
                                                                  const std::string &params,
                                                                  const Bytes &rawBody,
                                                                  const std::vector<NGenXX::Net::HttpFormField> &formFields,
-                                                                 const std::FILE *cFILE, const size_t fileSize,
-                                                                 const size_t timeout)
+                                                                 const std::FILE *cFILE, size_t fileSize,
+                                                                 size_t timeout)
 {
     NGenXXHttpResponse rsp;
 
@@ -107,7 +107,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, cons
     curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
     auto urlAppend = false;
-    if (cFILE != NULL)
+    if (cFILE != nullptr)
     {
         curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
         curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_UploadReadCallback);
@@ -145,7 +145,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, cons
             urlAppend = true;
             curl_easy_setopt(curl, CURLOPT_READFUNCTION, _NGenXX_Net_HttpClient_PostReadCallback);
             curl_easy_setopt(curl, CURLOPT_READDATA, &rawBody);
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, nullptr);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawBody.size());
         }
     }
@@ -162,7 +162,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, cons
     }
     curl_easy_setopt(curl, CURLOPT_URL, ssUrl.str().c_str());
 
-    struct curl_slist *headerList = NULL;
+    struct curl_slist *headerList = nullptr;
     for (const auto &it : headers)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request header: {}", it);
@@ -197,7 +197,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, cons
     return rsp;
 }
 
-bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string &filePath, const size_t timeout)
+bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string &filePath, size_t timeout)
 {
     auto res = false;
 

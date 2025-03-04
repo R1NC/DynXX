@@ -78,12 +78,12 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     if (!_db_conn) return;
     
     NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
-    NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:NULL];
+    NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:nil];
     auto bPrepareData = ngenxx_store_sqlite_execute(_db_conn, NSString2CharP(sqlPrepareData));
     if (!bPrepareData) return;
     
     NSString *sqlPathQuery = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"query.sql"];
-    NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:NULL];
+    NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:nil];
     auto qrQuery = ngenxx_store_sqlite_query_do(_db_conn, NSString2CharP(sqlQuery));
     if (!qrQuery) return;
     
@@ -145,12 +145,12 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
     size_t aesgcmTagBits = 15 * 8;
     
     size_t aesgcmEncodedLen;
-    auto aesgcmEncodedBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmEncodedLen);
+    auto aesgcmEncodedBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, ivBytes, ivLen, nullptr, 0, aesgcmTagBits, &aesgcmEncodedLen);
     if (aesgcmEncodedBytes && aesgcmEncodedLen > 0) {
         auto aes_gcm_encoded_hex = ngenxx_coding_hex_bytes2str(aesgcmEncodedBytes, aesgcmEncodedLen);
         NSLog(@"AES GCM Encoded:%s", aes_gcm_encoded_hex);
         size_t aesgcmDecodedLen;
-        auto aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmDecodedLen);
+        auto aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, nullptr, 0, aesgcmTagBits, &aesgcmDecodedLen);
         if (aesgcmDecodedBytes && aesgcmDecodedLen > 0) {
             auto aes_decoded = ngenxx_coding_bytes2str(aesgcmDecodedBytes, aesgcmDecodedLen);
             NSLog(@"AES GCM Decoded:%s", aes_decoded);
@@ -161,17 +161,17 @@ static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0
 - (void)testJsonDecoder {
     auto jsonDecoder = ngenxx_json_decoder_init(cParamsJson);
     if (jsonDecoder) {
-        auto urlNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "url");
+        auto urlNode = ngenxx_json_decoder_read_node(jsonDecoder, nullptr, "url");
         if (urlNode) {
             auto url = ngenxx_json_decoder_read_string(jsonDecoder, urlNode);
             NSLog(@"url:%s", url);
         }
-        auto methodNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "method");
+        auto methodNode = ngenxx_json_decoder_read_node(jsonDecoder, nullptr, "method");
         if (methodNode) {
             auto method = ngenxx_json_decoder_read_number(jsonDecoder, methodNode);
             NSLog(@"method:%f", method);
         }
-        auto headerVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_v");
+        auto headerVNode = ngenxx_json_decoder_read_node(jsonDecoder, nullptr, "header_v");
         if (headerVNode) {
             auto headerNode = ngenxx_json_decoder_read_child(jsonDecoder, headerVNode);
             while (headerNode) {

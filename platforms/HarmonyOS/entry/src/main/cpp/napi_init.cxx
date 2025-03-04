@@ -50,7 +50,7 @@ static napi_ref sTsLogCallbackRef;
 
 static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context, void *data)
 {
-    if (env == NULL || ts_callback == NULL || data == NULL) {
+    if (env == nullptr || ts_callback == nullptr || data == nullptr) {
         return;
     }
 
@@ -68,7 +68,7 @@ static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context,
     napi_get_reference_value(sNapiEnv, sTsLogCallbackRef, &ts_callback);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_get_reference_value() failed");
 
-    status = napi_call_function(env, vGlobal, ts_callback, argc, argv, NULL);
+    status = napi_call_function(env, vGlobal, ts_callback, argc, argv, nullptr);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_call_function() failed");
 
     freeX(tSLogWorkData->logContent);
@@ -99,13 +99,13 @@ static void OnLogWorkComplete(napi_env env, napi_status status, void *data)
 
 static void engineLogCallback(int level, const char *content)
 {
-    if (sNapiEnv == NULL || content == NULL) {
+    if (sNapiEnv == nullptr || content == nullptr) {
         return;
     }
 
     auto tSLogWorkData = mallocX<TSLogWorkData>(1);
-    tSLogWorkData->tsWork = NULL;
-    tSLogWorkData->tsWorkFunc = NULL;
+    tSLogWorkData->tsWork = nullptr;
+    tSLogWorkData->tsWorkFunc = nullptr;
     tSLogWorkData->logLevel = level;
     auto len = std::strlen(content);
     tSLogWorkData->logContent = mallocX<char>(len);
@@ -118,11 +118,11 @@ static void engineLogCallback(int level, const char *content)
     auto status = napi_get_reference_value(sNapiEnv, sTsLogCallbackRef, &vTsCallback);
     CHECK_NAPI_STATUS_RETURN_VOID(sNapiEnv, status, "napi_get_reference_value() failed");
 
-    status = napi_create_threadsafe_function(sNapiEnv, vTsCallback, NULL, vWorkName, 0, 1, NULL, NULL, NULL,
+    status = napi_create_threadsafe_function(sNapiEnv, vTsCallback, nullptr, vWorkName, 0, 1, nullptr, nullptr, nullptr,
                                              OnLogWorkCallTS, &(tSLogWorkData->tsWorkFunc));
     CHECK_NAPI_STATUS_RETURN_VOID(sNapiEnv, status, "napi_create_threadsafe_function() failed");
 
-    status = napi_create_async_work(sNapiEnv, NULL, vWorkName, OnLogWorkExecute, OnLogWorkComplete, tSLogWorkData,
+    status = napi_create_async_work(sNapiEnv, nullptr, vWorkName, OnLogWorkExecute, OnLogWorkComplete, tSLogWorkData,
                                     &(tSLogWorkData->tsWork));
     CHECK_NAPI_STATUS_RETURN_VOID(sNapiEnv, status, "napi_create_async_work() failed");
 
@@ -147,16 +147,16 @@ static napi_value LogSetCallback(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
-    napi_value vLogCallback = args.c > 0 ? args.v[0] : NULL;
+    napi_value vLogCallback = args.c > 0 ? args.v[0] : nullptr;
     int status;
-    if (vLogCallback == NULL)
+    if (vLogCallback == nullptr)
     {
-        sNapiEnv = NULL;
+        sNapiEnv = nullptr;
 
         status = napi_delete_reference(env, sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_delete_reference() failed");
 
-        ngenxx_log_set_callback(NULL);
+        ngenxx_log_set_callback(nullptr);
     }
     else
     {
@@ -195,14 +195,14 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info)
     auto cParams = args.c > 2 ? napiValue2chars(env, args.v[2]) : "";
 
     auto header_c = args.c > 3 ? napiValueArrayLen(env, args.v[3]) : 0;
-    auto header_v = args.c > 3 ? napiValue2charsArray(env, args.v[3], header_c) : NULL;
+    auto header_v = args.c > 3 ? napiValue2charsArray(env, args.v[3], header_c) : nullptr;
 
     auto form_field_count = args.c > 4 ? napiValueArrayLen(env, args.v[4]) : 0;
-    auto form_field_name_v = args.c > 4 ? napiValue2charsArray(env, args.v[4], form_field_count) : NULL;
-    auto form_field_mime_v = args.c > 5 ? napiValue2charsArray(env, args.v[5], form_field_count) : NULL;
-    auto form_field_data_v = args.c > 6 ? napiValue2charsArray(env, args.v[6], form_field_count) : NULL;
+    auto form_field_name_v = args.c > 4 ? napiValue2charsArray(env, args.v[4], form_field_count) : nullptr;
+    auto form_field_mime_v = args.c > 5 ? napiValue2charsArray(env, args.v[5], form_field_count) : nullptr;
+    auto form_field_data_v = args.c > 6 ? napiValue2charsArray(env, args.v[6], form_field_count) : nullptr;
 
-    auto cFilePath = args.c > 7 ? napiValue2chars(env, args.v[7]) : NULL;
+    auto cFilePath = args.c > 7 ? napiValue2chars(env, args.v[7]) : nullptr;
     FILE *cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
     auto fileLength = args.c > 8 ? napiValue2long(env, args.v[8]) : 0;
 
@@ -755,7 +755,7 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
     auto initVectorBytes = napiValue2byteArray(env, args.v[2], initVectorLen);
     auto tagBits = napiValue2int(env, args.v[3]);
     auto aadLen = args.c > 4 ? napiValueArrayLen(env, args.v[4]) : 0;
-    auto aadBytes = args.c > 4 ? napiValue2byteArray(env, args.v[4], aadLen) : NULL;
+    auto aadBytes = args.c > 4 ? napiValue2byteArray(env, args.v[4], aadLen) : nullptr;
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);
@@ -783,7 +783,7 @@ static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
     auto initVectorBytes = napiValue2byteArray(env, args.v[2], initVectorLen);
     auto tagBits = napiValue2int(env, args.v[3]);
     auto aadLen = args.c > 4 ? napiValueArrayLen(env, args.v[4]) : 0;
-    auto aadBytes = args.c > 4 ? napiValue2byteArray(env, args.v[4], aadLen) : NULL;
+    auto aadBytes = args.c > 4 ? napiValue2byteArray(env, args.v[4], aadLen) : nullptr;
 
     size_t outLen;
     auto outBytes = ngenxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen, aadBytes, aadLen, tagBits, &outLen);

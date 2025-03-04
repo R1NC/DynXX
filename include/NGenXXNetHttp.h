@@ -44,14 +44,14 @@ extern "C"
      * @param timeout Timeout(milliseconds)
      * @return response
      */
-    const char *ngenxx_net_http_request(const char *url, const char *params, const int method,
-                                        const char **header_v, const size_t header_c,
+    const char *ngenxx_net_http_request(const char *url, const char *params, int method,
+                                        const char **header_v, size_t header_c,
                                         const char **form_field_name_v,
                                         const char **form_field_mime_v,
                                         const char **form_field_data_v,
-                                        const size_t form_field_count,
-                                        void *const cFILE, const size_t file_size,
-                                        const size_t timeout);
+                                        size_t form_field_count,
+                                        void *const cFILE, size_t file_size,
+                                        size_t timeout);
 
     /**
      * @brief download file
@@ -60,7 +60,7 @@ extern "C"
      * @param timeout Timeout(milliseconds)
      * @return download result
      */
-    bool ngenxx_net_http_download(const char *url, const char *file_path, const size_t timeout);
+    bool ngenxx_net_http_download(const char *url, const char *file_path, size_t timeout);
 
 #ifdef __cplusplus
 }

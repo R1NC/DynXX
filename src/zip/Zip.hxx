@@ -22,14 +22,14 @@ namespace NGenXX
         {
         public:
             ZBase() = delete;
-            explicit ZBase(const size_t bufferSize, const int format);
+            explicit ZBase(size_t bufferSize, int format);
             ZBase(const ZBase &) = delete;
             ZBase &operator=(const ZBase &) = delete;
             ZBase(ZBase &&) = delete;
             ZBase &operator=(ZBase &&) = delete;
             virtual ~ZBase();
 
-            size_t input(const Bytes &bytes, const bool inFinish);
+            size_t input(const Bytes &bytes, bool inFinish);
             Bytes processDo();
             bool processFinished() const;
 
@@ -40,8 +40,8 @@ namespace NGenXX
             int windowBits();
 
         private:
-            byte *inBuffer{NULL};
-            byte *outBuffer{NULL};
+            byte *inBuffer{nullptr};
+            byte *outBuffer{nullptr};
             size_t bufferSize;
             int format;
         };
@@ -50,7 +50,7 @@ namespace NGenXX
         {
         public:
             Zip() = delete;
-            explicit Zip(const int mode, const size_t bufferSize, const int format);
+            explicit Zip(int mode, size_t bufferSize, int format);
             Zip(const Zip &) = delete;
             Zip &operator=(const Zip &) = delete;
             Zip(Zip &&) = delete;
@@ -66,7 +66,7 @@ namespace NGenXX
         {
         public:
             UnZip() = delete;
-            explicit UnZip(const size_t bufferSize, const int format);
+            explicit UnZip(size_t bufferSize, int format);
             UnZip(const UnZip &) = delete;
             UnZip &operator=(const UnZip &) = delete;
             UnZip(UnZip &&) = delete;
@@ -78,17 +78,17 @@ namespace NGenXX
             void processImp();
         };
 
-        bool zip(const int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
+        bool zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream);
 
-        bool unzip(const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream);
+        bool unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream);
 
-        bool zip(const int mode, const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
+        bool zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile);
 
-        bool unzip(const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile);
+        bool unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile);
 
-        Bytes zip(const int mode, const size_t bufferSize, const int format, const Bytes &bytes);
+        Bytes zip(int mode, size_t bufferSize, int format, const Bytes &bytes);
 
-        Bytes unzip(const size_t bufferSize, const int format, const Bytes &bytes);
+        Bytes unzip(size_t bufferSize, int format, const Bytes &bytes);
     }
 }
 

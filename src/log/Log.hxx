@@ -10,11 +10,11 @@ namespace NGenXX
 {
     namespace Log
     {
-        void setLevel(const int level);
+        void setLevel(int level);
 
-        void setCallback(const std::function<void(const int level, const char *content)> &callback);
+        void setCallback(const std::function<void(int level, const char *content)> &callback);
 
-        void print(const int level, const std::string &content);
+        void print(int level, const std::string &content);
     }
 }
 

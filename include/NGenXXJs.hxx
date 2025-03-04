@@ -5,13 +5,13 @@
 
 #include <functional>
 
-bool ngenxxJsLoadF(const std::string &file, const bool isModule);
+bool ngenxxJsLoadF(const std::string &file, bool isModule);
 
-bool ngenxxJsLoadS(const std::string &script, const std::string &name, const bool isModule);
+bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isModule);
 
-bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule);
+bool ngenxxJsLoadB(const Bytes &bytes, bool isModule);
 
-std::string ngenxxJsCall(const std::string &func, const std::string &params, const bool await);
+std::string ngenxxJsCall(const std::string &func, const std::string &params, bool await);
 
 void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback);
 

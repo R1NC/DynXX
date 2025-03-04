@@ -159,7 +159,7 @@ static void _ngenxx_js_dump_err(JSContext *ctx)
     JS_FreeValue(ctx, exception_val);
 }
 
-bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std::string &name, const bool isModule)
+bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std::string &name, bool isModule)
 {
     auto res = true;
     auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
@@ -199,10 +199,10 @@ static JSContext *_ngenxx_js_newContext(JSRuntime *rt)
     auto ctx = JS_NewContext(rt);
     if (!ctx) [[unlikely]]
     {
-        return NULL;
+        return nullptr;
     }
 
-    js_std_add_helpers(ctx, 0, NULL);
+    js_std_add_helpers(ctx, 0, nullptr);
     js_init_module_std(ctx, "qjs:std");
     js_init_module_os(ctx, "qjs:os");
 
@@ -217,7 +217,7 @@ NGenXX::JsBridge::JsBridge()
 
     this->runtime = JS_NewRuntime();
     js_std_init_handlers(this->runtime);
-    JS_SetModuleLoaderFunc(this->runtime, NULL, js_module_loader, NULL);
+    JS_SetModuleLoaderFunc(this->runtime, nullptr, js_module_loader, nullptr);
     js_std_set_worker_new_context_func(_ngenxx_js_newContext);
 
     this->context = _ngenxx_js_newContext(this->runtime);
@@ -259,7 +259,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
     return res;
 }
 
-bool NGenXX::JsBridge::loadFile(const std::string &file, const bool isModule)
+bool NGenXX::JsBridge::loadFile(const std::string &file, bool isModule)
 {
     std::ifstream ifs(file.c_str());
     std::stringstream ss;
@@ -267,13 +267,13 @@ bool NGenXX::JsBridge::loadFile(const std::string &file, const bool isModule)
     return this->loadScript(ss.str(), file, isModule);
 }
 
-bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name, const bool isModule)
+bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name, bool isModule)
 {
     auto lock = std::lock_guard(*_ngenxx_js_mutex);
     return _ngenxx_js_loadScript(this->context, script, name, isModule);
 }
 
-bool NGenXX::JsBridge::loadBinary(const Bytes &bytes, const bool isModule)
+bool NGenXX::JsBridge::loadBinary(const Bytes &bytes, bool isModule)
 {
     auto lock = std::lock_guard(*_ngenxx_js_mutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
@@ -330,7 +330,7 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
-std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, const bool await)
+std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, bool await)
 {
     _ngenxx_js_mutex->lock();
     std::string s;
@@ -478,7 +478,7 @@ NGenXX::JsBridge::~JsBridge()
 {
     _ngenxx_js_loop_stop(this->runtime);
 
-    js_std_set_worker_new_context_func(NULL);
+    js_std_set_worker_new_context_func(nullptr);
 
     for (const auto &jv : this->jValues)
     {

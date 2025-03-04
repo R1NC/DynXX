@@ -9,7 +9,7 @@ namespace NGenXX
 {
     namespace Crypto
     {
-        bool rand(const size_t len, byte *bytes);
+        bool rand(size_t len, byte *bytes);
 
         namespace AES
         {
@@ -18,24 +18,24 @@ namespace NGenXX
 
             Bytes decrypt(const Bytes &in, const Bytes &key);
 
-            static constexpr bool checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits)
+            static constexpr bool checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, size_t tagBits)
             {
                 auto inBytes = in.data(), keyBytes = key.data(), initVectorBytes = initVector.data(), aadBytes = aad.data();
                 auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
                 auto tagLen = tagBits / 8;
-                if (inBytes == NULL || inLen <= 0)
+                if (inBytes == nullptr || inLen <= 0)
                 {
                     return false;
                 }
-                if (keyBytes == NULL || (keyLen != 16 && keyLen != 24 && keyLen != 32))
+                if (keyBytes == nullptr || (keyLen != 16 && keyLen != 24 && keyLen != 32))
                 {
                     return false;
                 }
-                if (initVectorBytes == NULL || initVectorLen != 12)
+                if (initVectorBytes == nullptr || initVectorLen != 12)
                 {
                     return false;
                 }
-                if (aadLen > 16 || (aadLen > 0 && aadBytes == NULL))
+                if (aadLen > 16 || (aadLen > 0 && aadBytes == nullptr))
                 {
                     return false;
                 }
@@ -50,16 +50,16 @@ namespace NGenXX
                 return true;
             }
 
-            Bytes gcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits);
+            Bytes gcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, size_t tagBits);
 
-            Bytes gcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, const size_t tagBits);
+            Bytes gcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, size_t tagBits);
         }
 
         namespace RSA
         {
-            Bytes encrypt(const Bytes &in, const Bytes &key, const int padding);
+            Bytes encrypt(const Bytes &in, const Bytes &key, int padding);
             
-            Bytes decrypt(const Bytes &in, const Bytes &key, const int padding);
+            Bytes decrypt(const Bytes &in, const Bytes &key, int padding);
         }
 
         namespace Hash

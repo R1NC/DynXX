@@ -16,7 +16,7 @@ extern "C"
     /**
      * @brief Check if the node is an array
      * @param decoder JSON decoder
-     * @param node JSON node, `NULL` represents the root
+     * @param node JSON node, `nullptr` represents the root
      * @return `true` if the node is an array
      */
     bool ngenxx_json_decoder_is_array(void *const decoder, void *const node);
@@ -24,7 +24,7 @@ extern "C"
     /**
      * @brief Check if the node is an object
      * @param decoder JSON decoder
-     * @param node JSON node, `NULL` represents the root
+     * @param node JSON node, `nullptr` represents the root
      * @return `true` if the node is an object
      */
     bool ngenxx_json_decoder_is_object(void *const decoder, void *const node);
@@ -32,7 +32,7 @@ extern "C"
     /**
      * @brief Read JSON node wihh name
      * @param decoder JSON decoder
-     * @param node JSON node, `NULL` represents the root
+     * @param node JSON node, `nullptr` represents the root
      * @param k JSON node name
      * @return JSON node
      */
@@ -41,7 +41,7 @@ extern "C"
     /**
      * @brief Read string from the JSON node
      * @param decoder JSON decoder
-     * @param node JSON node, `NULL` represents the root
+     * @param node JSON node, `nullptr` represents the root
      * @return String
      */
     const char *ngenxx_json_decoder_read_string(void *const decoder, void *const node);
@@ -49,7 +49,7 @@ extern "C"
     /**
      * @brief Read number from the JOSON node
      * @param decoder JSON decoder
-     * @param node JSON node, `NULL` represents the root
+     * @param node JSON node, `nullptr` represents the root
      * @return Number
      */
     double ngenxx_json_decoder_read_number(void *const decoder, void *const node);
@@ -57,7 +57,7 @@ extern "C"
     /**
      * @brief Read first child node of the Object/Array node
      * @param decoder JSON decoder
-     * @param node JSON node, `NULL` represents the root
+     * @param node JSON node, `nullptr` represents the root
      * @return First child node
      */
     void *ngenxx_json_decoder_read_child(void *const decoder, void *const node);
@@ -65,7 +65,7 @@ extern "C"
     /**
      * @brief Read next node
      * @param decoder JSON decoder
-     * @param node JSON node, `NULL` represents the root
+     * @param node JSON node, `nullptr` represents the root
      * @return Next node
      */
     void *ngenxx_json_decoder_read_next(void *const decoder, void *const node);

@@ -107,7 +107,7 @@ namespace NGenXX
         ~LuaBridge();
 
     private:
-        lua_State *lstate{NULL};
+        lua_State *lstate{nullptr};
         std::recursive_mutex mutex;
     };
 }

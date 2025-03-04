@@ -145,7 +145,7 @@ namespace NGenXX
          * @param file JS file path
          * @return success or not
          */
-        [[nodiscard]] bool loadFile(const std::string &file, const bool isModule);
+        [[nodiscard]] bool loadFile(const std::string &file, bool isModule);
 
         /**
          * @brief Load JS script
@@ -153,13 +153,13 @@ namespace NGenXX
          * @param name JS file name
          * @return success or not
          */
-        [[nodiscard]] bool loadScript(const std::string &script, const std::string &name, const bool isModule);
+        [[nodiscard]] bool loadScript(const std::string &script, const std::string &name, bool isModule);
 
         /**
          * @brief Load JS ByteCode
          * @param bytes JS ByteCode
          */
-        [[nodiscard]] bool loadBinary(const Bytes &bytes, const bool isModule);
+        [[nodiscard]] bool loadBinary(const Bytes &bytes, bool isModule);
 
         /**
          * @brief call JS func
@@ -167,7 +167,7 @@ namespace NGenXX
          * @param params parameters(json)
          * @param await Whether wait for the promise result or not
          */
-        std::string callFunc(const std::string &func, const std::string &params, const bool await);
+        std::string callFunc(const std::string &func, const std::string &params, bool await);
 
         /**
          * @brief New JS `Promise`
@@ -187,8 +187,8 @@ namespace NGenXX
         ~JsBridge();
 
     private:
-        JSRuntime *runtime{NULL};
-        JSContext *context{NULL};
+        JSRuntime *runtime{nullptr};
+        JSContext *context{nullptr};
         std::vector<JSValue> jValues;
 
         JSValue newPromise(const std::function<JSValue()> &jf);

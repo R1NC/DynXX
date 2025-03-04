@@ -33,7 +33,7 @@ int NGenXX::Z::ZBase<T>::windowBits()
 }
 
 template <typename T>
-NGenXX::Z::ZBase<T>::ZBase(const size_t bufferSize, const int format) : bufferSize{bufferSize}, format{format}
+NGenXX::Z::ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{bufferSize}, format{format}
 {
     if (bufferSize == 0) [[unlikely]]
     {
@@ -53,7 +53,7 @@ NGenXX::Z::ZBase<T>::ZBase(const size_t bufferSize, const int format) : bufferSi
 }
 
 template <typename T>
-size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, const bool inFinish)
+size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
 {
     if (bytes.empty()) [[unlikely]]
     {
@@ -108,7 +108,7 @@ NGenXX::Z::ZBase<T>::~ZBase()
 template class NGenXX::Z::ZBase<NGenXX::Z::Zip>;
 template class NGenXX::Z::ZBase<NGenXX::Z::UnZip>;
 
-NGenXX::Z::Zip::Zip(const int mode, const size_t bufferSize, const int format) : ZBase(bufferSize, format)
+NGenXX::Z::Zip::Zip(int mode, size_t bufferSize, int format) : ZBase(bufferSize, format)
 {
     if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) [[unlikely]]
     {
@@ -132,7 +132,7 @@ NGenXX::Z::Zip::~Zip()
     deflateEnd(&(this->zs));
 }
 
-NGenXX::Z::UnZip::UnZip(const size_t bufferSize, const int format) : ZBase(bufferSize, format)
+NGenXX::Z::UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, format)
 {
     this->ret = inflateInit2(&(this->zs), this->windowBits());
     if (this->ret != Z_OK) [[unlikely]]
@@ -155,7 +155,7 @@ NGenXX::Z::UnZip::~UnZip()
 #pragma mark Stream
 
 template <typename T>
-bool _ngenxx_z_process(const size_t bufferSize,
+bool _ngenxx_z_process(size_t bufferSize,
               std::function<const Bytes()> sReadF,
               std::function<void(const Bytes &)> sWriteF,
               std::function<void()> sFlushF,
@@ -193,7 +193,7 @@ bool _ngenxx_z_process(const size_t bufferSize,
 #pragma mark Cxx stream
 
 template <typename T>
-bool _ngenxx_z_processCxxStream(const size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase<T> &zb)
+bool _ngenxx_z_processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase<T> &zb)
 {
     return _ngenxx_z_process(bufferSize, 
         [bufferSize, &inStream] -> Bytes 
@@ -214,13 +214,13 @@ bool _ngenxx_z_processCxxStream(const size_t bufferSize, std::istream *inStream,
     );
 }
 
-bool NGenXX::Z::zip(const int mode, const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream)
+bool NGenXX::Z::zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
 {
     Zip zip(mode, bufferSize, format);
     return _ngenxx_z_processCxxStream(bufferSize, inStream, outStream, zip);
 }
 
-bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::istream *inStream, std::ostream *outStream)
+bool NGenXX::Z::unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
 {
     UnZip unzip(bufferSize, format);
     return _ngenxx_z_processCxxStream(bufferSize, inStream, outStream, unzip);
@@ -229,7 +229,7 @@ bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::istream *i
 #pragma mark C FILE
 
 template <typename T>
-bool _ngenxx_z_processCFILE(const size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase<T> &zb)
+bool _ngenxx_z_processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase<T> &zb)
 {
     return _ngenxx_z_process(bufferSize, 
         [bufferSize, &inFile] -> Bytes
@@ -250,13 +250,13 @@ bool _ngenxx_z_processCFILE(const size_t bufferSize, std::FILE *inFile, std::FIL
     );
 }
 
-bool NGenXX::Z::zip(const int mode, const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile)
+bool NGenXX::Z::zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 {
     Zip zip(mode, bufferSize, format);
     return _ngenxx_z_processCFILE(bufferSize, inFile, outFile, zip);
 }
 
-bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::FILE *inFile, std::FILE *outFile)
+bool NGenXX::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 {
     UnZip unzip(bufferSize, format);
     return _ngenxx_z_processCFILE(bufferSize, inFile, outFile, unzip);
@@ -265,7 +265,7 @@ bool NGenXX::Z::unzip(const size_t bufferSize, const int format, std::FILE *inFi
 #pragma mark Bytes
 
 template <typename T>
-Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
+Bytes _ngenxx_z_processBytes(size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
 {
     std::remove_const<decltype(bufferSize)>::type pos(0);
     Bytes outBytes;
@@ -291,13 +291,13 @@ Bytes _ngenxx_z_processBytes(const size_t bufferSize, const Bytes &in, NGenXX::Z
     return outBytes;
 }
 
-Bytes NGenXX::Z::zip(const int mode, const size_t bufferSize, const int format, const Bytes &bytes)
+Bytes NGenXX::Z::zip(int mode, size_t bufferSize, int format, const Bytes &bytes)
 {
     Zip zip(mode, bufferSize, format);
     return _ngenxx_z_processBytes(bufferSize, bytes, zip);
 }
 
-Bytes NGenXX::Z::unzip(const size_t bufferSize, const int format, const Bytes &bytes)
+Bytes NGenXX::Z::unzip(size_t bufferSize, int format, const Bytes &bytes)
 {
     UnZip unzip(bufferSize, format);
     return _ngenxx_z_processBytes(bufferSize, bytes, unzip);

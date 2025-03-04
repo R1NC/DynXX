@@ -3,16 +3,16 @@
 
 #include "NGenXXTypes.hxx"
 
-bool ngenxxCryptoRand(const size_t len, byte *bytes);
+bool ngenxxCryptoRand(size_t len, byte *bytes);
 
 Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key);
 
 Bytes ngenxxCryptoAesDecrypt(const Bytes &in, const Bytes &key);
 
-Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits,
+Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, size_t tagBits,
                                       const Bytes &aad = {});
 
-Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const size_t tagBits,
+Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, size_t tagBits,
                                       const Bytes &aad = {});
 
 enum class NGenXXCryptoRSAPaddingX : int

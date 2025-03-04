@@ -16,12 +16,12 @@
 #include <NGenXXLog.h>
 #include <NGenXXTypes.hxx>
 
-static std::function<void(const int level, const char *content)> _NGenXX_Log_callback = nullptr;
+static std::function<void(int level, const char *content)> _NGenXX_Log_callback = nullptr;
 static std::mutex *_ngenxx_log_mutex = nullptr;
 
 static int _NGenXX_Log_level = NGenXXLogLevelNone;
 
-void NGenXX::Log::setLevel(const int level)
+void NGenXX::Log::setLevel(int level)
 {
     if (level < NGenXXLogLevelDebug || level > NGenXXLogLevelNone) [[unlikely]]
     {
@@ -30,12 +30,12 @@ void NGenXX::Log::setLevel(const int level)
     _NGenXX_Log_level = level;
 }
 
-void NGenXX::Log::setCallback(const std::function<void(const int level, const char *content)> &callback)
+void NGenXX::Log::setCallback(const std::function<void(int level, const char *content)> &callback)
 {
     _NGenXX_Log_callback = callback;
 }
 
-void NGenXX::Log::print(const int level, const std::string &content)
+void NGenXX::Log::print(int level, const std::string &content)
 {
     if (_ngenxx_log_mutex == nullptr)
     {

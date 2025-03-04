@@ -21,7 +21,7 @@ enum class NGenXXLogLevelX : int
 
 void ngenxxLogSetLevel(const NGenXXLogLevelX level);
 
-void ngenxxLogSetCallback(const std::function<void(const int level, const char *content)> &callback);
+void ngenxxLogSetCallback(const std::function<void(int level, const char *content)> &callback);
 
 void ngenxxLogPrint(const NGenXXLogLevelX level, const std::string &content);
 

@@ -10,7 +10,7 @@ std::string NGenXX::Json::dictAnyToJson(const DictAny &dict)
     auto cjson = cJSON_CreateObject();
     for (const auto& [k, v] : dict) 
     {
-        cJSON *node = NULL;
+        cJSON *node = nullptr;
         if (std::holds_alternative<int64_t>(v)) 
         {
             node = cJSON_CreateNumber(std::get<int64_t>(v));
@@ -111,12 +111,12 @@ void NGenXX::Json::Decoder::moveImp(Decoder&& other) noexcept
 
 void NGenXX::Json::Decoder::cleanup() noexcept
 {
-    if (this->cjson == NULL) [[unlikely]]
+    if (this->cjson == nullptr) [[unlikely]]
     {
         return;
     }
     cJSON_Delete(this->cjson);
-    this->cjson = NULL;
+    this->cjson = nullptr;
 }
 
 NGenXX::Json::Decoder::Decoder(const std::string &json)
@@ -146,7 +146,7 @@ NGenXX::Json::Decoder &NGenXX::Json::Decoder::operator=(NGenXX::Json::Decoder &&
 
 const cJSON *NGenXX::Json::Decoder::reinterpretNode(const void *const node) const
 {
-    if (node == NULL)
+    if (node == nullptr)
     {
         return this->cjson;
     }
@@ -168,18 +168,18 @@ bool NGenXX::Json::Decoder::isObject(const void *const node) const
 void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string &k) const
 {
     auto cj = this->reinterpretNode(node);
-    if (cj != NULL) [[likely]]
+    if (cj != nullptr) [[likely]]
     {
         return cJSON_GetObjectItemCaseSensitive(cj, k.c_str());
     }
-    return NULL;
+    return nullptr;
 }
 
 std::string NGenXX::Json::Decoder::readString(const void *const node) const
 {
     std::string s;
     auto cj = this->reinterpretNode(node);
-    if (cj != NULL && cJSON_IsString(cj) && cj->valuestring) [[likely]]
+    if (cj != nullptr && cJSON_IsString(cj) && cj->valuestring) [[likely]]
     {
         return cj->valuestring;
     }
@@ -190,7 +190,7 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
 {
     auto num = 0.0;
     auto cj = this->reinterpretNode(node);
-    if (cj != NULL) [[likely]]
+    if (cj != nullptr) [[likely]]
     {
         if (cJSON_IsNumber(cj)) [[likely]]
         {
@@ -218,14 +218,14 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
 void *NGenXX::Json::Decoder::readChild(const void *const node) const
 {
     auto cj = this->reinterpretNode(node);
-    if (cj != NULL && (this->isArray(cj) || this->isObject(cj))) [[likely]]
+    if (cj != nullptr && (this->isArray(cj) || this->isObject(cj))) [[likely]]
     {
         return cj->child;
     }
-    return NULL;
+    return nullptr;
 }
 
-void NGenXX::Json::Decoder::readChildren(const void *const node, const std::function<void(const size_t idx, const void *const child)> &callback) const
+void NGenXX::Json::Decoder::readChildren(const void *const node, const std::function<void(size_t idx, const void *const child)> &callback) const
 {
     if (!this->isArray(node) && !this->isObject(node)) [[unlikely]]
     {
@@ -246,5 +246,5 @@ void NGenXX::Json::Decoder::readChildren(const void *const node, const std::func
 void *NGenXX::Json::Decoder::readNext(const void *const node) const
 {
     auto cj = this->reinterpretNode(node);
-    return cj ? cj->next : NULL;
+    return cj ? cj->next : nullptr;
 }

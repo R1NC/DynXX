@@ -15,7 +15,7 @@ extern "C"
      * @param is_module Whether the js import modules or not 
      * @return success or not
      */
-    bool ngenxx_js_loadF(const char *file, const bool is_module);
+    bool ngenxx_js_loadF(const char *file, bool is_module);
 
     /**
      * @brief Load JS Script
@@ -25,7 +25,7 @@ extern "C"
      * @param is_module Whether the js import modules or not 
      * @return success or not
      */
-    bool ngenxx_js_loadS(const char *script, const char *name, const bool is_module);
+    bool ngenxx_js_loadS(const char *script, const char *name, bool is_module);
 
     /**
      * @brief Load JS ByteCode
@@ -35,7 +35,7 @@ extern "C"
      * @param is_module Whether the js import modules or not 
      * @return success or not
      */
-    bool ngenxx_js_loadB(const byte *bytes, const size_t len, const bool is_module);
+    bool ngenxx_js_loadB(const byte *bytes, size_t len, bool is_module);
 
     /**
      * @brief Call JS function
@@ -45,7 +45,7 @@ extern "C"
      * @param await Whether wait for the promise result or not
      * @return return value of JS function
      */
-    const char *ngenxx_js_call(const char *func, const char *params, const bool await);
+    const char *ngenxx_js_call(const char *func, const char *params, bool await);
 
     /**
      * @brief Set JS msg callback

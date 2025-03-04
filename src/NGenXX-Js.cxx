@@ -23,7 +23,7 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
 std::string ngenxx_js_ask_platform(const char *msg)
 {
     std::string s;
-    if (msg == NULL || _NGenXX_J_msg_callback == nullptr)
+    if (msg == nullptr || _NGenXX_J_msg_callback == nullptr)
     {
         return s;
     }
@@ -105,7 +105,7 @@ DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzip
 
 #pragma mark JS
 
-bool ngenxxJsLoadF(const std::string &file, const bool isModule)
+bool ngenxxJsLoadF(const std::string &file, bool isModule)
 {
     if (_ngenxx_js == nullptr || file.length() == 0) [[unlikely]]
     {
@@ -114,7 +114,7 @@ bool ngenxxJsLoadF(const std::string &file, const bool isModule)
     return _ngenxx_js->loadFile(file, isModule);
 }
 
-bool ngenxxJsLoadS(const std::string &script, const std::string &name, const bool isModule)
+bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isModule)
 {
     if (_ngenxx_js == nullptr || script.length() == 0 || name.length() == 0) [[unlikely]]
     {
@@ -123,7 +123,7 @@ bool ngenxxJsLoadS(const std::string &script, const std::string &name, const boo
     return _ngenxx_js->loadScript(script, name, isModule);
 }
 
-bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule)
+bool ngenxxJsLoadB(const Bytes &bytes, bool isModule)
 {
     if (_ngenxx_js == nullptr || bytes.empty()) [[unlikely]]
     {
@@ -132,7 +132,7 @@ bool ngenxxJsLoadB(const Bytes &bytes, const bool isModule)
     return _ngenxx_js->loadBinary(bytes, isModule);
 }
 
-std::string ngenxxJsCall(const std::string &func, const std::string &params, const bool await)
+std::string ngenxxJsCall(const std::string &func, const std::string &params, bool await)
 {
     std::string s;
     if (_ngenxx_js == nullptr || func.length() == 0L) [[unlikely]]
@@ -148,25 +148,25 @@ void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &
 }
 
 EXPORT_AUTO
-bool ngenxx_js_loadF(const char *file, const bool is_module)
+bool ngenxx_js_loadF(const char *file, bool is_module)
 {
     return ngenxxJsLoadF(file ?: "", is_module);
 }
 
 EXPORT_AUTO
-bool ngenxx_js_loadS(const char *script, const char *name, const bool is_module)
+bool ngenxx_js_loadS(const char *script, const char *name, bool is_module)
 {
     return ngenxxJsLoadS(script ?: "", name ?: "", is_module);
 }
 
 EXPORT_AUTO
-bool ngenxx_js_loadB(const byte *bytes, const size_t len, const bool is_module)
+bool ngenxx_js_loadB(const byte *bytes, size_t len, bool is_module)
 {
     return ngenxxJsLoadB(wrapBytes(bytes, len), is_module);
 }
 
 EXPORT_AUTO
-const char *ngenxx_js_call(const char *func, const char *params, const bool await)
+const char *ngenxx_js_call(const char *func, const char *params, bool await)
 {
     return copyStr(ngenxxJsCall(func ?: "", params ?: "", await));
 }

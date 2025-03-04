@@ -15,7 +15,7 @@ static inline const char *copyStr(const std::string &s)
     return nc;
 }
 
-static inline const char **copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen)
+static inline const char **copyStrVector(const std::vector<std::string> &sv, size_t strMaxLen)
 {
     auto sArrLen = sizeof(char *) * sv.size();
     auto sArr = mallocX<char *>(sArrLen);
@@ -32,9 +32,9 @@ static inline const byte *copyBytes(const Bytes &t)
 {
     auto cs = t.data();
     auto len = t.size();
-    if (cs == NULL || len == 0) [[unlikely]]
+    if (cs == nullptr || len == 0) [[unlikely]]
     {
-        return NULL;
+        return nullptr;
     }
     auto ncs = mallocX<byte>(len);
     std::memcpy(static_cast<void *>(ncs), cs, len);

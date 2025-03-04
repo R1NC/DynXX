@@ -105,10 +105,10 @@ void ngenxx_posix_testCrypto(void)
     size aesgcmTagBits = 15 * 8;
     
     size aesgcmEncodedLen;
-    const byte *aesgcmEncodedBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmEncodedLen);
+    const byte *aesgcmEncodedBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, ivBytes, ivLen, nullptr, 0, aesgcmTagBits, &aesgcmEncodedLen);
     if (aesgcmEncodedBytes && aesgcmEncodedLen > 0) {
         size aesgcmDecodedLen;
-        const byte *aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, NULL, 0, aesgcmTagBits, &aesgcmDecodedLen);
+        const byte *aesgcmDecodedBytes = ngenxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, nullptr, 0, aesgcmTagBits, &aesgcmDecodedLen);
         if (aesgcmDecodedBytes && aesgcmDecodedLen > 0) {
             std::cout << "AES-GCM: " << (char *)aesgcmDecodedBytes << std::endl;
         }
@@ -119,17 +119,17 @@ void ngenxx_posix_testJsonDecoder(void)
 {
     void *jsonDecoder = ngenxx_json_decoder_init(cParamsJson);
     if (jsonDecoder) {
-        void *urlNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "url");
+        void *urlNode = ngenxx_json_decoder_read_node(jsonDecoder, nullptr, "url");
         if (urlNode) {
             const char *url = ngenxx_json_decoder_read_string(jsonDecoder, urlNode);
             std::cout << "url:" << url << std::endl;
         }
-        void *methodNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "method");
+        void *methodNode = ngenxx_json_decoder_read_node(jsonDecoder, nullptr, "method");
         if (methodNode) {
             double method = ngenxx_json_decoder_read_number(jsonDecoder, methodNode);
             std::cout << "method:" << method << std::endl;
         }
-        void *headerVNode = ngenxx_json_decoder_read_node(jsonDecoder, NULL, "header_v");
+        void *headerVNode = ngenxx_json_decoder_read_node(jsonDecoder, nullptr, "header_v");
         if (headerVNode) {
             void *headerNode = ngenxx_json_decoder_read_child(jsonDecoder, headerVNode);
             while (headerNode) {

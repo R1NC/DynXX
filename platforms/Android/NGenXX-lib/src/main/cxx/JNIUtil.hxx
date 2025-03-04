@@ -9,14 +9,14 @@
 #include "../../../../../../build.Android/output/include/NGenXXTypes.hxx"
 
 static inline JNIEnv *currentEnv(JavaVM *vm) {
-    JNIEnv *env = NULL;
+    JNIEnv *env = nullptr;
     if (vm != nullptr) {
         vm->AttachCurrentThread(&env, nullptr);
     }
     return env;
 }
 
-jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, const size_t outLen, const bool needFree)
+jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, bool needFree)
 {
     jbyteArray jba;
     if (bytes && outLen > 0)

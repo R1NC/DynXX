@@ -99,7 +99,7 @@ static int ngenxx_lua_util_timer_add(lua_State *L)
 static int ngenxx_lua_util_timer_remove(lua_State *L)
 {
     auto timer = static_cast<uv_timer_t *>(lua_touserdata(L, 1));
-    if (timer != NULL) [[likely]]
+    if (timer != nullptr) [[likely]]
     {
         ngenxx_lua_uv_timer_stop(timer, true);
     }
@@ -109,7 +109,7 @@ static int ngenxx_lua_util_timer_remove(lua_State *L)
 static const luaL_Reg ngenxx_lua_lib_timer_funcs[] = {
     {"add", ngenxx_lua_util_timer_add},
     {"remove", ngenxx_lua_util_timer_remove},
-    {NULL, NULL} /* sentinel */
+    {nullptr, nullptr} /* sentinel */
 };
 
 #define ngenxx_lua_register_lib(L, lib, funcs) \
@@ -122,7 +122,7 @@ static const luaL_Reg ngenxx_lua_lib_timer_funcs[] = {
     do                                                                          \
     {                                                                           \
         const char *luaErrMsg = lua_tostring(L, -1);                            \
-        if (luaErrMsg != NULL)                                                  \
+        if (luaErrMsg != nullptr)                                                  \
         {                                                                       \
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "{}{}", prefix, luaErrMsg); \
         }                                                                       \

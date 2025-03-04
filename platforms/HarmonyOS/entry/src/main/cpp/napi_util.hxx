@@ -10,7 +10,7 @@
     {                                                        \
         char msg[128];                                       \
         sprintf(msg, "status=%d desc='%s'", status, errMsg); \
-        napi_throw_error(env, NULL, msg);                    \
+        napi_throw_error(env, nullptr, msg);                    \
     } while (0);
 
 #define CHECK_NAPI_STATUS_RETURN_TUPLE(env, status, errMsg) \
@@ -29,7 +29,7 @@
         if (status != napi_ok)                            \
         {                                                 \
             PRINT_NAPI_STATUS_ERR(env, status, errMsg);   \
-            return NULL;                                  \
+            return nullptr;                                  \
         }                                                 \
     } while (0);
 
@@ -57,7 +57,7 @@
 class Args {
 public:
     size_t c{0};
-    napi_value *v{NULL};
+    napi_value *v{nullptr};
     
     Args() = delete;
     Args(napi_env env, napi_callback_info info);
@@ -73,7 +73,7 @@ private:
 };
 
 
-const size_t napiValueArrayLen(napi_env env, napi_value nv);
+size_t napiValueArrayLen(napi_env env, napi_value nv);
 
 const char *napiValue2chars(napi_env env, napi_value nv);
 

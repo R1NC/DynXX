@@ -30,7 +30,7 @@ static inline address ptr2addr(const void *ptr)
 #pragma mark Memory
 
 template <typename T>
-static inline T* mallocX(const size_t count)
+static inline T* mallocX(size_t count)
 {
     if constexpr (std::is_same_v<T, char> || std::is_same_v<T, wchar_t> 
         || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> 
@@ -131,7 +131,7 @@ using DictAny = std::unordered_map<std::string, Any>;
 
 using Bytes = std::vector<byte>;
 
-static inline const Bytes wrapBytes(const byte* data, const size_t len)
+static inline const Bytes wrapBytes(const byte* data, size_t len)
 {
     return Bytes(data, data + len);
 }

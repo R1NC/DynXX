@@ -14,7 +14,7 @@ extern "C"
      * @param inLen byte array length
      * @return hex string
      */
-    const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, const size_t inLen);
+    const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, size_t inLen);
 
     /**
      * @brief transfer hex string to byte array
@@ -30,7 +30,7 @@ extern "C"
      * @param inLen byte array length
      * @return hex string
      */
-    const char *ngenxx_coding_bytes2str(const byte *inBytes, const size_t inLen);
+    const char *ngenxx_coding_bytes2str(const byte *inBytes, size_t inLen);
 
     /**
      * @brief transfer string to byte array

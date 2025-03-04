@@ -20,7 +20,7 @@ std::weak_ptr<NGenXX::Store::SQLite::Connection> NGenXX::Store::SQLite::connect(
         return this->conns.at(file);
     }
     sqlite3 *db;
-    auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+    auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
     if (rc != SQLITE_OK) [[unlikely]]
     {
@@ -69,13 +69,13 @@ NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
 bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql) const
 {
     auto lock = std::lock_guard(this->mutex);
-    if (this->db == NULL) [[unlikely]]
+    if (this->db == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.execute DB NULL");
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.execute DB nullptr");
         return false;
     }
     sqlite3_stmt *stmt;
-    auto rc = sqlite3_exec(this->db, sql.c_str(), NULL, NULL, NULL);
+    auto rc = sqlite3_exec(this->db, sql.c_str(), nullptr, nullptr, nullptr);
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
     if (rc != SQLITE_OK)
     {
@@ -87,13 +87,13 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql) const
 std::unique_ptr<NGenXX::Store::SQLite::Connection::QueryResult> NGenXX::Store::SQLite::Connection::query(const std::string &sql) const
 {
     auto lock = std::lock_guard(this->mutex);
-    if (this->db == NULL) [[unlikely]]
+    if (this->db == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.query DB NULL");
-        return NULL;
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.query DB nullptr");
+        return nullptr;
     }
     sqlite3_stmt *stmt;
-    auto rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, NULL);
+    auto rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, nullptr);
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.query ret:{}", rc);
     if (rc != SQLITE_OK)
     {
@@ -105,7 +105,7 @@ std::unique_ptr<NGenXX::Store::SQLite::Connection::QueryResult> NGenXX::Store::S
 
 NGenXX::Store::SQLite::Connection::~Connection()
 {
-    if (this->db != NULL) [[likely]]
+    if (this->db != nullptr) [[likely]]
     {
         sqlite3_close_v2(this->db);
     }
@@ -118,16 +118,16 @@ NGenXX::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) 
 bool NGenXX::Store::SQLite::Connection::QueryResult::readRow() const
 {
     auto lock = std::unique_lock(this->mutex);
-    if (this->stmt == NULL) [[unlikely]]
+    if (this->stmt == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readRow STMT NULL");
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readRow STMT nullptr");
         return false;
     }
     auto rc = sqlite3_step(this->stmt);
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.step ret:{}", rc);
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
-        PRINT_ERR(rc, NULL);
+        PRINT_ERR(rc, nullptr);
     }
     return rc == SQLITE_ROW;
 }
@@ -135,9 +135,9 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow() const
 Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column) const
 {
     auto lock = std::shared_lock(this->mutex);
-    if (this->stmt == NULL) [[unlikely]]
+    if (this->stmt == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readColumn STMT NULL");
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readColumn STMT nullptr");
         return {};
     }
     auto colCount = sqlite3_column_count(this->stmt);
@@ -165,7 +165,7 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
 
 NGenXX::Store::SQLite::Connection::QueryResult::~QueryResult()
 {
-    if (this->stmt != NULL) [[likely]]
+    if (this->stmt != nullptr) [[likely]]
     {
         sqlite3_finalize(this->stmt);
     }

@@ -33,8 +33,8 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               const std::vector<std::string> &formFieldNameV = {},
                                               const std::vector<std::string> &formFieldMimeV = {},
                                               const std::vector<std::string> &formFieldDataV = {},
-                                              const std::FILE *cFILE = nullptr, const size_t fileSize = 0,
-                                              const size_t timeout = NGenXXHttpDefaultTimeout);
+                                              const std::FILE *cFILE = nullptr, size_t fileSize = 0,
+                                              size_t timeout = NGenXXHttpDefaultTimeout);
 
 NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               const NGenXXHttpMethodX method,
@@ -44,9 +44,9 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               const std::vector<std::string> &formFieldNameV = {},
                                               const std::vector<std::string> &formFieldMimeV = {},
                                               const std::vector<std::string> &formFieldDataV = {},
-                                              const std::FILE *cFILE = nullptr, const size_t fileSize = 0,
-                                              const size_t timeout = NGenXXHttpDefaultTimeout);
+                                              const std::FILE *cFILE = nullptr, size_t fileSize = 0,
+                                              size_t timeout = NGenXXHttpDefaultTimeout);
 
-bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath, const size_t timeout = NGenXXHttpDefaultTimeout);
+bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath, size_t timeout = NGenXXHttpDefaultTimeout);
 
 #endif // NGENXX_INCLUDE_NET_HTTP_HXX_

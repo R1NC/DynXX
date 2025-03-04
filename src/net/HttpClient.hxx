@@ -32,15 +32,15 @@ namespace NGenXX
             HttpClient(HttpClient &&) = delete;
             HttpClient &operator=(HttpClient &&) = delete;
 
-            [[nodiscard]] NGenXXHttpResponse request(const std::string &url, const int method,
+            [[nodiscard]] NGenXXHttpResponse request(const std::string &url, int method,
                                                      const std::vector<std::string> &headers,
                                                      const std::string &params,
                                                      const Bytes &rawBody,
                                                      const std::vector<HttpFormField> &formFields,
-                                                     const std::FILE *cFILE, const size_t fileSize,
-                                                     const size_t timeout);
+                                                     const std::FILE *cFILE, size_t fileSize,
+                                                     size_t timeout);
 
-            [[nodiscard]] bool download(const std::string &url, const std::string &filePath, const size_t timeout);
+            [[nodiscard]] bool download(const std::string &url, const std::string &filePath, size_t timeout);
 
             ~HttpClient();
 

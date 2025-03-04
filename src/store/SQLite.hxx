@@ -73,7 +73,7 @@ namespace NGenXX
                     ~QueryResult();
 
                 private:
-                    sqlite3_stmt *stmt{NULL};
+                    sqlite3_stmt *stmt{nullptr};
                     mutable std::shared_mutex mutex;
                 };
 
@@ -87,7 +87,7 @@ namespace NGenXX
                 /**
                  * @brief Query with a SQL
                  * @param sql SQL
-                 * @return A QueryResult, or NULL if execute failed.
+                 * @return A QueryResult, or `nullptr` if execute failed.
                  */
                 std::unique_ptr<QueryResult> query(const std::string &sql) const;
 
@@ -97,7 +97,7 @@ namespace NGenXX
                 ~Connection();
 
             private:
-                struct sqlite3 *db{NULL};
+                struct sqlite3 *db{nullptr};
                 mutable std::mutex mutex;
             };
 
