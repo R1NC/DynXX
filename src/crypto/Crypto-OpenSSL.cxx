@@ -80,7 +80,10 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     
     //ECB-PKCS5 UnPadding:
     auto paddingSize = static_cast<size_t>(inBytes[inLen - 1]);
-    inLen -= paddingSize;
+    if (paddingSize < inLen && paddingSize < AES_BLOCK_SIZE)
+    {
+        inLen -= paddingSize;
+    }
     auto outLen = inLen;
 
     byte fixedIn[outLen];
