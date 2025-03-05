@@ -37,14 +37,15 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
     {
         return {};
     }
-    // keyLen = AES_BLOCK_SIZE * 8;
+    
+    //ECB-PKCS5 Padding:
     auto outLen = inLen;
-    if (inLen % AES_BLOCK_SIZE != 0)
-    {
-        outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
-    }
+    auto paddingSize = AES_BLOCK_SIZE - (inLen % AES_BLOCK_SIZE);
+    auto paddingData = static_cast<byte>(paddingSize);
+    outLen += paddingSize;
+
     byte fixedIn[outLen];
-    std::memset(fixedIn, 0, outLen);
+    std::memset(fixedIn, paddingData, outLen);
     std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
     std::memset(out, 0, outLen);
@@ -76,14 +77,13 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     {
         return {};
     }
-    // keyLen = AES_BLOCK_SIZE * 8;
+    
+    //ECB-PKCS5 UnPadding:
+    auto paddingSize = static_cast<size_t>(inBytes[inLen - 1]);
+    inLen -= paddingSize;
     auto outLen = inLen;
-    if (inLen % AES_BLOCK_SIZE != 0)
-    {
-        outLen = (inLen / AES_BLOCK_SIZE + 1) * AES_BLOCK_SIZE;
-    }
+
     byte fixedIn[outLen];
-    std::memset(fixedIn, 0, outLen);
     std::memcpy(fixedIn, in, inLen);
     byte out[outLen];
     std::memset(out, 0, outLen);
