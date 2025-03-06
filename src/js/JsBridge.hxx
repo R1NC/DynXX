@@ -191,6 +191,9 @@ namespace NGenXX
         JSRuntime *runtime{nullptr};
         JSContext *context{nullptr};
         JSValue jGlobal;
+
+        JSValue newPromise(const std::function<JSValue()> &jf);
+
         // Custom hash function for JSValue
         struct JSValueHash 
         {
@@ -204,12 +207,27 @@ namespace NGenXX
         {
           bool operator()(const JSValue &left, const JSValue &right) const 
           {
-              return JS_VALUE_GET_PTR(left) == JS_VALUE_GET_PTR(right);
+            if (JS_VALUE_GET_TAG(left) != JS_VALUE_GET_TAG(right)) 
+            {
+              return false;
+            }
+            auto tag = JS_VALUE_GET_TAG(left);
+            if (tag == JS_TAG_BOOL && JS_VALUE_GET_BOOL(left) != JS_VALUE_GET_BOOL(right))
+            {
+              return false;
+            }
+            if (tag == JS_TAG_INT && JS_VALUE_GET_INT(left) != JS_VALUE_GET_INT(right))
+            {
+              return false;
+            }
+            if (tag == JS_TAG_FLOAT64 && JS_VALUE_GET_FLOAT64(left) != JS_VALUE_GET_FLOAT64(right))
+            {
+              return false;
+            }
+            return JS_VALUE_GET_PTR(left) == JS_VALUE_GET_PTR(right);
           }
         };
         std::unordered_set<JSValue, JSValueHash, JSValueEqual> jValueCache;
-
-        JSValue newPromise(const std::function<JSValue()> &jf);
     };
 }
 
