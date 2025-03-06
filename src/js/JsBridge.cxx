@@ -182,7 +182,7 @@ bool _ngenxx_js_loadScript(JSContext *ctx, const std::string &script, const std:
         js_module_set_import_meta(ctx, jEvalRet, false, true);
         auto jEvalFuncRet = JS_EvalFunction(ctx, jEvalRet);
         JS_FreeValue(ctx, jEvalFuncRet);
-        // this->jValues.push_back(jEvalRet);//Can not free here, or QJS may crash
+        // this->jValueCache.insert(std::move(jEvalRet));//Can not free here, or QJS may crash
     }
     else
     {
@@ -221,8 +221,7 @@ NGenXX::JsBridge::JsBridge()
     js_std_set_worker_new_context_func(_ngenxx_js_newContext);
 
     this->context = _ngenxx_js_newContext(this->runtime);
-    auto globalObj = JS_GetGlobalObject(this->context);
-    this->jValues.push_back(globalObj); // Can not free here, will be called in future
+    this->jGlobal = JS_GetGlobalObject(this->context);// Can not free here, will be called in future
 
     std::thread([&ctx = this->context]
     {
@@ -246,7 +245,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
     }
     else [[likely]]
     {
-        if (!JS_DefinePropertyValueStr(this->context, this->jValues[0], funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE)) [[unlikely]]
+        if (!JS_DefinePropertyValueStr(this->context, this->jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE)) [[unlikely]]
         {
             ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_DefinePropertyValueStr failed ->");
             _ngenxx_js_dump_err(this->context);
@@ -254,7 +253,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
         }
     }
 
-    this->jValues.push_back(jFunc); // Can not free here, will be called in future
+    this->jValueCache.insert(std::move(jFunc)); // Can not free here, will be called in future
 
     return res;
 }
@@ -335,13 +334,13 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     _ngenxx_js_mutex->lock();
     std::string s;
 
-    auto jFunc = JS_GetPropertyStr(this->context, this->jValues[0], func.c_str());
+    auto jFunc = JS_GetPropertyStr(this->context, this->jGlobal, func.c_str());
     if (JS_IsFunction(this->context, jFunc)) [[likely]]
     {
         auto jParams = JS_NewString(this->context, params.c_str());
         JSValue argv[] = {jParams};
 
-        auto jRes = JS_Call(this->context, jFunc, this->jValues[0], sizeof(argv), argv);
+        auto jRes = JS_Call(this->context, jFunc, this->jGlobal, sizeof(argv), argv);
 
         /// Release the lock imediately, to avoid blocking the JS event loop.
         _ngenxx_js_mutex->unlock();
@@ -479,7 +478,7 @@ NGenXX::JsBridge::~JsBridge()
 
     js_std_set_worker_new_context_func(nullptr);
 
-    for (const auto &jv : this->jValues)
+    for (const auto &jv : this->jValueCache)
     {
         auto tag = JS_VALUE_GET_TAG(jv);
         if (tag == static_cast<decltype(tag)>(JS_TAG_MODULE)) [[unlikely]]
@@ -489,6 +488,7 @@ NGenXX::JsBridge::~JsBridge()
         }
         JS_FreeValue(this->context, jv);
     }
+    JS_FreeValue(this->context, jGlobal);
     JS_FreeContext(this->context);
 
     js_std_free_handlers(this->runtime);

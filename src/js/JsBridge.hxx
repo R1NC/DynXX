@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <unordered_set>
 
 #include <quickjs-libc.h>
 
@@ -189,7 +190,24 @@ namespace NGenXX
     private:
         JSRuntime *runtime{nullptr};
         JSContext *context{nullptr};
-        std::vector<JSValue> jValues;
+        JSValue jGlobal;
+        // Custom hash function for JSValue
+        struct JSValueHash 
+        {
+          std::size_t operator()(const JSValue &jv) const 
+          {
+            return std::hash<void *>()(reinterpret_cast<void *>(JS_VALUE_GET_PTR(jv)));
+          }
+        };
+        // Custom equality function for JSValue
+        struct JSValueEqual 
+        {
+          bool operator()(const JSValue &left, const JSValue &right) const 
+          {
+              return JS_VALUE_GET_PTR(left) == JS_VALUE_GET_PTR(right);
+          }
+        };
+        std::unordered_set<JSValue, JSValueHash, JSValueEqual> jValueCache;
 
         JSValue newPromise(const std::function<JSValue()> &jf);
     };
