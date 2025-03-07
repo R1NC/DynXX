@@ -107,7 +107,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
         offset += AES_BLOCK_SIZE;
     }
 
-    return trimBytes(wrapBytes(out, outLen));
+    return wrapBytes(out, outLen);
 }
 
 const EVP_CIPHER *aesGcmCipher(const Bytes &keyBytes)
