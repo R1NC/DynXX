@@ -15,19 +15,7 @@
 #include <limits>
 #include <type_traits>
 
-#pragma mark Pointer
-
-static inline void *addr2ptr(const address addr)
-{
-    return reinterpret_cast<void *>(addr);
-}
-
-static inline address ptr2addr(const void *ptr)
-{
-    return reinterpret_cast<address>(ptr);
-}
-
-#pragma mark Memory
+#pragma mark Concepts
 
 template <typename T>
 concept CharacterType =
@@ -36,6 +24,17 @@ concept CharacterType =
     || std::is_same_v<T, char8_t>
 #endif
     || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t>;
+
+template <typename T>
+concept ConstType = std::is_const_v<T>;
+    
+template <typename T>
+concept VoidType = std::is_void_v<T>;
+
+template<class T, class U>
+concept Derived = std::is_base_of<U, T>::value;
+
+#pragma mark Memory
 
 // malloc for character types
 template <CharacterType T>
@@ -64,12 +63,6 @@ static inline T* mallocX(size_t count)
     return static_cast<T *>(ptr);
 }
 
-
-template <typename T>
-concept ConstType = std::is_const_v<T>;
-
-template <typename T>
-concept VoidType = std::is_void_v<T>;
 
 // free for non-const & non-void types
 template <typename T>
@@ -123,7 +116,19 @@ static inline void freeX(T* &ptr)
     ptr = nullptr;
 }
 
-#pragma mark Any
+#pragma mark Pointer transform
+
+static inline void *addr2ptr(const address addr)
+{
+    return reinterpret_cast<void *>(addr);
+}
+
+static inline address ptr2addr(const void *ptr)
+{
+    return reinterpret_cast<address>(ptr);
+}
+
+#pragma mark Any Type
 
 using Any = std::variant<int64_t, double, std::string>;
 
@@ -159,7 +164,7 @@ using Dict = std::unordered_map<std::string, std::string>;
 using DictAny = std::unordered_map<std::string, Any>;
 
 
-#pragma mark Bytes
+#pragma mark Bytes Type
 
 using Bytes = std::vector<byte>;
 
