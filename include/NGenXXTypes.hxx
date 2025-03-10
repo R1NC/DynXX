@@ -30,64 +30,96 @@ static inline address ptr2addr(const void *ptr)
 #pragma mark Memory
 
 template <typename T>
+concept CharacterType =
+    std::is_same_v<T, char> || std::is_same_v<T, wchar_t>
+#ifdef __cpp_char8_t
+    || std::is_same_v<T, char8_t>
+#endif
+    || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t>;
+
+// malloc for character types
+template <CharacterType T>
 static inline T* mallocX(size_t count)
 {
-    if constexpr (std::is_same_v<T, char> || std::is_same_v<T, wchar_t> 
-        || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> 
-#ifdef __cpp_char8_t
-        || std::is_same_v<T, char8_t>
- #endif
-    )
+    auto len = count * sizeof(T) + 1;
+    auto ptr = std::malloc(len);
+    if (!ptr) [[unlikely]]
     {
-        auto len = count * sizeof(T) + 1;
-        auto ptr = std::malloc(len);
-        if (!ptr) [[unlikely]]
-        {
-            return nullptr;
-        }
-        std::memset(ptr, 0, len);
-        return static_cast<T *>(ptr);
+        return nullptr;
     }
-    else 
-    {
-        auto ptr = std::calloc(count, sizeof(T));
-        if (!ptr) [[unlikely]]
-        {
-            return nullptr;
-        }
-        return static_cast<T *>(ptr);
-    }
+    std::memset(ptr, 0, len);
+    return static_cast<T *>(ptr);
 }
 
+// malloc for non-character types
 template <typename T>
+requires (!CharacterType<T>)
+static inline T* mallocX(size_t count)
+{
+    auto ptr = std::calloc(count, sizeof(T));
+    if (!ptr) [[unlikely]]
+    {
+        return nullptr;
+    }
+    return static_cast<T *>(ptr);
+}
+
+
+template <typename T>
+concept ConstType = std::is_const_v<T>;
+
+template <typename T>
+concept VoidType = std::is_void_v<T>;
+
+// free for non-const & non-void types
+template <typename T>
+requires (!ConstType<T> && !VoidType<T>)
 static inline void freeX(T* &ptr)
 {
     if (!ptr) [[unlikely]]
     {
         return;
     }
-    if constexpr (std::is_const_v<T>)
+    std::free(static_cast<void *>(ptr));
+    ptr = nullptr;
+}
+
+// free for non-const & void types
+template <typename T>
+requires (!ConstType<T> && VoidType<T>)
+static inline void freeX(T* &ptr)
+{
+    if (!ptr) [[unlikely]]
     {
-        if constexpr (std::is_void_v<T>)
-        {
-            std::free(const_cast<void *>(ptr));
-        }
-        else 
-        {
-            std::free(const_cast<void *>(static_cast<const void *>(ptr)));
-        }
+        return;
     }
-    else 
+    std::free(ptr);
+    ptr = nullptr;
+}
+
+// free for const & non-void types
+template <typename T>
+requires (ConstType<T> && !VoidType<T>)
+static inline void freeX(T* &ptr)
+{
+    if (!ptr) [[unlikely]]
     {
-        if constexpr (std::is_void_v<T>)
-        {
-            std::free(ptr);
-        }
-        else 
-        {
-            std::free(static_cast<void *>(ptr));
-        }
+        return;
     }
+    std::free(const_cast<void *>(static_cast<const void *>(ptr)));
+    ptr = nullptr;
+}
+
+// free for const & void types
+template <typename T>
+requires (ConstType<T> && VoidType<T>)
+static inline void freeX(T* &ptr)
+{
+    if (!ptr) [[unlikely]]
+    {
+        return;
+    }
+    std::free(const_cast<void *>(ptr));
     ptr = nullptr;
 }
 
