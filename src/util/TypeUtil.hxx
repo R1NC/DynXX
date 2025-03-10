@@ -39,19 +39,4 @@ static inline byte *copyBytes(const Bytes &t)
     return ncs;
 }
 
-static inline Bytes trimBytes(const Bytes &bytes)
-{
-    auto data = bytes.data();
-    auto len = bytes.size();
-    auto fixedLen = len;
-    for (auto i = len - 1; i > 0; i--)
-    {
-        if (data[i] <= 0) [[unlikely]]
-        {
-            fixedLen--;
-        }
-    }
-    return Bytes(bytes.begin(), bytes.begin() + fixedLen);
-}
-
 #endif // NGENXX_SRC_UTIL_TYPE_HXX_

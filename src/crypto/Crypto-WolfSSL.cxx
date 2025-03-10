@@ -133,7 +133,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
 
     wc_AesFree(aes);
 
-    return trimBytes(wrapBytes(out, outLen));
+    return wrapBytes(out, outLen);
 }
 
 Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, size_t tagBits)
