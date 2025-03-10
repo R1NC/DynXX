@@ -436,7 +436,7 @@ const char **ngenxx_store_kv_all_keys(void *const conn, size_t *len)
     {
         *len = t.size();
     }
-    return copyStrVector(t, NGENXX_STORE_KV_KEY_MAX_LENGTH);
+    return const_cast<const char **>(copyStrVector(t, NGENXX_STORE_KV_KEY_MAX_LENGTH));
 }
 
 EXPORT_AUTO

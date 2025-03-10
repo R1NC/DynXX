@@ -6,7 +6,7 @@
 
 #include <NGenXXTypes.hxx>
 
-static inline const char *copyStr(const std::string &s)
+static inline char *copyStr(const std::string &s)
 {
     const char *c = s.c_str();
     auto len = std::strlen(c);
@@ -15,20 +15,18 @@ static inline const char *copyStr(const std::string &s)
     return nc;
 }
 
-static inline const char **copyStrVector(const std::vector<std::string> &sv, size_t strMaxLen)
+static inline char **copyStrVector(const std::vector<std::string> &sv, size_t strMaxLen)
 {
-    auto sArrLen = sizeof(char *) * sv.size();
-    auto sArr = mallocX<char *>(sArrLen);
+    auto sArr = mallocX<char *>(sv.size());
     for (size_t i = 0; i < sv.size(); i++)
     {
-        auto len = sizeof(char) * strMaxLen;
-        sArr[i] = mallocX<char>(len);
-        std::strncpy(sArr[i], sv[i].c_str(), len);
+        sArr[i] = mallocX<char>(strMaxLen);
+        std::strncpy(sArr[i], sv[i].c_str(), strMaxLen);
     }
-    return const_cast<const char **>(sArr);
+    return sArr;
 }
 
-static inline const byte *copyBytes(const Bytes &t)
+static inline byte *copyBytes(const Bytes &t)
 {
     auto cs = t.data();
     auto len = t.size();

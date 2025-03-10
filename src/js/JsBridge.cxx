@@ -23,11 +23,11 @@ constexpr auto IMPORT_STD_OS_JS = "import * as std from 'qjs:std';\n"
 
 constexpr auto NGenXXJsSleepMilliSecs = 1uz;
 
-typedef struct
+typedef struct NgenXXJSPromise
 {
-    JSValue p;
-    JSValue f[2];
-} NGenXX_JS_Promise;
+    JSValue p{JS_UNDEFINED};
+    JSValue f[2]{JS_UNDEFINED, JS_UNDEFINED};
+} NgenXXJSPromise;
 
 static uv_loop_t *_ngenxx_js_uv_loop_p = nullptr;
 static uv_loop_t *_ngenxx_js_uv_loop_t = nullptr;
@@ -71,7 +71,7 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_time
 {
     if (uv_loop == nullptr) [[likely]]
     {
-        uv_loop = mallocX<uv_loop_t>(1);
+        uv_loop = mallocX<uv_loop_t>();
         uv_loop_init(uv_loop);
     }
     else [[unlikely]]
@@ -84,7 +84,7 @@ static void _ngenxx_js_uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_time
 
     if (uv_timer == nullptr) [[likely]]
     {
-        uv_timer = mallocX<uv_timer_t>(1);
+        uv_timer = mallocX<uv_timer_t>();
         uv_timer_init(uv_loop, uv_timer);
         uv_timer->data = ctx;
         uv_timer_start(uv_timer, cb, NGenXXJsSleepMilliSecs, NGenXXJsSleepMilliSecs);
@@ -370,9 +370,9 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     return s;
 }
 
-NGenXX_JS_Promise *_ngenxx_js_promise_new(JSContext *ctx)
+NgenXXJSPromise *_NgenXXJSPromise_new(JSContext *ctx)
 {
-    auto jPromise = new NGenXX_JS_Promise();
+    auto jPromise = new NgenXXJSPromise();
     jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
     if (JS_IsException(jPromise->p)) [[unlikely]]
     {
@@ -384,7 +384,7 @@ NGenXX_JS_Promise *_ngenxx_js_promise_new(JSContext *ctx)
     return jPromise;
 }
 
-void _ngenxx_js_promise_callback(JSContext *ctx, NGenXX_JS_Promise *jPromise, JSValue jRet)
+void _NgenXXJSPromise_callback(JSContext *ctx, NgenXXJSPromise *jPromise, JSValue jRet)
 {
     auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
     if (JS_IsException(jCallRet)) [[unlikely]]
@@ -403,7 +403,7 @@ void _ngenxx_js_promise_callback(JSContext *ctx, NGenXX_JS_Promise *jPromise, JS
 
 JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
 {
-    auto jPromise = _ngenxx_js_promise_new(this->context);
+    auto jPromise = _NgenXXJSPromise_new(this->context);
     if (jPromise == nullptr) [[unlikely]]
     {
         return JS_EXCEPTION;
@@ -418,7 +418,7 @@ JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
 
         auto jRet = cb();
 
-        _ngenxx_js_promise_callback(ctx, jPro, jRet);
+        _NgenXXJSPromise_callback(ctx, jPro, jRet);
     }).detach();
 
     return jPromise->p;

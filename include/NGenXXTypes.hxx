@@ -38,7 +38,7 @@ concept Derived = std::is_base_of<U, T>::value;
 
 // malloc for character types
 template <CharacterType T>
-static inline T* mallocX(size_t count)
+static inline T* mallocX(size_t count = 1)
 {
     auto len = count * sizeof(T) + 1;
     auto ptr = std::malloc(len);
@@ -53,7 +53,7 @@ static inline T* mallocX(size_t count)
 // malloc for non-character types
 template <typename T>
 requires (!CharacterType<T>)
-static inline T* mallocX(size_t count)
+static inline T* mallocX(size_t count = 1)
 {
     auto ptr = std::calloc(count, sizeof(T));
     if (!ptr) [[unlikely]]

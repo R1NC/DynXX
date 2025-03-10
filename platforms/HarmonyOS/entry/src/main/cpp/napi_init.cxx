@@ -103,7 +103,7 @@ static void engineLogCallback(int level, const char *content)
         return;
     }
 
-    auto tSLogWorkData = mallocX<TSLogWorkData>(1);
+    auto tSLogWorkData = mallocX<TSLogWorkData>();
     tSLogWorkData->tsWork = nullptr;
     tSLogWorkData->tsWorkFunc = nullptr;
     tSLogWorkData->logLevel = level;
