@@ -14,13 +14,13 @@ string(
     IS_ROOT
 )
 
-if(IS_ROOT)
+#if(IS_ROOT)
     set(CMAKE_C_COMPILER "clang")
     set(CMAKE_CXX_COMPILER "clang++")
     set(CMAKE_C_STANDARD 99)
     set(CMAKE_CXX_STANDARD 23)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
+#endif()
 
 project(NGenXX)
 
