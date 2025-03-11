@@ -13,31 +13,85 @@
 #include <variant>
 #include <unordered_map>
 #include <limits>
+#include <iostream>
 #include <type_traits>
 
 #pragma mark Concepts
 
 template <typename T>
-concept CharacterType =
+concept ConstT = std::is_const_v<T>;
+    
+template <typename T>
+concept VoidT = std::is_void_v<T>;
+
+template <typename T>
+concept CharacterT =
     std::is_same_v<T, char> || std::is_same_v<T, wchar_t>
 #ifdef __cpp_char8_t
     || std::is_same_v<T, char8_t>
 #endif
     || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t>;
 
-template <typename T>
-concept ConstType = std::is_const_v<T>;
-    
-template <typename T>
-concept VoidType = std::is_void_v<T>;
-
 template<class T, class U>
-concept Derived = std::is_base_of<U, T>::value;
+concept DerivedT = std::is_base_of<U, T>::value;
 
-#pragma mark Memory
+template<typename T>
+concept PolymorphicT = std::is_polymorphic_v<T>;
+
+template<typename T>
+concept MemcpyableT = std::is_trivially_copyable_v<T>;
+
+template<typename T>
+concept HashableT = requires(T a) 
+{
+    { std::hash<T>{}(a) } -> std::convertible_to<std::size_t>;
+};
+
+template<typename T>
+concept Comparable = requires(T a, T b) 
+{
+    { a < b } -> std::convertible_to<bool>;
+};
+
+template<typename T>
+concept Iterable = requires(T a) 
+{
+    { std::begin(a) } -> std::input_iterator;
+    { std::end(a) } -> std::sentinel_for<decltype(std::begin(a))>;
+};
+
+#pragma mark Utils using concept
+
+template<PolymorphicT T>
+T* dynamicCastX(void* ptr) 
+{
+    return dynamic_cast<T *>(ptr);
+}
+
+template<HashableT T>
+std::size_t getHash(const T& value) 
+{
+    return std::hash<T>{}(value);
+}
+
+template<Iterable T>
+void printElements(const T& container) 
+{
+    for (const auto& element : container) 
+    {
+        std::cout << element << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+template<MemcpyableT T>
+void memcpyX(const T* src, T* dst, std::size_t count) 
+{
+    std::memcpy(dst, src, count * sizeof(T));
+}
 
 // malloc for character types
-template <CharacterType T>
+template <CharacterT T>
 static inline T* mallocX(size_t count = 1)
 {
     auto len = count * sizeof(T) + 1;
@@ -52,7 +106,7 @@ static inline T* mallocX(size_t count = 1)
 
 // malloc for non-character types
 template <typename T>
-requires (!CharacterType<T>)
+requires (!CharacterT<T>)
 static inline T* mallocX(size_t count = 1)
 {
     auto ptr = std::calloc(count, sizeof(T));
@@ -63,10 +117,9 @@ static inline T* mallocX(size_t count = 1)
     return static_cast<T *>(ptr);
 }
 
-
 // free for non-const & non-void types
 template <typename T>
-requires (!ConstType<T> && !VoidType<T>)
+requires (!ConstT<T> && !VoidT<T>)
 static inline void freeX(T* &ptr)
 {
     if (!ptr) [[unlikely]]
@@ -79,7 +132,7 @@ static inline void freeX(T* &ptr)
 
 // free for non-const & void types
 template <typename T>
-requires (!ConstType<T> && VoidType<T>)
+requires (!ConstT<T> && VoidT<T>)
 static inline void freeX(T* &ptr)
 {
     if (!ptr) [[unlikely]]
@@ -92,7 +145,7 @@ static inline void freeX(T* &ptr)
 
 // free for const & non-void types
 template <typename T>
-requires (ConstType<T> && !VoidType<T>)
+requires (ConstT<T> && !VoidT<T>)
 static inline void freeX(T* &ptr)
 {
     if (!ptr) [[unlikely]]
@@ -105,7 +158,7 @@ static inline void freeX(T* &ptr)
 
 // free for const & void types
 template <typename T>
-requires (ConstType<T> && VoidType<T>)
+requires (ConstT<T> && VoidT<T>)
 static inline void freeX(T* &ptr)
 {
     if (!ptr) [[unlikely]]
