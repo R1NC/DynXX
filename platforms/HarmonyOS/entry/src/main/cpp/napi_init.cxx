@@ -50,7 +50,8 @@ static napi_ref sTsLogCallbackRef;
 
 static void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context, void *data)
 {
-    if (env == nullptr || ts_callback == nullptr || data == nullptr) {
+    if (env == nullptr || ts_callback == nullptr || data == nullptr) 
+    {
         return;
     }
 
@@ -99,7 +100,8 @@ static void OnLogWorkComplete(napi_env env, napi_status status, void *data)
 
 static void engineLogCallback(int level, const char *content)
 {
-    if (sNapiEnv == nullptr || content == nullptr) {
+    if (sNapiEnv == nullptr || content == nullptr) 
+    {
         return;
     }
 
@@ -216,11 +218,11 @@ static napi_value NetHttpRequest(napi_env env, napi_callback_info info)
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
-    for (int i = 0; i < header_c; i++)
+    for (decltype(header_c) i = 0; i < header_c; i++)
     {
         freeX(header_v[i]);
     }
-    for (int i = 0; i < form_field_count; i++)
+    for (decltype(form_field_count) i = 0; i < form_field_count; i++)
     {
         freeX(form_field_name_v[i]);
         freeX(form_field_mime_v[i]);
@@ -762,7 +764,8 @@ static napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
-    if (aadBytes) {
+    if (aadBytes) 
+    {
         freeX(aadBytes);
     }
     freeX(initVectorBytes);
@@ -790,7 +793,8 @@ static napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
-    if (aadBytes) {
+    if (aadBytes) 
+    {
         freeX(aadBytes);
     }
     freeX(initVectorBytes);
@@ -902,7 +906,8 @@ static napi_value LCall(napi_env env, napi_callback_info info)
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
-    if (params) {
+    if (params) 
+    {
         freeX(params);
     }
     freeX(func);
@@ -969,7 +974,8 @@ static napi_value JCall(napi_env env, napi_callback_info info)
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
-    if (params) {
+    if (params) 
+    {
         freeX(params);
     }
     freeX(func);
@@ -981,7 +987,8 @@ static napi_value JCall(napi_env env, napi_callback_info info)
 EXTERN_C_START
 static napi_value RegisterFuncs(napi_env env, napi_value exports)
 {
-    napi_property_descriptor desc[] = {
+    napi_property_descriptor desc[] = 
+    {
         {"getVersion", nullptr, GetVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"init", nullptr, Init, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"release", nullptr, Release, nullptr, nullptr, nullptr, napi_default, nullptr},
@@ -1057,7 +1064,8 @@ static napi_value RegisterFuncs(napi_env env, napi_value exports)
 }
 EXTERN_C_END
 
-static napi_module ngenxxModule = {
+static napi_module ngenxxModule = 
+{
     .nm_version = 1,
     .nm_flags = 0,
     .nm_filename = nullptr,
@@ -1067,4 +1075,7 @@ static napi_module ngenxxModule = {
     .reserved = {0},
 };
 
-extern "C" __attribute__((constructor)) void RegisterNGenXXModule(void) { napi_module_register(&ngenxxModule); }
+extern "C" __attribute__((constructor)) void RegisterNGenXXModule(void) 
+{ 
+    napi_module_register(&ngenxxModule); 
+}

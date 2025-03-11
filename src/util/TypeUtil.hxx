@@ -17,8 +17,9 @@ static inline char *copyStr(const std::string &s)
 
 static inline char **copyStrVector(const std::vector<std::string> &sv, size_t strMaxLen)
 {
-    auto sArr = mallocX<char *>(sv.size());
-    for (size_t i = 0; i < sv.size(); i++)
+    auto size = sv.size();
+    auto sArr = mallocX<char *>(size);
+    for (decltype(size) i = 0; i < size; i++)
     {
         sArr[i] = mallocX<char>(strMaxLen);
         std::strncpy(sArr[i], sv[i].c_str(), strMaxLen);

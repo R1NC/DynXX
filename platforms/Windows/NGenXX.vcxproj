@@ -134,6 +134,11 @@
     <ClCompile Include="..\POSIX\NGenXXPOSIX.cxx" />
     <ClCompile Include="NGenXX.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile>
+        <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+</ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

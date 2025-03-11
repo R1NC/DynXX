@@ -58,7 +58,7 @@
 		403F9F822CBCB5E600F4ECE6 /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../../scripts/Lua/biz.lua; sourceTree = "<group>"; };
 		403F9F8C2CBF480F00F4ECE6 /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
 		403F9F8D2CBF480F00F4ECE6 /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
-		40596B782C75AAD700AC552D /* NGenXX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = NGenXX.app; path = "NGenXX-Wrapper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		40596B782C75AAD700AC552D /* NGenXX-Wrapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NGenXX-Wrapper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		40596B7B2C75AAD700AC552D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		40596B7C2C75AAD700AC552D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		40596B7E2C75AAD700AC552D /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
@@ -155,7 +155,7 @@
 		40596B792C75AAD700AC552D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				40596B782C75AAD700AC552D /* NGenXX.app */,
+				40596B782C75AAD700AC552D /* NGenXX-Wrapper.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -254,7 +254,7 @@
 			);
 			name = "NGenXX-Wrapper";
 			productName = "NGenXX-Wrapper";
-			productReference = 40596B782C75AAD700AC552D /* NGenXX.app */;
+			productReference = 40596B782C75AAD700AC552D /* NGenXX-Wrapper.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -464,6 +464,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5TNCWX532Z;
@@ -492,6 +493,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5TNCWX532Z;
