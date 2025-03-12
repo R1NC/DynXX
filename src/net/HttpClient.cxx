@@ -6,7 +6,7 @@
 #include <vector>
 #include <sstream>
 
-#if defined(USE_ADA_URL)
+#if defined(USE_STD_RANGES)
 #include <ada.h>
 #endif
 
@@ -260,7 +260,7 @@ bool NGenXX::Net::HttpClient::checkUrlValid(const std::string &url)
     {
         return false;
     }
-#if defined(USE_ADA_URL)
+#if defined(USE_STD_RANGES)
     auto aUrl = ada::parse(url);
     if (!aUrl)
     {
@@ -273,7 +273,7 @@ bool NGenXX::Net::HttpClient::checkUrlValid(const std::string &url)
 
 bool NGenXX::Net::HttpClient::checkUrlHasSearch(const std::string &url)
 {
-#if defined(USE_ADA_URL)
+#if defined(USE_STD_RANGES)
     auto aUrl = ada::parse(url);
     return !aUrl->get_search().empty();
 #else
@@ -283,7 +283,7 @@ bool NGenXX::Net::HttpClient::checkUrlHasSearch(const std::string &url)
 
 bool NGenXX::Net::HttpClient::handleSSL(CURL *const curl, const std::string &url)
 {
-#if defined(USE_ADA_URL)
+#if defined(USE_STD_RANGES)
     auto aUrl = ada::parse(url);
     static const auto protocolHttps = "https:";
     if (aUrl->get_protocol() == protocolHttps)

@@ -6,6 +6,9 @@
 
 #include <algorithm>
 #include <functional>
+#if defined(USE_STD_RANGES)
+#include <ranges>
+#endif
 
 #include <NGenXX.hxx>
 #include <NGenXXNetHttp.h>
@@ -13,11 +16,21 @@
 
 std::string bytes2json(const Bytes &bytes)
 {
+    if (bytes.empty()) [[unlikely]]
+    {
+        return {};
+    }
+#if defined(USE_STD_RANGES)
+    auto intV = bytes 
+        | std::views::transform([](const auto b) { return static_cast<int>(b); })
+        | std::ranges::to<std::vector>();
+#else
     std::vector<int> intV(bytes.size());
     std::transform(bytes.begin(), bytes.end(), intV.begin(), [](const auto b) { 
         return static_cast<int>(b); 
     });
-    auto cj = bytes.empty() ? cJSON_CreateArray() : cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));
+#endif
+    auto cj = cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));
     return cJSON_PrintUnformatted(cj);
 }
 
