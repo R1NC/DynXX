@@ -18,31 +18,38 @@ A cross-platform framework based on modern C++ that also supports JS and Lua.
 | Zip |✔️|✔️|🛠️|🛠️|✔️|✔️|🛠️|
 | Device Info |✔️|✔️|✔️|🛠️|✔️|🛠️|❔|
 
-- ❔ : Unknown.
-- ⭕ : Not supported.
-- ❌ : With compiling error.
-- 🛠️ : Under developing.
-- ⁉️ : With running error.
+- ❔ : Unknown;
+- ⭕ : Not supported;
+- ❌ : With compiling error;
+- 🛠️ : Under developing;
+- ⁉️ : With running error;
 - ✔️ : Running well.
 
 ### Unsupported Features in WebAssembly
 
-- Load Lua script with file;(Will trigger a prompt window.)
-- [C/C++ callback JS function in async thread][2];
+- Load Lua script with file;(Will trigger a prompt window)
+- [C/C++ callback JS function in async thread][2].
 
 ## Requirements
 
 - C99, C++23;
 - Clang 15+;
-- CMake;
-- Xcode, for iOS & macOS;
-- Android Studio(or IntelliJ IDEA) with NDK;
+- CMake 3.10+;
+- Xcode 14.0+, for iOS & macOS;
+- Android Studio(or IntelliJ IDEA) with NDK r25+;
 - DevEco Studio with Native SDK, for HarmonyOS;
-- [Emscripten][1], for WebAssembly;
+- [Emscripten][1], for WebAssembly.
+
+## C++ New Features Compatibility
+
+| Feature | Standard | Unsupported Platforms |
+| :-- | :--: | :--: |
+| [std::format][12] | C++20 | iOS 16.3-, macOS 13.3-, HarmonyOS Next; |
+| [std::ranges][13] | C++20 | iOS 16.3-, macOS 13.3-, HarmonyOS Next; |
 
 ## Dependencies
 
-- [ada-url][3]: URL parser;
+- [ada-url][3]: URL parser;(Requires `std::ranges` in C++20)
 - [curl][4]: Networking;
 - [cJSON][5]: JSON parser;
 - [libuv][6]: Asynchronous I/O;
@@ -50,7 +57,7 @@ A cross-platform framework based on modern C++ that also supports JS and Lua.
 - [MMKV][8]: Key-value storage;
 - [openssl][9]: Crypto;
 - [quickjs][10]: JS runtime;
-- [sqlite][11]: DB storage;
+- [sqlite][11]: DB storage.
 
 [1]: https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install
 [2]: https://github.com/emscripten-core/emscripten/issues/16567
@@ -63,3 +70,5 @@ A cross-platform framework based on modern C++ that also supports JS and Lua.
 [9]: https://github.com/openssl/openssl
 [10]: https://github.com/bellard/quickjs
 [11]: https://github.com/sqlite/sqlite
+[12]: https://en.cppreference.com/w/cpp/utility/format/format
+[13]: https://en.cppreference.com/w/cpp/ranges
