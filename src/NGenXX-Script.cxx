@@ -14,7 +14,7 @@
 std::string bytes2json(const Bytes &bytes)
 {
     std::vector<int> intV(bytes.size());
-    std::transform(bytes.begin(), bytes.end(), intV.begin(), [](const auto& b) { 
+    std::transform(bytes.begin(), bytes.end(), intV.begin(), [](const auto b) { 
         return static_cast<int>(b); 
     });
     auto cj = bytes.empty() ? cJSON_CreateArray() : cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));

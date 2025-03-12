@@ -32,7 +32,7 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
     }
     std::stringstream ss;
     ss << std::hex;
-    for (const auto& b : bytes)
+    for (const auto b : bytes)
     {
         ss << std::setw(2) << std::setfill('0') << static_cast<int>(b);
     }

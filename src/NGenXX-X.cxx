@@ -287,7 +287,7 @@ std::string NGenXXHttpResponse::toJson() const
     cJSON_AddItemToObject(cj, "contentType", cJSON_CreateString(this->contentType.c_str()));
 
     auto cjHeaders = cJSON_CreateObject();
-    for (const auto& [k, v] : this->headers)
+    for (const auto &[k, v] : this->headers)
     {
         cJSON_AddItemToObject(cjHeaders, k.c_str(), cJSON_CreateString(v.c_str()));
     }

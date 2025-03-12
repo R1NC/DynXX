@@ -119,7 +119,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
         auto mime = curl_mime_init(curl);
         auto part = curl_mime_addpart(mime);
 
-        for (const auto& [name, mime, data] : formFields)
+        for (const auto &[name, mime, data] : formFields)
         {
             curl_mime_name(part, name.c_str());
             curl_mime_type(part, mime.c_str());

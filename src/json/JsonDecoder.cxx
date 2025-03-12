@@ -8,7 +8,7 @@
 std::string NGenXX::Json::dictAnyToJson(const DictAny &dict)
 {
     auto cjson = cJSON_CreateObject();
-    for (const auto& [k, v] : dict) 
+    for (const auto &[k, v] : dict) 
     {
         cJSON *node = nullptr;
         if (std::holds_alternative<int64_t>(v)) 
@@ -67,7 +67,7 @@ DictAny NGenXX::Json::dictAnyFromJson(const std::string &json)
 std::string NGenXX::Json::dictToJson(const Dict &dict)
 {
     auto cjson = cJSON_CreateObject();
-    for (const auto& [k, v] : dict) 
+    for (const auto &[k, v] : dict) 
     {
         auto node = cJSON_CreateString(v.c_str());
         cJSON_AddItemToObject(cjson, k.c_str(), node);
