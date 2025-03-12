@@ -37,7 +37,7 @@ namespace NGenXX
             z_stream zs;
             int ret{Z_OK};
             bool inFinish{false};
-            int windowBits();
+            int windowBits() const;
 
         private:
             byte *inBuffer{nullptr};

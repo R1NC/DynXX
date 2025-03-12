@@ -280,7 +280,7 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     return rsp;
 }
 
-std::string NGenXXHttpResponse::toJson()
+std::string NGenXXHttpResponse::toJson() const
 {
     auto cj = cJSON_CreateObject();
     cJSON_AddItemToObject(cj, "code", cJSON_CreateNumber(this->code));

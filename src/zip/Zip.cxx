@@ -19,7 +19,7 @@
 #endif
 
 template <typename T>
-int NGenXX::Z::ZBase<T>::windowBits()
+int NGenXX::Z::ZBase<T>::windowBits() const
 {
     if (this->format == NGenXXZFormatGZip)
     {
