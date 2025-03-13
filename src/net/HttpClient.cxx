@@ -13,15 +13,16 @@
 #include <NGenXXTypes.h>
 #include <NGenXXLog.hxx>
 #include <NGenXXNetHttp.h>
+#include <NGenXXCoding.hxx>
 
 size_t _NGenXX_Net_HttpClient_PostReadCallback(char *buffer, size_t size, size_t nmemb, void *userdata)
 {
-    auto bytes = static_cast<Bytes *>(userdata);
-    auto len = std::min(size * nmemb, bytes->size());
+    auto pBytes = static_cast<Bytes *>(userdata);
+    auto len = std::min(size * nmemb, pBytes->size());
     if (len > 0)
     {
-        std::memcpy(buffer, bytes->data(), len);
-        bytes->erase(bytes->begin(), bytes->begin() + len);
+        std::memcpy(buffer, pBytes->data(), len);
+        pBytes->erase(pBytes->begin(), pBytes->begin() + len);
     }
     return len;
 }
@@ -35,27 +36,23 @@ size_t _NGenXX_Net_HttpClient_UploadReadCallback(char *ptr, size_t size, size_t 
 
 size_t _NGenXX_Net_HttpClient_WriteCallback(char *contents, size_t size, size_t nmemb, void *userp)
 {
-    (static_cast<std::string *>(userp))->append(contents, size * nmemb);
+    auto pS = static_cast<std::string *>(userp);
+    pS->append(contents, size * nmemb);
     return size * nmemb;
 }
 
 size_t _NGenXX_Net_HttpClient_RspHeadersCallback(char *buffer, size_t size, size_t nitems, void *userdata)
 {
-    auto headers = static_cast<std::unordered_map<std::string, std::string> *>(userdata);
+    auto pHeaders = static_cast<std::unordered_map<std::string, std::string> *>(userdata);
     std::string header(buffer, size * nitems);
-    // Split K & V
     auto colonPos = header.find(':');
     if (colonPos != std::string::npos)
     {
-        // Skip colon and space
         auto k = header.substr(0, colonPos);
         auto v = header.substr(colonPos + 2);
-        // Trim whitespace around K & V
-        k.erase(0, k.find_first_not_of(" \t"));
-        k.erase(k.find_last_not_of(" \t") + 1);
-        k.erase(0, k.find_first_not_of(" \t"));
-        k.erase(k.find_last_not_of(" \t") + 1);
-        (*headers).emplace(std::move(k), std::move(v));
+        auto trimedK = ngenxxCodingStrTrim(k);
+        auto trimedV = ngenxxCodingStrTrim(v);
+        pHeaders->emplace(std::move(trimedK), std::move(trimedV));
     }
     return size * nitems;
 }
