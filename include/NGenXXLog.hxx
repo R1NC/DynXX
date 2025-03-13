@@ -19,11 +19,11 @@ enum class NGenXXLogLevelX : int
     None
 };
 
-void ngenxxLogSetLevel(const NGenXXLogLevelX level);
+void ngenxxLogSetLevel(NGenXXLogLevelX level);
 
 void ngenxxLogSetCallback(const std::function<void(int level, const char *content)> &callback);
 
-void ngenxxLogPrint(const NGenXXLogLevelX level, const std::string &content);
+void ngenxxLogPrint(NGenXXLogLevelX level, const std::string &content);
 
 #if !defined(USE_STD_FORMAT)
 inline void _ngenxxLogFormatImpl(std::ostringstream &oss, const std::string &format)
@@ -56,7 +56,7 @@ inline std::string _ngenxxLogFormat(const std::string &format, Args... args)
 #endif
 
 template <typename... Args>
-inline void ngenxxLogPrintF(const NGenXXLogLevelX level, const std::string &format, Args... args)
+inline void ngenxxLogPrintF(NGenXXLogLevelX level, const std::string &format, Args... args)
 {
 #if !defined(USE_STD_FORMAT)
     auto fContent = _ngenxxLogFormat(format, args...);

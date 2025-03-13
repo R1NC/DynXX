@@ -26,7 +26,7 @@ struct NGenXXHttpResponse
 using NGenXXHttpResponse = struct NGenXXHttpResponse;
 
 NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                              const NGenXXHttpMethodX method,
+                                            NGenXXHttpMethodX method,
                                               const std::string &params,
                                               const Bytes &rawBody = {},
                                               const std::vector<std::string> &headerV = {},
@@ -37,7 +37,7 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               size_t timeout = NGenXXHttpDefaultTimeout);
 
 NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                              const NGenXXHttpMethodX method,
+                                            NGenXXHttpMethodX method,
                                               const std::unordered_map<std::string, Any> &params,
                                               const Bytes &rawBody = {},
                                               const std::unordered_map<std::string, std::string> &headers = {},

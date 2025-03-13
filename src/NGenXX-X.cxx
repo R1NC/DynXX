@@ -27,14 +27,14 @@
 #endif
 #endif
 
-#define VERSION "0.0.1"
+#define VERSION "1.0.0"
 
 std::unique_ptr<NGenXX::Net::HttpClient> _ngenxx_http_client = nullptr;
 std::unique_ptr<NGenXX::Store::SQLite> _ngenxx_sqlite = nullptr;
 std::unique_ptr<NGenXX::Store::KV> _ngenxx_kv = nullptr;
 std::unique_ptr<const std::string> _ngenxx_root = nullptr;
 
-std::string ngenxxGetVersion(void)
+std::string ngenxxGetVersion()
 {
     return VERSION;
 }
@@ -122,7 +122,7 @@ NGenXXDeviceCpuArchX ngenxxDeviceCpuArch()
 
 #pragma mark Log
 
-void ngenxxLogSetLevel(const NGenXXLogLevelX level)
+void ngenxxLogSetLevel(NGenXXLogLevelX level)
 {
     NGenXX::Log::setLevel(static_cast<int>(level));
 }
@@ -132,7 +132,7 @@ void ngenxxLogSetCallback(const std::function<void(int level, const char *conten
     NGenXX::Log::setCallback(callback);
 }
 
-void ngenxxLogPrint(const NGenXXLogLevelX level, const std::string &content)
+void ngenxxLogPrint(NGenXXLogLevelX level, const std::string &content)
 {
     NGenXX::Log::print(static_cast<int>(level), content);
 }
@@ -201,12 +201,12 @@ Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &
     return NGenXX::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }
 
-Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding)
+Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding)
 {
     return NGenXX::Crypto::RSA::encrypt(in, key, static_cast<int>(padding));
 }
 
-Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding)
+Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding)
 {
     return NGenXX::Crypto::RSA::decrypt(in, key, static_cast<int>(padding));
 }
@@ -239,7 +239,7 @@ Bytes ngenxxCryptoBase64Decode(const Bytes &in)
 #pragma mark Net.Http
 
 NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                              const NGenXXHttpMethodX method,
+                                            NGenXXHttpMethodX method,
                                               const std::string &params,
                                               const Bytes &rawBody,
                                               const std::vector<std::string> &headerV,
@@ -298,7 +298,7 @@ std::string NGenXXHttpResponse::toJson() const
 }
 
 NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                              const NGenXXHttpMethodX method,
+                                            NGenXXHttpMethodX method,
                                               const std::unordered_map<std::string, Any> &params,
                                               const Bytes &rawBody,
                                               const std::unordered_map<std::string, std::string> &headers,

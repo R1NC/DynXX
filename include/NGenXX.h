@@ -23,7 +23,7 @@ extern "C"
      * @brief Read version
      * @return version name
      */
-    const char *ngenxx_get_version(void);
+    const char *ngenxx_get_version();
 
     /**
      * @brief Initialize SDK

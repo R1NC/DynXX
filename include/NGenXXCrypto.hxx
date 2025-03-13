@@ -25,9 +25,9 @@ enum class NGenXXCryptoRSAPaddingX : int
     PKCS1_PSS = 6
 };
 
-Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding);
+Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding);
 
-Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, const NGenXXCryptoRSAPaddingX padding);
+Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding);
 
 Bytes ngenxxCryptoHashMd5(const Bytes &in);
 

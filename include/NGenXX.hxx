@@ -14,7 +14,7 @@
 #include "NGenXXZip.hxx"
 #include "NGenXXDeviceInfo.hxx"
 
-std::string ngenxxGetVersion(void);
+std::string ngenxxGetVersion();
 
 bool ngenxxInit(const std::string &root);
 
