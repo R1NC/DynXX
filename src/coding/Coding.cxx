@@ -92,16 +92,16 @@ Bytes NGenXX::Coding::str2bytes(const std::string_view &str)
 
 std::string NGenXX::Coding::strTrim(const std::string_view &str) 
 {
-    constexpr auto invalidChars = " \t\n\r\f\v"; 
 #if defined(USE_STD_RANGES)
-    auto findInvalidCharF = [&](char c) { return std::strchr(invalidChars, c) != nullptr; };
+    auto findSpaceF = [&](char c) { return std::isspace(static_cast<int>(c)); };
     auto trimmed = str 
-        | std::ranges::views::drop_while(findInvalidCharF)
+        | std::ranges::views::drop_while(findSpaceF)
         | std::ranges::views::reverse
-        | std::ranges::views::drop_while(findInvalidCharF)
+        | std::ranges::views::drop_while(findSpaceF)
         | std::ranges::views::reverse;
     return std::string(trimmed.begin(), trimmed.end());
 #else
+    constexpr auto invalidChars = " \t\n\r\f\v";
     const auto begin = str.find_first_not_of(invalidChars);
     if (begin == std::string_view::npos) [[unlikely]]
     {
