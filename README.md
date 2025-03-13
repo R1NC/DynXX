@@ -46,6 +46,7 @@ A cross-platform framework based on modern C++ that also supports JS and Lua.
 | :-- | :--: | :--: |
 | [std::format][12] | C++20 | iOS 16.3-, macOS 13.3-, HarmonyOS Next; |
 | [std::ranges][13] | C++20 | iOS 16.3-, macOS 13.3-, HarmonyOS Next; |
+| [std::ranges][14] | C++23 | *Not clear, maybe all?* |
 
 ## Dependencies
 
@@ -72,3 +73,4 @@ A cross-platform framework based on modern C++ that also supports JS and Lua.
 [11]: https://github.com/sqlite/sqlite
 [12]: https://en.cppreference.com/w/cpp/utility/format/format
 [13]: https://en.cppreference.com/w/cpp/ranges
+[14]: https://en.cppreference.com/w/cpp/ranges/chunk_view

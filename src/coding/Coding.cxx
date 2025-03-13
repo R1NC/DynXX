@@ -7,6 +7,10 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#if defined(USE_STD_RANGES)
+#include <ranges>
+#include <numeric>
+#endif
 
 std::string NGenXX::Coding::Case::upper(const std::string_view &str)
 {
@@ -30,13 +34,23 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
     {
         return {};
     }
+    auto transF = [](byte b) {
+        std::stringstream ss;
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(b);
+        return ss.str();
+    };
+#if defined(USE_STD_RANGES)
+    auto hexView = bytes 
+        | std::ranges::views::transform(transF);
+    return std::accumulate(hexView.begin(), hexView.end(), std::string{});
+#else
     std::stringstream ss;
-    ss << std::hex;
     for (const auto b : bytes)
     {
-        ss << std::setw(2) << std::setfill('0') << static_cast<int>(b);
+        ss << transF(b);
     }
     return ss.str();
+#endif
 }
 
 Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
@@ -46,14 +60,24 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     {
         return {};
     }
+    auto transF = [](const std::string &s) { 
+        return static_cast<byte>(std::stoi(s.c_str(), nullptr, 16));
+     };
+#if defined(USE_STD_RANGES_CHUNK)
+    auto byteView = str 
+        | std::ranges::views::chunk(2) 
+        | std::ranges::views::transform(transF);
+    return Bytes(byteView.begin(), byteView.end());
+#else
     Bytes bytes;
     bytes.reserve(sLen / 2);
     for (decltype(sLen) i(0); i < sLen; i += 2)
     {
         auto s = str.substr(i, 2);
-        bytes.push_back(static_cast<byte>(std::stoi(s.c_str(), nullptr, 16)));
+        bytes.push_back(transF(s));
     }
     return bytes;
+#endif
 }
 
 std::string NGenXX::Coding::bytes2str(const Bytes &bytes)
@@ -69,6 +93,15 @@ Bytes NGenXX::Coding::str2bytes(const std::string_view &str)
 std::string NGenXX::Coding::strTrim(const std::string_view &str) 
 {
     constexpr auto invalidChars = " \t\n\r\f\v"; 
+#if defined(USE_STD_RANGES)
+    auto findInvalidCharF = [&](char c) { return std::strchr(invalidChars, c) != nullptr; };
+    auto trimmed = str 
+        | std::ranges::views::drop_while(findInvalidCharF)
+        | std::ranges::views::reverse
+        | std::ranges::views::drop_while(findInvalidCharF)
+        | std::ranges::views::reverse;
+    return std::string(trimmed.begin(), trimmed.end());
+#else
     const auto begin = str.find_first_not_of(invalidChars);
     if (begin == std::string_view::npos) [[unlikely]]
     {
@@ -76,4 +109,5 @@ std::string NGenXX::Coding::strTrim(const std::string_view &str)
     }
     const auto end = str.find_last_not_of(invalidChars);
     return std::string(str.substr(begin, end - begin + 1));
+#endif
 }
