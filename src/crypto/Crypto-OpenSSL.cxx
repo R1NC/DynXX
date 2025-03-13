@@ -14,7 +14,6 @@
 #include <openssl/buffer.h>
 
 #include <NGenXXLog.hxx>
-#include "../util/TypeUtil.hxx"
 
 constexpr auto OpenSSL_OK = 1;
 constexpr auto OpenSSL_AES_Key_BITS = 128;

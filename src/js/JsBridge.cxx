@@ -2,11 +2,9 @@
 #include "JsBridge.hxx"
 
 #include <cstdint>
-#include <cstdlib>
 
 #include <fstream>
 #include <sstream>
-#include <streambuf>
 #include <utility>
 #include <mutex>
 #include <thread>

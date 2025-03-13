@@ -4,7 +4,6 @@
 #if defined(__cplusplus)
 
 #include <cstdio>
-#include <unordered_map>
 
 #include <curl/curl.h>
 

@@ -1,7 +1,6 @@
 #include "Log.hxx"
 
 #include <cstring>
-#include <cstdlib>
 
 #include <mutex>
 

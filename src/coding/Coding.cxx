@@ -1,12 +1,10 @@
 #include "Coding.hxx"
 
-#include <cstring>
 #include <cctype>
 
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
-#include <vector>
 #if defined(USE_STD_RANGES)
 #include <ranges>
 #include <numeric>

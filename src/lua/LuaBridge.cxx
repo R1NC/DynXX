@@ -5,7 +5,6 @@
 #include <cstdlib>
 
 #include <thread>
-#include <functional>
 
 #include <uv.h>
 

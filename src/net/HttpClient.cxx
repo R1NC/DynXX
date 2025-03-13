@@ -10,7 +10,6 @@
 #include <ada.h>
 #endif
 
-#include <NGenXXTypes.h>
 #include <NGenXXLog.hxx>
 #include <NGenXXNetHttp.h>
 #include <NGenXXCoding.hxx>
