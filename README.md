@@ -1,6 +1,6 @@
 # NGenXX
 
-A cross-platform framework based on modern C++ that also supports JS and Lua.
+A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 ![Arch](/res/arch.svg)
 
