@@ -1,6 +1,8 @@
 #ifndef NGENXX_INCLUDE_ZIP_H_
 #define NGENXX_INCLUDE_ZIP_H_
 
+#include <stddef.h>
+
 #include "NGenXXTypes.h"
 
 #ifdef __cplusplus

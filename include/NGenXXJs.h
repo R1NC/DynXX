@@ -1,6 +1,9 @@
 #ifndef NGENXX_INCLUDE_JS_H_
 #define NGENXX_INCLUDE_JS_H_
 
+#include <stdbool.h>
+#include <stddef.h>
+
 #include "NGenXXTypes.h"
 
 #ifdef __cplusplus

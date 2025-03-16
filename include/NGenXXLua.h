@@ -1,6 +1,8 @@
 #ifndef NGENXX_INCLUDE_LUA_H_
 #define NGENXX_INCLUDE_LUA_H_
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C"
 {

@@ -3,8 +3,6 @@
 
 #include "NGenXXTypes.hxx"
 
-#include <unordered_map>
-
 constexpr size_t NGenXXHttpDefaultTimeout = 15 * 1000;
 
 enum class NGenXXHttpMethodX : int

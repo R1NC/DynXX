@@ -1,6 +1,9 @@
 #ifndef NGENXX_INCLUDE_CRYPTO_H_
 #define NGENXX_INCLUDE_CRYPTO_H_
 
+#include <stddef.h>
+#include <stdbool.h>
+
 #include "NGenXXTypes.h"
 
 #ifdef __cplusplus

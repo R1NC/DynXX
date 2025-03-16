@@ -1,7 +1,7 @@
 #ifndef NGENXX_INCLUDE_NET_HTTP_H_
 #define NGENXX_INCLUDE_NET_HTTP_H_
 
-#include "NGenXXTypes.h"
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -1,6 +1,8 @@
 #ifndef NGENXX_INCLUDE_JSON_DECODER_H_
 #define NGENXX_INCLUDE_JSON_DECODER_H_
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C"
 {
