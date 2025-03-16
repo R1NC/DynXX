@@ -45,11 +45,11 @@ void NGenXX::Log::print(int level, const std::string &content)
         return;
     }
 
-    if (_ngenxx_log_mutex == nullptr)
+    if (!_ngenxx_log_mutex)
     {
         _ngenxx_log_mutex = std::make_unique<std::mutex>();
     }
-    auto lock = std::lock_guard(*_ngenxx_log_mutex);
+    auto lock = std::lock_guard(*_ngenxx_log_mutex.get());
 
     auto cContent = content.c_str();
     if (_NGenXX_Log_callback)

@@ -16,7 +16,7 @@ std::unique_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
 static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nullptr;
 
 #define BIND_JS_FUNC(f)                                                        \
-  if (_ngenxx_js != nullptr) [[likely]] {                                    \
+  if (_ngenxx_js) [[likely]] {                                                 \
     _ngenxx_js->bindFunc(#f, f);                                               \
   }
 
@@ -107,7 +107,7 @@ DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzip
 
 bool ngenxxJsLoadF(const std::string &file, bool isModule)
 {
-    if (_ngenxx_js == nullptr || file.length() == 0) [[unlikely]]
+    if (!_ngenxx_js || file.empty()) [[unlikely]]
     {
         return false;
     }
@@ -116,7 +116,7 @@ bool ngenxxJsLoadF(const std::string &file, bool isModule)
 
 bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isModule)
 {
-    if (_ngenxx_js == nullptr || script.length() == 0 || name.length() == 0) [[unlikely]]
+    if (!_ngenxx_js || script.empty() || name.empty()) [[unlikely]]
     {
         return false;
     }
@@ -125,7 +125,7 @@ bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isMo
 
 bool ngenxxJsLoadB(const Bytes &bytes, bool isModule)
 {
-    if (_ngenxx_js == nullptr || bytes.empty()) [[unlikely]]
+    if (!_ngenxx_js || bytes.empty()) [[unlikely]]
     {
         return false;
     }
@@ -135,7 +135,7 @@ bool ngenxxJsLoadB(const Bytes &bytes, bool isModule)
 std::string ngenxxJsCall(const std::string &func, const std::string &params, bool await)
 {
     std::string s;
-    if (_ngenxx_js == nullptr || func.length() == 0L) [[unlikely]]
+    if (!_ngenxx_js || func.empty()) [[unlikely]]
     {
         return s;
     }
@@ -253,7 +253,7 @@ void registerJsModule()
 
 void _ngenxx_js_init(void)
 {
-    if (_ngenxx_js != nullptr) [[unlikely]]
+    if (_ngenxx_js) [[unlikely]]
     {
         return;
     }
@@ -263,7 +263,7 @@ void _ngenxx_js_init(void)
 
 void _ngenxx_js_release(void)
 {
-    if (_ngenxx_js == nullptr) [[unlikely]]
+    if (!_ngenxx_js) [[unlikely]]
     {
         return;
     }

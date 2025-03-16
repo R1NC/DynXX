@@ -11,7 +11,7 @@
 std::unique_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
 
 #define BIND_LUA_FUNC(f)                                                       \
-  if (_ngenxx_lua != nullptr) [[likely]] {                                   \
+  if (_ngenxx_lua) [[likely]] {                                                \
     _ngenxx_lua->bindFunc(std::string(#f), f);                                 \
   }
 
@@ -86,7 +86,7 @@ DEF_LUA_FUNC_STRING(ngenxx_z_bytes_unzipL, ngenxx_z_bytes_unzipS)
 
 bool ngenxxLuaLoadF(const std::string &f)
 {
-    if (_ngenxx_lua == nullptr || f.length() == 0) [[unlikely]]
+    if (!_ngenxx_lua || f.empty()) [[unlikely]]
     {
         return false;
     }
@@ -95,7 +95,7 @@ bool ngenxxLuaLoadF(const std::string &f)
 
 bool ngenxxLuaLoadS(const std::string &s)
 {
-    if (_ngenxx_lua == nullptr || s.length() == 0) [[unlikely]]
+    if (!_ngenxx_lua || s.empty()) [[unlikely]]
     {
         return false;
     }
@@ -105,7 +105,7 @@ bool ngenxxLuaLoadS(const std::string &s)
 std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
 {
     std::string s;
-    if (_ngenxx_lua == nullptr || f.length() == 0) [[unlikely]]
+    if (!_ngenxx_lua || f.empty()) [[unlikely]]
     {
         return s;
     }
@@ -204,7 +204,7 @@ void _ngenxx_export_funcs_for_lua()
 
 void _ngenxx_lua_init(void)
 {
-    if (_ngenxx_lua != nullptr) [[unlikely]]
+    if (_ngenxx_lua) [[unlikely]]
     {
         return;
     }
@@ -214,7 +214,7 @@ void _ngenxx_lua_init(void)
 
 void _ngenxx_lua_release(void)
 {
-    if (_ngenxx_lua == nullptr) [[unlikely]]
+    if (!_ngenxx_lua) [[unlikely]]
     {
         return;
     }
