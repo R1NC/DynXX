@@ -332,9 +332,9 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     }
     for (const auto &[k, v] : headers)
     {
-        std::stringstream ss;
+        std::ostringstream ss;
         ss << k << ":" << v;
-        headerV.push_back(ss.str());
+        headerV.emplace_back(ss.str());
     }
     return ngenxxNetHttpRequest(url, method, ssParams.str(), rawBody, headerV,
                                 formFieldNameV, formFieldMimeV, formFieldDataV,

@@ -259,7 +259,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
 bool NGenXX::JsBridge::loadFile(const std::string &file, bool isModule)
 {
     std::ifstream ifs(file.c_str());
-    std::stringstream ss;
+    std::ostringstream ss;
     ss << ifs.rdbuf();
     return this->loadScript(ss.str(), file, isModule);
 }

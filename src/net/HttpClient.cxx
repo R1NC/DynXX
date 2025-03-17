@@ -110,7 +110,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
         curl_easy_setopt(curl, CURLOPT_READDATA, cFILE);
         curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, fileSize);
     }
-    else if (formFields.size() > 0)
+    else if (!formFields.empty())
     {
         auto mime = curl_mime_init(curl);
         auto part = curl_mime_addpart(mime);

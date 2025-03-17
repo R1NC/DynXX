@@ -52,7 +52,7 @@ std::string NGenXX::Device::DeviceInfo::osVersion()
     int major = static_cast<int32_t>(version.majorVersion);
     int minor = static_cast<int32_t>(version.minorVersion);
     int bugfix = static_cast<int32_t>(version.patchVersion);
-    std::stringstream ss;
+    std::ostringstream ss;
     ss << major << "." << minor << "." << bugfix;  
     return ss.str();
 }

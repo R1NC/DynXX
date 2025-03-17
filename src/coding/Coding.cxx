@@ -33,7 +33,7 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
         return {};
     }
     auto transF = [](byte b) {
-        std::stringstream ss;
+        std::ostringstream ss;
         ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(b);
         return ss.str();
     };
@@ -42,7 +42,7 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
         | std::ranges::views::transform(transF);
     return std::accumulate(hexView.begin(), hexView.end(), std::string{});
 #else
-    std::stringstream ss;
+    std::ostringstream ss;
     for (const auto b : bytes)
     {
         ss << transF(b);
@@ -72,7 +72,7 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     for (decltype(sLen) i(0); i < sLen; i += 2)
     {
         auto s = str.substr(i, 2);
-        bytes.push_back(transF(s));
+        bytes.emplace_back(transF(s));
     }
     return bytes;
 #endif

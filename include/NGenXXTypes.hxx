@@ -171,12 +171,14 @@ static inline void freeX(T* &ptr)
 
 #pragma mark Pointer transform
 
-static inline void *addr2ptr(const address addr)
+template <typename T = void>
+static inline T *addr2ptr(const address addr)
 {
-    return reinterpret_cast<void *>(addr);
+    return reinterpret_cast<T *>(addr);
 }
 
-static inline address ptr2addr(const void *ptr)
+template <typename T = void>
+static inline address ptr2addr(const T *ptr)
 {
     return reinterpret_cast<address>(ptr);
 }
