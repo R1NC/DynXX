@@ -132,7 +132,7 @@ const char *ngenxx_lua_call(const char *f, const char *ps)
     return copyStr(ngenxxLuaCall(f ?: "", ps ?: ""));
 }
 
-void _ngenxx_export_funcs_for_lua()
+void _ngenxx_lua_registerFuncs()
 {
     BIND_LUA_FUNC(ngenxx_get_versionL);
     BIND_LUA_FUNC(ngenxx_root_pathL);
@@ -209,7 +209,7 @@ void _ngenxx_lua_init(void)
         return;
     }
     _ngenxx_lua = std::make_unique<NGenXX::LuaBridge>();
-    _ngenxx_export_funcs_for_lua();
+    _ngenxx_lua_registerFuncs();
 }
 
 void _ngenxx_lua_release(void)

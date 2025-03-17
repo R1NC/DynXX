@@ -20,7 +20,7 @@ static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nul
     _ngenxx_js->bindFunc(#f, f);                                               \
   }
 
-std::string ngenxx_js_ask_platform(const char *msg)
+std::string _ngenxx_js_ask_platform(const char *msg)
 {
     std::string s;
     if (msg == nullptr || _NGenXX_J_msg_callback == nullptr)
@@ -34,7 +34,7 @@ std::string ngenxx_js_ask_platform(const char *msg)
     return res ?: s;
 }
 
-DEF_JS_FUNC_STRING(ngenxx_ask_platformJ, ngenxx_js_ask_platform)
+DEF_JS_FUNC_STRING(ngenxx_ask_platformJ, _ngenxx_js_ask_platform)
 
 DEF_JS_FUNC_STRING(ngenxx_get_versionJ, ngenxx_get_versionS)
 DEF_JS_FUNC_STRING(ngenxx_root_pathJ, ngenxx_root_pathS)
@@ -179,7 +179,7 @@ void ngenxx_js_set_msg_callback(const char *(*const callback)(const char *msg))
 
 #pragma mark JS Module Register
 
-void registerJsModule()
+void _ngenxx_js_registerFuncs()
 {
     BIND_JS_FUNC(ngenxx_ask_platformJ);
 
@@ -258,7 +258,7 @@ void _ngenxx_js_init(void)
         return;
     }
     _ngenxx_js = std::make_unique<NGenXX::JsBridge>();
-    registerJsModule();
+    _ngenxx_js_registerFuncs();
 }
 
 void _ngenxx_js_release(void)
