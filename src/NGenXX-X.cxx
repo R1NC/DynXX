@@ -358,8 +358,9 @@ void *ngenxxStoreSqliteOpen(const std::string &_id)
     {
         return nullptr;
     }
-    auto dbFile = *_ngenxx_root.get() + "/" + std::string(_id) + ".db";
-    if (auto ptr = _ngenxx_sqlite->connect(dbFile).lock()) [[likely]]
+    std::ostringstream ss;
+    ss << *_ngenxx_root.get() << "/" << _id << ".db";
+    if (auto ptr = _ngenxx_sqlite->connect(ss.str()).lock()) [[likely]]
     {
         return ptr.get();
     }

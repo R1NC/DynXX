@@ -143,21 +143,23 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
     auto colCount = sqlite3_column_count(this->stmt);
     for (decltype(colCount) i(0); i < colCount; i++)
     {
-        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) == 0)
+        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) != 0)
         {
-            auto columnType = sqlite3_column_type(this->stmt, i);
-            if (columnType == SQLITE_TEXT)
+            continue;
+        }
+        switch(sqlite3_column_type(this->stmt, i))
+        {
+            case SQLITE_TEXT: 
             {
-                return reinterpret_cast<const char *>(sqlite3_column_text(this->stmt, i));
+                auto cTxt = sqlite3_column_text(this->stmt, i);
+                return std::string(cTxt ? reinterpret_cast<const char *>(cTxt) : "");
             }
-            else if (columnType == SQLITE_INTEGER)
-            {
+            case SQLITE_INTEGER:
                 return sqlite3_column_int64(this->stmt, i);
-            }
-            else if (columnType == SQLITE_FLOAT)
-            {
+            case SQLITE_FLOAT:
                 return sqlite3_column_double(this->stmt, i);
-            }
+            default:
+                return {};
         }
     }
     return {};
