@@ -38,7 +38,7 @@ std::string NGenXX::Device::DeviceInfo::deviceName()
 {
     struct utsname systemInfo;
     uname(&systemInfo);
-    return systemInfo.machine ?: "";
+    return wrapStr(systemInfo.machine);
 }
 
 std::string NGenXX::Device::DeviceInfo::deviceManufacturer()

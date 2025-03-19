@@ -1,3 +1,4 @@
+#include "quickjs.h"
 #if defined(USE_QJS)
 #include "JsBridge.hxx"
 
@@ -276,14 +277,6 @@ bool NGenXX::JsBridge::loadBinary(const Bytes &bytes, bool isModule)
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
-static inline std::string _ngenxx_js_jstr2stdstr(JSContext *ctx, JSValue jstr)
-{
-    auto c = JS_ToCString(ctx, jstr);
-    auto s = std::string(c ?: "");
-    JS_FreeCString(ctx, c);
-    return s;
-}
-
 JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
 {
     auto ret = JS_UNDEFINED;
@@ -354,7 +347,9 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
             {/// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
                 jRes = _ngenxx_js_await(this->context, jRes); // Handle promise if needed
             }
-            s = _ngenxx_js_jstr2stdstr(this->context, jRes);
+            auto cS = JS_ToCString(this->context, jRes);
+            s = wrapStr(cS);
+            JS_FreeCString(this->context, cS);
         }
         JS_FreeValue(this->context, jRes);
         JS_FreeValue(this->context, jParams);

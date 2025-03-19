@@ -188,8 +188,7 @@ std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::stri
         PRINT_L_ERROR(this->lstate, "`lua_pcall` error:");
         return s;
     }
-    auto res = lua_tostring(this->lstate, -1);
-    s = std::string(res ?: "");
+    s = wrapStr(lua_tostring(this->lstate, -1));
 
     lua_pop(this->lstate, 1);
     return s;

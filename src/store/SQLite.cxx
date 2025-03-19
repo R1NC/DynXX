@@ -149,11 +149,8 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
         }
         switch(sqlite3_column_type(this->stmt, i))
         {
-            case SQLITE_TEXT: 
-            {
-                auto cTxt = sqlite3_column_text(this->stmt, i);
-                return std::string(cTxt ? reinterpret_cast<const char *>(cTxt) : "");
-            }
+            case SQLITE_TEXT:
+                return wrapStr(sqlite3_column_text(this->stmt, i));
             case SQLITE_INTEGER:
                 return sqlite3_column_int64(this->stmt, i);
             case SQLITE_FLOAT:

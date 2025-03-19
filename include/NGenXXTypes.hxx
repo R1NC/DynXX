@@ -228,6 +228,15 @@ static inline const Bytes wrapBytes(const byte* data, size_t len)
     return Bytes(data, data + len);
 }
 
+template <typename T>
+std::string wrapStr(const T* ptr) {
+    if (ptr == nullptr) 
+    {
+        return {};
+    }
+    return std::string(reinterpret_cast<const char*>(ptr));
+}
+
 #endif
 
 #endif // NGENXX_INCLUDE_TYPES_HXX_

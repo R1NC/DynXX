@@ -6,6 +6,7 @@
 
 #include <NGenXX.hxx>
 #include <NGenXXStoreKV.h>
+#include <NGenXXTypes.hxx>
 #include "NGenXX-inner.hxx"
 #include "util/TypeUtil.hxx"
 #endif
@@ -25,7 +26,7 @@ const char *ngenxx_root_path()
 EXPORT
 bool ngenxx_init(const char *root)
 {
-    return ngenxxInit(root ?: "");
+    return ngenxxInit(wrapStr(root));
 }
 
 EXPORT
@@ -83,7 +84,7 @@ void ngenxx_log_set_callback(void (*const callback)(int level, const char *conte
 EXPORT_AUTO
 void ngenxx_log_print(int level, const char *content)
 {
-    ngenxxLogPrint(static_cast<NGenXXLogLevelX>(level), content ?: "");
+    ngenxxLogPrint(static_cast<NGenXXLogLevelX>(level), wrapStr(content));
 }
 
 #pragma mark Coding
@@ -91,7 +92,7 @@ void ngenxx_log_print(int level, const char *content)
 EXPORT_AUTO
 const byte *ngenxx_coding_hex_str2bytes(const char *str, size_t *outLen)
 {
-    auto t = ngenxxCodingHexStr2bytes(str ?: "");
+    auto t = ngenxxCodingHexStr2bytes(wrapStr(str));
     if (outLen)
     {
         *outLen = t.size();
@@ -116,7 +117,7 @@ const char *ngenxx_coding_bytes2str(const byte *inBytes, size_t inLen)
 EXPORT_AUTO
 const byte *ngenxx_coding_str2bytes(const char *str, size_t *outLen)
 {
-    auto t = ngenxxCodingStr2bytes(str ?: "");
+    auto t = ngenxxCodingStr2bytes(wrapStr(str));
     if (outLen)
     {
         *outLen = t.size();
@@ -313,9 +314,9 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
         vFormFieldData = std::vector<std::string>(form_field_data_v, form_field_data_v + form_field_count);
     }
 
-    auto t = ngenxxNetHttpRequest(url ?: "",
+    auto t = ngenxxNetHttpRequest(wrapStr(url),
                                   static_cast<NGenXXHttpMethodX>(method),
-                                  params ?: "",
+                                  wrapStr(params),
                                   {},
                                   vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
                                   static_cast<std::FILE *>(cFILE), file_size, timeout);
@@ -325,7 +326,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
 EXPORT_AUTO
 bool ngenxx_net_http_download(const char *url, const char *file_path, size_t timeout)
 {
-    return ngenxxNetHttpDownload(url ?: "", file_path ?: "", timeout);
+    return ngenxxNetHttpDownload(wrapStr(url), wrapStr(file_path), timeout);
 }
 
 #pragma mark Store.SQLite
@@ -333,19 +334,19 @@ bool ngenxx_net_http_download(const char *url, const char *file_path, size_t tim
 EXPORT_AUTO
 void *ngenxx_store_sqlite_open(const char *_id)
 {
-    return ngenxxStoreSqliteOpen(_id ?: "");
+    return ngenxxStoreSqliteOpen(wrapStr(_id));
 }
 
 EXPORT_AUTO
 bool ngenxx_store_sqlite_execute(void *const conn, const char *sql)
 {
-    return ngenxxStoreSqliteExecute(conn, sql ?: "");
+    return ngenxxStoreSqliteExecute(conn, wrapStr(sql));
 }
 
 EXPORT_AUTO
 void *ngenxx_store_sqlite_query_do(void *const conn, const char *sql)
 {
-    return ngenxxStoreSqliteQueryDo(conn, sql ?: "");
+    return ngenxxStoreSqliteQueryDo(conn, wrapStr(sql));
 }
 
 EXPORT_AUTO
@@ -357,19 +358,19 @@ bool ngenxx_store_sqlite_query_read_row(void *const query_result)
 EXPORT_AUTO
 const char *ngenxx_store_sqlite_query_read_column_text(void *const query_result, const char *column)
 {
-    return copyStr(ngenxxStoreSqliteQueryReadColumnText(query_result, column ?: ""));
+    return copyStr(ngenxxStoreSqliteQueryReadColumnText(query_result, wrapStr(column)));
 }
 
 EXPORT_AUTO
 int64_t ngenxx_store_sqlite_query_read_column_integer(void *const query_result, const char *column)
 {
-    return ngenxxStoreSqliteQueryReadColumnInteger(query_result, column ?: "");
+    return ngenxxStoreSqliteQueryReadColumnInteger(query_result, wrapStr(column));
 }
 
 EXPORT_AUTO
 double ngenxx_store_sqlite_query_read_column_float(void *const query_result, const char *column)
 {
-    return ngenxxStoreSqliteQueryReadColumnFloat(query_result, column ?: "");
+    return ngenxxStoreSqliteQueryReadColumnFloat(query_result, wrapStr(column));
 }
 
 EXPORT_AUTO
@@ -389,43 +390,43 @@ void ngenxx_store_sqlite_close(void *const conn)
 EXPORT_AUTO
 void *ngenxx_store_kv_open(const char *_id)
 {
-    return ngenxxStoreKvOpen(_id ?: "");
+    return ngenxxStoreKvOpen(wrapStr(_id));
 }
 
 EXPORT_AUTO
 const char *ngenxx_store_kv_read_string(void *const conn, const char *k)
 {
-    return copyStr(ngenxxStoreKvReadString(conn, k ?: ""));
+    return copyStr(ngenxxStoreKvReadString(conn, wrapStr(k)));
 }
 
 EXPORT_AUTO
 bool ngenxx_store_kv_write_string(void *const conn, const char *k, const char *v)
 {
-    return ngenxxStoreKvWriteString(conn, k ?: "", v ?: "");
+    return ngenxxStoreKvWriteString(conn, wrapStr(k), wrapStr(v));
 }
 
 EXPORT_AUTO
 int64_t ngenxx_store_kv_read_integer(void *const conn, const char *k)
 {
-    return ngenxxStoreKvReadInteger(conn, k ?: "");
+    return ngenxxStoreKvReadInteger(conn, wrapStr(k));
 }
 
 EXPORT_AUTO
 bool ngenxx_store_kv_write_integer(void *const conn, const char *k, int64_t v)
 {
-    return ngenxxStoreKvWriteInteger(conn, k ?: "", v);
+    return ngenxxStoreKvWriteInteger(conn, wrapStr(k), v);
 }
 
 EXPORT_AUTO
 double ngenxx_store_kv_read_float(void *const conn, const char *k)
 {
-    return ngenxxStoreKvReadFloat(conn, k ?: "");
+    return ngenxxStoreKvReadFloat(conn, wrapStr(k));
 }
 
 EXPORT_AUTO
 bool ngenxx_store_kv_write_float(void *const conn, const char *k, double v)
 {
-    return ngenxxStoreKvWriteFloat(conn, k ?: "", v);
+    return ngenxxStoreKvWriteFloat(conn, wrapStr(k), v);
 }
 
 EXPORT_AUTO
@@ -442,13 +443,13 @@ const char **ngenxx_store_kv_all_keys(void *const conn, size_t *len)
 EXPORT_AUTO
 bool ngenxx_store_kv_contains(void *const conn, const char *k)
 {
-    return ngenxxStoreKvContains(conn, k ?: "");
+    return ngenxxStoreKvContains(conn, wrapStr(k));
 }
 
 EXPORT_AUTO
 bool ngenxx_store_kv_remove(void *const conn, const char *k)
 {
-    return ngenxxStoreKvRemove(conn, k ?: "");
+    return ngenxxStoreKvRemove(conn, wrapStr(k));
 }
 
 EXPORT_AUTO
@@ -468,7 +469,7 @@ void ngenxx_store_kv_close(void *const conn)
 EXPORT_AUTO
 void *ngenxx_json_decoder_init(const char *json)
 {
-    return json ? ngenxxJsonDecoderInit(json ?: "") : nullptr;
+    return ngenxxJsonDecoderInit(wrapStr(json));
 }
 
 EXPORT_AUTO
@@ -486,7 +487,7 @@ bool ngenxx_json_decoder_is_object(void *const decoder, void *const node)
 EXPORT_AUTO
 void *ngenxx_json_decoder_read_node(void *const decoder, void *const node, const char *k)
 {
-    return ngenxxJsonDecoderReadNode(decoder, k ?: "", node);
+    return ngenxxJsonDecoderReadNode(decoder, wrapStr(k), node);
 }
 
 EXPORT_AUTO

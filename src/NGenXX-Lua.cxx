@@ -116,20 +116,20 @@ std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
 EXPORT
 bool ngenxx_lua_loadF(const char *file)
 {
-    return ngenxxLuaLoadF(file ?: "");
+    return ngenxxLuaLoadF(wrapStr(file));
 }
 #endif
 
 EXPORT
 bool ngenxx_lua_loadS(const char *script)
 {
-    return ngenxxLuaLoadS(script ?: "");
+    return ngenxxLuaLoadS(wrapStr(script));
 }
 
 EXPORT
 const char *ngenxx_lua_call(const char *f, const char *ps)
 {
-    return copyStr(ngenxxLuaCall(f ?: "", ps ?: ""));
+    return copyStr(ngenxxLuaCall(wrapStr(f), wrapStr(ps)));
 }
 
 void _ngenxx_lua_registerFuncs()
