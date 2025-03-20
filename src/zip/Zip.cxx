@@ -196,7 +196,7 @@ template <typename T>
 bool _ngenxx_z_processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase<T> &zb)
 {
     return _ngenxx_z_process(bufferSize, 
-        [bufferSize, &inStream] -> Bytes 
+        [bufferSize, &inStream] 
         {
             Bytes in;
             inStream->readsome(reinterpret_cast<char *>(in.data()), bufferSize);
@@ -232,7 +232,7 @@ template <typename T>
 bool _ngenxx_z_processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase<T> &zb)
 {
     return _ngenxx_z_process(bufferSize, 
-        [bufferSize, &inFile] -> Bytes
+        [bufferSize, &inFile]
         {
             Bytes in;
             std::fread(static_cast<void *>(in.data()), sizeof(byte), bufferSize, inFile);
@@ -267,10 +267,10 @@ bool NGenXX::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, std::FIL
 template <typename T>
 Bytes _ngenxx_z_processBytes(size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
 {
-    std::remove_const<decltype(bufferSize)>::type pos(0);
+    decltype(bufferSize) pos(0);
     Bytes outBytes;
     auto b = _ngenxx_z_process(bufferSize, 
-        [bufferSize, &in, &pos] -> Bytes
+        [bufferSize, &in, &pos]
         {
             auto len = std::min(bufferSize, in.size() - pos);
             Bytes bytes(in.begin() + pos, in.begin() + pos + len);
