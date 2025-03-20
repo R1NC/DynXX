@@ -20,7 +20,6 @@ namespace NGenXX
         
         namespace Hex
         {
-
             std::string bytes2str(const Bytes &bytes);
 
             Bytes str2bytes(const std::string &str);
