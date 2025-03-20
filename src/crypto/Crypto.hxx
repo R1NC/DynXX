@@ -23,7 +23,7 @@ namespace NGenXX
                 auto inBytes = in.data(), keyBytes = key.data(), initVectorBytes = initVector.data(), aadBytes = aad.data();
                 auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
                 auto tagLen = tagBits / 8;
-                if (inBytes == nullptr || inLen <= 0)
+                if (inBytes == nullptr || inLen == 0)
                 {
                     return false;
                 }

@@ -68,7 +68,7 @@ double napiValue2double(napi_env env, napi_value nv)
 
 const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len)
 {
-    if (len <= 0) 
+    if (len == 0) 
     {
         return nullptr;
     }
@@ -86,7 +86,7 @@ const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len)
 
 const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len)
 {
-    if (len <= 0) 
+    if (len == 0) 
     {
         return nullptr;
     }
