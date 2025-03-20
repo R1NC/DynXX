@@ -646,8 +646,7 @@ std::string ngenxx_coding_hex_str2bytesS(const char *json)
     NGenXX::Json::Decoder decoder(json);
 
     auto str = _ngenxx_script_parseStr(decoder, "str");
-
-    if (str.size() == 0)
+    if (str.empty())
     {
         return s;
     }
@@ -684,8 +683,7 @@ std::string ngenxx_coding_str2bytesS(const char *json)
     NGenXX::Json::Decoder decoder(json);
 
     auto str = _ngenxx_script_parseStr(decoder, "str");
-
-    if (str.size() == 0)
+    if (str.empty())
     {
         return s;
     }
@@ -704,8 +702,7 @@ std::string ngenxx_coding_case_upperS(const char *json)
     NGenXX::Json::Decoder decoder(json);
 
     auto str = _ngenxx_script_parseStr(decoder, "str");
-
-    if (str.size() == 0)
+    if (str.empty())
     {
         return s;
     }
@@ -722,8 +719,7 @@ std::string ngenxx_coding_case_lowerS(const char *json)
     NGenXX::Json::Decoder decoder(json);
 
     auto str = _ngenxx_script_parseStr(decoder, "str");
-
-    if (str.size() == 0)
+    if (str.empty())
     {
         return s;
     }
