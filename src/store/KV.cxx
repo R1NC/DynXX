@@ -20,8 +20,7 @@ std::weak_ptr<NGenXX::Store::KV::Connection> NGenXX::Store::KV::open(const std::
     {
         return this->conns.at(_id);
     }
-    auto upConn = std::make_shared<Connection>(_id);
-    this->conns.emplace(_id, std::move(upConn));
+    this->conns.emplace(_id, std::make_shared<Connection>(_id));
     return this->conns.at(_id);
 }
 

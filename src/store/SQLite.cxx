@@ -26,9 +26,8 @@ std::weak_ptr<NGenXX::Store::SQLite::Connection> NGenXX::Store::SQLite::connect(
     {
         PRINT_ERR(rc, db);
         return std::weak_ptr<Connection>();
-    } 
-    auto upConn = std::make_shared<Connection>(db);
-    this->conns.emplace(file, std::move(upConn));
+    }
+    this->conns.emplace(file, std::make_shared<Connection>(db));
     return this->conns.at(file);
 }
 
