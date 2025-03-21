@@ -49,17 +49,17 @@ void ngenxx_lua_uv_timer_cb(uv_timer_t *timer)
 
 uv_timer_t *ngenxx_lua_uv_timer_start(NgenXXLuaTimerData *timer_data)
 {
-    auto timer = mallocX<uv_timer_t>();
-    timer->data = timer_data;
+    auto timerP = mallocX<uv_timer_t>();
+    timerP->data = timer_data;
     
-    std::thread([tmr = timer] {
-        uv_timer_init(uv_default_loop(), tmr);
-        auto timer_data = static_cast<NgenXXLuaTimerData *>(tmr->data);
-        uv_timer_start(tmr, ngenxx_lua_uv_timer_cb, timer_data->timeout, timer_data->repeat ? timer_data->timeout : 0);
+    std::thread([timerP] {
+        uv_timer_init(uv_default_loop(), timerP);
+        auto timer_data = static_cast<NgenXXLuaTimerData *>(timerP->data);
+        uv_timer_start(timerP, ngenxx_lua_uv_timer_cb, timer_data->timeout, timer_data->repeat ? timer_data->timeout : 0);
         ngenxx_lua_uv_loop_prepare();
     }).detach();
     
-    return timer;
+    return timerP;
 }
 
 void ngenxx_lua_uv_timer_stop(uv_timer_t *timer, bool release)

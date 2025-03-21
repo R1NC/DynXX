@@ -49,9 +49,7 @@ size_t _NGenXX_Net_HttpClient_RspHeadersCallback(char *buffer, size_t size, size
     {
         auto k = header.substr(0, colonPos);
         auto v = header.substr(colonPos + 2);
-        auto trimedK = ngenxxCodingStrTrim(k);
-        auto trimedV = ngenxxCodingStrTrim(v);
-        pHeaders->emplace(std::move(trimedK), std::move(trimedV));
+        pHeaders->emplace(ngenxxCodingStrTrim(k), ngenxxCodingStrTrim(v));
     }
     return size * nitems;
 }

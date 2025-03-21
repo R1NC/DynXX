@@ -91,7 +91,7 @@ Bytes NGenXX::Coding::str2bytes(const std::string_view &str)
 std::string NGenXX::Coding::strTrim(const std::string_view &str) 
 {
 #if defined(USE_STD_RANGES)
-    auto findSpaceF = [&](char c) { return std::isspace(static_cast<int>(c)); };
+    auto findSpaceF = [](char c) { return std::isspace(static_cast<int>(c)); };
     auto trimmed = str 
         | std::ranges::views::drop_while(findSpaceF)
         | std::ranges::views::reverse
