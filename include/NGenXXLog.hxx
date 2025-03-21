@@ -2,11 +2,13 @@
 #define NGENXX_INCLUDE_LOG_HXX_
 
 #include <string>
-#include <sstream>
 #include <functional>
 
 #if defined(USE_STD_FORMAT)
 #include <format>
+#else
+#include <tuple>
+#include <sstream>
 #endif
 
 enum class NGenXXLogLevelX : int
@@ -26,31 +28,18 @@ void ngenxxLogSetCallback(const std::function<void(int level, const char *conten
 void ngenxxLogPrint(NGenXXLogLevelX level, const std::string &content);
 
 #if !defined(USE_STD_FORMAT)
-inline void _ngenxxLogFormatImpl(std::ostringstream &oss, const std::string &format)
-{
-    oss << format;
-}
-
-template <typename T, typename... Args>
-inline void _ngenxxLogFormatImpl(std::ostringstream &oss, const std::string &format, T value, Args... args)
-{
-    auto argPos = format.find("{}");
-    if (argPos != std::string::npos)
-    {
-        oss << format.substr(0, argPos) << value;
-        _ngenxxLogFormatImpl(oss, format.substr(argPos + 2), args...);
-    }
-    else
-    {
-        oss << format;
-    }
-}
-
 template <typename... Args>
 inline std::string _ngenxxLogFormat(const std::string &format, Args... args)
 {
     std::ostringstream oss;
-    _ngenxxLogFormatImpl(oss, format, args...);
+    
+    auto formatWithArgs = [&oss, &format](auto... xArgs) {
+        auto tmpFormat = format;
+        ((oss << tmpFormat.substr(0, tmpFormat.find("{}")) << xArgs, tmpFormat.erase(0, tmpFormat.find("{}") + 2)), ...);
+        oss << tmpFormat;
+    };
+    std::apply(formatWithArgs, std::make_tuple(args...));
+    
     return oss.str();
 }
 #endif
