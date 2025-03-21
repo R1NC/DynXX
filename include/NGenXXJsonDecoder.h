@@ -3,10 +3,9 @@
 
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "NGenXXInternal.h"
+
+EXTERN_C_BEGIN
 
     /**
      * @brief initialize JSON decoder
@@ -78,8 +77,6 @@ extern "C"
      */
     void ngenxx_json_decoder_release(void *const decoder);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_JSON_DECODER_H_

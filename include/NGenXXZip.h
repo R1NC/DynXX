@@ -3,12 +3,10 @@
 
 #include <stddef.h>
 
+#include "NGenXXInternal.h"
 #include "NGenXXTypes.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+EXTERN_C_BEGIN
 
     /**
      * ZIP compress mode
@@ -178,8 +176,6 @@ extern "C"
      */
     const byte *ngenxx_z_bytes_unzip(size_t bufferSize, int format, const byte *inBytes, size_t inLen, size_t *outLen);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_ZIP_H_

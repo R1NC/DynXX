@@ -4,12 +4,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "NGenXXInternal.h"
 #include "NGenXXTypes.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+EXTERN_C_BEGIN
 
     /**
      * @brief Load JS file
@@ -56,8 +54,6 @@ extern "C"
      */
     void ngenxx_js_set_msg_callback(const char *(*const callback)(const char *msg));
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_JS_H_

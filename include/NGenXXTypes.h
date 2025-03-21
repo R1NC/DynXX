@@ -3,16 +3,13 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "NGenXXInternal.h"
+
+EXTERN_C_BEGIN
 
     typedef unsigned char byte;
     typedef intptr_t address;
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_TYPES_H_

@@ -1,12 +1,13 @@
 #ifndef NGENXX_SRC_LUA_BRIDGE_HXX_
 #define NGENXX_SRC_LUA_BRIDGE_HXX_
 
-extern "C"
-{
+#include <NGenXXInternal.h>
+
+EXTERN_C_BEGIN
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
-}
+EXTERN_C_END
 
 #if defined(__cplusplus)
 

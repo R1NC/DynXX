@@ -4,12 +4,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#include "NGenXXInternal.h"
 #include "NGenXXTypes.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+EXTERN_C_BEGIN
 
     /**
      * @brief Generate random bytes
@@ -164,8 +162,6 @@ extern "C"
      */
     const byte *ngenxx_crypto_base64_decode(const byte *inBytes, size_t inLen, size_t *outLen);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_CRYPTO_H_

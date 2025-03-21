@@ -3,10 +3,9 @@
 
 #include <stddef.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "NGenXXInternal.h"
+
+EXTERN_C_BEGIN
 
     static const size_t NGENXX_HTTP_DEFAULT_TIMEOUT = 15 * 1000;
 
@@ -62,8 +61,6 @@ extern "C"
      */
     bool ngenxx_net_http_download(const char *url, const char *file_path, size_t timeout);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_NET_HTTP_H_

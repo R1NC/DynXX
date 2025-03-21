@@ -1,10 +1,9 @@
 #ifndef NGENXX_INCLUDE_LOG_LOG_H_
 #define NGENXX_INCLUDE_LOG_LOG_H_
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "NGenXXInternal.h"
+
+EXTERN_C_BEGIN
 
     /**
      *
@@ -40,8 +39,6 @@ extern "C"
      */
     void ngenxx_log_print(int level, const char *content);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_LOG_LOG_H_

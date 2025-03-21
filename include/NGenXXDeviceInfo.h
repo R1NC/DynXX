@@ -1,10 +1,9 @@
 #ifndef NGENXX_INCLUDE_DEVICE_INFO_H_
 #define NGENXX_INCLUDE_DEVICE_INFO_H_
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "NGenXXInternal.h"
+
+EXTERN_C_BEGIN
 
     /**
      * Device Type
@@ -67,8 +66,6 @@ extern "C"
      */
     int ngenxx_device_cpu_arch();
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_DEVICE_INFO_H_

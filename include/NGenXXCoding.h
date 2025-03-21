@@ -3,12 +3,10 @@
 
 #include <stddef.h>
 
+#include "NGenXXInternal.h"
 #include "NGenXXTypes.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+EXTERN_C_BEGIN
 
     /**
      * @brief transfer byte array to hex string
@@ -42,8 +40,6 @@ extern "C"
      */
     const byte *ngenxx_coding_str2bytes(const char *str, size_t *outLen);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_CODING_H_

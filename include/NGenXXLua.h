@@ -3,10 +3,9 @@
 
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "NGenXXInternal.h"
+
+EXTERN_C_BEGIN
 
     /**
      * @brief Load Lua file
@@ -34,8 +33,6 @@ extern "C"
      */
     const char *ngenxx_lua_call(const char *func, const char *params);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_LUA_H_

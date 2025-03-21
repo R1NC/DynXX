@@ -3,10 +3,9 @@
 
 #include <stddef.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "NGenXXInternal.h"
+
+EXTERN_C_BEGIN
 
     static const size_t NGENXX_STORE_KV_KEY_MAX_LENGTH = 256; /**< Max length of the KV Key */
 
@@ -104,8 +103,6 @@ extern "C"
      */
     void ngenxx_store_kv_close(void *const conn);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_STORE_KV_H_

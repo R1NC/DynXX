@@ -4,10 +4,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include "NGenXXInternal.h"
+
+EXTERN_C_BEGIN
 
     /**
      * @brief Open DB
@@ -75,8 +74,6 @@ extern "C"
      */
     void ngenxx_store_sqlite_close(void *const conn);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_STORE_SQLITE_H_

@@ -1,6 +1,7 @@
 #ifndef NGENXX_INCLUDE_H_
 #define NGENXX_INCLUDE_H_
 
+#include "NGenXXInternal.h"
 #include "NGenXXTypes.h"
 #include "NGenXXLog.h"
 #include "NGenXXCrypto.h"
@@ -14,10 +15,7 @@
 #include "NGenXXLua.h"
 #include "NGenXXJs.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+EXTERN_C_BEGIN
 
     /**
      * @brief Read version
@@ -45,8 +43,6 @@ extern "C"
      */
     void ngenxx_release(void);
 
-#ifdef __cplusplus
-}
-#endif
+EXTERN_C_END
 
 #endif // NGENXX_INCLUDE_H_
