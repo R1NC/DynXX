@@ -35,7 +35,8 @@ inline std::string _ngenxxLogFormat(const std::string &format, Args... args)
     
     auto formatWithArgs = [&oss, &format](auto... xArgs) {
         auto tmpFormat = format;
-        ((oss << tmpFormat.substr(0, tmpFormat.find("{}")) << xArgs, tmpFormat.erase(0, tmpFormat.find("{}") + 2)), ...);
+        constexpr auto flag = "{}";
+        ((oss << tmpFormat.substr(0, tmpFormat.find(flag)) << xArgs, tmpFormat.erase(0, tmpFormat.find(flag) + 2)), ...);
         oss << tmpFormat;
     };
     std::apply(formatWithArgs, std::make_tuple(args...));
