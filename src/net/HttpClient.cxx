@@ -74,31 +74,13 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
 {
     NGenXXHttpResponse rsp;
 
-    if (!this->checkUrlValid(url))
-    {
-        return rsp;
-    }
-
-    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request url: {} params: {}", url, params);
-
-    auto curl = curl_easy_init();
+    auto curl = this->createRequest(url);
     if (!curl) [[unlikely]]
     {
         return rsp;
     }
 
-    if (!this->handleSSL(curl, url))
-    {
-        return rsp;
-    }
-
-    auto _timeout = timeout;
-    if (_timeout == 0) [[unlikely]]
-    {
-        _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
-    }
-    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
-    curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
+    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request params: {}", url, params);
 
     auto urlAppend = false;
     if (cFILE != nullptr)
@@ -125,6 +107,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
     else if (method == NGenXXNetHttpMethodGet)
     {
         urlAppend = true;
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
     }
     else if (method == NGenXXNetHttpMethodPost)
     {
@@ -146,7 +129,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
 
     std::stringstream ssUrl;
     ssUrl << url;
-    if (urlAppend)
+    if (urlAppend && !params.empty())
     {
         if (!this->checkUrlHasSearch(url))
         {
@@ -195,26 +178,10 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
 {
     auto res = false;
 
-    if (!this->checkUrlValid(url))
-    {
-        return res;
-    }
-
-    auto curl = curl_easy_init();
+    auto curl = this->createRequest(url);
     if (!curl) [[unlikely]]
     {
         return res;
-    }
-
-    if (!this->handleSSL(curl, url))
-    {
-        return res;
-    }
-
-    auto _timeout = timeout;
-    if (_timeout == 0) [[unlikely]]
-    {
-        _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
     }
 
     auto file = std::fopen(filePath.c_str(), "wb");
@@ -225,8 +192,6 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     }
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, timeout);
-    curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, timeout);
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::fwrite);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
@@ -248,6 +213,41 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     return res;
 }
 
+CURL* NGenXX::Net::HttpClient::createRequest(const std::string &url)
+{
+    if (!this->checkUrlValid(url))
+    {
+        return nullptr;
+    }
+
+    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient url: {}", url);
+
+    auto curl = curl_easy_init();
+    if (!curl) [[unlikely]]
+    {
+        return nullptr;
+    }
+
+    if (!this->handleSSL(curl, url))
+    {
+        return nullptr;
+    }
+
+    auto _timeout = timeout;
+    if (_timeout == 0) [[unlikely]]
+    {
+        _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
+    }
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
+    curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
+
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "NGenXX");
+    //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+    return curl;
+}
+
 bool NGenXX::Net::HttpClient::checkUrlValid(const std::string &url)
 {
     if (url.empty()) [[unlikely]]
@@ -258,7 +258,7 @@ bool NGenXX::Net::HttpClient::checkUrlValid(const std::string &url)
     auto aUrl = ada::parse(url);
     if (!aUrl)
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.request INVALID URL: {}", url);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient INVALID URL: {}", url);
         return false;
     }
 #endif
