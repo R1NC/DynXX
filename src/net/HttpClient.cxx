@@ -74,7 +74,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
 {
     NGenXXHttpResponse rsp;
 
-    auto curl = this->createRequest(url);
+    auto curl = this->createRequest(url, timeout);
     if (!curl) [[unlikely]]
     {
         return rsp;
@@ -178,7 +178,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
 {
     auto res = false;
 
-    auto curl = this->createRequest(url);
+    auto curl = this->createRequest(url, timeout);
     if (!curl) [[unlikely]]
     {
         return res;
@@ -213,7 +213,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     return res;
 }
 
-CURL* NGenXX::Net::HttpClient::createRequest(const std::string &url)
+CURL* NGenXX::Net::HttpClient::createRequest(const std::string &url, size_t timeout)
 {
     if (!this->checkUrlValid(url))
     {

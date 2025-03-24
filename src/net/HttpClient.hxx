@@ -44,7 +44,7 @@ namespace NGenXX
             ~HttpClient();
 
         private:
-            CURL *createRequest(const std::string &url);
+            CURL *createRequest(const std::string &url, size_t timeout);
             bool checkUrlValid(const std::string &url);
             bool checkUrlHasSearch(const std::string &url);
             bool handleSSL(CURL *const curl, const std::string &url);
