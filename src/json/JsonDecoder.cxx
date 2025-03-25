@@ -203,12 +203,12 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
             }
             catch (const std::exception &e)
             {
-                ngenxxLogPrint(NGenXXLogLevelX::Error, "FAILED TO PARSE NUMBER FROM JSON: INVALID STRING VALUE");
+                ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID STRING VALUE", cj->string ?: "");
             }
         }
         else [[unlikely]]
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "FAILED TO PARSE NUMBER FROM JSON: INVALID NODE TYPE");
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", cj->string ?: "", cj->type);
         }
     }
     return num;
