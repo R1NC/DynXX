@@ -195,8 +195,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::req(const std::string &url, const st
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
     NGenXXHttpResponse rsp;
-    auto cbk = std::move(func);
-    cbk(curl, rsp);
+    std::move(func)(curl, rsp);
 
     auto curlCode = curl_easy_perform(curl);
 

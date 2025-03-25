@@ -224,7 +224,7 @@ void *NGenXX::Json::Decoder::readChild(const void *const node) const
     return nullptr;
 }
 
-void NGenXX::Json::Decoder::readChildren(const void *const node, const std::function<void(size_t idx, const void *const child)> &callback) const
+void NGenXX::Json::Decoder::readChildren(const void *const node, std::function<void(size_t idx, const void * child)> &&callback) const
 {
     if (!this->isArray(node) && !this->isObject(node)) [[unlikely]]
     {
@@ -234,10 +234,7 @@ void NGenXX::Json::Decoder::readChildren(const void *const node, const std::func
     auto idx = 0;
     while (childNode)
     {
-        if (callback)
-        {
-            callback(idx++, childNode);
-        }
+        std::move(callback)(idx++, childNode);
         childNode = this->readNext(childNode);
     }
 }

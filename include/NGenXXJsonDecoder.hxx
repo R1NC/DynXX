@@ -18,7 +18,7 @@ double ngenxxJsonDecoderReadNumber(void *const decoder, void *const node = nullp
 
 void *ngenxxJsonDecoderReadChild(void *const decoder, void *const node = nullptr);
 
-void ngenxxJsonDecoderReadChildren(void *const decoder, const std::function<void(size_t idx, const void *const child)> &callback, void *const node = nullptr);
+void ngenxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void * child)> &&callback, void *const node = nullptr);
 
 void *ngenxxJsonDecoderReadNext(void *const decoder, void *const node = nullptr);
 

@@ -156,15 +156,15 @@ NGenXX::Z::UnZip::~UnZip()
 
 template <typename T>
 bool _ngenxx_z_process(size_t bufferSize,
-              std::function<const Bytes()> sReadF,
-              std::function<void(const Bytes &)> sWriteF,
-              std::function<void()> sFlushF,
+              std::function<const Bytes()> &&sReadF,
+              std::function<void(const Bytes &)> &&sWriteF,
+              std::function<void()> &&sFlushF,
               NGenXX::Z::ZBase<T> &zb)
 {
     auto inputFinished = false;
     do
     {
-        auto in = sReadF();
+        auto in = std::move(sReadF)();
         inputFinished = in.size() < bufferSize;
         auto ret = zb.input(in, inputFinished);
         if (ret == 0L)
@@ -182,10 +182,10 @@ bool _ngenxx_z_process(size_t bufferSize,
             }
             processFinished = zb.processFinished();
 
-            sWriteF(outData);
+            std::move(sWriteF)(outData);
         } while (!processFinished);
     } while (!inputFinished);
-    sFlushF();
+    std::move(sFlushF)();
 
     return true;
 }

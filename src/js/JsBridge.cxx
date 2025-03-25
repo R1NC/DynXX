@@ -394,7 +394,7 @@ void _NgenXXJSPromise_callback(JSContext *ctx, NgenXXJSPromise *jPromise, JSValu
     delete jPromise;
 }
 
-JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
+JSValue NGenXX::JsBridge::newPromise(std::function<JSValue()> &&jf)
 {
     auto jPromise = _NgenXXJSPromise_new(this->context);
     if (jPromise == nullptr) [[unlikely]]
@@ -402,7 +402,7 @@ JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
         return JS_EXCEPTION;
     }
     
-    std::thread([&ctx = this->context, jPromise, jf] {
+    std::thread([&ctx = this->context, jPromise, jf = std::move(jf)] {
         if (!_ngenxx_js_mutex) [[unlikely]]
         {
             return;
@@ -417,49 +417,49 @@ JSValue NGenXX::JsBridge::newPromise(const std::function<JSValue()> &jf)
     return jPromise->p;
 }
 
-JSValue NGenXX::JsBridge::newPromiseVoid(const std::function<void()> &f)
+JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> &&f)
 {
-    return this->newPromise([f]() {
+    return this->newPromise([f = std::move(f)]() {
         f();
         return JS_UNDEFINED;
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseBool(const std::function<bool()> &f)
+JSValue NGenXX::JsBridge::newPromiseBool(std::function<bool()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f]{
+    return this->newPromise([&ctx = this->context, f = std::move(f)]{
         auto ret = f();
         return JS_NewBool(ctx, ret);
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseInt32(const std::function<int32_t()> &f)
+JSValue NGenXX::JsBridge::newPromiseInt32(std::function<int32_t()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f]{
+    return this->newPromise([&ctx = this->context, f = std::move(f)]{
         auto ret = f();
         return JS_NewInt32(ctx, ret);
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseInt64(const std::function<int64_t()> &f)
+JSValue NGenXX::JsBridge::newPromiseInt64(std::function<int64_t()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f]{
+    return this->newPromise([&ctx = this->context, f = std::move(f)]{
         auto ret = f();
         return JS_NewInt64(ctx, ret);
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseFloat(const std::function<double()> &f)
+JSValue NGenXX::JsBridge::newPromiseFloat(std::function<double()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f]{
+    return this->newPromise([&ctx = this->context, f = std::move(f)]{
         auto ret = f();
         return JS_NewFloat64(ctx, ret);
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseString(const std::function<const std::string()> &f)
+JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f]{
+    return this->newPromise([&ctx = this->context, f = std::move(f)]{
         auto ret = f();
         return JS_NewString(ctx, ret.c_str() ? : "");
     });
