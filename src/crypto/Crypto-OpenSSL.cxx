@@ -18,6 +18,8 @@
 constexpr auto OpenSSL_OK = 1;
 constexpr auto OpenSSL_AES_Key_BITS = 128;
 
+#pragma mark Rand
+
 bool NGenXX::Crypto::rand(size_t len, byte *bytes)
 {
     if (len == 0 || bytes == nullptr) [[unlikely]]
@@ -27,6 +29,8 @@ bool NGenXX::Crypto::rand(size_t len, byte *bytes)
     auto ret = RAND_bytes(bytes, static_cast<int>(len));
     return ret != -1;
 }
+
+#pragma mark AES
 
 Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
 {
@@ -108,6 +112,8 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
 
     return wrapBytes(out, outLen);
 }
+
+#pragma mark AES-GCM
 
 const EVP_CIPHER *aesGcmCipher(const Bytes &keyBytes)
 {
@@ -319,6 +325,8 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     return wrapBytes(out, outLen);
 }
 
+#pragma mark MD5
+
 Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
 {
     auto in = inBytes.data();
@@ -356,6 +364,8 @@ Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
 
     return wrapBytes(out, outLen);
 }
+
+#pragma mark SHA1
 
 Bytes NGenXX::Crypto::Hash::sha1(const Bytes &inBytes)
 {
@@ -398,6 +408,7 @@ Bytes NGenXX::Crypto::Hash::sha1(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
+#pragma mark SHA256
 Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
 {
     auto in = inBytes.data();
@@ -436,69 +447,7 @@ Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
-Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
-{
-    auto in = inBytes.data();
-    auto inLen = inBytes.size();
-    if (in == nullptr || inLen == 0) [[unlikely]]
-    {
-        return {};
-    }
-
-    BIO *b64, *bmem;
-
-    b64 = BIO_new(BIO_f_base64());
-    bmem = BIO_new(BIO_s_mem());
-
-    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-    b64 = BIO_push(b64, bmem);
-
-    BIO_write(b64, in, static_cast<int>(inLen));
-    BIO_flush(b64);
-
-    char *outBytes = nullptr;
-    auto outLen = BIO_get_mem_data(bmem, &outBytes);
-    if (outLen == 0)
-    {
-        BIO_free_all(b64);
-        return {};
-    }
-
-    auto out = wrapBytes(reinterpret_cast<byte *>(outBytes), outLen);
-
-    BIO_free_all(b64);
-
-    return out;
-}
-
-Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
-{
-    auto in = inBytes.data();
-    auto inLen = inBytes.size();
-    if (in == nullptr || inLen == 0) [[unlikely]]
-    {
-        return {};
-    }
-
-    BIO *bio, *b64;
-    bio = BIO_new_mem_buf(in, -1);
-    b64 = BIO_new(BIO_f_base64());
-    bio = BIO_push(b64, bio);
-    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-
-    byte outBytes[inLen * 2];
-    auto outLen = BIO_read(bio, outBytes, static_cast<int>(inLen));
-    if (outLen == 0)
-    {
-        BIO_free_all(bio);
-        return {};
-    }
-
-    auto out = wrapBytes(outBytes, outLen);
-    BIO_free_all(bio);
-
-    return out;
-}
+#pragma mark RSA
 
 RSA *ngenxxCryptoCreateRSA(const Bytes &key, bool isPublic)
 {
@@ -556,5 +505,74 @@ Bytes NGenXX::Crypto::RSA::decrypt(const Bytes &in, const Bytes &key, int paddin
     }
     auto out = wrapBytes(outBytes, outLen);
     RSA_free(rsa);
+    return out;
+}
+
+#pragma mark Base64
+
+Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
+{
+    auto in = inBytes.data();
+    auto inLen = inBytes.size();
+    if (in == nullptr || inLen == 0) [[unlikely]]
+    {
+        return {};
+    }
+
+    BIO *b64, *bmem;
+
+    b64 = BIO_new(BIO_f_base64());
+    bmem = BIO_new(BIO_s_mem());
+
+    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+    b64 = BIO_push(b64, bmem);
+
+    BIO_write(b64, in, static_cast<int>(inLen));
+    BIO_flush(b64);
+
+    char *outBytes = nullptr;
+    auto outLen = BIO_get_mem_data(bmem, &outBytes);
+    if (outLen == 0)
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to encode Base64");
+        BIO_free_all(b64);
+        return {};
+    }
+
+    auto out = wrapBytes(reinterpret_cast<byte *>(outBytes), outLen);
+
+    BIO_free_all(b64);
+
+    return out;
+}
+
+Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
+{
+    auto in = inBytes.data();
+    auto inLen = inBytes.size();
+    if (in == nullptr || inLen == 0) [[unlikely]]
+    {
+        return {};
+    }
+
+    BIO *bio, *b64;
+    bio = BIO_new_mem_buf(in, -1);
+    b64 = BIO_new(BIO_f_base64());
+    bio = BIO_push(b64, bio);
+    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
+
+    auto outLen = inLen * 3 / 4;
+    byte outBytes[outLen];
+    outLen = BIO_read(bio, outBytes, static_cast<int>(inLen));
+    if (outLen == 0)
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to decode Base64");
+        BIO_free_all(bio);
+        return {};
+    }
+
+    auto out = wrapBytes(outBytes, outLen);
+    BIO_free_all(bio);
+
     return out;
 }
