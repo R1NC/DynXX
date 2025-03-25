@@ -5,6 +5,8 @@
 
 #include <cstdio>
 
+#include <functional>
+
 #include <curl/curl.h>
 
 #include <NGenXXTypes.hxx>
@@ -44,7 +46,7 @@ namespace NGenXX
             ~HttpClient();
 
         private:
-            CURL *createRequest(const std::string &url, size_t timeout);
+            NGenXXHttpResponse req(const std::string &url, const std::vector<std::string> &headers, const std::string &params, int method, size_t timeout, std::function<void(CURL *const, const NGenXXHttpResponse &rsp)> &&func);
             bool checkUrlValid(const std::string &url);
             bool checkUrlHasSearch(const std::string &url);
             bool handleSSL(CURL *const curl, const std::string &url);
