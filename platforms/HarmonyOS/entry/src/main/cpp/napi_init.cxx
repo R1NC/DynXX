@@ -1072,7 +1072,7 @@ static napi_module ngenxxModule =
     .nm_filename = nullptr,
     .nm_register_func = _napi_ngenxxRegisterFuncs,
     .nm_modname = "ngenxx",
-    .nm_priv = (addr2ptr(0)),
+    .nm_priv = ((void*)(0)),
     .reserved = {0},
 };
 
