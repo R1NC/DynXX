@@ -13,7 +13,7 @@
 #include "net/HttpClient.hxx"
 #include "store/SQLite.hxx"
 #include "store/KV.hxx"
-#include "json/JsonDecoder.hxx"
+#include "json/JsonCodec.hxx"
 #include "zip/Zip.hxx"
 #include "coding/Coding.hxx"
 #include "crypto/Crypto.hxx"
@@ -575,7 +575,17 @@ void ngenxxStoreKvClose(void *const conn)
     delete xconn;*/
 }
 
-#pragma mark Json.Decoder
+#pragma mark Json
+
+std::string ngenxxJsonFromDictAny(const DictAny &dict)
+{
+    return NGenXX::Json::jsonFromDictAny(dict);
+}
+
+DictAny ngenxxJsonToDictAny(const std::string &json)
+{
+    return NGenXX::Json::jsonToDictAny(json);
+}
 
 void *ngenxxJsonDecoderInit(const std::string &json)
 {

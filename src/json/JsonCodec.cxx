@@ -1,10 +1,10 @@
-#include "JsonDecoder.hxx"
+#include "JsonCodec.hxx"
 
 #include <utility>
 
 #include <NGenXXLog.hxx>
 
-std::string NGenXX::Json::dictAnyToJson(const DictAny &dict)
+std::string NGenXX::Json::jsonFromDictAny(const DictAny &dict)
 {
     auto cjson = cJSON_CreateObject();
     for (const auto &[k, v] : dict) 
@@ -32,7 +32,7 @@ std::string NGenXX::Json::dictAnyToJson(const DictAny &dict)
     return json;
 }
 
-DictAny NGenXX::Json::dictAnyFromJson(const std::string &json)
+DictAny NGenXX::Json::jsonToDictAny(const std::string &json)
 {
     DictAny dict;
     auto cjson = cJSON_Parse(json.c_str());
@@ -43,8 +43,7 @@ DictAny NGenXX::Json::dictAnyFromJson(const std::string &json)
 
     if (cJSON_IsObject(cjson)) [[likely]]
     {
-        auto node = cjson->child;
-        while (node)
+        for (auto node = cjson->child; node != nullptr; node = node->next)
         {
             std::string k(node->string);
             if (cJSON_IsNumber(node))
@@ -55,53 +54,18 @@ DictAny NGenXX::Json::dictAnyFromJson(const std::string &json)
             {
                 dict.emplace(k, node->valuestring);
             }
-            node = node->next;
-        }
-    }
-
-    cJSON_Delete(cjson);
-    return dict;
-}
-
-std::string NGenXX::Json::dictToJson(const Dict &dict)
-{
-    auto cjson = cJSON_CreateObject();
-    for (const auto &[k, v] : dict) 
-    {
-        auto node = cJSON_CreateString(v.c_str());
-        cJSON_AddItemToObject(cjson, k.c_str(), node);
-    }
-    std::string json = cJSON_PrintUnformatted(cjson);
-    cJSON_Delete(cjson);
-    return json;
-}
-
-Dict NGenXX::Json::dictFromJson(const std::string &json)
-{
-    Dict dict;
-    auto cjson = cJSON_Parse(json.c_str());
-    if (!cjson) [[unlikely]]
-    {
-        return dict;
-    }
-
-    if (cJSON_IsObject(cjson)) [[likely]]
-    {
-        auto node = cjson->child;
-        while (node)
-        {
-            std::string k(node->string);
-            if (cJSON_IsString(node)) [[likely]]
+            else
             {
-                dict.emplace(k, node->valuestring);
+                dict.emplace(k, cJSON_PrintUnformatted(node));
             }
-            node = node->next;
         }
     }
 
     cJSON_Delete(cjson);
     return dict;
 }
+
+#pragma mark Decoder
 
 void NGenXX::Json::Decoder::moveImp(Decoder&& other) noexcept
 {
@@ -230,12 +194,10 @@ void NGenXX::Json::Decoder::readChildren(const void *const node, std::function<v
     {
         return;
     }
-    auto childNode = this->readChild(node);
     auto idx = 0;
-    while (childNode)
+    for (auto childNode = this->readChild(node); childNode != nullptr; childNode = this->readNext(childNode))
     {
         std::move(callback)(idx++, childNode);
-        childNode = this->readNext(childNode);
     }
 }
 

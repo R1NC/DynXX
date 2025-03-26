@@ -8,7 +8,7 @@
 #include "NGenXXLua.hxx"
 #include "NGenXXJs.hxx"
 #include "NGenXXLog.hxx"
-#include "NGenXXJsonDecoder.hxx"
+#include "NGenXXJsonCodec.hxx"
 #include "NGenXXCoding.hxx"
 #include "NGenXXCrypto.hxx"
 #include "NGenXXZip.hxx"

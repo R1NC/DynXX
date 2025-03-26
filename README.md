@@ -13,7 +13,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | Network |✔️|✔️|✔️|✔️|✔️|✔️|⁉️|
 | SQLite |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
 | Key-Value Store |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
-| JSON |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
+| JSON Codec |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
 | Crypto |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
 | Zip |✔️|✔️|🛠️|🛠️|✔️|✔️|🛠️|
 | Device Info |✔️|✔️|✔️|🛠️|✔️|🛠️|❔|
@@ -52,7 +52,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 - [ada-url][3]: URL parser;(Requires `std::ranges` in C++20)
 - [curl][4]: Networking;
-- [cJSON][5]: JSON parser;
+- [cJSON][5]: JSON codec;
 - [libuv][6]: Asynchronous I/O;
 - [lua][7]: Lua runtime;
 - [MMKV][8]: Key-value storage;

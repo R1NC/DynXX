@@ -10,7 +10,7 @@
 #include "NGenXXNetHttp.h"
 #include "NGenXXStoreKV.h"
 #include "NGenXXStoreSQLite.h"
-#include "NGenXXJsonDecoder.h"
+#include "NGenXXJsonCodec.h"
 #include "NGenXXZip.h"
 #include "NGenXXLua.h"
 #include "NGenXXJs.h"

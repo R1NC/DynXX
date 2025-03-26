@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_JSON_DECODER_HXX_
-#define NGENXX_SRC_JSON_DECODER_HXX_
+#ifndef NGENXX_SRC_JSON_CODEC_HXX_
+#define NGENXX_SRC_JSON_CODEC_HXX_
 
 #include <cJSON.h>
 
@@ -14,10 +14,8 @@ namespace NGenXX
 {
     namespace Json
     {
-        Dict dictFromJson(const std::string &json);
-        std::string dictToJson(const Dict &dict);
-        DictAny dictAnyFromJson(const std::string &json);
-        std::string dictAnyToJson(const DictAny &dict);
+        std::string jsonFromDictAny(const DictAny &dict);
+        DictAny jsonToDictAny(const std::string &json);
         
         class Decoder
         {
@@ -64,4 +62,4 @@ namespace NGenXX
 
 #endif
 
-#endif // NGENXX_SRC_JSON_DECODER_HXX_
+#endif // NGENXX_SRC_JSON_CODEC_HXX_

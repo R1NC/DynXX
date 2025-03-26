@@ -187,37 +187,52 @@ static inline address ptr2addr(const T *ptr)
 
 using Any = std::variant<int64_t, double, std::string>;
 
-static inline std::string Any2String(const Any &v)
+static inline std::string Any2String(const Any &v, const std::string &defaultS = {})
 {
-    std::string s;
     if (std::holds_alternative<std::string>(v))
     {
-        s = std::get<std::string>(v);
+        return std::get<std::string>(v);
     }
-    return s;
+    return defaultS;
 }
 
-static inline int64_t Any2Integer(const Any &v)
+static inline int64_t Any2Integer(const Any &v, int64_t defaultI = std::numeric_limits<int64_t>::min())
 {
     if (!std::holds_alternative<std::string>(v))
     {
         return std::get<int64_t>(v);
     }
-    return std::numeric_limits<int64_t>::min();
+    return defaultI;
 }
 
-static inline double Any2Float(const Any &v)
+static inline double Any2Float(const Any &v, double defaultF = std::numeric_limits<double>::min())
 {
     if (!std::holds_alternative<std::string>(v))
     {
         return std::get<double>(v);
     }
-    return std::numeric_limits<double>::min();
+    return defaultF;
 }
+
+#pragma mark Dict Type
 
 using Dict = std::unordered_map<std::string, std::string>;
 using DictAny = std::unordered_map<std::string, Any>;
 
+static inline std::string dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
+{
+    return dict.find(key) == dict.end() ? defaultS : Any2String(dict.at(key), defaultS);
+}
+
+static inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, int64_t defaultI = std::numeric_limits<int64_t>::min())
+{
+    return dict.find(key) == dict.end() ? defaultI : Any2Integer(dict.at(key), defaultI);
+}
+
+static inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, double defaultF = std::numeric_limits<double>::min())
+{
+    return dict.find(key) == dict.end() ? defaultF : Any2Float(dict.at(key), defaultF);
+}
 
 #pragma mark Bytes Type
 

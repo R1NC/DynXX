@@ -1,8 +1,13 @@
-#ifndef NGENXX_INCLUDE_JSON_DECODER_HXX_
-#define NGENXX_INCLUDE_JSON_DECODER_HXX_
+#ifndef NGENXX_INCLUDE_JSON_CODEC_HXX_
+#define NGENXX_INCLUDE_JSON_CODEC_HXX_
 
 #include <string>
 #include <functional>
+
+#include "NGenXXTypes.hxx"
+
+std::string ngenxxJsonFromDictAny(const DictAny &dict);
+DictAny ngenxxJsonToDictAny(const std::string &json);
 
 void *ngenxxJsonDecoderInit(const std::string &json);
 
@@ -24,4 +29,4 @@ void *ngenxxJsonDecoderReadNext(void *const decoder, void *const node = nullptr)
 
 void ngenxxJsonDecoderRelease(void *const decoder);
 
-#endif // NGENXX_INCLUDE_JSON_DECODER_HXX_
+#endif // NGENXX_INCLUDE_JSON_CODEC_HXX_

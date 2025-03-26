@@ -11,7 +11,7 @@
 
 #include <NGenXX.hxx>
 #include <NGenXXNetHttp.h>
-#include "json/JsonDecoder.hxx"
+#include "json/JsonCodec.hxx"
 
 std::string _ngenxx_script_bytes2json(const Bytes &bytes)
 {
