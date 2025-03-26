@@ -12,6 +12,7 @@
 #include <vector>
 #include <variant>
 #include <unordered_map>
+#include <functional>
 #include <limits>
 #include <iostream>
 #include <type_traits>
@@ -75,13 +76,12 @@ std::size_t getHash(const T& value)
 }
 
 template<Iterable T>
-void printElements(const T& container) 
+void iterate(const T& container, std::function<void(const typename T::value_type&)> &&func) 
 {
-    for (const auto& element : container) 
+    for (const auto& e : container)
     {
-        std::cout << element << std::endl;
+        std::move(func)(e);
     }
-    std::cout << std::endl;
 }
 
 template<MemcpyableT T>
@@ -185,6 +185,11 @@ static inline address ptr2addr(const T *ptr)
 
 #pragma mark Any Type
 
+constexpr auto MinInt64 = std::numeric_limits<int64_t>::min();
+constexpr auto MaxInt64 = std::numeric_limits<int64_t>::max();
+constexpr auto MinDouble = std::numeric_limits<double>::min();
+constexpr auto MaxDouble = std::numeric_limits<double>::max();
+
 using Any = std::variant<int64_t, double, std::string>;
 
 static inline std::string Any2String(const Any &v, const std::string &defaultS = {})
@@ -196,7 +201,7 @@ static inline std::string Any2String(const Any &v, const std::string &defaultS =
     return defaultS;
 }
 
-static inline int64_t Any2Integer(const Any &v, int64_t defaultI = std::numeric_limits<int64_t>::min())
+static inline int64_t Any2Integer(const Any &v, int64_t defaultI = MinInt64)
 {
     if (!std::holds_alternative<std::string>(v))
     {
@@ -205,7 +210,7 @@ static inline int64_t Any2Integer(const Any &v, int64_t defaultI = std::numeric_
     return defaultI;
 }
 
-static inline double Any2Float(const Any &v, double defaultF = std::numeric_limits<double>::min())
+static inline double Any2Float(const Any &v, double defaultF = MinDouble)
 {
     if (!std::holds_alternative<std::string>(v))
     {
@@ -224,12 +229,12 @@ static inline std::string dictAnyReadString(const DictAny &dict, const std::stri
     return dict.find(key) == dict.end() ? defaultS : Any2String(dict.at(key), defaultS);
 }
 
-static inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, int64_t defaultI = std::numeric_limits<int64_t>::min())
+static inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, int64_t defaultI = MinInt64)
 {
     return dict.find(key) == dict.end() ? defaultI : Any2Integer(dict.at(key), defaultI);
 }
 
-static inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, double defaultF = std::numeric_limits<double>::min())
+static inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, double defaultF = MinDouble)
 {
     return dict.find(key) == dict.end() ? defaultF : Any2Float(dict.at(key), defaultF);
 }
@@ -244,7 +249,8 @@ static inline const Bytes wrapBytes(const byte* data, size_t len)
 }
 
 template <typename T>
-std::string wrapStr(const T* ptr) {
+std::string wrapStr(const T* ptr) 
+{
     if (ptr == nullptr) 
     {
         return {};
