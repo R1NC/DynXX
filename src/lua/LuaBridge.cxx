@@ -14,8 +14,8 @@
 typedef struct NgenXXLuaTimerData
 {
     lua_State *lState{nullptr};
-    size_t lFuncRef{0};
-    uint64_t timeout{1};
+    int lFuncRef{0};
+    lua_Integer timeout{1};
     bool repeat{false};
     bool finished{false};
 } NgenXXLuaTimerData;
@@ -52,7 +52,7 @@ uv_timer_t *ngenxx_lua_uv_timer_start(NgenXXLuaTimerData *timer_data)
     auto timerP = mallocX<uv_timer_t>();
     timerP->data = timer_data;
     
-    std::thread([timerP] {
+    std::thread([&timerP] {
         uv_timer_init(uv_default_loop(), timerP);
         auto timer_data = static_cast<NgenXXLuaTimerData *>(timerP->data);
         uv_timer_start(timerP, ngenxx_lua_uv_timer_cb, timer_data->timeout, timer_data->repeat ? timer_data->timeout : 0);
@@ -81,18 +81,18 @@ void ngenxx_lua_uv_timer_stop(uv_timer_t *timer, bool release)
 
 static int ngenxx_lua_util_timer_add(lua_State *L)
 {
-    auto timeout = lua_tointeger(L, 1);
-    auto repeat = lua_toboolean(L, 2);
     auto timer_data = mallocX<NgenXXLuaTimerData>();
-    timer_data->lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX);
-    timer_data->lState = L;
-    timer_data->timeout = timeout;
-    timer_data->repeat = repeat != 0;
+    *timer_data = {
+        .lState = L,
+        .lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX),
+        .timeout = lua_tointeger(L, 1),
+        .repeat = static_cast<bool>(lua_toboolean(L, 2))
+    };
     
     auto timer = ngenxx_lua_uv_timer_start(timer_data);
     
     lua_pushlightuserdata(L, timer);
-    return 1;
+    return LUA_OK;
 }
 
 static int ngenxx_lua_util_timer_remove(lua_State *L)
@@ -102,7 +102,7 @@ static int ngenxx_lua_util_timer_remove(lua_State *L)
     {
         ngenxx_lua_uv_timer_stop(timer, true);
     }
-    return 0;
+    return LUA_OK;
 }
 
 static const luaL_Reg ngenxx_lua_lib_timer_funcs[] = {
