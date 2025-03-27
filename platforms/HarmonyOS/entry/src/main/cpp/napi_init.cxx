@@ -7,7 +7,7 @@
 
 #include "../../../../../../build.HarmonyOS/output/include/NGenXX.h"
 
-static napi_value _napi_ngenxxGetVersion(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXGetVersion(napi_env env, napi_callback_info info)
 {
     auto c = ngenxx_get_version();
     auto v = chars2NapiValue(env, c);
@@ -15,7 +15,7 @@ static napi_value _napi_ngenxxGetVersion(napi_env env, napi_callback_info info)
     return v;
 }
 
-static napi_value _napi_ngenxxInit(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXInit(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -28,7 +28,7 @@ static napi_value _napi_ngenxxInit(napi_env env, napi_callback_info info)
     return v;
 }
 
-static napi_value _napi_ngenxxRelease(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXRelease(napi_env env, napi_callback_info info)
 {
     ngenxx_release();
 
@@ -134,7 +134,7 @@ static void engineLogCallback(int level, const char *content)
 
 #pragma mark Log API
 
-static napi_value _napi_ngenxxLogSetLevel(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXLogSetLevel(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -145,7 +145,7 @@ static napi_value _napi_ngenxxLogSetLevel(napi_env env, napi_callback_info info)
     return int2NapiValue(env, napi_ok);
 }
 
-static napi_value _napi_ngenxxLogSetCallback(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXLogSetCallback(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -173,7 +173,7 @@ static napi_value _napi_ngenxxLogSetCallback(napi_env env, napi_callback_info in
     return int2NapiValue(env, napi_ok);
 }
 
-static napi_value _napi_ngenxxLogPrint(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXLogPrint(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -188,7 +188,7 @@ static napi_value _napi_ngenxxLogPrint(napi_env env, napi_callback_info info)
 
 #pragma mark Net
 
-static napi_value _napi_ngenxxNetHttpRequest(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXNetHttpRequest(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -245,7 +245,7 @@ static napi_value _napi_ngenxxNetHttpRequest(napi_env env, napi_callback_info in
 
 #pragma mark Store.SQLite
 
-static napi_value _napi_ngenxxStoreSQLiteOpen(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreSQLiteOpen(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -257,7 +257,7 @@ static napi_value _napi_ngenxxStoreSQLiteOpen(napi_env env, napi_callback_info i
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreSQLiteExecute(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreSQLiteExecute(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -271,7 +271,7 @@ static napi_value _napi_ngenxxStoreSQLiteExecute(napi_env env, napi_callback_inf
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreSQLiteQueryDo(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreSQLiteQueryDo(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -285,7 +285,7 @@ static napi_value _napi_ngenxxStoreSQLiteQueryDo(napi_env env, napi_callback_inf
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -295,7 +295,7 @@ static napi_value _napi_ngenxxStoreSQLiteQueryReadRow(napi_env env, napi_callbac
     return bool2NapiValue(env, res);
 }
 
-static napi_value _napi_ngenxxStoreSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -310,7 +310,7 @@ static napi_value _napi_ngenxxStoreSQLiteQueryReadColumnText(napi_env env, napi_
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -324,7 +324,7 @@ static napi_value _napi_ngenxxStoreSQLiteQueryReadColumnInteger(napi_env env, na
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -338,7 +338,7 @@ static napi_value _napi_ngenxxStoreSQLiteQueryReadColumnFloat(napi_env env, napi
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreSQLiteQueryDrop(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreSQLiteQueryDrop(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -348,7 +348,7 @@ static napi_value _napi_ngenxxStoreSQLiteQueryDrop(napi_env env, napi_callback_i
     return int2NapiValue(env, napi_ok);
 }
 
-static napi_value _napi_ngenxxStoreSQLiteClose(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreSQLiteClose(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -360,7 +360,7 @@ static napi_value _napi_ngenxxStoreSQLiteClose(napi_env env, napi_callback_info 
 
 #pragma mark Store.KV
 
-static napi_value _napi_ngenxxStoreKVOpen(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVOpen(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -372,7 +372,7 @@ static napi_value _napi_ngenxxStoreKVOpen(napi_env env, napi_callback_info info)
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreKVReadString(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVReadString(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -387,7 +387,7 @@ static napi_value _napi_ngenxxStoreKVReadString(napi_env env, napi_callback_info
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreKVWriteString(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVWriteString(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -403,7 +403,7 @@ static napi_value _napi_ngenxxStoreKVWriteString(napi_env env, napi_callback_inf
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreKVReadInteger(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVReadInteger(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -417,7 +417,7 @@ static napi_value _napi_ngenxxStoreKVReadInteger(napi_env env, napi_callback_inf
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreKVWriteInteger(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVWriteInteger(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -432,7 +432,7 @@ static napi_value _napi_ngenxxStoreKVWriteInteger(napi_env env, napi_callback_in
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreKVReadFloat(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVReadFloat(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -446,7 +446,7 @@ static napi_value _napi_ngenxxStoreKVReadFloat(napi_env env, napi_callback_info 
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreKVWriteFloat(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVWriteFloat(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -461,7 +461,7 @@ static napi_value _napi_ngenxxStoreKVWriteFloat(napi_env env, napi_callback_info
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreKVContains(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVContains(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -475,7 +475,7 @@ static napi_value _napi_ngenxxStoreKVContains(napi_env env, napi_callback_info i
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreKVRemove(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVRemove(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -489,7 +489,7 @@ static napi_value _napi_ngenxxStoreKVRemove(napi_env env, napi_callback_info inf
     return nv;
 }
 
-static napi_value _napi_ngenxxStoreKVClear(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVClear(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -499,7 +499,7 @@ static napi_value _napi_ngenxxStoreKVClear(napi_env env, napi_callback_info info
     return int2NapiValue(env, napi_ok);
 }
 
-static napi_value _napi_ngenxxStoreKVClose(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXStoreKVClose(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -511,14 +511,14 @@ static napi_value _napi_ngenxxStoreKVClose(napi_env env, napi_callback_info info
 
 #pragma mark DeviceInfo
 
-static napi_value _napi_ngenxxDeviceType(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXDeviceType(napi_env env, napi_callback_info info)
 {
     auto dt = ngenxx_device_type();
     auto v = int2NapiValue(env, dt);
     return v;
 }
 
-static napi_value _napi_ngenxxDeviceName(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXDeviceName(napi_env env, napi_callback_info info)
 {
     auto cDN = ngenxx_device_name();
     auto v = chars2NapiValue(env, cDN);
@@ -527,7 +527,7 @@ static napi_value _napi_ngenxxDeviceName(napi_env env, napi_callback_info info)
     return v;
 }
 
-static napi_value _napi_ngenxxDeviceManufacturer(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXDeviceManufacturer(napi_env env, napi_callback_info info)
 {
     auto cDM = ngenxx_device_manufacturer();
     auto v = chars2NapiValue(env, cDM);
@@ -535,7 +535,7 @@ static napi_value _napi_ngenxxDeviceManufacturer(napi_env env, napi_callback_inf
     return v;
 }
 
-static napi_value _napi_ngenxxDeviceOsVersion(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXDeviceOsVersion(napi_env env, napi_callback_info info)
 {
     auto cOV = ngenxx_device_name();
     auto v = chars2NapiValue(env, cOV);
@@ -543,7 +543,7 @@ static napi_value _napi_ngenxxDeviceOsVersion(napi_env env, napi_callback_info i
     return v;
 }
 
-static napi_value _napi_ngenxxDeviceCpuArch(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXDeviceCpuArch(napi_env env, napi_callback_info info)
 {
     auto dca = ngenxx_device_cpu_arch();
     auto v = int2NapiValue(env, dca);
@@ -552,7 +552,7 @@ static napi_value _napi_ngenxxDeviceCpuArch(napi_env env, napi_callback_info inf
 
 #pragma mark JsonDecoder
 
-static napi_value _napi_ngenxxJsonDecoderInit(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJsonDecoderInit(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -565,7 +565,7 @@ static napi_value _napi_ngenxxJsonDecoderInit(napi_env env, napi_callback_info i
     return v;
 }
 
-static napi_value _napi_ngenxxJsonDecoderIsArray(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJsonDecoderIsArray(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -576,7 +576,7 @@ static napi_value _napi_ngenxxJsonDecoderIsArray(napi_env env, napi_callback_inf
     return bool2NapiValue(env, res);
 }
 
-static napi_value _napi_ngenxxJsonDecoderIsObject(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJsonDecoderIsObject(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -587,7 +587,7 @@ static napi_value _napi_ngenxxJsonDecoderIsObject(napi_env env, napi_callback_in
     return bool2NapiValue(env, res);
 }
 
-static napi_value _napi_ngenxxJsonDecoderReadNode(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJsonDecoderReadNode(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -602,7 +602,7 @@ static napi_value _napi_ngenxxJsonDecoderReadNode(napi_env env, napi_callback_in
     return v;
 }
 
-static napi_value _napi_ngenxxJsonDecoderReadChild(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJsonDecoderReadChild(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -613,7 +613,7 @@ static napi_value _napi_ngenxxJsonDecoderReadChild(napi_env env, napi_callback_i
     return long2NapiValue(env, res);
 }
 
-static napi_value _napi_ngenxxJsonDecoderReadNext(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJsonDecoderReadNext(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -624,7 +624,7 @@ static napi_value _napi_ngenxxJsonDecoderReadNext(napi_env env, napi_callback_in
     return long2NapiValue(env, res);
 }
 
-static napi_value _napi_ngenxxJsonDecoderReadString(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJsonDecoderReadString(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -638,7 +638,7 @@ static napi_value _napi_ngenxxJsonDecoderReadString(napi_env env, napi_callback_
     return v;
 }
 
-static napi_value _napi_ngenxxJsonDecoderReadNumber(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJsonDecoderReadNumber(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -649,7 +649,7 @@ static napi_value _napi_ngenxxJsonDecoderReadNumber(napi_env env, napi_callback_
     return double2NapiValue(env, res);
 }
 
-static napi_value _napi_ngenxxJsonDecoderRelease(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJsonDecoderRelease(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -662,7 +662,7 @@ static napi_value _napi_ngenxxJsonDecoderRelease(napi_env env, napi_callback_inf
 
 #pragma mark Coding
 
-static napi_value _napi_ngenxxCodingHexBytes2str(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCodingHexBytes2str(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -677,7 +677,7 @@ static napi_value _napi_ngenxxCodingHexBytes2str(napi_env env, napi_callback_inf
     return v;
 }
 
-static napi_value _napi_ngenxxCodingHexStr2Bytes(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCodingHexStr2Bytes(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -694,7 +694,7 @@ static napi_value _napi_ngenxxCodingHexStr2Bytes(napi_env env, napi_callback_inf
 
 #pragma mark Crypto
 
-static napi_value _napi_ngenxxCryptoRand(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCryptoRand(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -708,7 +708,7 @@ static napi_value _napi_ngenxxCryptoRand(napi_env env, napi_callback_info info)
     return v;
 }
 
-static napi_value _napi_ngenxxCryptoAesEncrypt(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCryptoAesEncrypt(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -727,7 +727,7 @@ static napi_value _napi_ngenxxCryptoAesEncrypt(napi_env env, napi_callback_info 
     return v;
 }
 
-static napi_value _napi_ngenxxCryptoAesDecrypt(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCryptoAesDecrypt(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -746,7 +746,7 @@ static napi_value _napi_ngenxxCryptoAesDecrypt(napi_env env, napi_callback_info 
     return v;
 }
 
-static napi_value _napi_ngenxxCryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -775,7 +775,7 @@ static napi_value _napi_ngenxxCryptoAesGcmEncrypt(napi_env env, napi_callback_in
     return v;
 }
 
-static napi_value _napi_ngenxxCryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -804,7 +804,7 @@ static napi_value _napi_ngenxxCryptoAesGcmDecrypt(napi_env env, napi_callback_in
     return v;
 }
 
-static napi_value _napi_ngenxxCryptoHashMd5(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCryptoHashMd5(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -820,7 +820,7 @@ static napi_value _napi_ngenxxCryptoHashMd5(napi_env env, napi_callback_info inf
     return v;
 }
 
-static napi_value _napi_ngenxxCryptoHashSha256(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCryptoHashSha256(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -836,7 +836,7 @@ static napi_value _napi_ngenxxCryptoHashSha256(napi_env env, napi_callback_info 
     return v;
 }
 
-static napi_value _napi_ngenxxCryptoBase64Encode(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCryptoBase64Encode(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -852,7 +852,7 @@ static napi_value _napi_ngenxxCryptoBase64Encode(napi_env env, napi_callback_inf
     return v;
 }
 
-static napi_value _napi_ngenxxCryptoBase64Decode(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXCryptoBase64Decode(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -870,7 +870,7 @@ static napi_value _napi_ngenxxCryptoBase64Decode(napi_env env, napi_callback_inf
 
 #pragma mark Lua
 
-static napi_value _napi_ngenxxLLoadF(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXLLoadF(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -883,7 +883,7 @@ static napi_value _napi_ngenxxLLoadF(napi_env env, napi_callback_info info)
     return nv;
 }
 
-static napi_value _napi_ngenxxLLoadS(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXLLoadS(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -896,7 +896,7 @@ static napi_value _napi_ngenxxLLoadS(napi_env env, napi_callback_info info)
     return nv;
 }
 
-static napi_value _napi_ngenxxLCall(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXLCall(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -917,7 +917,7 @@ static napi_value _napi_ngenxxLCall(napi_env env, napi_callback_info info)
 
 #pragma mark JS
 
-static napi_value _napi_ngenxxJLoadF(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJLoadF(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -931,7 +931,7 @@ static napi_value _napi_ngenxxJLoadF(napi_env env, napi_callback_info info)
     return nv;
 }
 
-static napi_value _napi_ngenxxJLoadS(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJLoadS(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -947,7 +947,7 @@ static napi_value _napi_ngenxxJLoadS(napi_env env, napi_callback_info info)
     return nv;
 }
 
-static napi_value _napi_ngenxxJLoadB(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJLoadB(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -963,7 +963,7 @@ static napi_value _napi_ngenxxJLoadB(napi_env env, napi_callback_info info)
     return v;
 }
 
-static napi_value _napi_ngenxxJCall(napi_env env, napi_callback_info info)
+static napi_value NapiNGenXXJCall(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -986,79 +986,79 @@ static napi_value _napi_ngenxxJCall(napi_env env, napi_callback_info info)
 #pragma mark Register Module
 
 EXTERN_C_START
-static napi_value _napi_ngenxxRegisterFuncs(napi_env env, napi_value exports)
+static napi_value NapiNGenXXRegisterFuncs(napi_env env, napi_value exports)
 {
     napi_property_descriptor desc[] = 
     {
-        {"getVersion", nullptr, _napi_ngenxxGetVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"init", nullptr, _napi_ngenxxInit, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"release", nullptr, _napi_ngenxxRelease, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"getVersion", NULL, NapiNGenXXGetVersion, NULL, NULL, NULL, napi_default, NULL},
+        {"init", NULL, NapiNGenXXInit, NULL, NULL, NULL, napi_default, NULL},
+        {"release", NULL, NapiNGenXXRelease, NULL, NULL, NULL, napi_default, NULL},
 
-        {"logSetLevel", nullptr, _napi_ngenxxLogSetLevel, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"logSetCallback", nullptr, _napi_ngenxxLogSetCallback, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"logPrint", nullptr, _napi_ngenxxLogPrint, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"logSetLevel", NULL, NapiNGenXXLogSetLevel, NULL, NULL, NULL, napi_default, NULL},
+        {"logSetCallback", NULL, NapiNGenXXLogSetCallback, NULL, NULL, NULL, napi_default, NULL},
+        {"logPrint", NULL, NapiNGenXXLogPrint, NULL, NULL, NULL, napi_default, NULL},
 
-        {"netHttpRequest", nullptr, _napi_ngenxxNetHttpRequest, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"netHttpRequest", NULL, NapiNGenXXNetHttpRequest, NULL, NULL, NULL, napi_default, NULL},
 
-        {"lLoadF", nullptr, _napi_ngenxxLLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"lLoadS", nullptr, _napi_ngenxxLLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"lCall", nullptr, _napi_ngenxxLCall, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"lLoadF", NULL, NapiNGenXXLLoadF, NULL, NULL, NULL, napi_default, NULL},
+        {"lLoadS", NULL, NapiNGenXXLLoadS, NULL, NULL, NULL, napi_default, NULL},
+        {"lCall", NULL, NapiNGenXXLCall, NULL, NULL, NULL, napi_default, NULL},
 
-        {"jLoadF", nullptr, _napi_ngenxxJLoadF, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jLoadS", nullptr, _napi_ngenxxJLoadS, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jLoadB", nullptr, _napi_ngenxxJLoadB, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jCall", nullptr, _napi_ngenxxJCall, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jLoadF", NULL, NapiNGenXXJLoadF, NULL, NULL, NULL, napi_default, NULL},
+        {"jLoadS", NULL, NapiNGenXXJLoadS, NULL, NULL, NULL, napi_default, NULL},
+        {"jLoadB", NULL, NapiNGenXXJLoadB, NULL, NULL, NULL, napi_default, NULL},
+        {"jCall", NULL, NapiNGenXXJCall, NULL, NULL, NULL, napi_default, NULL},
 
-        {"storeSQLiteOpen", nullptr, _napi_ngenxxStoreSQLiteOpen, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteExecute", nullptr, _napi_ngenxxStoreSQLiteExecute, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteQueryDo", nullptr, _napi_ngenxxStoreSQLiteQueryDo, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteQueryReadRow", nullptr, _napi_ngenxxStoreSQLiteQueryReadRow, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteQueryReadColumnText", nullptr, _napi_ngenxxStoreSQLiteQueryReadColumnText, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteQueryReadColumnInteger", nullptr, _napi_ngenxxStoreSQLiteQueryReadColumnInteger, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteQueryReadColumnFloat", nullptr, _napi_ngenxxStoreSQLiteQueryReadColumnFloat, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteQueryDrop", nullptr, _napi_ngenxxStoreSQLiteQueryDrop, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeSQLiteClose", nullptr, _napi_ngenxxStoreSQLiteClose, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"storeSQLiteOpen", NULL, NapiNGenXXStoreSQLiteOpen, NULL, NULL, NULL, napi_default, NULL},
+        {"storeSQLiteExecute", NULL, NapiNGenXXStoreSQLiteExecute, NULL, NULL, NULL, napi_default, NULL},
+        {"storeSQLiteQueryDo", NULL, NapiNGenXXStoreSQLiteQueryDo, NULL, NULL, NULL, napi_default, NULL},
+        {"storeSQLiteQueryReadRow", NULL, NapiNGenXXStoreSQLiteQueryReadRow, NULL, NULL, NULL, napi_default, NULL},
+        {"storeSQLiteQueryReadColumnText", NULL, NapiNGenXXStoreSQLiteQueryReadColumnText, NULL, NULL, NULL, napi_default, NULL},
+        {"storeSQLiteQueryReadColumnInteger", NULL, NapiNGenXXStoreSQLiteQueryReadColumnInteger, NULL, NULL, NULL, napi_default, NULL},
+        {"storeSQLiteQueryReadColumnFloat", NULL, NapiNGenXXStoreSQLiteQueryReadColumnFloat, NULL, NULL, NULL, napi_default, NULL},
+        {"storeSQLiteQueryDrop", NULL, NapiNGenXXStoreSQLiteQueryDrop, NULL, NULL, NULL, napi_default, NULL},
+        {"storeSQLiteClose", NULL, NapiNGenXXStoreSQLiteClose, NULL, NULL, NULL, napi_default, NULL},
 
-        {"storeKVOpen", nullptr, _napi_ngenxxStoreKVOpen, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVReadString", nullptr, _napi_ngenxxStoreKVReadString, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVWriteString", nullptr, _napi_ngenxxStoreKVWriteString, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVReadInteger", nullptr, _napi_ngenxxStoreKVReadInteger, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVWriteInteger", nullptr, _napi_ngenxxStoreKVWriteInteger, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVReadFloat", nullptr, _napi_ngenxxStoreKVReadFloat, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVWriteFloat", nullptr, _napi_ngenxxStoreKVWriteFloat, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVContains", nullptr, _napi_ngenxxStoreKVContains, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVRemove", nullptr, _napi_ngenxxStoreKVRemove, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVClear", nullptr, _napi_ngenxxStoreKVClear, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"storeKVClose", nullptr, _napi_ngenxxStoreKVClose, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"storeKVOpen", NULL, NapiNGenXXStoreKVOpen, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVReadString", NULL, NapiNGenXXStoreKVReadString, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVWriteString", NULL, NapiNGenXXStoreKVWriteString, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVReadInteger", NULL, NapiNGenXXStoreKVReadInteger, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVWriteInteger", NULL, NapiNGenXXStoreKVWriteInteger, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVReadFloat", NULL, NapiNGenXXStoreKVReadFloat, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVWriteFloat", NULL, NapiNGenXXStoreKVWriteFloat, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVContains", NULL, NapiNGenXXStoreKVContains, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVRemove", NULL, NapiNGenXXStoreKVRemove, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVClear", NULL, NapiNGenXXStoreKVClear, NULL, NULL, NULL, napi_default, NULL},
+        {"storeKVClose", NULL, NapiNGenXXStoreKVClose, NULL, NULL, NULL, napi_default, NULL},
 
-        {"deviceType", nullptr, _napi_ngenxxDeviceType, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"deviceName", nullptr, _napi_ngenxxDeviceName, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"deviceManufacturer", nullptr, _napi_ngenxxDeviceManufacturer, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"deviceOsVersion", nullptr, _napi_ngenxxDeviceOsVersion, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"deviceCpuArch", nullptr, _napi_ngenxxDeviceCpuArch, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"deviceType", NULL, NapiNGenXXDeviceType, NULL, NULL, NULL, napi_default, NULL},
+        {"deviceName", NULL, NapiNGenXXDeviceName, NULL, NULL, NULL, napi_default, NULL},
+        {"deviceManufacturer", NULL, NapiNGenXXDeviceManufacturer, NULL, NULL, NULL, napi_default, NULL},
+        {"deviceOsVersion", NULL, NapiNGenXXDeviceOsVersion, NULL, NULL, NULL, napi_default, NULL},
+        {"deviceCpuArch", NULL, NapiNGenXXDeviceCpuArch, NULL, NULL, NULL, napi_default, NULL},
 
-        {"jsonDecoderInit", nullptr, _napi_ngenxxJsonDecoderInit, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderIsArray", nullptr, _napi_ngenxxJsonDecoderIsArray, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderIsObject", nullptr, _napi_ngenxxJsonDecoderIsObject, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadNode", nullptr, _napi_ngenxxJsonDecoderReadNode, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadChild", nullptr, _napi_ngenxxJsonDecoderReadChild, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadNext", nullptr, _napi_ngenxxJsonDecoderReadNext, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadString", nullptr, _napi_ngenxxJsonDecoderReadString, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderReadNumber", nullptr, _napi_ngenxxJsonDecoderReadNumber, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"jsonDecoderRelease", nullptr, _napi_ngenxxJsonDecoderRelease, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"jsonDecoderInit", NULL, NapiNGenXXJsonDecoderInit, NULL, NULL, NULL, napi_default, NULL},
+        {"jsonDecoderIsArray", NULL, NapiNGenXXJsonDecoderIsArray, NULL, NULL, NULL, napi_default, NULL},
+        {"jsonDecoderIsObject", NULL, NapiNGenXXJsonDecoderIsObject, NULL, NULL, NULL, napi_default, NULL},
+        {"jsonDecoderReadNode", NULL, NapiNGenXXJsonDecoderReadNode, NULL, NULL, NULL, napi_default, NULL},
+        {"jsonDecoderReadChild", NULL, NapiNGenXXJsonDecoderReadChild, NULL, NULL, NULL, napi_default, NULL},
+        {"jsonDecoderReadNext", NULL, NapiNGenXXJsonDecoderReadNext, NULL, NULL, NULL, napi_default, NULL},
+        {"jsonDecoderReadString", NULL, NapiNGenXXJsonDecoderReadString, NULL, NULL, NULL, napi_default, NULL},
+        {"jsonDecoderReadNumber", NULL, NapiNGenXXJsonDecoderReadNumber, NULL, NULL, NULL, napi_default, NULL},
+        {"jsonDecoderRelease", NULL, NapiNGenXXJsonDecoderRelease, NULL, NULL, NULL, napi_default, NULL},
 
-        {"codingHexBytes2str", nullptr, _napi_ngenxxCodingHexBytes2str, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"codingHexStr2Bytes", nullptr, _napi_ngenxxCodingHexStr2Bytes, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"codingHexBytes2str", NULL, NapiNGenXXCodingHexBytes2str, NULL, NULL, NULL, napi_default, NULL},
+        {"codingHexStr2Bytes", NULL, NapiNGenXXCodingHexStr2Bytes, NULL, NULL, NULL, napi_default, NULL},
 
-        {"cryptoRand", nullptr, _napi_ngenxxCryptoRand, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoAesEncrypt", nullptr, _napi_ngenxxCryptoAesEncrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoAesDecrypt", nullptr, _napi_ngenxxCryptoAesDecrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoAesGcmEncrypt", nullptr, _napi_ngenxxCryptoAesGcmEncrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoAesGcmDecrypt", nullptr, _napi_ngenxxCryptoAesGcmDecrypt, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoHashMd5", nullptr, _napi_ngenxxCryptoHashMd5, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoHashSha256", nullptr, _napi_ngenxxCryptoHashSha256, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoBase64Encode", nullptr, _napi_ngenxxCryptoBase64Encode, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"cryptoBase64Decode", nullptr, _napi_ngenxxCryptoBase64Decode, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"cryptoRand", NULL, NapiNGenXXCryptoRand, NULL, NULL, NULL, napi_default, NULL},
+        {"cryptoAesEncrypt", NULL, NapiNGenXXCryptoAesEncrypt, NULL, NULL, NULL, napi_default, NULL},
+        {"cryptoAesDecrypt", NULL, NapiNGenXXCryptoAesDecrypt, NULL, NULL, NULL, napi_default, NULL},
+        {"cryptoAesGcmEncrypt", NULL, NapiNGenXXCryptoAesGcmEncrypt, NULL, NULL, NULL, napi_default, NULL},
+        {"cryptoAesGcmDecrypt", NULL, NapiNGenXXCryptoAesGcmDecrypt, NULL, NULL, NULL, napi_default, NULL},
+        {"cryptoHashMd5", NULL, NapiNGenXXCryptoHashMd5, NULL, NULL, NULL, napi_default, NULL},
+        {"cryptoHashSha256", NULL, NapiNGenXXCryptoHashSha256, NULL, NULL, NULL, napi_default, NULL},
+        {"cryptoBase64Encode", NULL, NapiNGenXXCryptoBase64Encode, NULL, NULL, NULL, napi_default, NULL},
+        {"cryptoBase64Decode", NULL, NapiNGenXXCryptoBase64Decode, NULL, NULL, NULL, napi_default, NULL},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
@@ -1069,8 +1069,8 @@ static napi_module ngenxxModule =
 {
     .nm_version = 1,
     .nm_flags = 0,
-    .nm_filename = nullptr,
-    .nm_register_func = _napi_ngenxxRegisterFuncs,
+    .nm_filename = NULL,
+    .nm_register_func = NapiNGenXXRegisterFuncs,
     .nm_modname = "ngenxx",
     .nm_priv = ((void*)(0)),
     .reserved = {0},
