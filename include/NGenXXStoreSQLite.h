@@ -2,7 +2,6 @@
 #define NGENXX_INCLUDE_STORE_SQLITE_H_
 
 #include <stdbool.h>
-#include <stdint.h>
 
 #include "NGenXXInternal.h"
 

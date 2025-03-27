@@ -1,9 +1,6 @@
 #if defined(USE_LUA)
 #include "LuaBridge.hxx"
 
-#include <cstring>
-#include <cstdlib>
-
 #include <thread>
 
 #include <uv.h>
