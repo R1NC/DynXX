@@ -16,7 +16,7 @@ static jmethodID sJsMsgCallbackMethodId;
 
 #pragma mark Engine Callback
 
-static void ngenxx_jni_log_callback(int level, const char *content)
+static void JNI_NGenXX_log_callback(int level, const char *content)
 {
     if (sVM == nullptr || sLogCallback == nullptr || sLogCallbackMethodId == nullptr || content == nullptr) {
         return;
@@ -27,7 +27,7 @@ static void ngenxx_jni_log_callback(int level, const char *content)
     env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
 }
 
-static const char *ngenxx_jni_js_msg_callback(const char *msg)
+static const char *JNI_NGenXX_js_msg_callback(const char *msg)
 {
     if (sVM == nullptr || sJsMsgCallback == nullptr || sJsMsgCallbackMethodId == nullptr || msg == nullptr) {
         return nullptr;
@@ -41,7 +41,7 @@ static const char *ngenxx_jni_js_msg_callback(const char *msg)
 
 #pragma mark Engine base API
 
-jstring NGenXX_JNI_getVersion(JNIEnv *env, jobject thiz)
+jstring JNI_NGenXX_getVersion(JNIEnv *env, jobject thiz)
 {
     auto cV = ngenxx_get_version();
     auto jStr = env->NewStringUTF(cV ?: "");
@@ -49,7 +49,7 @@ jstring NGenXX_JNI_getVersion(JNIEnv *env, jobject thiz)
     return jStr;
 }
 
-jboolean NGenXX_JNI_init(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_init(JNIEnv *env, jobject thiz,
                          jstring root)
 {
     auto cRoot = env->GetStringUTFChars(root, nullptr);
@@ -58,25 +58,25 @@ jboolean NGenXX_JNI_init(JNIEnv *env, jobject thiz,
     return res;
 }
 
-void NGenXX_JNI_release(JNIEnv *env, jobject thiz)
+void JNI_NGenXX_release(JNIEnv *env, jobject thiz)
 {
     ngenxx_release();
 }
 
 #pragma mark Log
 
-void NGenXX_JNI_logSetLevel(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_logSetLevel(JNIEnv *env, jobject thiz,
                             jint level)
 {
     ngenxx_log_set_level(level);
 }
 
-void NGenXX_JNI_logSetCallback(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_logSetCallback(JNIEnv *env, jobject thiz,
                                jobject callback)
 {
     if (callback)
     {
-        ngenxx_log_set_callback(ngenxx_jni_log_callback);
+        ngenxx_log_set_callback(JNI_NGenXX_log_callback);
         sLogCallback = env->NewWeakGlobalRef(callback);
         auto jCallbackClass = env->GetObjectClass(callback);
         if (jCallbackClass)
@@ -86,7 +86,7 @@ void NGenXX_JNI_logSetCallback(JNIEnv *env, jobject thiz,
     }
 }
 
-void NGenXX_JNI_logPrint(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_logPrint(JNIEnv *env, jobject thiz,
                          jint level, jstring content)
 {
     auto cContent = env->GetStringUTFChars(content, nullptr);
@@ -96,7 +96,7 @@ void NGenXX_JNI_logPrint(JNIEnv *env, jobject thiz,
 
 #pragma mark Net
 
-jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
+jstring JNI_NGenXX_netHttpRequest(JNIEnv *env, jobject thiz,
                                   jstring url, jstring params,
                                   jint method,
                                   jobjectArray headerV,
@@ -197,7 +197,7 @@ jstring NGenXX_JNI_netHttpRequest(JNIEnv *env, jobject thiz,
 
 #pragma mark Lua
 
-jboolean NGenXX_JNI_lLoadF(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_lLoadF(JNIEnv *env, jobject thiz,
                            jstring file)
 {
     auto cFile = env->GetStringUTFChars(file, nullptr);
@@ -206,7 +206,7 @@ jboolean NGenXX_JNI_lLoadF(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean NGenXX_JNI_lLoadS(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_lLoadS(JNIEnv *env, jobject thiz,
                            jstring script)
 {
     auto cScript = env->GetStringUTFChars(script, nullptr);
@@ -215,7 +215,7 @@ jboolean NGenXX_JNI_lLoadS(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jstring NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
+jstring JNI_NGenXX_lCall(JNIEnv *env, jobject thiz,
                          jstring func, jstring params)
 {
     auto cFunc = env->GetStringUTFChars(func, nullptr);
@@ -232,7 +232,7 @@ jstring NGenXX_JNI_lCall(JNIEnv *env, jobject thiz,
 
 #pragma mark JS
 
-jboolean NGenXX_JNI_jLoadF(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_jLoadF(JNIEnv *env, jobject thiz,
                            jstring file, jboolean is_module)
 {
     auto cFile = env->GetStringUTFChars(file, nullptr);
@@ -241,7 +241,7 @@ jboolean NGenXX_JNI_jLoadF(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean NGenXX_JNI_jLoadS(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_jLoadS(JNIEnv *env, jobject thiz,
                            jstring script, jstring name, jboolean is_module)
 {
     auto cScript = env->GetStringUTFChars(script, nullptr);
@@ -252,7 +252,7 @@ jboolean NGenXX_JNI_jLoadS(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_jLoadB(JNIEnv *env, jobject thiz,
                            jbyteArray bytes, jboolean is_module)
 {
     auto cIn = env->GetByteArrayElements(bytes, nullptr);
@@ -264,7 +264,7 @@ jboolean NGenXX_JNI_jLoadB(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jstring NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
+jstring JNI_NGenXX_jCall(JNIEnv *env, jobject thiz,
                          jstring func, jstring params, jboolean await)
 {
     auto cFunc = env->GetStringUTFChars(func, nullptr);
@@ -279,12 +279,12 @@ jstring NGenXX_JNI_jCall(JNIEnv *env, jobject thiz,
     return jStr;
 }
 
-void NGenXX_JNI_jSetMsgCallback(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_jSetMsgCallback(JNIEnv *env, jobject thiz,
                                 jobject callback)
 {
     if (callback)
     {
-        ngenxx_js_set_msg_callback(ngenxx_jni_js_msg_callback);
+        ngenxx_js_set_msg_callback(JNI_NGenXX_js_msg_callback);
         sJsMsgCallback = env->NewWeakGlobalRef(callback);
         auto jCallbackClass = env->GetObjectClass(callback);
         if (jCallbackClass)
@@ -296,7 +296,7 @@ void NGenXX_JNI_jSetMsgCallback(JNIEnv *env, jobject thiz,
 
 #pragma mark Store.SQLite
 
-jlong NGenXX_JNI_storeSQLiteOpen(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_storeSQLiteOpen(JNIEnv *env, jobject thiz,
                                  jstring id)
 {
     auto cId = env->GetStringUTFChars(id, nullptr);
@@ -305,7 +305,7 @@ jlong NGenXX_JNI_storeSQLiteOpen(JNIEnv *env, jobject thiz,
     return ptr2addr(res);
 }
 
-jboolean NGenXX_JNI_storeSQLiteExecute(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_storeSQLiteExecute(JNIEnv *env, jobject thiz,
                                        jlong conn,
                                        jstring sql)
 {
@@ -315,7 +315,7 @@ jboolean NGenXX_JNI_storeSQLiteExecute(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jlong NGenXX_JNI_storeSQLiteQueryDo(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_storeSQLiteQueryDo(JNIEnv *env, jobject thiz,
                                     jlong conn,
                                     jstring sql)
 {
@@ -325,13 +325,13 @@ jlong NGenXX_JNI_storeSQLiteQueryDo(JNIEnv *env, jobject thiz,
     return ptr2addr(res);
 }
 
-jboolean NGenXX_JNI_storeSQLiteQueryReadRow(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_storeSQLiteQueryReadRow(JNIEnv *env, jobject thiz,
                                             jlong query_result)
 {
     return ngenxx_store_sqlite_query_read_row(addr2ptr(query_result));
 }
 
-jstring NGenXX_JNI_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
+jstring JNI_NGenXX_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
                                                   jlong query_result,
                                                   jstring column)
 {
@@ -343,7 +343,7 @@ jstring NGenXX_JNI_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
     return jStr;
 }
 
-jlong NGenXX_JNI_storeSQLiteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_storeSQLiteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
                                                    jlong query_result,
                                                    jstring column)
 {
@@ -353,7 +353,7 @@ jlong NGenXX_JNI_storeSQLiteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jdouble NGenXX_JNI_storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
+jdouble JNI_NGenXX_storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
                                                    jlong query_result,
                                                    jstring column)
 {
@@ -363,13 +363,13 @@ jdouble NGenXX_JNI_storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
     return res;
 }
 
-void NGenXX_JNI_storeSQLiteQueryDrop(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_storeSQLiteQueryDrop(JNIEnv *env, jobject thiz,
                                      jlong query_result)
 {
     ngenxx_store_sqlite_query_drop(addr2ptr(query_result));
 }
 
-void NGenXX_JNI_storeSQLiteClose(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_storeSQLiteClose(JNIEnv *env, jobject thiz,
                                  jlong conn)
 {
     ngenxx_store_sqlite_close(addr2ptr(conn));
@@ -377,7 +377,7 @@ void NGenXX_JNI_storeSQLiteClose(JNIEnv *env, jobject thiz,
 
 #pragma mark Srore.KV
 
-jlong NGenXX_JNI_storeKVOpen(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_storeKVOpen(JNIEnv *env, jobject thiz,
                              jstring id)
 {
     auto cId = env->GetStringUTFChars(id, nullptr);
@@ -386,7 +386,7 @@ jlong NGenXX_JNI_storeKVOpen(JNIEnv *env, jobject thiz,
     return ptr2addr(res);
 }
 
-jstring NGenXX_JNI_storeKVReadString(JNIEnv *env, jobject thiz,
+jstring JNI_NGenXX_storeKVReadString(JNIEnv *env, jobject thiz,
                                      jlong conn,
                                      jstring k)
 {
@@ -398,7 +398,7 @@ jstring NGenXX_JNI_storeKVReadString(JNIEnv *env, jobject thiz,
     return jStr;
 }
 
-jboolean NGenXX_JNI_storeKVWriteString(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_storeKVWriteString(JNIEnv *env, jobject thiz,
                                        jlong conn,
                                        jstring k, jstring v)
 {
@@ -410,7 +410,7 @@ jboolean NGenXX_JNI_storeKVWriteString(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jlong NGenXX_JNI_storeKVReadInteger(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_storeKVReadInteger(JNIEnv *env, jobject thiz,
                                     jlong conn,
                                     jstring k)
 {
@@ -420,7 +420,7 @@ jlong NGenXX_JNI_storeKVReadInteger(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean NGenXX_JNI_storeKVWriteInteger(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_storeKVWriteInteger(JNIEnv *env, jobject thiz,
                                         jlong conn,
                                         jstring k, jlong v)
 {
@@ -430,7 +430,7 @@ jboolean NGenXX_JNI_storeKVWriteInteger(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jdouble NGenXX_JNI_storeKVReadFloat(JNIEnv *env, jobject thiz,
+jdouble JNI_NGenXX_storeKVReadFloat(JNIEnv *env, jobject thiz,
                                     jlong conn,
                                     jstring k)
 {
@@ -440,7 +440,7 @@ jdouble NGenXX_JNI_storeKVReadFloat(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean NGenXX_JNI_storeKVWriteFloat(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_storeKVWriteFloat(JNIEnv *env, jobject thiz,
                                       jlong conn,
                                       jstring k, jdouble v)
 {
@@ -450,7 +450,7 @@ jboolean NGenXX_JNI_storeKVWriteFloat(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean NGenXX_JNI_storeKVContains(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_storeKVContains(JNIEnv *env, jobject thiz,
                                     jlong conn,
                                     jstring k)
 {
@@ -460,7 +460,7 @@ jboolean NGenXX_JNI_storeKVContains(JNIEnv *env, jobject thiz,
     return res;
 }
 
-jboolean NGenXX_JNI_storeKVRemove(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_storeKVRemove(JNIEnv *env, jobject thiz,
                                     jlong conn,
                                     jstring k)
 {
@@ -470,13 +470,13 @@ jboolean NGenXX_JNI_storeKVRemove(JNIEnv *env, jobject thiz,
     return res;
 }
 
-void NGenXX_JNI_storeKVClear(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_storeKVClear(JNIEnv *env, jobject thiz,
                              jlong conn)
 {
     ngenxx_store_kv_clear(addr2ptr(conn));
 }
 
-void NGenXX_JNI_storeKVClose(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_storeKVClose(JNIEnv *env, jobject thiz,
                              jlong conn)
 {
     ngenxx_store_kv_close(addr2ptr(conn));
@@ -484,12 +484,12 @@ void NGenXX_JNI_storeKVClose(JNIEnv *env, jobject thiz,
 
 #pragma mark Device
 
-jint NGenXX_JNI_deviceType(JNIEnv *env, jobject thiz)
+jint JNI_NGenXX_deviceType(JNIEnv *env, jobject thiz)
 {
     return ngenxx_device_type();
 }
 
-jstring NGenXX_JNI_deviceName(JNIEnv *env, jobject thiz)
+jstring JNI_NGenXX_deviceName(JNIEnv *env, jobject thiz)
 {
     auto cDN = ngenxx_device_name();
     auto jStr = env->NewStringUTF(cDN ?: "");
@@ -497,7 +497,7 @@ jstring NGenXX_JNI_deviceName(JNIEnv *env, jobject thiz)
     return jStr;
 }
 
-jstring NGenXX_JNI_deviceManufacturer(JNIEnv *env, jobject thiz)
+jstring JNI_NGenXX_deviceManufacturer(JNIEnv *env, jobject thiz)
 {
     auto cDM = ngenxx_device_manufacturer();
     auto jStr = env->NewStringUTF(cDM ?: "");
@@ -505,7 +505,7 @@ jstring NGenXX_JNI_deviceManufacturer(JNIEnv *env, jobject thiz)
     return jStr;
 }
 
-jstring NGenXX_JNI_deviceOsVersion(JNIEnv *env, jobject thiz)
+jstring JNI_NGenXX_deviceOsVersion(JNIEnv *env, jobject thiz)
 {
     auto cDOV = ngenxx_device_os_version();
     auto jStr = env->NewStringUTF(cDOV ?: "");
@@ -513,14 +513,14 @@ jstring NGenXX_JNI_deviceOsVersion(JNIEnv *env, jobject thiz)
     return jStr;
 }
 
-jint NGenXX_JNI_deviceCpuArch(JNIEnv *env, jobject thiz)
+jint JNI_NGenXX_deviceCpuArch(JNIEnv *env, jobject thiz)
 {
     return ngenxx_device_cpu_arch();
 }
 
 #pragma mark Coding
 
-jstring NGenXX_JNI_codingHexBytes2Str(JNIEnv *env, jobject thiz,
+jstring JNI_NGenXX_codingHexBytes2Str(JNIEnv *env, jobject thiz,
                                       jbyteArray bytes)
 {
     auto cIn = env->GetByteArrayElements(bytes, nullptr);
@@ -534,7 +534,7 @@ jstring NGenXX_JNI_codingHexBytes2Str(JNIEnv *env, jobject thiz,
     return jStr;
 }
 
-jbyteArray NGenXX_JNI_codingHexStr2Bytes(JNIEnv *env,
+jbyteArray JNI_NGenXX_codingHexStr2Bytes(JNIEnv *env,
                                          jobject thiz,
                                          jstring str)
 {
@@ -550,7 +550,7 @@ jbyteArray NGenXX_JNI_codingHexStr2Bytes(JNIEnv *env,
 
 #pragma mark Crypto
 
-jbyteArray NGenXX_JNI_cryptoRandom(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_cryptoRandom(JNIEnv *env, jobject thiz,
                                    jint len)
 {
     byte out[len];
@@ -560,7 +560,7 @@ jbyteArray NGenXX_JNI_cryptoRandom(JNIEnv *env, jobject thiz,
     return moveToJByteArray(env, out, len, false);
 }
 
-jbyteArray NGenXX_JNI_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
                                        jbyteArray input,
                                        jbyteArray key)
 {
@@ -580,7 +580,7 @@ jbyteArray NGenXX_JNI_cryptoAesEncrypt(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray NGenXX_JNI_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
                                        jbyteArray input,
                                        jbyteArray key)
 {
@@ -600,7 +600,7 @@ jbyteArray NGenXX_JNI_cryptoAesDecrypt(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray NGenXX_JNI_cryptoAesGcmEncrypt(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_cryptoAesGcmEncrypt(JNIEnv *env, jobject thiz,
                                           jbyteArray input,
                                           jbyteArray key,
                                           jbyteArray init_vector,
@@ -633,7 +633,7 @@ jbyteArray NGenXX_JNI_cryptoAesGcmEncrypt(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray NGenXX_JNI_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
                                           jbyteArray input,
                                           jbyteArray key,
                                           jbyteArray init_vector,
@@ -666,7 +666,7 @@ jbyteArray NGenXX_JNI_cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray NGenXX_JNI_cryptoHashMd5(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_cryptoHashMd5(JNIEnv *env, jobject thiz,
                                     jbyteArray input)
 {
     auto cIn = env->GetByteArrayElements(input, nullptr);
@@ -680,7 +680,7 @@ jbyteArray NGenXX_JNI_cryptoHashMd5(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray NGenXX_JNI_cryptoHashSha256(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_cryptoHashSha256(JNIEnv *env, jobject thiz,
                                        jbyteArray input)
 {
     auto cIn = env->GetByteArrayElements(input, nullptr);
@@ -694,7 +694,7 @@ jbyteArray NGenXX_JNI_cryptoHashSha256(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray NGenXX_JNI_cryptoBase64Encode(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_cryptoBase64Encode(JNIEnv *env, jobject thiz,
                                          jbyteArray input)
 {
     auto cIn = env->GetByteArrayElements(input, nullptr);
@@ -708,7 +708,7 @@ jbyteArray NGenXX_JNI_cryptoBase64Encode(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray NGenXX_JNI_cryptoBase64Decode(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_cryptoBase64Decode(JNIEnv *env, jobject thiz,
                                          jbyteArray input)
 {
     auto cIn = env->GetByteArrayElements(input, nullptr);
@@ -724,7 +724,7 @@ jbyteArray NGenXX_JNI_cryptoBase64Decode(JNIEnv *env, jobject thiz,
 
 #pragma mark JsonDecoder
 
-jlong NGenXX_JNI_jsonDecoderInit(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_jsonDecoderInit(JNIEnv *env, jobject thiz,
                                  jstring json)
 {
     auto cJson = env->GetStringUTFChars(json, nullptr);
@@ -733,21 +733,21 @@ jlong NGenXX_JNI_jsonDecoderInit(JNIEnv *env, jobject thiz,
     return ptr2addr(res);
 }
 
-jboolean NGenXX_JNI_jsonDecoderIsArray(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_jsonDecoderIsArray(JNIEnv *env, jobject thiz,
                                        jlong decoder,
                                        jlong node)
 {
     return ngenxx_json_decoder_is_array(addr2ptr(decoder), addr2ptr(node));
 }
 
-jboolean NGenXX_JNI_jsonDecoderIsObject(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_jsonDecoderIsObject(JNIEnv *env, jobject thiz,
                                         jlong decoder,
                                         jlong node)
 {
     return ngenxx_json_decoder_is_object(addr2ptr(decoder), addr2ptr(node));
 }
 
-jlong NGenXX_JNI_jsonDecoderReadNode(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_jsonDecoderReadNode(JNIEnv *env, jobject thiz,
                                      jlong decoder,
                                      jlong node,
                                      jstring k)
@@ -758,7 +758,7 @@ jlong NGenXX_JNI_jsonDecoderReadNode(JNIEnv *env, jobject thiz,
     return ptr2addr(res);
 }
 
-jstring NGenXX_JNI_jsonDecoderReadString(JNIEnv *env, jobject thiz,
+jstring JNI_NGenXX_jsonDecoderReadString(JNIEnv *env, jobject thiz,
                                          jlong decoder,
                                          jlong node)
 {
@@ -768,28 +768,28 @@ jstring NGenXX_JNI_jsonDecoderReadString(JNIEnv *env, jobject thiz,
     return jStr;
 }
 
-jdouble NGenXX_JNI_jsonDecoderReadNumber(JNIEnv *env, jobject thiz,
+jdouble JNI_NGenXX_jsonDecoderReadNumber(JNIEnv *env, jobject thiz,
                                          jlong decoder,
                                          jlong node)
 {
     return ngenxx_json_decoder_read_number(addr2ptr(decoder), addr2ptr(node));
 }
 
-jlong NGenXX_JNI_jsonDecoderReadChild(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_jsonDecoderReadChild(JNIEnv *env, jobject thiz,
                                       jlong decoder,
                                       jlong node)
 {
     return ptr2addr(ngenxx_json_decoder_read_child(addr2ptr(decoder), addr2ptr(node)));
 }
 
-jlong NGenXX_JNI_jsonDecoderReadNext(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_jsonDecoderReadNext(JNIEnv *env, jobject thiz,
                                      jlong decoder,
                                      jlong node)
 {
     return ptr2addr(ngenxx_json_decoder_read_next(addr2ptr(decoder), addr2ptr(node)));
 }
 
-void NGenXX_JNI_jsonDecoderRelease(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_jsonDecoderRelease(JNIEnv *env, jobject thiz,
                                    jlong decoder)
 {
     ngenxx_json_decoder_release(addr2ptr(decoder));
@@ -797,13 +797,13 @@ void NGenXX_JNI_jsonDecoderRelease(JNIEnv *env, jobject thiz,
 
 #pragma mark Zip
 
-jlong NGenXX_JNI_zZipInit(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_zZipInit(JNIEnv *env, jobject thiz,
                           jint mode, jlong bufferSize, jint format)
 {
     return ptr2addr(ngenxx_z_zip_init(mode, bufferSize, format));
 }
 
-jlong NGenXX_JNI_zZipInput(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_zZipInput(JNIEnv *env, jobject thiz,
                            jlong zip,
                            jbyteArray inBytes, jint inLen, jboolean inFinish)
 {
@@ -817,7 +817,7 @@ jlong NGenXX_JNI_zZipInput(JNIEnv *env, jobject thiz,
     return ret;
 }
 
-jbyteArray NGenXX_JNI_zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
+jbyteArray JNI_NGenXX_zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
 {
     size_t outLen = 0;
     auto cRes = ngenxx_z_zip_process_do(addr2ptr(zip), &outLen);
@@ -826,25 +826,25 @@ jbyteArray NGenXX_JNI_zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
     return jba;
 }
 
-jboolean NGenXX_JNI_zZipProcessFinished(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_zZipProcessFinished(JNIEnv *env, jobject thiz,
                                         jlong zip)
 {
     return ngenxx_z_zip_process_finished(addr2ptr(zip));
 }
 
-void NGenXX_JNI_zZipRelease(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_zZipRelease(JNIEnv *env, jobject thiz,
                             jlong zip)
 {
     ngenxx_z_zip_release(addr2ptr(zip));
 }
 
-jlong NGenXX_JNI_zUnZipInit(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_zUnZipInit(JNIEnv *env, jobject thiz,
                             jlong bufferSize, jint format)
 {
     return ptr2addr(ngenxx_z_unzip_init(bufferSize, format));
 }
 
-jlong NGenXX_JNI_zUnZipInput(JNIEnv *env, jobject thiz,
+jlong JNI_NGenXX_zUnZipInput(JNIEnv *env, jobject thiz,
                              jlong unzip,
                              jbyteArray inBytes, jint inLen, jboolean inFinish)
 {
@@ -858,7 +858,7 @@ jlong NGenXX_JNI_zUnZipInput(JNIEnv *env, jobject thiz,
     return ret;
 }
 
-jbyteArray NGenXX_JNI_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip) {
+jbyteArray JNI_NGenXX_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip) {
     size_t outLen = 0;
     auto cRes = ngenxx_z_unzip_process_do(addr2ptr(unzip), &outLen);
     auto jba = moveToJByteArray(env, cRes, outLen, true);
@@ -866,19 +866,19 @@ jbyteArray NGenXX_JNI_zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip) {
     return jba;
 }
 
-jboolean NGenXX_JNI_zUnZipProcessFinished(JNIEnv *env, jobject thiz,
+jboolean JNI_NGenXX_zUnZipProcessFinished(JNIEnv *env, jobject thiz,
                                           jlong unzip)
 {
     return ngenxx_z_unzip_process_finished(addr2ptr(unzip));
 }
 
-void NGenXX_JNI_zUnZipRelease(JNIEnv *env, jobject thiz,
+void JNI_NGenXX_zUnZipRelease(JNIEnv *env, jobject thiz,
                               jlong unzip)
 {
     ngenxx_z_unzip_release(addr2ptr(unzip));
 }
 
-jbyteArray NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_zZipBytes(JNIEnv *env, jobject thiz,
                                 jint mode,
                                 jlong buffer_size, jint format, jbyteArray bytes)
 {
@@ -893,7 +893,7 @@ jbyteArray NGenXX_JNI_zZipBytes(JNIEnv *env, jobject thiz,
     return jba;
 }
 
-jbyteArray NGenXX_JNI_zUnZipBytes(JNIEnv *env, jobject thiz,
+jbyteArray JNI_NGenXX_zUnZipBytes(JNIEnv *env, jobject thiz,
                                   jlong buffer_size, jint format, jbyteArray bytes)
 {
     auto cIn = env->GetByteArrayElements(bytes, nullptr);
@@ -912,89 +912,89 @@ static const char *JClassName = "xyz/rinc/ngenxx/NGenXX$Companion";
 #define DECLARE_JNI_FUNC(name, signature, funcPtr) {name, signature, reinterpret_cast<void *>(funcPtr)}
 
 static const JNINativeMethod JCFuncList[] = {
-    DECLARE_JNI_FUNC("getVersion", "()Ljava/lang/String;", NGenXX_JNI_getVersion),
-    DECLARE_JNI_FUNC("init", "(Ljava/lang/String;)Z", NGenXX_JNI_init),
-    DECLARE_JNI_FUNC("release", "()V", NGenXX_JNI_release),
+    DECLARE_JNI_FUNC("getVersion", "()Ljava/lang/String;", JNI_NGenXX_getVersion),
+    DECLARE_JNI_FUNC("init", "(Ljava/lang/String;)Z", JNI_NGenXX_init),
+    DECLARE_JNI_FUNC("release", "()V", JNI_NGenXX_release),
 
-    DECLARE_JNI_FUNC("logSetLevel", "(I)V", NGenXX_JNI_logSetLevel),
-    DECLARE_JNI_FUNC("logSetCallback", "(Lkotlin/jvm/functions/Function2;)V", NGenXX_JNI_logSetCallback),
-    DECLARE_JNI_FUNC("logPrint", "(ILjava/lang/String;)V", NGenXX_JNI_logPrint),
+    DECLARE_JNI_FUNC("logSetLevel", "(I)V", JNI_NGenXX_logSetLevel),
+    DECLARE_JNI_FUNC("logSetCallback", "(Lkotlin/jvm/functions/Function2;)V", JNI_NGenXX_logSetCallback),
+    DECLARE_JNI_FUNC("logPrint", "(ILjava/lang/String;)V", JNI_NGenXX_logPrint),
 
-    DECLARE_JNI_FUNC("netHttpRequest", "(Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;JJ)Ljava/lang/String;", NGenXX_JNI_netHttpRequest),
+    DECLARE_JNI_FUNC("netHttpRequest", "(Ljava/lang/String;Ljava/lang/String;I[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;JJ)Ljava/lang/String;", JNI_NGenXX_netHttpRequest),
 
-    DECLARE_JNI_FUNC("lLoadF", "(Ljava/lang/String;)Z", NGenXX_JNI_lLoadF),
-    DECLARE_JNI_FUNC("lLoadS", "(Ljava/lang/String;)Z", NGenXX_JNI_lLoadS),
-    DECLARE_JNI_FUNC("lCall", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", NGenXX_JNI_lCall),
+    DECLARE_JNI_FUNC("lLoadF", "(Ljava/lang/String;)Z", JNI_NGenXX_lLoadF),
+    DECLARE_JNI_FUNC("lLoadS", "(Ljava/lang/String;)Z", JNI_NGenXX_lLoadS),
+    DECLARE_JNI_FUNC("lCall", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", JNI_NGenXX_lCall),
 
-    DECLARE_JNI_FUNC("jLoadF", "(Ljava/lang/String;Z)Z", NGenXX_JNI_jLoadF),
-    DECLARE_JNI_FUNC("jLoadS", "(Ljava/lang/String;Ljava/lang/String;Z)Z", NGenXX_JNI_jLoadS),
-    DECLARE_JNI_FUNC("jLoadB", "([BZ)Z", NGenXX_JNI_jLoadB),
-    DECLARE_JNI_FUNC("jCall", "(Ljava/lang/String;Ljava/lang/String;Z)Ljava/lang/String;", NGenXX_JNI_jCall),
-    DECLARE_JNI_FUNC("jSetMsgCallback", "(Lkotlin/jvm/functions/Function1;)V", NGenXX_JNI_jSetMsgCallback),
+    DECLARE_JNI_FUNC("jLoadF", "(Ljava/lang/String;Z)Z", JNI_NGenXX_jLoadF),
+    DECLARE_JNI_FUNC("jLoadS", "(Ljava/lang/String;Ljava/lang/String;Z)Z", JNI_NGenXX_jLoadS),
+    DECLARE_JNI_FUNC("jLoadB", "([BZ)Z", JNI_NGenXX_jLoadB),
+    DECLARE_JNI_FUNC("jCall", "(Ljava/lang/String;Ljava/lang/String;Z)Ljava/lang/String;", JNI_NGenXX_jCall),
+    DECLARE_JNI_FUNC("jSetMsgCallback", "(Lkotlin/jvm/functions/Function1;)V", JNI_NGenXX_jSetMsgCallback),
 
-    DECLARE_JNI_FUNC("storeSQLiteOpen", "(Ljava/lang/String;)J", NGenXX_JNI_storeSQLiteOpen),
-    DECLARE_JNI_FUNC("storeSQLiteExecute", "(JLjava/lang/String;)Z", NGenXX_JNI_storeSQLiteExecute),
-    DECLARE_JNI_FUNC("storeSQLiteQueryDo", "(JLjava/lang/String;)J", NGenXX_JNI_storeSQLiteQueryDo),
-    DECLARE_JNI_FUNC("storeSQLiteQueryReadRow", "(J)Z", NGenXX_JNI_storeSQLiteQueryReadRow),
-    DECLARE_JNI_FUNC("storeSQLiteQueryReadColumnText", "(JLjava/lang/String;)Ljava/lang/String;", NGenXX_JNI_storeSQLiteQueryReadColumnText),
-    DECLARE_JNI_FUNC("storeSQLiteQueryReadColumnInteger", "(JLjava/lang/String;)J", NGenXX_JNI_storeSQLiteQueryReadColumnInteger),
-    DECLARE_JNI_FUNC("storeSQLiteQueryReadColumnFloat", "(JLjava/lang/String;)D", NGenXX_JNI_storeSQLiteQueryReadColumnFloat),
-    DECLARE_JNI_FUNC("storeSQLiteQueryDrop", "(J)V", NGenXX_JNI_storeSQLiteQueryDrop),
-    DECLARE_JNI_FUNC("storeSQLiteClose", "(J)V", NGenXX_JNI_storeSQLiteClose),
+    DECLARE_JNI_FUNC("storeSQLiteOpen", "(Ljava/lang/String;)J", JNI_NGenXX_storeSQLiteOpen),
+    DECLARE_JNI_FUNC("storeSQLiteExecute", "(JLjava/lang/String;)Z", JNI_NGenXX_storeSQLiteExecute),
+    DECLARE_JNI_FUNC("storeSQLiteQueryDo", "(JLjava/lang/String;)J", JNI_NGenXX_storeSQLiteQueryDo),
+    DECLARE_JNI_FUNC("storeSQLiteQueryReadRow", "(J)Z", JNI_NGenXX_storeSQLiteQueryReadRow),
+    DECLARE_JNI_FUNC("storeSQLiteQueryReadColumnText", "(JLjava/lang/String;)Ljava/lang/String;", JNI_NGenXX_storeSQLiteQueryReadColumnText),
+    DECLARE_JNI_FUNC("storeSQLiteQueryReadColumnInteger", "(JLjava/lang/String;)J", JNI_NGenXX_storeSQLiteQueryReadColumnInteger),
+    DECLARE_JNI_FUNC("storeSQLiteQueryReadColumnFloat", "(JLjava/lang/String;)D", JNI_NGenXX_storeSQLiteQueryReadColumnFloat),
+    DECLARE_JNI_FUNC("storeSQLiteQueryDrop", "(J)V", JNI_NGenXX_storeSQLiteQueryDrop),
+    DECLARE_JNI_FUNC("storeSQLiteClose", "(J)V", JNI_NGenXX_storeSQLiteClose),
 
-    DECLARE_JNI_FUNC("storeKVOpen", "(Ljava/lang/String;)J", NGenXX_JNI_storeKVOpen),
-    DECLARE_JNI_FUNC("storeKVReadString", "(JLjava/lang/String;)Ljava/lang/String;", NGenXX_JNI_storeKVReadString),
-    DECLARE_JNI_FUNC("storeKVWriteString", "(JLjava/lang/String;Ljava/lang/String;)Z", NGenXX_JNI_storeKVWriteString),
-    DECLARE_JNI_FUNC("storeKVReadInteger", "(JLjava/lang/String;)J", NGenXX_JNI_storeKVReadInteger),
-    DECLARE_JNI_FUNC("storeKVWriteInteger", "(JLjava/lang/String;J)Z", NGenXX_JNI_storeKVWriteInteger),
-    DECLARE_JNI_FUNC("storeKVReadFloat", "(JLjava/lang/String;)D", NGenXX_JNI_storeKVReadFloat),
-    DECLARE_JNI_FUNC("storeKVWriteFloat", "(JLjava/lang/String;D)Z", NGenXX_JNI_storeKVWriteFloat),
-    DECLARE_JNI_FUNC("storeKVContains", "(JLjava/lang/String;)Z", NGenXX_JNI_storeKVContains),
-    DECLARE_JNI_FUNC("storeKVRemove", "(JLjava/lang/String;)Z", NGenXX_JNI_storeKVRemove),
-    DECLARE_JNI_FUNC("storeKVClear", "(J)V", NGenXX_JNI_storeKVClear),
-    DECLARE_JNI_FUNC("storeKVClose", "(J)V", NGenXX_JNI_storeKVClose),
+    DECLARE_JNI_FUNC("storeKVOpen", "(Ljava/lang/String;)J", JNI_NGenXX_storeKVOpen),
+    DECLARE_JNI_FUNC("storeKVReadString", "(JLjava/lang/String;)Ljava/lang/String;", JNI_NGenXX_storeKVReadString),
+    DECLARE_JNI_FUNC("storeKVWriteString", "(JLjava/lang/String;Ljava/lang/String;)Z", JNI_NGenXX_storeKVWriteString),
+    DECLARE_JNI_FUNC("storeKVReadInteger", "(JLjava/lang/String;)J", JNI_NGenXX_storeKVReadInteger),
+    DECLARE_JNI_FUNC("storeKVWriteInteger", "(JLjava/lang/String;J)Z", JNI_NGenXX_storeKVWriteInteger),
+    DECLARE_JNI_FUNC("storeKVReadFloat", "(JLjava/lang/String;)D", JNI_NGenXX_storeKVReadFloat),
+    DECLARE_JNI_FUNC("storeKVWriteFloat", "(JLjava/lang/String;D)Z", JNI_NGenXX_storeKVWriteFloat),
+    DECLARE_JNI_FUNC("storeKVContains", "(JLjava/lang/String;)Z", JNI_NGenXX_storeKVContains),
+    DECLARE_JNI_FUNC("storeKVRemove", "(JLjava/lang/String;)Z", JNI_NGenXX_storeKVRemove),
+    DECLARE_JNI_FUNC("storeKVClear", "(J)V", JNI_NGenXX_storeKVClear),
+    DECLARE_JNI_FUNC("storeKVClose", "(J)V", JNI_NGenXX_storeKVClose),
 
-    DECLARE_JNI_FUNC("deviceType", "()I", NGenXX_JNI_deviceType),
-    DECLARE_JNI_FUNC("deviceName", "()Ljava/lang/String;", NGenXX_JNI_deviceName),
-    DECLARE_JNI_FUNC("deviceManufacturer", "()Ljava/lang/String;", NGenXX_JNI_deviceManufacturer),
-    DECLARE_JNI_FUNC("deviceOsVersion", "()Ljava/lang/String;", NGenXX_JNI_deviceOsVersion),
-    DECLARE_JNI_FUNC("deviceCpuArch", "()I", NGenXX_JNI_deviceCpuArch),
+    DECLARE_JNI_FUNC("deviceType", "()I", JNI_NGenXX_deviceType),
+    DECLARE_JNI_FUNC("deviceName", "()Ljava/lang/String;", JNI_NGenXX_deviceName),
+    DECLARE_JNI_FUNC("deviceManufacturer", "()Ljava/lang/String;", JNI_NGenXX_deviceManufacturer),
+    DECLARE_JNI_FUNC("deviceOsVersion", "()Ljava/lang/String;", JNI_NGenXX_deviceOsVersion),
+    DECLARE_JNI_FUNC("deviceCpuArch", "()I", JNI_NGenXX_deviceCpuArch),
 
-    DECLARE_JNI_FUNC("codingHexBytes2Str", "([B)Ljava/lang/String;", NGenXX_JNI_codingHexBytes2Str),
-    DECLARE_JNI_FUNC("codingHexStr2Bytes", "(Ljava/lang/String;)[B", NGenXX_JNI_codingHexStr2Bytes),
+    DECLARE_JNI_FUNC("codingHexBytes2Str", "([B)Ljava/lang/String;", JNI_NGenXX_codingHexBytes2Str),
+    DECLARE_JNI_FUNC("codingHexStr2Bytes", "(Ljava/lang/String;)[B", JNI_NGenXX_codingHexStr2Bytes),
 
-    DECLARE_JNI_FUNC("cryptoRandom", "(I)[B", NGenXX_JNI_cryptoRandom),
-    DECLARE_JNI_FUNC("cryptoAesEncrypt", "([B[B)[B", NGenXX_JNI_cryptoAesEncrypt),
-    DECLARE_JNI_FUNC("cryptoAesDecrypt", "([B[B)[B", NGenXX_JNI_cryptoAesDecrypt),
-    DECLARE_JNI_FUNC("cryptoAesGcmEncrypt", "([B[B[B[BI)[B", NGenXX_JNI_cryptoAesGcmEncrypt),
-    DECLARE_JNI_FUNC("cryptoAesGcmDecrypt", "([B[B[B[BI)[B", NGenXX_JNI_cryptoAesGcmDecrypt),
-    DECLARE_JNI_FUNC("cryptoHashMd5", "([B)[B", NGenXX_JNI_cryptoHashMd5),
-    DECLARE_JNI_FUNC("cryptoHashSha256", "([B)[B", NGenXX_JNI_cryptoHashSha256),
-    DECLARE_JNI_FUNC("cryptoBase64Encode", "([B)[B", NGenXX_JNI_cryptoBase64Encode),
-    DECLARE_JNI_FUNC("cryptoBase64Decode", "([B)[B", NGenXX_JNI_cryptoBase64Decode),
+    DECLARE_JNI_FUNC("cryptoRandom", "(I)[B", JNI_NGenXX_cryptoRandom),
+    DECLARE_JNI_FUNC("cryptoAesEncrypt", "([B[B)[B", JNI_NGenXX_cryptoAesEncrypt),
+    DECLARE_JNI_FUNC("cryptoAesDecrypt", "([B[B)[B", JNI_NGenXX_cryptoAesDecrypt),
+    DECLARE_JNI_FUNC("cryptoAesGcmEncrypt", "([B[B[B[BI)[B", JNI_NGenXX_cryptoAesGcmEncrypt),
+    DECLARE_JNI_FUNC("cryptoAesGcmDecrypt", "([B[B[B[BI)[B", JNI_NGenXX_cryptoAesGcmDecrypt),
+    DECLARE_JNI_FUNC("cryptoHashMd5", "([B)[B", JNI_NGenXX_cryptoHashMd5),
+    DECLARE_JNI_FUNC("cryptoHashSha256", "([B)[B", JNI_NGenXX_cryptoHashSha256),
+    DECLARE_JNI_FUNC("cryptoBase64Encode", "([B)[B", JNI_NGenXX_cryptoBase64Encode),
+    DECLARE_JNI_FUNC("cryptoBase64Decode", "([B)[B", JNI_NGenXX_cryptoBase64Decode),
 
-    DECLARE_JNI_FUNC("jsonDecoderInit", "(Ljava/lang/String;)J", NGenXX_JNI_jsonDecoderInit),
-    DECLARE_JNI_FUNC("jsonDecoderIsArray", "(JJ)Z", NGenXX_JNI_jsonDecoderIsArray),
-    DECLARE_JNI_FUNC("jsonDecoderIsObject", "(JJ)Z", NGenXX_JNI_jsonDecoderIsObject),
-    DECLARE_JNI_FUNC("jsonDecoderReadNode", "(JJLjava/lang/String;)J", NGenXX_JNI_jsonDecoderReadNode),
-    DECLARE_JNI_FUNC("jsonDecoderReadString", "(JJ)Ljava/lang/String;", NGenXX_JNI_jsonDecoderReadString),
-    DECLARE_JNI_FUNC("jsonDecoderReadNumber", "(JJ)D", NGenXX_JNI_jsonDecoderReadNumber),
-    DECLARE_JNI_FUNC("jsonDecoderReadChild", "(JJ)J", NGenXX_JNI_jsonDecoderReadChild),
-    DECLARE_JNI_FUNC("jsonDecoderReadNext", "(JJ)J", NGenXX_JNI_jsonDecoderReadNext),
-    DECLARE_JNI_FUNC("jsonDecoderRelease", "(J)V", NGenXX_JNI_jsonDecoderRelease),
+    DECLARE_JNI_FUNC("jsonDecoderInit", "(Ljava/lang/String;)J", JNI_NGenXX_jsonDecoderInit),
+    DECLARE_JNI_FUNC("jsonDecoderIsArray", "(JJ)Z", JNI_NGenXX_jsonDecoderIsArray),
+    DECLARE_JNI_FUNC("jsonDecoderIsObject", "(JJ)Z", JNI_NGenXX_jsonDecoderIsObject),
+    DECLARE_JNI_FUNC("jsonDecoderReadNode", "(JJLjava/lang/String;)J", JNI_NGenXX_jsonDecoderReadNode),
+    DECLARE_JNI_FUNC("jsonDecoderReadString", "(JJ)Ljava/lang/String;", JNI_NGenXX_jsonDecoderReadString),
+    DECLARE_JNI_FUNC("jsonDecoderReadNumber", "(JJ)D", JNI_NGenXX_jsonDecoderReadNumber),
+    DECLARE_JNI_FUNC("jsonDecoderReadChild", "(JJ)J", JNI_NGenXX_jsonDecoderReadChild),
+    DECLARE_JNI_FUNC("jsonDecoderReadNext", "(JJ)J", JNI_NGenXX_jsonDecoderReadNext),
+    DECLARE_JNI_FUNC("jsonDecoderRelease", "(J)V", JNI_NGenXX_jsonDecoderRelease),
 
-    DECLARE_JNI_FUNC("zZipInit", "(IJI)J", NGenXX_JNI_zZipInit),
-    DECLARE_JNI_FUNC("zZipInput", "(J[BIZ)J", NGenXX_JNI_zZipInput),
-    DECLARE_JNI_FUNC("zZipProcessDo", "(J)[B", NGenXX_JNI_zZipProcessDo),
-    DECLARE_JNI_FUNC("zZipProcessFinished", "(J)Z", NGenXX_JNI_zZipProcessFinished),
-    DECLARE_JNI_FUNC("zZipRelease", "(J)V", NGenXX_JNI_zZipRelease),
-    DECLARE_JNI_FUNC("zUnZipInit", "(JI)J", NGenXX_JNI_zUnZipInit),
-    DECLARE_JNI_FUNC("zUnZipInput", "(J[BIZ)J", NGenXX_JNI_zUnZipInput),
-    DECLARE_JNI_FUNC("zUnZipProcessDo", "(J)[B", NGenXX_JNI_zUnZipProcessDo),
-    DECLARE_JNI_FUNC("zUnZipProcessFinished", "(J)Z", NGenXX_JNI_zUnZipProcessFinished),
-    DECLARE_JNI_FUNC("zUnZipRelease", "(J)V", NGenXX_JNI_zUnZipRelease),
-    DECLARE_JNI_FUNC("zZipBytes", "(IJI[B)[B", NGenXX_JNI_zZipBytes),
-    DECLARE_JNI_FUNC("zUnZipBytes", "(JI[B)[B", NGenXX_JNI_zUnZipBytes),
+    DECLARE_JNI_FUNC("zZipInit", "(IJI)J", JNI_NGenXX_zZipInit),
+    DECLARE_JNI_FUNC("zZipInput", "(J[BIZ)J", JNI_NGenXX_zZipInput),
+    DECLARE_JNI_FUNC("zZipProcessDo", "(J)[B", JNI_NGenXX_zZipProcessDo),
+    DECLARE_JNI_FUNC("zZipProcessFinished", "(J)Z", JNI_NGenXX_zZipProcessFinished),
+    DECLARE_JNI_FUNC("zZipRelease", "(J)V", JNI_NGenXX_zZipRelease),
+    DECLARE_JNI_FUNC("zUnZipInit", "(JI)J", JNI_NGenXX_zUnZipInit),
+    DECLARE_JNI_FUNC("zUnZipInput", "(J[BIZ)J", JNI_NGenXX_zUnZipInput),
+    DECLARE_JNI_FUNC("zUnZipProcessDo", "(J)[B", JNI_NGenXX_zUnZipProcessDo),
+    DECLARE_JNI_FUNC("zUnZipProcessFinished", "(J)Z", JNI_NGenXX_zUnZipProcessFinished),
+    DECLARE_JNI_FUNC("zUnZipRelease", "(J)V", JNI_NGenXX_zUnZipRelease),
+    DECLARE_JNI_FUNC("zZipBytes", "(IJI[B)[B", JNI_NGenXX_zZipBytes),
+    DECLARE_JNI_FUNC("zUnZipBytes", "(JI[B)[B", JNI_NGenXX_zUnZipBytes),
 };
 
 int JNI_OnLoad(JavaVM *vm, void *reserved)
