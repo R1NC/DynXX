@@ -556,7 +556,6 @@ jbyteArray JNI_NGenXX_cryptoRandom(JNIEnv *env, jobject thiz,
     byte out[len];
     std::memset(out, 0, len);
     ngenxx_crypto_rand(len, out);
-    ngenxx_crypto_rand(len, out);
     return moveToJByteArray(env, out, len, false);
 }
 
