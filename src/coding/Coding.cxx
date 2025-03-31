@@ -3,8 +3,8 @@
 #include <cctype>
 
 #include <iomanip>
-#include <sstream>
 #include <algorithm>
+#include <charconv>
 #if defined(USE_STD_RANGES)
 #include <ranges>
 #include <numeric>
@@ -32,22 +32,34 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
     {
         return {};
     }
-    auto transF = [](byte b) {
-        std::ostringstream ss;
-        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(b);
-        return ss.str();
+    std::string str;
+    str.resize(bytes.size() * 2);
+    auto transF = [](byte b, char *buf) {
+        auto [ptr, errCode] = std::to_chars(buf, buf + 2, static_cast<int>(b), 16);
+        if (errCode != std::errc()) [[unlikely]] 
+        {
+            buf[0] = '0';
+            buf[1] = '0';
+        }
+        else if (ptr - buf == 1) // Zero-pad for single-digit results
+        {
+            buf[1] = buf[0];
+            buf[0] = '0';
+        }
     };
 #if defined(USE_STD_RANGES)
     auto hexView = bytes 
-        | std::ranges::views::transform(transF);
+        | std::ranges::views::transform([&str](byte b) {
+            transF(b, &str[b * 2]);
+            return std::string_view(&str[b * 2], 2);
+        });
     return std::accumulate(hexView.begin(), hexView.end(), std::string{});
 #else
-    std::ostringstream ss;
-    for (const auto b : bytes)
+    for (size_t i = 0; i < bytes.size(); ++i) 
     {
-        ss << transF(b);
+        transF(str[i], &str[i * 2]);
     }
-    return ss.str();
+    return str;
 #endif
 }
 
@@ -59,8 +71,14 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
         return {};
     }
     auto transF = [](const std::string &s) { 
-        return static_cast<byte>(std::stoi(s.c_str(), nullptr, 16));
-     };
+        auto hex = 0;
+        auto [_, errCode] = std::from_chars(s.data(), s.data() + s.size(), hex, 16);
+        if (errCode != std::errc()) [[unlikely]]
+        {
+            return static_cast<byte>(0);
+        }
+        return static_cast<byte>(hex);
+    };
 #if defined(USE_STD_RANGES_CHUNK)
     auto byteView = str 
         | std::ranges::views::chunk(2) 
