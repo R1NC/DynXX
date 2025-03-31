@@ -4,6 +4,8 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 > :point_right: The Rust version([NGenRS](https://github.com/R1NC/NGenRS)) is in works.
 
+## Architecture
+
 ![Arch](/res/arch.svg)
 
 ## Progress
