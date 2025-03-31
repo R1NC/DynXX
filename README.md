@@ -9,7 +9,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 > * Guarantee memory safety by the compiler, not the programmer;
 > * Complete standard library, like networking, crypto and serialization, no need to interop with C libs;
 > * Powerful third-party dependency management tool - [Crates](https://crates.io/);
-> * First-class [WASM support](https://rustwasm.github.io/docs/book/), no other toolchain needed(Like Emscripten);
+> * First-class [WASM support](https://rustwasm.github.io/docs/book/), no other toolchain needed(Like [Emscripten](https://emscripten.org/));
 > * Complete cross-platform support - [FFI](https://doc.rust-lang.org/nomicon/ffi.html), [CXX](https://cxx.rs/), [jni](https://docs.rs/jni/latest/jni/), [ojbc2](https://docs.rs/objc2/latest/objc2/).
 
 ## Architecture
