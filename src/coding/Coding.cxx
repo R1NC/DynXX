@@ -65,16 +65,21 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
 
 Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
 {
-    auto sLen = str.length();
-    if (sLen < 2) [[unlikely]]
+    std::string filteredStr;
+    filteredStr.reserve(str.size());
+    std::copy_if(str.begin(), str.end(), std::back_inserter(filteredStr),
+        [](char c) { return std::isxdigit(static_cast<unsigned char>(c)); });
+    if (filteredStr.length() < 2) [[unlikely]]
     {
         return {};
     }
+
     std::string fixedStr = str;
     if (fixedStr.length() % 2 != 0) [[unlikely]]
     {
         fixedStr.insert(0, "0");
     }
+    auto sLen = str.length();
       
     auto transF = [](const std::string &s) { 
         auto hex = 0;
