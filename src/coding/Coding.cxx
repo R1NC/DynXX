@@ -70,6 +70,12 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     {
         return {};
     }
+    std::string fixedStr = str;
+    if (fixedStr.length() % 2 != 0) [[unlikely]]
+    {
+        fixedStr.insert(0, "0");
+    }
+      
     auto transF = [](const std::string &s) { 
         auto hex = 0;
         auto [_, errCode] = std::from_chars(s.data(), s.data() + s.size(), hex, 16);
@@ -80,7 +86,7 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
         return static_cast<byte>(hex);
     };
 #if defined(USE_STD_RANGES_CHUNK)
-    auto byteView = str 
+    auto byteView = fixedStr 
         | std::ranges::views::chunk(2) 
         | std::ranges::views::transform(transF);
     return Bytes(byteView.begin(), byteView.end());
@@ -89,7 +95,7 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
     bytes.reserve(sLen / 2);
     for (decltype(sLen) i(0); i < sLen; i += 2)
     {
-        auto s = str.substr(i, 2);
+        auto s = fixedStr.substr(i, 2);
         bytes.emplace_back(transF(s));
     }
     return bytes;
