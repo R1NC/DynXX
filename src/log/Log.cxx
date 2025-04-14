@@ -15,6 +15,10 @@
 #include <NGenXXLog.h>
 #include <NGenXXTypes.hxx>
 
+#if defined(__APPLE__)
+void _ngenxx_log_apple(const char*);
+#endif
+
 static std::function<void(int level, const char *content)> _NGenXX_Log_callback = nullptr;
 static std::unique_ptr<std::mutex> _ngenxx_log_mutex = nullptr;
 
@@ -66,6 +70,8 @@ void NGenXX::Log::print(int level, const std::string &content)
         __android_log_print(level, tag.c_str(), "%s", cContent);
 #elif defined(__OHOS__)
         OH_LOG_Print(LOG_APP, static_cast<LogLevel>(level), 0xC0DE, tag.c_str(), "%s", cContent);
+#elif defined(__APPLE__)
+        _ngenxx_log_apple(cContent);
 #else
         std::cout << tag << "_" << level << " -> " << cContent << std::endl;
 #endif
