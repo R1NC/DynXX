@@ -49,11 +49,14 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
     };
 #if defined(USE_STD_RANGES)
     auto hexView = bytes 
-        | std::ranges::views::transform([&str](byte b) {
+        | std::ranges::views::transform([&str, &transF](byte b) {
             transF(b, &str[b * 2]);
             return std::string_view(&str[b * 2], 2);
         });
-    return std::accumulate(hexView.begin(), hexView.end(), std::string{});
+    return std::accumulate(hexView.begin(), hexView.end(), std::string{},
+        [](std::string&& acc, std::string_view sv) {
+            return std::move(acc) + std::string(sv);
+        });
 #else
     for (size_t i = 0; i < bytes.size(); ++i) 
     {
