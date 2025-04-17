@@ -267,18 +267,30 @@ bool NGenXX::JsBridge::loadFile(const std::string &file, bool isModule)
 
 bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name, bool isModule)
 {
+    if (!_ngenxx_js_mutex) [[unlikely]]
+    {
+        return false;
+    }
     auto lock = std::lock_guard(*_ngenxx_js_mutex.get());
     return _ngenxx_js_loadScript(this->context, script, name, isModule);
 }
 
 bool NGenXX::JsBridge::loadBinary(const Bytes &bytes, bool isModule)
 {
+    if (!_ngenxx_js_mutex) [[unlikely]]
+    {
+        return false;
+    }
     auto lock = std::lock_guard(*_ngenxx_js_mutex.get());
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
 JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
 {
+    if (!_ngenxx_js_mutex) [[unlikely]]
+    {
+        return JS_UNDEFINED;
+    }
     auto ret = JS_UNDEFINED;
     for (;;)
     {
@@ -322,6 +334,10 @@ JSValue _ngenxx_js_await(JSContext *ctx, JSValue obj)
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
 std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, bool await)
 {
+    if (!_ngenxx_js_mutex) [[unlikely]]
+    {
+        return {};
+    }
     _ngenxx_js_mutex->lock();
     std::string s;
 
@@ -396,6 +412,10 @@ void _NgenXXJSPromise_callback(JSContext *ctx, NgenXXJSPromise *jPromise, JSValu
 
 JSValue NGenXX::JsBridge::newPromise(std::function<JSValue()> &&jf)
 {
+    if (!_ngenxx_js_mutex) [[unlikely]]
+    {
+        return JS_UNDEFINED;
+    }
     auto jPromise = _NgenXXJSPromise_new(this->context);
     if (jPromise == nullptr) [[unlikely]]
     {
@@ -488,5 +508,9 @@ NGenXX::JsBridge::~JsBridge()
     JS_FreeRuntime(this->runtime);
 
     _ngenxx_js_mutex.reset();
+    _ngenxx_js_uv_loop_p = nullptr;
+    _ngenxx_js_uv_loop_t = nullptr;
+    _ngenxx_js_uv_timer_p = nullptr;
+    _ngenxx_js_uv_timer_t = nullptr;
 }
 #endif
