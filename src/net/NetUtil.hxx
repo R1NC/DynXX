@@ -12,6 +12,7 @@ namespace NGenXX
         namespace Util
         {
             std::string publicIpV4();
+            
             std::string publicIpV6();
         }
     }
