@@ -1,11 +1,54 @@
-#ifndef _WIN32
+#if !defined(_WIN32)
 
 #include "NetUtil.hxx"
+
+#include <string.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
+#include <ifaddrs.h>
+
+NGenXX::Net::Util::NetType NGenXX::Net::Util::netType() 
+{
+    struct ifaddrs *ifaddr, *ifa;
+    NetType result = NetType::Offline;
+    
+    if (getifaddrs(&ifaddr) == -1) 
+    {
+        return NetType::Unknown;
+    }
+
+    for (ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) 
+    {
+        if (ifa->ifa_addr == nullptr) continue;
+        
+        int family = ifa->ifa_addr->sa_family;
+        if (family == AF_INET || family == AF_INET6) 
+        {
+            if (strncmp(ifa->ifa_name, "en", 2) == 0) 
+            {
+                result = NetType::Ethernet;
+            } 
+            else if (strncmp(ifa->ifa_name, "awdl", 4) == 0 
+                    || strncmp(ifa->ifa_name, "llw", 3) == 0) 
+            {
+                result = NetType::Wifi;
+            }
+            else if (strncmp(ifa->ifa_name, "pdp_ip", 6) == 0 
+                    || strncmp(ifa->ifa_name, "pdp", 3) == 0)
+            {
+                result = NetType::Mobile;
+            }
+        }
+    }
+    
+    freeifaddrs(ifaddr);
+    return result;
+}
 
 std::string NGenXX::Net::Util::publicIpV4()
 {

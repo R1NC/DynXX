@@ -1,10 +1,50 @@
-#ifdef _WIN32
+#if defined(_WIN32)
 
 #include "NetUtil.hxx"
 
+#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <iphlpapi.h>
+
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "iphlpapi.lib")
+
+NGenXX::Net::Util::NetType NGenXX::Net::Util::netType() 
+{
+    PIP_ADAPTER_ADDRESSES pAddresses = NULL;
+    ULONG outBufLen = 0;
+    DWORD dwRetVal = 0;
+    NetType result = NetType::Offline;
+    
+    GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &outBufLen);
+    pAddresses = (PIP_ADAPTER_ADDRESSES)malloc(outBufLen);
+        
+    if ((dwRetVal = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, pAddresses, &outBufLen)) == NO_ERROR) 
+    {
+        PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses;
+        while (pCurrAddresses) 
+        {
+            if (pCurrAddresses->OperStatus == IfOperStatusUp) 
+            {
+                if (pCurrAddresses->IfType == IF_TYPE_ETHERNET_CSMACD) 
+                {
+                    result = NetType::Ethernet;
+                    break;
+                } 
+                else if (pCurrAddresses->IfType == IF_TYPE_IEEE80211) 
+                {
+                    result = NetType::Wifi;
+                    break;
+                }
+            }
+            pCurrAddresses = pCurrAddresses->Next;
+        }
+    }
+        
+    free(pAddresses);
+    return result;
+}
 
 std::string NGenXX::Net::Util::publicIpV4()
 {

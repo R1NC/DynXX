@@ -11,8 +11,19 @@ namespace NGenXX
     {
         namespace Util
         {
+            enum class NetType : int 
+            {
+                Unknown,
+                Offline,
+                Wifi,
+                Ethernet,
+                Mobile
+            };
+
+            NetType netType();
+
             std::string publicIpV4();
-            
+
             std::string publicIpV6();
         }
     }

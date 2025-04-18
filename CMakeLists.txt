@@ -39,9 +39,17 @@ else()
     add_definitions(-DUSE_STD_RANGES)
 endif()
 
+# Android can not find built-in `ifaddrs.h`;
+if(ANDROID)
+    set(ANDROID_IFADDRS_ROOT external/android-ifaddrs)
+endif()
+
 ## Source & Output:
 
 file(GLOB_RECURSE SRC_FILES "src/*.cxx" "src/*.mm")
+if(ANDROID)
+    list(APPEND SRC_FILES ${ANDROID_IFADDRS_ROOT}/ifaddrs.c)
+endif()
 
 if(EMSCRIPTEN)
     add_executable(${PROJECT_NAME} ${SRC_FILES})
@@ -115,6 +123,10 @@ if(USE_STD_RANGES)
     set(ADAURL_ROOT external/AdaURL)
     add_subdirectory(${ADAURL_ROOT} AdaURL.output)
     list(APPEND INC_DIRS ${ADAURL_ROOT}/include)
+endif()
+
+if(ANDROID)
+    list(APPEND INC_DIRS ${ANDROID_IFADDRS_ROOT})
 endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${INC_DIRS})
