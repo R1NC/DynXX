@@ -29,17 +29,33 @@ NGenXX::Net::Util::NetType NGenXX::Net::Util::netType()
         int family = ifa->ifa_addr->sa_family;
         if (family == AF_INET || family == AF_INET6) 
         {
-            if (strncmp(ifa->ifa_name, "en", 2) == 0) 
+            if (
+            #if defined(__ANDROID__)
+                strncmp(ifa->ifa_name, "eth", 3) == 0
+            #else
+                strncmp(ifa->ifa_name, "en", 2) == 0
+            #endif
+            )
             {
                 result = NetType::Ethernet;
             } 
-            else if (strncmp(ifa->ifa_name, "awdl", 4) == 0 
-                    || strncmp(ifa->ifa_name, "llw", 3) == 0) 
+            else if (
+            #if defined(__ANDROID__)
+                strncmp(ifa->ifa_name, "wlan", 4) == 0 || strncmp(ifa->ifa_name, "p2p", 3) == 0
+            #else
+                strncmp(ifa->ifa_name, "awdl", 4) == 0 || strncmp(ifa->ifa_name, "llw", 3) == 0
+            #endif
+            ) 
             {
                 result = NetType::Wifi;
-            }
-            else if (strncmp(ifa->ifa_name, "pdp_ip", 6) == 0 
-                    || strncmp(ifa->ifa_name, "pdp", 3) == 0)
+            } 
+            else if (
+            #if defined(__ANDROID__)
+                strncmp(ifa->ifa_name, "rmnet", 5) == 0 || strncmp(ifa->ifa_name, "wwan", 4) == 0
+            #else
+                strncmp(ifa->ifa_name, "pdp_ip", 6) == 0 || strncmp(ifa->ifa_name, "pdp", 3) == 0
+            #endif
+            )
             {
                 result = NetType::Mobile;
             }
