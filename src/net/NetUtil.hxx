@@ -9,11 +9,14 @@ namespace NGenXX
 {
     namespace Net
     {
-        namespace util
+        namespace Util
         {
             std::string publicIpV4();
+            std::string publicIpV6();
         }
     }
 }
 
 #endif
+
+#endif // NGENXX_SRC_NET_UTIL_HXX_
