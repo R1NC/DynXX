@@ -20,6 +20,10 @@ namespace NGenXX
                 Mobile
             };
 
+            auto constexpr kDefaultDnsIpV4 = "8.8.8.8";
+            auto constexpr kDefaultDnsIpV6 = "2001:4860:4860::8888";
+            auto constexpr kDefaultDnsPort = 53;
+
             NetType netType();
 
             std::string publicIpV4();

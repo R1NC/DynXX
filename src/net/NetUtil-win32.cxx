@@ -60,13 +60,11 @@ std::string NGenXX::Net::Util::publicIpV4()
         return {};
     }
 
-    const char* kGoogleDnsIp = "8.8.8.8";
-    uint16_t kDnsPort = 53;
     struct sockaddr_in serv;
     serv.sin_family = AF_INET;
-    serv.sin_port = htons(kDnsPort);
+    serv.sin_port = htons(kDefaultDnsPort);
     
-    InetPtonA(AF_INET, kGoogleDnsIp, &serv.sin_addr);
+    InetPtonA(AF_INET, kDefaultDnsIpV4, &serv.sin_addr);
 
     if (connect(sock, (struct sockaddr*)&serv, sizeof(serv)) < 0) 
     {
@@ -106,14 +104,12 @@ std::string NGenXX::Net::Util::publicIpV6()
         return {};
     }
 
-    const char* kGoogleDnsIp = "2001:4860:4860::8888";
-    uint16_t kDnsPort = 53;
     struct sockaddr_in6 serv;
     memset(&serv, 0, sizeof(serv));
     serv.sin6_family = AF_INET6;
-    serv.sin6_port = htons(kDnsPort);
+    serv.sin6_port = htons(kDefaultDnsPort);
     
-    InetPtonA(AF_INET6, kGoogleDnsIp, &serv.sin6_addr);
+    InetPtonA(AF_INET6, kDefaultDnsIpV6, &serv.sin6_addr);
 
     if (connect(sock, (struct sockaddr*)&serv, sizeof(serv)) < 0) 
     {
