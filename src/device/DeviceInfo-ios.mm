@@ -4,10 +4,26 @@
 #import <UIKit/UIKit.h>
 
 #import <sys/utsname.h>
+#import <sys/sysctl.h>
 
 #include <NGenXXDeviceInfo.h>
 
 #define NSString2CharP(nsstr) [nsstr cStringUsingEncoding:NSUTF8StringEncoding]
+#define CharP2NSString(cstr) [NSString stringWithCString:cstr encoding:NSUTF8StringEncoding]
+
+namespace
+{
+    NSString *systemsInfoByName(const char *typeName) 
+    {
+        size_t size;
+        sysctlbyname(typeName, NULL, &size, NULL, 0);
+        char *answer = reinterpret_cast<char*>(malloc(size * sizeof(char)));
+        sysctlbyname(typeName, answer, &size, NULL, 0);
+        NSString *results = CharP2NSString(answer);
+        free(answer);
+        return results;
+    }
+}
 
 int NGenXX::Device::DeviceInfo::deviceType()
 {
@@ -24,6 +40,18 @@ std::string NGenXX::Device::DeviceInfo::deviceName()
 std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
 {
     return "Apple";
+}
+
+std::string NGenXX::Device::DeviceInfo::deviceModel()
+{
+    static dispatch_once_t get_system_model_once;
+    static std::string *model;
+    dispatch_once(&get_system_model_once, ^{
+        @autoreleasepool {
+            model = new std::string(NSString2CharP(systemsInfoByName("hw.machine")));
+        }
+    });
+    return *model;
 }
 
 std::string NGenXX::Device::DeviceInfo::osVersion()

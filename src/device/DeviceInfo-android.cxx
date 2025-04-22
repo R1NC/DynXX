@@ -36,6 +36,11 @@ std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
     return sysProperty(SYS_PROPERTY_MANUFACTURER);
 }
 
+std::string NGenXX::Device::DeviceInfo::deviceModel()
+{
+    return sysProperty(SYS_PROPERTY_MODEL);
+}
+
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
     return sysProperty(SYS_PROPERTY_VERSION_RELEASE);

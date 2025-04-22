@@ -110,6 +110,11 @@ std::string ngenxxDeviceManufacturer()
     return NGenXX::Device::DeviceInfo::deviceManufacturer();
 }
 
+std::string ngenxxDeviceModel()
+{
+    return NGenXX::Device::DeviceInfo::deviceModel();
+}
+
 std::string ngenxxDeviceOsVersion()
 {
     return NGenXX::Device::DeviceInfo::osVersion();

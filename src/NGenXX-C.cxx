@@ -65,6 +65,12 @@ const char *ngenxx_device_manufacturer()
 }
 
 EXPORT_AUTO
+const char *ngenxx_device_model()
+{
+    return copyStr(ngenxxDeviceModel());
+}
+
+EXPORT_AUTO
 const char *ngenxx_device_os_version()
 {
     return copyStr(ngenxxDeviceOsVersion());

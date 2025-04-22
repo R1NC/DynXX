@@ -32,6 +32,8 @@ std::string ngenxxDeviceName();
 
 std::string ngenxxDeviceManufacturer();
 
+std::string ngenxxDeviceModel();
+
 std::string ngenxxDeviceOsVersion();
 
 NGenXXDeviceCpuArchX ngenxxDeviceCpuArch();

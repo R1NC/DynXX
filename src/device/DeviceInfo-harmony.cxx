@@ -20,6 +20,11 @@ std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
     return OH_GetManufacture();
 }
 
+std::string NGenXX::Device::DeviceInfo::deviceModel()
+{
+    return OH_GetHardwareModel();
+}
+
 std::string NGenXX::Device::DeviceInfo::osVersion()
 {
     return OH_GetDistributionOSVersion();

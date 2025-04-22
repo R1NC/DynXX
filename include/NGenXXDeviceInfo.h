@@ -54,6 +54,12 @@ EXTERN_C_BEGIN
      */
     const char *ngenxx_device_manufacturer();
 
+     /**
+     * @brief Read device model
+     * @return device model
+     */
+     const char *ngenxx_device_model();
+
     /**
      * @brief Read OS version
      * @return OS VERSION
