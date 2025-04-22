@@ -13,15 +13,13 @@
 
 namespace
 {
-    NSString *systemsInfoByName(const char *typeName) 
+    char *sysCtlByName(const char *key) 
     {
         size_t size;
-        sysctlbyname(typeName, NULL, &size, NULL, 0);
-        char *answer = reinterpret_cast<char*>(malloc(size * sizeof(char)));
-        sysctlbyname(typeName, answer, &size, NULL, 0);
-        NSString *results = CharP2NSString(answer);
-        free(answer);
-        return results;
+        sysctlbyname(key, NULL, &size, NULL, 0);
+        auto value = reinterpret_cast<char*>(malloc(size * sizeof(char)));
+        sysctlbyname(key, value, &size, NULL, 0);
+        return value;
     }
 }
 
@@ -48,7 +46,7 @@ std::string NGenXX::Device::DeviceInfo::deviceModel()
     static std::string *model;
     dispatch_once(&get_system_model_once, ^{
         @autoreleasepool {
-            model = new std::string(NSString2CharP(systemsInfoByName("hw.machine")));
+            model = new std::string(sysCtlByName("hw.machine"));
         }
     });
     return *model;
