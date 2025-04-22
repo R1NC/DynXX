@@ -84,11 +84,9 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
         return {};
     }
     
-    decltype(inLen) offset(0);
-    while (offset < inLen)
+    for (decltype(inLen) offset(0); offset < outLen; offset += AES_BLOCK_SIZE)
     {
         AES_encrypt(fixedIn + offset, out + offset, &aes_key);
-        offset += AES_BLOCK_SIZE;
     }
 
     return wrapBytes(out, outLen);
@@ -125,11 +123,9 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
         return {};
     }
 
-    decltype(inLen) offset(0);
-    while (offset < inLen)
+    for (decltype(inLen) offset(0); offset < inLen; offset += AES_BLOCK_SIZE)
     {
         AES_decrypt(fixedIn + offset, out + offset, &aes_key);
-        offset += AES_BLOCK_SIZE;
     }
 
     return wrapBytes(out, outLen);
