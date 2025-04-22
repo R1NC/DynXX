@@ -11,6 +11,11 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <ifaddrs.h>
+#if defined(__ANDROID__)
+#include <linux/if_packet.h>
+#else
+#include <net/if_dl.h>
+#endif
 
 namespace 
 {
@@ -22,6 +27,49 @@ namespace
         }
         return strncmp(ifa->ifa_name, name.data(), name.size()) == 0;
     }
+}
+
+std::string NGenXX::Net::Util::macAddress()
+{
+    struct ifaddrs *ifaddr, *ifa;
+    std::string macAddress;
+    
+    if (getifaddrs(&ifaddr) == -1) 
+    {
+        return {};
+    }
+
+    for (ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) 
+    {
+        if (!ifa->ifa_addr) continue;
+
+#if defined(__ANDROID__)
+        if (ifa->ifa_addr->sa_family == AF_PACKET) 
+        {
+            struct sockaddr_ll *s = (struct sockaddr_ll*)ifa->ifa_addr;
+            if (s->sll_halen == 6)
+            {
+                macAddress = formatMacAddress(s->sll_addr);
+            }
+        }
+#else
+        if (ifa->ifa_addr->sa_family == AF_LINK) 
+        {
+            struct sockaddr_dl* sdl = (struct sockaddr_dl*)ifa->ifa_addr;
+            if (sdl->sdl_alen == 6)
+            {
+                macAddress = formatMacAddress((unsigned char*)LLADDR(sdl));
+            }
+        }
+#endif
+
+        if (!macAddress.empty()) {
+            break;
+        }
+    }
+    
+    freeifaddrs(ifaddr);
+    return macAddress;
 }
 
 NGenXX::Net::Util::NetType NGenXX::Net::Util::netType() 

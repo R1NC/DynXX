@@ -10,6 +10,34 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "iphlpapi.lib")
 
+std::string NGenXX::Net::Util::macAddress()
+{
+    PIP_ADAPTER_ADDRESSES pAddresses = NULL;
+    ULONG outBufLen = 0;
+    std::string macAddress;
+
+    GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &outBufLen);
+    pAddresses = (PIP_ADAPTER_ADDRESSES)std::malloc(outBufLen);
+    
+    if (GetAdaptersAddresses(AF_UNSPEC, 0, NULL, pAddresses, &outBufLen) == NO_ERROR)
+    {
+        PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses;
+        while (pCurrAddresses)
+        {
+            if (pCurrAddresses->OperStatus == IfOperStatusUp &&
+                pCurrAddresses->PhysicalAddressLength == 6)
+            {
+                macAddress = formatMacAddress(pCurrAddresses->PhysicalAddress);
+                break;
+            }
+            pCurrAddresses = pCurrAddresses->Next;
+        }
+    }
+
+    std::free(pAddresses);
+    return macAddress;
+}
+
 NGenXX::Net::Util::NetType NGenXX::Net::Util::netType() 
 {
     PIP_ADAPTER_ADDRESSES pAddresses = NULL;
@@ -18,7 +46,7 @@ NGenXX::Net::Util::NetType NGenXX::Net::Util::netType()
     NetType result = NetType::Offline;
     
     GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &outBufLen);
-    pAddresses = (PIP_ADAPTER_ADDRESSES)malloc(outBufLen);
+    pAddresses = (PIP_ADAPTER_ADDRESSES)std::malloc(outBufLen);
         
     if ((dwRetVal = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, pAddresses, &outBufLen)) == NO_ERROR) 
     {
@@ -42,7 +70,7 @@ NGenXX::Net::Util::NetType NGenXX::Net::Util::netType()
         }
     }
         
-    free(pAddresses);
+    std::free(pAddresses);
     return result;
 }
 
