@@ -24,7 +24,7 @@ namespace NGenXX
             auto constexpr kDefaultDnsIpV6 = "2001:4860:4860::8888";
             auto constexpr kDefaultDnsPort = 53;
 
-            std::string formatMacAddress(const unsigned char* mac)
+            static inline std::string formatMacAddress(const unsigned char* mac)
             {
                 char macStr[18];
                 snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",

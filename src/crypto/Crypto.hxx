@@ -18,7 +18,7 @@ namespace NGenXX
 
             Bytes decrypt(const Bytes &in, const Bytes &key);
 
-            static constexpr bool checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, size_t tagBits)
+            static inline constexpr bool checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, size_t tagBits)
             {
                 auto inBytes = in.data(), keyBytes = key.data(), initVectorBytes = initVector.data(), aadBytes = aad.data();
                 auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
