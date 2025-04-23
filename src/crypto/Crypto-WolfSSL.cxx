@@ -15,7 +15,10 @@
 #include <NGenXXLog.hxx>
 #include "../util/TypeUtil.hxx"
 
-constexpr auto WolfSSL_OK = 0;
+namespace 
+{
+    constexpr auto OK = 0;
+}
 
 bool NGenXX::Crypto::rand(size_t len, byte *bytes)
 {
@@ -52,14 +55,14 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
     Aes aes[1];
 
     auto ret = wc_AesInit(aes, nullptr, 0);
-    if (ret != WolfSSL_OK) [[unlikely]]
+    if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key error:{}", ret);
         return {};
     }
 
     ret = wc_AesSetKey(aes, key, keyLen, out, AES_ENCRYPTION);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesSetKey_AES_ENCRYPTION error:{}", ret);
         return {};
@@ -68,7 +71,7 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
     while (offset < inLen)
     {
         ret = wc_AesEncryptDirect(aes, out + offset, fixedIn + offset);
-        if (ret != WolfSSL_OK)
+        if (ret != OK)
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesEncryptDirect error:{}", ret);
             return {};
@@ -107,14 +110,14 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     Aes aes[1];
 
     auto ret = wc_AesInit(aes, nullptr, 0);
-    if (ret != WolfSSL_OK) [[unlikely]]
+    if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
         return {};
     }
 
     ret = wc_AesSetKey(aes, key, keyLen, out, AES_DECRYPTION);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesSetKey_AES_DECRYPTION error:{}", ret);
         return {};
@@ -123,7 +126,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
     while (offset < inLen)
     {
         ret = wc_AesDecryptDirect(aes, out + offset, fixedIn + offset);
-        if (ret != WolfSSL_OK)
+        if (ret != OK)
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesDecryptDirect error:{}", ret);
             return {};
@@ -154,21 +157,21 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
 
     Aes aes[1];
     auto ret = wc_AesInit(aes, nullptr, 0);
-    if (ret != WolfSSL_OK) [[unlikely]]
+    if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
         return {};
     }
 
     ret = wc_AesGcmSetKey(aes, key, keyLen);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesGcmSetKey error:{}", ret);
         return {};
     }
 
     ret = wc_AesGcmEncrypt(aes, out, in, inLen, initVector, initVectorLen, tag, tagLen, aad, aadLen);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesGcmEncrypt error:{}", ret);
         return {};
@@ -199,21 +202,21 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
 
     Aes aes[1];
     auto ret = wc_AesInit(aes, nullptr, 0);
-    if (ret != WolfSSL_OK) [[unlikely]]
+    if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesInit error:{}", ret);
         return {};
     }
 
     ret = wc_AesGcmSetKey(aes, key, keyLen);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesGcmSetKey error:{}", ret);
         return {};
     }
 
     ret = wc_AesGcmDecrypt(aes, out, in, inLen, initVector, initVectorLen, tag, tagLen, aad, aadLen);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_AesGcmDecrypt error:{}", ret);
         return {};
@@ -239,21 +242,21 @@ Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     wc_Md5 md5;
 
     auto ret = wc_InitMd5(&md5);
-    if (ret != WolfSSL_OK) [[unlikely]]
+    if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_InitMd5 error:{}", ret);
         return {};
     }
 
     ret = wc_Md5Update(&md5, (byte *)in, inLen);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Md5Update error:{}", ret);
         return {};
     }
 
     ret = wc_Md5Final(&md5, out);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Md5Final error:{}", ret);
         return {};
@@ -279,21 +282,21 @@ Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     wc_Sha256 sha256;
 
     auto ret = wc_InitSha256(&sha256);
-    if (ret != WolfSSL_OK) [[unlikely]]
+    if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_InitSha256 error:{}", ret);
         return {};
     }
 
     ret = wc_Sha256Update(&sha256, (byte *)in, inLen);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Sha256Update error:{}", ret);
         return {};
     }
 
     ret = wc_Sha256Final(&sha256, out);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "wc_Sha256Final error:{}", ret);
         return {};
@@ -320,7 +323,7 @@ Bytes NGenXX::Crypto::Base64::encode(const Bytes &inBytes)
     std::memset(outBuffer, 0, outLen + 1);
 
     ret = Base64_Encode_NoNl(in, inLen, outBuffer, &outLen);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "Base64_Encode error:{}", ret);
         return {};
@@ -343,7 +346,7 @@ Bytes NGenXX::Crypto::Base64::decode(const Bytes &inBytes)
     std::memset(outBuffer, 0, outLen + 1);
 
     auto ret = Base64_Decode(in, inLen, outBuffer, &outLen);
-    if (ret != WolfSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "Base64_Decode error:{}", ret);
         return {};

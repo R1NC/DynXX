@@ -27,12 +27,15 @@
 #endif
 #endif
 
-#define VERSION "1.0.0"
+namespace
+{
+    auto constexpr VERSION = "1.0.0";
 
-std::unique_ptr<NGenXX::Net::HttpClient> _ngenxx_http_client = nullptr;
-std::unique_ptr<NGenXX::Store::SQLite> _ngenxx_sqlite = nullptr;
-std::unique_ptr<NGenXX::Store::KV> _ngenxx_kv = nullptr;
-std::unique_ptr<const std::string> _ngenxx_root = nullptr;
+    std::unique_ptr<NGenXX::Net::HttpClient> _http_client = nullptr;
+    std::unique_ptr<NGenXX::Store::SQLite> _sqlite = nullptr;
+    std::unique_ptr<NGenXX::Store::KV> _kv = nullptr;
+    std::unique_ptr<const std::string> _root = nullptr;   
+}
 
 std::string ngenxxGetVersion()
 {
@@ -42,16 +45,16 @@ std::string ngenxxGetVersion()
 std::string ngenxxRootPath()
 {
     std::string s;
-    if (!_ngenxx_root)
+    if (!_root)
     {
         return s;
     }
-    return *_ngenxx_root.get();
+    return *_root.get();
 }
 
 bool ngenxxInit(const std::string &root)
 {
-    if (_ngenxx_root)
+    if (_root)
     {
         return true;
     }
@@ -59,10 +62,10 @@ bool ngenxxInit(const std::string &root)
     {
         return false;
     }
-    _ngenxx_root = std::make_unique<const std::string>(root);
-    _ngenxx_sqlite = std::make_unique<NGenXX::Store::SQLite>();
-    _ngenxx_kv = std::make_unique<NGenXX::Store::KV>(*_ngenxx_root.get());
-    _ngenxx_http_client = std::make_unique<NGenXX::Net::HttpClient>();
+    _root = std::make_unique<const std::string>(root);
+    _sqlite = std::make_unique<NGenXX::Store::SQLite>();
+    _kv = std::make_unique<NGenXX::Store::KV>(*_root.get());
+    _http_client = std::make_unique<NGenXX::Net::HttpClient>();
 #if defined(USE_LUA)
     _ngenxx_lua_init();
 #endif
@@ -74,16 +77,16 @@ bool ngenxxInit(const std::string &root)
 
 void ngenxxRelease()
 {
-    if (!_ngenxx_root)
+    if (!_root)
     {
         return;
     }
-    _ngenxx_root.reset();
-    _ngenxx_http_client.reset();
-    _ngenxx_sqlite->closeAll();
-    _ngenxx_sqlite.reset();
-    _ngenxx_kv->closeAll();
-    _ngenxx_kv.reset();
+    _root.reset();
+    _http_client.reset();
+    _sqlite->closeAll();
+    _sqlite.reset();
+    _kv->closeAll();
+    _kv.reset();
     ngenxxLogSetCallback(nullptr);
 #if defined(USE_LUA)
     _ngenxx_lua_release();
@@ -255,7 +258,7 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               size_t timeout)
 {
     NGenXXHttpResponse rsp;
-    if (!_ngenxx_http_client || url.empty())
+    if (!_http_client || url.empty())
     {
         return rsp;
     }
@@ -275,7 +278,7 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
         });
     }
 
-    auto t = _ngenxx_http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize, timeout);
+    auto t = _http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize, timeout);
     rsp = {
         .code = t.code,
         .contentType = t.contentType,
@@ -348,24 +351,24 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
 
 bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath, size_t timeout)
 {
-    if (!_ngenxx_http_client || url.empty()|| filePath.empty())
+    if (!_http_client || url.empty()|| filePath.empty())
     {
         return false;
     }
-    return _ngenxx_http_client->download(url, filePath, timeout);
+    return _http_client->download(url, filePath, timeout);
 }
 
 #pragma mark Store.SQLite
 
 void *ngenxxStoreSqliteOpen(const std::string &_id)
 {
-    if (!_ngenxx_sqlite || !_ngenxx_root || _id.empty())
+    if (!_sqlite || !_root || _id.empty())
     {
         return nullptr;
     }
     std::ostringstream ss;
-    ss << *_ngenxx_root.get() << "/" << _id << ".db";
-    if (auto ptr = _ngenxx_sqlite->connect(ss.str()).lock()) [[likely]]
+    ss << *_root.get() << "/" << _id << ".db";
+    if (auto ptr = _sqlite->connect(ss.str()).lock()) [[likely]]
     {
         return ptr.get();
     }
@@ -459,11 +462,11 @@ void ngenxxStoreSqliteClose(void *const conn)
 
 void *ngenxxStoreKvOpen(const std::string &_id)
 {
-    if (!_ngenxx_kv || _id.empty())
+    if (!_kv || _id.empty())
     {
         return nullptr;
     }
-    if (auto ptr = _ngenxx_kv->open(_id).lock()) [[likely]]
+    if (auto ptr = _kv->open(_id).lock()) [[likely]]
     {
         return ptr.get();
     }
@@ -699,7 +702,7 @@ void *ngenxxZZipInit(const NGenXXZipCompressModeX mode, size_t bufferSize, const
     }
     catch (const std::exception &e)
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "ngenxx_z_zip_init failed");
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "ngenxxZZipInit failed: {}", e.what());
     }
     return zip;
 }
@@ -753,7 +756,7 @@ void *ngenxxZUnzipInit(size_t bufferSize, const NGenXXZFormatX format)
     }
     catch (const std::exception &e)
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "ngenxx_z_unzip_init failed");
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "ngenxxZUnzipInit failed: {}", e.what());
     }
     return unzip;
 }

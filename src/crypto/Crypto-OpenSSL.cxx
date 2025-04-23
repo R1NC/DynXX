@@ -15,30 +15,36 @@
 
 #include <NGenXXLog.hxx>
 
-constexpr auto OpenSSL_OK = 1;
-constexpr auto OpenSSL_AES_Key_BITS = 128;
-
-class OpenSslEvpCipherCtx
+namespace
 {
-public:
-    OpenSslEvpCipherCtx()
+    constexpr auto OK = 1;
+    constexpr auto AES_Key_BITS = 128;
+
+    constexpr auto MD5_BYTES_LEN = 16uz;
+    constexpr auto SHA256_BYTES_LEN = 32uz;
+
+    class EvpCipherCtx
     {
-        raw = EVP_CIPHER_CTX_new();
-    }
-    ~OpenSslEvpCipherCtx()
-    {
-        if (raw != nullptr)
+    public:
+        EvpCipherCtx()
         {
-            EVP_CIPHER_CTX_free(raw);
-            raw = nullptr;
+            raw = EVP_CIPHER_CTX_new();
         }
-    }
-    OpenSslEvpCipherCtx(const OpenSslEvpCipherCtx &) = delete;
-    OpenSslEvpCipherCtx &operator=(const OpenSslEvpCipherCtx &) = delete;
-    OpenSslEvpCipherCtx(OpenSslEvpCipherCtx &&) = delete;
-    OpenSslEvpCipherCtx &operator=(OpenSslEvpCipherCtx &&) = delete;
-    EVP_CIPHER_CTX *raw;
-};
+        ~EvpCipherCtx()
+        {
+            if (raw != nullptr)
+            {
+                EVP_CIPHER_CTX_free(raw);
+                raw = nullptr;
+            }
+        }
+        EvpCipherCtx(const EvpCipherCtx &) = delete;
+        EvpCipherCtx &operator=(const EvpCipherCtx &) = delete;
+        EvpCipherCtx(EvpCipherCtx &&) = delete;
+        EvpCipherCtx &operator=(EvpCipherCtx &&) = delete;
+        EVP_CIPHER_CTX *raw;
+    };
+}
 
 #pragma mark Rand
 
@@ -77,7 +83,7 @@ Bytes NGenXX::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
 
     AES_KEY aes_key;
 
-    auto ret = AES_set_encrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
+    auto ret = AES_set_encrypt_key(key, AES_Key_BITS, &aes_key);
     if (ret != 0)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_encrypt_key error:{}", ret);
@@ -116,7 +122,7 @@ Bytes NGenXX::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
 
     AES_KEY aes_key;
 
-    auto ret = AES_set_decrypt_key(key, OpenSSL_AES_Key_BITS, &aes_key);
+    auto ret = AES_set_decrypt_key(key, AES_Key_BITS, &aes_key);
     if (ret != 0)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key error:{}", ret);
@@ -173,7 +179,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
 
     auto cipher = aesGcmCipher(keyBytes);
 
-    OpenSslEvpCipherCtx evpCipherCtx;
+    EvpCipherCtx evpCipherCtx;
     if (evpCipherCtx.raw == nullptr) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
@@ -181,21 +187,21 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     }
 
     auto ret = EVP_EncryptInit_ex(evpCipherCtx.raw, cipher, nullptr, nullptr, nullptr);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher error:{}", ret);
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:{}", ret);
         return {};
     }
 
     ret = EVP_EncryptInit_ex(evpCipherCtx.raw, nullptr, nullptr, key, initVector);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector error:{}", ret);
         return {};
@@ -206,7 +212,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     if (aad != nullptr && aadLen > 0)
     {
         ret = EVP_EncryptUpdate(evpCipherCtx.raw, nullptr, &len, aad, static_cast<int>(aadLen));
-        if (ret != OpenSSL_OK)
+        if (ret != OK)
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate aad error:{}", ret);
             return {};
@@ -214,21 +220,21 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     }
 
     ret = EVP_EncryptUpdate(evpCipherCtx.raw, out, &len, in, static_cast<int>(inLen));
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate error:{}", ret);
         return {};
     }
 
     ret = EVP_EncryptFinal_ex(evpCipherCtx.raw, out, &len);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptFinal_ex error:{}", ret);
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:{}", ret);
         return {};
@@ -257,7 +263,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
 
     auto cipher = aesGcmCipher(keyBytes);
 
-    OpenSslEvpCipherCtx evpCipherCtx;
+    EvpCipherCtx evpCipherCtx;
     if (evpCipherCtx.raw == nullptr) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
@@ -265,21 +271,21 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     }
 
     auto ret = EVP_DecryptInit_ex(evpCipherCtx.raw, cipher, nullptr, nullptr, nullptr);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher error:{}", ret);
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmdDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:{}", ret);
         return {};
     }
 
     ret = EVP_DecryptInit_ex(evpCipherCtx.raw, nullptr, nullptr, key, initVector);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector error:{}", ret);
         return {};
@@ -290,7 +296,7 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     if (aad != nullptr && aadLen > 0)
     {
         ret = EVP_DecryptUpdate(evpCipherCtx.raw, nullptr, &len, aad, static_cast<int>(aadLen));
-        if (ret != OpenSSL_OK)
+        if (ret != OK)
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate aad error:{}", ret);
             return {};
@@ -298,21 +304,21 @@ Bytes NGenXX::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyByte
     }
 
     ret = EVP_DecryptUpdate(evpCipherCtx.raw, out, &len, in, static_cast<int>(inLen));
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate error:{}", ret);
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG error:{}", ret);
         return {};
     }
 
     ret = EVP_DecryptFinal_ex(evpCipherCtx.raw, out, &len);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptFinal_ex error:{}", ret);
         return {};
@@ -338,21 +344,21 @@ Bytes NGenXX::Crypto::Hash::md5(const Bytes &inBytes)
     MD5_CTX md5;
 
     auto ret = MD5_Init(&md5);
-    if (ret != OpenSSL_OK) [[unlikely]]
+    if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Init error:{}", ret);
         return {};
     }
 
     ret = MD5_Update(&md5, in, inLen);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Update error:{}", ret);
         return {};
     }
 
     ret = MD5_Final(out, &md5);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Final error:{}", ret);
         return {};
@@ -379,21 +385,21 @@ Bytes NGenXX::Crypto::Hash::sha1(const Bytes &inBytes)
     auto md = EVP_sha1();
 
     auto ret = EVP_DigestInit_ex(ctx, md, nullptr);
-    if (ret != OpenSSL_OK) [[unlikely]]
+    if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestInit_ex error:{}", ret);
         return {};
     }
 
     ret = EVP_DigestUpdate(ctx, in, inLen);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestUpdate error:{}", ret);
         return {};
     }
 
     ret = EVP_DigestFinal_ex(ctx, out, &outLen);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestFinal_ex error:{}", ret);
         return {};
@@ -420,21 +426,21 @@ Bytes NGenXX::Crypto::Hash::sha256(const Bytes &inBytes)
     SHA256_CTX sha256;
 
     auto ret = SHA256_Init(&sha256);
-    if (ret != OpenSSL_OK) [[unlikely]]
+    if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Init error:{}", ret);
         return {};
     }
 
     ret = SHA256_Update(&sha256, in, inLen);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Update error:{}", ret);
         return {};
     }
 
     ret = SHA256_Final(out, &sha256);
-    if (ret != OpenSSL_OK)
+    if (ret != OK)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Final error:{}", ret);
         return {};

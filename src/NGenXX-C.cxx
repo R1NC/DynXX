@@ -11,13 +11,16 @@
 #include "util/TypeUtil.hxx"
 #endif
 
-byte *handleBytes(const Bytes &bytes, size_t *outLen)
+namespace
 {
-    if (outLen)
+    byte *handleBytes(const Bytes &bytes, size_t *outLen)
     {
-        *outLen = bytes.size();
+        if (outLen) [[likely]]
+        {
+            *outLen = bytes.size();
+        }
+        return copyBytes(bytes);
     }
-    return copyBytes(bytes);
 }
 
 EXPORT_AUTO

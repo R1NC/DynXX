@@ -18,19 +18,22 @@
 #include <NGenXXDeviceInfo.h>
 #include <NGenXXTypes.hxx>
 
-#if defined(ARCH_CPU_X86_64)
-// https://developer.apple.com/documentation/apple_silicon/about_the_rosetta_translation_environment#3616845
-bool ProcessIsTranslated() 
+namespace
 {
-  int ret = 0;
-  size_t size = sizeof(ret);
-  if (sysctlbyname("sysctl.proc_translated", &ret, &size, nullptr, 0) == -1) 
-  {
-    return false;
-  }
-  return ret;
-}
+    #if defined(ARCH_CPU_X86_64)
+    // https://developer.apple.com/documentation/apple_silicon/about_the_rosetta_translation_environment#3616845
+    bool ProcessIsTranslated() 
+    {
+        int ret = 0;
+        size_t size = sizeof(ret);
+        if (sysctlbyname("sysctl.proc_translated", &ret, &size, nullptr, 0) == -1) 
+        {
+            return false;
+        }
+        return ret;
+    }
 #endif
+}
 
 int NGenXX::Device::DeviceInfo::deviceType()
 {
