@@ -1,4 +1,4 @@
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(__EMSCRIPTEN__)
 
 #include "NetUtil.hxx"
 
@@ -11,7 +11,7 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <ifaddrs.h>
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || defined(__OHOS__) || defined(__linux__)
 #include <linux/if_packet.h>
 #else
 #include <net/if_dl.h>
@@ -43,7 +43,7 @@ std::string NGenXX::Net::Util::macAddress()
     {
         if (!ifa->ifa_addr) continue;
 
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || defined(__OHOS__) || defined(__linux__)
         if (ifa->ifa_addr->sa_family == AF_PACKET) 
         {
             struct sockaddr_ll *s = (struct sockaddr_ll*)ifa->ifa_addr;
@@ -90,8 +90,10 @@ NGenXX::Net::Util::NetType NGenXX::Net::Util::netType()
         if (family == AF_INET || family == AF_INET6) 
         {
             if (
-            #if defined(__ANDROID__)
+            #if defined(__ANDROID__) || defined(__OHOS__)
                 checkIfaName(ifa, "eth")
+            #elif defined(__linux__)
+                checkIfaName(ifa, "eth") || checkIfaName(ifa, "enp")
             #else
                 checkIfaName(ifa, "en")
             #endif
@@ -102,6 +104,10 @@ NGenXX::Net::Util::NetType NGenXX::Net::Util::netType()
             else if (
             #if defined(__ANDROID__)
                 checkIfaName(ifa, "wlan") || checkIfaName(ifa, "p2p")
+            #elif defined(__OHOS__)
+                checkIfaName(ifa, "wlan")
+            #elif defined(__linux__)
+                checkIfaName(ifa, "wlan") || checkIfaName(ifa, "wifi") || checkIfaName(ifa, "wlp")
             #else
                 checkIfaName(ifa, "awdl") || checkIfaName(ifa, "llw")
             #endif
@@ -112,6 +118,10 @@ NGenXX::Net::Util::NetType NGenXX::Net::Util::netType()
             else if (
             #if defined(__ANDROID__)
                 checkIfaName(ifa, "rmnet") || checkIfaName(ifa, "wwan")
+            #elif defined(__OHOS__)
+                checkIfaName(ifa, "rmnet")
+            #elif defined(__linux__)
+                checkIfaName(ifa, "ppp") || checkIfaName(ifa, "wwan")
             #else
                 checkIfaName(ifa, "pdp_ip") || checkIfaName(ifa, "pdp")
             #endif
