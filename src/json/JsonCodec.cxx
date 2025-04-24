@@ -4,6 +4,22 @@
 
 #include <NGenXXLog.hxx>
 
+std::string NGenXX::Json::cJSON2Str(void *const cjson)
+{
+    if (!cjson) [[unlikely]]
+    {
+        return {};
+    }
+    auto jsonChars = cJSON_PrintUnformatted(reinterpret_cast<cJSON *>(cjson));
+    if (!jsonChars) [[unlikely]]
+    {
+        return {};
+    }
+    std::string json(jsonChars);
+    std::free(jsonChars);
+    return json;
+}
+
 std::string NGenXX::Json::jsonFromDictAny(const DictAny &dict)
 {
     auto cjson = cJSON_CreateObject();
@@ -27,7 +43,7 @@ std::string NGenXX::Json::jsonFromDictAny(const DictAny &dict)
             cJSON_AddItemToObject(cjson, k.c_str(), node);
         }
     }
-    std::string json = cJSON_PrintUnformatted(cjson);
+    auto json = cJSON2Str(cjson);
     cJSON_Delete(cjson);
     return json;
 }
@@ -56,7 +72,7 @@ DictAny NGenXX::Json::jsonToDictAny(const std::string &json)
             }
             else
             {
-                dict.emplace(k, cJSON_PrintUnformatted(node));
+                dict.emplace(k, cJSON2Str(node));
             }
         }
     }

@@ -16,6 +16,8 @@ namespace NGenXX
     {
         std::string jsonFromDictAny(const DictAny &dict);
         DictAny jsonToDictAny(const std::string &json);
+
+        std::string cJSON2Str(void *const cjson);
         
         class Decoder
         {

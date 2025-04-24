@@ -6,6 +6,8 @@
 
 #include "NGenXXTypes.hxx"
 
+std::string ngenxxJsonCJSON2Str(void *const cjson);
+
 std::string ngenxxJsonFromDictAny(const DictAny &dict);
 DictAny ngenxxJsonToDictAny(const std::string &json);
 

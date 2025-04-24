@@ -302,7 +302,9 @@ std::string NGenXXHttpResponse::toJson() const
     cJSON_AddItemToObject(cj, "headers", cjHeaders);
 
     cJSON_AddItemToObject(cj, "data", cJSON_CreateString(this->data.c_str()));
-    return cJSON_PrintUnformatted(cj);
+    auto json = ngenxxJsonCJSON2Str(cj);
+    cJSON_Delete(cj);
+    return json;
 }
 
 NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
@@ -584,6 +586,11 @@ void ngenxxStoreKvClose(void *const conn)
 }
 
 #pragma mark Json
+
+std::string ngenxxJsonCJSON2Str(void *const cjson)
+{
+    return NGenXX::Json::cJSON2Str(cjson);
+}
 
 std::string ngenxxJsonFromDictAny(const DictAny &dict)
 {

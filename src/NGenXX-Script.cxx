@@ -32,7 +32,9 @@ namespace
         });
 #endif
         auto cj = cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));
-        return cJSON_PrintUnformatted(cj);
+        auto json = ngenxxJsonCJSON2Str(cj);
+        cJSON_Delete(cj);
+        return json;
     }
 
     std::string strArray2json(const std::vector<std::string> &v)
@@ -42,7 +44,9 @@ namespace
         {
             cJSON_AddItemToArray(cj, cJSON_CreateString(it.c_str()));
         }
-        return cJSON_PrintUnformatted(cj);
+        auto json = ngenxxJsonCJSON2Str(cj);
+        cJSON_Delete(cj);
+        return json;
     }
 
     double parseNum(const NGenXX::Json::Decoder &decoder, const char *k)
