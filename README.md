@@ -62,6 +62,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 ## Dependencies
 
 - [ada-url][3]: URL parser;(Requires `std::ranges` in C++20)
+- [android-ifaddrs][16]: The missing `ifaddrs` for Android;
 - [curl][4]: Networking;
 - [cJSON][5]: JSON codec;
 - [libuv][6]: Asynchronous I/O;
@@ -70,7 +71,8 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 - [openssl][9]: Crypto;
 - [quickjs][10]: JS runtime;
 - [spdlog][15]: File logging;
-- [sqlite][11]: DB storage.
+- [sqlite][11]: DB storage;
+- [zlib][17]: Compression.
 
 [1]: https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install
 [2]: https://github.com/emscripten-core/emscripten/issues/16567
@@ -87,3 +89,5 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [13]: https://en.cppreference.com/w/cpp/ranges
 [14]: https://en.cppreference.com/w/cpp/ranges/chunk_view
 [15]: https://github.com/gabime/spdlog
+[16]: https://github.com/morristech/android-ifaddrs
+[17]: https://github.com/madler/zlib
