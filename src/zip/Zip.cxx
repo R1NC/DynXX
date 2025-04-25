@@ -81,7 +81,7 @@ Bytes NGenXX::Z::ZBase<T>::processDo()
     static_cast<T *>(this)->processImp();
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
 
-    if (this->ret != Z_OK && ret != Z_STREAM_END)
+    if (this->ret != Z_OK && ret != Z_STREAM_END) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "z process error:{}", this->ret);
         return {};
@@ -167,7 +167,7 @@ bool _ngenxx_z_process(size_t bufferSize,
         auto in = std::move(sReadF)();
         inputFinished = in.size() < bufferSize;
         auto ret = zb.input(in, inputFinished);
-        if (ret == 0L)
+        if (ret == 0L) [[unlikely]]
         {
             return false;
         }
@@ -176,7 +176,7 @@ bool _ngenxx_z_process(size_t bufferSize,
         do
         {
             auto outData = zb.processDo();
-            if (outData.empty())
+            if (outData.empty()) [[unlikely]]
             {
                 return false;
             }

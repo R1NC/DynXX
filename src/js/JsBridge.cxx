@@ -76,7 +76,7 @@ namespace
         return jPromise;
     }
 
-    void _JSPromise_callback(JSContext *ctx, JSPromise *jPromise, JSValue jRet)
+    void callback_JSPromise(JSContext *ctx, JSPromise *jPromise, JSValue jRet)
     {
         auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
         if (JS_IsException(jCallRet)) [[unlikely]]
@@ -213,7 +213,7 @@ namespace
 
         if (isModule)
         {
-            if (JS_VALUE_GET_TAG(jEvalRet) != JS_TAG_MODULE)
+            if (JS_VALUE_GET_TAG(jEvalRet) != JS_TAG_MODULE) [[unlikely]]
             { // Check whether it's a JS Module or not，or QJS may crash
                 ngenxxLogPrint(NGenXXLogLevelX::Error, "JS try to load invalid module");
                 JS_FreeValue(ctx, jEvalRet);
@@ -473,7 +473,7 @@ JSValue NGenXX::JsBridge::newPromise(std::function<JSValue()> &&jf)
 
         auto jRet = jf();
 
-        _JSPromise_callback(ctx, jPromise, jRet);
+        callback_JSPromise(ctx, jPromise, jRet);
     }).detach();
 
     return jPromise->p;
