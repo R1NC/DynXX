@@ -65,6 +65,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 - [android-ifaddrs][16]: The missing `ifaddrs` for Android;
 - [curl][4]: Networking;
 - [cJSON][5]: JSON codec;
+- [iOS-cmake][18]: CMake toolchain for Apple platforms;
 - [libuv][6]: Asynchronous I/O;
 - [lua][7]: Lua runtime;
 - [MMKV][8]: Key-value storage;
@@ -91,3 +92,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [15]: https://github.com/gabime/spdlog
 [16]: https://github.com/morristech/android-ifaddrs
 [17]: https://github.com/madler/zlib
+[18]: https://github.com/leetal/ios-cmake
