@@ -69,6 +69,7 @@ ${COMMAND} openssl.output/ssl/${LIB_DIR}libssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR
 ${COMMAND} openssl.output/crypto/${LIB_DIR}libcrypto.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/crypto.a
 ${COMMAND} lua.output/${LIB_DIR}liblua.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/lua.a
 ${COMMAND} quickjs.output/${LIB_DIR}libqjs.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/qjs.a
+${COMMAND} spdlog.output/${LIB_DIR}libspdlog.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/spdlog.a
 ${COMMAND} libuv.output/${LIB_DIR}libuv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/uv.a
 ${COMMAND} cjson.output/${LIB_DIR}libcjson.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/cjson.a
 ${COMMAND} mmkv.output/Core/${LIB_DIR}/libmmkvcore.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkvcore.a

@@ -3,26 +3,101 @@
 #include <cstring>
 
 #include <mutex>
+#include <iostream>
 
 #if defined(__ANDROID__)
 #include <android/log.h>
 #elif defined(__OHOS__)
 #include <hilog/log.h>
-#else
-#include <iostream>
+#endif
+
+#if defined(USE_SPDLOG)
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/daily_file_sink.h>
 #endif
 
 #include <NGenXXLog.h>
 #include <NGenXXTypes.hxx>
+#if defined(USE_SPDLOG)
+#include <NGenXX.hxx>
+#endif
 
 #if defined(__APPLE__)
 void _ngenxx_log_apple(const char*);
 #endif
 
-static std::function<void(int level, const char *content)> _NGenXX_Log_callback = nullptr;
-static std::unique_ptr<std::mutex> _ngenxx_log_mutex = nullptr;
+namespace
+{
+    int _level = NGenXXLogLevelNone;
+    static std::function<void(int level, const char *content)> _callback = nullptr;
+    static std::unique_ptr<std::mutex> _mutex = nullptr;
 
-static int _NGenXX_Log_level = NGenXXLogLevelNone;
+#if defined(USE_SPDLOG)
+    void spdlogPrepare() 
+    {
+        static bool isInited = false;
+        if (isInited) 
+        {
+            return;
+        }
+        try 
+        {   
+            auto logger = spdlog::daily_logger_mt(
+                "ngenxx_spdlog",
+                ngenxxRootPath() + "/log.txt",
+                0,
+                0 
+            );
+            spdlog::set_default_logger(logger);
+            spdlog::set_pattern("[%Y-%m-%d_%H:%M:%S.%e] [%l] [%t] %v");
+            switch(_level)
+            {
+                case NGenXXLogLevelDebug:
+                    spdlog::set_level(spdlog::level::debug);
+                    break;
+                case NGenXXLogLevelInfo:
+                    spdlog::set_level(spdlog::level::info);
+                    break;
+                case NGenXXLogLevelWarn:
+                    spdlog::set_level(spdlog::level::warn);
+                    break;
+                case NGenXXLogLevelError:
+                    spdlog::set_level(spdlog::level::err);
+                    break;
+                default:
+                    spdlog::set_level(spdlog::level::off);
+            }
+            spdlog::flush_on(spdlog::level::debug);
+        }
+        catch (const spdlog::spdlog_ex& ex) 
+        {
+            std::cerr << "SpdLog init failed: " << ex.what() << std::endl;
+        }
+        isInited = true;
+    }
+
+    void spdlogPrint(const int level, const std::string &content)
+    {
+        spdlogPrepare();
+        if (level == NGenXXLogLevelDebug)
+        {
+            spdlog::debug(content);
+        }
+        else if (level == NGenXXLogLevelInfo)
+        {
+            spdlog::info(content);
+        }
+        else if (level == NGenXXLogLevelWarn)
+        {
+            spdlog::warn(content);
+        }
+        else if (level == NGenXXLogLevelError)
+        {
+            spdlog::error(content);
+        }
+    }
+#endif
+}
 
 void NGenXX::Log::setLevel(int level)
 {
@@ -30,38 +105,41 @@ void NGenXX::Log::setLevel(int level)
     {
         return;
     }
-    _NGenXX_Log_level = level;
+    _level = level;
+#if defined(USE_SPDLOG)
+    spdlogPrepare();
+#endif
 }
 
 void NGenXX::Log::setCallback(const std::function<void(int level, const char *content)> &callback)
 {
-    _NGenXX_Log_callback = callback;
+    _callback = callback;
     if (callback == nullptr)
     {
-        _ngenxx_log_mutex.reset();
+        _mutex.reset();
     }
 }
 
 void NGenXX::Log::print(int level, const std::string &content)
 {
-    if (level < _NGenXX_Log_level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone) [[unlikely]]
+    if (!_mutex)
+    {
+        _mutex = std::make_unique<std::mutex>();
+    }
+    auto lock = std::lock_guard(*_mutex.get());
+
+    if (level < _level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone) [[unlikely]]
     {
         return;
     }
 
-    if (!_ngenxx_log_mutex)
-    {
-        _ngenxx_log_mutex = std::make_unique<std::mutex>();
-    }
-    auto lock = std::lock_guard(*_ngenxx_log_mutex.get());
-
     auto cContent = content.c_str();
-    if (_NGenXX_Log_callback)
+    if (_callback)
     {
         auto len = std::strlen(cContent);
         auto c = mallocX<char>(len);
         std::strncpy(c, content.c_str(), len);
-        _NGenXX_Log_callback(level, c);
+        _callback(level, c);
     }
     else
     {
@@ -76,4 +154,7 @@ void NGenXX::Log::print(int level, const std::string &content)
         std::cout << tag << "_" << level << " -> " << cContent << std::endl;
 #endif
     }
+#if defined(USE_SPDLOG)
+    spdlogPrint(level, content);
+#endif
 }

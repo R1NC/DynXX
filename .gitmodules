@@ -34,3 +34,6 @@
 [submodule "external/android-ifaddrs"]
 	path = external/android-ifaddrs
 	url = git@github.com:R1NC/android-ifaddrs.git
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = git@github.com:R1NC/spdlog.git

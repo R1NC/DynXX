@@ -28,6 +28,11 @@ if(USE_QJS)
     add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
 endif()
 
+option(USE_SPDLOG "Use SpdLog" ON)
+if(USE_SPDLOG)
+    add_definitions(-DUSE_SPDLOG)
+endif()
+
 # HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't support `std::format` & `std::ranges` in C++20;
 if(OHOS OR(APPLE AND((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
     option(USE_STD_FORMAT "Use std::format" OFF)
@@ -97,6 +102,12 @@ if(USE_QJS)
     list(APPEND INC_DIRS ${QJS_ROOT})
 endif()
 
+if(USE_SPDLOG)
+    set(SPDLOG_ROOT external/spdlog)
+    add_subdirectory(${SPDLOG_ROOT} sodlog.output)
+    list(APPEND INC_DIRS ${SPDLOG_ROOT}/include)
+endif()
+
 # The buillt-in sqlite in iOS/macOS is available，no need to compile；
 # For Android, it's only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
 if(NOT APPLE)
@@ -147,6 +158,10 @@ endif()
 
 if(USE_QJS)
     list(APPEND LINK_LIBS quickjs)
+endif()
+
+if(USE_SPDLOG)
+    list(APPEND LINK_LIBS spdlog::spdlog)
 endif()
 
 if(APPLE)

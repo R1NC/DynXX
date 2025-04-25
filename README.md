@@ -69,6 +69,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 - [MMKV][8]: Key-value storage;
 - [openssl][9]: Crypto;
 - [quickjs][10]: JS runtime;
+- [spdlog][15]: File logging;
 - [sqlite][11]: DB storage.
 
 [1]: https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install
@@ -85,3 +86,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [12]: https://en.cppreference.com/w/cpp/utility/format/format
 [13]: https://en.cppreference.com/w/cpp/ranges
 [14]: https://en.cppreference.com/w/cpp/ranges/chunk_view
+[15]: https://github.com/gabime/spdlog

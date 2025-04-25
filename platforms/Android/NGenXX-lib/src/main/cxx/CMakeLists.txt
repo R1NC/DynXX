@@ -34,6 +34,11 @@ set(libquickjsPath ${libDir}/libqjs.a)
 add_library(libquickjs STATIC IMPORTED)
 set_property(TARGET libquickjs PROPERTY IMPORTED_LOCATION ${libquickjsPath})
 
+#Find libspdlog
+set(libspdlogPath ${libDir}/libspdlog.a)
+add_library(libspdlog STATIC IMPORTED)
+set_property(TARGET libspdlog PROPERTY IMPORTED_LOCATION ${libspdlogPath})
+
 #Find libuv
 set(libuvPath ${libDir}/libuv.a)
 add_library(libuv STATIC IMPORTED)
@@ -75,6 +80,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         libcurl
         liblua
         libquickjs
+        libspdlog
         libuv
         libcjson
         libsqlite

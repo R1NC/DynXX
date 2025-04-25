@@ -46,6 +46,11 @@ set(quickjsPath ${libDir}/libqjs.a)
 add_library(libquickjs STATIC IMPORTED)
 set_property(TARGET libquickjs PROPERTY IMPORTED_LOCATION ${quickjsPath})
 
+#Find spdlog
+set(spdlogPath ${libDir}/libspdlog.a)
+add_library(libspdlog STATIC IMPORTED)
+set_property(TARGET libspdlog PROPERTY IMPORTED_LOCATION ${spdlogPath})
+
 #Find cjson
 set(cjsonPath ${libDir}/libcjson.a)
 add_library(libcjson STATIC IMPORTED)
@@ -84,6 +89,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     libquickjs
     libcjson
     libsqlite
+    libspdlog
     #libadaurl
     libmmkvcore
     libmmkv
