@@ -4,8 +4,15 @@
 #if defined(__cplusplus)
 
 #include <atomic>
+#include <new>
 
-class SpinLock {
+#if defined(__cpp_lib_hardware_interference_size)
+    static constexpr size_t CacheLineSize = std::hardware_destructive_interference_size;
+#else
+    static constexpr size_t CacheLineSize = 64;
+#endif
+
+class alignas(CacheLineSize) SpinLock {
 private:
     std::atomic<bool> lockFlag = {false};
 
