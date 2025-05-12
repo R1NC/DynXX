@@ -164,11 +164,11 @@ std::string NGenXX::Json::Decoder::readString(const void *const node) const
     }
     if (cJSON_IsBool(cj))
     {
-        s = cj->valueint ? "true" : "false";
+        return cj->valueint ? "true" : "false";
     }
     else if (cJSON_IsNumber(cj))
     {
-        s = std::to_string(cj->valuedouble);
+        return std::to_string(cj->valuedouble);
     }
     else if (cJSON_IsString(cj) && cj->valuestring)
     {
@@ -176,7 +176,7 @@ std::string NGenXX::Json::Decoder::readString(const void *const node) const
     }
     else if (!cJSON_IsNull(cj))
     {
-        s = cJSON_PrintUnformatted(cj);
+        return cJSON_PrintUnformatted(cj);
     }
     return s;
 }
