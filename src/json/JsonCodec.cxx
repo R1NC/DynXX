@@ -36,7 +36,24 @@ std::string NGenXX::Json::jsonFromDictAny(const DictAny &dict)
         } 
         else if (std::holds_alternative<std::string>(v)) 
         {
-            node = cJSON_CreateString(std::get<std::string>(v).c_str());
+            auto s = std::get<std::string>(v);
+            if ((s.starts_with("[") && s.ends_with("]"))
+                || (s.starts_with("{") && s.ends_with("}")))
+            {
+                auto cjsonNodes = cJSON_Parse(s.c_str());
+                if (cjsonNodes)
+                {
+                    node = cjsonNodes;
+                }
+                else [[unlikely]]
+                {
+                    ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON VALUE: {}", s);
+                }
+            }
+            else
+            {
+                node = cJSON_CreateString(s.c_str());
+            }
         }
         if (node) [[likely]]
         {
