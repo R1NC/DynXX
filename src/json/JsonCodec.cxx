@@ -158,9 +158,25 @@ std::string NGenXX::Json::Decoder::readString(const void *const node) const
 {
     std::string s;
     auto cj = this->reinterpretNode(node);
-    if (cj != nullptr && cJSON_IsString(cj) && cj->valuestring) [[likely]]
+    if (cj == NULL) [[unlikely]]
+    {
+        return s;
+    }
+    if (cJSON_IsBool(cj))
+    {
+        s = cj->valueint ? "true" : "false";
+    }
+    else if (cJSON_IsNumber(cj))
+    {
+        s = std::to_string(cj->valuedouble);
+    }
+    else if (cJSON_IsString(cj) && cj->valuestring)
     {
         return cj->valuestring;
+    }
+    else if (!cJSON_IsNull(cj))
+    {
+        s = cJSON_PrintUnformatted(cj);
     }
     return s;
 }
