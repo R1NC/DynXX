@@ -171,11 +171,10 @@ void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string 
 
 std::string NGenXX::Json::Decoder::readString(const void *const node) const
 {
-    std::string s;
     const auto cj = this->reinterpretNode(node);
     if (cj == nullptr) [[unlikely]]
     {
-        return s;
+        return {};
     }
     if (cJSON_IsBool(cj))
     {
@@ -193,7 +192,7 @@ std::string NGenXX::Json::Decoder::readString(const void *const node) const
     {
         return cJSON_PrintUnformatted(cj);
     }
-    return s;
+    return {};
 }
 
 double NGenXX::Json::Decoder::readNumber(const void *const node) const

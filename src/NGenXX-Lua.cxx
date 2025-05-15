@@ -11,11 +11,11 @@
 namespace {
     std::unique_ptr<NGenXX::LuaBridge> bridge = nullptr;
 
-    #define DEF_API(f, T) DEF_LUA_FUNC_##T##(##f##L, ##f##S)
+    #define DEF_API(f, T) DEF_LUA_FUNC_##T(f##L, f##S)
 
-    #define BIND_API(f)                                                        \
-        if (bridge) [[likely]] {                                               \
-            bridge->bindFunc(###f##, ##f##L);                                  \
+    #define BIND_API(f)                                                  \
+        if (bridge) [[likely]] {                                         \
+            bridge->bindFunc(#f, f##L);                                  \
         }
 
     bool loadF(const std::string &f)

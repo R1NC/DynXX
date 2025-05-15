@@ -634,10 +634,9 @@ void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void 
 
 std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node)
 {
-    std::string s;
     if (decoder == nullptr)
     {
-        return s;
+        return {};
     }
     const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readString(node);

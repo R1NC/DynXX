@@ -16,15 +16,15 @@ namespace {
     std::unique_ptr<NGenXX::JsBridge> bridge = nullptr;
     std::function<const char *(const char *msg)> msgCbk = nullptr;
 
-    #define DEF_API(f, T) DEF_JS_FUNC_##T##(##f##J, ##f##S)
-    #define DEF_API_ASYNC(f, T) DEF_JS_FUNC_##T##_ASYNC(bridge, ##f##J, ##f##S)
+    #define DEF_API(f, T) DEF_JS_FUNC_##T(f##J, f##S)
+    #define DEF_API_ASYNC(f, T) DEF_JS_FUNC_##T##_ASYNC(bridge, f##J, f##S)
 
-    #define BIND_API(f)                                                        \
-        if (bridge) [[likely]] {                                               \
-            bridge->bindFunc(###f##, ##f##J);                                  \
+    #define BIND_API(f)                                                    \
+        if (bridge) [[likely]] {                                           \
+            bridge->bindFunc(#f, f##J);                                    \
         }
 
-    bool loadF(const std::string &file, bool isModule)
+    bool loadF(const std::string &file, const bool isModule)
     {
         if (!bridge || file.empty()) [[unlikely]]
         {
@@ -33,7 +33,7 @@ namespace {
         return bridge->loadFile(file, isModule);
     }
 
-    bool loadS(const std::string &script, const std::string &name, bool isModule)
+    bool loadS(const std::string &script, const std::string &name, const bool isModule)
     {
         if (!bridge || script.empty() || name.empty()) [[unlikely]]
         {
@@ -42,7 +42,7 @@ namespace {
         return bridge->loadScript(script, name, isModule);
     }
 
-    bool loadB(const Bytes &bytes, bool isModule)
+    bool loadB(const Bytes &bytes, const bool isModule)
     {
         if (!bridge || bytes.empty()) [[unlikely]]
         {
@@ -51,7 +51,7 @@ namespace {
         return bridge->loadBinary(bytes, isModule);
     }
 
-    std::string call(const std::string &func, const std::string &params, bool await)
+    std::string call(const std::string &func, const std::string &params, const bool await)
     {
         if (!bridge || func.empty()) [[unlikely]]
         {
@@ -67,16 +67,19 @@ namespace {
 
     std::string ngenxx_ask_platformS(const char *msg)
     {
-        std::string s;
         if (msg == nullptr || msgCbk == nullptr)
         {
-            return s;
+            return {};
         }
         const auto len = std::strlen(msg);
         const auto cMsg = mallocX<char>(len);
         std::strncpy(cMsg, msg, len);
         const auto res = msgCbk(cMsg);
-        return res ? std::string(res): s;
+        if (res == nullptr) [[unlikely]]
+        {
+            return {};
+        }
+        return {res};
     }
 }
 
