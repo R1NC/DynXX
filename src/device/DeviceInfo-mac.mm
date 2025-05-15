@@ -35,24 +35,24 @@ namespace
 #endif
 }
 
-int NGenXX::Device::DeviceInfo::deviceType()
+int NGenXX::DeviceInfo::deviceType()
 {
     return NGenXXDeviceTypeAppleMac;
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceName()
+std::string NGenXX::DeviceInfo::deviceName()
 {
-    struct utsname systemInfo;
+    struct utsname systemInfo{};
     uname(&systemInfo);
     return wrapStr(systemInfo.machine);
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
+std::string NGenXX::DeviceInfo::deviceManufacturer()
 {
     return "Apple";
 }
 
-std::string NGenXX::Device::DeviceInfo::osVersion()
+std::string NGenXX::DeviceInfo::osVersion()
 {
     NSOperatingSystemVersion version = NSProcessInfo.processInfo.operatingSystemVersion;
     int major = static_cast<int32_t>(version.majorVersion);
@@ -63,7 +63,7 @@ std::string NGenXX::Device::DeviceInfo::osVersion()
     return ss.str();
 }
 
-int NGenXX::Device::DeviceInfo::cpuArch()
+int NGenXX::DeviceInfo::cpuArch()
 {
 #if defined(ARCH_CPU_X86_64)
     if (!ProcessIsTranslated())

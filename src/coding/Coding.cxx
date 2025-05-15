@@ -14,7 +14,11 @@ std::string NGenXX::Coding::Case::upper(const std::string_view &str)
 {
     std::string s(str);
     s.reserve(str.size());
-    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+#if defined(USE_STD_RANGES)
+    std::ranges::transform(s, s.begin(), toupper);
+#else
+    std::transform(s.begin(), s.end(), s.begin(), toupper);
+#endif
     return s;
 }
 
@@ -22,7 +26,11 @@ std::string NGenXX::Coding::Case::lower(const std::string_view &str)
 {
     std::string s(str);
     s.reserve(str.size());
-    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+#if defined(USE_STD_RANGES)
+    std::ranges::transform(s, s.begin(), tolower);
+#else
+    std::transform(s.begin(), s.end(), s.begin(), tolower);
+#endif
     return s;
 }
 
@@ -34,9 +42,8 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
     }
     std::string str;
     str.resize(bytes.size() * 2);
-    auto transF = [](byte b, char *buf) {
-        auto [ptr, errCode] = std::to_chars(buf, buf + 2, static_cast<int>(b), 16);
-        if (errCode != std::errc()) [[unlikely]] 
+    auto transF = [](const byte b, char *buf) {
+        if (auto [ptr, errCode] = std::to_chars(buf, buf + 2, static_cast<int>(b), 16); errCode != std::errc()) [[unlikely]]
         {
             buf[0] = '0';
             buf[1] = '0';
@@ -86,8 +93,7 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
       
     auto transF = [](const std::string &s) { 
         auto hex = 0;
-        auto [_, errCode] = std::from_chars(s.data(), s.data() + s.size(), hex, 16);
-        if (errCode != std::errc()) [[unlikely]]
+        if (auto [_, errCode] = std::from_chars(s.data(), s.data() + s.size(), hex, 16); errCode != std::errc()) [[unlikely]]
         {
             return static_cast<byte>(0);
         }
@@ -112,12 +118,12 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
 
 std::string NGenXX::Coding::bytes2str(const Bytes &bytes)
 {
-    return std::string(bytes.begin(), bytes.end());
+    return {bytes.begin(), bytes.end()};
 }
 
 Bytes NGenXX::Coding::str2bytes(const std::string_view &str)
 {
-    return Bytes(str.begin(), str.end());
+    return {str.begin(), str.end()};
 }
 
 std::string NGenXX::Coding::strTrim(const std::string_view &str) 

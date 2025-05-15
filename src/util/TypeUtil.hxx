@@ -6,19 +6,19 @@
 
 #include <NGenXXTypes.hxx>
 
-static inline char *copyStr(const std::string &s)
+inline char *copyStr(const std::string &s)
 {
     const char *c = s.c_str();
-    auto len = std::strlen(c);
-    auto nc = mallocX<char>(len);
+    const auto len = std::strlen(c);
+    const auto nc = mallocX<char>(len);
     std::strncpy(nc, c, len);
     return nc;
 }
 
-static inline char **copyStrVector(const std::vector<std::string> &sv, size_t strMaxLen)
+inline char **copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen)
 {
     auto size = sv.size();
-    auto sArr = mallocX<char *>(size);
+    const auto sArr = mallocX<char *>(size);
     for (decltype(size) i = 0; i < size; i++)
     {
         sArr[i] = mallocX<char>(strMaxLen);
@@ -27,15 +27,15 @@ static inline char **copyStrVector(const std::vector<std::string> &sv, size_t st
     return sArr;
 }
 
-static inline byte *copyBytes(const Bytes &t)
+inline byte *copyBytes(const Bytes &t)
 {
-    auto cs = t.data();
-    auto len = t.size();
+    const auto cs = t.data();
+    const auto len = t.size();
     if (cs == nullptr || len == 0) [[unlikely]]
     {
         return nullptr;
     }
-    auto ncs = mallocX<byte>(len);
+    const auto ncs = mallocX<byte>(len);
     std::memcpy(static_cast<void *>(ncs), cs, len);
     return ncs;
 }

@@ -3,9 +3,9 @@
 
 #if defined(__cplusplus)
 
-void _ngenxx_js_init(void);
+void _ngenxx_js_init();
 
-void _ngenxx_js_release(void);
+void _ngenxx_js_release();
 
 #endif
 

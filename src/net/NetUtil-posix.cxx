@@ -2,7 +2,7 @@
 
 #include "NetUtil.hxx"
 
-#include <string.h>
+#include <cstring>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -19,7 +19,7 @@
 
 namespace 
 {
-    bool checkIfaName(const struct ifaddrs *ifa, std::string_view name) 
+    bool checkIfaName(const ifaddrs *ifa, const std::string_view name)
     {
         if (!ifa || !ifa->ifa_name) [[unlikely]]
         {
@@ -31,7 +31,7 @@ namespace
 
 std::string NGenXX::Net::Util::macAddress()
 {
-    struct ifaddrs *ifaddr, *ifa;
+    ifaddrs *ifaddr;
     std::string macAddress;
     
     if (getifaddrs(&ifaddr) == -1) 
@@ -39,14 +39,14 @@ std::string NGenXX::Net::Util::macAddress()
         return {};
     }
 
-    for (ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) 
+    for (ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next)
     {
         if (!ifa->ifa_addr) continue;
 
 #if defined(__ANDROID__) || defined(__OHOS__) || defined(__linux__)
         if (ifa->ifa_addr->sa_family == AF_PACKET) 
         {
-            struct sockaddr_ll *s = (struct sockaddr_ll*)ifa->ifa_addr;
+            sockaddr_ll *s = reinterpret_cast<sockaddr_ll*>(ifa->ifa_addr);
             if (s->sll_halen == 6)
             {
                 macAddress = formatMacAddress(s->sll_addr);
@@ -55,10 +55,9 @@ std::string NGenXX::Net::Util::macAddress()
 #else
         if (ifa->ifa_addr->sa_family == AF_LINK) 
         {
-            struct sockaddr_dl* sdl = (struct sockaddr_dl*)ifa->ifa_addr;
-            if (sdl->sdl_alen == 6)
+            if (auto* sdl = reinterpret_cast<sockaddr_dl *>(ifa->ifa_addr); sdl->sdl_alen == 6)
             {
-                macAddress = formatMacAddress((unsigned char*)LLADDR(sdl));
+                macAddress = formatMacAddress(reinterpret_cast<unsigned char *>(LLADDR(sdl)));
             }
         }
 #endif
@@ -74,20 +73,19 @@ std::string NGenXX::Net::Util::macAddress()
 
 NGenXX::Net::Util::NetType NGenXX::Net::Util::netType() 
 {
-    struct ifaddrs *ifaddr, *ifa;
-    NetType result = NetType::Offline;
+    ifaddrs *ifaddr;
+    auto result = NetType::Offline;
     
     if (getifaddrs(&ifaddr) == -1) 
     {
         return NetType::Unknown;
     }
 
-    for (ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) 
+    for (ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next)
     {
         if (ifa->ifa_addr == nullptr) continue;
-        
-        int family = ifa->ifa_addr->sa_family;
-        if (family == AF_INET || family == AF_INET6) 
+
+        if (const int family = ifa->ifa_addr->sa_family; family == AF_INET || family == AF_INET6)
         {
             if (
             #if defined(__ANDROID__) || defined(__OHOS__)
@@ -138,27 +136,27 @@ NGenXX::Net::Util::NetType NGenXX::Net::Util::netType()
 
 std::string NGenXX::Net::Util::publicIpV4()
 {
-    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    const int sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock < 0) 
     {
         return {};
     }
 
-    struct sockaddr_in serv;
+    sockaddr_in serv{};
     serv.sin_family = AF_INET;
     serv.sin_port = htons(kDefaultDnsPort);
     
     inet_pton(AF_INET, kDefaultDnsIpV4, &serv.sin_addr);
 
-    if (connect(sock, (struct sockaddr*)&serv, sizeof(serv)) < 0) 
+    if (connect(sock, reinterpret_cast<sockaddr *>(&serv), sizeof(serv)) < 0)
     {
         close(sock);
         return {};
     }
 
-    struct sockaddr_in name;
+    sockaddr_in name{};
     socklen_t namelen = sizeof(name);
-    if (getsockname(sock, (struct sockaddr*)&name, &namelen) < 0) 
+    if (getsockname(sock, reinterpret_cast<sockaddr *>(&name), &namelen) < 0)
     {
         close(sock);
         return {};
@@ -168,33 +166,33 @@ std::string NGenXX::Net::Util::publicIpV4()
     inet_ntop(AF_INET, &name.sin_addr, ipStr, INET_ADDRSTRLEN);
     close(sock);
 
-    return std::string(ipStr);
+    return {ipStr};
 }
 
 std::string NGenXX::Net::Util::publicIpV6()
 {
-    int sock = socket(AF_INET6, SOCK_DGRAM, 0);
+    const int sock = socket(AF_INET6, SOCK_DGRAM, 0);
     if (sock < 0) 
     {
         return {};
     }
 
-    struct sockaddr_in6 serv;
+    sockaddr_in6 serv{};
     memset(&serv, 0, sizeof(serv));
     serv.sin6_family = AF_INET6;
     serv.sin6_port = htons(kDefaultDnsPort);
     
     inet_pton(AF_INET6, kDefaultDnsIpV6, &serv.sin6_addr);
 
-    if (connect(sock, (struct sockaddr*)&serv, sizeof(serv)) < 0) 
+    if (connect(sock, reinterpret_cast<sockaddr *>(&serv), sizeof(serv)) < 0)
     {
         close(sock);
         return {};
     }
 
-    struct sockaddr_in6 name;
+    sockaddr_in6 name{};
     socklen_t namelen = sizeof(name);
-    if (getsockname(sock, (struct sockaddr*)&name, &namelen) < 0) 
+    if (getsockname(sock, reinterpret_cast<sockaddr *>(&name), &namelen) < 0)
     {
         close(sock);
         return {};
@@ -204,7 +202,7 @@ std::string NGenXX::Net::Util::publicIpV6()
     inet_ntop(AF_INET6, &name.sin6_addr, ipStr, INET6_ADDRSTRLEN);
     close(sock);
 
-    return std::string(ipStr);
+    return {ipStr};
 }
 
 #endif

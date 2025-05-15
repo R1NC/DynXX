@@ -9,22 +9,22 @@
 using namespace std::chrono;
 
 template <typename clockT, typename durationT>
-static inline uint64_t castNow()
+uint64_t castNow()
 {
     return duration_cast<durationT>(clockT::now().time_since_epoch()).count();
 }
 
-static inline uint64_t nowInMicroSecs()
+inline uint64_t nowInMicroSecs()
 {
     return castNow<system_clock, microseconds>();
 }
 
-static inline uint64_t nowInNanoSecs()
+inline uint64_t nowInNanoSecs()
 {
     return castNow<high_resolution_clock, nanoseconds>();
 }
 
-static inline void sleepForMilliSecs(size_t milliSecs)
+inline void sleepForMilliSecs(const size_t milliSecs)
 {
     std::this_thread::sleep_for(milliseconds(milliSecs));
 }

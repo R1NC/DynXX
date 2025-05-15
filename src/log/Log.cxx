@@ -29,8 +29,8 @@ void _ngenxx_log_apple(const char*);
 namespace
 {
     int _level = NGenXXLogLevelNone;
-    static std::function<void(int level, const char *content)> _callback = nullptr;
-    static std::unique_ptr<std::mutex> _mutex = nullptr;
+    std::function<void(int level, const char *content)> _callback = nullptr;
+    std::unique_ptr<std::mutex> _mutex = nullptr;
 
 #if defined(USE_SPDLOG)
     void spdlogPrepare() 
@@ -41,8 +41,8 @@ namespace
             return;
         }
         try 
-        {   
-            auto logger = spdlog::daily_logger_mt(
+        {
+            const auto logger = spdlog::daily_logger_mt(
                 "ngenxx_spdlog",
                 ngenxxRootPath() + "/log.txt",
                 0,
@@ -126,7 +126,7 @@ void NGenXX::Log::print(int level, const std::string &content)
     {
         _mutex = std::make_unique<std::mutex>();
     }
-    auto lock = std::lock_guard(*_mutex.get());
+    auto lock = std::lock_guard(*_mutex);
 
     if (level < _level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone) [[unlikely]]
     {
@@ -136,8 +136,8 @@ void NGenXX::Log::print(int level, const std::string &content)
     auto cContent = content.c_str();
     if (_callback)
     {
-        auto len = std::strlen(cContent);
-        auto c = mallocX<char>(len);
+        const auto len = std::strlen(cContent);
+        const auto c = mallocX<char>(len);
         std::strncpy(c, content.c_str(), len);
         _callback(level, c);
     }

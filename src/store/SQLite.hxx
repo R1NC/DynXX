@@ -12,9 +12,7 @@
 
 #include <NGenXXTypes.hxx>
 
-namespace NGenXX
-{
-    namespace Store
+namespace NGenXX::Store
     {
         class SQLite
         {
@@ -97,7 +95,7 @@ namespace NGenXX
                 ~Connection();
 
             private:
-                struct sqlite3 *db{nullptr};
+                sqlite3 *db{nullptr};
                 mutable std::mutex mutex;
             };
 
@@ -121,7 +119,6 @@ namespace NGenXX
             std::unordered_map<std::string, std::shared_ptr<Connection>> conns;
             std::mutex mutex;
         };
-    }
 }
 
 #endif

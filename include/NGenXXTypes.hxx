@@ -33,7 +33,7 @@ concept CharacterT =
     || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t>;
 
 template<class T, class U>
-concept DerivedT = std::is_base_of<U, T>::value;
+concept DerivedT = std::is_base_of_v<U, T>;
 
 template<typename T>
 concept PolymorphicT = std::is_polymorphic_v<T>;
@@ -84,16 +84,16 @@ void iterate(const T& container, std::function<void(const typename T::value_type
 }
 
 template<MemcpyableT T>
-void memcpyX(const T* src, T* dst, std::size_t count) 
+void memcpyX(const T* src, T* dst, const std::size_t count)
 {
     std::memcpy(dst, src, count * sizeof(T));
 }
 
 // malloc for character types
 template <CharacterT T>
-static inline T* mallocX(size_t count = 1)
+T* mallocX(const size_t count = 1)
 {
-    auto len = count * sizeof(T) + 1;
+    const auto len = count * sizeof(T) + 1;
     auto ptr = std::malloc(len);
     if (!ptr) [[unlikely]]
     {
@@ -106,7 +106,7 @@ static inline T* mallocX(size_t count = 1)
 // malloc for non-character types
 template <typename T>
 requires (!CharacterT<T>)
-static inline T* mallocX(size_t count = 1)
+T* mallocX(const size_t count = 1)
 {
     auto ptr = std::calloc(count, sizeof(T));
     if (!ptr) [[unlikely]]
@@ -119,7 +119,7 @@ static inline T* mallocX(size_t count = 1)
 // free for non-const & non-void types
 template <typename T>
 requires (!ConstT<T> && !VoidT<T>)
-static inline void freeX(T* &ptr)
+void freeX(T* &ptr)
 {
     if (!ptr) [[unlikely]]
     {
@@ -132,7 +132,7 @@ static inline void freeX(T* &ptr)
 // free for non-const & void types
 template <typename T>
 requires (!ConstT<T> && VoidT<T>)
-static inline void freeX(T* &ptr)
+void freeX(T* &ptr)
 {
     if (!ptr) [[unlikely]]
     {
@@ -145,7 +145,7 @@ static inline void freeX(T* &ptr)
 // free for const & non-void types
 template <typename T>
 requires (ConstT<T> && !VoidT<T>)
-static inline void freeX(T* &ptr)
+void freeX(T* &ptr)
 {
     if (!ptr) [[unlikely]]
     {
@@ -158,7 +158,7 @@ static inline void freeX(T* &ptr)
 // free for const & void types
 template <typename T>
 requires (ConstT<T> && VoidT<T>)
-static inline void freeX(T* &ptr)
+void freeX(T* &ptr)
 {
     if (!ptr) [[unlikely]]
     {
@@ -171,13 +171,13 @@ static inline void freeX(T* &ptr)
 #pragma mark Pointer transform
 
 template <typename T = void>
-static inline T *addr2ptr(const address addr)
+T *addr2ptr(const address addr)
 {
     return reinterpret_cast<T *>(addr);
 }
 
 template <typename T = void>
-static inline address ptr2addr(const T *ptr)
+address ptr2addr(const T *ptr)
 {
     return reinterpret_cast<address>(ptr);
 }
@@ -191,7 +191,7 @@ constexpr auto MaxDouble = std::numeric_limits<double>::max();
 
 using Any = std::variant<int64_t, double, std::string>;
 
-static inline std::string Any2String(const Any &v, const std::string &defaultS = {})
+inline std::string Any2String(const Any &v, const std::string &defaultS = {})
 {
     if (std::holds_alternative<std::string>(v))
     {
@@ -200,7 +200,7 @@ static inline std::string Any2String(const Any &v, const std::string &defaultS =
     return defaultS;
 }
 
-static inline int64_t Any2Integer(const Any &v, int64_t defaultI = MinInt64)
+inline int64_t Any2Integer(const Any &v, const int64_t defaultI = MinInt64)
 {
     if (!std::holds_alternative<std::string>(v))
     {
@@ -209,7 +209,7 @@ static inline int64_t Any2Integer(const Any &v, int64_t defaultI = MinInt64)
     return defaultI;
 }
 
-static inline double Any2Float(const Any &v, double defaultF = MinDouble)
+inline double Any2Float(const Any &v, const double defaultF = MinDouble)
 {
     if (!std::holds_alternative<std::string>(v))
     {
@@ -223,28 +223,27 @@ static inline double Any2Float(const Any &v, double defaultF = MinDouble)
 using Dict = std::unordered_map<std::string, std::string>;
 using DictAny = std::unordered_map<std::string, Any>;
 
-static inline std::string dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
+inline std::string dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
 {
-    return dict.find(key) == dict.end() ? defaultS : Any2String(dict.at(key), defaultS);
+    return !dict.contains(key) ? defaultS : Any2String(dict.at(key), defaultS);
 }
 
-static inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, int64_t defaultI = MinInt64)
+inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI = MinInt64)
 {
-    return dict.find(key) == dict.end() ? defaultI : Any2Integer(dict.at(key), defaultI);
+    return !dict.contains(key) ? defaultI : Any2Integer(dict.at(key), defaultI);
 }
 
-static inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, double defaultF = MinDouble)
+inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF = MinDouble)
 {
-    return dict.find(key) == dict.end() ? defaultF : Any2Float(dict.at(key), defaultF);
+    return !dict.contains(key) ? defaultF : Any2Float(dict.at(key), defaultF);
 }
 
 #pragma mark Bytes Type
 
 using Bytes = std::vector<byte>;
 
-static inline const Bytes wrapBytes(const byte* data, size_t len)
-{
-    return Bytes(data, data + len);
+inline Bytes wrapBytes(const byte *data, const size_t len) {
+    return {data, data + len};
 }
 
 template <typename T>

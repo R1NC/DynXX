@@ -73,7 +73,7 @@
   }
 
 #define DEF_JS_FUNC_VOID_ASYNC(bridge, fJ, fS)                                 \
-  static JSValue fJ(JS_FUNC_PARAMS) {                                          \             
+  static JSValue fJ(JS_FUNC_PARAMS) {                                          \
     DEF_JS_FUNC_CHECK_BRIDGE(bridge);                                          \
     std::string json = JS_FUNC_READ_JSON;                                      \
     return bridge->newPromiseVoid(                                             \
@@ -97,7 +97,7 @@
   }
 
 #define DEF_JS_FUNC_INT64_ASYNC(bridge, fJ, fS)                                \
-  static JSValue fJ(JS_FUNC_PARAMS) {                                          \      
+  static JSValue fJ(JS_FUNC_PARAMS) {                                          \
     DEF_JS_FUNC_CHECK_BRIDGE(bridge);                                          \
     std::string json = JS_FUNC_READ_JSON;                                      \
     return bridge->newPromiseInt64(                                            \
@@ -147,7 +147,7 @@ namespace NGenXX
          * @param file JS file path
          * @return success or not
          */
-        [[nodiscard]] bool loadFile(const std::string &file, bool isModule);
+        [[nodiscard]] bool loadFile(const std::string &file, bool isModule) const;
 
         /**
          * @brief Load JS script
@@ -155,13 +155,13 @@ namespace NGenXX
          * @param name JS file name
          * @return success or not
          */
-        [[nodiscard]] bool loadScript(const std::string &script, const std::string &name, bool isModule);
+        [[nodiscard]] bool loadScript(const std::string &script, const std::string &name, bool isModule) const;
 
         /**
          * @brief Load JS ByteCode
          * @param bytes JS ByteCode
          */
-        [[nodiscard]] bool loadBinary(const Bytes &bytes, bool isModule);
+        [[nodiscard]] bool loadBinary(const Bytes &bytes, bool isModule) const;
 
         /**
          * @brief call JS func
@@ -169,7 +169,7 @@ namespace NGenXX
          * @param params parameters(json)
          * @param await Whether wait for the promise result or not
          */
-        std::string callFunc(const std::string &func, const std::string &params, bool await);
+        std::string callFunc(const std::string &func, const std::string &params, bool await) const;
 
         /**
          * @brief New JS `Promise`

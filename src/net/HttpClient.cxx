@@ -16,10 +16,10 @@
 
 namespace
 {
-    size_t on_post_read(char *buffer, size_t size, size_t nmemb, void *userdata)
+    size_t on_post_read(char *buffer, const size_t size, size_t nmemb, void *userdata)
     {
-        auto pBytes = static_cast<Bytes *>(userdata);
-        auto len = std::min(size * nmemb, pBytes->size());
+        const auto pBytes = static_cast<Bytes *>(userdata);
+        const auto len = static_cast<long>(std::min(size * nmemb, pBytes->size()));
         if (len > 0) [[likely]]
         {
             std::memcpy(buffer, pBytes->data(), len);
@@ -28,29 +28,28 @@ namespace
         return len;
     }
 
-    size_t on_upload_read(char *ptr, size_t size, size_t nmemb, void *stream)
+    size_t on_upload_read(char *ptr, const size_t size, size_t nmemb, void *stream)
     {
-        auto ret = std::fread(ptr, size, nmemb, static_cast<std::FILE *>(stream));
+        const auto ret = std::fread(ptr, size, nmemb, static_cast<std::FILE *>(stream));
         ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient read {} bytes from file", ret);
         return ret;
     }
 
-    size_t on_write(char *contents, size_t size, size_t nmemb, void *userp)
+    size_t on_write(const char *contents, const size_t size, size_t nmemb, void *userp)
     {
-        auto pS = static_cast<std::string *>(userp);
+        const auto pS = static_cast<std::string *>(userp);
         pS->append(contents, size * nmemb);
         return size * nmemb;
     }
 
-    size_t on_handle_rsp_headers(char *buffer, size_t size, size_t nitems, void *userdata)
+    size_t on_handle_rsp_headers(const char *buffer, const size_t size, size_t nitems, void *userdata)
     {
-        auto pHeaders = static_cast<std::unordered_map<std::string, std::string> *>(userdata);
+        const auto pHeaders = static_cast<std::unordered_map<std::string, std::string> *>(userdata);
         std::string header(buffer, size * nitems);
-        auto colonPos = header.find(':');
-        if (colonPos != std::string::npos) [[likely]]
+        if (const auto colonPos = header.find(':'); colonPos != std::string::npos) [[likely]]
         {
-            auto k = header.substr(0, colonPos);
-            auto v = header.substr(colonPos + 2);
+            const auto k = header.substr(0, colonPos);
+            const auto v = header.substr(colonPos + 2);
             pHeaders->emplace(ngenxxCodingStrTrim(k), ngenxxCodingStrTrim(v));
         }
         return size * nitems;
@@ -71,10 +70,9 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
                                                                  const std::vector<std::string> &headers,
                                                                  const std::string &params,
                                                                  const Bytes &rawBody,
-                                                                 const std::vector<NGenXX::Net::HttpFormField> &formFields,
+                                                                 const std::vector<HttpFormField> &formFields,
                                                                  const std::FILE *cFILE, size_t fileSize,
-                                                                 size_t timeout)
-{
+                                                                 size_t timeout) {
     return this->req(url, headers, params, method, timeout, [&url, method, &params, &rawBody, &formFields, cFILE, fileSize](CURL *const curl, const NGenXXHttpResponse &rsp) {
         ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request params: {}", url, params);
 
@@ -87,8 +85,8 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
         }
         else if (!formFields.empty())
         {
-            auto mime = curl_mime_init(curl);
-            auto part = curl_mime_addpart(mime);
+            const auto mime = curl_mime_init(curl);
+            const auto part = curl_mime_addpart(mime);
 
             for (const auto &[name, mime, data] : formFields)
             {
@@ -117,15 +115,14 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::request(const std::string &url, int 
         }
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_write);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &(rsp.data));
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &rsp.data);
 
         curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, on_handle_rsp_headers);
-        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &(rsp.headers));
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &rsp.headers);
     });
 }
 
-bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string &filePath, size_t timeout)
-{
+bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string &filePath, size_t timeout) {
     auto file = std::fopen(filePath.c_str(), "wb");
     if (!file) [[unlikely]]
     {
@@ -133,7 +130,7 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
         return false;
     }
 
-    auto rsp = this->req(url, {}, {}, NGenXXNetHttpMethodGet, timeout, [file](CURL *const curl, const NGenXXHttpResponse &rsp) {
+    const auto rsp = this->req(url, {}, {}, NGenXXNetHttpMethodGet, timeout, [file](CURL *const curl, const NGenXXHttpResponse &) {
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::fwrite);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
@@ -144,9 +141,8 @@ bool NGenXX::Net::HttpClient::download(const std::string &url, const std::string
     return rsp.code == 200;
 }
 
-NGenXXHttpResponse NGenXX::Net::HttpClient::req(const std::string &url, const std::vector<std::string> &headers, const std::string &params, int method, size_t timeout, std::function<void(CURL *const, const NGenXXHttpResponse &rsp)> &&func)
-{
-    if (!this->checkUrlValid(url)) [[unlikely]]
+NGenXXHttpResponse NGenXX::Net::HttpClient::req(const std::string &url, const std::vector<std::string> &headers, const std::string &params, int method, size_t timeout, std::function<void(CURL *const, const NGenXXHttpResponse &rsp)> &&func) {
+    if (!checkUrlValid(url)) [[unlikely]]
     {
         return {};
     }
@@ -177,7 +173,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::req(const std::string &url, const st
     curl_easy_setopt(curl, CURLOPT_HTTPGET, method == NGenXXNetHttpMethodGet ? 1L : 0L);
     //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
-    struct curl_slist *headerList = nullptr;
+    curl_slist *headerList = nullptr;
     for (const auto &it : headers)
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request header: {}", it);
@@ -189,7 +185,7 @@ NGenXXHttpResponse NGenXX::Net::HttpClient::req(const std::string &url, const st
     ssUrl << url;
     if (method == NGenXXNetHttpMethodGet && !params.empty())
     {
-        if (!this->checkUrlHasSearch(url))
+        if (!checkUrlHasSearch(url))
         {
             ssUrl << "?";
         }
@@ -244,11 +240,11 @@ bool NGenXX::Net::HttpClient::checkUrlHasSearch(const std::string &url)
     auto aUrl = ada::parse(url);
     return !aUrl->get_search().empty();
 #else
-    return url.find("?", 0) != std::string::npos;
+    return url.find('?', 0) != std::string::npos;
 #endif
 }
 
-bool NGenXX::Net::HttpClient::handleSSL(CURL *const curl, const std::string &url)
+bool NGenXX::Net::HttpClient::handleSSL(CURL * curl, const std::string &url)
 {
 #if defined(USE_STD_RANGES)
     auto aUrl = ada::parse(url);

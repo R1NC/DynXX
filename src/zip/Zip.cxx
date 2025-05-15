@@ -272,7 +272,7 @@ Bytes _ngenxx_z_processBytes(size_t bufferSize, const Bytes &in, NGenXX::Z::ZBas
     auto b = _ngenxx_z_process(bufferSize, 
         [bufferSize, &in, &pos]
         {
-            auto len = std::min(bufferSize, in.size() - pos);
+            const auto len = std::min(bufferSize, in.size() - pos);
             Bytes bytes(in.begin() + pos, in.begin() + pos + len);
             pos += len;
             return bytes;

@@ -3,9 +3,9 @@
 
 #if defined(__cplusplus)
 
-void _ngenxx_lua_init(void);
+void _ngenxx_lua_init();
 
-void _ngenxx_lua_release(void);
+void _ngenxx_lua_release();
 
 #endif
 

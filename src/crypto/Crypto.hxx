@@ -5,9 +5,7 @@
 
 #include <NGenXXTypes.hxx>
 
-namespace NGenXX
-{
-    namespace Crypto
+namespace NGenXX::Crypto
     {
         bool rand(size_t len, byte *bytes);
 
@@ -18,11 +16,11 @@ namespace NGenXX
 
             Bytes decrypt(const Bytes &in, const Bytes &key);
 
-            static inline constexpr bool checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, size_t tagBits)
+            static constexpr bool checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, size_t tagBits)
             {
-                auto inBytes = in.data(), keyBytes = key.data(), initVectorBytes = initVector.data(), aadBytes = aad.data();
-                auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
-                auto tagLen = tagBits / 8;
+                const auto inBytes = in.data(), keyBytes = key.data(), initVectorBytes = initVector.data(), aadBytes = aad.data();
+                const auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
+                const auto tagLen = tagBits / 8;
                 if (inBytes == nullptr || inLen == 0)
                 {
                     return false;
@@ -76,7 +74,6 @@ namespace NGenXX
 
             Bytes decode(const Bytes &in);
         }
-    }
 }
 
 #endif

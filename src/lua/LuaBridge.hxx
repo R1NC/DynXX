@@ -92,7 +92,7 @@ namespace NGenXX
          * @param funcName the exported function name
          * @param funcPointer the C function pointer
          */
-        void bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *));
+        void bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const;
 
         /**
          * @brief Call Lua function

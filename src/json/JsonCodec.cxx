@@ -10,7 +10,7 @@ std::string NGenXX::Json::cJSON2Str(void *const cjson)
     {
         return {};
     }
-    auto jsonChars = cJSON_PrintUnformatted(reinterpret_cast<cJSON *>(cjson));
+    const auto jsonChars = cJSON_PrintUnformatted(static_cast<cJSON *>(cjson));
     if (!jsonChars) [[unlikely]]
     {
         return {};
@@ -22,13 +22,13 @@ std::string NGenXX::Json::cJSON2Str(void *const cjson)
 
 std::string NGenXX::Json::jsonFromDictAny(const DictAny &dict)
 {
-    auto cjson = cJSON_CreateObject();
+    const auto cjson = cJSON_CreateObject();
     for (const auto &[k, v] : dict) 
     {
         cJSON *node = nullptr;
         if (std::holds_alternative<int64_t>(v)) 
         {
-            node = cJSON_CreateNumber(std::get<int64_t>(v));
+            node = cJSON_CreateNumber(static_cast<double>(std::get<int64_t>(v)));
         } 
         else if (std::holds_alternative<double>(v)) 
         {
@@ -40,8 +40,7 @@ std::string NGenXX::Json::jsonFromDictAny(const DictAny &dict)
             if ((s.starts_with("[") && s.ends_with("]"))
                 || (s.starts_with("{") && s.ends_with("}")))
             {
-                auto cjsonNodes = cJSON_Parse(s.c_str());
-                if (cjsonNodes)
+                if (const auto cjsonNodes = cJSON_Parse(s.c_str()))
                 {
                     node = cjsonNodes;
                 }
@@ -68,7 +67,7 @@ std::string NGenXX::Json::jsonFromDictAny(const DictAny &dict)
 DictAny NGenXX::Json::jsonToDictAny(const std::string &json)
 {
     DictAny dict;
-    auto cjson = cJSON_Parse(json.c_str());
+    const auto cjson = cJSON_Parse(json.c_str());
     if (!cjson) [[unlikely]]
     {
         return dict;
@@ -125,12 +124,12 @@ NGenXX::Json::Decoder::~Decoder()
     this->cleanup();
 }
 
-NGenXX::Json::Decoder::Decoder(NGenXX::Json::Decoder &&other) noexcept
+NGenXX::Json::Decoder::Decoder(Decoder &&other) noexcept
 {
     this->moveImp(std::move(other));
 }
 
-NGenXX::Json::Decoder &NGenXX::Json::Decoder::operator=(NGenXX::Json::Decoder &&other) noexcept
+NGenXX::Json::Decoder &NGenXX::Json::Decoder::operator=(Decoder &&other) noexcept
 {
     if (this != &other) [[likely]]
     {
@@ -151,20 +150,19 @@ const cJSON *NGenXX::Json::Decoder::reinterpretNode(const void *const node) cons
 
 bool NGenXX::Json::Decoder::isArray(const void *const node) const
 {
-    auto cj = this->reinterpretNode(node);
+    const auto cj = this->reinterpretNode(node);
     return cj ? cJSON_IsArray(cj) : false;
 }
 
 bool NGenXX::Json::Decoder::isObject(const void *const node) const
 {
-    auto cj = this->reinterpretNode(node);
+    const auto cj = this->reinterpretNode(node);
     return cj ? cJSON_IsObject(cj) : false;
 }
 
 void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string &k) const
 {
-    auto cj = this->reinterpretNode(node);
-    if (cj != nullptr) [[likely]]
+    if (const auto cj = this->reinterpretNode(node); cj != nullptr) [[likely]]
     {
         return cJSON_GetObjectItemCaseSensitive(cj, k.c_str());
     }
@@ -174,8 +172,8 @@ void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string 
 std::string NGenXX::Json::Decoder::readString(const void *const node) const
 {
     std::string s;
-    auto cj = this->reinterpretNode(node);
-    if (cj == NULL) [[unlikely]]
+    const auto cj = this->reinterpretNode(node);
+    if (cj == nullptr) [[unlikely]]
     {
         return s;
     }
@@ -183,15 +181,15 @@ std::string NGenXX::Json::Decoder::readString(const void *const node) const
     {
         return cj->valueint ? "true" : "false";
     }
-    else if (cJSON_IsNumber(cj))
+    if (cJSON_IsNumber(cj))
     {
         return std::to_string(cj->valuedouble);
     }
-    else if (cJSON_IsString(cj) && cj->valuestring)
+    if (cJSON_IsString(cj) && cj->valuestring)
     {
         return cj->valuestring;
     }
-    else if (!cJSON_IsNull(cj))
+    if (!cJSON_IsNull(cj))
     {
         return cJSON_PrintUnformatted(cj);
     }
@@ -201,8 +199,7 @@ std::string NGenXX::Json::Decoder::readString(const void *const node) const
 double NGenXX::Json::Decoder::readNumber(const void *const node) const
 {
     auto num = 0.0;
-    auto cj = this->reinterpretNode(node);
-    if (cj != nullptr) [[likely]]
+    if (const auto cj = this->reinterpretNode(node); cj != nullptr) [[likely]]
     {
         if (cJSON_IsNumber(cj)) [[likely]]
         {
@@ -214,7 +211,7 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
             {
                 num = std::stod(cj->valuestring);
             }
-            catch (const std::exception &e)
+            catch (const std::exception &_)
             {
                 ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID STRING VALUE", cj->string ?: "");
             }
@@ -229,8 +226,7 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
 
 void *NGenXX::Json::Decoder::readChild(const void *const node) const
 {
-    auto cj = this->reinterpretNode(node);
-    if (cj != nullptr && (this->isArray(cj) || this->isObject(cj))) [[likely]]
+    if (const auto cj = this->reinterpretNode(node); cj != nullptr && (this->isArray(cj) || this->isObject(cj))) [[likely]]
     {
         return cj->child;
     }
@@ -252,6 +248,6 @@ void NGenXX::Json::Decoder::readChildren(const void *const node, std::function<v
 
 void *NGenXX::Json::Decoder::readNext(const void *const node) const
 {
-    auto cj = this->reinterpretNode(node);
+    const auto cj = this->reinterpretNode(node);
     return cj ? cj->next : nullptr;
 }

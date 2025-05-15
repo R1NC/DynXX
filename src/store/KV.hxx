@@ -13,9 +13,7 @@
 
 #include <NGenXXTypes.hxx>
 
-namespace NGenXX
-{
-    namespace Store
+namespace NGenXX::Store
     {
         class KV
         {
@@ -72,7 +70,6 @@ namespace NGenXX
             std::unordered_map<std::string, std::shared_ptr<Connection>> conns;
             std::mutex mutex;
         };
-    }
 }
 
 #endif

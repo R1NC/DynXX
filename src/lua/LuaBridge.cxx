@@ -19,17 +19,17 @@ namespace
         bool finished{false};
     } LuaTimerData;
 
-    void lua_uv_loop_init()
+    void _uv_loop_init()
     {
         uv_loop_init(uv_default_loop());
     }
 
-    void lua_uv_loop_prepare()
+    void _uv_loop_prepare()
     {
         uv_run(uv_default_loop(), UV_RUN_DEFAULT);
     }
 
-    void lua_uv_loop_stop()
+    void _uv_loop_stop()
     {
         if (!uv_loop_alive(uv_default_loop())) [[unlikely]]
         {
@@ -39,31 +39,31 @@ namespace
         uv_loop_close(uv_default_loop());
     }
 
-    void lua_uv_timer_cb(uv_timer_t *timer)
+    void _uv_timer_cb(uv_timer_t *timer)
     {
-        auto timer_data = static_cast<LuaTimerData *>(timer->data);
+        const auto timer_data = static_cast<LuaTimerData *>(timer->data);
         lua_rawgeti(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
         lua_pcall(timer_data->lState, 0, 0, 0);
     }
 
-    uv_timer_t *lua_uv_timer_start(LuaTimerData *timer_data)
+    uv_timer_t *_uv_timer_start(LuaTimerData *timer_data)
     {
         auto timerP = mallocX<uv_timer_t>();
         timerP->data = timer_data;
     
         std::thread([&timerP] {
             uv_timer_init(uv_default_loop(), timerP);
-            auto timer_data = static_cast<LuaTimerData *>(timerP->data);
-            uv_timer_start(timerP, lua_uv_timer_cb, timer_data->timeout, timer_data->repeat ? timer_data->timeout : 0);
-            lua_uv_loop_prepare();
+            const auto data = static_cast<LuaTimerData *>(timerP->data);
+            uv_timer_start(timerP, _uv_timer_cb, data->timeout, data->repeat ? data->timeout : 0);
+            _uv_loop_prepare();
         }).detach();
     
         return timerP;
     }
 
-    void lua_uv_timer_stop(uv_timer_t *timer, bool release)
+    void _uv_timer_stop(uv_timer_t *timer, bool release)
     {
-        auto timer_data = static_cast<LuaTimerData *>(timer->data);
+        const auto timer_data = static_cast<LuaTimerData *>(timer->data);
         luaL_unref(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
         if (!timer_data->finished)
         {
@@ -78,35 +78,34 @@ namespace
         }
     }
 
-    int lua_util_timer_add(lua_State *L)
+    int _util_timer_add(lua_State *L)
     {
-        auto timer_data = mallocX<LuaTimerData>();
+        const auto timer_data = mallocX<LuaTimerData>();
         *timer_data = {
             .lState = L,
             .lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX),
             .timeout = lua_tointeger(L, 1),
             .repeat = static_cast<bool>(lua_toboolean(L, 2))
         };
-    
-        auto timer = lua_uv_timer_start(timer_data);
+
+        const auto timer = _uv_timer_start(timer_data);
     
         lua_pushlightuserdata(L, timer);
         return LUA_OK;
     }
 
-    int lua_util_timer_remove(lua_State *L)
+    int _util_timer_remove(lua_State *L)
     {
-        auto timer = static_cast<uv_timer_t *>(lua_touserdata(L, 1));
-        if (timer != nullptr) [[likely]]
+        if (const auto timer = static_cast<uv_timer_t *>(lua_touserdata(L, 1)); timer != nullptr) [[likely]]
         {
-            lua_uv_timer_stop(timer, true);
+            _uv_timer_stop(timer, true);
         }
         return LUA_OK;
     }
 
-    const luaL_Reg ngenxx_lua_lib_timer_funcs[] = {
-        {"add", lua_util_timer_add},
-        {"remove", lua_util_timer_remove},
+    constexpr luaL_Reg lib_timer_funcs[] = {
+        {"add", _util_timer_add},
+        {"remove", _util_timer_remove},
         {nullptr, nullptr} /* sentinel */
     };
 
@@ -132,20 +131,19 @@ NGenXX::LuaBridge::LuaBridge()
     this->lstate = luaL_newstate();
     luaL_openlibs(this->lstate);
     
-    lua_register_lib(this->lstate, "Timer", ngenxx_lua_lib_timer_funcs);
+    lua_register_lib(this->lstate, "Timer", lib_timer_funcs);
     
-    lua_uv_loop_init();
+    _uv_loop_init();
 }
 
 NGenXX::LuaBridge::~LuaBridge()
 {
-    lua_uv_loop_stop();
+    _uv_loop_stop();
     
     lua_close(this->lstate);
 }
 
-void NGenXX::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *))
-{
+void NGenXX::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
     lua_register(this->lstate, funcName.c_str(), funcPointer);
 }
 
@@ -153,8 +151,7 @@ void NGenXX::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)
 bool NGenXX::LuaBridge::loadFile(const std::string &file)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto ret = luaL_dofile(this->lstate, file.c_str());
-    if (ret != LUA_OK) [[unlikely]]
+    if (const auto ret = luaL_dofile(this->lstate, file.c_str()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dofile` error:");
         return false;
@@ -166,8 +163,7 @@ bool NGenXX::LuaBridge::loadFile(const std::string &file)
 bool NGenXX::LuaBridge::loadScript(const std::string &script)
 {
     auto lock = std::lock_guard(this->mutex);
-    auto ret = luaL_dostring(this->lstate, script.c_str());
-    if (ret != LUA_OK) [[unlikely]]
+    if (const auto ret = luaL_dostring(this->lstate, script.c_str()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dostring` error:");
         return false;
@@ -182,8 +178,7 @@ std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::stri
     auto lock = std::lock_guard(this->mutex);
     lua_getglobal(this->lstate, func.c_str());
     lua_pushstring(this->lstate, params.c_str());
-    auto ret = lua_pcall(lstate, 1, 1, 0);
-    if (ret != LUA_OK) [[unlikely]]
+    if (const auto ret = lua_pcall(lstate, 1, 1, 0); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`lua_pcall` error:");
         return s;

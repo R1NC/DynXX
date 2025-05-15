@@ -104,7 +104,7 @@ endif()
 
 if(USE_SPDLOG)
     set(SPDLOG_ROOT external/spdlog)
-    add_subdirectory(${SPDLOG_ROOT} sodlog.output)
+    add_subdirectory(${SPDLOG_ROOT} spdlog.output)
     list(APPEND INC_DIRS ${SPDLOG_ROOT}/include)
 endif()
 

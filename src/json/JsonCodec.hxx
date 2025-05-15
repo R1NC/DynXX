@@ -10,9 +10,7 @@
 
 #include <NGenXXTypes.hxx>
 
-namespace NGenXX
-{
-    namespace Json
+namespace NGenXX::Json
     {
         std::string jsonFromDictAny(const DictAny &dict);
         DictAny jsonToDictAny(const std::string &json);
@@ -59,7 +57,6 @@ namespace NGenXX
 
             const cJSON *reinterpretNode(const void *const node) const;
         };
-    }
 }
 
 #endif

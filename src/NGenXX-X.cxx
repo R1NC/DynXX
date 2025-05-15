@@ -44,12 +44,11 @@ std::string ngenxxGetVersion()
 
 std::string ngenxxRootPath()
 {
-    std::string s;
     if (!_root)
     {
-        return s;
+        return {};
     }
-    return *_root.get();
+    return *_root;
 }
 
 bool ngenxxInit(const std::string &root)
@@ -64,7 +63,7 @@ bool ngenxxInit(const std::string &root)
     }
     _root = std::make_unique<const std::string>(root);
     _sqlite = std::make_unique<NGenXX::Store::SQLite>();
-    _kv = std::make_unique<NGenXX::Store::KV>(*_root.get());
+    _kv = std::make_unique<NGenXX::Store::KV>(*_root);
     _http_client = std::make_unique<NGenXX::Net::HttpClient>();
 #if defined(USE_LUA)
     _ngenxx_lua_init();
@@ -100,32 +99,32 @@ void ngenxxRelease()
 
 NGenXXDeviceTypeX ngenxxDeviceType()
 {
-    return static_cast<NGenXXDeviceTypeX>(NGenXX::Device::DeviceInfo::deviceType());
+    return static_cast<NGenXXDeviceTypeX>(NGenXX::DeviceInfo::deviceType());
 }
 
 std::string ngenxxDeviceName()
 {
-    return NGenXX::Device::DeviceInfo::deviceName();
+    return NGenXX::DeviceInfo::deviceName();
 }
 
 std::string ngenxxDeviceManufacturer()
 {
-    return NGenXX::Device::DeviceInfo::deviceManufacturer();
+    return NGenXX::DeviceInfo::deviceManufacturer();
 }
 
 std::string ngenxxDeviceModel()
 {
-    return NGenXX::Device::DeviceInfo::deviceModel();
+    return NGenXX::DeviceInfo::deviceModel();
 }
 
 std::string ngenxxDeviceOsVersion()
 {
-    return NGenXX::Device::DeviceInfo::osVersion();
+    return NGenXX::DeviceInfo::osVersion();
 }
 
 NGenXXDeviceCpuArchX ngenxxDeviceCpuArch()
 {
-    return static_cast<NGenXXDeviceCpuArchX>(NGenXX::Device::DeviceInfo::cpuArch());
+    return static_cast<NGenXXDeviceCpuArchX>(NGenXX::DeviceInfo::cpuArch());
 }
 
 #pragma mark Log
@@ -278,23 +277,23 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
         });
     }
 
-    auto t = _http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize, timeout);
+    auto [code, contentType, headers, data] = _http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize, timeout);
     rsp = {
-        .code = t.code,
-        .contentType = t.contentType,
-        .headers = t.headers,
-        .data = t.data
+        .code = code,
+        .contentType = contentType,
+        .headers = headers,
+        .data = data
     };
     return rsp;
 }
 
 std::string NGenXXHttpResponse::toJson() const
 {
-    auto cj = cJSON_CreateObject();
+    const auto cj = cJSON_CreateObject();
     cJSON_AddItemToObject(cj, "code", cJSON_CreateNumber(this->code));
     cJSON_AddItemToObject(cj, "contentType", cJSON_CreateString(this->contentType.c_str()));
 
-    auto cjHeaders = cJSON_CreateObject();
+    const auto cjHeaders = cJSON_CreateObject();
     for (const auto &[k, v] : this->headers)
     {
         cJSON_AddItemToObject(cjHeaders, k.c_str(), cJSON_CreateString(v.c_str()));
@@ -319,24 +318,23 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                               size_t timeout)
 {
     std::stringstream ssParams;
-    for (auto &it : params)
+    for (const auto &[k, v] : params)
     {
-        if (ssParams.str().length() > 0)
+        if (!ssParams.str().empty())
         {
             ssParams << "&";
         }
-        ssParams << it.first << "=";
+        ssParams << k << "=";
         std::visit(
             [&ssParams](auto &x)
             { 
                 ssParams << x; 
             }, 
-            it.second
+            v
         );
     }
     std::vector<std::string> headerV;
-    auto headersCount = headers.size();
-    if (headersCount > 0)
+    if (auto headersCount = headers.size(); headersCount > 0)
     {
         headerV.reserve(headersCount);
     }
@@ -369,8 +367,8 @@ void *ngenxxStoreSqliteOpen(const std::string &_id)
         return nullptr;
     }
     std::ostringstream ss;
-    ss << *_root.get() << "/" << _id << ".db";
-    if (auto ptr = _sqlite->connect(ss.str()).lock()) [[likely]]
+    ss << *_root << "/" << _id << ".db";
+    if (const auto ptr = _sqlite->connect(ss.str()).lock()) [[likely]]
     {
         return ptr.get();
     }
@@ -383,7 +381,7 @@ bool ngenxxStoreSqliteExecute(void *const conn, const std::string &sql)
     {
         return false;
     }
-    auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
     return xconn->execute(sql);
 }
 
@@ -393,7 +391,7 @@ void *ngenxxStoreSqliteQueryDo(void *const conn, const std::string &sql)
     {
         return nullptr;
     }
-    auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
     auto ptrQr = xconn->query(sql);
     return ptrQr? ptrQr.release() : nullptr;//trans ownership to C API, not release the memory.
 }
@@ -404,18 +402,17 @@ bool ngenxxStoreSqliteQueryReadRow(void *const query_result)
     {
         return false;
     }
-    auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     return xqr->readRow();
 }
 
 std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column)
 {
-    std::string s;
     if (query_result == nullptr || column.empty())
     {
-        return s;
+        return {};
     }
-    auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     auto a = xqr->readColumn(column);
     return *std::get_if<std::string>(&a);
 }
@@ -426,8 +423,8 @@ int64_t ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const 
     {
         return 0;
     }
-    auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
-    auto a = xqr->readColumn(column);
+    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto a = xqr->readColumn(column);
     return *std::get_if<int64_t>(&a);
 }
 
@@ -437,8 +434,8 @@ double ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std
     {
         return 0.f;
     }
-    auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
-    auto a = xqr->readColumn(column);
+    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto a = xqr->readColumn(column);
     return *std::get_if<double>(&a);
 }
 
@@ -448,7 +445,7 @@ void ngenxxStoreSqliteQueryDrop(void *const query_result)
     {
         return;
     }
-    auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     delete xqr;
 }
 
@@ -456,7 +453,7 @@ void ngenxxStoreSqliteClose(void *const conn)
 {
     /*if (conn == nullptr)
         return;
-    auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
     delete xconn;*/
 }
 
@@ -468,7 +465,7 @@ void *ngenxxStoreKvOpen(const std::string &_id)
     {
         return nullptr;
     }
-    if (auto ptr = _kv->open(_id).lock()) [[likely]]
+    if (const auto ptr = _kv->open(_id).lock()) [[likely]]
     {
         return ptr.get();
     }
@@ -477,12 +474,11 @@ void *ngenxxStoreKvOpen(const std::string &_id)
 
 std::string ngenxxStoreKvReadString(void *const conn, const std::string_view &k)
 {
-    std::string s;
     if (conn == nullptr || k.empty())
     {
-        return s;
+        return {};
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->readString(k);
 }
 
@@ -492,7 +488,7 @@ bool ngenxxStoreKvWriteString(void *const conn, const std::string_view &k, const
     {
         return false;
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->write(k, v);
 }
 
@@ -502,7 +498,7 @@ int64_t ngenxxStoreKvReadInteger(void *const conn, const std::string_view &k)
     {
         return 0;
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->readInteger(k);
 }
 
@@ -512,7 +508,7 @@ bool ngenxxStoreKvWriteInteger(void *const conn, const std::string_view &k, int6
     {
         return false;
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->write(k, v);
 }
 
@@ -522,7 +518,7 @@ double ngenxxStoreKvReadFloat(void *const conn, const std::string_view &k)
     {
         return 0;
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->readFloat(k);
 }
 
@@ -532,18 +528,17 @@ bool ngenxxStoreKvWriteFloat(void *const conn, const std::string_view &k, double
     {
         return false;
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->write(k, v);
 }
 
 const std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn)
 {
-    std::vector<std::string> v;
     if (conn == nullptr)
     {
-        return v;
+        return {};
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->allKeys();
 }
 
@@ -553,7 +548,7 @@ bool ngenxxStoreKvContains(void *const conn, const std::string_view &k)
     {
         return false;
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->contains(k);
 }
 
@@ -563,7 +558,7 @@ bool ngenxxStoreKvRemove(void *const conn, const std::string_view &k)
     {
         return false;
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->remove(k);
 }
 
@@ -573,7 +568,7 @@ void ngenxxStoreKvClear(void *const conn)
     {
         return;
     }
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     xconn->clear();
 }
 
@@ -581,7 +576,7 @@ void ngenxxStoreKvClose(void *const conn)
 {
     /*if (conn == nullptr)
         return;
-    auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     delete xconn;*/
 }
 
@@ -613,7 +608,7 @@ bool ngenxxJsonDecoderIsArray(void *const decoder, void *const node)
     {
         return false;
     }
-    auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->isArray(node);
 }
 
@@ -623,7 +618,7 @@ bool ngenxxJsonDecoderIsObject(void *const decoder, void *const node)
     {
         return false;
     }
-    auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->isObject(node);
 }
 
@@ -633,7 +628,7 @@ void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void 
     {
         return nullptr;
     }
-    auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readNode(node, k);
 }
 
@@ -644,7 +639,7 @@ std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node)
     {
         return s;
     }
-    auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readString(node);
 }
 
@@ -654,7 +649,7 @@ double ngenxxJsonDecoderReadNumber(void *const decoder, void *const node)
     {
         return 0;
     }
-    auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readNumber(node);
 }
 
@@ -664,7 +659,7 @@ void *ngenxxJsonDecoderReadChild(void *const decoder, void *const node)
     {
         return nullptr;
     }
-    auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readChild(node);
 }
 
@@ -674,7 +669,7 @@ void ngenxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_
     {
         return;
     }
-    auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     xdecoder->readChildren(node, std::move(callback));
 }
 
@@ -684,7 +679,7 @@ void *ngenxxJsonDecoderReadNext(void *const decoder, void *const node)
     {
         return nullptr;
     }
-    auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readNext(node);
 }
 
@@ -694,7 +689,7 @@ void ngenxxJsonDecoderRelease(void *const decoder)
     {
         return;
     }
-    auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     delete xdecoder;
 }
 
@@ -720,7 +715,7 @@ size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, bool inFinish)
     {
         return 0;
     }
-    auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
+    const auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
     return xzip->input(inBytes, inFinish);
 }
 
@@ -730,7 +725,7 @@ Bytes ngenxxZZipProcessDo(void *const zip)
     {
         return {};
     }
-    auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
+    const auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
     return xzip->processDo();
 }
 
@@ -740,7 +735,7 @@ bool ngenxxZZipProcessFinished(void *const zip)
     {
         return false;
     }
-    auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
+    const auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
     return xzip->processFinished();
 }
 
@@ -750,7 +745,7 @@ void ngenxxZZipRelease(void *const zip)
     {
         return;
     }
-    auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
+    const auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
     delete xzip;
 }
 
@@ -774,7 +769,7 @@ size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, bool inFinish)
     {
         return 0;
     }
-    auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
+    const auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
     return xunzip->input(inBytes, inFinish);
 }
 
@@ -784,7 +779,7 @@ Bytes ngenxxZUnzipProcessDo(void *const unzip)
     {
         return {};
     }
-    auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
+    const auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
     return xunzip->processDo();
 }
 
@@ -794,7 +789,7 @@ bool ngenxxZUnzipProcessFinished(void *const unzip)
     {
         return false;
     }
-    auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
+    const auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
     return xunzip->processFinished();
 }
 
@@ -804,7 +799,7 @@ void ngenxxZUnzipRelease(void *const unzip)
     {
         return;
     }
-    auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
+    const auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
     delete xunzip;
 }
 

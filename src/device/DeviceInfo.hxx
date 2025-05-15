@@ -5,11 +5,7 @@
 
 #include <string>
 
-namespace NGenXX
-{
-    namespace Device
-    {
-        namespace DeviceInfo
+namespace NGenXX::DeviceInfo
         {
             int deviceType();
 
@@ -22,8 +18,6 @@ namespace NGenXX
             std::string osVersion();
 
             int cpuArch();
-        }
-    }
 }
 
 #endif

@@ -13,9 +13,7 @@
 #include <NGenXXZip.h>
 #include <NGenXXTypes.hxx>
 
-namespace NGenXX
-{
-    namespace Z
+namespace NGenXX::Z
     {
         template <typename T>
         class ZBase
@@ -31,7 +29,7 @@ namespace NGenXX
 
             size_t input(const Bytes &bytes, bool inFinish);
             Bytes processDo();
-            bool processFinished() const;
+            [[nodiscard]] bool processFinished() const;
 
         protected:
             z_stream zs;
@@ -46,7 +44,7 @@ namespace NGenXX
             int format;
         };
 
-        class Zip : public ZBase<Zip>
+        class Zip final : public ZBase<Zip>
         {
         public:
             Zip() = delete;
@@ -62,7 +60,7 @@ namespace NGenXX
             void processImp();
         };
 
-        class UnZip : public ZBase<UnZip>
+        class UnZip final : public ZBase<UnZip>
         {
         public:
             UnZip() = delete;
@@ -89,7 +87,6 @@ namespace NGenXX
         Bytes zip(int mode, size_t bufferSize, int format, const Bytes &bytes);
 
         Bytes unzip(size_t bufferSize, int format, const Bytes &bytes);
-    }
 }
 
 #endif

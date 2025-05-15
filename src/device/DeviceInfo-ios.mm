@@ -23,24 +23,24 @@ namespace
     }
 }
 
-int NGenXX::Device::DeviceInfo::deviceType()
+int NGenXX::DeviceInfo::deviceType()
 {
     return NGenXXDeviceTypeApplePhone;
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceName()
+std::string NGenXX::DeviceInfo::deviceName()
 {
     struct utsname systemInfo;
     uname(&systemInfo);
     return systemInfo.machine;
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
+std::string NGenXX::DeviceInfo::deviceManufacturer()
 {
     return "Apple";
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceModel()
+std::string NGenXX::DeviceInfo::deviceModel()
 {
     static dispatch_once_t get_system_model_once;
     static std::string *model;
@@ -52,7 +52,7 @@ std::string NGenXX::Device::DeviceInfo::deviceModel()
     return *model;
 }
 
-std::string NGenXX::Device::DeviceInfo::osVersion()
+std::string NGenXX::DeviceInfo::osVersion()
 {
     static dispatch_once_t get_system_version_once;
     static std::string *osv;
@@ -64,7 +64,7 @@ std::string NGenXX::Device::DeviceInfo::osVersion()
     return *osv;
 }
 
-int NGenXX::Device::DeviceInfo::cpuArch()
+int NGenXX::DeviceInfo::cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
     return NGenXXDeviceCpuArchARM_64;

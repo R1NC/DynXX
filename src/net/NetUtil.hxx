@@ -5,11 +5,7 @@
 
 #include <string>
 
-namespace NGenXX
-{
-    namespace Net
-    {
-        namespace Util
+namespace NGenXX::Net::Util
         {
             enum class NetType : int 
             {
@@ -24,12 +20,12 @@ namespace NGenXX
             auto constexpr kDefaultDnsIpV6 = "2001:4860:4860::8888";
             auto constexpr kDefaultDnsPort = 53;
 
-            static inline std::string formatMacAddress(const unsigned char* mac)
+            inline std::string formatMacAddress(const unsigned char* mac)
             {
                 char macStr[18];
                 snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
                     mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-                return std::string(macStr);
+                return {macStr};
             }
 
             std::string macAddress();
@@ -39,8 +35,6 @@ namespace NGenXX
             std::string publicIpV4();
 
             std::string publicIpV6();
-        }
-    }
 }
 
 #endif

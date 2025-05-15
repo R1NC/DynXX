@@ -5,32 +5,32 @@
 
 #include <NGenXXDeviceInfo.h>
 
-int NGenXX::Device::DeviceInfo::deviceType()
+int NGenXX::DeviceInfo::deviceType()
 {
     return NGenXXDeviceTypeHarmonyOS;
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceName()
+std::string NGenXX::DeviceInfo::deviceName()
 {
     return OH_GetHardwareModel();
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
+std::string NGenXX::DeviceInfo::deviceManufacturer()
 {
     return OH_GetManufacture();
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceModel()
+std::string NGenXX::DeviceInfo::deviceModel()
 {
     return OH_GetHardwareModel();
 }
 
-std::string NGenXX::Device::DeviceInfo::osVersion()
+std::string NGenXX::DeviceInfo::osVersion()
 {
     return OH_GetDistributionOSVersion();
 }
 
-int NGenXX::Device::DeviceInfo::cpuArch()
+int NGenXX::DeviceInfo::cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
     return NGenXXDeviceCpuArchARM_64;

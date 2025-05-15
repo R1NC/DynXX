@@ -7,9 +7,7 @@
 
 #include <NGenXXTypes.hxx>
 
-namespace NGenXX
-{
-    namespace Coding
+namespace NGenXX::Coding
     {
         namespace Case
         {
@@ -30,7 +28,6 @@ namespace NGenXX
         Bytes str2bytes(const std::string_view &str);
 
         std::string strTrim(const std::string_view &str);
-    }
 }
 
 #endif

@@ -8,11 +8,11 @@
 #include "NGenXX-inner.hxx"
 #include "NGenXX-Script.hxx"
 
-std::unique_ptr<NGenXX::LuaBridge> _ngenxx_lua = nullptr;
+static std::unique_ptr<NGenXX::LuaBridge> sLuaBridge = nullptr;
 
 #define BIND_LUA_FUNC(f)                                                       \
-  if (_ngenxx_lua) [[likely]] {                                                \
-    _ngenxx_lua->bindFunc(std::string(#f), f);                                 \
+  if (sLuaBridge) [[likely]] {                                                \
+    sLuaBridge->bindFunc(std::string(#f), f);                                 \
   }
 
 DEF_LUA_FUNC_STRING(ngenxx_get_versionL, ngenxx_get_versionS)
@@ -86,30 +86,29 @@ DEF_LUA_FUNC_STRING(ngenxx_z_bytes_unzipL, ngenxx_z_bytes_unzipS)
 
 bool ngenxxLuaLoadF(const std::string &f)
 {
-    if (!_ngenxx_lua || f.empty()) [[unlikely]]
+    if (!sLuaBridge || f.empty()) [[unlikely]]
     {
         return false;
     }
-    return _ngenxx_lua->loadFile(f);
+    return sLuaBridge->loadFile(f);
 }
 
 bool ngenxxLuaLoadS(const std::string &s)
 {
-    if (!_ngenxx_lua || s.empty()) [[unlikely]]
+    if (!sLuaBridge || s.empty()) [[unlikely]]
     {
         return false;
     }
-    return _ngenxx_lua->loadScript(s);
+    return sLuaBridge->loadScript(s);
 }
 
 std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
 {
-    std::string s;
-    if (!_ngenxx_lua || f.empty()) [[unlikely]]
+    if (!sLuaBridge || f.empty()) [[unlikely]]
     {
-        return s;
+        return {};
     }
-    return _ngenxx_lua->callFunc(f, ps);
+    return sLuaBridge->callFunc(f, ps);
 }
 
 #if !defined(__EMSCRIPTEN__)
@@ -132,7 +131,7 @@ const char *ngenxx_lua_call(const char *f, const char *ps)
     return copyStr(ngenxxLuaCall(wrapStr(f), wrapStr(ps)));
 }
 
-void _ngenxx_lua_registerFuncs()
+static void registerFuncs()
 {
     BIND_LUA_FUNC(ngenxx_get_versionL);
     BIND_LUA_FUNC(ngenxx_root_pathL);
@@ -202,22 +201,22 @@ void _ngenxx_lua_registerFuncs()
     BIND_LUA_FUNC(ngenxx_z_bytes_unzipL)
 }
 
-void _ngenxx_lua_init(void)
+void _ngenxx_lua_init()
 {
-    if (_ngenxx_lua) [[unlikely]]
+    if (sLuaBridge) [[unlikely]]
     {
         return;
     }
-    _ngenxx_lua = std::make_unique<NGenXX::LuaBridge>();
-    _ngenxx_lua_registerFuncs();
+    sLuaBridge = std::make_unique<NGenXX::LuaBridge>();
+    registerFuncs();
 }
 
-void _ngenxx_lua_release(void)
+void _ngenxx_lua_release()
 {
-    if (!_ngenxx_lua) [[unlikely]]
+    if (!sLuaBridge) [[unlikely]]
     {
         return;
     }
-    _ngenxx_lua.reset();
+    sLuaBridge.reset();
 }
 #endif

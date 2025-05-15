@@ -8,29 +8,29 @@
 
 #include <NGenXXDeviceInfo.h>
 
-int NGenXX::Device::DeviceInfo::deviceType()
+int NGenXX::DeviceInfo::deviceType()
 {
     return NGenXXDeviceTypeWindows;
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceName()
+std::string NGenXX::DeviceInfo::deviceName()
 {
     //TODO
     return {};
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
+std::string NGenXX::DeviceInfo::deviceManufacturer()
 {
     return "Microsoft";
 }
 
-std::string NGenXX::Device::DeviceInfo::osVersion()
+std::string NGenXX::DeviceInfo::osVersion()
 {
     //TODO
     return {};
 }
 
-int NGenXX::Device::DeviceInfo::cpuArch()
+int NGenXX::DeviceInfo::cpuArch()
 {
     //TODO
     return NGenXXDeviceCpuArchUnknown;

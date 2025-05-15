@@ -20,12 +20,12 @@ std::weak_ptr<NGenXX::Store::SQLite::Connection> NGenXX::Store::SQLite::connect(
         return this->conns.at(file);
     }
     sqlite3 *db;
-    auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+    const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
     if (rc != SQLITE_OK) [[unlikely]]
     {
         PRINT_ERR(rc, db);
-        return std::weak_ptr<Connection>();
+        return {};
     }
     this->conns.emplace(file, std::make_shared<Connection>(db));
     return this->conns.at(file);
@@ -58,8 +58,7 @@ NGenXX::Store::SQLite::~SQLite()
 
 NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
 {
-    constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
-    if (!this->execute(sEnableWAL)) [[unlikely]]
+    if (constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;"; !this->execute(sEnableWAL)) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Warn, "SQLite enable WAL failed");
     }
@@ -74,7 +73,7 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql) const
         return false;
     }
     sqlite3_stmt *stmt;
-    auto rc = sqlite3_exec(this->db, sql.c_str(), nullptr, nullptr, nullptr);
+    const auto rc = sqlite3_exec(this->db, sql.c_str(), nullptr, nullptr, nullptr);
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
     if (rc != SQLITE_OK)
     {
@@ -92,7 +91,7 @@ std::unique_ptr<NGenXX::Store::SQLite::Connection::QueryResult> NGenXX::Store::S
         return nullptr;
     }
     sqlite3_stmt *stmt;
-    auto rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, nullptr);
+    const auto rc = sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, nullptr);
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.query ret:{}", rc);
     if (rc != SQLITE_OK)
     {
@@ -122,7 +121,7 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow() const
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readRow STMT nullptr");
         return false;
     }
-    auto rc = sqlite3_step(this->stmt);
+    const auto rc = sqlite3_step(this->stmt);
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.step ret:{}", rc);
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {

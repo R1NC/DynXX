@@ -39,7 +39,7 @@ EXTERN_C_BEGIN
      * @param form_field_data_v Form field data bytes vector, max length is `NGENXX_HTTP_FORM_FIELD_DATA_MAX_LENGTH`
      * @param form_field_count Form field count, max ount is `NGENXX_HTTP_FORM_FIELD_MAX_COUNT`
      * @param cFILE A `FILE` (pointer) to PUT
-     * @param fileSize File size
+     * @param file_size File size
      * @param timeout Timeout(milliseconds)
      * @return response
      */

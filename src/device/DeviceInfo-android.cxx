@@ -49,32 +49,32 @@ namespace
     }
 }
 
-int NGenXX::Device::DeviceInfo::deviceType()
+int NGenXX::DeviceInfo::deviceType()
 {
     return NGenXXDeviceTypeAndroid;
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceName()
+std::string NGenXX::DeviceInfo::deviceName()
 {
     return sysProperty(SYS_PROPERTY_MODEL);
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceManufacturer()
+std::string NGenXX::DeviceInfo::deviceManufacturer()
 {
     return sysProperty(SYS_PROPERTY_MANUFACTURER);
 }
 
-std::string NGenXX::Device::DeviceInfo::deviceModel()
+std::string NGenXX::DeviceInfo::deviceModel()
 {
     return sysProperty(SYS_PROPERTY_MODEL);
 }
 
-std::string NGenXX::Device::DeviceInfo::osVersion()
+std::string NGenXX::DeviceInfo::osVersion()
 {
     return sysProperty(SYS_PROPERTY_VERSION_RELEASE);
 }
 
-int NGenXX::Device::DeviceInfo::cpuArch()
+int NGenXX::DeviceInfo::cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
     return NGenXXDeviceCpuArchARM_64;

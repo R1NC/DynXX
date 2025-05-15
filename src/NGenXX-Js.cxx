@@ -12,26 +12,26 @@
 #include "js/JsBridge.hxx"
 #include "NGenXX-Script.hxx"
 
-std::unique_ptr<NGenXX::JsBridge> _ngenxx_js = nullptr;
-static std::function<const char *(const char *msg)> _NGenXX_J_msg_callback = nullptr;
+static std::unique_ptr<NGenXX::JsBridge> sJsBridge = nullptr;
+static std::function<const char *(const char *msg)> sMsgCbk = nullptr;
 
 #define BIND_JS_FUNC(f)                                                        \
-  if (_ngenxx_js) [[likely]] {                                                 \
-    _ngenxx_js->bindFunc(#f, f);                                               \
+  if (sJsBridge) [[likely]] {                                                 \
+    sJsBridge->bindFunc(#f, f);                                               \
   }
 
 std::string _ngenxx_js_ask_platform(const char *msg)
 {
     std::string s;
-    if (msg == nullptr || _NGenXX_J_msg_callback == nullptr)
+    if (msg == nullptr || sMsgCbk == nullptr)
     {
         return s;
     }
-    auto len = std::strlen(msg);
-    auto cMsg = mallocX<char>(len);
+    const auto len = std::strlen(msg);
+    const auto cMsg = mallocX<char>(len);
     std::strncpy(cMsg, msg, len);
-    auto res = _NGenXX_J_msg_callback(cMsg);
-    return res ?: s;
+    const auto res = sMsgCbk(cMsg);
+    return res ? std::string(res): s;
 }
 
 DEF_JS_FUNC_STRING(ngenxx_ask_platformJ, _ngenxx_js_ask_platform)
@@ -47,12 +47,12 @@ DEF_JS_FUNC_INT32(ngenxx_device_cpu_archJ, ngenxx_device_cpu_archS)
 
 DEF_JS_FUNC_VOID(ngenxx_log_printJ, ngenxx_log_printS)
 
-DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_net_http_requestJ, ngenxx_net_http_requestS)
-DEF_JS_FUNC_BOOL_ASYNC(_ngenxx_js, ngenxx_net_http_downloadJ, ngenxx_net_http_downloadS)
+DEF_JS_FUNC_STRING_ASYNC(sJsBridge, ngenxx_net_http_requestJ, ngenxx_net_http_requestS)
+DEF_JS_FUNC_BOOL_ASYNC(sJsBridge, ngenxx_net_http_downloadJ, ngenxx_net_http_downloadS)
 
 DEF_JS_FUNC_STRING(ngenxx_store_sqlite_openJ, ngenxx_store_sqlite_openS)
-DEF_JS_FUNC_BOOL_ASYNC(_ngenxx_js, ngenxx_store_sqlite_executeJ, ngenxx_store_sqlite_executeS)
-DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_store_sqlite_query_doJ, ngenxx_store_sqlite_query_doS)
+DEF_JS_FUNC_BOOL_ASYNC(sJsBridge, ngenxx_store_sqlite_executeJ, ngenxx_store_sqlite_executeS)
+DEF_JS_FUNC_STRING_ASYNC(sJsBridge, ngenxx_store_sqlite_query_doJ, ngenxx_store_sqlite_query_doS)
 DEF_JS_FUNC_BOOL(ngenxx_store_sqlite_query_read_rowJ, ngenxx_store_sqlite_query_read_rowS)
 DEF_JS_FUNC_STRING(ngenxx_store_sqlite_query_read_column_textJ, ngenxx_store_sqlite_query_read_column_textS)
 DEF_JS_FUNC_INT64(ngenxx_store_sqlite_query_read_column_integerJ, ngenxx_store_sqlite_query_read_column_integerS)
@@ -100,51 +100,50 @@ DEF_JS_FUNC_INT64(ngenxx_z_unzip_inputJ, ngenxx_z_unzip_inputS)
 DEF_JS_FUNC_STRING(ngenxx_z_unzip_process_doJ, ngenxx_z_unzip_process_doS)
 DEF_JS_FUNC_BOOL(ngenxx_z_unzip_process_finishedJ, ngenxx_z_unzip_process_finishedS)
 DEF_JS_FUNC_VOID(ngenxx_z_unzip_releaseJ, ngenxx_z_unzip_releaseS)
-DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_z_bytes_zipJ, ngenxx_z_bytes_zipS)
-DEF_JS_FUNC_STRING_ASYNC(_ngenxx_js, ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
+DEF_JS_FUNC_STRING_ASYNC(sJsBridge, ngenxx_z_bytes_zipJ, ngenxx_z_bytes_zipS)
+DEF_JS_FUNC_STRING_ASYNC(sJsBridge, ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
 
 #pragma mark JS
 
 bool ngenxxJsLoadF(const std::string &file, bool isModule)
 {
-    if (!_ngenxx_js || file.empty()) [[unlikely]]
+    if (!sJsBridge || file.empty()) [[unlikely]]
     {
         return false;
     }
-    return _ngenxx_js->loadFile(file, isModule);
+    return sJsBridge->loadFile(file, isModule);
 }
 
 bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isModule)
 {
-    if (!_ngenxx_js || script.empty() || name.empty()) [[unlikely]]
+    if (!sJsBridge || script.empty() || name.empty()) [[unlikely]]
     {
         return false;
     }
-    return _ngenxx_js->loadScript(script, name, isModule);
+    return sJsBridge->loadScript(script, name, isModule);
 }
 
 bool ngenxxJsLoadB(const Bytes &bytes, bool isModule)
 {
-    if (!_ngenxx_js || bytes.empty()) [[unlikely]]
+    if (!sJsBridge || bytes.empty()) [[unlikely]]
     {
         return false;
     }
-    return _ngenxx_js->loadBinary(bytes, isModule);
+    return sJsBridge->loadBinary(bytes, isModule);
 }
 
 std::string ngenxxJsCall(const std::string &func, const std::string &params, bool await)
 {
-    std::string s;
-    if (!_ngenxx_js || func.empty()) [[unlikely]]
+    if (!sJsBridge || func.empty()) [[unlikely]]
     {
-        return s;
+        return {};
     }
-    return _ngenxx_js->callFunc(func, params, await);
+    return sJsBridge->callFunc(func, params, await);
 }
 
 void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback)
 {
-    _NGenXX_J_msg_callback = callback;
+    sMsgCbk = callback;
 }
 
 EXPORT_AUTO
@@ -179,7 +178,7 @@ void ngenxx_js_set_msg_callback(const char *(*const callback)(const char *msg))
 
 #pragma mark JS Module Register
 
-void _ngenxx_js_registerFuncs()
+static void registerFuncs()
 {
     BIND_JS_FUNC(ngenxx_ask_platformJ);
 
@@ -251,23 +250,23 @@ void _ngenxx_js_registerFuncs()
     BIND_JS_FUNC(ngenxx_z_bytes_unzipJ)
 }
 
-void _ngenxx_js_init(void)
+void _ngenxx_js_init()
 {
-    if (_ngenxx_js) [[unlikely]]
+    if (sJsBridge) [[unlikely]]
     {
         return;
     }
-    _ngenxx_js = std::make_unique<NGenXX::JsBridge>();
-    _ngenxx_js_registerFuncs();
+    sJsBridge = std::make_unique<NGenXX::JsBridge>();
+    registerFuncs();
 }
 
-void _ngenxx_js_release(void)
+void _ngenxx_js_release()
 {
-    if (!_ngenxx_js) [[unlikely]]
+    if (!sJsBridge) [[unlikely]]
     {
         return;
     }
-    _ngenxx_js.reset();
-    _NGenXX_J_msg_callback = nullptr;
+    sJsBridge.reset();
+    sMsgCbk = nullptr;
 }
 #endif
