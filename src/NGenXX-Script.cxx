@@ -493,7 +493,7 @@ bool ngenxx_store_kv_write_integerS(const char *json)
     const NGenXX::Json::Decoder decoder(json);
     const auto conn = parsePtr(decoder, "conn");
     const auto k = parseStr(decoder, "k");
-    const auto v = parseNum(decoder, "v");
+    const auto v = static_cast<int64_t>(parseNum(decoder, "v"));
     if (conn == nullptr || k.empty())
     {
         return false;

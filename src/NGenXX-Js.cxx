@@ -12,261 +12,270 @@
 #include "js/JsBridge.hxx"
 #include "NGenXX-Script.hxx"
 
-static std::unique_ptr<NGenXX::JsBridge> sJsBridge = nullptr;
-static std::function<const char *(const char *msg)> sMsgCbk = nullptr;
+namespace {
+    std::unique_ptr<NGenXX::JsBridge> bridge = nullptr;
+    std::function<const char *(const char *msg)> msgCbk = nullptr;
 
-#define BIND_JS_FUNC(f)                                                        \
-  if (sJsBridge) [[likely]] {                                                 \
-    sJsBridge->bindFunc(#f, f);                                               \
-  }
+    #define DEF_API(f, T) DEF_JS_FUNC_##T##(##f##J, ##f##S)
+    #define DEF_API_ASYNC(f, T) DEF_JS_FUNC_##T##_ASYNC(bridge, ##f##J, ##f##S)
 
-std::string _ngenxx_js_ask_platform(const char *msg)
-{
-    std::string s;
-    if (msg == nullptr || sMsgCbk == nullptr)
+    #define BIND_API(f)                                                        \
+        if (bridge) [[likely]] {                                               \
+            bridge->bindFunc(###f##, ##f##J);                                  \
+        }
+
+    bool loadF(const std::string &file, bool isModule)
     {
-        return s;
+        if (!bridge || file.empty()) [[unlikely]]
+        {
+            return false;
+        }
+        return bridge->loadFile(file, isModule);
     }
-    const auto len = std::strlen(msg);
-    const auto cMsg = mallocX<char>(len);
-    std::strncpy(cMsg, msg, len);
-    const auto res = sMsgCbk(cMsg);
-    return res ? std::string(res): s;
-}
 
-DEF_JS_FUNC_STRING(ngenxx_ask_platformJ, _ngenxx_js_ask_platform)
-
-DEF_JS_FUNC_STRING(ngenxx_get_versionJ, ngenxx_get_versionS)
-DEF_JS_FUNC_STRING(ngenxx_root_pathJ, ngenxx_root_pathS)
-
-DEF_JS_FUNC_INT32(ngenxx_device_typeJ, ngenxx_device_typeS)
-DEF_JS_FUNC_STRING(ngenxx_device_nameJ, ngenxx_device_nameS)
-DEF_JS_FUNC_STRING(ngenxx_device_manufacturerJ, ngenxx_device_manufacturerS)
-DEF_JS_FUNC_STRING(ngenxx_device_os_versionJ, ngenxx_device_os_versionS)
-DEF_JS_FUNC_INT32(ngenxx_device_cpu_archJ, ngenxx_device_cpu_archS)
-
-DEF_JS_FUNC_VOID(ngenxx_log_printJ, ngenxx_log_printS)
-
-DEF_JS_FUNC_STRING_ASYNC(sJsBridge, ngenxx_net_http_requestJ, ngenxx_net_http_requestS)
-DEF_JS_FUNC_BOOL_ASYNC(sJsBridge, ngenxx_net_http_downloadJ, ngenxx_net_http_downloadS)
-
-DEF_JS_FUNC_STRING(ngenxx_store_sqlite_openJ, ngenxx_store_sqlite_openS)
-DEF_JS_FUNC_BOOL_ASYNC(sJsBridge, ngenxx_store_sqlite_executeJ, ngenxx_store_sqlite_executeS)
-DEF_JS_FUNC_STRING_ASYNC(sJsBridge, ngenxx_store_sqlite_query_doJ, ngenxx_store_sqlite_query_doS)
-DEF_JS_FUNC_BOOL(ngenxx_store_sqlite_query_read_rowJ, ngenxx_store_sqlite_query_read_rowS)
-DEF_JS_FUNC_STRING(ngenxx_store_sqlite_query_read_column_textJ, ngenxx_store_sqlite_query_read_column_textS)
-DEF_JS_FUNC_INT64(ngenxx_store_sqlite_query_read_column_integerJ, ngenxx_store_sqlite_query_read_column_integerS)
-DEF_JS_FUNC_FLOAT(ngenxx_store_sqlite_query_read_column_floatJ, ngenxx_store_sqlite_query_read_column_floatS)
-DEF_JS_FUNC_VOID(ngenxx_store_sqlite_query_dropJ, ngenxx_store_sqlite_query_dropS)
-DEF_JS_FUNC_VOID(ngenxx_store_sqlite_closeJ, ngenxx_store_sqlite_closeS)
-
-DEF_JS_FUNC_STRING(ngenxx_store_kv_openJ, ngenxx_store_kv_openS)
-DEF_JS_FUNC_STRING(ngenxx_store_kv_read_stringJ, ngenxx_store_kv_read_stringS)
-DEF_JS_FUNC_BOOL(ngenxx_store_kv_write_stringJ, ngenxx_store_kv_write_stringS)
-DEF_JS_FUNC_INT64(ngenxx_store_kv_read_integerJ, ngenxx_store_kv_read_integerS)
-DEF_JS_FUNC_BOOL(ngenxx_store_kv_write_integerJ, ngenxx_store_kv_write_integerS)
-DEF_JS_FUNC_FLOAT(ngenxx_store_kv_read_floatJ, ngenxx_store_kv_read_floatS)
-DEF_JS_FUNC_BOOL(ngenxx_store_kv_write_floatJ, ngenxx_store_kv_write_floatS)
-DEF_JS_FUNC_STRING(ngenxx_store_kv_all_keysJ, ngenxx_store_kv_all_keysS)
-DEF_JS_FUNC_BOOL(ngenxx_store_kv_containsJ, ngenxx_store_kv_containsS)
-DEF_JS_FUNC_BOOL(ngenxx_store_kv_removeJ, ngenxx_store_kv_removeS)
-DEF_JS_FUNC_VOID(ngenxx_store_kv_clearJ, ngenxx_store_kv_clearS)
-DEF_JS_FUNC_VOID(ngenxx_store_kv_closeJ, ngenxx_store_kv_closeS)
-
-DEF_JS_FUNC_STRING(ngenxx_coding_hex_bytes2strJ, ngenxx_coding_hex_bytes2strS)
-DEF_JS_FUNC_STRING(ngenxx_coding_hex_str2bytesJ, ngenxx_coding_hex_str2bytesS)
-DEF_JS_FUNC_STRING(ngenxx_coding_bytes2strJ, ngenxx_coding_bytes2strS)
-DEF_JS_FUNC_STRING(ngenxx_coding_str2bytesJ, ngenxx_coding_str2bytesS)
-DEF_JS_FUNC_STRING(ngenxx_coding_case_upperJ, ngenxx_coding_case_upperS)
-DEF_JS_FUNC_STRING(ngenxx_coding_case_lowerJ, ngenxx_coding_case_lowerS)
-
-DEF_JS_FUNC_STRING(ngenxx_crypto_randJ, ngenxx_crypto_randS)
-DEF_JS_FUNC_STRING(ngenxx_crypto_aes_encryptJ, ngenxx_crypto_aes_encryptS)
-DEF_JS_FUNC_STRING(ngenxx_crypto_aes_decryptJ, ngenxx_crypto_aes_decryptS)
-DEF_JS_FUNC_STRING(ngenxx_crypto_aes_gcm_encryptJ, ngenxx_crypto_aes_gcm_encryptS)
-DEF_JS_FUNC_STRING(ngenxx_crypto_aes_gcm_decryptJ, ngenxx_crypto_aes_gcm_decryptS)
-DEF_JS_FUNC_STRING(ngenxx_crypto_hash_md5J, ngenxx_crypto_hash_md5S)
-DEF_JS_FUNC_STRING(ngenxx_crypto_hash_sha256J, ngenxx_crypto_hash_sha256S)
-DEF_JS_FUNC_STRING(ngenxx_crypto_base64_encodeJ, ngenxx_crypto_base64_encodeS)
-DEF_JS_FUNC_STRING(ngenxx_crypto_base64_decodeJ, ngenxx_crypto_base64_decodeS)
-
-DEF_JS_FUNC_STRING(ngenxx_z_zip_initJ, ngenxx_z_zip_initS)
-DEF_JS_FUNC_INT64(ngenxx_z_zip_inputJ, ngenxx_z_zip_inputS)
-DEF_JS_FUNC_STRING(ngenxx_z_zip_process_doJ, ngenxx_z_zip_process_doS)
-DEF_JS_FUNC_BOOL(ngenxx_z_zip_process_finishedJ, ngenxx_z_zip_process_finishedS)
-DEF_JS_FUNC_VOID(ngenxx_z_zip_releaseJ, ngenxx_z_zip_releaseS)
-DEF_JS_FUNC_STRING(ngenxx_z_unzip_initJ, ngenxx_z_unzip_initS)
-DEF_JS_FUNC_INT64(ngenxx_z_unzip_inputJ, ngenxx_z_unzip_inputS)
-DEF_JS_FUNC_STRING(ngenxx_z_unzip_process_doJ, ngenxx_z_unzip_process_doS)
-DEF_JS_FUNC_BOOL(ngenxx_z_unzip_process_finishedJ, ngenxx_z_unzip_process_finishedS)
-DEF_JS_FUNC_VOID(ngenxx_z_unzip_releaseJ, ngenxx_z_unzip_releaseS)
-DEF_JS_FUNC_STRING_ASYNC(sJsBridge, ngenxx_z_bytes_zipJ, ngenxx_z_bytes_zipS)
-DEF_JS_FUNC_STRING_ASYNC(sJsBridge, ngenxx_z_bytes_unzipJ, ngenxx_z_bytes_unzipS)
-
-#pragma mark JS
-
-bool ngenxxJsLoadF(const std::string &file, bool isModule)
-{
-    if (!sJsBridge || file.empty()) [[unlikely]]
+    bool loadS(const std::string &script, const std::string &name, bool isModule)
     {
-        return false;
+        if (!bridge || script.empty() || name.empty()) [[unlikely]]
+        {
+            return false;
+        }
+        return bridge->loadScript(script, name, isModule);
     }
-    return sJsBridge->loadFile(file, isModule);
-}
 
-bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isModule)
-{
-    if (!sJsBridge || script.empty() || name.empty()) [[unlikely]]
+    bool loadB(const Bytes &bytes, bool isModule)
     {
-        return false;
+        if (!bridge || bytes.empty()) [[unlikely]]
+        {
+            return false;
+        }
+        return bridge->loadBinary(bytes, isModule);
     }
-    return sJsBridge->loadScript(script, name, isModule);
-}
 
-bool ngenxxJsLoadB(const Bytes &bytes, bool isModule)
-{
-    if (!sJsBridge || bytes.empty()) [[unlikely]]
+    std::string call(const std::string &func, const std::string &params, bool await)
     {
-        return false;
+        if (!bridge || func.empty()) [[unlikely]]
+        {
+            return {};
+        }
+        return bridge->callFunc(func, params, await);
     }
-    return sJsBridge->loadBinary(bytes, isModule);
-}
 
-std::string ngenxxJsCall(const std::string &func, const std::string &params, bool await)
-{
-    if (!sJsBridge || func.empty()) [[unlikely]]
+    void setMsgCallback(const std::function<const char *(const char *msg)> &callback)
     {
-        return {};
+        msgCbk = callback;
     }
-    return sJsBridge->callFunc(func, params, await);
+
+    std::string ngenxx_ask_platformS(const char *msg)
+    {
+        std::string s;
+        if (msg == nullptr || msgCbk == nullptr)
+        {
+            return s;
+        }
+        const auto len = std::strlen(msg);
+        const auto cMsg = mallocX<char>(len);
+        std::strncpy(cMsg, msg, len);
+        const auto res = msgCbk(cMsg);
+        return res ? std::string(res): s;
+    }
 }
 
-void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback)
-{
-    sMsgCbk = callback;
-}
+#pragma mark Native API
 
 EXPORT_AUTO
 bool ngenxx_js_loadF(const char *file, bool is_module)
 {
-    return ngenxxJsLoadF(wrapStr(file), is_module);
+    return loadF(wrapStr(file), is_module);
 }
 
 EXPORT_AUTO
 bool ngenxx_js_loadS(const char *script, const char *name, bool is_module)
 {
-    return ngenxxJsLoadS(wrapStr(script), wrapStr(name), is_module);
+    return loadS(wrapStr(script), wrapStr(name), is_module);
 }
 
 EXPORT_AUTO
 bool ngenxx_js_loadB(const byte *bytes, size_t len, bool is_module)
 {
-    return ngenxxJsLoadB(wrapBytes(bytes, len), is_module);
+    return loadB(wrapBytes(bytes, len), is_module);
 }
 
 EXPORT_AUTO
 const char *ngenxx_js_call(const char *func, const char *params, bool await)
 {
-    return copyStr(ngenxxJsCall(wrapStr(func), wrapStr(params), await));
+    return copyStr(call(wrapStr(func), wrapStr(params), await));
 }
 
 EXPORT_AUTO
 void ngenxx_js_set_msg_callback(const char *(*const callback)(const char *msg))
 {
-    ngenxxJsSetMsgCallback(callback);
+    setMsgCallback(callback);
 }
 
-#pragma mark JS Module Register
+#pragma mark JS API - Declaration
+
+DEF_API(ngenxx_ask_platform, STRING)
+
+DEF_API(ngenxx_get_version, STRING)
+DEF_API(ngenxx_root_path, STRING)
+
+DEF_API(ngenxx_device_type, INT32)
+DEF_API(ngenxx_device_name, STRING)
+DEF_API(ngenxx_device_manufacturer, STRING)
+DEF_API(ngenxx_device_os_version, STRING)
+DEF_API(ngenxx_device_cpu_arch, INT32)
+
+DEF_API(ngenxx_log_print, VOID)
+
+DEF_API_ASYNC(ngenxx_net_http_request, STRING)
+DEF_API_ASYNC(ngenxx_net_http_download, BOOL)
+
+DEF_API(ngenxx_store_sqlite_open, STRING)
+DEF_API_ASYNC(ngenxx_store_sqlite_execute, BOOL)
+DEF_API_ASYNC(ngenxx_store_sqlite_query_do, STRING)
+DEF_API(ngenxx_store_sqlite_query_read_row, BOOL)
+DEF_API(ngenxx_store_sqlite_query_read_column_text, STRING)
+DEF_API(ngenxx_store_sqlite_query_read_column_integer, INT64)
+DEF_API(ngenxx_store_sqlite_query_read_column_float, FLOAT)
+DEF_API(ngenxx_store_sqlite_query_drop, VOID)
+DEF_API(ngenxx_store_sqlite_close, VOID)
+
+DEF_API(ngenxx_store_kv_open, STRING)
+DEF_API(ngenxx_store_kv_read_string, STRING)
+DEF_API(ngenxx_store_kv_write_string, BOOL)
+DEF_API(ngenxx_store_kv_read_integer, INT64)
+DEF_API(ngenxx_store_kv_write_integer, BOOL)
+DEF_API(ngenxx_store_kv_read_float, FLOAT)
+DEF_API(ngenxx_store_kv_write_float, BOOL)
+DEF_API(ngenxx_store_kv_all_keys, STRING)
+DEF_API(ngenxx_store_kv_contains, BOOL)
+DEF_API(ngenxx_store_kv_remove, BOOL)
+DEF_API(ngenxx_store_kv_clear, VOID)
+DEF_API(ngenxx_store_kv_close, VOID)
+
+DEF_API(ngenxx_coding_hex_bytes2str, STRING)
+DEF_API(ngenxx_coding_hex_str2bytes, STRING)
+DEF_API(ngenxx_coding_bytes2str, STRING)
+DEF_API(ngenxx_coding_str2bytes, STRING)
+DEF_API(ngenxx_coding_case_upper, STRING)
+DEF_API(ngenxx_coding_case_lower, STRING)
+
+DEF_API(ngenxx_crypto_rand, STRING)
+DEF_API(ngenxx_crypto_aes_encrypt, STRING)
+DEF_API(ngenxx_crypto_aes_decrypt, STRING)
+DEF_API(ngenxx_crypto_aes_gcm_encrypt, STRING)
+DEF_API(ngenxx_crypto_aes_gcm_decrypt, STRING)
+DEF_API(ngenxx_crypto_hash_md5, STRING)
+DEF_API(ngenxx_crypto_hash_sha256, STRING)
+DEF_API(ngenxx_crypto_base64_encode, STRING)
+DEF_API(ngenxx_crypto_base64_decode, STRING)
+
+DEF_API(ngenxx_z_zip_init, STRING)
+DEF_API(ngenxx_z_zip_input, INT64)
+DEF_API(ngenxx_z_zip_process_do, STRING)
+DEF_API(ngenxx_z_zip_process_finished, BOOL)
+DEF_API(ngenxx_z_zip_release, VOID)
+DEF_API(ngenxx_z_unzip_init, STRING)
+DEF_API(ngenxx_z_unzip_input, INT64)
+DEF_API(ngenxx_z_unzip_process_do, STRING)
+DEF_API(ngenxx_z_unzip_process_finished, BOOL)
+DEF_API(ngenxx_z_unzip_release, VOID)
+DEF_API_ASYNC(ngenxx_z_bytes_zip, STRING)
+DEF_API_ASYNC(ngenxx_z_bytes_unzip, STRING)
+
+#pragma mark JS API - Binding
 
 static void registerFuncs()
 {
-    BIND_JS_FUNC(ngenxx_ask_platformJ);
+    BIND_API(ngenxx_ask_platform);
 
-    BIND_JS_FUNC(ngenxx_get_versionJ);
-    BIND_JS_FUNC(ngenxx_root_pathJ);
+    BIND_API(ngenxx_get_version);
+    BIND_API(ngenxx_root_path);
 
-    BIND_JS_FUNC(ngenxx_log_printJ);
+    BIND_API(ngenxx_log_print);
 
-    BIND_JS_FUNC(ngenxx_device_typeJ);
-    BIND_JS_FUNC(ngenxx_device_nameJ);
-    BIND_JS_FUNC(ngenxx_device_manufacturerJ);
-    BIND_JS_FUNC(ngenxx_device_os_versionJ);
-    BIND_JS_FUNC(ngenxx_device_cpu_archJ);
+    BIND_API(ngenxx_device_type);
+    BIND_API(ngenxx_device_name);
+    BIND_API(ngenxx_device_manufacturer);
+    BIND_API(ngenxx_device_os_version);
+    BIND_API(ngenxx_device_cpu_arch);
 
-    BIND_JS_FUNC(ngenxx_net_http_requestJ);
-    BIND_JS_FUNC(ngenxx_net_http_downloadJ);
+    BIND_API(ngenxx_net_http_request);
+    BIND_API(ngenxx_net_http_download);
 
-    BIND_JS_FUNC(ngenxx_store_sqlite_openJ);
-    BIND_JS_FUNC(ngenxx_store_sqlite_executeJ);
-    BIND_JS_FUNC(ngenxx_store_sqlite_query_doJ);
-    BIND_JS_FUNC(ngenxx_store_sqlite_query_read_rowJ);
-    BIND_JS_FUNC(ngenxx_store_sqlite_query_read_column_textJ);
-    BIND_JS_FUNC(ngenxx_store_sqlite_query_read_column_integerJ);
-    BIND_JS_FUNC(ngenxx_store_sqlite_query_read_column_floatJ);
-    BIND_JS_FUNC(ngenxx_store_sqlite_query_dropJ);
-    BIND_JS_FUNC(ngenxx_store_sqlite_closeJ);
+    BIND_API(ngenxx_store_sqlite_open);
+    BIND_API(ngenxx_store_sqlite_execute);
+    BIND_API(ngenxx_store_sqlite_query_do);
+    BIND_API(ngenxx_store_sqlite_query_read_row);
+    BIND_API(ngenxx_store_sqlite_query_read_column_text);
+    BIND_API(ngenxx_store_sqlite_query_read_column_integer);
+    BIND_API(ngenxx_store_sqlite_query_read_column_float);
+    BIND_API(ngenxx_store_sqlite_query_drop);
+    BIND_API(ngenxx_store_sqlite_close);
 
-    BIND_JS_FUNC(ngenxx_store_kv_openJ);
-    BIND_JS_FUNC(ngenxx_store_kv_read_stringJ);
-    BIND_JS_FUNC(ngenxx_store_kv_write_stringJ);
-    BIND_JS_FUNC(ngenxx_store_kv_read_integerJ);
-    BIND_JS_FUNC(ngenxx_store_kv_write_integerJ);
-    BIND_JS_FUNC(ngenxx_store_kv_read_floatJ);
-    BIND_JS_FUNC(ngenxx_store_kv_write_floatJ);
-    BIND_JS_FUNC(ngenxx_store_kv_all_keysJ);
-    BIND_JS_FUNC(ngenxx_store_kv_containsJ);
-    BIND_JS_FUNC(ngenxx_store_kv_removeJ);
-    BIND_JS_FUNC(ngenxx_store_kv_clearJ);
-    BIND_JS_FUNC(ngenxx_store_kv_closeJ);
+    BIND_API(ngenxx_store_kv_open);
+    BIND_API(ngenxx_store_kv_read_string);
+    BIND_API(ngenxx_store_kv_write_string);
+    BIND_API(ngenxx_store_kv_read_integer);
+    BIND_API(ngenxx_store_kv_write_integer);
+    BIND_API(ngenxx_store_kv_read_float);
+    BIND_API(ngenxx_store_kv_write_float);
+    BIND_API(ngenxx_store_kv_all_keys);
+    BIND_API(ngenxx_store_kv_contains);
+    BIND_API(ngenxx_store_kv_remove);
+    BIND_API(ngenxx_store_kv_clear);
+    BIND_API(ngenxx_store_kv_close);
 
-    BIND_JS_FUNC(ngenxx_coding_hex_bytes2strJ);
-    BIND_JS_FUNC(ngenxx_coding_hex_str2bytesJ);
-    BIND_JS_FUNC(ngenxx_coding_bytes2strJ);
-    BIND_JS_FUNC(ngenxx_coding_str2bytesJ);
-    BIND_JS_FUNC(ngenxx_coding_case_upperJ);
-    BIND_JS_FUNC(ngenxx_coding_case_lowerJ);
+    BIND_API(ngenxx_coding_hex_bytes2str);
+    BIND_API(ngenxx_coding_hex_str2bytes);
+    BIND_API(ngenxx_coding_bytes2str);
+    BIND_API(ngenxx_coding_str2bytes);
+    BIND_API(ngenxx_coding_case_upper);
+    BIND_API(ngenxx_coding_case_lower);
 
-    BIND_JS_FUNC(ngenxx_crypto_randJ);
-    BIND_JS_FUNC(ngenxx_crypto_aes_encryptJ);
-    BIND_JS_FUNC(ngenxx_crypto_aes_decryptJ);
-    BIND_JS_FUNC(ngenxx_crypto_aes_gcm_encryptJ);
-    BIND_JS_FUNC(ngenxx_crypto_aes_gcm_decryptJ);
-    BIND_JS_FUNC(ngenxx_crypto_hash_md5J);
-    BIND_JS_FUNC(ngenxx_crypto_hash_sha256J);
-    BIND_JS_FUNC(ngenxx_crypto_base64_encodeJ);
-    BIND_JS_FUNC(ngenxx_crypto_base64_decodeJ);
+    BIND_API(ngenxx_crypto_rand);
+    BIND_API(ngenxx_crypto_aes_encrypt);
+    BIND_API(ngenxx_crypto_aes_decrypt);
+    BIND_API(ngenxx_crypto_aes_gcm_encrypt);
+    BIND_API(ngenxx_crypto_aes_gcm_decrypt);
+    BIND_API(ngenxx_crypto_hash_md5);
+    BIND_API(ngenxx_crypto_hash_sha256);
+    BIND_API(ngenxx_crypto_base64_encode);
+    BIND_API(ngenxx_crypto_base64_decode);
 
-    BIND_JS_FUNC(ngenxx_z_zip_initJ);
-    BIND_JS_FUNC(ngenxx_z_zip_inputJ);
-    BIND_JS_FUNC(ngenxx_z_zip_process_doJ);
-    BIND_JS_FUNC(ngenxx_z_zip_process_finishedJ);
-    BIND_JS_FUNC(ngenxx_z_zip_releaseJ);
-    BIND_JS_FUNC(ngenxx_z_unzip_initJ);
-    BIND_JS_FUNC(ngenxx_z_unzip_inputJ);
-    BIND_JS_FUNC(ngenxx_z_unzip_process_doJ);
-    BIND_JS_FUNC(ngenxx_z_unzip_process_finishedJ);
-    BIND_JS_FUNC(ngenxx_z_unzip_releaseJ);
-    BIND_JS_FUNC(ngenxx_z_bytes_zipJ)
-    BIND_JS_FUNC(ngenxx_z_bytes_unzipJ)
+    BIND_API(ngenxx_z_zip_init);
+    BIND_API(ngenxx_z_zip_input);
+    BIND_API(ngenxx_z_zip_process_do);
+    BIND_API(ngenxx_z_zip_process_finished);
+    BIND_API(ngenxx_z_zip_release);
+    BIND_API(ngenxx_z_unzip_init);
+    BIND_API(ngenxx_z_unzip_input);
+    BIND_API(ngenxx_z_unzip_process_do);
+    BIND_API(ngenxx_z_unzip_process_finished);
+    BIND_API(ngenxx_z_unzip_release);
+    BIND_API(ngenxx_z_bytes_zip)
+    BIND_API(ngenxx_z_bytes_unzip)
 }
+
+#pragma mark Inner API
 
 void _ngenxx_js_init()
 {
-    if (sJsBridge) [[unlikely]]
+    if (bridge) [[unlikely]]
     {
         return;
     }
-    sJsBridge = std::make_unique<NGenXX::JsBridge>();
+    bridge = std::make_unique<NGenXX::JsBridge>();
     registerFuncs();
 }
 
 void _ngenxx_js_release()
 {
-    if (!sJsBridge) [[unlikely]]
+    if (!bridge) [[unlikely]]
     {
         return;
     }
-    sJsBridge.reset();
-    sMsgCbk = nullptr;
+    bridge.reset();
+    msgCbk = nullptr;
 }
 #endif

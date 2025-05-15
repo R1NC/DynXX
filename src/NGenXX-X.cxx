@@ -532,7 +532,7 @@ bool ngenxxStoreKvWriteFloat(void *const conn, const std::string_view &k, double
     return xconn->write(k, v);
 }
 
-const std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn)
+std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn)
 {
     if (conn == nullptr)
     {

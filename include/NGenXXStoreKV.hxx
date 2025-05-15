@@ -20,7 +20,7 @@ double ngenxxStoreKvReadFloat(void *const conn, const std::string_view &k);
 
 bool ngenxxStoreKvWriteFloat(void *const conn, const std::string_view &k, double v);
 
-const std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn);
+std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn);
 
 bool ngenxxStoreKvContains(void *const conn, const std::string_view &k);
 

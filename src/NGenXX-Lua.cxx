@@ -8,215 +8,225 @@
 #include "NGenXX-inner.hxx"
 #include "NGenXX-Script.hxx"
 
-static std::unique_ptr<NGenXX::LuaBridge> sLuaBridge = nullptr;
+namespace {
+    std::unique_ptr<NGenXX::LuaBridge> bridge = nullptr;
 
-#define BIND_LUA_FUNC(f)                                                       \
-  if (sLuaBridge) [[likely]] {                                                \
-    sLuaBridge->bindFunc(std::string(#f), f);                                 \
-  }
+    #define DEF_API(f, T) DEF_LUA_FUNC_##T##(##f##L, ##f##S)
 
-DEF_LUA_FUNC_STRING(ngenxx_get_versionL, ngenxx_get_versionS)
-DEF_LUA_FUNC_STRING(ngenxx_root_pathL, ngenxx_root_pathS)
+    #define BIND_API(f)                                                        \
+        if (bridge) [[likely]] {                                               \
+            bridge->bindFunc(###f##, ##f##L);                                  \
+        }
 
-DEF_LUA_FUNC_INTEGER(ngenxx_device_typeL, ngenxx_device_typeS)
-DEF_LUA_FUNC_STRING(ngenxx_device_nameL, ngenxx_device_nameS)
-DEF_LUA_FUNC_STRING(ngenxx_device_manufacturerL, ngenxx_device_manufacturerS)
-DEF_LUA_FUNC_STRING(ngenxx_device_os_versionL, ngenxx_device_os_versionS)
-DEF_LUA_FUNC_INTEGER(ngenxx_device_cpu_archL, ngenxx_device_cpu_archS)
-
-DEF_LUA_FUNC_VOID(ngenxx_log_printL, ngenxx_log_printS)
-
-DEF_LUA_FUNC_STRING(ngenxx_net_http_requestL, ngenxx_net_http_requestS)
-DEF_LUA_FUNC_BOOL(ngenxx_net_http_downloadL, ngenxx_net_http_downloadS)
-
-DEF_LUA_FUNC_STRING(ngenxx_store_sqlite_openL, ngenxx_store_sqlite_openS)
-DEF_LUA_FUNC_BOOL(ngenxx_store_sqlite_executeL, ngenxx_store_sqlite_executeS)
-DEF_LUA_FUNC_STRING(ngenxx_store_sqlite_query_doL, ngenxx_store_sqlite_query_doS)
-DEF_LUA_FUNC_BOOL(ngenxx_store_sqlite_query_read_rowL, ngenxx_store_sqlite_query_read_rowS)
-DEF_LUA_FUNC_STRING(ngenxx_store_sqlite_query_read_column_textL, ngenxx_store_sqlite_query_read_column_textS)
-DEF_LUA_FUNC_INTEGER(ngenxx_store_sqlite_query_read_column_integerL, ngenxx_store_sqlite_query_read_column_integerS)
-DEF_LUA_FUNC_FLOAT(ngenxx_store_sqlite_query_read_column_floatL, ngenxx_store_sqlite_query_read_column_floatS)
-DEF_LUA_FUNC_VOID(ngenxx_store_sqlite_query_dropL, ngenxx_store_sqlite_query_dropS)
-DEF_LUA_FUNC_VOID(ngenxx_store_sqlite_closeL, ngenxx_store_sqlite_closeS)
-
-DEF_LUA_FUNC_STRING(ngenxx_store_kv_openL, ngenxx_store_kv_openS)
-DEF_LUA_FUNC_STRING(ngenxx_store_kv_read_stringL, ngenxx_store_kv_read_stringS)
-DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_stringL, ngenxx_store_kv_write_stringS)
-DEF_LUA_FUNC_INTEGER(ngenxx_store_kv_read_integerL, ngenxx_store_kv_read_integerS)
-DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_integerL, ngenxx_store_kv_write_integerS)
-DEF_LUA_FUNC_FLOAT(ngenxx_store_kv_read_floatL, ngenxx_store_kv_read_floatS)
-DEF_LUA_FUNC_BOOL(ngenxx_store_kv_write_floatL, ngenxx_store_kv_write_floatS)
-DEF_LUA_FUNC_STRING(ngenxx_store_kv_all_keysL, ngenxx_store_kv_all_keysS)
-DEF_LUA_FUNC_BOOL(ngenxx_store_kv_containsL, ngenxx_store_kv_containsS)
-DEF_LUA_FUNC_BOOL(ngenxx_store_kv_removeL, ngenxx_store_kv_removeS)
-DEF_LUA_FUNC_VOID(ngenxx_store_kv_clearL, ngenxx_store_kv_clearS)
-DEF_LUA_FUNC_VOID(ngenxx_store_kv_closeL, ngenxx_store_kv_closeS)
-
-DEF_LUA_FUNC_STRING(ngenxx_coding_hex_bytes2strL, ngenxx_coding_hex_bytes2strS)
-DEF_LUA_FUNC_STRING(ngenxx_coding_hex_str2bytesL, ngenxx_coding_hex_str2bytesS)
-DEF_LUA_FUNC_STRING(ngenxx_coding_case_upperL, ngenxx_coding_case_upperS)
-DEF_LUA_FUNC_STRING(ngenxx_coding_case_lowerL, ngenxx_coding_case_lowerS)
-DEF_LUA_FUNC_STRING(ngenxx_coding_bytes2strL, ngenxx_coding_bytes2strS)
-DEF_LUA_FUNC_STRING(ngenxx_coding_str2bytesL, ngenxx_coding_str2bytesS)
-
-DEF_LUA_FUNC_STRING(ngenxx_crypto_randL, ngenxx_crypto_randS)
-DEF_LUA_FUNC_STRING(ngenxx_crypto_aes_encryptL, ngenxx_crypto_aes_encryptS)
-DEF_LUA_FUNC_STRING(ngenxx_crypto_aes_decryptL, ngenxx_crypto_aes_decryptS)
-DEF_LUA_FUNC_STRING(ngenxx_crypto_aes_gcm_encryptL, ngenxx_crypto_aes_gcm_encryptS)
-DEF_LUA_FUNC_STRING(ngenxx_crypto_aes_gcm_decryptL, ngenxx_crypto_aes_gcm_decryptS)
-DEF_LUA_FUNC_STRING(ngenxx_crypto_hash_md5L, ngenxx_crypto_hash_md5S)
-DEF_LUA_FUNC_STRING(ngenxx_crypto_hash_sha256L, ngenxx_crypto_hash_sha256S)
-DEF_LUA_FUNC_STRING(ngenxx_crypto_base64_encodeL, ngenxx_crypto_base64_encodeS)
-DEF_LUA_FUNC_STRING(ngenxx_crypto_base64_decodeL, ngenxx_crypto_base64_decodeS)
-
-DEF_LUA_FUNC_STRING(ngenxx_z_zip_initL, ngenxx_z_zip_initS)
-DEF_LUA_FUNC_INTEGER(ngenxx_z_zip_inputL, ngenxx_z_zip_inputS)
-DEF_LUA_FUNC_STRING(ngenxx_z_zip_process_doL, ngenxx_z_zip_process_doS)
-DEF_LUA_FUNC_BOOL(ngenxx_z_zip_process_finishedL, ngenxx_z_zip_process_finishedS)
-DEF_LUA_FUNC_VOID(ngenxx_z_zip_releaseL, ngenxx_z_zip_releaseS)
-DEF_LUA_FUNC_STRING(ngenxx_z_unzip_initL, ngenxx_z_unzip_initS)
-DEF_LUA_FUNC_INTEGER(ngenxx_z_unzip_inputL, ngenxx_z_unzip_inputS)
-DEF_LUA_FUNC_STRING(ngenxx_z_unzip_process_doL, ngenxx_z_unzip_process_doS)
-DEF_LUA_FUNC_BOOL(ngenxx_z_unzip_process_finishedL, ngenxx_z_unzip_process_finishedS)
-DEF_LUA_FUNC_VOID(ngenxx_z_unzip_releaseL, ngenxx_z_unzip_releaseS)
-DEF_LUA_FUNC_STRING(ngenxx_z_bytes_zipL, ngenxx_z_bytes_zipS)
-DEF_LUA_FUNC_STRING(ngenxx_z_bytes_unzipL, ngenxx_z_bytes_unzipS)
-
-#pragma mark Lua
-
-bool ngenxxLuaLoadF(const std::string &f)
-{
-    if (!sLuaBridge || f.empty()) [[unlikely]]
+    bool loadF(const std::string &f)
     {
-        return false;
+        if (!bridge || f.empty()) [[unlikely]]
+        {
+            return false;
+        }
+        return bridge->loadFile(f);
     }
-    return sLuaBridge->loadFile(f);
+
+    bool loadS(const std::string &s)
+    {
+        if (!bridge || s.empty()) [[unlikely]]
+        {
+            return false;
+        }
+        return bridge->loadScript(s);
+    }
+
+    std::string call(const std::string &f, const std::string &ps)
+    {
+        if (!bridge || f.empty()) [[unlikely]]
+        {
+            return {};
+        }
+        return bridge->callFunc(f, ps);
+    }
 }
 
-bool ngenxxLuaLoadS(const std::string &s)
-{
-    if (!sLuaBridge || s.empty()) [[unlikely]]
-    {
-        return false;
-    }
-    return sLuaBridge->loadScript(s);
-}
-
-std::string ngenxxLuaCall(const std::string &f, const std::string &ps)
-{
-    if (!sLuaBridge || f.empty()) [[unlikely]]
-    {
-        return {};
-    }
-    return sLuaBridge->callFunc(f, ps);
-}
+#pragma mark Native API
 
 #if !defined(__EMSCRIPTEN__)
 EXPORT
 bool ngenxx_lua_loadF(const char *file)
 {
-    return ngenxxLuaLoadF(wrapStr(file));
+    return loadF(wrapStr(file));
 }
 #endif
 
 EXPORT
 bool ngenxx_lua_loadS(const char *script)
 {
-    return ngenxxLuaLoadS(wrapStr(script));
+    return loadS(wrapStr(script));
 }
 
 EXPORT
 const char *ngenxx_lua_call(const char *f, const char *ps)
 {
-    return copyStr(ngenxxLuaCall(wrapStr(f), wrapStr(ps)));
+    return copyStr(call(wrapStr(f), wrapStr(ps)));
 }
+
+#pragma mark Lua API - Declaration
+
+DEF_API(ngenxx_get_version, STRING)
+DEF_API(ngenxx_root_path, STRING)
+
+DEF_API(ngenxx_device_type, INTEGER)
+DEF_API(ngenxx_device_name, STRING)
+DEF_API(ngenxx_device_manufacturer, STRING)
+DEF_API(ngenxx_device_os_version, STRING)
+DEF_API(ngenxx_device_cpu_arch, INTEGER)
+
+DEF_API(ngenxx_log_print, VOID)
+
+DEF_API(ngenxx_net_http_request, STRING)
+DEF_API(ngenxx_net_http_download, BOOL)
+
+DEF_API(ngenxx_store_sqlite_open, STRING)
+DEF_API(ngenxx_store_sqlite_execute, BOOL)
+DEF_API(ngenxx_store_sqlite_query_do, STRING)
+DEF_API(ngenxx_store_sqlite_query_read_row, BOOL)
+DEF_API(ngenxx_store_sqlite_query_read_column_text, STRING)
+DEF_API(ngenxx_store_sqlite_query_read_column_integer, INTEGER)
+DEF_API(ngenxx_store_sqlite_query_read_column_float, FLOAT)
+DEF_API(ngenxx_store_sqlite_query_drop, VOID)
+DEF_API(ngenxx_store_sqlite_close, VOID)
+
+DEF_API(ngenxx_store_kv_open, STRING)
+DEF_API(ngenxx_store_kv_read_string, STRING)
+DEF_API(ngenxx_store_kv_write_string, BOOL)
+DEF_API(ngenxx_store_kv_read_integer, INTEGER)
+DEF_API(ngenxx_store_kv_write_integer, BOOL)
+DEF_API(ngenxx_store_kv_read_float, FLOAT)
+DEF_API(ngenxx_store_kv_write_float, BOOL)
+DEF_API(ngenxx_store_kv_all_keys, STRING)
+DEF_API(ngenxx_store_kv_contains, BOOL)
+DEF_API(ngenxx_store_kv_remove, BOOL)
+DEF_API(ngenxx_store_kv_clear, VOID)
+DEF_API(ngenxx_store_kv_close, VOID)
+
+DEF_API(ngenxx_coding_hex_bytes2str, STRING)
+DEF_API(ngenxx_coding_hex_str2bytes, STRING)
+DEF_API(ngenxx_coding_case_upper, STRING)
+DEF_API(ngenxx_coding_case_lower, STRING)
+DEF_API(ngenxx_coding_bytes2str, STRING)
+DEF_API(ngenxx_coding_str2bytes, STRING)
+
+DEF_API(ngenxx_crypto_rand, STRING)
+DEF_API(ngenxx_crypto_aes_encrypt, STRING)
+DEF_API(ngenxx_crypto_aes_decrypt, STRING)
+DEF_API(ngenxx_crypto_aes_gcm_encrypt, STRING)
+DEF_API(ngenxx_crypto_aes_gcm_decrypt, STRING)
+DEF_API(ngenxx_crypto_hash_md5, STRING)
+DEF_API(ngenxx_crypto_hash_sha256, STRING)
+DEF_API(ngenxx_crypto_base64_encode, STRING)
+DEF_API(ngenxx_crypto_base64_decode, STRING)
+
+DEF_API(ngenxx_z_zip_init, STRING)
+DEF_API(ngenxx_z_zip_input, INTEGER)
+DEF_API(ngenxx_z_zip_process_do, STRING)
+DEF_API(ngenxx_z_zip_process_finished, BOOL)
+DEF_API(ngenxx_z_zip_release, VOID)
+DEF_API(ngenxx_z_unzip_init, STRING)
+DEF_API(ngenxx_z_unzip_input, INTEGER)
+DEF_API(ngenxx_z_unzip_process_do, STRING)
+DEF_API(ngenxx_z_unzip_process_finished, BOOL)
+DEF_API(ngenxx_z_unzip_release, VOID)
+DEF_API(ngenxx_z_bytes_zip, STRING)
+DEF_API(ngenxx_z_bytes_unzip, STRING)
+
+#pragma mark Lua API - Binding
 
 static void registerFuncs()
 {
-    BIND_LUA_FUNC(ngenxx_get_versionL);
-    BIND_LUA_FUNC(ngenxx_root_pathL);
+    BIND_API(ngenxx_get_version);
+    BIND_API(ngenxx_root_path);
 
-    BIND_LUA_FUNC(ngenxx_log_printL);
+    BIND_API(ngenxx_log_print);
 
-    BIND_LUA_FUNC(ngenxx_device_typeL);
-    BIND_LUA_FUNC(ngenxx_device_nameL);
-    BIND_LUA_FUNC(ngenxx_device_manufacturerL);
-    BIND_LUA_FUNC(ngenxx_device_os_versionL);
-    BIND_LUA_FUNC(ngenxx_device_cpu_archL);
+    BIND_API(ngenxx_device_type);
+    BIND_API(ngenxx_device_name);
+    BIND_API(ngenxx_device_manufacturer);
+    BIND_API(ngenxx_device_os_version);
+    BIND_API(ngenxx_device_cpu_arch);
 
-    BIND_LUA_FUNC(ngenxx_net_http_requestL);
-    BIND_LUA_FUNC(ngenxx_net_http_downloadL);
+    BIND_API(ngenxx_net_http_request);
+    BIND_API(ngenxx_net_http_download);
 
-    BIND_LUA_FUNC(ngenxx_store_sqlite_openL);
-    BIND_LUA_FUNC(ngenxx_store_sqlite_executeL);
-    BIND_LUA_FUNC(ngenxx_store_sqlite_query_doL);
-    BIND_LUA_FUNC(ngenxx_store_sqlite_query_read_rowL);
-    BIND_LUA_FUNC(ngenxx_store_sqlite_query_read_column_textL);
-    BIND_LUA_FUNC(ngenxx_store_sqlite_query_read_column_integerL);
-    BIND_LUA_FUNC(ngenxx_store_sqlite_query_read_column_floatL);
-    BIND_LUA_FUNC(ngenxx_store_sqlite_query_dropL);
-    BIND_LUA_FUNC(ngenxx_store_sqlite_closeL);
+    BIND_API(ngenxx_store_sqlite_open);
+    BIND_API(ngenxx_store_sqlite_execute);
+    BIND_API(ngenxx_store_sqlite_query_do);
+    BIND_API(ngenxx_store_sqlite_query_read_row);
+    BIND_API(ngenxx_store_sqlite_query_read_column_text);
+    BIND_API(ngenxx_store_sqlite_query_read_column_integer);
+    BIND_API(ngenxx_store_sqlite_query_read_column_float);
+    BIND_API(ngenxx_store_sqlite_query_drop);
+    BIND_API(ngenxx_store_sqlite_close);
 
-    BIND_LUA_FUNC(ngenxx_store_kv_openL);
-    BIND_LUA_FUNC(ngenxx_store_kv_read_stringL);
-    BIND_LUA_FUNC(ngenxx_store_kv_write_stringL);
-    BIND_LUA_FUNC(ngenxx_store_kv_read_integerL);
-    BIND_LUA_FUNC(ngenxx_store_kv_write_integerL);
-    BIND_LUA_FUNC(ngenxx_store_kv_read_floatL);
-    BIND_LUA_FUNC(ngenxx_store_kv_write_floatL);
-    BIND_LUA_FUNC(ngenxx_store_kv_all_keysL);
-    BIND_LUA_FUNC(ngenxx_store_kv_containsL);
-    BIND_LUA_FUNC(ngenxx_store_kv_removeL);
-    BIND_LUA_FUNC(ngenxx_store_kv_clearL);
-    BIND_LUA_FUNC(ngenxx_store_kv_closeL);
+    BIND_API(ngenxx_store_kv_open);
+    BIND_API(ngenxx_store_kv_read_string);
+    BIND_API(ngenxx_store_kv_write_string);
+    BIND_API(ngenxx_store_kv_read_integer);
+    BIND_API(ngenxx_store_kv_write_integer);
+    BIND_API(ngenxx_store_kv_read_float);
+    BIND_API(ngenxx_store_kv_write_float);
+    BIND_API(ngenxx_store_kv_all_keys);
+    BIND_API(ngenxx_store_kv_contains);
+    BIND_API(ngenxx_store_kv_remove);
+    BIND_API(ngenxx_store_kv_clear);
+    BIND_API(ngenxx_store_kv_close);
 
-    BIND_LUA_FUNC(ngenxx_coding_hex_bytes2strL);
-    BIND_LUA_FUNC(ngenxx_coding_hex_str2bytesL);
-    BIND_LUA_FUNC(ngenxx_coding_case_upperL);
-    BIND_LUA_FUNC(ngenxx_coding_case_lowerL);
-    BIND_LUA_FUNC(ngenxx_coding_bytes2strL);
-    BIND_LUA_FUNC(ngenxx_coding_str2bytesL);
+    BIND_API(ngenxx_coding_hex_bytes2str);
+    BIND_API(ngenxx_coding_hex_str2bytes);
+    BIND_API(ngenxx_coding_case_upper);
+    BIND_API(ngenxx_coding_case_lower);
+    BIND_API(ngenxx_coding_bytes2str);
+    BIND_API(ngenxx_coding_str2bytes);
 
-    BIND_LUA_FUNC(ngenxx_crypto_randL);
-    BIND_LUA_FUNC(ngenxx_crypto_aes_encryptL);
-    BIND_LUA_FUNC(ngenxx_crypto_aes_decryptL);
-    BIND_LUA_FUNC(ngenxx_crypto_aes_gcm_encryptL);
-    BIND_LUA_FUNC(ngenxx_crypto_aes_gcm_decryptL);
-    BIND_LUA_FUNC(ngenxx_crypto_hash_md5L);
-    BIND_LUA_FUNC(ngenxx_crypto_hash_sha256L);
-    BIND_LUA_FUNC(ngenxx_crypto_base64_encodeL);
-    BIND_LUA_FUNC(ngenxx_crypto_base64_decodeL);
+    BIND_API(ngenxx_crypto_rand);
+    BIND_API(ngenxx_crypto_aes_encrypt);
+    BIND_API(ngenxx_crypto_aes_decrypt);
+    BIND_API(ngenxx_crypto_aes_gcm_encrypt);
+    BIND_API(ngenxx_crypto_aes_gcm_decrypt);
+    BIND_API(ngenxx_crypto_hash_md5);
+    BIND_API(ngenxx_crypto_hash_sha256);
+    BIND_API(ngenxx_crypto_base64_encode);
+    BIND_API(ngenxx_crypto_base64_decode);
 
-    BIND_LUA_FUNC(ngenxx_z_zip_initL);
-    BIND_LUA_FUNC(ngenxx_z_zip_inputL);
-    BIND_LUA_FUNC(ngenxx_z_zip_process_doL);
-    BIND_LUA_FUNC(ngenxx_z_zip_process_finishedL);
-    BIND_LUA_FUNC(ngenxx_z_zip_releaseL);
-    BIND_LUA_FUNC(ngenxx_z_unzip_initL);
-    BIND_LUA_FUNC(ngenxx_z_unzip_inputL);
-    BIND_LUA_FUNC(ngenxx_z_unzip_process_doL);
-    BIND_LUA_FUNC(ngenxx_z_unzip_process_finishedL);
-    BIND_LUA_FUNC(ngenxx_z_unzip_releaseL);
-    BIND_LUA_FUNC(ngenxx_z_bytes_zipL)
-    BIND_LUA_FUNC(ngenxx_z_bytes_unzipL)
+    BIND_API(ngenxx_z_zip_init);
+    BIND_API(ngenxx_z_zip_input);
+    BIND_API(ngenxx_z_zip_process_do);
+    BIND_API(ngenxx_z_zip_process_finished);
+    BIND_API(ngenxx_z_zip_release);
+    BIND_API(ngenxx_z_unzip_init);
+    BIND_API(ngenxx_z_unzip_input);
+    BIND_API(ngenxx_z_unzip_process_do);
+    BIND_API(ngenxx_z_unzip_process_finished);
+    BIND_API(ngenxx_z_unzip_release);
+    BIND_API(ngenxx_z_bytes_zip)
+    BIND_API(ngenxx_z_bytes_unzip)
 }
+
+#pragma mark Inner API
 
 void _ngenxx_lua_init()
 {
-    if (sLuaBridge) [[unlikely]]
+    if (bridge) [[unlikely]]
     {
         return;
     }
-    sLuaBridge = std::make_unique<NGenXX::LuaBridge>();
+    bridge = std::make_unique<NGenXX::LuaBridge>();
     registerFuncs();
 }
 
 void _ngenxx_lua_release()
 {
-    if (!sLuaBridge) [[unlikely]]
+    if (!bridge) [[unlikely]]
     {
         return;
     }
-    sLuaBridge.reset();
+    bridge.reset();
 }
 #endif
