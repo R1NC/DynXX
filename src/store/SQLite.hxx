@@ -64,6 +64,7 @@ namespace NGenXX::Store
                      * @return column data
                      */
                     Any readColumn(const std::string &column) const;
+                    Any operator[](const std::string &column) const;
 
                     /**
                      * @brief Release QueryResult

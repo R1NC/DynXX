@@ -38,10 +38,7 @@ namespace NGenXX::Json
             void readChildren(const void *const node, std::function<void(size_t idx, const void * child)> &&callback) const;
 
             void *readNode(const void *const node, const std::string &k) const;
-            void *operator[](const std::string &k) const
-            {
-                return this->readNode(nullptr, k);
-            }
+            void *operator[](const std::string &k) const;
 
             std::string readString(const void *const node) const;
 

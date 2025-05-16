@@ -169,6 +169,11 @@ void *NGenXX::Json::Decoder::readNode(const void *const node, const std::string 
     return nullptr;
 }
 
+void *NGenXX::Json::Decoder::operator[](const std::string &k) const
+{
+    return this->readNode(nullptr, k);
+}
+
 std::string NGenXX::Json::Decoder::readString(const void *const node) const
 {
     const auto cj = this->reinterpretNode(node);

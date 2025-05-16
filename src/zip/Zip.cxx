@@ -18,6 +18,116 @@
 #define SET_BINARY_MODE(file)
 #endif
 
+
+namespace {
+    template <typename T>
+    bool process(size_t bufferSize,
+              std::function<const Bytes()> &&sReadF,
+              std::function<void(const Bytes &)> &&sWriteF,
+              std::function<void()> &&sFlushF,
+              NGenXX::Z::ZBase<T> &zb)
+    {
+        auto inputFinished = false;
+        do
+        {
+            auto in = std::move(sReadF)();
+            inputFinished = in.size() < bufferSize;
+            auto ret = zb.input(in, inputFinished);
+            if (ret == 0L) [[unlikely]]
+            {
+                return false;
+            }
+
+            auto processFinished = false;
+            do
+            {
+                auto outData = zb.processDo();
+                if (outData.empty()) [[unlikely]]
+                {
+                    return false;
+                }
+                processFinished = zb.processFinished();
+
+                std::move(sWriteF)(outData);
+            } while (!processFinished);
+        } while (!inputFinished);
+        std::move(sFlushF)();
+
+        return true;
+    }
+
+    template <typename T>
+    bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase<T> &zb)
+    {
+        return process(bufferSize,
+            [bufferSize, &inStream]
+            {
+                Bytes in;
+                inStream->readsome(reinterpret_cast<char *>(in.data()), bufferSize);
+                return in;
+            },
+            [&outStream](const Bytes &bytes)
+            {
+                outStream->write(reinterpret_cast<const char *>(bytes.data()), bytes.size());
+            },
+            [&outStream]
+            {
+                outStream->flush();
+            },
+            zb
+        );
+    }
+
+    template <typename T>
+    bool processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase<T> &zb)
+    {
+        return process(bufferSize,
+            [bufferSize, &inFile]
+            {
+                Bytes in;
+                std::fread(in.data(), sizeof(byte), bufferSize, inFile);
+                return in;
+            },
+            [&outFile](const Bytes &bytes)
+            {
+                std::fwrite(bytes.data(), sizeof(byte), bytes.size(), outFile);
+            },
+            [&outFile]
+            {
+                std::fflush(outFile);
+            },
+            zb
+        );
+    }
+
+    template <typename T>
+    Bytes processBytes(size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
+    {
+        decltype(bufferSize) pos(0);
+        Bytes outBytes;
+        auto b = process(bufferSize,
+            [bufferSize, &in, &pos]
+            {
+                const auto len = std::min(bufferSize, in.size() - pos);
+                Bytes bytes(in.begin() + pos, in.begin() + pos + len);
+                pos += len;
+                return bytes;
+            },
+            [&outBytes](const Bytes &bytes)
+            {
+                outBytes.insert(outBytes.end(), bytes.begin(), bytes.end());
+            },
+            [] {},
+            zb
+        );
+        if (!b)
+        {
+            return {};
+        }
+        return outBytes;
+    }
+}
+
 template <typename T>
 int NGenXX::Z::ZBase<T>::windowBits() const
 {
@@ -64,8 +174,8 @@ size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
     std::memset(this->inBuffer, 0, this->bufferSize);
     std::memcpy(this->inBuffer, bytes.data(), dataLen);
 
-    (this->zs).avail_in = static_cast<uint>(dataLen);
-    (this->zs).next_in = reinterpret_cast<Bytef *>(this->inBuffer);
+    this->zs.avail_in = static_cast<uint>(dataLen);
+    this->zs.next_in = this->inBuffer;
     this->inFinish = inFinish;
     return dataLen;
 }
@@ -74,8 +184,8 @@ template <typename T>
 Bytes NGenXX::Z::ZBase<T>::processDo()
 {
     std::memset(this->outBuffer, 0, this->bufferSize);
-    (this->zs).avail_out = static_cast<uint>(this->bufferSize);
-    (this->zs).next_out = reinterpret_cast<Bytef *>(this->outBuffer);
+    this->zs.avail_out = static_cast<uint>(this->bufferSize);
+    this->zs.next_out = this->outBuffer;
 
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
     static_cast<T *>(this)->processImp();
@@ -94,7 +204,7 @@ Bytes NGenXX::Z::ZBase<T>::processDo()
 template <typename T>
 bool NGenXX::Z::ZBase<T>::processFinished() const
 {
-    return (this->zs).avail_out != 0;
+    return this->zs.avail_out != 0;
 }
 
 template <typename T>
@@ -152,153 +262,44 @@ NGenXX::Z::UnZip::~UnZip()
     inflateEnd(&(this->zs));
 }
 
-#pragma mark Stream
-
-template <typename T>
-bool _ngenxx_z_process(size_t bufferSize,
-              std::function<const Bytes()> &&sReadF,
-              std::function<void(const Bytes &)> &&sWriteF,
-              std::function<void()> &&sFlushF,
-              NGenXX::Z::ZBase<T> &zb)
-{
-    auto inputFinished = false;
-    do
-    {
-        auto in = std::move(sReadF)();
-        inputFinished = in.size() < bufferSize;
-        auto ret = zb.input(in, inputFinished);
-        if (ret == 0L) [[unlikely]]
-        {
-            return false;
-        }
-
-        auto processFinished = false;
-        do
-        {
-            auto outData = zb.processDo();
-            if (outData.empty()) [[unlikely]]
-            {
-                return false;
-            }
-            processFinished = zb.processFinished();
-
-            std::move(sWriteF)(outData);
-        } while (!processFinished);
-    } while (!inputFinished);
-    std::move(sFlushF)();
-
-    return true;
-}
-
 #pragma mark Cxx stream
-
-template <typename T>
-bool _ngenxx_z_processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase<T> &zb)
-{
-    return _ngenxx_z_process(bufferSize, 
-        [bufferSize, &inStream] 
-        {
-            Bytes in;
-            inStream->readsome(reinterpret_cast<char *>(in.data()), bufferSize);
-            return in; 
-        }, 
-        [&outStream](const Bytes &bytes)
-        { 
-            outStream->write(const_cast<char *>(reinterpret_cast<const char *>(bytes.data())), bytes.size());
-        }, 
-        [&outStream]
-        { 
-            outStream->flush(); 
-        }, 
-        zb
-    );
-}
 
 bool NGenXX::Z::zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
 {
     Zip zip(mode, bufferSize, format);
-    return _ngenxx_z_processCxxStream(bufferSize, inStream, outStream, zip);
+    return processCxxStream(bufferSize, inStream, outStream, zip);
 }
 
 bool NGenXX::Z::unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
 {
     UnZip unzip(bufferSize, format);
-    return _ngenxx_z_processCxxStream(bufferSize, inStream, outStream, unzip);
+    return processCxxStream(bufferSize, inStream, outStream, unzip);
 }
 
 #pragma mark C FILE
 
-template <typename T>
-bool _ngenxx_z_processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase<T> &zb)
-{
-    return _ngenxx_z_process(bufferSize, 
-        [bufferSize, &inFile]
-        {
-            Bytes in;
-            std::fread(static_cast<void *>(in.data()), sizeof(byte), bufferSize, inFile);
-            return in;
-        }, 
-        [&outFile](const Bytes &bytes)
-        {
-            std::fwrite(bytes.data(), sizeof(byte), bytes.size(), outFile);
-        }, 
-        [&outFile]
-        { 
-            std::fflush(outFile);
-        }, 
-        zb
-    );
-}
-
 bool NGenXX::Z::zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 {
     Zip zip(mode, bufferSize, format);
-    return _ngenxx_z_processCFILE(bufferSize, inFile, outFile, zip);
+    return processCFILE(bufferSize, inFile, outFile, zip);
 }
 
 bool NGenXX::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 {
     UnZip unzip(bufferSize, format);
-    return _ngenxx_z_processCFILE(bufferSize, inFile, outFile, unzip);
+    return processCFILE(bufferSize, inFile, outFile, unzip);
 }
 
 #pragma mark Bytes
 
-template <typename T>
-Bytes _ngenxx_z_processBytes(size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
-{
-    decltype(bufferSize) pos(0);
-    Bytes outBytes;
-    auto b = _ngenxx_z_process(bufferSize, 
-        [bufferSize, &in, &pos]
-        {
-            const auto len = std::min(bufferSize, in.size() - pos);
-            Bytes bytes(in.begin() + pos, in.begin() + pos + len);
-            pos += len;
-            return bytes;
-        }, 
-        [&outBytes](const Bytes &bytes)
-        {
-            outBytes.insert(outBytes.end(), bytes.begin(), bytes.end());
-        }, 
-        [] {}, 
-        zb
-    );
-    if (!b)
-    {
-        return {};
-    }
-    return outBytes;
-}
-
 Bytes NGenXX::Z::zip(int mode, size_t bufferSize, int format, const Bytes &bytes)
 {
     Zip zip(mode, bufferSize, format);
-    return _ngenxx_z_processBytes(bufferSize, bytes, zip);
+    return processBytes(bufferSize, bytes, zip);
 }
 
 Bytes NGenXX::Z::unzip(size_t bufferSize, int format, const Bytes &bytes)
 {
     UnZip unzip(bufferSize, format);
-    return _ngenxx_z_processBytes(bufferSize, bytes, unzip);
+    return processBytes(bufferSize, bytes, unzip);
 }

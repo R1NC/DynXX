@@ -109,17 +109,17 @@ namespace
         {nullptr, nullptr} /* sentinel */
     };
 
-    #define lua_register_lib(L, lib, funcs) \
+    #define lua_register_lib(L, lib, funcs)    \
     {                                          \
         luaL_newlib(L, funcs);                 \
         lua_setglobal(L, lib);                 \
     }
 
-    #define PRINT_L_ERROR(L, prefix)                                                \
+    #define PRINT_L_ERROR(L, prefix)                                            \
     do                                                                          \
     {                                                                           \
         const char *luaErrMsg = lua_tostring(L, -1);                            \
-        if (luaErrMsg != nullptr)                                                  \
+        if (luaErrMsg != nullptr)                                               \
         {                                                                       \
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "{}{}", prefix, luaErrMsg); \
         }                                                                       \

@@ -413,8 +413,8 @@ std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const
         return {};
     }
     const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
-    auto a = xqr->readColumn(column);
-    return *std::get_if<std::string>(&a);
+    auto v = (*xqr)[column];
+    return *std::get_if<std::string>(&v);
 }
 
 int64_t ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column)
@@ -424,8 +424,8 @@ int64_t ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const 
         return 0;
     }
     const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
-    const auto a = xqr->readColumn(column);
-    return *std::get_if<int64_t>(&a);
+    const auto v = (*xqr)[column];
+    return *std::get_if<int64_t>(&v);
 }
 
 double ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string &column)
@@ -435,8 +435,8 @@ double ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std
         return 0.f;
     }
     const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
-    const auto a = xqr->readColumn(column);
-    return *std::get_if<double>(&a);
+    const auto v = (*xqr)[column];
+    return *std::get_if<double>(&v);
 }
 
 void ngenxxStoreSqliteQueryDrop(void *const query_result)

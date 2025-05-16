@@ -160,6 +160,10 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
     return {};
 }
 
+Any NGenXX::Store::SQLite::Connection::QueryResult::operator[](const std::string &column) const {
+    return this->readColumn(column);
+}
+
 NGenXX::Store::SQLite::Connection::QueryResult::~QueryResult()
 {
     if (this->stmt != nullptr) [[likely]]
