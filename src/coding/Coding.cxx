@@ -1,7 +1,5 @@
 #include "Coding.hxx"
 
-#include <cctype>
-
 #include <iomanip>
 #include <algorithm>
 #include <charconv>
@@ -77,8 +75,15 @@ Bytes NGenXX::Coding::Hex::str2bytes(const std::string &str)
 {
     std::string filteredStr;
     filteredStr.reserve(str.size());
+
+#if defined(USE_STD_RANGES)
+    std::ranges::copy_if(str, std::back_inserter(filteredStr),
+                         [](const char c) { return std::isxdigit(static_cast<unsigned char>(c)); });
+#else
     std::copy_if(str.begin(), str.end(), std::back_inserter(filteredStr),
-        [](char c) { return std::isxdigit(static_cast<unsigned char>(c)); });
+                [](const char c) { return std::isxdigit(static_cast<unsigned char>(c)); });
+#endif
+
     if (filteredStr.length() < 2) [[unlikely]]
     {
         return {};

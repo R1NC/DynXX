@@ -4,6 +4,7 @@
 #include <thread>
 
 #include <uv.h>
+#include <lualib.h>
 
 #include <NGenXXLog.hxx>
 #include <NGenXXTypes.hxx>

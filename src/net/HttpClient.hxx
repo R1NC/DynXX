@@ -3,8 +3,6 @@
 
 #if defined(__cplusplus)
 
-#include <cstdio>
-
 #include <functional>
 
 #include <curl/curl.h>

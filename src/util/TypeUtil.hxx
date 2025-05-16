@@ -1,7 +1,6 @@
 #ifndef NGENXX_SRC_UTIL_TYPE_HXX_
 #define NGENXX_SRC_UTIL_TYPE_HXX_
 
-#include <cstdlib>
 #include <cstring>
 
 #include <NGenXXTypes.hxx>

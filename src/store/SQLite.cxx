@@ -72,7 +72,6 @@ bool NGenXX::Store::SQLite::Connection::execute(const std::string &sql) const
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.execute DB nullptr");
         return false;
     }
-    sqlite3_stmt *stmt;
     const auto rc = sqlite3_exec(this->db, sql.c_str(), nullptr, nullptr, nullptr);
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
     if (rc != SQLITE_OK)

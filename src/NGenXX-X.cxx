@@ -1,9 +1,5 @@
 #if defined(__cplusplus)
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 #include <vector>
 #include <string>
 #include <sstream>

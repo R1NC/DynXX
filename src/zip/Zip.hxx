@@ -32,7 +32,7 @@ namespace NGenXX::Z
             [[nodiscard]] bool processFinished() const;
 
         protected:
-            z_stream zs;
+            z_stream zs{Z_NULL, Z_NULL, Z_NULL};
             int ret{Z_OK};
             bool inFinish{false};
             int windowBits() const;

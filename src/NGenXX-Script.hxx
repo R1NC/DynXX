@@ -1,11 +1,8 @@
 #ifndef NGENXX_SRC_SCRIPT_HXX_
 #define NGENXX_SRC_SCRIPT_HXX_
 
-#include <NGenXXTypes.h>
-
 #if defined(__cplusplus)
 
-#include <cstdint>
 #include <string>
 
 std::string ngenxx_get_versionS(const char *json);

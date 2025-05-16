@@ -9,7 +9,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <net/if.h>
-#include <sys/ioctl.h>
 #include <ifaddrs.h>
 #if defined(__ANDROID__) || defined(__OHOS__) || defined(__linux__)
 #include <linux/if_packet.h>

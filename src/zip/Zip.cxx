@@ -63,12 +63,12 @@ namespace {
             [bufferSize, &inStream]
             {
                 Bytes in;
-                inStream->readsome(reinterpret_cast<char *>(in.data()), bufferSize);
+                inStream->readsome(reinterpret_cast<char *>(in.data()), static_cast<std::streamsize>(bufferSize));
                 return in;
             },
             [&outStream](const Bytes &bytes)
             {
-                outStream->write(reinterpret_cast<const char *>(bytes.data()), bytes.size());
+                outStream->write(reinterpret_cast<const char *>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
             },
             [&outStream]
             {
@@ -103,7 +103,7 @@ namespace {
     template <typename T>
     Bytes processBytes(size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
     {
-        decltype(bufferSize) pos(0);
+        decltype(in.size()) pos(0);
         Bytes outBytes;
         auto b = process(bufferSize,
             [bufferSize, &in, &pos]
@@ -153,11 +153,6 @@ NGenXX::Z::ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{bufferSiz
     {
         throw std::invalid_argument("format invalid");
     }
-    this->zs = {
-        .zalloc = Z_NULL,
-        .zfree = Z_NULL,
-        .opaque = Z_NULL
-    };
     this->inBuffer = mallocX<byte>(bufferSize);
     this->outBuffer = mallocX<byte>(bufferSize);
 }
@@ -244,7 +239,7 @@ NGenXX::Z::Zip::~Zip()
 
 NGenXX::Z::UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, format)
 {
-    this->ret = inflateInit2(&(this->zs), this->windowBits());
+    this->ret = inflateInit2(&this->zs, this->windowBits());
     if (this->ret != Z_OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "inflateInit error:{}", this->ret);
@@ -259,7 +254,7 @@ void NGenXX::Z::UnZip::processImp()
 
 NGenXX::Z::UnZip::~UnZip()
 {
-    inflateEnd(&(this->zs));
+    inflateEnd(&this->zs);
 }
 
 #pragma mark Cxx stream

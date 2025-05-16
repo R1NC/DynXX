@@ -169,7 +169,7 @@ namespace NGenXX
          * @param params parameters(json)
          * @param await Whether wait for the promise result or not
          */
-        std::string callFunc(const std::string &func, const std::string &params, bool await) const;
+        [[nodiscard]] std::string callFunc(const std::string &func, const std::string &params, bool await) const;
 
         /**
          * @brief New JS `Promise`
@@ -191,7 +191,7 @@ namespace NGenXX
     private:
         JSRuntime *runtime{nullptr};
         JSContext *context{nullptr};
-        JSValue jGlobal;
+        JSValue jGlobal{JS_UNDEFINED};
 
         JSValue newPromise(std::function<JSValue()> &&jf);
 

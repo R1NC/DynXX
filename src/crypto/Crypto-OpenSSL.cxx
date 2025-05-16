@@ -11,7 +11,6 @@
 #include <openssl/pem.h>
 #include <openssl/sha.h>
 #include <openssl/md5.h>
-#include <openssl/buffer.h>
 
 #include <NGenXXLog.hxx>
 

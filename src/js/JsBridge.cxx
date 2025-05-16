@@ -2,8 +2,6 @@
 #if defined(USE_QJS)
 #include "JsBridge.hxx"
 
-#include <cstdint>
-
 #include <fstream>
 #include <sstream>
 #include <utility>
@@ -26,7 +24,7 @@ namespace
 
 #pragma mark JsBridge dump error
 
-    void printJsErr(JSContext *ctx, JSValueConst val)
+    void printJsErr(JSContext *ctx, const JSValueConst val)
     {
         if (const auto str = JS_ToCString(ctx, val))
         {
@@ -75,7 +73,7 @@ namespace
         return jPromise;
     }
 
-    void _callbackPromise(JSContext *ctx, Promise *jPromise, JSValue jRet)
+    void _callbackPromise(JSContext *ctx, const Promise *jPromise, JSValue jRet)
     {
         const auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
         if (JS_IsException(jCallRet)) [[unlikely]]
@@ -132,7 +130,7 @@ namespace
         }
     }
 
-    void _uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_timer_t *uv_timer, uv_timer_cb cb)
+    void _uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_timer_t *uv_timer, const uv_timer_cb cb)
     {
         if (uv_loop == nullptr) [[likely]]
         {
@@ -198,7 +196,7 @@ namespace
 
 #pragma mark JsBridge Internal
 
-    bool _loadScript(JSContext *ctx, const std::string &script, const std::string &name, bool isModule)
+    bool _loadScript(JSContext *ctx, const std::string &script, const std::string &name, const bool isModule)
     {
         const auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
         const auto jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
@@ -249,7 +247,7 @@ namespace
         return ctx;
     }
 
-    JSValue _await(JSContext *ctx, JSValue obj)
+    JSValue _await(JSContext *ctx, const JSValue obj)
     {
         if (!mutex) [[unlikely]]
         {

@@ -2,11 +2,11 @@
 #define NGENXX_INCLUDE_TYPES_HXX_
 
 #include "NGenXXTypes.h"
-#include <cstring>
 
 #ifdef __cplusplus
 
 #include <cstdlib>
+#include <cstring>
 
 #include <string>
 #include <vector>
@@ -16,6 +16,13 @@
 #include <limits>
 #include <type_traits>
 
+#pragma mark Limits constants
+
+constexpr auto MinInt64 = std::numeric_limits<int64_t>::min();
+constexpr auto MaxInt64 = std::numeric_limits<int64_t>::max();
+constexpr auto MinDouble = std::numeric_limits<double>::min();
+constexpr auto MaxDouble = std::numeric_limits<double>::max();
+
 #pragma mark Concepts
 
 template <typename T>
@@ -23,6 +30,20 @@ concept ConstT = std::is_const_v<T>;
     
 template <typename T>
 concept VoidT = std::is_void_v<T>;
+
+template<typename T>
+concept NumberT =
+    std::is_arithmetic_v<T> ||
+        (std::is_enum_v<T> && std::is_convertible_v<std::underlying_type_t<T>, int>);
+
+template<typename T>
+concept IntegerT = NumberT<T> && std::integral<T>;
+
+template<typename T>
+concept FloatT = NumberT<T> && std::floating_point<T>;
+
+template<typename T>
+concept EnumT = NumberT<T> && std::is_enum_v<T>;
 
 template <typename T>
 concept CharacterT =
@@ -82,6 +103,91 @@ void iterate(const T& container, std::function<void(const typename T::value_type
         std::move(func)(e);
     }
 }
+
+#pragma mark Pointer cast
+
+template <typename T = void>
+T *addr2ptr(const address addr)
+{
+    return reinterpret_cast<T *>(addr);
+}
+
+template <typename T = void>
+address ptr2addr(const T *ptr)
+{
+    return reinterpret_cast<address>(ptr);
+}
+
+#pragma mark Any Type
+
+using Any = std::variant<int64_t, double, std::string>;
+
+inline std::string Any2String(const Any &v, const std::string &defaultS = {})
+{
+    if (std::holds_alternative<std::string>(v))
+    {
+        return std::get<std::string>(v);
+    }
+    return defaultS;
+}
+
+inline int64_t Any2Integer(const Any &v, const int64_t defaultI = MinInt64)
+{
+    if (!std::holds_alternative<std::string>(v))
+    {
+        return std::get<int64_t>(v);
+    }
+    return defaultI;
+}
+
+inline double Any2Float(const Any &v, const double defaultF = MinDouble)
+{
+    if (!std::holds_alternative<std::string>(v))
+    {
+        return std::get<double>(v);
+    }
+    return defaultF;
+}
+
+#pragma mark Dict Type
+
+using Dict = std::unordered_map<std::string, std::string>;
+using DictAny = std::unordered_map<std::string, Any>;
+
+inline std::string dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
+{
+    return !dict.contains(key) ? defaultS : Any2String(dict.at(key), defaultS);
+}
+
+inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI = MinInt64)
+{
+    return !dict.contains(key) ? defaultI : Any2Integer(dict.at(key), defaultI);
+}
+
+inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF = MinDouble)
+{
+    return !dict.contains(key) ? defaultF : Any2Float(dict.at(key), defaultF);
+}
+
+#pragma mark Bytes Type
+
+using Bytes = std::vector<byte>;
+
+inline Bytes wrapBytes(const byte *data, const size_t len) {
+    return {data, data + len};
+}
+
+template <typename T>
+std::string wrapStr(const T* ptr) 
+{
+    if (ptr == nullptr) 
+    {
+        return {};
+    }
+    return std::string(reinterpret_cast<const char*>(ptr));
+}
+
+#pragma mark Memory Utils
 
 template<MemcpyableT T>
 void memcpyX(const T* src, T* dst, const std::size_t count)
@@ -166,94 +272,6 @@ void freeX(T* &ptr)
     }
     std::free(const_cast<void *>(ptr));
     ptr = nullptr;
-}
-
-#pragma mark Pointer transform
-
-template <typename T = void>
-T *addr2ptr(const address addr)
-{
-    return reinterpret_cast<T *>(addr);
-}
-
-template <typename T = void>
-address ptr2addr(const T *ptr)
-{
-    return reinterpret_cast<address>(ptr);
-}
-
-#pragma mark Any Type
-
-constexpr auto MinInt64 = std::numeric_limits<int64_t>::min();
-constexpr auto MaxInt64 = std::numeric_limits<int64_t>::max();
-constexpr auto MinDouble = std::numeric_limits<double>::min();
-constexpr auto MaxDouble = std::numeric_limits<double>::max();
-
-using Any = std::variant<int64_t, double, std::string>;
-
-inline std::string Any2String(const Any &v, const std::string &defaultS = {})
-{
-    if (std::holds_alternative<std::string>(v))
-    {
-        return std::get<std::string>(v);
-    }
-    return defaultS;
-}
-
-inline int64_t Any2Integer(const Any &v, const int64_t defaultI = MinInt64)
-{
-    if (!std::holds_alternative<std::string>(v))
-    {
-        return std::get<int64_t>(v);
-    }
-    return defaultI;
-}
-
-inline double Any2Float(const Any &v, const double defaultF = MinDouble)
-{
-    if (!std::holds_alternative<std::string>(v))
-    {
-        return std::get<double>(v);
-    }
-    return defaultF;
-}
-
-#pragma mark Dict Type
-
-using Dict = std::unordered_map<std::string, std::string>;
-using DictAny = std::unordered_map<std::string, Any>;
-
-inline std::string dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
-{
-    return !dict.contains(key) ? defaultS : Any2String(dict.at(key), defaultS);
-}
-
-inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI = MinInt64)
-{
-    return !dict.contains(key) ? defaultI : Any2Integer(dict.at(key), defaultI);
-}
-
-inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF = MinDouble)
-{
-    return !dict.contains(key) ? defaultF : Any2Float(dict.at(key), defaultF);
-}
-
-#pragma mark Bytes Type
-
-using Bytes = std::vector<byte>;
-
-inline Bytes wrapBytes(const byte *data, const size_t len) {
-    return {data, data + len};
-}
-
-template <typename T>
-std::string wrapStr(const T* ptr) 
-{
-    if (ptr == nullptr) 
-    {
-        return {};
-    }
-    return std::string(reinterpret_cast<const char*>(ptr));
 }
 
 #endif
