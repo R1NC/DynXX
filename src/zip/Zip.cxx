@@ -1,7 +1,6 @@
 #include "Zip.hxx"
 
 #include <cstring>
-#include <cstdlib>
 
 #include <algorithm>
 #include <stdexcept>
@@ -9,6 +8,7 @@
 #include <vector>
 
 #include <NGenXXLog.hxx>
+#include "NGenXXZip.h"
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -103,12 +103,12 @@ namespace {
     template <typename T>
     Bytes processBytes(size_t bufferSize, const Bytes &in, NGenXX::Z::ZBase<T> &zb)
     {
-        decltype(in.size()) pos(0);
+        long pos(0);
         Bytes outBytes;
         auto b = process(bufferSize,
             [bufferSize, &in, &pos]
             {
-                const auto len = std::min(bufferSize, in.size() - pos);
+                const auto len = static_cast<long>(std::min(bufferSize, in.size() - pos));
                 Bytes bytes(in.begin() + pos, in.begin() + pos + len);
                 pos += len;
                 return bytes;
