@@ -1,7 +1,6 @@
 #include "napi/native_api.h"
 
 #include <cstring>
-#include <cstdlib>
 
 #include <napi_util.hxx>
 
@@ -89,7 +88,7 @@ static void OnLogWorkExecute(napi_env env, void *data)
 
 static void OnLogWorkComplete(napi_env env, napi_status status, void *data)
 {
-    auto tSLogWorkData = static_cast<TSLogWorkData *>(data);
+    const auto tSLogWorkData = static_cast<TSLogWorkData *>(data);
 
     status = napi_release_threadsafe_function(tSLogWorkData->tsWorkFunc, napi_tsfn_release);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_release_threadsafe_function() failed");
@@ -205,7 +204,7 @@ static napi_value NAPI_NGenXX_NetHttpRequest(napi_env env, napi_callback_info in
     auto form_field_data_v = args.c > 6 ? napiValue2charsArray(env, args.v[6], form_field_count) : nullptr;
 
     auto cFilePath = args.c > 7 ? napiValue2chars(env, args.v[7]) : nullptr;
-    FILE *cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
+    auto cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
     auto fileLength = args.c > 8 ? napiValue2long(env, args.v[8]) : 0;
 
     auto lTimeout = args.c > 9 ? napiValue2long(env, args.v[9]) : 15000;

@@ -3,12 +3,9 @@
 
 #include <jni.h>
 
-#include <cstdlib>
-#include <string>
-
 #include "../../../../../../build.Android/output/include/NGenXXTypes.hxx"
 
-static inline JNIEnv *currentEnv(JavaVM *vm) {
+inline JNIEnv *currentEnv(JavaVM *vm) {
     JNIEnv *env = nullptr;
     if (vm != nullptr) {
         vm->AttachCurrentThread(&env, nullptr);

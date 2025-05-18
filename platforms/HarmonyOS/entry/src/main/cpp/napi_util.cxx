@@ -1,7 +1,6 @@
 #include "napi_util.hxx"
 
 #include <cstring>
-#include <cstdlib>
 
 Args::Args(napi_env env, napi_callback_info info): env(env), info(info) 
 {
@@ -73,11 +72,10 @@ const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len)
         return nullptr;
     }
     auto byteArray = mallocX<byte>(len);
-    int status;
     for (decltype(len) i = 0; i < len; i++)
     {
         napi_value vByte;
-        status = napi_get_element(env, nv, i, &vByte);
+        auto status = napi_get_element(env, nv, i, &vByte);
         CHECK_NAPI_STATUS_RETURN_PTR(env, status, "napi_get_element() failed");
         byteArray[i] = napiValue2int(env, vByte);
     }
@@ -90,12 +88,11 @@ const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len)
     {
         return nullptr;
     }
-    auto charsArray = mallocX<const char *>(len);
-    int status;
+    const auto charsArray = mallocX<const char *>(len);
     for (decltype(len) i = 0; i < len; i++)
     {
         napi_value vChars;
-        status = napi_get_element(env, nv, i, &vChars);
+        auto status = napi_get_element(env, nv, i, &vChars);
         CHECK_NAPI_STATUS_RETURN_PTR(env, status, "napi_get_element() failed");
         charsArray[i] = napiValue2chars(env, vChars);
     }

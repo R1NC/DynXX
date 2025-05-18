@@ -1,4 +1,5 @@
-#include <cstdio>
+#ifndef NGENXX_NAPI_UTIL_HXX_
+#define NGENXX_NAPI_UTIL_HXX_
 
 #include <napi/native_api.h>
 
@@ -101,3 +102,5 @@ napi_value double2NapiValue(napi_env env, double d);
 napi_value byteArray2NapiValue(napi_env, const byte *byteArray, size_t len);
 
 napi_value charsArray2NapiValue(napi_env, const char **charsArray, size_t len);
+
+#endif
