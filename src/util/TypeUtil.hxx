@@ -35,7 +35,7 @@ inline byte *copyBytes(const Bytes &t)
         return nullptr;
     }
     const auto ncs = mallocX<byte>(len);
-    std::memcpy(static_cast<void *>(ncs), cs, len);
+    std::memcpy(ncs, cs, len);
     return ncs;
 }
 

@@ -5,7 +5,6 @@
 
 #ifdef __cplusplus
 
-#include <cstdlib>
 #include <cstring>
 
 #include <string>
@@ -122,7 +121,7 @@ address ptr2addr(const T *ptr)
 
 using Any = std::variant<int64_t, double, std::string>;
 
-inline std::string Any2String(const Any &v, const std::string &defaultS = {})
+inline auto Any2String(const Any &v, const std::string &defaultS = {})
 {
     if (std::holds_alternative<std::string>(v))
     {
@@ -131,7 +130,7 @@ inline std::string Any2String(const Any &v, const std::string &defaultS = {})
     return defaultS;
 }
 
-inline int64_t Any2Integer(const Any &v, const int64_t defaultI = MinInt64)
+inline auto Any2Integer(const Any &v, const int64_t defaultI = MinInt64)
 {
     if (!std::holds_alternative<std::string>(v))
     {
@@ -140,7 +139,7 @@ inline int64_t Any2Integer(const Any &v, const int64_t defaultI = MinInt64)
     return defaultI;
 }
 
-inline double Any2Float(const Any &v, const double defaultF = MinDouble)
+inline auto Any2Float(const Any &v, const double defaultF = MinDouble)
 {
     if (!std::holds_alternative<std::string>(v))
     {
@@ -154,17 +153,17 @@ inline double Any2Float(const Any &v, const double defaultF = MinDouble)
 using Dict = std::unordered_map<std::string, std::string>;
 using DictAny = std::unordered_map<std::string, Any>;
 
-inline std::string dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
+inline auto dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
 {
     return !dict.contains(key) ? defaultS : Any2String(dict.at(key), defaultS);
 }
 
-inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI = MinInt64)
+inline auto dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI = MinInt64)
 {
     return !dict.contains(key) ? defaultI : Any2Integer(dict.at(key), defaultI);
 }
 
-inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF = MinDouble)
+inline auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF = MinDouble)
 {
     return !dict.contains(key) ? defaultF : Any2Float(dict.at(key), defaultF);
 }
@@ -178,13 +177,13 @@ inline Bytes wrapBytes(const byte *data, const size_t len) {
 }
 
 template <typename T>
-std::string wrapStr(const T* ptr) 
+std::string wrapStr(const T* ptr)
 {
     if (ptr == nullptr) 
     {
         return {};
     }
-    return std::string(reinterpret_cast<const char*>(ptr));
+    return {reinterpret_cast<const char*>(ptr)};
 }
 
 #pragma mark Memory Utils
