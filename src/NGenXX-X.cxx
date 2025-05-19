@@ -40,8 +40,13 @@ namespace
 template <NumberT T>
 T str2num(const std::string &str, const T defaultV)
 {
+    if (str.empty())
+    {
+        return defaultV;
+    }
     T v;
-    if (auto [_, ec] = std::from_chars(str.data(), str.data() + str.size(), v); ec == std::errc())
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), v);
+    if (ec == std::errc() && ptr == str.data() + str.size()) [[likely]]
     {
         return v;
     }
