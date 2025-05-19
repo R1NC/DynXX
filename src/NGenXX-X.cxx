@@ -21,6 +21,9 @@
 #if defined(USE_QJS)
 #include "NGenXX-Js.hxx"
 #endif
+#if defined(USE_STD_FORMAT)
+#include <charconv>
+#endif
 #endif
 
 namespace
@@ -31,6 +34,83 @@ namespace
     std::unique_ptr<NGenXX::Store::SQLite> _sqlite = nullptr;
     std::unique_ptr<NGenXX::Store::KV> _kv = nullptr;
     std::unique_ptr<const std::string> _root = nullptr;   
+}
+
+#if defined(USE_STD_FORMAT)
+template <NumberT T>
+T str2num(const std::string &str, const T defaultV)
+{
+    T v;
+    if (auto [_, ec] = std::from_chars(str.data(), str.data() + str.size(), v); ec == std::errc())
+    {
+        return v;
+    }
+    return defaultV;
+}
+#endif
+
+int32_t str2int32(const std::string &str, const int32_t &defaultI)
+{
+#if defined(USE_STD_FORMAT)
+    return str2num<int32_t>(str, defaultI);
+#else
+    try
+    {
+        return std::stoi(str);
+    }
+    catch (std::exception &_)
+    {
+        return defaultI;
+    }
+#endif
+}
+
+int64_t str2int64(const std::string &str, const int64_t &defaultI)
+{
+#if defined(USE_STD_FORMAT)
+    str2num<int64_t>(str, defaultI);
+#else
+    try
+    {
+        return std::stoll(str);
+    }
+    catch (std::exception &_)
+    {
+        return defaultI;
+    }
+#endif
+}
+
+float str2float32(const std::string &str, const float &defaultF)
+{
+#if defined(USE_STD_FORMAT)
+    str2num<float>(str, defaultF);
+#else
+    try
+    {
+        return std::stof(str);
+    }
+    catch (std::exception &_)
+    {
+        return defaultF;
+    }
+#endif
+}
+
+double str2float64(const std::string &str, const double &defaultF)
+{
+#if defined(USE_STD_FORMAT)
+    str2num<double>(str, defaultF);
+#else
+    try
+    {
+        return std::stod(str);
+    }
+    catch (std::exception &_)
+    {
+        return defaultF;
+    }
+#endif
 }
 
 std::string ngenxxGetVersion()

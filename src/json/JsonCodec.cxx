@@ -211,14 +211,7 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
         } 
         else if (cJSON_IsString(cj)) [[likely]]
         {
-            try
-            {
-                num = std::stod(cj->valuestring);
-            }
-            catch (const std::exception &_)
-            {
-                ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID STRING VALUE", cj->string ?: "");
-            }
+            str2float64(cj->valuestring);
         }
         else [[unlikely]]
         {

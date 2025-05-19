@@ -17,10 +17,14 @@
 
 #pragma mark Limits constants
 
+constexpr auto MinInt32 = std::numeric_limits<int32_t>::min();
+constexpr auto MaxInt32 = std::numeric_limits<int32_t>::max();
 constexpr auto MinInt64 = std::numeric_limits<int64_t>::min();
 constexpr auto MaxInt64 = std::numeric_limits<int64_t>::max();
-constexpr auto MinDouble = std::numeric_limits<double>::min();
-constexpr auto MaxDouble = std::numeric_limits<double>::max();
+constexpr auto MinFloat32 = std::numeric_limits<float>::min();
+constexpr auto MaxFloat32 = std::numeric_limits<float>::max();
+constexpr auto MinFloat64 = std::numeric_limits<double>::min();
+constexpr auto MaxFloat64 = std::numeric_limits<double>::max();
 
 #pragma mark Concepts
 
@@ -103,6 +107,13 @@ void iterate(const T& container, std::function<void(const typename T::value_type
     }
 }
 
+#pragma mark String to Number
+
+int32_t str2int32(const std::string &str, const int32_t &defaultI = MinInt32);
+int64_t str2int64(const std::string &str, const int64_t &defaultI = MinInt64);
+float str2float32(const std::string &str, const float &defaultI = MinFloat32);
+double str2float64(const std::string &str, const double &defaultI = MinFloat64);
+
 #pragma mark Pointer cast
 
 template <typename T = void>
@@ -138,24 +149,28 @@ auto Any2String(const Any &v, const auto &defaultS = {})
     return defaultS;
 }
 
-template <NumberT T>
-T Any2Num(const Any &dict, const T defaultV)
-{
-    if (!std::holds_alternative<std::string>(dict))
-    {
-        return std::get<T>(dict);
-    }
-    return defaultV;
-}
-
 auto Any2Integer(const Any &dict, const auto defaultI = MinInt64)
 {
-    return Any2Num<int64_t>(dict, defaultI);
+    if (!std::holds_alternative<std::string>(dict)) [[likely]]
+    {
+        return std::get<int64_t>(dict);
+    }
+    else [[unlikely]]
+    {
+        return str2int64(std::get<std::string>(dict), defaultI);
+    }
 }
 
-auto Any2Float(const Any &dict, const auto defaultF = MinDouble)
+auto Any2Float(const Any &dict, const auto defaultF = MinFloat64)
 {
-    return Any2Num<double>(dict, defaultF);
+    if (!std::holds_alternative<std::string>(dict)) [[likely]]
+    {
+        return std::get<double>(dict);
+    }
+    else [[unlikely]]
+    {
+        return str2float64(std::get<std::string>(dict), defaultF);
+    }
 }
 
 #pragma mark Dict Type
@@ -163,17 +178,17 @@ auto Any2Float(const Any &dict, const auto defaultF = MinDouble)
 using Dict = std::unordered_map<std::string, std::string>;
 using DictAny = std::unordered_map<std::string, Any>;
 
-auto dictAnyReadString(const DictAny &dict, const std::string &key, const auto &defaultS = {})
+inline std::string dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
 {
     return !dict.contains(key) ? defaultS : Any2String(dict.at(key), defaultS);
 }
 
-auto dictAnyReadInteger(const DictAny &dict, const std::string &key, const auto defaultI = MinInt64)
+inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI = MinInt64)
 {
     return !dict.contains(key) ? defaultI : Any2Integer(dict.at(key), defaultI);
 }
 
-auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const auto defaultF = MinDouble)
+inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF = MinFloat64)
 {
     return !dict.contains(key) ? defaultF : Any2Float(dict.at(key), defaultF);
 }

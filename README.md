@@ -53,11 +53,12 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 ## C++ New Features Compatibility
 
-| Feature | Standard | Unsupported Platforms |
-| :-- | :--: | :--: |
-| [std::format][12] | C++20 | iOS 16.3-, macOS 13.3-, HarmonyOS Next; |
-| [std::ranges][13] | C++20 | iOS 16.3-, macOS 13.3-, HarmonyOS Next; |
-| [std::ranges::chunk_view][14] | C++23 | *Not clear, maybe all?* |
+| Feature                       | Standard |             Unsupported Platforms             |
+|:------------------------------|:--------:|:---------------------------------------------:|
+| [std::from_chars][19]         |  C++17   |  Android, iOS 16.3-, macOS 13.3-, HarmonyOS;  |
+| [std::format][12]             |  C++20   |      iOS 16.3-, macOS 13.3-, HarmonyOS;       |
+| [std::ranges][13]             |  C++20   |      iOS 16.3-, macOS 13.3-, HarmonyOS;       |
+| [std::ranges::chunk_view][14] |  C++23   |            *Not clear, maybe all?*            |
 
 ## Dependencies
 
@@ -93,3 +94,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [16]: https://github.com/morristech/android-ifaddrs
 [17]: https://github.com/madler/zlib
 [18]: https://github.com/leetal/ios-cmake
+[19]: https://en.cppreference.com/w/cpp/utility/from_chars

@@ -67,15 +67,7 @@ namespace
             return nullptr;
         }
     
-        try
-        {
-            addr = std::stoll(s);
-        }
-        catch (const std::exception &e)
-        {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "parsePtr failed s: {} err: {}", s, e.what());
-            return nullptr;
-        }
+        addr = str2int64(s);
 
         return addr2ptr<T>(addr);
     }

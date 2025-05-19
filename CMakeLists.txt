@@ -33,13 +33,18 @@ if(USE_SPDLOG)
     add_definitions(-DUSE_SPDLOG)
 endif()
 
-# HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't support `std::format` & `std::ranges` in C++20;
-if(OHOS OR(APPLE AND((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
+# Android, HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't have full support of `std::from_chars` & `std::format`;
+if(ANDROID OR OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
     option(USE_STD_FORMAT "Use std::format" OFF)
-    option(USE_STD_RANGES "Use std::ranges" OFF)
 else()
     option(USE_STD_FORMAT "Use std::format" ON)
     add_definitions(-DUSE_STD_FORMAT)
+endif()
+
+# HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't support `std::ranges` in C++20;
+if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
+    option(USE_STD_RANGES "Use std::ranges" OFF)
+else()
     option(USE_STD_RANGES "Use std::ranges" ON)
     add_definitions(-DUSE_STD_RANGES)
 endif()
