@@ -33,8 +33,16 @@ if(USE_SPDLOG)
     add_definitions(-DUSE_SPDLOG)
 endif()
 
-# Android, HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't have full support of `std::from_chars` & `std::format`;
-if(ANDROID OR OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
+# Android, HarmonyOS, iOS & earlier MacOS(13.4-) don't support `std::from_chars` in C++17;
+if(ANDROID OR OHOS OR (APPLE AND (CMAKE_SYSTEM_NAME STREQUAL "iOS" OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.4"))))
+    option(USE_STD_FROM_CHARS "Use std::from_chars" OFF)
+else()
+    option(USE_STD_FROM_CHARS "Use std::from_chars" ON)
+    add_definitions(-DUSE_STD_FORMAT)
+endif()
+
+# HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't support `std::format` in C++20;
+if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
     option(USE_STD_FORMAT "Use std::format" OFF)
 else()
     option(USE_STD_FORMAT "Use std::format" ON)
@@ -212,6 +220,7 @@ message(STATUS "  SYS_NAME: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "  IS_ROOT: ${IS_ROOT}")
 message(STATUS "  USE_LUA: ${USE_LUA}")
 message(STATUS "  USE_QJS: ${USE_QJS}")
+message(STATUS "  USE_STD_FROM_CHARS: ${USE_STD_FROM_CHARS}")
 message(STATUS "  USE_STD_FORMAT: ${USE_STD_FORMAT}")
 message(STATUS "  USE_STD_RANGES: ${USE_STD_RANGES}")
 message(STATUS "  LINK_LIBS:")

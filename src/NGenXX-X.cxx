@@ -21,7 +21,7 @@
 #if defined(USE_QJS)
 #include "NGenXX-Js.hxx"
 #endif
-#if defined(USE_STD_FORMAT)
+#if defined(USE_STD_FROM_CHARS)
 #include <charconv>
 #endif
 #endif
@@ -36,7 +36,7 @@ namespace
     std::unique_ptr<const std::string> _root = nullptr;   
 }
 
-#if defined(USE_STD_FORMAT)
+#if defined(USE_STD_FROM_CHARS)
 template <NumberT T>
 T str2num(const std::string &str, const T defaultV)
 {
@@ -51,7 +51,7 @@ T str2num(const std::string &str, const T defaultV)
 
 int32_t str2int32(const std::string &str, const int32_t &defaultI)
 {
-#if defined(USE_STD_FORMAT)
+#if defined(USE_STD_FROM_CHARS)
     return str2num<int32_t>(str, defaultI);
 #else
     try
@@ -67,7 +67,7 @@ int32_t str2int32(const std::string &str, const int32_t &defaultI)
 
 int64_t str2int64(const std::string &str, const int64_t &defaultI)
 {
-#if defined(USE_STD_FORMAT)
+#if defined(USE_STD_FROM_CHARS)
     str2num<int64_t>(str, defaultI);
 #else
     try
@@ -83,7 +83,7 @@ int64_t str2int64(const std::string &str, const int64_t &defaultI)
 
 float str2float32(const std::string &str, const float &defaultF)
 {
-#if defined(USE_STD_FORMAT)
+#if defined(USE_STD_FROM_CHARS)
     str2num<float>(str, defaultF);
 #else
     try
@@ -99,7 +99,7 @@ float str2float32(const std::string &str, const float &defaultF)
 
 double str2float64(const std::string &str, const double &defaultF)
 {
-#if defined(USE_STD_FORMAT)
+#if defined(USE_STD_FROM_CHARS)
     str2num<double>(str, defaultF);
 #else
     try
