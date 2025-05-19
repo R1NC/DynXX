@@ -121,31 +121,41 @@ address ptr2addr(const T *ptr)
 
 using Any = std::variant<int64_t, double, std::string>;
 
-inline auto Any2String(const Any &v, const std::string &defaultS = {})
+auto Any2String(const Any &v, const auto &defaultS = {})
 {
-    if (std::holds_alternative<std::string>(v))
+    if (std::holds_alternative<std::string>(v)) [[likely]]
     {
         return std::get<std::string>(v);
+    }
+    if (std::holds_alternative<int64_t>(v)) [[unlikely]]
+    {
+        return std::to_string(std::get<int64_t>(v));
+    }
+    if (std::holds_alternative<double>(v)) [[unlikely]]
+    {
+        return std::to_string(std::get<double>(v));
     }
     return defaultS;
 }
 
-inline auto Any2Integer(const Any &v, const int64_t defaultI = MinInt64)
+template <NumberT T>
+T Any2Num(const Any &dict, const T defaultV)
 {
-    if (!std::holds_alternative<std::string>(v))
+    if (!std::holds_alternative<std::string>(dict))
     {
-        return std::get<int64_t>(v);
+        return std::get<T>(dict);
     }
-    return defaultI;
+    return defaultV;
 }
 
-inline auto Any2Float(const Any &v, const double defaultF = MinDouble)
+auto Any2Integer(const Any &dict, const auto defaultI = MinInt64)
 {
-    if (!std::holds_alternative<std::string>(v))
-    {
-        return std::get<double>(v);
-    }
-    return defaultF;
+    return Any2Num<int64_t>(dict, defaultI);
+}
+
+auto Any2Float(const Any &dict, const auto defaultF = MinDouble)
+{
+    return Any2Num<double>(dict, defaultF);
 }
 
 #pragma mark Dict Type
@@ -153,17 +163,17 @@ inline auto Any2Float(const Any &v, const double defaultF = MinDouble)
 using Dict = std::unordered_map<std::string, std::string>;
 using DictAny = std::unordered_map<std::string, Any>;
 
-inline auto dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
+auto dictAnyReadString(const DictAny &dict, const std::string &key, const auto &defaultS = {})
 {
     return !dict.contains(key) ? defaultS : Any2String(dict.at(key), defaultS);
 }
 
-inline auto dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI = MinInt64)
+auto dictAnyReadInteger(const DictAny &dict, const std::string &key, const auto defaultI = MinInt64)
 {
     return !dict.contains(key) ? defaultI : Any2Integer(dict.at(key), defaultI);
 }
 
-inline auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF = MinDouble)
+auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const auto defaultF = MinDouble)
 {
     return !dict.contains(key) ? defaultF : Any2Float(dict.at(key), defaultF);
 }
