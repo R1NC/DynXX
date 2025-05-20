@@ -13,7 +13,33 @@ inline JNIEnv *currentEnv(JavaVM *vm) {
     return env;
 }
 
-jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, bool needFree)
+inline jobject boxJInt(JNIEnv *env, const jint ji)
+{
+    jclass integerClass = env->FindClass("java/lang/Integer");
+    jmethodID intValueOf = env->GetStaticMethodID(integerClass, "valueOf", "(I)Ljava/lang/Integer;");
+    return env->CallStaticObjectMethod(integerClass, intValueOf, ji);
+}
+
+inline jobject boxJLong(JNIEnv *env, const jlong jl)
+{
+    jclass longClass = env->FindClass("java/lang/Long");
+    jmethodID longValueOf = env->GetStaticMethodID(longClass, "valueOf", "(J)Ljava/lang/Long;");
+    return env->CallStaticObjectMethod(longClass, longValueOf, jl);
+}
+
+inline jmethodID getLambdaMethod1(JNIEnv *env)
+{
+    jclass function1Class = env->FindClass("kotlin/jvm/functions/Function1");
+    return env->GetMethodID(function1Class, "invoke", "(Ljava/lang/Object;)Ljava/lang/Object;");
+}
+
+inline jmethodID getLambdaMethod2(JNIEnv *env)
+{
+    jclass function1Class = env->FindClass("kotlin/jvm/functions/Function2");
+    return env->GetMethodID(function1Class, "invoke", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+}
+
+inline jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, bool needFree)
 {
     jbyteArray jba;
     if (bytes && outLen > 0)

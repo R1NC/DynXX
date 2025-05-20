@@ -21,7 +21,7 @@
 
 namespace {
     template <typename T>
-    bool process(size_t bufferSize,
+    bool process(const size_t bufferSize,
               std::function<const Bytes()> &&sReadF,
               std::function<void(const Bytes &)> &&sWriteF,
               std::function<void()> &&sFlushF,

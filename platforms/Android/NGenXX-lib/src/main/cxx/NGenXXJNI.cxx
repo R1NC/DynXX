@@ -23,7 +23,9 @@ static void JNI_NGenXX_log_callback(int level, const char *content)
     auto env = currentEnv(sVM);
     auto jContent = env->NewStringUTF(content);
     freeX(content);
-    env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
+    //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
+    auto boxedLevel = boxJInt(env, static_cast<jint>(level));
+    env->CallObjectMethod(sLogCallback, sLogCallbackMethodId, boxedLevel, jContent);
 }
 
 static const char *JNI_NGenXX_js_msg_callback(const char *msg)
@@ -77,11 +79,12 @@ void JNI_NGenXX_logSetCallback(JNIEnv *env, jobject thiz,
     {
         ngenxx_log_set_callback(JNI_NGenXX_log_callback);
         sLogCallback = env->NewWeakGlobalRef(callback);
-        auto jCallbackClass = env->GetObjectClass(callback);
+        /*auto jCallbackClass = env->GetObjectClass(callback);
         if (jCallbackClass)
         {
             sLogCallbackMethodId = env->GetMethodID(jCallbackClass, "invoke", "(ILjava/lang/String;)V");
-        }
+        }*/
+        sLogCallbackMethodId = getLambdaMethod2(env);
     }
 }
 
@@ -285,10 +288,11 @@ void JNI_NGenXX_jSetMsgCallback(JNIEnv *env, jobject thiz,
     {
         ngenxx_js_set_msg_callback(JNI_NGenXX_js_msg_callback);
         sJsMsgCallback = env->NewWeakGlobalRef(callback);
-        if (auto jCallbackClass = env->GetObjectClass(callback))
+        /*if (auto jCallbackClass = env->GetObjectClass(callback))
         {
             sJsMsgCallbackMethodId = env->GetMethodID(jCallbackClass, "invoke", "(Ljava/lang/String;)Ljava/lang/String;");
-        }
+        }*/
+        sJsMsgCallbackMethodId = getLambdaMethod1(env);
     }
 }
 

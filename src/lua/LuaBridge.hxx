@@ -5,6 +5,7 @@
 
 EXTERN_C_BEGIN
 #include <lua.h>
+#include <lualib.h>
 #include <lauxlib.h>
 EXTERN_C_END
 
