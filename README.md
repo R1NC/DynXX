@@ -55,7 +55,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 | Feature                       | Standard |         Unsupported Platforms         |
 |:------------------------------|:--------:|:-------------------------------------:|
-| [std::from_chars][19]         |  C++17   | Android, iOS, HarmonyOS, macOS 13.4-; |
+| [std::from_chars][19]         |  C++17   | Android, iOS 16.5-, HarmonyOS, macOS 13.4-; |
 | [std::format][12]             |  C++20   |  iOS 16.3-, macOS 13.3-, HarmonyOS;   |
 | [std::ranges][13]             |  C++20   |  iOS 16.3-, macOS 13.3-, HarmonyOS;   |
 | [std::ranges::chunk_view][14] |  C++23   |        *Not clear, maybe all?*        |
