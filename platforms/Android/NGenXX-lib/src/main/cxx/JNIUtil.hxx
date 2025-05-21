@@ -15,6 +15,9 @@ inline JNIEnv *currentEnv(JavaVM *vm)
     return env;
 }
 
+#define JNumCls(T) "java/lang/"#T
+#define JNumSig(T, S) "(" #S ")L" JNumCls(T) ";"
+
 template <NumberT T>
 inline jobject boxJNum(JNIEnv *env, const T j, const char *cls, const char *sig) {
     auto jClass = env->FindClass(cls);
@@ -23,28 +26,31 @@ inline jobject boxJNum(JNIEnv *env, const T j, const char *cls, const char *sig)
 }
 
 inline jobject boxJBoolean(JNIEnv *env, const jboolean j) {
-    return boxJNum<jboolean>(env, j, "java/lang/Boolean", "(Z)Ljava/lang/Boolean;");
+    return boxJNum<jboolean>(env, j, JNumCls(Boolean), JNumSig(Boolean, Z));
 }
 
 inline jobject boxJInt(JNIEnv *env, const jint j)
 {
-    return boxJNum<jboolean>(env, j, "java/lang/Integer", "(I)Ljava/lang/Integer;");
+    return boxJNum<jboolean>(env, j, JNumCls(Integer), JNumSig(Integer, I));
 }
 
 inline jobject boxJLong(JNIEnv *env, const jlong j)
 {
-    return boxJNum<jboolean>(env, j, "java/lang/Long", "(J)Ljava/lang/Long;");
+    return boxJNum<jboolean>(env, j, JNumCls(Long), JNumSig(Long, J));
 }
 
 inline jobject boxJFloat(JNIEnv *env, const jfloat j)
 {
-    return boxJNum<jboolean>(env, j, "java/lang/Float", "(F)Ljava/lang/Float;");
+    return boxJNum<jboolean>(env, j, JNumCls(Float), JNumSig(Float, F));
 }
 
 inline jobject boxJDouble(JNIEnv *env, const jdouble j)
 {
-    return boxJNum<jboolean>(env, j, "java/lang/Double", "(D)Ljava/lang/Double;");
+    return boxJNum<jboolean>(env, j, JNumCls(Double), JNumSig(Double, D));
 }
+
+#define K_FUN "kotlin/jvm/functions/Function"
+#define J_OBJ "Ljava/lang/Object;"
 
 inline jmethodID getLambdaMethod(JNIEnv *env, const char* cls, const char *sig)
 {
@@ -54,15 +60,15 @@ inline jmethodID getLambdaMethod(JNIEnv *env, const char* cls, const char *sig)
 
 inline jmethodID getLambdaMethod1(JNIEnv *env)
 {
-    return getLambdaMethod(env, "kotlin/jvm/functions/Function1", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    return getLambdaMethod(env, K_FUN "1", "(" J_OBJ ")" J_OBJ);
 }
 
 inline jmethodID getLambdaMethod2(JNIEnv *env)
 {
-    return getLambdaMethod(env, "kotlin/jvm/functions/Function2", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    return getLambdaMethod(env, K_FUN "2", "(" J_OBJ J_OBJ ")" J_OBJ);
 }
 
-inline jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, bool needFree)
+inline jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, const bool needFree)
 {
     jbyteArray jba;
     if (bytes && outLen > 0)
