@@ -22,6 +22,7 @@
 		40596BA02C75BECB00AC552D /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 40596B9F2C75BECB00AC552D /* libz.1.tbd */; };
 		407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B3A2C897F48008A138C /* libsqlite3.tbd */; };
 		407D2B9E2C929A7C008A138C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 407D2B9D2C929A7C008A138C /* ViewController.m */; };
+		409BA4132DDD8018004828A2 /* spdlog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 409BA4122DDD8018004828A2 /* spdlog.a */; };
 		40A94B362CCFB31C0059C652 /* qjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40A94B352CCFB31C0059C652 /* qjs.a */; };
 		40D5FDA52CF6F6A700D6E313 /* NGenXX.lua in Resources */ = {isa = PBXBuildFile; fileRef = 40D5FDA32CF6F6A700D6E313 /* NGenXX.lua */; };
 		40D5FDA62CF6F6A700D6E313 /* json.lua in Resources */ = {isa = PBXBuildFile; fileRef = 40D5FDA42CF6F6A700D6E313 /* json.lua */; };
@@ -95,6 +96,7 @@
 		407D2BA92C929C2E008A138C /* NGenXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NGenXX.a; path = ../../../build.iOS/output/Release/NGenXX.a; sourceTree = "<group>"; };
 		407D2BAA2C929C2E008A138C /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../../build.iOS/output/Release/lua.a; sourceTree = "<group>"; };
 		407D2BAB2C929C2E008A138C /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../../build.iOS/output/Release/curl.a; sourceTree = "<group>"; };
+		409BA4122DDD8018004828A2 /* spdlog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = spdlog.a; path = ../../build.iOS/output/libs/spdlog.a; sourceTree = "<group>"; };
 		40A94B352CCFB31C0059C652 /* qjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = qjs.a; path = ../../build.iOS/output/libs/qjs.a; sourceTree = "<group>"; };
 		40D5FDA32CF6F6A700D6E313 /* NGenXX.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = NGenXX.lua; path = ../../scripts/Lua/NGenXX.lua; sourceTree = "<group>"; };
 		40D5FDA42CF6F6A700D6E313 /* json.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = json.lua; path = ../../scripts/Lua/json.lua; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				409BA4132DDD8018004828A2 /* spdlog.a in Frameworks */,
 				40EB92592D22BFF3006DEE1C /* ada.a in Frameworks */,
 				4011029B2CED7FB10004CCA3 /* uv.a in Frameworks */,
 				40A94B362CCFB31C0059C652 /* qjs.a in Frameworks */,
@@ -182,6 +185,7 @@
 		40596B982C75BC5A00AC552D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				409BA4122DDD8018004828A2 /* spdlog.a */,
 				40EB92582D22BFF3006DEE1C /* ada.a */,
 				4011029A2CED7FB10004CCA3 /* uv.a */,
 				40A94B352CCFB31C0059C652 /* qjs.a */,
