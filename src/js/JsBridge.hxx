@@ -183,9 +183,6 @@ namespace NGenXX
         JSValue newPromiseFloat(std::function<double()> &&f);
         JSValue newPromiseString(std::function<const std::string()> &&f);
 
-        /**
-         * Relase JS VM
-         */
         ~JsBridge();
 
     private:

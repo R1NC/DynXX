@@ -336,11 +336,11 @@ NGenXX::JsBridge::JsBridge()
     this->context = _newContext(this->runtime);
     this->jGlobal = JS_GetGlobalObject(this->context);// Can not free here, will be called in future
 
-    std::thread([&ctx = this->context]
+    std::thread([ctx = this->context]
     {
         loop_startP(ctx); 
     }).detach();
-    std::thread([&ctx = this->context]
+    std::thread([ctx = this->context]
     {
         loop_startT(ctx); 
     }).detach();
@@ -455,7 +455,7 @@ JSValue NGenXX::JsBridge::newPromise(std::function<JSValue()> &&jf)
         return JS_EXCEPTION;
     }
     
-    std::thread([&ctx = this->context, jPromise, jf = std::move(jf)] {
+    std::thread([ctx = this->context, jPromise, jf = std::move(jf)] {
         if (!mutex) [[unlikely]]
         {
             return;
@@ -480,7 +480,7 @@ JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> &&f)
 
 JSValue NGenXX::JsBridge::newPromiseBool(std::function<bool()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f = std::move(f)]{
+    return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
         return JS_NewBool(ctx, ret);
     });
@@ -488,7 +488,7 @@ JSValue NGenXX::JsBridge::newPromiseBool(std::function<bool()> &&f)
 
 JSValue NGenXX::JsBridge::newPromiseInt32(std::function<int32_t()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f = std::move(f)]{
+    return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
         return JS_NewInt32(ctx, ret);
     });
@@ -496,7 +496,7 @@ JSValue NGenXX::JsBridge::newPromiseInt32(std::function<int32_t()> &&f)
 
 JSValue NGenXX::JsBridge::newPromiseInt64(std::function<int64_t()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f = std::move(f)]{
+    return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
         return JS_NewInt64(ctx, ret);
     });
@@ -504,7 +504,7 @@ JSValue NGenXX::JsBridge::newPromiseInt64(std::function<int64_t()> &&f)
 
 JSValue NGenXX::JsBridge::newPromiseFloat(std::function<double()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f = std::move(f)]{
+    return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
         return JS_NewFloat64(ctx, ret);
     });
@@ -512,7 +512,7 @@ JSValue NGenXX::JsBridge::newPromiseFloat(std::function<double()> &&f)
 
 JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> &&f)
 {
-    return this->newPromise([&ctx = this->context, f = std::move(f)]{
+    return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
         return JS_NewString(ctx, ret.c_str() ? : "");
     });
@@ -535,11 +535,14 @@ NGenXX::JsBridge::~JsBridge()
     }
     JS_FreeValue(this->context, jGlobal);
     JS_FreeContext(this->context);
+    this->context = nullptr;
 
     js_std_free_handlers(this->runtime);
     JS_FreeRuntime(this->runtime);
+    this->runtime = nullptr;
 
     mutex.reset();
+
     _uv_loop_p = nullptr;
     _uv_loop_t = nullptr;
     _uv_timer_p = nullptr;

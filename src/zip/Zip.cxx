@@ -60,17 +60,17 @@ namespace {
     bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Z::ZBase<T> &zb)
     {
         return process(bufferSize,
-            [bufferSize, &inStream]
+            [bufferSize, inStream]
             {
                 Bytes in;
                 inStream->readsome(reinterpret_cast<char *>(in.data()), static_cast<std::streamsize>(bufferSize));
                 return in;
             },
-            [&outStream](const Bytes &bytes)
+            [outStream](const Bytes &bytes)
             {
                 outStream->write(reinterpret_cast<const char *>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
             },
-            [&outStream]
+            [outStream]
             {
                 outStream->flush();
             },
@@ -82,17 +82,17 @@ namespace {
     bool processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Z::ZBase<T> &zb)
     {
         return process(bufferSize,
-            [bufferSize, &inFile]
+            [bufferSize, inFile]
             {
                 Bytes in;
                 std::fread(in.data(), sizeof(byte), bufferSize, inFile);
                 return in;
             },
-            [&outFile](const Bytes &bytes)
+            [outFile](const Bytes &bytes)
             {
                 std::fwrite(bytes.data(), sizeof(byte), bytes.size(), outFile);
             },
-            [&outFile]
+            [outFile]
             {
                 std::fflush(outFile);
             },
