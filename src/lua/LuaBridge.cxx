@@ -52,7 +52,7 @@ namespace
         auto timerP = mallocX<uv_timer_t>();
         timerP->data = timer_data;
     
-        std::thread([&timerP] {
+        std::thread([timerP] {
             uv_timer_init(uv_default_loop(), timerP);
             const auto data = static_cast<LuaTimerData *>(timerP->data);
             uv_timer_start(timerP, _uv_timer_cb, data->timeout, data->repeat ? data->timeout : 0);
