@@ -40,6 +40,7 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
     }
     std::string str;
     str.resize(bytes.size() * 2);
+
     auto transF = [](const byte b, char *buf) {
         if (auto [ptr, errCode] = std::to_chars(buf, buf + 2, static_cast<int>(b), 16); errCode != std::errc()) [[unlikely]]
         {
@@ -53,19 +54,22 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
         }
     };
 #if defined(USE_STD_RANGES)
-    auto hexView = bytes 
-        | std::ranges::views::transform([&str, &transF](byte b) {
-            transF(b, &str[b * 2]);
-            return std::string_view(&str[b * 2], 2);
+    auto indices = std::views::iota(size_t{0}, bytes.size());
+    auto hexView = std::views::zip(indices, bytes)
+        | std::ranges::views::transform([&str, &transF](const auto& pair) {
+            const auto& [idx, b] = pair;
+            transF(b, &str[idx * 2]);
+            return std::string_view(&str[idx * 2], 2);
         });
     return std::accumulate(hexView.begin(), hexView.end(), std::string{},
         [](std::string&& acc, std::string_view sv) {
             return std::move(acc) + std::string(sv);
         });
 #else
-    for (size_t i = 0; i < bytes.size(); ++i) 
-    {
-        transF(str[i], &str[i * 2]);
+    size_t idx = 0;
+    for (const auto& b : bytes) {
+        transF(b, &str[idx * 2]);
+        idx++;
     }
     return str;
 #endif
