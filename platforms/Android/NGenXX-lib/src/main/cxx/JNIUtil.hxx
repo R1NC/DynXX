@@ -17,9 +17,9 @@ inline JNIEnv *currentEnv(JavaVM *vm)
 
 template <NumberT T>
 inline jobject boxJNum(JNIEnv *env, const T j, const char *cls, const char *sig) {
-    auto booleanClass = env->FindClass(cls);
-    auto boolValueOf = env->GetStaticMethodID(booleanClass, "valueOf", sig);
-    return env->CallStaticObjectMethod(booleanClass, boolValueOf, j);
+    auto jClass = env->FindClass(cls);
+    auto jValueOf = env->GetStaticMethodID(jClass, "valueOf", sig);
+    return env->CallStaticObjectMethod(jClass, jValueOf, j);
 }
 
 inline jobject boxJBoolean(JNIEnv *env, const jboolean j) {
