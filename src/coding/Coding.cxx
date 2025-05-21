@@ -53,9 +53,14 @@ std::string NGenXX::Coding::Hex::bytes2str(const Bytes &bytes)
             buf[0] = '0';
         }
     };
+
 #if defined(USE_STD_RANGES)
+#if defined(USE_STD_RANGES_ENUMERATE)
+    auto hexView = bytes | std::ranges::views::enumerate
+#else
     auto indices = std::views::iota(size_t{0}, bytes.size());
     auto hexView = std::views::zip(indices, bytes)
+#endif
         | std::ranges::views::transform([&str, &transF](const auto& pair) {
             const auto& [idx, b] = pair;
             transF(b, &str[idx * 2]);
