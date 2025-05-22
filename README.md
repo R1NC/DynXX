@@ -54,7 +54,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 ## C++ New Features Compatibility
 
 | Feature                                  | Standard | Unsupported Platforms              |
-|:-----------------------------------------|:--------:|:----------------------------------:|
+|:-----------------------------------------|:---------|:-----------------------------------|
 | [std::from_chars][19] for floating-point | C++17    | All;                               |
 | [std::format][12]                        | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
 | [std::ranges][13]                        | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
