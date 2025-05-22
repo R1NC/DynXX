@@ -46,6 +46,10 @@ class NGenXXTest {
 
         private fun go() {
             NGenXXHelper.logSetLevel(LogLevel.Debug)
+            /*NGenXX.logSetCallback{ level, msg ->
+                android.util.Log.d("@_@", "$level | $msg")
+            }*/
+
             NGenXXHelper.logPrint(LogLevel.Debug, "deviceType:${NGenXX.deviceType()}")
             NGenXXHelper.logPrint(LogLevel.Debug, "deviceName:${NGenXX.deviceName()}")
             NGenXXHelper.logPrint(LogLevel.Debug, "deviceManufacturer:${NGenXX.deviceManufacturer()}")

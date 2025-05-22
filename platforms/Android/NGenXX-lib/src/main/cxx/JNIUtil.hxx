@@ -5,6 +5,25 @@
 
 #include "../../../../../../build.Android/output/include/NGenXXTypes.hxx"
 
+#define L "L"
+#define _ ";"
+#define JL "java/lang/"
+#define JLO JL "Object"
+#define LJLO L JLO
+#define LJLO_ LJLO _
+#define JLS JL "String"
+#define LJLS L JLS
+#define LJLS_ LJLS _
+#define JNumCls(T) JL #T
+#define JNumSig(T, S) "(" #S ")" L JNumCls(T) _
+#define KF "kotlin/jvm/functions/Function"
+#define KF1 KF "1"
+#define KF2 KF "2"
+#define LKF1 L KF1
+#define LKF2 L KF2
+#define LKF1_ LKF1 _
+#define LKF2_ LKF2 _
+
 inline JNIEnv *currentEnv(JavaVM *vm)
 {
     JNIEnv *env = nullptr;
@@ -15,17 +34,16 @@ inline JNIEnv *currentEnv(JavaVM *vm)
     return env;
 }
 
-#define JNumCls(T) "java/lang/"#T
-#define JNumSig(T, S) "(" #S ")L" JNumCls(T) ";"
-
 template <NumberT T>
-inline jobject boxJNum(JNIEnv *env, const T j, const char *cls, const char *sig) {
+jobject boxJNum(JNIEnv *env, const T j, const char *cls, const char *sig)
+{
     auto jClass = env->FindClass(cls);
     auto jValueOf = env->GetStaticMethodID(jClass, "valueOf", sig);
     return env->CallStaticObjectMethod(jClass, jValueOf, j);
 }
 
-inline jobject boxJBoolean(JNIEnv *env, const jboolean j) {
+inline jobject boxJBoolean(JNIEnv *env, const jboolean j)
+{
     return boxJNum<jboolean>(env, j, JNumCls(Boolean), JNumSig(Boolean, Z));
 }
 
@@ -49,9 +67,6 @@ inline jobject boxJDouble(JNIEnv *env, const jdouble j)
     return boxJNum<jboolean>(env, j, JNumCls(Double), JNumSig(Double, D));
 }
 
-#define K_FUN "kotlin/jvm/functions/Function"
-#define J_OBJ "Ljava/lang/Object;"
-
 inline jmethodID getLambdaMethod(JNIEnv *env, const char* cls, const char *sig)
 {
     auto function1Class = env->FindClass(cls);
@@ -60,12 +75,12 @@ inline jmethodID getLambdaMethod(JNIEnv *env, const char* cls, const char *sig)
 
 inline jmethodID getLambdaMethod1(JNIEnv *env)
 {
-    return getLambdaMethod(env, K_FUN "1", "(" J_OBJ ")" J_OBJ);
+    return getLambdaMethod(env, KF1, "(" LJLO_ ")" LJLO_);
 }
 
 inline jmethodID getLambdaMethod2(JNIEnv *env)
 {
-    return getLambdaMethod(env, K_FUN "2", "(" J_OBJ J_OBJ ")" J_OBJ);
+    return getLambdaMethod(env, KF2, "(" LJLO_ LJLO_ ")" LJLO_);
 }
 
 inline jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, const bool needFree)
