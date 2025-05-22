@@ -34,87 +34,87 @@ namespace
     std::unique_ptr<NGenXX::Store::SQLite> _sqlite = nullptr;
     std::unique_ptr<NGenXX::Store::KV> _kv = nullptr;
     std::unique_ptr<const std::string> _root = nullptr;   
-}
 
 #if defined(USE_STD_FROM_CHARS)
-template <NumberT T>
-T str2num(const std::string &str, const T defaultV)
-{
-    if (str.empty())
+    template <NumberT T>
+    T from_chars(const std::string &str, const T defaultV)
     {
+        if (str.empty())
+        {
+            return defaultV;
+        }
+        T v;
+        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), v);
+        if (ec == std::errc() && ptr == str.data() + str.size()) [[likely]]
+        {
+            return v;
+        }
         return defaultV;
     }
-    T v;
-    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), v);
-    if (ec == std::errc() && ptr == str.data() + str.size()) [[likely]]
-    {
-        return v;
-    }
-    return defaultV;
-}
 #endif
 
-int32_t str2int32(const std::string &str, const int32_t &defaultI)
+    template<IntegerT T>
+    T stox(const std::string& str, T defaultValue, T (*f)(const std::string&, size_t*, int)) 
+    {
+        try 
+        {
+            return f(str, nullptr, 10);
+        } 
+        catch (const std::exception& e)
+        {
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "stox failed: {}", e.what());
+            return defaultValue;
+        }
+    }
+
+    template<FloatT T>
+    T stox(const std::string& str, T defaultValue, T (*f)(const std::string&, size_t*))
+    {
+        try
+        {
+            return f(str, nullptr);
+        }
+        catch (const std::exception& e)
+        {
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "stox failed: {}", e.what());
+            return defaultValue;
+        }
+    }
+}
+
+int32_t str2int32(const std::string &str, const int32_t defaultI)
 {
 #if defined(USE_STD_FROM_CHARS)
-    return str2num<int32_t>(str, defaultI);
+    return from_chars<int32_t>(str, defaultI);
 #else
-    try
-    {
-        return std::stoi(str);
-    }
-    catch (std::exception &_)
-    {
-        return defaultI;
-    }
+    return stox<int32_t>(str, defaultI, std::stoi);
 #endif
 }
 
-int64_t str2int64(const std::string &str, const int64_t &defaultI)
+int64_t str2int64(const std::string &str, const int64_t defaultI)
 {
 #if defined(USE_STD_FROM_CHARS)
-    str2num<int64_t>(str, defaultI);
+    return from_chars<int64_t>(str, defaultI);
 #else
-    try
-    {
-        return std::stoll(str);
-    }
-    catch (std::exception &_)
-    {
-        return defaultI;
-    }
+    return stox<int64_t>(str, defaultI, std::stoll);
 #endif
 }
 
-float str2float32(const std::string &str, const float &defaultF)
+float str2float32(const std::string &str, const float defaultF)
 {
 #if defined(USE_STD_FROM_CHARS_FLOAT)
-    str2num<float>(str, defaultF);
+    return from_chars<float>(str, defaultF);
 #else
-    try
-    {
-        return std::stof(str);
-    }
-    catch (std::exception &_)
-    {
-        return defaultF;
-    }
+    return stox<float>(str, defaultF, std::stof);
 #endif
 }
 
-double str2float64(const std::string &str, const double &defaultF)
+double str2float64(const std::string &str, const double defaultF)
 {
 #if defined(USE_STD_FROM_CHARS_FLOAT)
-    str2num<double>(str, defaultF);
+    return from_chars<double>(str, defaultF);
 #else
-    try
-    {
-        return std::stod(str);
-    }
-    catch (std::exception &_)
-    {
-        return defaultF;
-    }
+    return stox<double>(str, defaultF, std::stod);
 #endif
 }
 
