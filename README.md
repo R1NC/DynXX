@@ -10,6 +10,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 > * Powerful third-party dependency management tool - [Crates](https://crates.io/), no need to struggle with CMake;
 > * First-class [WASM support](https://rustwasm.github.io/docs/book/), no other toolchain needed(Like [Emscripten](https://emscripten.org/));
 > * Complete cross-platform support - [FFI](https://doc.rust-lang.org/nomicon/ffi.html), [CXX](https://cxx.rs/), [jni](https://docs.rs/jni/latest/jni/), [ojbc2](https://docs.rs/objc2/latest/objc2/), [ohos-rs](https://ohos.rs/).
+> </details>
 
 ## Architecture
 
@@ -62,10 +63,14 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | [std::ranges::views::enumerate][20] | C++23    | All;                               |
 | [std::ranges::views::chunk][14]     | C++23    | All;                               |
 
-**Reference:**
+<details>
+
+<summary>Reference:</summary>
 
 - [C++ compiler support - cppreference.com][22];
 - [C++ Language Support - Xcode - Apple Developer][21];
+
+</details>
 
 ## Dependencies
 
