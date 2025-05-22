@@ -33,19 +33,11 @@ if(USE_SPDLOG)
     add_definitions(-DUSE_SPDLOG)
 endif()
 
-# Support of `std::from_chars` in C++17 is not clear yet;
+# Support of `std::from_chars`(for floating-point types) in C++17
 option(USE_STD_FROM_CHARS "Use std::from_chars" OFF)
 #add_definitions(-DUSE_STD_FROM_CHARS)
 
-# Support of `std::ranges::views::enumerate` in C++23 is not clear yet;
-option(USE_STD_RANGES_ENUMERATE "std::ranges::views::enumerate" OFF)
-#add_definitions(-DUSE_STD_RANGES_ENUMERATE)
-
-# Support of `std::ranges::views::trunk` in C++23 is not clear yet;
-option(USE_STD_RANGES_CHUNK "Use std::ranges::views::trunk" OFF)
-#add_definitions(-DUSE_STD_RANGES_CHUNK)
-
-# HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't support `std::format` in C++20;
+# Support of `std::format` in C++20
 if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
     option(USE_STD_FORMAT "Use std::format" OFF)
 else()
@@ -53,13 +45,21 @@ else()
     add_definitions(-DUSE_STD_FORMAT)
 endif()
 
-# HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't support `std::ranges` in C++20;
+# Support of `std::ranges` in C++20
 if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
     option(USE_STD_RANGES "Use std::ranges" OFF)
 else()
     option(USE_STD_RANGES "Use std::ranges" ON)
     add_definitions(-DUSE_STD_RANGES)
 endif()
+
+# Support of `std::ranges::views::enumerate` in C++23
+option(USE_STD_RANGES_ENUMERATE "std::ranges::views::enumerate" OFF)
+#add_definitions(-DUSE_STD_RANGES_ENUMERATE)
+
+# Support of `std::ranges::views::trunk` in C++23
+option(USE_STD_RANGES_CHUNK "Use std::ranges::views::trunk" OFF)
+#add_definitions(-DUSE_STD_RANGES_CHUNK)
 
 # Android can not find built-in `ifaddrs.h`;
 if(ANDROID)
