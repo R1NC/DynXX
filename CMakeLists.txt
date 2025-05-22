@@ -33,13 +33,17 @@ if(USE_SPDLOG)
     add_definitions(-DUSE_SPDLOG)
 endif()
 
-# HarmonyOS & earlier Apple systems(iOS 16.5-, macOS 13.4-) don't support `std::from_chars` in C++17;
-if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.5") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.4"))))
-    option(USE_STD_FROM_CHARS "Use std::from_chars" OFF)
-else()
-    option(USE_STD_FROM_CHARS "Use std::from_chars" ON)
-    add_definitions(-DUSE_STD_FROM_CHARS)
-endif()
+# Support of `std::from_chars` in C++17 is not clear yet;
+option(USE_STD_FROM_CHARS "Use std::from_chars" OFF)
+#add_definitions(-DUSE_STD_FROM_CHARS)
+
+# Support of `std::ranges::views::enumerate` in C++23 is not clear yet;
+option(USE_STD_RANGES_ENUMERATE "std::ranges::views::enumerate" OFF)
+#add_definitions(-DUSE_STD_RANGES_ENUMERATE)
+
+# Support of `std::ranges::views::trunk` in C++23 is not clear yet;
+option(USE_STD_RANGES_CHUNK "Use std::ranges::views::trunk" OFF)
+#add_definitions(-DUSE_STD_RANGES_CHUNK)
 
 # HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't support `std::format` in C++20;
 if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
