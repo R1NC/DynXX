@@ -61,6 +61,11 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | [std::ranges::views::enumerate][20]  | C++23     | *Not clear yet, maybe all?*         |
 | [std::ranges::views::chunk][14]      | C++23     | *Not clear yet, maybe all?*         |
 
+**Reference:**
+
+- [C++ compiler support - cppreference.com][22];
+- [C++ Language Support - Xcode - Apple Developer][21];
+
 ## Dependencies
 
 - [ada-url][3]: URL parser;(Requires `std::ranges` in C++20)
@@ -97,3 +102,5 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [18]: https://github.com/leetal/ios-cmake
 [19]: https://en.cppreference.com/w/cpp/utility/from_chars
 [20]: https://en.cppreference.com/w/cpp/ranges/enumerate_view
+[21]: https://developer.apple.com/xcode/cpp/
+[22]: https://en.cppreference.com/w/cpp/compiler_support
