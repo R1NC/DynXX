@@ -38,7 +38,7 @@ if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMEN
     option(USE_STD_FROM_CHARS "Use std::from_chars" OFF)
 else()
     option(USE_STD_FROM_CHARS "Use std::from_chars" ON)
-    add_definitions(-DUSE_STD_FORMAT)
+    add_definitions(-DUSE_STD_FROM_CHARS)
 endif()
 
 # HarmonyOS & earlier Apple systems(iOS 16.3-, macOS 13.3-) don't support `std::format` in C++20;
