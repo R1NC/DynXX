@@ -88,7 +88,7 @@ int64_t str2int64(const std::string &str, const int64_t &defaultI)
 
 float str2float32(const std::string &str, const float &defaultF)
 {
-#if defined(USE_STD_FROM_CHARS)
+#if defined(USE_STD_FROM_CHARS_FLOAT)
     str2num<float>(str, defaultF);
 #else
     try
@@ -104,7 +104,7 @@ float str2float32(const std::string &str, const float &defaultF)
 
 double str2float64(const std::string &str, const double &defaultF)
 {
-#if defined(USE_STD_FROM_CHARS)
+#if defined(USE_STD_FROM_CHARS_FLOAT)
     str2num<double>(str, defaultF);
 #else
     try

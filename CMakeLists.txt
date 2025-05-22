@@ -33,9 +33,17 @@ if(USE_SPDLOG)
     add_definitions(-DUSE_SPDLOG)
 endif()
 
+# Support of `std::from_chars`(for integral types) in C++17
+if(APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.5") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.4")))
+    option(USE_STD_FROM_CHARS "Use std::from_chars for int" OFF)
+else()
+    option(USE_STD_FROM_CHARS "Use std::from_chars for int" ON)
+    add_definitions(-DUSE_STD_FROM_CHARS)
+endif()
+
 # Support of `std::from_chars`(for floating-point types) in C++17
-option(USE_STD_FROM_CHARS "Use std::from_chars" OFF)
-#add_definitions(-DUSE_STD_FROM_CHARS)
+option(USE_STD_FROM_CHARS_FLOAT "Use std::from_chars for float" OFF)
+#add_definitions(-DUSE_STD_FROM_CHARS_FLOAT)
 
 # Support of `std::format` in C++20
 if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
@@ -225,6 +233,7 @@ message(STATUS "  IS_ROOT: ${IS_ROOT}")
 message(STATUS "  USE_LUA: ${USE_LUA}")
 message(STATUS "  USE_QJS: ${USE_QJS}")
 message(STATUS "  USE_STD_FROM_CHARS: ${USE_STD_FROM_CHARS}")
+message(STATUS "  USE_STD_FROM_CHARS_FLOAT: ${USE_STD_FROM_CHARS_FLOAT}")
 message(STATUS "  USE_STD_FORMAT: ${USE_STD_FORMAT}")
 message(STATUS "  USE_STD_RANGES: ${USE_STD_RANGES}")
 message(STATUS "  LINK_LIBS:")
