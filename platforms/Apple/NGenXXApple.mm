@@ -7,7 +7,7 @@
 #define CharP2NSString(cp) [NSString stringWithCString:cp encoding:NSUTF8StringEncoding]
 #define STDStr2NSStr(stdStr) [NSString stringWithCString:stdStr.c_str() encoding:NSUTF8StringEncoding]
 
-static const char *cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"timeout\":66666}";
+static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"timeout\":66666}";
 
 @interface NGenXXApple () {
     void *_db_conn;
