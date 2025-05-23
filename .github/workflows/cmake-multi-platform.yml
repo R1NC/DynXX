@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   build:
     strategy:
@@ -41,10 +45,10 @@ jobs:
         chmod +x ${{ matrix.script }}
         ./${{ matrix.script }}
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v3
       with:
         name: ${{ runner.os }}-build
         path: |
           build.*/output/libs/
           build.*/output/include/
+        if-no-files-found: error
