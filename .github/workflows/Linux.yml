@@ -38,13 +38,6 @@ jobs:
         chmod +x ${{ matrix.script }}
         ./${{ matrix.script }}
 
-    - name: Check Artifacts
-      run: |
-          if not exist build.Linux/output/libs/*.a (
-            echo "No library files found in output directory"
-            exit 1
-          )
-
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:

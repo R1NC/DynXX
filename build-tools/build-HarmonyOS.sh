@@ -2,6 +2,7 @@
 
 # TODO
 NDK_ROOT="~/Library/OpenHarmony/Sdk/15/native"
+ARCH=arm64-v8a
 
 BUILD_DIR=../build.HarmonyOS
 rm -rf ${BUILD_DIR}
@@ -36,9 +37,30 @@ function build4harmony {
   rm -rf ${ABI_BUILD_DIR}
 }
 
-#build4harmony armeabi-v7a Release
-build4harmony arm64-v8a Release
+build4harmony ${ARCH} Release
 
 HEADER_OUTPUT_DIR=output/include
 mkdir -p ${HEADER_OUTPUT_DIR}
 cp -R ../include/ ${HEADER_OUTPUT_DIR}/
+
+#Checking Artifacts
+LIB_OUTPUT_DIR=output/libs/${ARCH}
+ARTIFACTS=(
+    "${LIB_OUTPUT_DIR}/libNGenXX.a"
+    "${LIB_OUTPUT_DIR}/libcurl.a"
+    "${LIB_OUTPUT_DIR}/libssl.a"
+    "${LIB_OUTPUT_DIR}/libcrypto.a"
+    "${LIB_OUTPUT_DIR}/liblua.a"
+    "${LIB_OUTPUT_DIR}/libqjs.a"
+    "${LIB_OUTPUT_DIR}/libspdlog.a"
+    "${LIB_OUTPUT_DIR}/libuv.a"
+    "${LIB_OUTPUT_DIR}/libcjson.a"
+    "${LIB_OUTPUT_DIR}/libmmkvcore.a"
+    "${LIB_OUTPUT_DIR}/libmmkv.a"
+)
+for a in "${ARTIFACTS[@]}"; do
+    if [ ! -f "$a" ]; then
+        echo "ARTIFACT NOT FOUND: $a"
+        exit 1
+    fi
+done

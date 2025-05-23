@@ -28,13 +28,6 @@ jobs:
         chmod +x build-iOS.sh
         ./build-iOS.sh
 
-    - name: Check Artifacts
-      run: |
-          if not exist build.iOS/output/libs/*.a (
-            echo "No library files found in output directory"
-            exit 1
-          )
-
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:

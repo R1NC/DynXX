@@ -63,6 +63,19 @@ if [ $DEBUG == 1 ]; then
 fi
 LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
+ARTIFACTS=(
+    "${LIB_OUTPUT_DIR}/NGenXX.a"
+    "${LIB_OUTPUT_DIR}/curl.a"
+    "${LIB_OUTPUT_DIR}/ssl.a"
+    "${LIB_OUTPUT_DIR}/crypto.a"
+    "${LIB_OUTPUT_DIR}/lua.a"
+    "${LIB_OUTPUT_DIR}/qjs.a"
+    "${LIB_OUTPUT_DIR}/spdlog.a"
+    "${LIB_OUTPUT_DIR}/uv.a"
+    "${LIB_OUTPUT_DIR}/cjson.a"
+    "${LIB_OUTPUT_DIR}/mmkvcore.a"
+    "${LIB_OUTPUT_DIR}/mmkv.a"
+)
 ${COMMAND} ${LIB_DIR}libNGenXX.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/NGenXX.a
 ${COMMAND} curl.output/lib/${LIB_DIR}libcurl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/curl.a
 ${COMMAND} openssl.output/ssl/${LIB_DIR}libssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ssl.a
@@ -76,5 +89,15 @@ ${COMMAND} mmkv.output/Core/${LIB_DIR}/libmmkvcore.a ${COMMAND_ARG} ${LIB_OUTPUT
 ${COMMAND} mmkv.output/${LIB_DIR}libmmkv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkv.a
 ADA_OUT_FILE=AdaURL.output/src/${LIB_DIR}libada.a
 if [ -f "$ADA_OUT_FILE" ]; then
-    ${COMMAND} ${ADA_OUT_FILE} ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ada.a
+    libAda=${LIB_OUTPUT_DIR}/ada.a
+    ${COMMAND} ${ADA_OUT_FILE} ${COMMAND_ARG} ${libAda}
+    ARTIFACTS+=(${libAda})
 fi
+
+#Checking Artifacts
+for a in "${ARTIFACTS[@]}"; do
+    if [ ! -f "$a" ]; then
+        echo "ARTIFACT NOT FOUND: $a"
+        exit 1
+    fi
+done

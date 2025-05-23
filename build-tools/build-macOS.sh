@@ -49,6 +49,19 @@ cp -R ../include/ ${HEADER_OUTPUT_DIR}/
 #Copy libs
 LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
+ARTIFACTS=(
+    "${LIB_OUTPUT_DIR}/NGenXX.a"
+    "${LIB_OUTPUT_DIR}/curl.a"
+    "${LIB_OUTPUT_DIR}/ssl.a"
+    "${LIB_OUTPUT_DIR}/crypto.a"
+    "${LIB_OUTPUT_DIR}/lua.a"
+    "${LIB_OUTPUT_DIR}/qjs.a"
+    "${LIB_OUTPUT_DIR}/spdlog.a"
+    "${LIB_OUTPUT_DIR}/uv.a"
+    "${LIB_OUTPUT_DIR}/cjson.a"
+    "${LIB_OUTPUT_DIR}/mmkvcore.a"
+    "${LIB_OUTPUT_DIR}/mmkv.a"
+)
 mv libNGenXX.a ${LIB_OUTPUT_DIR}/NGenXX.a
 mv curl.output/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
 mv openssl.output/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
@@ -62,10 +75,22 @@ mv mmkv.output/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
 mv mmkv.output/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
 ADA_OUT_FILE=AdaURL.output/src/libada.a
 if [ -f "$ADA_OUT_FILE" ]; then
-    mv ${ADA_OUT_FILE} ${LIB_OUTPUT_DIR}/ada.a
+    libAda=${LIB_OUTPUT_DIR}/ada.a
+    mv ${ADA_OUT_FILE} ${libAda}
+    ARTIFACTS+=(${libAda})
 fi
 
 #Copy executables
 TOOLS_OUTPUT_DIR=output/tools
 mkdir -p ${TOOLS_OUTPUT_DIR}
-mv quickjs.output/qjsc.app/Contents/MacOS/qjsc ${TOOLS_OUTPUT_DIR}/qjsc
+qjsc=${TOOLS_OUTPUT_DIR}/qjsc
+mv quickjs.output/qjsc.app/Contents/MacOS/qjsc ${qjsc}
+ARTIFACTS+=(${qjsc})
+
+#Checking Artifacts
+for a in "${ARTIFACTS[@]}"; do
+    if [ ! -f "$a" ]; then
+        echo "ARTIFACT NOT FOUND: $a"
+        exit 1
+    fi
+done

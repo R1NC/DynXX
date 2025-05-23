@@ -22,3 +22,24 @@ cmake --build . --config %BUILD_TYPE%
 
 mkdir %HEADER_OUTPUT_DIR% 2>nul
 xcopy /E /I /Y ..\include %HEADER_OUTPUT_DIR%
+
+set ARTIFACTS=^
+    %OUTPUT_DIR%NGenXX.lib ^
+    %OUTPUT_DIR%curl.lib ^
+    %OUTPUT_DIR%ssl.lib ^
+    %OUTPUT_DIR%crypto.lib ^
+    %OUTPUT_DIR%lua.lib ^
+    %OUTPUT_DIR%qjs.lib ^
+    %OUTPUT_DIR%spdlog.lib ^
+    %OUTPUT_DIR%sqlite3.lib ^
+    %OUTPUT_DIR%uv.lib ^
+    %OUTPUT_DIR%cjson.lib ^
+    %OUTPUT_DIR%mmkvcore.lib ^
+    %OUTPUT_DIR%mmkv.lib
+
+for %%f in (%ARTIFACTS%) do (
+    if not exist %%f (
+        echo ARTIFACT NOT FOUND: %%f
+        exit /b 1
+    )
+)

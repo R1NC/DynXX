@@ -28,13 +28,6 @@ jobs:
           cd build-tools
           .\build-Windows.bat
 
-      - name: Check Artifacts
-        run: |
-          if not exist build.Windows\output\libs\*.lib (
-            echo "No library files found in output directory"
-            exit 1
-          )
-
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:

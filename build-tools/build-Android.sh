@@ -2,6 +2,7 @@
 
 # Use NDK_ROOT from environment variable, with a fallback default
 NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/28.1.13356709/"}
+ARCH=arm64-v8a
 
 BUILD_DIR=../build.Android
 rm -rf ${BUILD_DIR}
@@ -39,8 +40,7 @@ build4android() {
   cd ${ROOT_DIR}
 }
 
-#build4android armeabi-v7a android-21 Release
-build4android arm64-v8a android-21 Release
+build4android ${ARCH} android-21 Release
 
 HEADER_OUTPUT_DIR=output/include
 mkdir -p ${HEADER_OUTPUT_DIR}
@@ -56,3 +56,25 @@ if [ -f "$BIZ_JS" ]; then
 else
   echo "biz.js does not exist!"
 fi
+
+#Checking Artifacts
+LIB_OUTPUT_DIR=output/libs/${ARCH}
+ARTIFACTS=(
+    "${LIB_OUTPUT_DIR}/libNGenXX.a"
+    "${LIB_OUTPUT_DIR}/libcurl.a"
+    "${LIB_OUTPUT_DIR}/libssl.a"
+    "${LIB_OUTPUT_DIR}/libcrypto.a"
+    "${LIB_OUTPUT_DIR}/liblua.a"
+    "${LIB_OUTPUT_DIR}/libqjs.a"
+    "${LIB_OUTPUT_DIR}/libspdlog.a"
+    "${LIB_OUTPUT_DIR}/libuv.a"
+    "${LIB_OUTPUT_DIR}/libcjson.a"
+    "${LIB_OUTPUT_DIR}/libmmkvcore.a"
+    "${LIB_OUTPUT_DIR}/libmmkv.a"
+)
+for a in "${ARTIFACTS[@]}"; do
+    if [ ! -f "$a" ]; then
+        echo "ARTIFACT NOT FOUND: $a"
+        exit 1
+    fi
+done

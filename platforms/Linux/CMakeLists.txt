@@ -22,6 +22,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${LIB_PATH}/quickjs.a
     ${LIB_PATH}/uv.a
     ${LIB_PATH}/sqlite3.a
+    ${LIB_PATH}/spdlog.a
     ${LIB_PATH}/curl.a
     ${LIB_PATH}/ssl.a
     ${LIB_PATH}/crypto.a
