@@ -3,5 +3,5 @@ export function ngenxxLog(level, content) {
         "level": level,
         "content": content
     });
-    ngenxx_log_printJ(inJson);
+    ngenxx_log_print(inJson);
 }

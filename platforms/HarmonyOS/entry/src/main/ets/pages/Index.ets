@@ -109,8 +109,8 @@ struct Index {
               "function jNetHttpRequest(params) {\n"
               + "var url = JSON.parse(params).url;\n"
               + "var pLog = `{\"level\":1,\"content\":\"Send Net Req from JS, url: ${url}\"}`;\n"
-              + "ngenxx_log_printJ(pLog);\n"
-              + "return ngenxx_net_http_requestJ(params);\n"
+              + "ngenxx_log_print(pLog);\n"
+              + "return ngenxx_net_http_request(params);\n"
               + "}\n"
             , "biz.js", false);
             let rsp = NGenXX.jCall("jNetHttpRequest", jsonParams, false);

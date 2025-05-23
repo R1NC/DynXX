@@ -30,12 +30,12 @@ namespace
 
 std::string NGenXX::Net::Util::macAddress()
 {
-    ifaddrs *ifaddr;
+    ifaddrs *ifaddr = nullptr;
     std::string macAddress;
     
     if (getifaddrs(&ifaddr) == -1) 
     {
-        return {};
+        return macAddress;
     }
 
     for (ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next)
@@ -72,7 +72,7 @@ std::string NGenXX::Net::Util::macAddress()
 
 NGenXX::Net::Util::NetType NGenXX::Net::Util::netType() 
 {
-    ifaddrs *ifaddr;
+    ifaddrs *ifaddr = nullptr;
     auto result = NetType::Offline;
     
     if (getifaddrs(&ifaddr) == -1) 
