@@ -27,7 +27,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
 | :-- | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime |✔️|✔️|✔️|❌|✔️|❌|🛠️|
+| JS Runtime |✔️|✔️|✔️|❌|✔️|✔️|🛠️|
 | Network |✔️|✔️|✔️|✔️|✔️|✔️|⁉️|
 | SQLite |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
 | Key-Value Store |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
