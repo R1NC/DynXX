@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'xyz.rinc.ngenxx'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         minSdk 24
@@ -37,11 +37,11 @@ android {
 
     externalNativeBuild {
         cmake {
-            version "3.31.6"
+            version "4.0.2"
             path file('src/main/cxx/CMakeLists.txt')
         }
     }
-    ndkVersion '28.0.13004108'
+    ndkVersion '28.1.13356709'
 }
 
 dependencies {
