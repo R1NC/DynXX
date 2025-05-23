@@ -39,7 +39,7 @@ jobs:
         ./${{ matrix.script }}
 
     - name: Check Artifacts
-        run: |
+      run: |
           if not exist build.Linux/output/libs/*.a (
             echo "No library files found in output directory"
             exit 1

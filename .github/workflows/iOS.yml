@@ -29,7 +29,7 @@ jobs:
         ./build-iOS.sh
 
     - name: Check Artifacts
-        run: |
+      run: |
           if not exist build.iOS/output/libs/*.a (
             echo "No library files found in output directory"
             exit 1
