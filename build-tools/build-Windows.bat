@@ -25,18 +25,18 @@ xcopy /E /I /Y ..\include %HEADER_OUTPUT_DIR%
 
 set LIB_OUTPUT_DIR=%OUTPUT_DIR%%BUILD_TYPE%
 set ARTIFACTS=^
-    %LIB_OUTPUT_DIR%/NGenXX.lib ^
-    %LIB_OUTPUT_DIR%/libssl.lib ^
-    %LIB_OUTPUT_DIR%/libcrypto.lib ^
-    %LIB_OUTPUT_DIR%/libcurl.lib ^
-    %LIB_OUTPUT_DIR%/lua.lib ^
-    %LIB_OUTPUT_DIR%/qjs.lib ^
-    %LIB_OUTPUT_DIR%/spdlog.lib ^
-    %LIB_OUTPUT_DIR%/sqlite3.lib ^
-    %LIB_OUTPUT_DIR%/libuv.lib ^
-    %LIB_OUTPUT_DIR%/cjson.lib ^
-    %LIB_OUTPUT_DIR%/mmkvcore.lib ^
-    %LIB_OUTPUT_DIR%/mmkv.lib
+    %LIB_OUTPUT_DIR%\NGenXX.lib ^
+    %LIB_OUTPUT_DIR%\libssl.lib ^
+    %LIB_OUTPUT_DIR%\libcrypto.lib ^
+    %LIB_OUTPUT_DIR%\libcurl.lib ^
+    %LIB_OUTPUT_DIR%\lua.lib ^
+    %LIB_OUTPUT_DIR%\qjs.lib ^
+    %LIB_OUTPUT_DIR%\spdlog.lib ^
+    %LIB_OUTPUT_DIR%\sqlite3.lib ^
+    %LIB_OUTPUT_DIR%\libuv.lib ^
+    %LIB_OUTPUT_DIR%\cjson.lib ^
+    %LIB_OUTPUT_DIR%\mmkvcore.lib ^
+    %LIB_OUTPUT_DIR%\mmkv.lib
 
 for %%f in (%ARTIFACTS%) do (
     if not exist %%f (
