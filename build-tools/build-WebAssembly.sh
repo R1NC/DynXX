@@ -1,15 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
 #TODO
 EMSCRIPTEN_ROOT_PATH="~/dev/emsdk/upstream/emscripten"
-declare -i DEBUG=0
+DEBUG=0
 
 BUILD_DIR=../build.WebAssembly
 rm -rf ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
-function build4wasm {
+build4wasm {
     BUILD_TYPE=$1
     ABI=$2
 

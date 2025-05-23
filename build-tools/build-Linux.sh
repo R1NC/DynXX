@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 #TODO
-declare -i DEBUG=0
+DEBUG=0
 
 BUILD_DIR=../build.Linux
 rm -rf ${BUILD_DIR}
@@ -52,12 +52,12 @@ mv cjson.output/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
 mv sqlite.output/libsqlite3.a ${LIB_OUTPUT_DIR}/sqlite3.a
 mv mmkv.output/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
 mv mmkv.output/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
-mv AdaURL.output/src/libada.a ${LIB_OUTPUT_DIR}/ada.a
+
 ADA_OUT_FILE=AdaURL.output/src/libada.a
 if [ -f "$ADA_OUT_FILE" ]; then
     libAda=${LIB_OUTPUT_DIR}/ada.a
-    mv ${ADA_OUT_FILE} libAda
-    ARTIFACTS+=(${libAda})
+    mv ${ADA_OUT_FILE} ${libAda}
+    ARTIFACTS+=("${libAda}")
 fi
 
 #Checking Artifacts
