@@ -1,9 +1,9 @@
 # NGenXX
 
-[Android Build](actions/workflows/Android.yml/badge.svg)
-[iOS Build](actions/workflows/iOS.yml/badge.svg)
-[macOS Build](actions/workflows/macOS.yml/badge.svg)
-[Linux Build](actions/workflows/Linux.yml/badge.svg)
+[![Android Build](../../actions/workflows/Android.yml/badge.svg)](../../actions/workflows/Android.yml)
+[![iOS Build](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml)
+[![macOS Build](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml)
+[![Linux Build](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml)
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
