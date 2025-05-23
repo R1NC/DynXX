@@ -29,13 +29,19 @@ jobs:
 
       - name: Setup Android NDK
         uses: nttld/setup-ndk@v1
+        id: setup-ndk
         with:
           ndk-version: r28b
           local-cache: true
 
+      - name: Install Build Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake make ninja-build
+
       - name: Build Android
         env:
-          NDK_ROOT: ${{ github.workspace }}/android-ndk
+          NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           cd build-tools
           chmod +x build-Android.sh
