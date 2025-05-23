@@ -30,7 +30,7 @@ jobs:
       - name: Setup Android NDK
         uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r28.0.13004108
+          ndk-version: r28b
           local-cache: true
 
       - name: Build Android

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Use NDK_ROOT from environment variable, with a fallback default
-NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/28.0.13004108/"}
+NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/28.1.13356709/"}
 
 BUILD_DIR=../build.Android
 rm -rf ${BUILD_DIR}
