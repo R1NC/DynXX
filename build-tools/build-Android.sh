@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Use NDK_ROOT from environment variable, with a fallback default
 NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/28.1.13356709/"}
@@ -8,7 +8,7 @@ rm -rf ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
-function build4android {
+build4android() {
   ABI=$1
   SYSTEM_VERSION=$2
   BUILD_TYPE=$3
@@ -34,11 +34,9 @@ function build4android {
     -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${OUTPUT_DIR} \
     -DANDROID_PLATFORM=${SYSTEM_VERSION}
 
-  pushd ${ABI_BUILD_DIR}
-    make -j5
-  popd
-
-  rm -rf ${ABI_BUILD_DIR}
+  cd ${ABI_BUILD_DIR}
+  make -j5
+  cd ${ROOT_DIR}
 }
 
 #build4android armeabi-v7a android-21 Release
