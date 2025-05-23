@@ -5,19 +5,20 @@ set BUILD_DIR=%CD%\..\build.Windows
 set OUTPUT_DIR=%BUILD_DIR%\output\
 set HEADER_OUTPUT_DIR=%OUTPUT_DIR%\include\
 
-del /s /f /q %BUILD_DIR%
+rmdir /s /q %BUILD_DIR% 2>nul
 mkdir %BUILD_DIR%
 mkdir %OUTPUT_DIR%
 cd %BUILD_DIR%
 
 cmake .. ^
+    -G %VISUAL_STUDIO% ^
+    -A x64 ^
     -DCMAKE_INSTALL_PREFIX=. ^
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=%OUTPUT_DIR% ^
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=%OUTPUT_DIR% ^
     -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=%OUTPUT_DIR%
-REM -G %VISUAL_STUDIO%
 
 cmake --build . --config %BUILD_TYPE%
 
-mkdir %HEADER_OUTPUT_DIR%
-copy -R %BUILD_DIR%\..\include\ %HEADER_OUTPUT_DIR%\
+mkdir %HEADER_OUTPUT_DIR% 2>nul
+xcopy /E /I /Y ..\include %HEADER_OUTPUT_DIR%
