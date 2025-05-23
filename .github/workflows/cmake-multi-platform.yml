@@ -24,7 +24,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
 
@@ -32,12 +32,12 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake clang
+        sudo apt-get install -y build-essential cmake clang ninja-build
 
     - name: Install Dependencies (macOS)
       if: runner.os == 'macOS'
       run: |
-        brew install cmake
+        brew install cmake ninja
 
     - name: Build
       run: |
@@ -45,7 +45,8 @@ jobs:
         chmod +x ${{ matrix.script }}
         ./${{ matrix.script }}
 
-    - uses: actions/upload-artifact@v3
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ runner.os }}-build
         path: |
