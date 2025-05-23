@@ -4,6 +4,7 @@
 [![iOS Build](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml)
 [![macOS Build](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml)
 [![Linux Build](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml)
+[![Windows Build](../../actions/workflows/Windows.yml/badge.svg)](../../actions/workflows/Windows.yml)
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
