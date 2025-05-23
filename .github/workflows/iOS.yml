@@ -22,13 +22,20 @@ jobs:
       run: |
         brew install cmake ninja
 
-    - name: Build iOS
+    - name: Build
       run: |
         cd build-tools
         chmod +x build-iOS.sh
         ./build-iOS.sh
 
-    - name: Upload iOS Artifacts
+    - name: Check Artifacts
+        run: |
+          if not exist build.iOS/output/libs/*.a (
+            echo "No library files found in output directory"
+            exit 1
+          )
+
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: iOS-build
