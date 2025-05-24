@@ -111,6 +111,14 @@ set(OPENSSL_ROOT external/openssl)
 add_subdirectory(${OPENSSL_ROOT} openssl.output)
 list(APPEND INC_DIRS ${OPENSSL_ROOT}/include)
 
+## Config OpenSSL for libcurl to find libssl and libcrypto
+set(OPENSSL_ROOT_DIR ${OPENSSL_ROOT})
+set(OPENSSL_INCLUDE_DIR ${OPENSSL_ROOT_DIR}/include)
+add_library(OpenSSL::SSL ALIAS ssl)
+add_library(OpenSSL::Crypto ALIAS crypto)
+set(OPENSSL_SSL_LIBRARY ssl)
+set(OPENSSL_CRYPTO_LIBRARY crypto)
+
 set(CURL_ROOT external/curl)
 add_subdirectory(${CURL_ROOT} curl.output)
 list(APPEND INC_DIRS ${CURL_ROOT}/include)
