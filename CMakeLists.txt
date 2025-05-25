@@ -150,7 +150,7 @@ if(NOT APPLE)
 endif()
 
 # WASM has no built-in zlib;
-if(EMSCRIPTEN)
+if(EMSCRIPTEN OR WIN32)
     set(Z_ROOT external/zlib)
     add_subdirectory(${Z_ROOT} zlib.output)
     list(APPEND INC_DIRS ${Z_ROOT})
@@ -203,7 +203,7 @@ else()
     list(APPEND LINK_LIBS sqlite3-static)
 endif()
 
-if(EMSCRIPTEN)
+if(EMSCRIPTEN OR WIN32)
     list(APPEND LINK_LIBS zlib)
 endif()
 

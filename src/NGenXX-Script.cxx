@@ -722,10 +722,9 @@ std::string ngenxx_crypto_randS(const char *json)
     {
         return {};
     }
-    byte outBytes[outLen];
-
-    ngenxxCryptoRand(outLen, outBytes);
-    return bytes2json(wrapBytes(outBytes, outLen));
+    std::vector<byte> outBytes(outLen);
+    ngenxxCryptoRand(outBytes.size(), outBytes.data());
+    return bytes2json(outBytes);
 }
 
 std::string ngenxx_crypto_aes_encryptS(const char *json)

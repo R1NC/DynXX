@@ -514,7 +514,7 @@ JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> &&
 {
     return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
-        return JS_NewString(ctx, ret.c_str() ? : "");
+        return JS_NewString(ctx, ret.c_str() != nullptr ? ret.c_str() : "");
     });
 }
 

@@ -215,7 +215,8 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
         }
         else [[unlikely]]
         {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", cj->string ?: "", cj->type);
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
+                cj->string != nullptr ? cj->string: "", cj->type);
         }
     }
     return num;
