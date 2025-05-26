@@ -169,7 +169,7 @@ size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
     std::memset(this->inBuffer, 0, this->bufferSize);
     std::memcpy(this->inBuffer, bytes.data(), dataLen);
 
-    this->zs.avail_in = static_cast<uint>(dataLen);
+    this->zs.avail_in = static_cast<unsigned int>(dataLen);
     this->zs.next_in = this->inBuffer;
     this->inFinish = inFinish;
     return dataLen;
@@ -179,7 +179,7 @@ template <typename T>
 Bytes NGenXX::Z::ZBase<T>::processDo()
 {
     std::memset(this->outBuffer, 0, this->bufferSize);
-    this->zs.avail_out = static_cast<uint>(this->bufferSize);
+    this->zs.avail_out = static_cast<unsigned int>(this->bufferSize);
     this->zs.next_out = this->outBuffer;
 
     // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
