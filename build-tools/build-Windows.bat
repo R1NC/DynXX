@@ -26,6 +26,8 @@ xcopy /E /I /Y ..\include %HEADER_OUTPUT_DIR%
 set LIB_OUTPUT_DIR=%OUTPUT_DIR%%BUILD_TYPE%
 set ARTIFACTS=^
     %LIB_OUTPUT_DIR%\NGenXX.lib ^
+    %LIB_OUTPUT_DIR%\libcrypto-x64.lib ^
+    %LIB_OUTPUT_DIR%\libssl-x64.lib ^
     %LIB_OUTPUT_DIR%\libcurl.lib ^
     %LIB_OUTPUT_DIR%\lua.lib ^
     %LIB_OUTPUT_DIR%\qjs.lib ^
