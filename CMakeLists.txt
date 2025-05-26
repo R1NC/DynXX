@@ -18,6 +18,8 @@ project(NGenXX)
 
 ## Definitions:
 
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
 option(USE_LUA "Use Lua" ON)
 if(USE_LUA)
     add_definitions(-DUSE_LUA)
