@@ -7,7 +7,7 @@
 #pragma comment(lib, "../../build.Windows/output/libs/libcrypto-x64.lib")
 #pragma comment(lib, "../../build.Windows/output/libs/libcurl.lib")
 #pragma comment(lib, "../../build.Windows/output/libs/libuv.lib")
-#pragma comment(lib, "../../build.Windows/output/libs/zlib.lib")
+#pragma comment(lib, "../../build.Windows/output/libs/zlibstatic.lib")
 #pragma comment(lib, "../../build.Windows/output/libs/sqlite3.lib")
 #pragma comment(lib, "../../build.Windows/output/libs/mmkvcore.lib")
 #pragma comment(lib, "../../build.Windows/output/libs/mmkv.lib")

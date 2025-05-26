@@ -37,7 +37,7 @@ set ARTIFACTS=^
     %LIB_OUTPUT_DIR%\cjson.lib ^
     %LIB_OUTPUT_DIR%\mmkvcore.lib ^
     %LIB_OUTPUT_DIR%\mmkv.lib ^
-    %LIB_OUTPUT_DIR%\zlib.lib ^
+    %LIB_OUTPUT_DIR%\zlibstatic.lib ^
     %LIB_OUTPUT_DIR%\qjsc.exe
 
 for %%f in (%ARTIFACTS%) do (
