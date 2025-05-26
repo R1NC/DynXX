@@ -15,17 +15,6 @@
 #include <limits>
 #include <type_traits>
 
-#pragma mark Limits constants
-
-constexpr auto MinInt32 = std::numeric_limits<int32_t>::min();
-constexpr auto MaxInt32 = std::numeric_limits<int32_t>::max();
-constexpr auto MinInt64 = std::numeric_limits<int64_t>::min();
-constexpr auto MaxInt64 = std::numeric_limits<int64_t>::max();
-constexpr auto MinFloat32 = std::numeric_limits<float>::min();
-constexpr auto MaxFloat32 = std::numeric_limits<float>::max();
-constexpr auto MinFloat64 = std::numeric_limits<double>::min();
-constexpr auto MaxFloat64 = std::numeric_limits<double>::max();
-
 #pragma mark Concepts
 
 template <typename T>
@@ -107,12 +96,35 @@ void iterate(const T& container, std::function<void(const typename T::value_type
     }
 }
 
+#pragma mark Limits constants
+
+template <NumberT T>
+constexpr T MinV() 
+{
+    return (std::numeric_limits<T>::min)();
+}
+
+template <NumberT T>
+constexpr T MaxV() 
+{
+    return (std::numeric_limits<T>::max)();
+}
+
+constexpr auto MinInt32 = MinV<int32_t>();
+constexpr auto MaxInt32 = MaxV<int32_t>();
+constexpr auto MinInt64 = MinV<int64_t>();
+constexpr auto MaxInt64 = MaxV<int64_t>();
+constexpr auto MinFloat32 = MinV<float>();
+constexpr auto MaxFloat32 = MaxV<float>();
+constexpr auto MinFloat64 = MinV<double>();
+constexpr auto MaxFloat64 = MaxV<double>();
+
 #pragma mark String to Number
 
-int32_t str2int32(const std::string &str, const int32_t defaultI = MinInt32);
-int64_t str2int64(const std::string &str, const int64_t defaultI = MinInt64);
-float str2float32(const std::string &str, const float defaultI = MinFloat32);
-double str2float64(const std::string &str, const double defaultI = MinFloat64);
+int32_t str2int32(const std::string &str, const int32_t &defaultI = MinInt32);
+int64_t str2int64(const std::string &str, const int64_t &defaultI = MinInt64);
+float str2float32(const std::string &str, const float &defaultI = MinFloat32);
+double str2float64(const std::string &str, const double &defaultI = MinFloat64);
 
 #pragma mark Pointer cast
 
