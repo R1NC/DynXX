@@ -1,6 +1,10 @@
 #ifndef NGENXX_INCLUDE_H_
 #define NGENXX_INCLUDE_H_
 
+#ifndef NOMINMAX
+#define NOMINMAX  // prevent windows redefining min/max
+#endif
+
 #include "NGenXXInternal.h"
 #include "NGenXXTypes.h"
 #include "NGenXXLog.h"
