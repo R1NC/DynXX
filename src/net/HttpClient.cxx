@@ -19,7 +19,7 @@ namespace
     size_t on_post_read(char *buffer, const size_t size, size_t nmemb, void *userdata)
     {
         const auto pBytes = static_cast<Bytes *>(userdata);
-        const auto len = static_cast<long>(std::min(size * nmemb, pBytes->size()));
+        const auto len = static_cast<long>(std::min<size_t>(size * nmemb, pBytes->size()));
         if (len > 0) [[likely]]
         {
             std::memcpy(buffer, pBytes->data(), len);

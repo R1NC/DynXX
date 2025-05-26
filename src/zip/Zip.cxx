@@ -108,7 +108,7 @@ namespace {
         auto b = process(bufferSize,
             [bufferSize, &in, &pos]
             {
-                const auto len = static_cast<long>(std::min(bufferSize, in.size() - pos));
+                const auto len = static_cast<long>(std::min<size_t>(bufferSize, in.size() - pos));
                 Bytes bytes(in.begin() + pos, in.begin() + pos + len);
                 pos += len;
                 return bytes;
@@ -164,7 +164,7 @@ size_t NGenXX::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
     {
         return 0;
     }
-    auto dataLen = std::min(bytes.size(), this->bufferSize);
+    auto dataLen = std::min<size_t>(bytes.size(), this->bufferSize);
 
     std::memset(this->inBuffer, 0, this->bufferSize);
     std::memcpy(this->inBuffer, bytes.data(), dataLen);
