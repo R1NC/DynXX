@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Use NDK_ROOT from environment variable, with a fallback default
 NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/28.1.13356709/"}
 ARCH=arm64-v8a
 

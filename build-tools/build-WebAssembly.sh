@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Use environment variable or default path
-EMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_ROOT_PATH:-"~/dev/emsdk/upstream/emscripten"}
+EMSCRIPTEN_ROOT=${EMSCRIPTEN_ROOT:-"~/dev/emsdk/upstream/emscripten"}
 DEBUG=0
 
 BUILD_DIR=../build.WebAssembly
@@ -14,8 +13,8 @@ build4wasm() {
     ABI=$2
 
     cmake .. \
-    -DEMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_ROOT_PATH} \
-    -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake \
+    -DEMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_ROOT} \
+    -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT}/cmake/Modules/Platform/Emscripten.cmake \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DEMSCRIPTEN_SYSTEM_PROCESSOR=${ABI}
 
@@ -25,6 +24,18 @@ build4wasm() {
     mkdir -p ${OUTPUT_DIR}
     cp NGenXX.wasm ${OUTPUT_DIR}
     cp NGenXX.js ${OUTPUT_DIR}
+
+    #Checking Artifacts
+    ARTIFACTS=(
+        "${OUTPUT_DIR}/NGenXX.wasm"
+        "${OUTPUT_DIR}/NGenXX.js"
+    )
+    for a in "${ARTIFACTS[@]}"; do
+        if [ ! -f "$a" ]; then
+            echo "ARTIFACT NOT FOUND: $a"
+            exit 1
+        fi
+    done
 }
 
 LIB_TYPE="Release"
@@ -33,15 +44,3 @@ if [ $DEBUG == 1 ]; then
 fi
 
 build4wasm $LIB_TYPE arm
-
-#Checking Artifacts
-ARTIFACTS=(
-    "${OUTPUT_DIR}/NGenXX.wasm"
-    "${OUTPUT_DIR}/NGenXX.js"
-)
-for a in "${ARTIFACTS[@]}"; do
-    if [ ! -f "$a" ]; then
-        echo "ARTIFACT NOT FOUND: $a"
-        exit 1
-    fi
-done

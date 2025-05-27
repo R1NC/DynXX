@@ -101,12 +101,8 @@ list(APPEND INC_DIRS include)
 
 if(EMSCRIPTEN)
     add_compile_options(
-        -Wno-error=c++11-narrowing
-        -Wno-error=implicit-void-ptr-cast
         -Wno-error=conversion
         -Wno-error=old-style-cast
-        -Wno-error=pointer-to-int-cast
-        -Wno-error=int-to-pointer-cast
     )
 endif()
 
