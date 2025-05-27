@@ -211,7 +211,7 @@ double NGenXX::Json::Decoder::readNumber(const void *const node) const
         } 
         else if (cJSON_IsString(cj)) [[likely]]
         {
-            str2float64(cj->valuestring);
+            num = str2float64(cj->valuestring);
         }
         else [[unlikely]]
         {
