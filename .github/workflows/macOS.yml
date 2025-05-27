@@ -12,14 +12,7 @@ permissions:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [macos-latest]
-        include:
-          - os: macos-latest
-            script: build-macOS.sh
-
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -27,20 +20,19 @@ jobs:
         submodules: 'recursive'
 
     - name: Install Dependencies
-      if: runner.os == 'macOS'
       run: |
         brew install cmake ninja
 
     - name: Build
       run: |
         cd build-tools
-        chmod +x ${{ matrix.script }}
-        ./${{ matrix.script }}
+        chmod +x build-macOS.sh
+        ./build-macOS.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ runner.os }}-build
+        name: macOS-build
         path: |
           build.*/output/libs/
           build.*/output/include/

@@ -37,6 +37,7 @@ jobs:
           OPENSSL_INCLUDE_DIR: ${{ env.OPENSSL_INCLUDE_DIR }}
         run: |
           cd build-tools
+          set COMPILER="Visual Studio 17 2022"
           .\build-Windows.bat
 
       - name: Upload Artifacts
