@@ -29,19 +29,20 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
 | :-- | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
+| JS Runtime |✔️|✔️|✔️|⚠️|✔️|✔️|❌|
 | Network |✔️|✔️|✔️|✔️|✔️|✔️|❗|
-| SQLite |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
-| Key-Value Store |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
-| JSON Codec |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
-| Crypto |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
-| Zip |✔️|✔️|🛠️|🛠️|✔️|✔️|🛠️|
+| SQLite |✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
+| Key-Value Store |✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
+| JSON Codec |✔️|✔️|✔️|⚠️|✔️|✔️|⚠️|
+| Crypto |✔️|✔️|✔️|⚠️|✔️|✔️|⚠️|
+| Zip |✔️|✔️|⚠️|⚠️|✔️|✔️|⚠️|
 | Device Info |✔️|✔️|✔️|🛠️|✔️|🛠️|❔|
 
 - ❔ : Unknown;
 - ⭕ : Not supported;
+- 🛠️ : Under developing;
 - ❌ : Failed to compile;
-- 🛠️ : Succeed to compile, not tested;
+- ⚠️ : Succeed to compile, not tested;
 - ❗ : With running error;
 - ✔️ : Tested.
 
