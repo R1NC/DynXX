@@ -33,4 +33,15 @@ if [ $DEBUG == 1 ]; then
 fi
 
 build4wasm $LIB_TYPE arm
-#build4wasm $LIB_TYPE x86
+
+#Checking Artifacts
+ARTIFACTS=(
+    "${OUTPUT_DIR}/NGenXX.wasm"
+    "${OUTPUT_DIR}/NGenXX.js"
+)
+for a in "${ARTIFACTS[@]}"; do
+    if [ ! -f "$a" ]; then
+        echo "ARTIFACT NOT FOUND: $a"
+        exit 1
+    fi
+done
