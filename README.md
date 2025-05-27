@@ -5,6 +5,7 @@
 [![macOS Build](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml)
 [![Linux Build](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml)
 [![Windows-MSVC Build](../../actions/workflows/Windows-MSVC.yml/badge.svg)](../../actions/workflows/Windows-MSVC.yml)
+[![Windows-MinGW Build](../../actions/workflows/Windows-MinGW.yml/badge.svg)](../../actions/workflows/Windows-MinGW.yml)
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
