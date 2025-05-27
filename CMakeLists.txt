@@ -14,12 +14,6 @@ string(
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    add_compile_options(-Wno-error=c++11-narrowing)
-    add_compile_options(-Wno-error=implicit-void-pointer-cast)
-    add_compile_options(-Wno-error=conversion)
-endif()
-
 project(NGenXX)
 
 ## Definitions:
@@ -104,6 +98,18 @@ endif()
 ## Include Directories:
 
 list(APPEND INC_DIRS include)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    add_compile_options(
+        -Wno-error=c++11-narrowing
+        -Wno-error=implicit-void-pointer-cast
+        -Wno-error=conversion
+        -Wno-error=c-style-cast
+        -Wno-error=old-style-cast
+        -Wno-error=pointer-to-int-cast
+        -Wno-error=int-to-pointer-cast
+    )
+endif()
 
 set(CJSON_ROOT external/cjson)
 add_subdirectory(${CJSON_ROOT} cjson.output)
