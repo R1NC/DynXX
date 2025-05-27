@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # TODO
 NDK_ROOT="~/Library/OpenHarmony/Sdk/15/native"
@@ -9,7 +9,7 @@ rm -rf ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
-function build4harmony {
+build4harmony() {
   ABI=$1
   BUILD_TYPE=$2
 

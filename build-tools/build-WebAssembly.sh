@@ -9,7 +9,7 @@ rm -rf ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
-build4wasm {
+build4wasm() {
     BUILD_TYPE=$1
     ABI=$2
 

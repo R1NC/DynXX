@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 #TODO
-declare -i DEBUG=0
+DEBUG=0
 TARGET_VERSION=12.0
 
 BUILD_DIR=../build.iOS
@@ -9,7 +9,7 @@ rm -rf ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
-function build4ios {
+build4ios() {
     PLATFORM=$1
     ARCHS=$2
     SYSTEM_VERSION=$3
