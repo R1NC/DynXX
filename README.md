@@ -38,7 +38,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | Zip |✔️|✔️|⚠️|⚠️|✔️|✔️|⚠️|
 | Device Info |✔️|✔️|✔️|🛠️|✔️|🛠️|❔|
 
-- ❔ : Unknown;
+- ⁉️ : Unknown;
 - ⭕ : Not supported;
 - 🛠️ : Under developing;
 - ❌ : Failed to compile;
