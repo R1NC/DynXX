@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#TODO
-EMSCRIPTEN_ROOT_PATH="~/dev/emsdk/upstream/emscripten"
+# Use environment variable or default path
+EMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_ROOT_PATH:-"~/dev/emsdk/upstream/emscripten"}
 DEBUG=0
 
 BUILD_DIR=../build.WebAssembly
