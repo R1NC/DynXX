@@ -30,7 +30,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | :-- | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
 | Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
 | JS Runtime |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
-| Network |✔️|✔️|✔️|✔️|✔️|✔️|⁉️|
+| Network |✔️|✔️|✔️|✔️|✔️|✔️|❗|
 | SQLite |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
 | Key-Value Store |✔️|✔️|✔️|✔️|✔️|✔️|🛠️|
 | JSON Codec |✔️|✔️|✔️|🛠️|✔️|✔️|🛠️|
@@ -42,7 +42,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 - ⭕ : Not supported;
 - ❌ : Failed to compile;
 - 🛠️ : Succeed to compile, not tested;
-- ⁉️ : With running error;
+- ❗ : With running error;
 - ✔️ : Tested.
 
 ### Unsupported Features in WebAssembly
