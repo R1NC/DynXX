@@ -1,0 +1,56 @@
+name: Windows-MinGW
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Setup MinGW
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: x64
+
+      - name: Install OpenSSL
+        run: |
+          choco install openssl
+          echo "OPENSSL_ROOT_DIR=C:\Program Files\OpenSSL" >> $env:GITHUB_ENV
+          echo "OPENSSL_LIBRARIES=C:\Program Files\OpenSSL\lib" >> $env:GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
+
+      - name: Setup CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Build
+        env:
+          OPENSSL_ROOT_DIR: ${{ env.OPENSSL_ROOT_DIR }}
+          OPENSSL_LIBRARIES: ${{ env.OPENSSL_LIBRARIES }}
+          OPENSSL_INCLUDE_DIR: ${{ env.OPENSSL_INCLUDE_DIR }}
+        run: |
+          mkdir build.mingw
+          cd build.mingw
+          cmake .. -G "MinGW Makefiles" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DOPENSSL_ROOT_DIR="$env:OPENSSL_ROOT_DIR" \
+            -DOPENSSL_LIBRARIES="$env:OPENSSL_LIBRARIES" \
+            -DOPENSSL_INCLUDE_DIR="$env:OPENSSL_INCLUDE_DIR"
+          cmake --build . --config Release -j $(nproc)
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-MinGW-build
+          path: build.mingw/output/
+          if-no-files-found: error
