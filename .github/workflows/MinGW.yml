@@ -1,4 +1,4 @@
-name: Windows-MinGW
+name: MinGW
 
 on:
   push:
