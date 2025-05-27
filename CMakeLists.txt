@@ -99,7 +99,7 @@ endif()
 
 list(APPEND INC_DIRS include)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if(EMSCRIPTEN)
     add_compile_options(
         -Wno-error=c++11-narrowing
         -Wno-error=implicit-void-ptr-cast
