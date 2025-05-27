@@ -102,9 +102,8 @@ list(APPEND INC_DIRS include)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     add_compile_options(
         -Wno-error=c++11-narrowing
-        -Wno-error=implicit-void-pointer-cast
+        -Wno-error=implicit-void-ptr-cast
         -Wno-error=conversion
-        -Wno-error=c-style-cast
         -Wno-error=old-style-cast
         -Wno-error=pointer-to-int-cast
         -Wno-error=int-to-pointer-cast
