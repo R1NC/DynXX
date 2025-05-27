@@ -196,7 +196,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
     const auto tagLen = tagBits / 8;
 
     std::vector<byte> tag(tagLen, 0);
-    const auto outLen = inLen + tagLen;
+    const auto outLen = inLen;
     std::vector<byte> out(outLen, 0);
 
     const auto cipher = aesGcmCipher(keyBytes);
@@ -261,7 +261,7 @@ Bytes NGenXX::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyByte
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:{}", ret);
         return {};
     }
-    out.insert(out.begin() + inLen, tag.begin(), tag.end());
+    out.insert(out.end(), tag.begin(), tag.end());
 
     return out;
 }
