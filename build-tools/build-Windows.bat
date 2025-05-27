@@ -1,4 +1,4 @@
-set VISUAL_STUDIO="Visual Studio 17 2022"
+set COMPILER="Visual Studio 17 2022"
 set BUILD_TYPE=Release
 
 set BUILD_DIR=%CD%\..\build.Windows
@@ -11,7 +11,7 @@ mkdir %OUTPUT_DIR%
 cd %BUILD_DIR%
 
 cmake .. ^
-    -G %VISUAL_STUDIO% ^
+    -G %COMPILER% ^
     -A x64 ^
     -DCMAKE_INSTALL_PREFIX=. ^
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=%OUTPUT_DIR% ^

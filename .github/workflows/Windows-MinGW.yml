@@ -22,6 +22,7 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: x64
+          version: 12.2.0
 
       - name: Install OpenSSL
         run: |
@@ -30,27 +31,19 @@ jobs:
           echo "OPENSSL_LIBRARIES=C:\Program Files\OpenSSL\lib" >> $env:GITHUB_ENV
           echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
 
-      - name: Setup CMake
-        uses: lukka/get-cmake@latest
-
       - name: Build
         env:
           OPENSSL_ROOT_DIR: ${{ env.OPENSSL_ROOT_DIR }}
           OPENSSL_LIBRARIES: ${{ env.OPENSSL_LIBRARIES }}
           OPENSSL_INCLUDE_DIR: ${{ env.OPENSSL_INCLUDE_DIR }}
         run: |
-          mkdir build.mingw
-          cd build.mingw
-          cmake .. -G "MinGW Makefiles" \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DOPENSSL_ROOT_DIR="$env:OPENSSL_ROOT_DIR" \
-            -DOPENSSL_LIBRARIES="$env:OPENSSL_LIBRARIES" \
-            -DOPENSSL_INCLUDE_DIR="$env:OPENSSL_INCLUDE_DIR"
-          cmake --build . --config Release -j $(nproc)
+          cd build-tools
+          set COMPILER="MinGW Makefiles"
+          .\build-Windows.bat
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Windows-MinGW-build
-          path: build.mingw/output/
+          path: build.Windows/output/
           if-no-files-found: error
