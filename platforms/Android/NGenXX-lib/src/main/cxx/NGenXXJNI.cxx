@@ -23,7 +23,7 @@ static void JNI_NGenXX_log_callback(int level, const char *content)
     }
     auto env = currentEnv(sVM);
     auto jContent = env->NewStringUTF(content);
-    freeX(content);
+    //freeX(content);
     //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
     auto boxedLevel = boxJInt(env, static_cast<jint>(level));
     env->CallObjectMethod(sLogCallback, sLogCallbackMethodId, boxedLevel, jContent);
@@ -37,7 +37,7 @@ static const char *JNI_NGenXX_js_msg_callback(const char *msg)
     }
     auto env = currentEnv(sVM);
     auto jMsg = env->NewStringUTF(msg);
-    freeX(msg);
+    //freeX(msg);
     auto jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
     return env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
 }

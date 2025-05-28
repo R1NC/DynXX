@@ -71,10 +71,7 @@ namespace {
         {
             return {};
         }
-        const auto len = std::strlen(msg);
-        const auto cMsg = mallocX<char>(len);
-        std::strncpy(cMsg, msg, len);
-        const auto res = msgCbk(cMsg);
+        const auto res = msgCbk(msg);
         if (res == nullptr) [[unlikely]]
         {
             return {};
