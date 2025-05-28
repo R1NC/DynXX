@@ -47,10 +47,14 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 - :heavy_exclamation_mark: : With running error;
 - :heavy_check_mark: : Tested.
 
-### Unsupported Features in WebAssembly
+<details>
+
+<summary>Unsupported Features in WASM:</summary>
 
 - Load Lua script with file;(Will trigger a prompt window)
 - [C/C++ callback JS function in async thread][2].
+
+</details>
 
 ## Requirements
 
