@@ -20,6 +20,12 @@ std::string NGenXX::DeviceInfo::deviceManufacturer()
     return {};
 }
 
+std::string NGenXX::DeviceInfo::deviceModel()
+{
+    //TODO
+    return {};
+}
+
 std::string NGenXX::DeviceInfo::osVersion()
 {
     //TODO

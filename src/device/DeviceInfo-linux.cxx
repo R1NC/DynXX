@@ -16,6 +16,13 @@ std::string NGenXX::DeviceInfo::deviceName()
 
 std::string NGenXX::DeviceInfo::deviceManufacturer()
 {
+    //TODO
+    return {};
+}
+
+std::string NGenXX::DeviceInfo::deviceModel()
+{
+    //TODO
     return {};
 }
 

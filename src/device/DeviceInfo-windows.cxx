@@ -24,6 +24,12 @@ std::string NGenXX::DeviceInfo::deviceManufacturer()
     return "Microsoft";
 }
 
+std::string NGenXX::DeviceInfo::deviceModel()
+{
+    //TODO
+    return {};
+}
+
 std::string NGenXX::DeviceInfo::osVersion()
 {
     //TODO

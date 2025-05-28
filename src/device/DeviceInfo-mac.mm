@@ -52,6 +52,12 @@ std::string NGenXX::DeviceInfo::deviceManufacturer()
     return "Apple";
 }
 
+std::string NGenXX::DeviceInfo::deviceModel()
+{
+    //TODO
+    return {};
+}
+
 std::string NGenXX::DeviceInfo::osVersion()
 {
     NSOperatingSystemVersion version = NSProcessInfo.processInfo.operatingSystemVersion;
