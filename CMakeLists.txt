@@ -194,7 +194,11 @@ if(USE_LUA)
 endif()
 
 if(USE_QJS)
-    list(APPEND LINK_LIBS quickjs)
+    if(EMSCRIPTEN)
+        list(APPEND LINK_LIBS qjs_wasm)
+    else()
+        list(APPEND LINK_LIBS quickjs)
+    endif()
 endif()
 
 if(USE_SPDLOG)
