@@ -26,7 +26,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 ## Progress
 
-| | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
+| | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WASM |
 | :-- | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
 | Lua Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|
 | JS Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:x:|
