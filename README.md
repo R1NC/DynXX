@@ -28,24 +28,24 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 | | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WebAssembly |
 | :-- | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
-| Lua Runtime |✔️|✔️|✔️|✔️|✔️|✔️|✔️|
-| JS Runtime |✔️|✔️|✔️|⚠️|✔️|✔️|❌|
-| Network |✔️|✔️|✔️|✔️|✔️|✔️|❗|
-| SQLite |✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
-| Key-Value Store |✔️|✔️|✔️|✔️|✔️|✔️|⚠️|
-| JSON Codec |✔️|✔️|✔️|⚠️|✔️|✔️|⚠️|
-| Crypto |✔️|✔️|✔️|⚠️|✔️|✔️|⚠️|
-| Zip |✔️|✔️|⚠️|⚠️|✔️|✔️|⚠️|
-| Device Info |✔️|✔️|✔️|🛠️|✔️|🛠️|⁉️|
-| Log |✔️|✔️|✔️|⁉️|✔️|✔️|⁉️|
+| Lua Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|
+| JS Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:x:|
+| Network |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_exclamation_mark:|
+| SQLite |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
+| Key-Value Store |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
+| JSON Codec |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
+| Crypto |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
+| Zip |:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
+| Device Info |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:hammer:|:heavy_check_mark:|:hammer:|:interrobang:|
+| Log |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:interrobang:|:heavy_check_mark:|:heavy_check_mark:|:interrobang:|
 
-- ⁉️ : Unknown;
-- ⭕ : Not supported;
-- 🛠️ : Under developing;
-- ❌ : Failed to compile;
-- ⚠️ : Succeed to compile, not tested;
-- ❗ : With running error;
-- ✔️ : Tested.
+- :interrobang: : Unknown;
+- :o: : Not supported;
+- :hammer: : Under developing;
+- :x: : Failed to compile;
+- :grey_exclamation: : Succeed to compile, not tested;
+- :heavy_exclamation_mark: : With running error;
+- :heavy_check_mark: : Tested.
 
 ### Unsupported Features in WebAssembly
 
