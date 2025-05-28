@@ -82,6 +82,10 @@ if(ANDROID)
 endif()
 
 if(EMSCRIPTEN)
+    add_compile_options(
+        -Wno-error=conversion
+        -Wno-error=old-style-cast
+    )
     add_executable(${PROJECT_NAME} ${SRC_FILES})
     set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
     # WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
@@ -98,13 +102,6 @@ endif()
 ## Include Directories:
 
 list(APPEND INC_DIRS include)
-
-if(EMSCRIPTEN)
-    add_compile_options(
-        -Wno-error=conversion
-        -Wno-error=old-style-cast
-    )
-endif()
 
 set(CJSON_ROOT external/cjson)
 add_subdirectory(${CJSON_ROOT} cjson.output)
@@ -215,7 +212,11 @@ if(EMSCRIPTEN OR WIN32)
 endif()
 
 if(NOT OHOS)
-    list(APPEND LINK_LIBS libuv)
+    if(EMSCRIPTEN)
+        list(APPEND LINK_LIBS uv_a)
+    else()
+        list(APPEND LINK_LIBS libuv)
+    endif()
 endif()
 
 if(USE_STD_RANGES)
