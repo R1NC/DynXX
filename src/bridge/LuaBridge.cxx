@@ -1,24 +1,28 @@
 #if defined(USE_LUA)
 #include "LuaBridge.hxx"
 
-#include <thread>
-
+#if defined(USE_LIBUV)
 #include <uv.h>
-#include <lualib.h>
+#endif
 
 #include <NGenXXLog.hxx>
 #include <NGenXXTypes.hxx>
 
+#include "../util/TimeUtil.hxx"
+
 namespace
 {
-    typedef struct LuaTimerData
+    std::recursive_timed_mutex mutex;
+
+#if defined(USE_LIBUV)
+    struct Timer
     {
         lua_State *lState{nullptr};
         int lFuncRef{0};
         lua_Integer timeout{1};
         bool repeat{false};
         bool finished{false};
-    } LuaTimerData;
+    };
 
     void _uv_loop_init()
     {
@@ -42,29 +46,29 @@ namespace
 
     void _uv_timer_cb(uv_timer_t *timer)
     {
-        const auto timer_data = static_cast<LuaTimerData *>(timer->data);
+        const auto timer_data = static_cast<Timer *>(timer->data);
         lua_rawgeti(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
         lua_pcall(timer_data->lState, 0, 0, 0);
     }
 
-    uv_timer_t *_uv_timer_start(LuaTimerData *timer_data)
+    uv_timer_t *_uv_timer_start(Timer *timer_data)
     {
         auto timerP = mallocX<uv_timer_t>();
         timerP->data = timer_data;
-    
+
         std::thread([timerP] {
             uv_timer_init(uv_default_loop(), timerP);
-            const auto data = static_cast<LuaTimerData *>(timerP->data);
+            const auto data = static_cast<Timer *>(timerP->data);
             uv_timer_start(timerP, _uv_timer_cb, data->timeout, data->repeat ? data->timeout : 0);
             _uv_loop_prepare();
         }).detach();
-    
+
         return timerP;
     }
 
     void _uv_timer_stop(uv_timer_t *timer, bool release)
     {
-        const auto timer_data = static_cast<LuaTimerData *>(timer->data);
+        const auto timer_data = static_cast<Timer *>(timer->data);
         luaL_unref(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
         if (!timer_data->finished)
         {
@@ -81,7 +85,7 @@ namespace
 
     int _util_timer_add(lua_State *L)
     {
-        const auto timer_data = mallocX<LuaTimerData>();
+        const auto timer_data = mallocX<Timer>();
         *timer_data = {
             .lState = L,
             .lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX),
@@ -90,7 +94,7 @@ namespace
         };
 
         const auto timer = _uv_timer_start(timer_data);
-    
+
         lua_pushlightuserdata(L, timer);
         return LUA_OK;
     }
@@ -109,6 +113,7 @@ namespace
         {"remove", _util_timer_remove},
         {nullptr, nullptr} /* sentinel */
     };
+#endif
 
     #define lua_register_lib(L, lib, funcs)    \
     {                                          \
@@ -127,31 +132,33 @@ namespace
     } while (0);
 }
 
-NGenXX::LuaBridge::LuaBridge()
+NGenXX::Bridge::LuaBridge::LuaBridge()
 {
     this->lstate = luaL_newstate();
     luaL_openlibs(this->lstate);
-    
+#if defined(USE_LIBUV)
     lua_register_lib(this->lstate, "Timer", lib_timer_funcs);
-    
     _uv_loop_init();
+#endif
 }
 
-NGenXX::LuaBridge::~LuaBridge()
+NGenXX::Bridge::LuaBridge::~LuaBridge()
 {
+    this->shouldStop = true;
+#if defined(USE_LIBUV)
     _uv_loop_stop();
-    
+#endif    
     lua_close(this->lstate);
 }
 
-void NGenXX::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
+void NGenXX::Bridge::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
     lua_register(this->lstate, funcName.c_str(), funcPointer);
 }
 
 #if !defined(__EMSCRIPTEN__)
-bool NGenXX::LuaBridge::loadFile(const std::string &file)
+bool NGenXX::Bridge::LuaBridge::loadFile(const std::string &file) const
 {
-    auto lock = std::lock_guard(this->mutex);
+    auto lock = std::lock_guard(mutex);
     if (const auto ret = luaL_dofile(this->lstate, file.c_str()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dofile` error:");
@@ -161,9 +168,9 @@ bool NGenXX::LuaBridge::loadFile(const std::string &file)
 }
 #endif
 
-bool NGenXX::LuaBridge::loadScript(const std::string &script)
+bool NGenXX::Bridge::LuaBridge::loadScript(const std::string &script) const
 {
-    auto lock = std::lock_guard(this->mutex);
+    auto lock = std::lock_guard(mutex);
     if (const auto ret = luaL_dostring(this->lstate, script.c_str()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dostring` error:");
@@ -173,10 +180,10 @@ bool NGenXX::LuaBridge::loadScript(const std::string &script)
 }
 
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
-std::string NGenXX::LuaBridge::callFunc(const std::string &func, const std::string &params)
+std::string NGenXX::Bridge::LuaBridge::callFunc(const std::string &func, const std::string &params) const
 {
     std::string s;
-    auto lock = std::lock_guard(this->mutex);
+    auto lock = std::lock_guard(mutex);
     lua_getglobal(this->lstate, func.c_str());
     lua_pushstring(this->lstate, params.c_str());
     if (const auto ret = lua_pcall(lstate, 1, 1, 0); ret != LUA_OK) [[unlikely]]

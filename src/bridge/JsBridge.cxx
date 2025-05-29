@@ -1,14 +1,9 @@
-#include "quickjs.h"
 #if defined(USE_QJS)
 #include "JsBridge.hxx"
 
 #include <fstream>
 #include <sstream>
 #include <utility>
-#include <mutex>
-#include <thread>
-
-#include <uv.h>
 
 #include <NGenXXLog.hxx>
 #include "../util/TimeUtil.hxx"
@@ -49,149 +44,6 @@ namespace
         }
 
         JS_FreeValue(ctx, exception_val);
-    }
-
-#pragma mark JS Promise wrapper
-
-    typedef struct Promise
-    {
-        JSValue p{JS_UNDEFINED};
-        JSValue f[2]{JS_UNDEFINED, JS_UNDEFINED};
-    } Promise;
-
-    Promise *_newPromise(JSContext *ctx)
-    {
-        const auto jPromise = new Promise();
-        jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
-        if (JS_IsException(jPromise->p)) [[unlikely]]
-        {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewPromise failed ->");
-            dumpJsErr(ctx);
-            JS_FreeValue(ctx, jPromise->p);
-            return nullptr;
-        }
-        return jPromise;
-    }
-
-    void _callbackPromise(JSContext *ctx, const Promise *jPromise, JSValue jRet)
-    {
-        const auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
-        if (JS_IsException(jCallRet)) [[unlikely]]
-        {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_CallPromise failed ->");
-            dumpJsErr(ctx);
-        }
-
-        JS_FreeValue(ctx, jCallRet);
-        JS_FreeValue(ctx, jRet);
-        JS_FreeValue(ctx, jPromise->f[0]);
-        JS_FreeValue(ctx, jPromise->f[1]);
-        // JS_FreeValue(ctx, jPromise->p);
-        delete jPromise;
-    }
-
-#pragma mark JsBridge Event Loop
-
-    uv_loop_t *_uv_loop_p = nullptr;
-    uv_loop_t *_uv_loop_t = nullptr;
-    uv_timer_t *_uv_timer_p = nullptr;
-    uv_timer_t *_uv_timer_t = nullptr;
-    std::unique_ptr<std::recursive_timed_mutex> mutex = nullptr;
-
-    bool tryLock()
-    {
-        if (!mutex) [[unlikely]]
-        {
-            return false;
-        }
-        const auto timeout = steady_clock::now() + milliseconds(SleepMilliSecs);
-        return mutex->try_lock_until(timeout);
-    }
-
-    void _uv_timer_cb_p(uv_timer_t *timer)
-    {
-        const auto ctx = static_cast<JSContext *>(timer->data);
-        /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-        if (tryLock())
-        {
-            js_std_loop_promise(ctx);
-            mutex->unlock();
-        }
-    }
-
-    void _uv_timer_cb_t(uv_timer_t *timer)
-    {
-        const auto ctx = static_cast<JSContext *>(timer->data);
-        /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-        if (tryLock()) [[likely]]
-        {
-            js_std_loop_timer(ctx);
-            mutex->unlock();
-        }
-    }
-
-    void _uv_loop_start(JSContext *ctx, uv_loop_t *uv_loop, uv_timer_t *uv_timer, const uv_timer_cb cb)
-    {
-        if (uv_loop == nullptr) [[likely]]
-        {
-            uv_loop = mallocX<uv_loop_t>();
-            uv_loop_init(uv_loop);
-        }
-        else [[unlikely]]
-        {
-            if (uv_loop_alive(uv_loop)) [[unlikely]]
-            {
-                return;
-            }
-        }
-
-        if (uv_timer == nullptr) [[likely]]
-        {
-            uv_timer = mallocX<uv_timer_t>();
-            uv_timer_init(uv_loop, uv_timer);
-            uv_timer->data = ctx;
-            uv_timer_start(uv_timer, cb, SleepMilliSecs, SleepMilliSecs);
-        }
-        else [[unlikely]]
-        {
-            uv_timer_stop(uv_timer);
-            uv_timer_again(uv_timer);
-        }
-
-        uv_run(uv_loop, UV_RUN_DEFAULT);
-    }
-
-    void _uv_loop_stop(uv_loop_t *uv_loop, uv_timer_t *uv_timer)
-    {
-        if (uv_loop == nullptr || uv_timer == nullptr || !uv_loop_alive(uv_loop)) [[unlikely]]
-        {
-            return;
-        }
-
-        uv_timer_stop(uv_timer);
-        freeX(uv_timer);
-
-        uv_stop(uv_loop);
-        uv_loop_close(uv_loop);
-        freeX(uv_loop);
-    }
-
-    void loop_startP(JSContext *ctx)
-    {
-        _uv_loop_start(ctx, _uv_loop_p, _uv_timer_p, _uv_timer_cb_p);
-    }
-
-    void loop_startT(JSContext *ctx)
-    {
-        _uv_loop_start(ctx, _uv_loop_t, _uv_timer_t, _uv_timer_cb_t);
-    }
-
-    void loop_stop(JSRuntime *rt)
-    {
-        _uv_loop_stop(_uv_loop_p, _uv_timer_p);
-        _uv_loop_stop(_uv_loop_t, _uv_timer_t);
-
-        js_std_loop_cancel(rt);
     }
 
 #pragma mark JsBridge Internal
@@ -247,60 +99,97 @@ namespace
         return ctx;
     }
 
-    JSValue _await(JSContext *ctx, const JSValue obj)
+#pragma mark JS Promise wrapper
+
+    struct Promise
     {
-        if (!mutex) [[unlikely]]
+        JSValue p{JS_UNDEFINED};
+        JSValue f[2]{JS_UNDEFINED, JS_UNDEFINED};
+    };
+
+    Promise *_newPromise(JSContext *ctx)
+    {
+        const auto jPromise = new Promise();
+        jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
+        if (JS_IsException(jPromise->p)) [[unlikely]]
         {
-            return JS_UNDEFINED;
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewPromise failed ->");
+            dumpJsErr(ctx);
+            JS_FreeValue(ctx, jPromise->p);
+            return nullptr;
         }
-        auto ret = JS_UNDEFINED;
-        for (;;)
-        {
-            /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-            if (!tryLock()) [[unlikely]]
-            {
-                sleepForMilliSecs(SleepMilliSecs);
-                continue;
-            }
-            if (const auto state = JS_PromiseState(ctx, obj); state == JS_PROMISE_FULFILLED)
-            {
-                ret = JS_PromiseResult(ctx, obj);
-                JS_FreeValue(ctx, obj);
-                break;
-            }
-            else if (state == JS_PROMISE_REJECTED)
-            {
-                ret = JS_Throw(ctx, JS_PromiseResult(ctx, obj));
-                JS_FreeValue(ctx, obj);
-                break;
-            }
-            else if (state == JS_PROMISE_PENDING)
-            {
-                /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
-                mutex->unlock();
-                sleepForMilliSecs(SleepMilliSecs);
-                continue;
-            }
-            else
-            {
-                /// Not a Promise: release the lock, return the result immediately.
-                ret = obj;
-                break;
-            }
-        }
-        mutex->unlock();
-        return ret;
+        return jPromise;
     }
+
+    void _callbackPromise(JSContext *ctx, const Promise *jPromise, JSValue jRet)
+    {
+        const auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
+        if (JS_IsException(jCallRet)) [[unlikely]]
+        {
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_CallPromise failed ->");
+            dumpJsErr(ctx);
+        }
+
+        JS_FreeValue(ctx, jCallRet);
+        JS_FreeValue(ctx, jRet);
+        JS_FreeValue(ctx, jPromise->f[0]);
+        JS_FreeValue(ctx, jPromise->f[1]);
+        // JS_FreeValue(ctx, jPromise->p);
+        delete jPromise;
+    }
+}
+
+#pragma mark JsBridge Internal
+
+JSValue NGenXX::Bridge::JsBridge::jAwait(const JSValue obj)
+{
+    auto ret = JS_UNDEFINED;
+    for (;;)
+    {
+        /// Do not force to acquire the lock, to avoid blocking the JS event loop.
+        if (!tryLockMutex(this->mutex)) [[unlikely]]
+        {
+            sleepForMilliSecs(SleepMilliSecs);
+            continue;
+        }
+        if (const auto state = JS_PromiseState(this->context, obj); state == JS_PROMISE_FULFILLED)
+        {
+            ret = JS_PromiseResult(this->context, obj);
+            JS_FreeValue(this->context, obj);
+            break;
+        }
+        else if (state == JS_PROMISE_REJECTED)
+        {
+            ret = JS_Throw(this->context, JS_PromiseResult(this->context, obj));
+            JS_FreeValue(this->context, obj);
+            break;
+        }
+        else if (state == JS_PROMISE_PENDING)
+        {
+            /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
+            unlockMutex(this->mutex);
+            sleepForMilliSecs(SleepMilliSecs);
+            continue;
+        }
+        else
+        {
+            /// Not a Promise: release the lock, return the result immediately.
+            ret = obj;
+            break;
+        }
+    }
+    unlockMutex(this->mutex);
+    return ret;
 }
 
 #pragma mark JSValueHash & JSValueEqual
 
-std::size_t NGenXX::JsBridge::JSValueHash::operator()(const JSValue &jv) const 
+std::size_t NGenXX::Bridge::JsBridge::JSValueHash::operator()(const JSValue &jv) const 
 {
     return std::hash<void *>()(JS_VALUE_GET_PTR(jv));
 }
 
-bool NGenXX::JsBridge::JSValueEqual::operator()(const JSValue &left, const JSValue &right) const 
+bool NGenXX::Bridge::JsBridge::JSValueEqual::operator()(const JSValue &left, const JSValue &right) const 
 {
     if (JS_VALUE_GET_TAG(left) != JS_VALUE_GET_TAG(right)) 
     {
@@ -324,10 +213,8 @@ bool NGenXX::JsBridge::JSValueEqual::operator()(const JSValue &left, const JSVal
 
 #pragma mark JsBridge API
 
-NGenXX::JsBridge::JsBridge()
+NGenXX::Bridge::JsBridge::JsBridge()
 {
-    mutex = std::make_unique<std::recursive_timed_mutex>();
-
     this->runtime = JS_NewRuntime();
     js_std_init_handlers(this->runtime);
     JS_SetModuleLoaderFunc(this->runtime, nullptr, js_module_loader, nullptr);
@@ -336,17 +223,15 @@ NGenXX::JsBridge::JsBridge()
     this->context = _newContext(this->runtime);
     this->jGlobal = JS_GetGlobalObject(this->context);// Can not free here, will be called in future
 
-    std::thread([ctx = this->context]
-    {
-        loop_startP(ctx); 
-    }).detach();
-    std::thread([ctx = this->context]
-    {
-        loop_startT(ctx); 
-    }).detach();
+    this->threadPromise = this->schedule([ctx = this->context]() {
+        js_std_loop_promise(ctx);
+    }, this->mutex);
+    this->threadTimer = this->schedule([ctx = this->context]() {
+        js_std_loop_timer(ctx);
+    }, this->mutex);
 }
 
-bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
+bool NGenXX::Bridge::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
 {
     auto res = true;
     const auto jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
@@ -371,7 +256,7 @@ bool NGenXX::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
     return res;
 }
 
-bool NGenXX::JsBridge::loadFile(const std::string &file, bool isModule) const
+bool NGenXX::Bridge::JsBridge::loadFile(const std::string &file, bool isModule)
 {
     std::ifstream ifs(file.c_str());
     std::ostringstream ss;
@@ -379,31 +264,19 @@ bool NGenXX::JsBridge::loadFile(const std::string &file, bool isModule) const
     return this->loadScript(ss.str(), file, isModule);
 }
 
-bool NGenXX::JsBridge::loadScript(const std::string &script, const std::string &name, bool isModule) const {
-    if (!mutex) [[unlikely]]
-    {
-        return false;
-    }
-    auto lock = std::lock_guard(*mutex);
+bool NGenXX::Bridge::JsBridge::loadScript(const std::string &script, const std::string &name, bool isModule) {
+    auto lock = std::lock_guard(this->mutex);
     return _loadScript(this->context, script, name, isModule);
 }
 
-bool NGenXX::JsBridge::loadBinary(const Bytes &bytes, bool isModule) const {
-    if (!mutex) [[unlikely]]
-    {
-        return false;
-    }
-    auto lock = std::lock_guard(*mutex);
+bool NGenXX::Bridge::JsBridge::loadBinary(const Bytes &bytes, bool isModule) {
+    auto lock = std::lock_guard(this->mutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
-std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::string &params, bool await) const {
-    if (!mutex) [[unlikely]]
-    {
-        return {};
-    }
-    mutex->lock();
+std::string NGenXX::Bridge::JsBridge::callFunc(const std::string &func, const std::string &params, bool await) {
+    auto lock = std::unique_lock(this->mutex);
     std::string s;
 
     if (const auto jFunc = JS_GetPropertyStr(this->context, this->jGlobal, func.c_str()); JS_IsFunction(this->context, jFunc)) [[likely]]
@@ -414,7 +287,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         auto jRes = JS_Call(this->context, jFunc, this->jGlobal, sizeof(argv), argv);
 
         /// Release the lock imediately, to avoid blocking the JS event loop.
-        mutex->unlock();
+        lock.unlock();
 
         if (JS_IsException(jRes)) [[unlikely]]
         {
@@ -425,7 +298,7 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
         {
             if (await)
             {/// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
-                jRes = _await(this->context, jRes); // Handle promise if needed
+                jRes = this->jAwait(jRes); // Handle promise if needed
             }
             const auto cS = JS_ToCString(this->context, jRes);
             s = wrapStr(cS);
@@ -436,31 +309,23 @@ std::string NGenXX::JsBridge::callFunc(const std::string &func, const std::strin
     }
     else [[unlikely]]
     {
-        mutex->unlock();
+        lock.unlock();
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "Can not find JS func:{}", func);
     }
 
     return s;
 }
 
-JSValue NGenXX::JsBridge::newPromise(std::function<JSValue()> &&jf)
+JSValue NGenXX::Bridge::JsBridge::newPromise(std::function<JSValue()> &&jf)
 {
-    if (!mutex) [[unlikely]]
-    {
-        return JS_UNDEFINED;
-    }
     auto jPromise = _newPromise(this->context);
     if (jPromise == nullptr) [[unlikely]]
     {
         return JS_EXCEPTION;
     }
     
-    std::thread([ctx = this->context, jPromise, jf = std::move(jf)] {
-        if (!mutex) [[unlikely]]
-        {
-            return;
-        }
-        auto lock = std::lock_guard(*mutex);
+    std::thread([&mtx = this->mutex, ctx = this->context, jPromise, jf = std::move(jf)] {
+        auto lock = std::lock_guard(mtx);
 
         const auto jRet = jf();
 
@@ -470,7 +335,7 @@ JSValue NGenXX::JsBridge::newPromise(std::function<JSValue()> &&jf)
     return jPromise->p;
 }
 
-JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> &&f)
+JSValue NGenXX::Bridge::JsBridge::newPromiseVoid(std::function<void()> &&f)
 {
     return this->newPromise([f = std::move(f)]() {
         f();
@@ -478,7 +343,7 @@ JSValue NGenXX::JsBridge::newPromiseVoid(std::function<void()> &&f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseBool(std::function<bool()> &&f)
+JSValue NGenXX::Bridge::JsBridge::newPromiseBool(std::function<bool()> &&f)
 {
     return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
@@ -486,7 +351,7 @@ JSValue NGenXX::JsBridge::newPromiseBool(std::function<bool()> &&f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseInt32(std::function<int32_t()> &&f)
+JSValue NGenXX::Bridge::JsBridge::newPromiseInt32(std::function<int32_t()> &&f)
 {
     return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
@@ -494,7 +359,7 @@ JSValue NGenXX::JsBridge::newPromiseInt32(std::function<int32_t()> &&f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseInt64(std::function<int64_t()> &&f)
+JSValue NGenXX::Bridge::JsBridge::newPromiseInt64(std::function<int64_t()> &&f)
 {
     return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
@@ -502,7 +367,7 @@ JSValue NGenXX::JsBridge::newPromiseInt64(std::function<int64_t()> &&f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseFloat(std::function<double()> &&f)
+JSValue NGenXX::Bridge::JsBridge::newPromiseFloat(std::function<double()> &&f)
 {
     return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
@@ -510,7 +375,7 @@ JSValue NGenXX::JsBridge::newPromiseFloat(std::function<double()> &&f)
     });
 }
 
-JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> &&f)
+JSValue NGenXX::Bridge::JsBridge::newPromiseString(std::function<const std::string()> &&f)
 {
     return this->newPromise([ctx = this->context, f = std::move(f)]{
         const auto ret = f();
@@ -518,9 +383,15 @@ JSValue NGenXX::JsBridge::newPromiseString(std::function<const std::string()> &&
     });
 }
 
-NGenXX::JsBridge::~JsBridge()
+NGenXX::Bridge::JsBridge::~JsBridge()
 {
-    loop_stop(this->runtime);
+    js_std_loop_cancel(this->runtime);
+
+    this->shouldStop = true;
+    this->threadPromise->join();
+    this->threadPromise.reset();
+    this->threadTimer->join();
+    this->threadTimer.reset();
 
     js_std_set_worker_new_context_func(nullptr);
 
@@ -540,12 +411,5 @@ NGenXX::JsBridge::~JsBridge()
     js_std_free_handlers(this->runtime);
     JS_FreeRuntime(this->runtime);
     this->runtime = nullptr;
-
-    mutex.reset();
-
-    _uv_loop_p = nullptr;
-    _uv_loop_t = nullptr;
-    _uv_timer_p = nullptr;
-    _uv_timer_t = nullptr;
 }
 #endif

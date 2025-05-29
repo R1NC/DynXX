@@ -9,11 +9,11 @@
 
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
-#include "js/JsBridge.hxx"
+#include "bridge/JsBridge.hxx"
 #include "NGenXX-Script.hxx"
 
 namespace {
-    std::unique_ptr<NGenXX::JsBridge> bridge = nullptr;
+    std::unique_ptr<NGenXX::Bridge::JsBridge> bridge = nullptr;
     std::function<const char *(const char *msg)> msgCbk = nullptr;
 
     #define DEF_API(f, T) DEF_JS_FUNC_##T(f##J, f##S)
@@ -265,7 +265,7 @@ void _ngenxx_js_init()
     {
         return;
     }
-    bridge = std::make_unique<NGenXX::JsBridge>();
+    bridge = std::make_unique<NGenXX::Bridge::JsBridge>();
     registerFuncs();
 }
 

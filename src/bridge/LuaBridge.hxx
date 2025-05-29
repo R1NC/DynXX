@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_LUA_BRIDGE_HXX_
-#define NGENXX_SRC_LUA_BRIDGE_HXX_
+#ifndef NGENXX_SRC_BRIDGE_LUA_HXX_
+#define NGENXX_SRC_BRIDGE_LUA_HXX_
 
 #include <NGenXXInternal.h>
 
@@ -12,7 +12,8 @@ EXTERN_C_END
 #if defined(__cplusplus)
 
 #include <string>
-#include <mutex>
+
+#include "BaseBridge.hxx"
 
 #define DEF_LUA_FUNC_VOID(fL, fS)           \
     int fL(lua_State *L)                    \
@@ -58,9 +59,9 @@ EXTERN_C_END
         return 1;                           \
     }
 
-namespace NGenXX
+namespace NGenXX::Bridge
 {
-    class LuaBridge
+    class LuaBridge : public BaseBridge
     {
     public:
         /**
@@ -78,14 +79,14 @@ namespace NGenXX
          * @param file Lua file path
          * @return success or not
          */
-        [[nodiscard]] bool loadFile(const std::string &file);
+        [[nodiscard]] bool loadFile(const std::string &file) const;
 
         /**
          * @brief Load Lua script content
          * @param script Lua script content
          * @return success or not
          */
-        [[nodiscard]] bool loadScript(const std::string &script);
+        [[nodiscard]] bool loadScript(const std::string &script) const;
 
         /**
          * @brief export C function to Lua environment
@@ -100,19 +101,19 @@ namespace NGenXX
          * @param params Lua function params（wrap multiple params with json）
          * @return return value of Lua function
          */
-        std::string callFunc(const std::string &func, const std::string &params);
+        std::string callFunc(const std::string &func, const std::string &params) const;
 
         /**
          * @brief Release Lua environment
          */
-        ~LuaBridge();
+        ~LuaBridge() override;
 
     private:
         lua_State *lstate{nullptr};
-        std::recursive_mutex mutex;
+        std::unique_ptr<std::thread> threadTimer{nullptr};
     };
 }
 
 #endif
 
-#endif // NGENXX_SRC_LUA_BRIDGE_HXX_
+#endif // NGENXX_SRC_BRIDGE_LUA_HXX_

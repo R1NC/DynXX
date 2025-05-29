@@ -24,11 +24,13 @@ build4wasm() {
     mkdir -p ${OUTPUT_DIR}
     cp NGenXX.wasm ${OUTPUT_DIR}
     cp NGenXX.js ${OUTPUT_DIR}
+    cp NGenXX.html ${OUTPUT_DIR}
 
     #Checking Artifacts
     ARTIFACTS=(
         "${OUTPUT_DIR}/NGenXX.wasm"
         "${OUTPUT_DIR}/NGenXX.js"
+        "${OUTPUT_DIR}/NGenXX.html"
     )
     for a in "${ARTIFACTS[@]}"; do
         if [ ! -f "$a" ]; then

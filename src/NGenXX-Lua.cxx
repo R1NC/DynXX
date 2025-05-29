@@ -3,13 +3,13 @@
 
 #include <memory>
 
-#include "lua/LuaBridge.hxx"
+#include "bridge/LuaBridge.hxx"
 #include "util/TypeUtil.hxx"
 #include "NGenXX-inner.hxx"
 #include "NGenXX-Script.hxx"
 
 namespace {
-    std::unique_ptr<NGenXX::LuaBridge> bridge = nullptr;
+    std::unique_ptr<NGenXX::Bridge::LuaBridge> bridge = nullptr;
 
     #define DEF_API(f, T) DEF_LUA_FUNC_##T(f##L, f##S)
 
@@ -217,7 +217,7 @@ void _ngenxx_lua_init()
     {
         return;
     }
-    bridge = std::make_unique<NGenXX::LuaBridge>();
+    bridge = std::make_unique<NGenXX::Bridge::LuaBridge>();
     registerFuncs();
 }
 

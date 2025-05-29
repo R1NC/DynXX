@@ -1,16 +1,17 @@
-#ifndef NGENXX_SRC_JS_BRIDGE_HXX_
-#define NGENXX_SRC_JS_BRIDGE_HXX_
+#ifndef NGENXX_SRC_BRIDGE_JS_HXX_
+#define NGENXX_SRC_BRIDGE_JS_HXX_
+
+#include <quickjs-libc.h>
 
 #if defined(__cplusplus)
 
 #include <cstdint>
 
-#include <functional>
 #include <unordered_set>
 
-#include <quickjs-libc.h>
-
 #include <NGenXXTypes.hxx>
+
+#include "BaseBridge.hxx"
 
 #define JS_FUNC_PARAMS                                                         \
   JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv
@@ -120,9 +121,9 @@
         [arg = json]() { return fS(arg.c_str()); });                           \
   }
 
-namespace NGenXX
+namespace NGenXX::Bridge
 {
-    class JsBridge
+    class JsBridge : public BaseBridge
     {
     public:
         /**
@@ -147,7 +148,7 @@ namespace NGenXX
          * @param file JS file path
          * @return success or not
          */
-        [[nodiscard]] bool loadFile(const std::string &file, bool isModule) const;
+        [[nodiscard]] bool loadFile(const std::string &file, bool isModule);
 
         /**
          * @brief Load JS script
@@ -155,13 +156,13 @@ namespace NGenXX
          * @param name JS file name
          * @return success or not
          */
-        [[nodiscard]] bool loadScript(const std::string &script, const std::string &name, bool isModule) const;
+        [[nodiscard]] bool loadScript(const std::string &script, const std::string &name, bool isModule);
 
         /**
          * @brief Load JS ByteCode
          * @param bytes JS ByteCode
          */
-        [[nodiscard]] bool loadBinary(const Bytes &bytes, bool isModule) const;
+        [[nodiscard]] bool loadBinary(const Bytes &bytes, bool isModule);
 
         /**
          * @brief call JS func
@@ -169,7 +170,7 @@ namespace NGenXX
          * @param params parameters(json)
          * @param await Whether wait for the promise result or not
          */
-        [[nodiscard]] std::string callFunc(const std::string &func, const std::string &params, bool await) const;
+        [[nodiscard]] std::string callFunc(const std::string &func, const std::string &params, bool await);
 
         /**
          * @brief New JS `Promise`
@@ -183,14 +184,12 @@ namespace NGenXX
         JSValue newPromiseFloat(std::function<double()> &&f);
         JSValue newPromiseString(std::function<const std::string()> &&f);
 
-        ~JsBridge();
+        ~JsBridge() override;
 
     private:
         JSRuntime *runtime{nullptr};
         JSContext *context{nullptr};
         JSValue jGlobal{JS_UNDEFINED};
-
-        JSValue newPromise(std::function<JSValue()> &&jf);
 
         // Custom hash function for JSValue
         struct JSValueHash 
@@ -203,9 +202,16 @@ namespace NGenXX
           bool operator()(const JSValue &left, const JSValue &right) const;
         };
         std::unordered_set<JSValue, JSValueHash, JSValueEqual> jValueCache;
+
+        std::unique_ptr<std::thread> threadPromise{nullptr};
+        std::unique_ptr<std::thread> threadTimer{nullptr};
+        std::recursive_timed_mutex mutex;
+
+        JSValue newPromise(std::function<JSValue()> &&jf);
+        JSValue jAwait(const JSValue obj);
     };
 }
 
 #endif
 
-#endif // NGENXX_SRC_JS_BRIDGE_HXX_
+#endif // NGENXX_SRC_BRIDGE_JS_HXX_

@@ -111,11 +111,7 @@ function NGenXXNetHttpRequest(url, method, paramMap,  headerMap, rawBodyBytes, f
         "timeout": timeout
     });
 
-    return new Promise((resolve, reject)=>{
-        ngenxx_net_http_request(inJson).then((outJson)=>{
-            resolve(JSON.parse(outJson));
-        });
-    });
+    return ngenxx_net_http_request(inJson);
 }
 
 function NGenXXNetHttpDownload(url, file, timeout) {
@@ -126,11 +122,7 @@ function NGenXXNetHttpDownload(url, file, timeout) {
         "timeout": timeout
     });
 
-    return new Promise((resolve, reject)=>{
-        ngenxx_net_http_download(inJson).then((res)=>{
-            resolve(res);
-        });
-    });
+    return ngenxx_net_http_download(inJson);
 }
 
 function NGenXXStoreSQLiteOpen(_id) {
@@ -546,11 +538,7 @@ function NGenXXZZipBytes(bytes, mode, bufferSize, format) {
         "format": format,
         "inBytes": bytes
     });
-    return new Promise((resolve, reject)=>{
-        ngenxx_z_bytes_zip(inJson).then((outJson)=>{
-            resolve(_json2Array(outJson));
-        });
-    });
+    return ngenxx_z_bytes_zip(inJson);
 }
 
 function NGenXXZUnZipBytes(bytes, bufferSize, format) {
@@ -559,11 +547,7 @@ function NGenXXZUnZipBytes(bytes, bufferSize, format) {
         "format": format,
         "inBytes": bytes
     });
-    return new Promise((resolve, reject)=>{
-        ngenxx_z_bytes_unzip(inJson).then((outJson)=>{
-            resolve(_json2Array(outJson));
-        });
-    });
+    return ngenxx_z_bytes_unzip(inJson);
 }
 
 function _NGenXXZStream(bufferSize, readFunc, writeFunc, flushFunc,

@@ -53,7 +53,6 @@ ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/liblua.a"
     "${LIB_OUTPUT_DIR}/libqjs.a"
     "${LIB_OUTPUT_DIR}/libspdlog.a"
-    "${LIB_OUTPUT_DIR}/libuv.a"
     "${LIB_OUTPUT_DIR}/libcjson.a"
     "${LIB_OUTPUT_DIR}/libmmkvcore.a"
     "${LIB_OUTPUT_DIR}/libmmkv.a"
