@@ -14,6 +14,11 @@ uint64_t castNow()
     return duration_cast<durationT>(clockT::now().time_since_epoch()).count();
 }
 
+inline uint64_t nowInMilliSecs()
+{
+    return castNow<system_clock, milliseconds>();
+}
+
 inline uint64_t nowInMicroSecs()
 {
     return castNow<system_clock, microseconds>();

@@ -49,12 +49,14 @@ namespace
     template <NumberT T>
     T parseNum(const NGenXX::Json::Decoder &decoder, const char *k)
     {
-        return static_cast<T>(decoder.readNumber(decoder[k]));
+        const auto node = decoder[k];
+        return static_cast<T>(node == nullptr ? 0 : decoder.readNumber(node));
     }
 
     std::string parseStr(const NGenXX::Json::Decoder &decoder, const char *k)
     {
-        return decoder.readString(decoder[k]);
+        const auto node = decoder[k];
+        return node == nullptr ? std::string{} : decoder.readString(node);
     }
 
     template <typename T = void>
