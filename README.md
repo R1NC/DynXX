@@ -1,13 +1,9 @@
 # NGenXX
 
-[![Build for Android on Ubuntu](../../actions/workflows/Android.yml/badge.svg)](../../actions/workflows/Android.yml)
-
-[![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml) [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml)
-
-[![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)](../../actions/workflows/Win-MSVC.yml) [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)](../../actions/workflows/Win-MinGW.yml)
-
-[![Build for Linux on Ubuntu](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml)
-
+[![Build for Android on Ubuntu](../../actions/workflows/Android.yml/badge.svg)](../../actions/workflows/Android.yml) <br/> 
+[![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml) [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml) <br/> 
+[![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)](../../actions/workflows/Win-MSVC.yml) [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)](../../actions/workflows/Win-MinGW.yml) <br/> 
+[![Build for Linux on Ubuntu](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml) <br/> 
 [![Build for WASM on macOS](../../actions/workflows/WASM-mac.yml/badge.svg)](../../actions/workflows/WASM-mac.yml)
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
