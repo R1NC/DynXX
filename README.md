@@ -4,9 +4,9 @@
 [![iOS Build](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml)
 [![macOS Build](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml)
 [![Linux Build](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml)
-[![MSVC Build](../../actions/workflows/MSVC.yml/badge.svg)](../../actions/workflows/MSVC.yml)
-[![MinGW Build](../../actions/workflows/MinGW.yml/badge.svg)](../../actions/workflows/MinGW.yml)
-[![WASM Build](../../actions/workflows/WASM.yml/badge.svg)](../../actions/workflows/WASM.yml)
+[![Windows MSVC Build](../../actions/workflows/Windows-MSVC.yml/badge.svg)](../../actions/workflows/Windows-MSVC.yml)
+[![Windows MinGW Build](../../actions/workflows/Windows-MinGW.yml/badge.svg)](../../actions/workflows/Windows-MinGW.yml)
+[![WASM macOS Build](../../actions/workflows/WASM-macOS.yml/badge.svg)](../../actions/workflows/WASM-macOS.yml)
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 

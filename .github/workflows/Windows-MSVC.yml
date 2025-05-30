@@ -1,4 +1,4 @@
-name: MinGW
+name: Windows-MSVC
 
 on:
   push:
@@ -18,11 +18,10 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Setup MinGW
-        uses: egor-tensin/setup-mingw@v2
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.3.1
         with:
-          platform: x64
-          version: 12.2.0
+          vs-version: '17.0'
 
       - name: Install OpenSSL
         run: |
@@ -38,12 +37,13 @@ jobs:
           OPENSSL_INCLUDE_DIR: ${{ env.OPENSSL_INCLUDE_DIR }}
         run: |
           cd build-tools
-          set COMPILER="MinGW Makefiles"
+          set COMPILER="Visual Studio 17 2022"
           .\build-Windows.bat
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Windows-MinGW-build
-          path: build.Windows/output/
+          name: Windows-build
+          path: |
+            build.Windows/output/
           if-no-files-found: error

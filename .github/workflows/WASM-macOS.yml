@@ -1,4 +1,4 @@
-name: WASM
+name: WASM-macOS
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -21,11 +21,13 @@ jobs:
 
     - name: Setup Emscripten
       uses: mymindstorm/setup-emsdk@v12
+      with:
+        version: 3.1.65
+        actions-cache-folder: 'emsdk-cache'
 
     - name: Install Dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential cmake ninja-build
+        brew install cmake ninja
 
     - name: Build
       env:
