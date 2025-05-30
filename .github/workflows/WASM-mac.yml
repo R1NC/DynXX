@@ -1,4 +1,4 @@
-name: WASM-macOS
+name: Build for WASM on macOS
 
 on:
   push:

@@ -1,12 +1,12 @@
 # NGenXX
 
-[![Android Build](../../actions/workflows/Android.yml/badge.svg)](../../actions/workflows/Android.yml)
-[![iOS Build](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml)
-[![macOS Build](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml)
-[![Linux Build](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml)
-[![Windows MSVC Build](../../actions/workflows/Windows-MSVC.yml/badge.svg)](../../actions/workflows/Windows-MSVC.yml)
-[![Windows MinGW Build](../../actions/workflows/Windows-MinGW.yml/badge.svg)](../../actions/workflows/Windows-MinGW.yml)
-[![WASM macOS Build](../../actions/workflows/WASM-macOS.yml/badge.svg)](../../actions/workflows/WASM-macOS.yml)
+* [![Build for Android on Ubuntu](../../actions/workflows/Android.yml/badge.svg)](../../actions/workflows/Android.yml)
+* [![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml)
+* [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml)
+* [![Build for Linux on Ubuntu](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml)
+* [![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)](../../actions/workflows/Win-MSVC.yml)
+* [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)](../../actions/workflows/Win-MinGW.yml)
+* [![Build for WASM on macOS](../../actions/workflows/WASM-mac.yml/badge.svg)](../../actions/workflows/WASM-mac.yml)
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
@@ -39,32 +39,32 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | Device Info |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:hammer:|:heavy_check_mark:|:hammer:|:grey_question:|
 | Log |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_question:|
 
-- :grey_question: : Unknown;
-- :o: : Not supported;
-- :hammer: : Under developing;
-- :x: : Failed to compile;
-- :grey_exclamation: : Succeed to compile, not tested;
-- :heavy_exclamation_mark: : With running error;
-- :heavy_check_mark: : Tested.
+* :grey_question: : Unknown;
+* :o: : Not supported;
+* :hammer: : Under developing;
+* :x: : Failed to compile;
+* :grey_exclamation: : Succeed to compile, not tested;
+* :heavy_exclamation_mark: : With running error;
+* :heavy_check_mark: : Tested.
 
 <details>
 
 <summary>Unsupported Features in WASM:</summary>
 
-- Load Lua script with file;(Will trigger a prompt window)
-- [C/C++ callback JS function in async thread][2].
+* Load Lua script with file;(Will trigger a prompt window)
+* [C/C++ callback JS function in async thread][2].
 
 </details>
 
 ## Requirements
 
-- C99, C++23;
-- Clang 15+;
-- CMake 3.10+;
-- Xcode 14.0+, for iOS & macOS;
-- Android Studio(or IntelliJ IDEA) with NDK r25+;
-- DevEco Studio with Native SDK, for HarmonyOS;
-- [Emscripten][1], for WebAssembly.
+* C99, C++23;
+* Clang 15+;
+* CMake 3.10+;
+* Xcode 14.0+, for iOS & macOS;
+* Android Studio(or IntelliJ IDEA) with NDK r25+;
+* DevEco Studio with Native SDK, for HarmonyOS;
+* [Emscripten][1], for WebAssembly.
 
 ## C++ New Features Compatibility
 
@@ -81,26 +81,26 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 <summary>Reference:</summary>
 
-- [C++ compiler support - cppreference.com][22];
-- [C++ Language Support - Xcode - Apple Developer][21];
+* [C++ compiler support - cppreference.com][22];
+* [C++ Language Support - Xcode - Apple Developer][21];
 
 </details>
 
 ## Dependencies
 
-- [ada-url][3]: URL parser;(Requires `std::ranges` in C++20)
-- [android-ifaddrs][16]: The missing `ifaddrs` for Android;
-- [curl][4]: Networking;
-- [cJSON][5]: JSON codec;
-- [iOS-cmake][18]: CMake toolchain for Apple platforms;
-- [libuv][6]: Asynchronous I/O;
-- [lua][7]: Lua runtime;
-- [MMKV][8]: Key-value storage;
-- [openssl][9]: Crypto;
-- [quickjs][10]: JS runtime;
-- [spdlog][15]: File logging;
-- [sqlite][11]: DB storage;
-- [zlib][17]: Compression.
+* [ada-url][3]: URL parser;(Requires `std::ranges` in C++20)
+* [android-ifaddrs][16]: The missing `ifaddrs` for Android;
+* [curl][4]: Networking;
+* [cJSON][5]: JSON codec;
+* [iOS-cmake][18]: CMake toolchain for Apple platforms;
+* [libuv][6]: Asynchronous I/O;
+* [lua][7]: Lua runtime;
+* [MMKV][8]: Key-value storage;
+* [openssl][9]: Crypto;
+* [quickjs][10]: JS runtime;
+* [spdlog][15]: File logging;
+* [sqlite][11]: DB storage;
+* [zlib][17]: Compression.
 
 [1]: https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install
 [2]: https://github.com/emscripten-core/emscripten/issues/16567
