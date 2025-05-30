@@ -1,23 +1,25 @@
 # NGenXX
 
-* [![Build for Android on Ubuntu](../../actions/workflows/Android.yml/badge.svg)](../../actions/workflows/Android.yml)
-* [![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml)
-* [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml)
-* [![Build for Linux on Ubuntu](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml)
-* [![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)](../../actions/workflows/Win-MSVC.yml)
-* [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)](../../actions/workflows/Win-MinGW.yml)
-* [![Build for WASM on macOS](../../actions/workflows/WASM-mac.yml/badge.svg)](../../actions/workflows/WASM-mac.yml)
+[![Build for Android on Ubuntu](../../actions/workflows/Android.yml/badge.svg)](../../actions/workflows/Android.yml)
+
+[![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml) [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml)
+
+[![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)](../../actions/workflows/Win-MSVC.yml) [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)](../../actions/workflows/Win-MinGW.yml)
+
+[![Build for Linux on Ubuntu](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml)
+
+[![Build for WASM on macOS](../../actions/workflows/WASM-mac.yml/badge.svg)](../../actions/workflows/WASM-mac.yml)
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
-> :point_right: The Rust version([NGenRS](https://github.com/R1NC/NGenRS)) is in works.
+> :point_right: The Rust version([NGenRS][31]) is in works.
 > <details>
 > <summary>Why Rust?</summary>
 > 
 > * Guarantee memory safety by the compiler, not the programmer;
-> * Powerful third-party dependency management tool - [Crates](https://crates.io/), no need to struggle with CMake;
-> * First-class [WASM support](https://rustwasm.github.io/docs/book/), no other toolchain needed(Like [Emscripten](https://emscripten.org/));
-> * Complete cross-platform support - [FFI](https://doc.rust-lang.org/nomicon/ffi.html), [CXX](https://cxx.rs/), [jni](https://docs.rs/jni/latest/jni/), [ojbc2](https://docs.rs/objc2/latest/objc2/), [ohos-rs](https://ohos.rs/).
+> * Powerful third-party dependency management tool - [Crates][23], no need to struggle with CMake;
+> * First-class [WASM support][24], no other toolchain needed(Like [Emscripten][27]);
+> * Complete cross-platform support - [FFI][25], [CXX][26], [jni][28], [ojbc2][29], [ohos-rs][30].
 > </details>
 
 ## Architecture
@@ -124,3 +126,12 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [20]: https://en.cppreference.com/w/cpp/ranges/enumerate_view
 [21]: https://developer.apple.com/xcode/cpp/
 [22]: https://en.cppreference.com/w/cpp/compiler_support
+[23]: https://crates.io/
+[24]: https://rustwasm.github.io/docs/book/
+[25]: https://doc.rust-lang.org/nomicon/ffi.html
+[26]: https://cxx.rs/
+[27]: https://emscripten.org/
+[28]: https://docs.rs/jni/latest/jni/
+[29]: https://docs.rs/objc2/latest/objc2/
+[30]: https://ohos.rs/
+[31]: https://github.com/R1NC/NGenRS
