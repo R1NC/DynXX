@@ -12,7 +12,8 @@ static constexpr size_t CacheLineSize = std::hardware_destructive_interference_s
     static constexpr size_t CacheLineSize = 64;
 #endif
 
-class alignas(CacheLineSize) SpinLock {
+class alignas(CacheLineSize) SpinLock 
+{
 public:
     SpinLock() = default;
 
@@ -26,11 +27,13 @@ public:
 
     ~SpinLock() = default;
 
-    void lock() {
+    void lock() 
+    {
         while (lockFlag.exchange(true, std::memory_order_acquire));
     }
 
-    void unlock() {
+    void unlock() 
+    {
         lockFlag.store(false, std::memory_order_release);
     }
 

@@ -7,9 +7,6 @@
 
 #include <NGenXXLog.hxx>
 #include <NGenXXTypes.hxx>
-
-#include "../util/TimeUtil.hxx"
-
 namespace
 {
     std::recursive_timed_mutex mutex;
@@ -24,17 +21,17 @@ namespace
         bool finished{false};
     };
 
-    void _uv_loop_init()
+    void _loop_init()
     {
         uv_loop_init(uv_default_loop());
     }
 
-    void _uv_loop_prepare()
+    void _loop_prepare()
     {
         uv_run(uv_default_loop(), UV_RUN_DEFAULT);
     }
 
-    void _uv_loop_stop()
+    void _loop_stop()
     {
         if (!uv_loop_alive(uv_default_loop())) [[unlikely]]
         {
@@ -44,14 +41,14 @@ namespace
         uv_loop_close(uv_default_loop());
     }
 
-    void _uv_timer_cb(uv_timer_t *timer)
+    void _timer_cb(uv_timer_t *timer)
     {
         const auto timer_data = static_cast<Timer *>(timer->data);
         lua_rawgeti(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
         lua_pcall(timer_data->lState, 0, 0, 0);
     }
 
-    uv_timer_t *_uv_timer_start(Timer *timer_data)
+    uv_timer_t *_timer_start(Timer *timer_data)
     {
         auto timerP = mallocX<uv_timer_t>();
         timerP->data = timer_data;
@@ -59,14 +56,14 @@ namespace
         std::thread([timerP] {
             uv_timer_init(uv_default_loop(), timerP);
             const auto data = static_cast<Timer *>(timerP->data);
-            uv_timer_start(timerP, _uv_timer_cb, data->timeout, data->repeat ? data->timeout : 0);
-            _uv_loop_prepare();
+            uv_timer_start(timerP, _timer_cb, data->timeout, data->repeat ? data->timeout : 0);
+            _loop_prepare();
         }).detach();
 
         return timerP;
     }
 
-    void _uv_timer_stop(uv_timer_t *timer, bool release)
+    void _timer_stop(uv_timer_t *timer, bool release)
     {
         const auto timer_data = static_cast<Timer *>(timer->data);
         luaL_unref(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
@@ -93,7 +90,7 @@ namespace
             .repeat = static_cast<bool>(lua_toboolean(L, 2))
         };
 
-        const auto timer = _uv_timer_start(timer_data);
+        const auto timer = _timer_start(timer_data);
 
         lua_pushlightuserdata(L, timer);
         return LUA_OK;
@@ -103,7 +100,7 @@ namespace
     {
         if (const auto timer = static_cast<uv_timer_t *>(lua_touserdata(L, 1)); timer != nullptr) [[likely]]
         {
-            _uv_timer_stop(timer, true);
+            _timer_stop(timer, true);
         }
         return LUA_OK;
     }
@@ -138,7 +135,7 @@ NGenXX::Bridge::LuaBridge::LuaBridge()
     luaL_openlibs(this->lstate);
 #if defined(USE_LIBUV)
     lua_register_lib(this->lstate, "Timer", lib_timer_funcs);
-    _uv_loop_init();
+    _loop_init();
 #endif
 }
 
@@ -146,7 +143,7 @@ NGenXX::Bridge::LuaBridge::~LuaBridge()
 {
     this->shouldStop = true;
 #if defined(USE_LIBUV)
-    _uv_loop_stop();
+    _loop_stop();
 #endif    
     lua_close(this->lstate);
 }

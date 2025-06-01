@@ -76,15 +76,11 @@ option(USE_STD_RANGES_ENUMERATE "std::ranges::views::enumerate" OFF)
 option(USE_STD_RANGES_CHUNK "Use std::ranges::views::trunk" OFF)
 #add_definitions(-DUSE_STD_RANGES_CHUNK)
 
-# Android can not find built-in `ifaddrs.h`;
-if(ANDROID)
-    set(ANDROID_IFADDRS_ROOT external/android-ifaddrs)
-endif()
-
 ## Source & Output:
 
 file(GLOB_RECURSE SRC_FILES "src/*.cxx" "src/*.mm")
-if(ANDROID)
+if(ANDROID) # Android can not find built-in `ifaddrs.h`;
+    set(ANDROID_IFADDRS_ROOT external/android-ifaddrs)
     list(APPEND SRC_FILES ${ANDROID_IFADDRS_ROOT}/ifaddrs.c)
 endif()
 
