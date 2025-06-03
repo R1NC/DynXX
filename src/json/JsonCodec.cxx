@@ -191,7 +191,7 @@ void *NGenXX::Json::Decoder::operator[](const std::string &k) const
 
 std::string NGenXX::Json::Decoder::readString(void *const node) const
 {
-    const auto &cj = this->reinterpretNode(node);
+    const auto cj = this->reinterpretNode(node);
     switch(cJSONReadType(node))
     {
         case NGenXXJsonNodeTypeX::Object:
@@ -222,7 +222,7 @@ double NGenXX::Json::Decoder::readNumber(void *const node) const
 {
     auto num = 0.0;
     auto type = cJSONReadType(node);
-    const auto &cj = this->reinterpretNode(node);
+    const auto cj = this->reinterpretNode(node);
     if (type == NGenXXJsonNodeTypeX::Number) [[likely]]
     {
         num = cj->valuedouble;
