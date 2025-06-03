@@ -28,7 +28,7 @@ void _ngenxx_log_apple(const char*);
 
 namespace
 {
-    auto _level = NGenXXLogLevelNone;
+    int _level = NGenXXLogLevelNone;
     std::function<void(int level, const char *content)> _callback = nullptr;
     std::mutex _mutex;
 
