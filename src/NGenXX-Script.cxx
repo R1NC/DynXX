@@ -29,7 +29,7 @@ namespace
         });
 #endif
         const auto cj = cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));
-        auto json = ngenxxJsonCJSON2Str(cj);
+        auto json = ngenxxJsonToStr(cj);
         cJSON_Delete(cj);
         return json;
     }
@@ -41,7 +41,7 @@ namespace
         {
             cJSON_AddItemToArray(cj, cJSON_CreateString(it.c_str()));
         }
-        auto json = ngenxxJsonCJSON2Str(cj);
+        auto json = ngenxxJsonToStr(cj);
         cJSON_Delete(cj);
         return json;
     }
@@ -80,7 +80,7 @@ namespace
         if (const auto byte_vNode = decoder[bytesK])
         {
             decoder.readChildren(byte_vNode, 
-                            [&data, &decoder](size_t, const void *const child)
+                            [&data, &decoder](size_t, void *const child)
                             {
                                 data.emplace_back(decoder.readNumber(child));
                             });
@@ -94,7 +94,7 @@ namespace
         if (const auto str_vNode = decoder[strVK])
         {
             decoder.readChildren(str_vNode,
-                             [&v, &decoder](size_t, const void *const child)
+                             [&v, &decoder](size_t, void *const child)
                              {
                                  v.emplace_back(decoder.readString(child));
                              });

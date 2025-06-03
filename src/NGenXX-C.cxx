@@ -429,21 +429,21 @@ void ngenxx_store_kv_close(void *const conn)
 #pragma mark Json.Decoder
 
 EXPORT_AUTO
+int ngenxx_json_read_type(void *const cjson)
+{
+    return static_cast<int>(ngenxxJsonReadType(cjson));
+}
+
+EXPORT_AUTO
+const char *ngenxx_json_to_str(void *const cjson)
+{
+    return copyStr(ngenxxJsonToStr(cjson));
+}
+
+EXPORT_AUTO
 void *ngenxx_json_decoder_init(const char *json)
 {
     return ngenxxJsonDecoderInit(wrapStr(json));
-}
-
-EXPORT_AUTO
-bool ngenxx_json_decoder_is_array(void *const decoder, void *const node)
-{
-    return ngenxxJsonDecoderIsArray(decoder, node);
-}
-
-EXPORT_AUTO
-bool ngenxx_json_decoder_is_object(void *const decoder, void *const node)
-{
-    return ngenxxJsonDecoderIsObject(decoder, node);
 }
 
 EXPORT_AUTO

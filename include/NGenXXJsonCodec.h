@@ -7,28 +7,37 @@
 
 EXTERN_C_BEGIN
 
+enum NGenXXJsonNodeType
+{
+    NGenXXJsonNodeTypeUnknown,
+    NGenXXJsonNodeTypeObject,
+    NGenXXJsonNodeTypeArray,
+    NGenXXJsonNodeTypeString,
+    NGenXXJsonNodeTypeNumber,
+    NGenXXJsonNodeTypeBoolean,
+    NGenXXJsonNodeTypeNull
+};
+
+    /**
+     * @brief Read json node type
+     * @param cjson JSON node
+     * @return `NGenXXJsonNodeType`
+     */
+    int ngenxx_json_read_type(void *const cjson);
+
+     /**
+     * @brief Read json node type
+     * @param cjson JSON node
+     * @return Formatted String
+     */
+    const char *ngenxx_json_to_str(void *const cjson);
+
     /**
      * @brief initialize JSON decoder
      * @param json JSON string
      * @return JSON decoder
      */
     void *ngenxx_json_decoder_init(const char *json);
-
-    /**
-     * @brief Check if the node is an array
-     * @param decoder JSON decoder
-     * @param node JSON node, `nullptr` represents the root
-     * @return `true` if the node is an array
-     */
-    bool ngenxx_json_decoder_is_array(void *const decoder, void *const node);
-
-    /**
-     * @brief Check if the node is an object
-     * @param decoder JSON decoder
-     * @param node JSON node, `nullptr` represents the root
-     * @return `true` if the node is an object
-     */
-    bool ngenxx_json_decoder_is_object(void *const decoder, void *const node);
 
     /**
      * @brief Read JSON node wihh name

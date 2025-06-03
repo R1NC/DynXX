@@ -382,7 +382,7 @@ std::string NGenXXHttpResponse::toJson() const
     cJSON_AddItemToObject(cj, "headers", cjHeaders);
 
     cJSON_AddItemToObject(cj, "data", cJSON_CreateString(this->data.c_str()));
-    auto json = ngenxxJsonCJSON2Str(cj);
+    auto json = ngenxxJsonToStr(cj);
     cJSON_Delete(cj);
     return json;
 }
@@ -663,9 +663,14 @@ void ngenxxStoreKvClose(void *const conn)
 
 #pragma mark Json
 
-std::string ngenxxJsonCJSON2Str(void *const cjson)
+NGenXXJsonNodeTypeX ngenxxJsonReadType(void *const cjson)
 {
-    return NGenXX::Json::cJSON2Str(cjson);
+    return NGenXX::Json::cJSONReadType(cjson);
+}
+
+std::string ngenxxJsonToStr(void *const cjson)
+{
+    return NGenXX::Json::cJSONToStr(cjson);
 }
 
 std::string ngenxxJsonFromDictAny(const DictAny &dict)
@@ -681,26 +686,6 @@ DictAny ngenxxJsonToDictAny(const std::string &json)
 void *ngenxxJsonDecoderInit(const std::string &json)
 {
     return new NGenXX::Json::Decoder(json);
-}
-
-bool ngenxxJsonDecoderIsArray(void *const decoder, void *const node)
-{
-    if (decoder == nullptr)
-    {
-        return false;
-    }
-    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
-    return xdecoder->isArray(node);
-}
-
-bool ngenxxJsonDecoderIsObject(void *const decoder, void *const node)
-{
-    if (decoder == nullptr)
-    {
-        return false;
-    }
-    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
-    return xdecoder->isObject(node);
 }
 
 void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node)

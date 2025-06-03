@@ -9,13 +9,15 @@
 #include <functional>
 
 #include <NGenXXTypes.hxx>
+#include <NGenXXJsonCodec.hxx>
 
 namespace NGenXX::Json
     {
+        NGenXXJsonNodeTypeX cJSONReadType(void *const cjson);
+        std::string cJSONToStr(void *const cjson);
+
         std::string jsonFromDictAny(const DictAny &dict);
         DictAny jsonToDictAny(const std::string &json);
-
-        std::string cJSON2Str(void *const cjson);
         
         class Decoder
         {
@@ -27,22 +29,18 @@ namespace NGenXX::Json
             Decoder(Decoder &&) noexcept;
             Decoder &operator=(Decoder &&) noexcept;
 
-            bool isArray(const void *const node) const;
+            void *readChild(void *const node) const;
 
-            bool isObject(const void *const node) const;
+            void *readNext(void *const node) const;
 
-            void *readChild(const void *const node) const;
+            void readChildren(void *const node, std::function<void(size_t idx, void *const child)> &&callback) const;
 
-            void *readNext(const void *const node) const;
-
-            void readChildren(const void *const node, std::function<void(size_t idx, const void * child)> &&callback) const;
-
-            void *readNode(const void *const node, const std::string &k) const;
+            void *readNode(void *const node, const std::string &k) const;
             void *operator[](const std::string &k) const;
 
-            std::string readString(const void *const node) const;
+            std::string readString(void *const node) const;
 
-            double readNumber(const void *const node) const;
+            double readNumber(void *const node) const;
 
             ~Decoder();
 
@@ -52,7 +50,7 @@ namespace NGenXX::Json
             void moveImp(Decoder&& other) noexcept;
             void cleanup() noexcept;
 
-            const cJSON *reinterpretNode(const void *const node) const;
+            const cJSON *reinterpretNode(void *const node) const;
         };
 }
 

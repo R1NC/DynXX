@@ -6,16 +6,24 @@
 
 #include "NGenXXTypes.hxx"
 
-std::string ngenxxJsonCJSON2Str(void *const cjson);
+enum class NGenXXJsonNodeTypeX : int
+{
+    Unknown,
+    Object,
+    Array,
+    String,
+    Number,
+    Boolean,
+    Null,
+};
+
+NGenXXJsonNodeTypeX ngenxxJsonReadType(void *const json);
+std::string ngenxxJsonToStr(void *const cjson);
 
 std::string ngenxxJsonFromDictAny(const DictAny &dict);
 DictAny ngenxxJsonToDictAny(const std::string &json);
 
 void *ngenxxJsonDecoderInit(const std::string &json);
-
-bool ngenxxJsonDecoderIsArray(void *const decoder, void *const node = nullptr);
-
-bool ngenxxJsonDecoderIsObject(void *const decoder, void *const node = nullptr);
 
 void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node = nullptr);
 
