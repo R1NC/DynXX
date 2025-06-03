@@ -28,9 +28,9 @@ void _ngenxx_log_apple(const char*);
 
 namespace
 {
-    int _level = NGenXXLogLevelNone;
+    auto _level = NGenXXLogLevelNone;
     std::function<void(int level, const char *content)> _callback = nullptr;
-    std::unique_ptr<std::mutex> _mutex = nullptr;
+    std::mutex _mutex;
 
 #if defined(USE_SPDLOG)
     void spdlogPrepare() 
@@ -114,19 +114,11 @@ void NGenXX::Log::setLevel(int level)
 void NGenXX::Log::setCallback(const std::function<void(int level, const char *content)> &callback)
 {
     _callback = callback;
-    if (callback == nullptr)
-    {
-        _mutex.reset();
-    }
 }
 
 void NGenXX::Log::print(int level, const std::string &content)
 {
-    if (!_mutex)
-    {
-        _mutex = std::make_unique<std::mutex>();
-    }
-    auto lock = std::lock_guard(*_mutex);
+    auto lock = std::lock_guard(_mutex);
 
     if (level < _level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone) [[unlikely]]
     {
