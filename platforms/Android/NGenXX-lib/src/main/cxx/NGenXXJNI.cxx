@@ -1,7 +1,9 @@
 #include <jni.h>
 
-#include <string>
 #include <cstring>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 #include "JNIUtil.hxx"
 #include "../../../../../../build.Android/output/include/NGenXX.h"
@@ -22,7 +24,23 @@ static void JNI_NGenXX_log_callback(int level, const char *content)
         return;
     }
     auto env = currentEnv(sVM);
-    auto jContent = env->NewStringUTF(content);
+    std::ostringstream fixedContentSS;
+    auto p = reinterpret_cast<const unsigned char*>(content);
+    while (*p) 
+    {
+        if (*p < 0x80) [[likely]]
+        {
+            fixedContentSS << *p;
+        } 
+        else [[unlikely]]
+        {// For non-ASCII, use hex representation
+            char hex[7];
+            fixedContentSS << "\\x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(*p);
+            fixedContentSS << hex;
+        }
+        p++;
+    }
+    auto jContent = env->NewStringUTF(fixedContentSS.str().c_str());
     //freeX(content);
     //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
     auto boxedLevel = boxJInt(env, static_cast<jint>(level));
