@@ -42,7 +42,7 @@ std::string NGenXX::Json::cJSONToStr(void *const cjson)
         return {};
     }
     std::string json(jsonChars);
-    std::free(jsonChars);
+    //std::free(jsonChars);
     return json;
 }
 
