@@ -550,6 +550,16 @@ static napi_value NAPI_NGenXX_DeviceCpuArch(napi_env env, napi_callback_info inf
 }
 
 #pragma mark JsonDecoder
+    
+static napi_value NAPI_NGenXX_JsonReadType(napi_env env, napi_callback_info info)
+{
+    Args args(env, info);
+
+    auto node = args.c > 1 ? napiValue2long(env, args.v[0]) : 0;
+
+    auto res = ngenxx_json_read_type(addr2ptr(node));
+    return int2NapiValue(env, res);
+}
 
 static napi_value NAPI_NGenXX_JsonDecoderInit(napi_env env, napi_callback_info info)
 {
@@ -562,28 +572,6 @@ static napi_value NAPI_NGenXX_JsonDecoderInit(napi_env env, napi_callback_info i
 
     freeX(cJson);
     return v;
-}
-
-static napi_value NAPI_NGenXX_JsonDecoderIsArray(napi_env env, napi_callback_info info)
-{
-    Args args(env, info);
-
-    auto decoder = napiValue2long(env, args.v[0]);
-    auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
-
-    auto res = ngenxx_json_decoder_is_array(addr2ptr(decoder), addr2ptr(node));
-    return bool2NapiValue(env, res);
-}
-
-static napi_value NAPI_NGenXX_JsonDecoderIsObject(napi_env env, napi_callback_info info)
-{
-    Args args(env, info);
-
-    auto decoder = napiValue2long(env, args.v[0]);
-    auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
-
-    auto res = ngenxx_json_decoder_is_object(addr2ptr(decoder), addr2ptr(node));
-    return bool2NapiValue(env, res);
 }
 
 static napi_value NAPI_NGenXX_JsonDecoderReadNode(napi_env env, napi_callback_info info)
@@ -1038,9 +1026,8 @@ static napi_value NAPI_NGenXX_RegisterFuncs(napi_env env, napi_value exports)
         NAPI("deviceOsVersion", NAPI_NGenXX_DeviceOsVersion),
         NAPI("deviceCpuArch", NAPI_NGenXX_DeviceCpuArch),
 
+        NAPI("jsonReadType", NAPI_NGenXX_JsonReadType),
         NAPI("jsonDecoderInit", NAPI_NGenXX_JsonDecoderInit),
-        NAPI("jsonDecoderIsArray", NAPI_NGenXX_JsonDecoderIsArray),
-        NAPI("jsonDecoderIsObject", NAPI_NGenXX_JsonDecoderIsObject),
         NAPI("jsonDecoderReadNode", NAPI_NGenXX_JsonDecoderReadNode),
         NAPI("jsonDecoderReadChild", NAPI_NGenXX_JsonDecoderReadChild),
         NAPI("jsonDecoderReadNext", NAPI_NGenXX_JsonDecoderReadNext),

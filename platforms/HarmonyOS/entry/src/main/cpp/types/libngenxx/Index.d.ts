@@ -81,9 +81,8 @@ export const cryptoHashSha256: (inBytes: number[]) => number[];
 export const cryptoBase64Encode: (inBytes: number[]) => number[];
 export const cryptoBase64Decode: (inBytes: number[]) => number[];
 
+export const jsonReadType: (node?: number) => number;
 export const jsonDecoderInit: (json: string) => number;
-export const jsonDecoderIsArray: (decoder: number, node?: number) => boolean;
-export const jsonDecoderIsObject: (decoder: number, node?: number) => boolean;
 export const jsonDecoderReadNode: (decoder: number, k: string, node?: number) => number;
 export const jsonDecoderReadChild: (decoder: number, node?: number) => number;
 export const jsonDecoderReadNext: (decoder: number, node?: number) => number;

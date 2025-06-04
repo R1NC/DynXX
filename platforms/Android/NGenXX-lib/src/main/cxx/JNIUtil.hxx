@@ -2,6 +2,8 @@
 #define NGENXX_JNI_UTIL_HXX_
 
 #include <jni.h>
+#include <sstream>
+#include <string>
 
 #include "../../../../../../build.Android/output/include/NGenXXTypes.hxx"
 
@@ -65,6 +67,79 @@ inline jobject boxJFloat(JNIEnv *env, const jfloat j)
 inline jobject boxJDouble(JNIEnv *env, const jdouble j)
 {
     return boxJNum<jboolean>(env, j, JNumCls(Double), JNumSig(Double, D));
+}
+
+inline bool checkUTF8(const unsigned char* bytes, size_t length) 
+{
+    size_t i = 0;
+    while (i < length) 
+    {
+        if (bytes[i] < 0x80) 
+        { // 1-byte character
+            i++;
+        } 
+        else if ((bytes[i] >> 5) == 0b110) 
+        { // 2-byte character
+            if (i + 1 >= length || (bytes[i + 1] >> 6) != 0b10)
+            {
+                return false;
+            } 
+            i += 2;
+        } 
+        else if ((bytes[i] >> 4) == 0b1110) 
+        { // 3-byte character
+            if (i + 2 >= length || 
+                (bytes[i + 1] >> 6) != 0b10 || 
+                (bytes[i + 2] >> 6) != 0b10)
+                {
+                    return false;
+                }
+            i += 3;
+        } 
+        else if ((bytes[i] >> 3) == 0b11110) 
+        { // 4-byte character
+            if (i + 3 >= length || 
+                (bytes[i + 1] >> 6) != 0b10 || 
+                (bytes[i + 2] >> 6) != 0b10 || 
+                (bytes[i + 3] >> 6) != 0b10) 
+                {
+                    return false;
+                }
+            i += 4;
+        } 
+        else 
+        {
+            return false; // Invalid UTF-8 lead byte
+        }
+    }
+    return true;
+}
+
+inline jstring boxJString(JNIEnv *env, const char *str)
+{
+    jsize stringLen = strlen(str);
+    auto p = reinterpret_cast<const unsigned char*>(str);
+    if (!checkUTF8(p, stringLen)) 
+    {
+        std::ostringstream oss;
+        while (*p) 
+        {
+            oss << (*p < 0x80 ? *p : '?'); // Replace invalid UTF-8 with placeholder
+            p++;
+        }
+        str = oss.str().c_str();
+    }
+
+    auto stringBytes = env->NewByteArray(stringLen);
+    env->SetByteArrayRegion(stringBytes, 0, stringLen, reinterpret_cast<const jbyte*>(str));
+    auto stringClass = env->FindClass(JLS);
+    auto stringConstructor = env->GetMethodID(stringClass, "<init>", "([B" LJLS_ ")V");
+    auto charsetName = env->NewStringUTF("UTF-8");
+    auto jStr = static_cast<jstring>(env->NewObject(stringClass, stringConstructor, stringBytes, charsetName));
+    env->DeleteLocalRef(stringBytes);
+    env->DeleteLocalRef(charsetName);
+    env->DeleteLocalRef(stringClass);
+    return jStr;
 }
 
 inline jmethodID getLambdaMethod(JNIEnv *env, const char* cls, const char *sig)

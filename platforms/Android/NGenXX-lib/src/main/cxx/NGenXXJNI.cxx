@@ -2,8 +2,6 @@
 
 #include <cstring>
 #include <string>
-#include <sstream>
-#include <iomanip>
 
 #include "JNIUtil.hxx"
 #include "../../../../../../build.Android/output/include/NGenXX.h"
@@ -24,23 +22,7 @@ static void JNI_NGenXX_log_callback(int level, const char *content)
         return;
     }
     auto env = currentEnv(sVM);
-    std::ostringstream fixedContentSS;
-    auto p = reinterpret_cast<const unsigned char*>(content);
-    while (*p) 
-    {
-        if (*p < 0x80) [[likely]]
-        {
-            fixedContentSS << *p;
-        } 
-        else [[unlikely]]
-        {// For non-ASCII, use hex representation
-            char hex[7];
-            fixedContentSS << "\\x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(*p);
-            fixedContentSS << hex;
-        }
-        p++;
-    }
-    auto jContent = env->NewStringUTF(fixedContentSS.str().c_str());
+    auto jContent = boxJString(env, content);
     //freeX(content);
     //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
     auto boxedLevel = boxJInt(env, static_cast<jint>(level));
@@ -54,7 +36,7 @@ static const char *JNI_NGenXX_js_msg_callback(const char *msg)
         return nullptr;
     }
     auto env = currentEnv(sVM);
-    auto jMsg = env->NewStringUTF(msg);
+    auto jMsg = boxJString(env, msg);
     //freeX(msg);
     auto jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
     return env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
@@ -65,7 +47,7 @@ static const char *JNI_NGenXX_js_msg_callback(const char *msg)
 jstring JNI_NGenXX_getVersion(JNIEnv *env, jobject thiz)
 {
     auto cV = ngenxx_get_version();
-    auto jStr = env->NewStringUTF(cV != nullptr ? cV: "");
+    auto jStr = boxJString(env, cV != nullptr ? cV: "");
     freeX(cV);
     return jStr;
 }
@@ -171,7 +153,7 @@ jstring JNI_NGenXX_netHttpRequest(JNIEnv *env, jobject thiz,
                                                formFieldCount,
                                                static_cast<void *>(cFILE), fileLength,
                                                static_cast<const size_t>(timeout));
-    auto jStr = env->NewStringUTF(cRsp != nullptr ? cRsp : "");
+    auto jStr = boxJString(env, cRsp != nullptr ? cRsp : "");
     freeX(cRsp);
 
     for (int i = 0; i < headerCount; i++)
@@ -232,7 +214,7 @@ jstring JNI_NGenXX_lCall(JNIEnv *env, jobject thiz,
     auto cFunc = env->GetStringUTFChars(func, nullptr);
     auto cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
     auto cRes = ngenxx_lua_call(cFunc, cParams);
-    auto jStr = env->NewStringUTF(cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
     freeX(cRes);
     if (cParams)
     {
@@ -282,7 +264,7 @@ jstring JNI_NGenXX_jCall(JNIEnv *env, jobject thiz,
     auto cFunc = env->GetStringUTFChars(func, nullptr);
     auto cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
     auto cRes = ngenxx_js_call(cFunc, cParams, await);
-    auto jStr = env->NewStringUTF(cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
     freeX(cRes);
     if (cParams)
     {
@@ -350,7 +332,7 @@ jstring JNI_NGenXX_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
 {
     auto cColumn = env->GetStringUTFChars(column, nullptr);
     auto cRes = ngenxx_store_sqlite_query_read_column_text(addr2ptr(query_result), cColumn);
-    auto jStr = env->NewStringUTF(cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
     freeX(cRes);
     env->ReleaseStringUTFChars(column, cColumn);
     return jStr;
@@ -405,7 +387,7 @@ jstring JNI_NGenXX_storeKVReadString(JNIEnv *env, jobject thiz,
 {
     auto cK = env->GetStringUTFChars(k, nullptr);
     auto cRes = ngenxx_store_kv_read_string(addr2ptr(conn), cK);
-    auto jStr = env->NewStringUTF(cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
     freeX(cRes);
     env->ReleaseStringUTFChars(k, cK);
     return jStr;
@@ -505,7 +487,7 @@ jint JNI_NGenXX_deviceType(JNIEnv *env, jobject thiz)
 jstring JNI_NGenXX_deviceName(JNIEnv *env, jobject thiz)
 {
     auto cDN = ngenxx_device_name();
-    auto jStr = env->NewStringUTF(cDN != nullptr ? cDN : "");
+    auto jStr = boxJString(env, cDN != nullptr ? cDN : "");
     freeX(cDN);
     return jStr;
 }
@@ -513,7 +495,7 @@ jstring JNI_NGenXX_deviceName(JNIEnv *env, jobject thiz)
 jstring JNI_NGenXX_deviceManufacturer(JNIEnv *env, jobject thiz)
 {
     auto cDM = ngenxx_device_manufacturer();
-    auto jStr = env->NewStringUTF(cDM != nullptr ? cDM : "");
+    auto jStr = boxJString(env, cDM != nullptr ? cDM : "");
     freeX(cDM);
     return jStr;
 }
@@ -521,7 +503,7 @@ jstring JNI_NGenXX_deviceManufacturer(JNIEnv *env, jobject thiz)
 jstring JNI_NGenXX_deviceOsVersion(JNIEnv *env, jobject thiz)
 {
     auto cDOV = ngenxx_device_os_version();
-    auto jStr = env->NewStringUTF(cDOV != nullptr ? cDOV : "");
+    auto jStr = boxJString(env, cDOV != nullptr ? cDOV : "");
     freeX(cDOV);
     return jStr;
 }
@@ -540,7 +522,7 @@ jstring JNI_NGenXX_codingHexBytes2Str(JNIEnv *env, jobject thiz,
     auto inLen = env->GetArrayLength(bytes);
 
     auto cRes = ngenxx_coding_hex_bytes2str(reinterpret_cast<const byte *>(cIn), inLen);
-    auto jStr = env->NewStringUTF(cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
 
     freeX(cRes);
     env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
@@ -738,6 +720,12 @@ jbyteArray JNI_NGenXX_cryptoBase64Decode(JNIEnv *env, jobject thiz,
 
 #pragma mark JsonDecoder
 
+jint JNI_NGenXX_jsonReadType(JNIEnv *env, jobject thiz,
+                             jlong node)
+{
+    return ngenxx_json_read_type(addr2ptr(node));
+}
+
 jlong JNI_NGenXX_jsonDecoderInit(JNIEnv *env, jobject thiz,
                                  jstring json)
 {
@@ -745,20 +733,6 @@ jlong JNI_NGenXX_jsonDecoderInit(JNIEnv *env, jobject thiz,
     const auto res = ngenxx_json_decoder_init(cJson);
     env->ReleaseStringUTFChars(json, cJson);
     return ptr2addr(res);
-}
-
-jboolean JNI_NGenXX_jsonDecoderIsArray(JNIEnv *env, jobject thiz,
-                                       jlong decoder,
-                                       jlong node)
-{
-    return ngenxx_json_decoder_is_array(addr2ptr(decoder), addr2ptr(node));
-}
-
-jboolean JNI_NGenXX_jsonDecoderIsObject(JNIEnv *env, jobject thiz,
-                                        jlong decoder,
-                                        jlong node)
-{
-    return ngenxx_json_decoder_is_object(addr2ptr(decoder), addr2ptr(node));
 }
 
 jlong JNI_NGenXX_jsonDecoderReadNode(JNIEnv *env, jobject thiz,
@@ -777,7 +751,7 @@ jstring JNI_NGenXX_jsonDecoderReadString(JNIEnv *env, jobject thiz,
                                          jlong node)
 {
     auto cRes = ngenxx_json_decoder_read_string(addr2ptr(decoder), addr2ptr(node));
-    auto jStr = env->NewStringUTF(cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
     freeX(cRes);
     return jStr;
 }
@@ -987,9 +961,8 @@ static const JNINativeMethod JCFuncList[] = {
     DECLARE_JNI_FUNC("cryptoBase64Encode", "([B)[B", JNI_NGenXX_cryptoBase64Encode),
     DECLARE_JNI_FUNC("cryptoBase64Decode", "([B)[B", JNI_NGenXX_cryptoBase64Decode),
 
+    DECLARE_JNI_FUNC("jsonReadType", "(J)I", JNI_NGenXX_jsonReadType),
     DECLARE_JNI_FUNC("jsonDecoderInit", "(" LJLS_ ")J", JNI_NGenXX_jsonDecoderInit),
-    DECLARE_JNI_FUNC("jsonDecoderIsArray", "(JJ)Z", JNI_NGenXX_jsonDecoderIsArray),
-    DECLARE_JNI_FUNC("jsonDecoderIsObject", "(JJ)Z", JNI_NGenXX_jsonDecoderIsObject),
     DECLARE_JNI_FUNC("jsonDecoderReadNode", "(JJ" LJLS_ ")J", JNI_NGenXX_jsonDecoderReadNode),
     DECLARE_JNI_FUNC("jsonDecoderReadString", "(JJ)" LJLS_ "", JNI_NGenXX_jsonDecoderReadString),
     DECLARE_JNI_FUNC("jsonDecoderReadNumber", "(JJ)D", JNI_NGenXX_jsonDecoderReadNumber),

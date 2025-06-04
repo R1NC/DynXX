@@ -75,9 +75,8 @@ class NGenXX {
         external fun cryptoBase64Encode(input: ByteArray): ByteArray
         external fun cryptoBase64Decode(input: ByteArray): ByteArray
 
+        external fun jsonReadType(node: Long): Int
         external fun jsonDecoderInit(json: String): Long
-        external fun jsonDecoderIsArray(decoder: Long, node: Long): Boolean
-        external fun jsonDecoderIsObject(decoder: Long, node: Long): Boolean
         external fun jsonDecoderReadNode(decoder: Long, node: Long, k: String): Long
         external fun jsonDecoderReadString(decoder: Long, node: Long): String?
         external fun jsonDecoderReadNumber(decoder: Long, node: Long): Double
