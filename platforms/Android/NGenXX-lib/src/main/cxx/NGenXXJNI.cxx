@@ -47,7 +47,7 @@ static const char *JNI_NGenXX_js_msg_callback(const char *msg)
 jstring JNI_NGenXX_getVersion(JNIEnv *env, jobject thiz)
 {
     auto cV = ngenxx_get_version();
-    auto jStr = boxJString(env, cV != nullptr ? cV: "");
+    auto jStr = boxJString(env, cV);
     freeX(cV);
     return jStr;
 }
@@ -153,7 +153,7 @@ jstring JNI_NGenXX_netHttpRequest(JNIEnv *env, jobject thiz,
                                                formFieldCount,
                                                static_cast<void *>(cFILE), fileLength,
                                                static_cast<const size_t>(timeout));
-    auto jStr = boxJString(env, cRsp != nullptr ? cRsp : "");
+    auto jStr = boxJString(env, cRsp);
     freeX(cRsp);
 
     for (int i = 0; i < headerCount; i++)
@@ -214,7 +214,7 @@ jstring JNI_NGenXX_lCall(JNIEnv *env, jobject thiz,
     auto cFunc = env->GetStringUTFChars(func, nullptr);
     auto cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
     auto cRes = ngenxx_lua_call(cFunc, cParams);
-    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes);
     freeX(cRes);
     if (cParams)
     {
@@ -264,7 +264,7 @@ jstring JNI_NGenXX_jCall(JNIEnv *env, jobject thiz,
     auto cFunc = env->GetStringUTFChars(func, nullptr);
     auto cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
     auto cRes = ngenxx_js_call(cFunc, cParams, await);
-    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes);
     freeX(cRes);
     if (cParams)
     {
@@ -332,7 +332,7 @@ jstring JNI_NGenXX_storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
 {
     auto cColumn = env->GetStringUTFChars(column, nullptr);
     auto cRes = ngenxx_store_sqlite_query_read_column_text(addr2ptr(query_result), cColumn);
-    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes);
     freeX(cRes);
     env->ReleaseStringUTFChars(column, cColumn);
     return jStr;
@@ -387,7 +387,7 @@ jstring JNI_NGenXX_storeKVReadString(JNIEnv *env, jobject thiz,
 {
     auto cK = env->GetStringUTFChars(k, nullptr);
     auto cRes = ngenxx_store_kv_read_string(addr2ptr(conn), cK);
-    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes);
     freeX(cRes);
     env->ReleaseStringUTFChars(k, cK);
     return jStr;
@@ -487,7 +487,7 @@ jint JNI_NGenXX_deviceType(JNIEnv *env, jobject thiz)
 jstring JNI_NGenXX_deviceName(JNIEnv *env, jobject thiz)
 {
     auto cDN = ngenxx_device_name();
-    auto jStr = boxJString(env, cDN != nullptr ? cDN : "");
+    auto jStr = boxJString(env, cDN);
     freeX(cDN);
     return jStr;
 }
@@ -495,7 +495,7 @@ jstring JNI_NGenXX_deviceName(JNIEnv *env, jobject thiz)
 jstring JNI_NGenXX_deviceManufacturer(JNIEnv *env, jobject thiz)
 {
     auto cDM = ngenxx_device_manufacturer();
-    auto jStr = boxJString(env, cDM != nullptr ? cDM : "");
+    auto jStr = boxJString(env, cDM);
     freeX(cDM);
     return jStr;
 }
@@ -503,7 +503,7 @@ jstring JNI_NGenXX_deviceManufacturer(JNIEnv *env, jobject thiz)
 jstring JNI_NGenXX_deviceOsVersion(JNIEnv *env, jobject thiz)
 {
     auto cDOV = ngenxx_device_os_version();
-    auto jStr = boxJString(env, cDOV != nullptr ? cDOV : "");
+    auto jStr = boxJString(env, cDOV);
     freeX(cDOV);
     return jStr;
 }
@@ -522,7 +522,7 @@ jstring JNI_NGenXX_codingHexBytes2Str(JNIEnv *env, jobject thiz,
     auto inLen = env->GetArrayLength(bytes);
 
     auto cRes = ngenxx_coding_hex_bytes2str(reinterpret_cast<const byte *>(cIn), inLen);
-    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes);
 
     freeX(cRes);
     env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
@@ -751,7 +751,7 @@ jstring JNI_NGenXX_jsonDecoderReadString(JNIEnv *env, jobject thiz,
                                          jlong node)
 {
     auto cRes = ngenxx_json_decoder_read_string(addr2ptr(decoder), addr2ptr(node));
-    auto jStr = boxJString(env, cRes != nullptr ? cRes : "");
+    auto jStr = boxJString(env, cRes);
     freeX(cRes);
     return jStr;
 }
