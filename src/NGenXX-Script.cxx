@@ -326,7 +326,8 @@ std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
         return {};
     }
 
-    return ngenxxStoreSqliteQueryReadColumnText(query_result, column);
+    auto s = ngenxxStoreSqliteQueryReadColumnText(query_result, column);
+    return s.value_or(std::string{});
 }
 
 int64_t ngenxx_store_sqlite_query_read_column_integerS(const char *json)
@@ -343,7 +344,8 @@ int64_t ngenxx_store_sqlite_query_read_column_integerS(const char *json)
         return 0;
     }
 
-    return ngenxxStoreSqliteQueryReadColumnInteger(query_result, column);
+    auto i = ngenxxStoreSqliteQueryReadColumnInteger(query_result, column);
+    return i.value_or(0);
 }
 
 double ngenxx_store_sqlite_query_read_column_floatS(const char *json)
@@ -360,7 +362,8 @@ double ngenxx_store_sqlite_query_read_column_floatS(const char *json)
         return 0;
     }
 
-    return ngenxxStoreSqliteQueryReadColumnFloat(query_result, column);
+    auto f = ngenxxStoreSqliteQueryReadColumnFloat(query_result, column);
+    return f.value_or(0.0);
 }
 
 void ngenxx_store_sqlite_query_dropS(const char *json)
@@ -432,7 +435,8 @@ std::string ngenxx_store_kv_read_stringS(const char *json)
         return {};
     }
 
-    return ngenxxStoreKvReadString(conn, k);
+    auto s = ngenxxStoreKvReadString(conn, k);
+    return s.value_or(std::string{});
 }
 
 bool ngenxx_store_kv_write_stringS(const char *json)
@@ -467,7 +471,8 @@ int64_t ngenxx_store_kv_read_integerS(const char *json)
         return 0;
     }
 
-    return ngenxxStoreKvReadInteger(conn, k);
+    auto i = ngenxxStoreKvReadInteger(conn, k);
+    return i.value_or(0);
 }
 
 bool ngenxx_store_kv_write_integerS(const char *json)
@@ -502,7 +507,8 @@ double ngenxx_store_kv_read_floatS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvReadFloat(conn, k);
+    auto f = ngenxxStoreKvReadFloat(conn, k);
+    return f.value_or(0.0);
 }
 
 bool ngenxx_store_kv_write_floatS(const char *json)

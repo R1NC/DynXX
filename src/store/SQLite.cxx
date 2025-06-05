@@ -129,13 +129,13 @@ bool NGenXX::Store::SQLite::Connection::QueryResult::readRow() const
     return rc == SQLITE_ROW;
 }
 
-Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column) const
+std::optional<Any> NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readColumn STMT nullptr");
-        return {};
+        return std::nullopt;
     }
     auto colCount = sqlite3_column_count(this->stmt);
     for (decltype(colCount) i(0); i < colCount; i++)
@@ -153,13 +153,13 @@ Any NGenXX::Store::SQLite::Connection::QueryResult::readColumn(const std::string
             case SQLITE_FLOAT:
                 return sqlite3_column_double(this->stmt, i);
             default:
-                return {};
+                return std::nullopt;
         }
     }
-    return {};
+    return std::nullopt;
 }
 
-Any NGenXX::Store::SQLite::Connection::QueryResult::operator[](const std::string &column) const {
+std::optional<Any> NGenXX::Store::SQLite::Connection::QueryResult::operator[](const std::string &column) const {
     return this->readColumn(column);
 }
 

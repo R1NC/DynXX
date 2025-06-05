@@ -320,19 +320,22 @@ bool ngenxx_store_sqlite_query_read_row(void *const query_result)
 EXPORT_AUTO
 const char *ngenxx_store_sqlite_query_read_column_text(void *const query_result, const char *column)
 {
-    return copyStr(ngenxxStoreSqliteQueryReadColumnText(query_result, wrapStr(column)));
+    auto s = ngenxxStoreSqliteQueryReadColumnText(query_result, wrapStr(column));
+    return copyStr(s.value_or(""));
 }
 
 EXPORT_AUTO
 int64_t ngenxx_store_sqlite_query_read_column_integer(void *const query_result, const char *column)
 {
-    return ngenxxStoreSqliteQueryReadColumnInteger(query_result, wrapStr(column));
+    auto i = ngenxxStoreSqliteQueryReadColumnInteger(query_result, wrapStr(column));
+    return i.value_or(0);
 }
 
 EXPORT_AUTO
 double ngenxx_store_sqlite_query_read_column_float(void *const query_result, const char *column)
 {
-    return ngenxxStoreSqliteQueryReadColumnFloat(query_result, wrapStr(column));
+    auto f = ngenxxStoreSqliteQueryReadColumnFloat(query_result, wrapStr(column));
+    return f.value_or(0.0);
 }
 
 EXPORT_AUTO
@@ -358,7 +361,8 @@ void *ngenxx_store_kv_open(const char *_id)
 EXPORT_AUTO
 const char *ngenxx_store_kv_read_string(void *const conn, const char *k)
 {
-    return copyStr(ngenxxStoreKvReadString(conn, wrapStr(k)));
+    auto s = ngenxxStoreKvReadString(conn, wrapStr(k));
+    return copyStr(s.value_or(""));
 }
 
 EXPORT_AUTO
@@ -370,7 +374,8 @@ bool ngenxx_store_kv_write_string(void *const conn, const char *k, const char *v
 EXPORT_AUTO
 int64_t ngenxx_store_kv_read_integer(void *const conn, const char *k)
 {
-    return ngenxxStoreKvReadInteger(conn, wrapStr(k));
+    auto i = ngenxxStoreKvReadInteger(conn, wrapStr(k));
+    return i.value_or(0);
 }
 
 EXPORT_AUTO
@@ -382,7 +387,8 @@ bool ngenxx_store_kv_write_integer(void *const conn, const char *k, int64_t v)
 EXPORT_AUTO
 double ngenxx_store_kv_read_float(void *const conn, const char *k)
 {
-    return ngenxxStoreKvReadFloat(conn, wrapStr(k));
+    auto f = ngenxxStoreKvReadFloat(conn, wrapStr(k));
+    return f.value_or(0.0);
 }
 
 EXPORT_AUTO

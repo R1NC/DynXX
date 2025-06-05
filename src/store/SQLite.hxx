@@ -4,6 +4,7 @@
 #if defined(__cplusplus)
 
 #include <unordered_map>
+#include <optional>
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
@@ -63,8 +64,8 @@ namespace NGenXX::Store
                      * @param column Column name
                      * @return column data
                      */
-                    Any readColumn(const std::string &column) const;
-                    Any operator[](const std::string &column) const;
+                    std::optional<Any> readColumn(const std::string &column) const;
+                    std::optional<Any> operator[](const std::string &column) const;
 
                     /**
                      * @brief Release QueryResult

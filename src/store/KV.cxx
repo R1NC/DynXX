@@ -55,23 +55,35 @@ NGenXX::Store::KV::Connection::Connection(const std::string &_id)
     MMKV::setLogLevel(MMKVLogNone);
 }
 
-std::string NGenXX::Store::KV::Connection::readString(const std::string_view &k) const
+std::optional<std::string> NGenXX::Store::KV::Connection::readString(const std::string_view &k) const
 {
     auto lock = std::shared_lock(this->mutex);
+    if (!this->kv->containsKey(k)) [[unlikely]]
+    {
+        return std::nullopt;
+    }
     std::string s;
     this->kv->getString(k, s);
     return s;
 }
 
-int64_t NGenXX::Store::KV::Connection::readInteger(const std::string_view &k) const
+std::optional<int64_t> NGenXX::Store::KV::Connection::readInteger(const std::string_view &k) const
 {
     auto lock = std::shared_lock(this->mutex);
+    if (!this->kv->containsKey(k)) [[unlikely]]
+    {
+        return std::nullopt;
+    }
     return this->kv->getInt64(k);
 }
 
-double NGenXX::Store::KV::Connection::readFloat(const std::string_view &k) const
+std::optional<double> NGenXX::Store::KV::Connection::readFloat(const std::string_view &k) const
 {
     auto lock = std::shared_lock(this->mutex);
+    if (!this->kv->containsKey(k)) [[unlikely]]
+    {
+        return std::nullopt;
+    }
     return this->kv->getDouble(k);
 }
 

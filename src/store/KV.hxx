@@ -3,6 +3,7 @@
 
 #if defined(__cplusplus)
 
+#include <optional>
 #include <string_view>
 #include <unordered_map>
 #include <memory>
@@ -35,11 +36,11 @@ namespace NGenXX::Store
                 Connection(Connection &&) = delete;
                 Connection &operator=(Connection &&) = delete;
 
-                std::string readString(const std::string_view &k) const;
+                std::optional<std::string> readString(const std::string_view &k) const;
 
-                int64_t readInteger(const std::string_view &k) const;
+                std::optional<int64_t> readInteger(const std::string_view &k) const;
 
-                double readFloat(const std::string_view &k) const;
+                std::optional<double> readFloat(const std::string_view &k) const;
 
                 [[nodiscard]] bool write(const std::string_view &k, const Any &v) const;
 

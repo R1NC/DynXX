@@ -487,37 +487,49 @@ bool ngenxxStoreSqliteQueryReadRow(void *const query_result)
     return xqr->readRow();
 }
 
-std::string ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column)
+std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column)
 {
     if (query_result == nullptr || column.empty())
     {
-        return {};
+        return std::nullopt;
     }
     const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     auto v = (*xqr)[column];
-    return *std::get_if<std::string>(&v);
+    if (!v.has_value()) [[unlikely]]
+    {
+        return std::nullopt;
+    }
+    return *std::get_if<std::string>(&(v.value()));
 }
 
-int64_t ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column)
+std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column)
 {
     if (query_result == nullptr || column.empty())
     {
-        return 0;
+        return std::nullopt;
     }
     const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     const auto v = (*xqr)[column];
-    return *std::get_if<int64_t>(&v);
+    if (!v.has_value()) [[unlikely]]
+    {
+        return std::nullopt;
+    }
+    return *std::get_if<int64_t>(&(v.value()));
 }
 
-double ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string &column)
+std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string &column)
 {
     if (query_result == nullptr || column.empty())
     {
-        return 0.f;
+        return std::nullopt;
     }
     const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
     const auto v = (*xqr)[column];
-    return *std::get_if<double>(&v);
+    if (!v.has_value()) [[unlikely]]
+    {
+        return std::nullopt;
+    }
+    return *std::get_if<double>(&(v.value()));
 }
 
 void ngenxxStoreSqliteQueryDrop(void *const query_result)
@@ -553,11 +565,11 @@ void *ngenxxStoreKvOpen(const std::string &_id)
     return nullptr;
 }
 
-std::string ngenxxStoreKvReadString(void *const conn, const std::string_view &k)
+std::optional<std::string> ngenxxStoreKvReadString(void *const conn, const std::string_view &k)
 {
     if (conn == nullptr || k.empty())
     {
-        return {};
+        return std::nullopt;
     }
     const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->readString(k);
@@ -573,11 +585,11 @@ bool ngenxxStoreKvWriteString(void *const conn, const std::string_view &k, const
     return xconn->write(k, v);
 }
 
-int64_t ngenxxStoreKvReadInteger(void *const conn, const std::string_view &k)
+std::optional<int64_t> ngenxxStoreKvReadInteger(void *const conn, const std::string_view &k)
 {
     if (conn == nullptr || k.empty())
     {
-        return 0;
+        return std::nullopt;
     }
     const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->readInteger(k);
@@ -593,11 +605,11 @@ bool ngenxxStoreKvWriteInteger(void *const conn, const std::string_view &k, int6
     return xconn->write(k, v);
 }
 
-double ngenxxStoreKvReadFloat(void *const conn, const std::string_view &k)
+std::optional<double> ngenxxStoreKvReadFloat(void *const conn, const std::string_view &k)
 {
     if (conn == nullptr || k.empty())
     {
-        return 0;
+        return std::nullopt;
     }
     const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
     return xconn->readFloat(k);
