@@ -51,22 +51,22 @@ inline jobject boxJBoolean(JNIEnv *env, const jboolean j)
 
 inline jobject boxJInt(JNIEnv *env, const jint j)
 {
-    return boxJNum<jboolean>(env, j, JNumCls(Integer), JNumSig(Integer, I));
+    return boxJNum<jint>(env, j, JNumCls(Integer), JNumSig(Integer, I));
 }
 
 inline jobject boxJLong(JNIEnv *env, const jlong j)
 {
-    return boxJNum<jboolean>(env, j, JNumCls(Long), JNumSig(Long, J));
+    return boxJNum<jlong>(env, j, JNumCls(Long), JNumSig(Long, J));
 }
 
 inline jobject boxJFloat(JNIEnv *env, const jfloat j)
 {
-    return boxJNum<jboolean>(env, j, JNumCls(Float), JNumSig(Float, F));
+    return boxJNum<jfloat>(env, j, JNumCls(Float), JNumSig(Float, F));
 }
 
 inline jobject boxJDouble(JNIEnv *env, const jdouble j)
 {
-    return boxJNum<jboolean>(env, j, JNumCls(Double), JNumSig(Double, D));
+    return boxJNum<jdouble>(env, j, JNumCls(Double), JNumSig(Double, D));
 }
 
 inline jstring boxJString(JNIEnv *env, const char *str)
@@ -137,16 +137,6 @@ inline jmethodID getLambdaMethod(JNIEnv *env, const char* cls, const char *sig)
 {
     auto function1Class = env->FindClass(cls);
     return env->GetMethodID(function1Class, "invoke", sig);
-}
-
-inline jmethodID getLambdaMethod1(JNIEnv *env)
-{
-    return getLambdaMethod(env, KF1, "(" LJLO_ ")" LJLO_);
-}
-
-inline jmethodID getLambdaMethod2(JNIEnv *env)
-{
-    return getLambdaMethod(env, KF2, "(" LJLO_ LJLO_ ")" LJLO_);
 }
 
 inline jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, const bool needFree)

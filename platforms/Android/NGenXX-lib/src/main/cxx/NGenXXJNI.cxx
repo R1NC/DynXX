@@ -25,8 +25,8 @@ static void JNI_NGenXX_log_callback(int level, const char *content)
     auto jContent = boxJString(env, content);
     //freeX(content);
     //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
-    auto boxedLevel = boxJInt(env, static_cast<jint>(level));
-    env->CallObjectMethod(sLogCallback, sLogCallbackMethodId, boxedLevel, jContent);
+    auto jLevel = boxJInt(env, static_cast<jint>(level));
+    env->CallObjectMethod(sLogCallback, sLogCallbackMethodId, jLevel, jContent);
 }
 
 static const char *JNI_NGenXX_js_msg_callback(const char *msg)
@@ -80,13 +80,13 @@ void JNI_NGenXX_logSetCallback(JNIEnv *env, jobject thiz,
     if (callback)
     {
         ngenxx_log_set_callback(JNI_NGenXX_log_callback);
-        sLogCallback = env->NewWeakGlobalRef(callback);
+        sLogCallback = env->NewGlobalRef(callback);
         /*auto jCallbackClass = env->GetObjectClass(callback);
         if (jCallbackClass)
         {
             sLogCallbackMethodId = env->GetMethodID(jCallbackClass, "invoke", "(I" LJLS_ ")V");
         }*/
-        sLogCallbackMethodId = getLambdaMethod2(env);
+        sLogCallbackMethodId = getLambdaMethod(env, KF2, "(" LJLO_ LJLO_ ")" LJLO_);
     }
 }
 
@@ -280,12 +280,12 @@ void JNI_NGenXX_jSetMsgCallback(JNIEnv *env, jobject thiz,
     if (callback)
     {
         ngenxx_js_set_msg_callback(JNI_NGenXX_js_msg_callback);
-        sJsMsgCallback = env->NewWeakGlobalRef(callback);
+        sJsMsgCallback = env->NewGlobalRef(callback);
         /*if (auto jCallbackClass = env->GetObjectClass(callback))
         {
             sJsMsgCallbackMethodId = env->GetMethodID(jCallbackClass, "invoke", "(" LJLS_ ")" LJLS_ "");
         }*/
-        sJsMsgCallbackMethodId = getLambdaMethod1(env);
+        sJsMsgCallbackMethodId = getLambdaMethod(env, KF1, "(" LJLO_ ")" LJLO_);
     }
 }
 
@@ -1015,8 +1015,8 @@ void JNI_OnUnload(JavaVM *vm, void *reserved)
 
     auto env = currentEnv(vm);
     env->UnregisterNatives(sJClass);
-    env->DeleteWeakGlobalRef(sLogCallback);
-    env->DeleteWeakGlobalRef(sJsMsgCallback);
+    env->DeleteGlobalRef(sLogCallback);
+    env->DeleteGlobalRef(sJsMsgCallback);
 
     sVM = nullptr;
     sLogCallback = nullptr;
