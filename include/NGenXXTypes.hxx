@@ -8,6 +8,7 @@
 #include <cstring>
 
 #include <string>
+#include <optional>
 #include <vector>
 #include <variant>
 #include <unordered_map>
@@ -144,7 +145,7 @@ address ptr2addr(const T *ptr)
 
 using Any = std::variant<int64_t, double, std::string>;
 
-auto Any2String(const Any &v, const auto &defaultS = {})
+auto Any2String(const Any &v, const std::string &defaultS = {})
 {
     if (std::holds_alternative<std::string>(v)) [[likely]]
     {
@@ -161,27 +162,27 @@ auto Any2String(const Any &v, const auto &defaultS = {})
     return defaultS;
 }
 
-auto Any2Integer(const Any &dict, const auto defaultI = MinInt64)
+auto Any2Integer(const Any &a, const int64_t defaultI = MinInt64)
 {
-    if (!std::holds_alternative<std::string>(dict)) [[likely]]
+    if (!std::holds_alternative<std::string>(a)) [[likely]]
     {
-        return std::get<int64_t>(dict);
+        return std::get<int64_t>(a);
     }
     else [[unlikely]]
     {
-        return str2int64(std::get<std::string>(dict), defaultI);
+        return str2int64(std::get<std::string>(a), defaultI);
     }
 }
 
-auto Any2Float(const Any &dict, const auto defaultF = MinFloat64)
+auto Any2Float(const Any &a, const double defaultF = MinFloat64)
 {
-    if (!std::holds_alternative<std::string>(dict)) [[likely]]
+    if (!std::holds_alternative<std::string>(a)) [[likely]]
     {
-        return std::get<double>(dict);
+        return std::get<double>(a);
     }
     else [[unlikely]]
     {
-        return str2float64(std::get<std::string>(dict), defaultF);
+        return str2float64(std::get<std::string>(a), defaultF);
     }
 }
 
@@ -190,19 +191,46 @@ auto Any2Float(const Any &dict, const auto defaultF = MinFloat64)
 using Dict = std::unordered_map<std::string, std::string>;
 using DictAny = std::unordered_map<std::string, Any>;
 
-inline std::string dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS = {})
+inline std::optional<std::string> dictAnyReadString(const DictAny &dict, const std::string &key)
 {
-    return !dict.contains(key) ? defaultS : Any2String(dict.at(key), defaultS);
+    if (!dict.contains(key)) [[unlikely]]
+    {
+        return std::nullopt;
+    }
+    return Any2String(dict.at(key));
 }
 
-inline int64_t dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI = MinInt64)
+inline auto dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS)
 {
-    return !dict.contains(key) ? defaultI : Any2Integer(dict.at(key), defaultI);
+    return dictAnyReadString(dict, key).value_or(defaultS);
 }
 
-inline double dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF = MinFloat64)
+inline std::optional<int64_t> dictAnyReadInteger(const DictAny &dict, const std::string &key)
 {
-    return !dict.contains(key) ? defaultF : Any2Float(dict.at(key), defaultF);
+    if (!dict.contains(key)) [[unlikely]]
+    {
+        return std::nullopt;
+    }
+    return Any2Integer(dict.at(key));
+}
+
+inline auto dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI)
+{
+    return dictAnyReadInteger(dict, key).value_or(defaultI);
+}
+
+inline std::optional<double> dictAnyReadFloat(const DictAny &dict, const std::string &key)
+{
+    if (!dict.contains(key)) [[unlikely]]
+    {
+        return std::nullopt;
+    }
+    return Any2Float(dict.at(key));
+}
+
+inline auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF)
+{
+    return dictAnyReadFloat(dict, key).value_or(defaultF);
 }
 
 #pragma mark Bytes Type
