@@ -177,20 +177,19 @@ bool NGenXX::Bridge::LuaBridge::loadScript(const std::string &script) const
 }
 
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
-std::string NGenXX::Bridge::LuaBridge::callFunc(const std::string &func, const std::string &params) const
+std::optional<std::string> NGenXX::Bridge::LuaBridge::callFunc(const std::string &func, const std::string &params) const
 {
-    std::string s;
     auto lock = std::lock_guard(mutex);
     lua_getglobal(this->lstate, func.c_str());
     lua_pushstring(this->lstate, params.c_str());
     if (const auto ret = lua_pcall(lstate, 1, 1, 0); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`lua_pcall` error:");
-        return s;
+        return std::nullopt;
     }
-    s = wrapStr(lua_tostring(this->lstate, -1));
+    const auto &s = wrapStr(lua_tostring(this->lstate, -1));
 
     lua_pop(this->lstate, 1);
-    return s;
+    return std::make_optional(std::move(s));
 }
 #endif

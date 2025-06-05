@@ -36,36 +36,53 @@ namespace {
         return bridge->loadScript(s);
     }
 
-    std::string call(const std::string &f, const std::string &ps)
+    std::optional<std::string> call(const std::string &f, const std::string &ps)
     {
         if (!bridge || f.empty()) [[unlikely]]
         {
-            return {};
+            return std::nullopt;
         }
         return bridge->callFunc(f, ps);
     }
 }
 
-#pragma mark Native API
+#pragma mark C++ API
+
+bool ngenxxLuaLoadF(const std::string &f)
+{
+    return loadF(f);
+}
+
+bool ngenxxLuaLoadS(const std::string &s)
+{
+    return loadS(s);
+}
+
+std::optional<std::string> ngenxxLuaCall(const std::string &f, const std::string &ps)
+{
+    return call(f, ps);
+}
+
+#pragma mark C API
 
 #if !defined(__EMSCRIPTEN__)
 EXPORT
 bool ngenxx_lua_loadF(const char *file)
 {
-    return loadF(wrapStr(file));
+    return ngenxxLuaLoadF(wrapStr(file));
 }
 #endif
 
 EXPORT
 bool ngenxx_lua_loadS(const char *script)
 {
-    return loadS(wrapStr(script));
+    return ngenxxLuaLoadS(wrapStr(script));
 }
 
 EXPORT
 const char *ngenxx_lua_call(const char *f, const char *ps)
 {
-    return copyStr(call(wrapStr(f), wrapStr(ps)));
+    return copyStr(ngenxxLuaCall(wrapStr(f), wrapStr(ps)).value_or(""));
 }
 
 #pragma mark Lua API - Declaration

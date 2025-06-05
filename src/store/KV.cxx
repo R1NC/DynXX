@@ -64,7 +64,7 @@ std::optional<std::string> NGenXX::Store::KV::Connection::readString(const std::
     }
     std::string s;
     this->kv->getString(k, s);
-    return s;
+    return std::make_optional(s);
 }
 
 std::optional<int64_t> NGenXX::Store::KV::Connection::readInteger(const std::string_view &k) const
@@ -74,7 +74,7 @@ std::optional<int64_t> NGenXX::Store::KV::Connection::readInteger(const std::str
     {
         return std::nullopt;
     }
-    return this->kv->getInt64(k);
+    return std::make_optional(this->kv->getInt64(k));
 }
 
 std::optional<double> NGenXX::Store::KV::Connection::readFloat(const std::string_view &k) const
@@ -84,7 +84,7 @@ std::optional<double> NGenXX::Store::KV::Connection::readFloat(const std::string
     {
         return std::nullopt;
     }
-    return this->kv->getDouble(k);
+    return std::make_optional(this->kv->getDouble(k));
 }
 
 bool NGenXX::Store::KV::Connection::write(const std::string_view &k, const Any &v) const

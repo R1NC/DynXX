@@ -170,7 +170,7 @@ namespace NGenXX::Bridge
          * @param params parameters(json)
          * @param await Whether wait for the promise result or not
          */
-        [[nodiscard]] std::string callFunc(const std::string &func, const std::string &params, bool await);
+        [[nodiscard]] std::optional<std::string> callFunc(const std::string &func, const std::string &params, bool await);
 
         /**
          * @brief New JS `Promise`

@@ -499,7 +499,7 @@ std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const quer
     {
         return std::nullopt;
     }
-    return *std::get_if<std::string>(&(v.value()));
+    return std::make_optional(*std::get_if<std::string>(&(v.value())));
 }
 
 std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column)
@@ -514,7 +514,7 @@ std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query
     {
         return std::nullopt;
     }
-    return *std::get_if<int64_t>(&(v.value()));
+    return std::make_optional(*std::get_if<int64_t>(&(v.value())));
 }
 
 std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string &column)
@@ -529,7 +529,7 @@ std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_re
     {
         return std::nullopt;
     }
-    return *std::get_if<double>(&(v.value()));
+    return std::make_optional(*std::get_if<double>(&(v.value())));
 }
 
 void ngenxxStoreSqliteQueryDrop(void *const query_result)

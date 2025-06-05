@@ -101,7 +101,7 @@ namespace NGenXX::Bridge
          * @param params Lua function params（wrap multiple params with json）
          * @return return value of Lua function
          */
-        std::string callFunc(const std::string &func, const std::string &params) const;
+        std::optional<std::string> callFunc(const std::string &func, const std::string &params) const;
 
         /**
          * @brief Release Lua environment

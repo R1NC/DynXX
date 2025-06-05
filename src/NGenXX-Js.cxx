@@ -51,11 +51,11 @@ namespace {
         return bridge->loadBinary(bytes, isModule);
     }
 
-    std::string call(const std::string &func, const std::string &params, const bool await)
+    std::optional<std::string> call(const std::string &func, const std::string &params, const bool await)
     {
         if (!bridge || func.empty()) [[unlikely]]
         {
-            return {};
+            return std::nullopt;
         }
         return bridge->callFunc(func, params, await);
     }
@@ -80,36 +80,63 @@ namespace {
     }
 }
 
-#pragma mark Native API
+#pragma mark C++ API
+
+bool ngenxxJsLoadF(const std::string &file, bool isModule)
+{
+    return loadF(file, isModule);
+}
+
+bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isModule)
+{
+    return loadS(script, name, isModule);
+}
+
+bool ngenxxJsLoadB(const Bytes &bytes, bool isModule)
+{
+    return loadB(bytes, isModule);
+}
+
+std::optional<std::string> ngenxxJsCall(const std::string &func, const std::string &params, bool await)
+{
+    return call(func, params, await);
+}
+
+void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback)
+{
+    setMsgCallback(callback);
+}
+
+#pragma mark C API
 
 EXPORT_AUTO
 bool ngenxx_js_loadF(const char *file, bool is_module)
 {
-    return loadF(wrapStr(file), is_module);
+    return ngenxxJsLoadF(wrapStr(file), is_module);
 }
 
 EXPORT_AUTO
 bool ngenxx_js_loadS(const char *script, const char *name, bool is_module)
 {
-    return loadS(wrapStr(script), wrapStr(name), is_module);
+    return ngenxxJsLoadS(wrapStr(script), wrapStr(name), is_module);
 }
 
 EXPORT_AUTO
 bool ngenxx_js_loadB(const byte *bytes, size_t len, bool is_module)
 {
-    return loadB(wrapBytes(bytes, len), is_module);
+    return ngenxxJsLoadB(wrapBytes(bytes, len), is_module);
 }
 
 EXPORT_AUTO
 const char *ngenxx_js_call(const char *func, const char *params, bool await)
 {
-    return copyStr(call(wrapStr(func), wrapStr(params), await));
+    return copyStr(ngenxxJsCall(wrapStr(func), wrapStr(params), await).value_or(""));
 }
 
 EXPORT_AUTO
 void ngenxx_js_set_msg_callback(const char *(*const callback)(const char *msg))
 {
-    setMsgCallback(callback);
+    ngenxxJsSetMsgCallback(callback);
 }
 
 #pragma mark JS API - Declaration

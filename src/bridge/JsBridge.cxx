@@ -275,9 +275,10 @@ bool NGenXX::Bridge::JsBridge::loadBinary(const Bytes &bytes, bool isModule) {
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
-std::string NGenXX::Bridge::JsBridge::callFunc(const std::string &func, const std::string &params, bool await) {
+std::optional<std::string> NGenXX::Bridge::JsBridge::callFunc(const std::string &func, const std::string &params, bool await) {
     auto lock = std::unique_lock(this->mutex);
     std::string s;
+    auto success = false;
 
     if (const auto jFunc = JS_GetPropertyStr(this->context, this->jGlobal, func.c_str()); JS_IsFunction(this->context, jFunc)) [[likely]]
     {
@@ -296,12 +297,13 @@ std::string NGenXX::Bridge::JsBridge::callFunc(const std::string &func, const st
         }
         else [[likely]]
         {
+            success = true;
             if (await)
             {/// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
                 jRes = this->jAwait(jRes); // Handle promise if needed
             }
             const auto cS = JS_ToCString(this->context, jRes);
-            s = wrapStr(cS);
+            s = std::move(wrapStr(cS));
             JS_FreeCString(this->context, cS);
         }
         JS_FreeValue(this->context, jRes);
@@ -313,7 +315,7 @@ std::string NGenXX::Bridge::JsBridge::callFunc(const std::string &func, const st
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "Can not find JS func:{}", func);
     }
 
-    return s;
+    return success? std::make_optional(s): std::nullopt;
 }
 
 JSValue NGenXX::Bridge::JsBridge::newPromise(std::function<JSValue()> &&jf)

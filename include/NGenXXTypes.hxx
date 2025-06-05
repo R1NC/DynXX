@@ -145,7 +145,7 @@ address ptr2addr(const T *ptr)
 
 using Any = std::variant<int64_t, double, std::string>;
 
-auto Any2String(const Any &v, const std::string &defaultS = {})
+inline auto Any2String(const Any &v, const std::string &defaultS = {})
 {
     if (std::holds_alternative<std::string>(v)) [[likely]]
     {
@@ -162,7 +162,7 @@ auto Any2String(const Any &v, const std::string &defaultS = {})
     return defaultS;
 }
 
-auto Any2Integer(const Any &a, const int64_t defaultI = MinInt64)
+inline auto Any2Integer(const Any &a, const int64_t defaultI = MinInt64)
 {
     if (!std::holds_alternative<std::string>(a)) [[likely]]
     {
@@ -174,7 +174,7 @@ auto Any2Integer(const Any &a, const int64_t defaultI = MinInt64)
     }
 }
 
-auto Any2Float(const Any &a, const double defaultF = MinFloat64)
+inline auto Any2Float(const Any &a, const double defaultF = MinFloat64)
 {
     if (!std::holds_alternative<std::string>(a)) [[likely]]
     {
@@ -197,7 +197,7 @@ inline std::optional<std::string> dictAnyReadString(const DictAny &dict, const s
     {
         return std::nullopt;
     }
-    return Any2String(dict.at(key));
+    return std::make_optional(Any2String(dict.at(key)));
 }
 
 inline auto dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS)
@@ -211,7 +211,7 @@ inline std::optional<int64_t> dictAnyReadInteger(const DictAny &dict, const std:
     {
         return std::nullopt;
     }
-    return Any2Integer(dict.at(key));
+    return std::make_optional(Any2Integer(dict.at(key)));
 }
 
 inline auto dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI)
@@ -225,7 +225,7 @@ inline std::optional<double> dictAnyReadFloat(const DictAny &dict, const std::st
     {
         return std::nullopt;
     }
-    return Any2Float(dict.at(key));
+    return std::make_optional(Any2Float(dict.at(key)));
 }
 
 inline auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF)

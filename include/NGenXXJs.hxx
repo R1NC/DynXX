@@ -4,6 +4,7 @@
 #include "NGenXXTypes.hxx"
 
 #include <functional>
+#include <optional>
 
 bool ngenxxJsLoadF(const std::string &file, bool isModule);
 
@@ -11,7 +12,7 @@ bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isMo
 
 bool ngenxxJsLoadB(const Bytes &bytes, bool isModule);
 
-std::string ngenxxJsCall(const std::string &func, const std::string &params, bool await);
+std::optional<std::string> ngenxxJsCall(const std::string &func, const std::string &params, bool await);
 
 void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback);
 
