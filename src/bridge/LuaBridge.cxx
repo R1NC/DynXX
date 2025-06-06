@@ -190,6 +190,6 @@ std::optional<std::string> NGenXX::Bridge::LuaBridge::callFunc(const std::string
     const auto &s = wrapStr(lua_tostring(this->lstate, -1));
 
     lua_pop(this->lstate, 1);
-    return std::make_optional(std::move(s));
+    return std::make_optional(s);
 }
 #endif

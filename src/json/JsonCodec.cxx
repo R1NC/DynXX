@@ -104,8 +104,7 @@ DictAny NGenXX::Json::jsonToDictAny(const std::string &json)
         for (auto node = cjson->child; node != nullptr; node = node->next)
         {
             std::string k(node->string);
-            auto type = cJSONReadType(node);
-            if (type == NGenXXJsonNodeTypeX::Number)
+            if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Number)
             {
                 dict.emplace(k, node->valuedouble);
             }
@@ -221,7 +220,7 @@ std::string NGenXX::Json::Decoder::readString(void *const node) const
 double NGenXX::Json::Decoder::readNumber(void *const node) const
 {
     auto num = 0.0;
-    auto type = cJSONReadType(node);
+    const auto type = cJSONReadType(node);
     const auto cj = this->reinterpretNode(node);
     if (type == NGenXXJsonNodeTypeX::Number) [[likely]]
     {
@@ -241,7 +240,7 @@ double NGenXX::Json::Decoder::readNumber(void *const node) const
 
 void *NGenXX::Json::Decoder::readChild(void *const node) const
 {
-    if (auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Object || type == NGenXXJsonNodeTypeX::Array) [[likely]]
+    if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Object || type == NGenXXJsonNodeTypeX::Array) [[likely]]
     {
         return this->reinterpretNode(node)->child;
     }
@@ -250,7 +249,7 @@ void *NGenXX::Json::Decoder::readChild(void *const node) const
 
 void NGenXX::Json::Decoder::readChildren(void *const node, std::function<void(size_t idx, void *const child)> &&callback) const
 {
-    if (auto type = cJSONReadType(node); type != NGenXXJsonNodeTypeX::Object && type != NGenXXJsonNodeTypeX::Array) [[unlikely]]
+    if (const auto type = cJSONReadType(node); type != NGenXXJsonNodeTypeX::Object && type != NGenXXJsonNodeTypeX::Array) [[unlikely]]
     {
         return;
     }

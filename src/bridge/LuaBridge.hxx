@@ -62,7 +62,7 @@ EXTERN_C_END
 
 namespace NGenXX::Bridge
 {
-    class LuaBridge : public BaseBridge
+    class LuaBridge final : public BaseBridge
     {
     public:
         /**

@@ -123,7 +123,7 @@
 
 namespace NGenXX::Bridge
 {
-    class JsBridge : public BaseBridge
+    class JsBridge final : public BaseBridge
     {
     public:
         /**

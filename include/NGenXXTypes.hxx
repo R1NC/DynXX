@@ -168,10 +168,7 @@ inline auto Any2Integer(const Any &a, const int64_t defaultI = MinInt64)
     {
         return std::get<int64_t>(a);
     }
-    else [[unlikely]]
-    {
-        return str2int64(std::get<std::string>(a), defaultI);
-    }
+    return str2int64(std::get<std::string>(a), defaultI);
 }
 
 inline auto Any2Float(const Any &a, const double defaultF = MinFloat64)
@@ -180,10 +177,7 @@ inline auto Any2Float(const Any &a, const double defaultF = MinFloat64)
     {
         return std::get<double>(a);
     }
-    else [[unlikely]]
-    {
-        return str2float64(std::get<std::string>(a), defaultF);
-    }
+    return str2float64(std::get<std::string>(a), defaultF);
 }
 
 #pragma mark Dict Type
