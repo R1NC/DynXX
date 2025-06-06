@@ -75,7 +75,7 @@ inline jstring boxJString(JNIEnv *env, const char *str)
     {
         str = "";
     }
-    jsize stringLen = strlen(str);
+    auto stringLen = static_cast<jsize>(strlen(str));
     auto p = reinterpret_cast<const unsigned char*>(str);
     std::ostringstream oss;
     size_t i = 0;
@@ -119,13 +119,14 @@ inline jstring boxJString(JNIEnv *env, const char *str)
     }
 
     auto fixedStr = oss.str();
-    auto stringBytes = env->NewByteArray(fixedStr.length());
-    env->SetByteArrayRegion(stringBytes, 0, fixedStr.length(), 
+    auto fixedLen = static_cast<jsize>(fixedStr.length());
+    auto stringBytes = env->NewByteArray(fixedLen);
+    env->SetByteArrayRegion(stringBytes, 0, fixedLen,
                            reinterpret_cast<const jbyte*>(fixedStr.c_str()));
     auto stringClass = env->FindClass(JLS);
     auto stringConstructor = env->GetMethodID(stringClass, "<init>", "([B" LJLS_ ")V");
     auto charsetName = env->NewStringUTF("UTF-8");
-    auto jStr = static_cast<jstring>(env->NewObject(stringClass, stringConstructor, 
+    auto jStr = reinterpret_cast<jstring>(env->NewObject(stringClass, stringConstructor,
                                                    stringBytes, charsetName));
     env->DeleteLocalRef(stringBytes);
     env->DeleteLocalRef(charsetName);
