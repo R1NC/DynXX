@@ -808,7 +808,7 @@ jlong zZipInput(JNIEnv *env, jobject thiz,
 
     env->ReleaseByteArrayElements(inBytes, cIn, JNI_ABORT);
 
-    return ret;
+    return static_cast<jlong>(ret);
 }
 
 jbyteArray zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip)
@@ -849,7 +849,7 @@ jlong zUnZipInput(JNIEnv *env, jobject thiz,
 
     env->ReleaseByteArrayElements(inBytes, cIn, JNI_ABORT);
 
-    return ret;
+    return static_cast<jlong>(ret);
 }
 
 jbyteArray zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip) {
