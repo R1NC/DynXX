@@ -11,7 +11,7 @@ namespace {
 napi_env sNapiEnv;
 napi_ref sTsLogCallbackRef;
 
-napi_value GetVersion(napi_env env, napi_callback_info info)
+napi_value getVersion(napi_env env, napi_callback_info info)
 {
     auto c = ngenxx_get_version();
     auto v = chars2NapiValue(env, c);
@@ -19,7 +19,7 @@ napi_value GetVersion(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value Init(napi_env env, napi_callback_info info)
+napi_value init(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -32,7 +32,7 @@ napi_value Init(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value Release(napi_env env, napi_callback_info info)
+napi_value release(napi_env env, napi_callback_info info)
 {
     ngenxx_release();
 
@@ -135,7 +135,7 @@ void engineLogCallback(int level, const char *content)
 
 #pragma mark Log API
 
-napi_value LogSetLevel(napi_env env, napi_callback_info info)
+napi_value logSetLevel(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -146,7 +146,7 @@ napi_value LogSetLevel(napi_env env, napi_callback_info info)
     return int2NapiValue(env, napi_ok);
 }
 
-napi_value LogSetCallback(napi_env env, napi_callback_info info)
+napi_value logSetCallback(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -174,7 +174,7 @@ napi_value LogSetCallback(napi_env env, napi_callback_info info)
     return int2NapiValue(env, napi_ok);
 }
 
-napi_value LogPrint(napi_env env, napi_callback_info info)
+napi_value logPrint(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -189,7 +189,7 @@ napi_value LogPrint(napi_env env, napi_callback_info info)
 
 #pragma mark Net
 
-napi_value NetHttpRequest(napi_env env, napi_callback_info info)
+napi_value netHttpRequest(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -246,7 +246,7 @@ napi_value NetHttpRequest(napi_env env, napi_callback_info info)
 
 #pragma mark Store.SQLite
 
-napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info)
+napi_value storeSQLiteOpen(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -258,7 +258,7 @@ napi_value StoreSQLiteOpen(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info)
+napi_value storeSQLiteExecute(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -272,7 +272,7 @@ napi_value StoreSQLiteExecute(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info)
+napi_value storeSQLiteQueryDo(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -286,7 +286,7 @@ napi_value StoreSQLiteQueryDo(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
+napi_value storeSQLiteQueryReadRow(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -296,7 +296,7 @@ napi_value StoreSQLiteQueryReadRow(napi_env env, napi_callback_info info)
     return bool2NapiValue(env, res);
 }
 
-napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
+napi_value storeSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -311,7 +311,7 @@ napi_value StoreSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info)
+napi_value storeSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -325,7 +325,7 @@ napi_value StoreSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info in
     return nv;
 }
 
-napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info)
+napi_value storeSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -339,7 +339,7 @@ napi_value StoreSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info
     return nv;
 }
 
-napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info)
+napi_value storeSQLiteQueryDrop(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -349,7 +349,7 @@ napi_value StoreSQLiteQueryDrop(napi_env env, napi_callback_info info)
     return int2NapiValue(env, napi_ok);
 }
 
-napi_value StoreSQLiteClose(napi_env env, napi_callback_info info)
+napi_value storeSQLiteClose(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -361,7 +361,7 @@ napi_value StoreSQLiteClose(napi_env env, napi_callback_info info)
 
 #pragma mark Store.KV
 
-napi_value StoreKVOpen(napi_env env, napi_callback_info info)
+napi_value storeKVOpen(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -373,7 +373,7 @@ napi_value StoreKVOpen(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreKVReadString(napi_env env, napi_callback_info info)
+napi_value storeKVReadString(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -388,7 +388,7 @@ napi_value StoreKVReadString(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreKVWriteString(napi_env env, napi_callback_info info)
+napi_value storeKVWriteString(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -404,7 +404,7 @@ napi_value StoreKVWriteString(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreKVReadInteger(napi_env env, napi_callback_info info)
+napi_value storeKVReadInteger(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -418,7 +418,7 @@ napi_value StoreKVReadInteger(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info)
+napi_value storeKVWriteInteger(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -433,7 +433,7 @@ napi_value StoreKVWriteInteger(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreKVReadFloat(napi_env env, napi_callback_info info)
+napi_value storeKVReadFloat(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -447,7 +447,7 @@ napi_value StoreKVReadFloat(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info)
+napi_value storeKVWriteFloat(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -462,7 +462,7 @@ napi_value StoreKVWriteFloat(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreKVContains(napi_env env, napi_callback_info info)
+napi_value storeKVContains(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -476,7 +476,7 @@ napi_value StoreKVContains(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreKVRemove(napi_env env, napi_callback_info info)
+napi_value storeKVRemove(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -490,7 +490,7 @@ napi_value StoreKVRemove(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value StoreKVClear(napi_env env, napi_callback_info info)
+napi_value storeKVClear(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -500,7 +500,7 @@ napi_value StoreKVClear(napi_env env, napi_callback_info info)
     return int2NapiValue(env, napi_ok);
 }
 
-napi_value StoreKVClose(napi_env env, napi_callback_info info)
+napi_value storeKVClose(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -512,14 +512,14 @@ napi_value StoreKVClose(napi_env env, napi_callback_info info)
 
 #pragma mark DeviceInfo
 
-napi_value DeviceType(napi_env env, napi_callback_info info)
+napi_value deviceType(napi_env env, napi_callback_info info)
 {
     auto dt = ngenxx_device_type();
     auto v = int2NapiValue(env, dt);
     return v;
 }
 
-napi_value DeviceName(napi_env env, napi_callback_info info)
+napi_value deviceName(napi_env env, napi_callback_info info)
 {
     auto cDN = ngenxx_device_name();
     auto v = chars2NapiValue(env, cDN);
@@ -528,7 +528,7 @@ napi_value DeviceName(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value DeviceManufacturer(napi_env env, napi_callback_info info)
+napi_value deviceManufacturer(napi_env env, napi_callback_info info)
 {
     auto cDM = ngenxx_device_manufacturer();
     auto v = chars2NapiValue(env, cDM);
@@ -536,7 +536,7 @@ napi_value DeviceManufacturer(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value DeviceOsVersion(napi_env env, napi_callback_info info)
+napi_value deviceOsVersion(napi_env env, napi_callback_info info)
 {
     auto cOV = ngenxx_device_name();
     auto v = chars2NapiValue(env, cOV);
@@ -544,7 +544,7 @@ napi_value DeviceOsVersion(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value DeviceCpuArch(napi_env env, napi_callback_info info)
+napi_value deviceCpuArch(napi_env env, napi_callback_info info)
 {
     auto dca = ngenxx_device_cpu_arch();
     auto v = int2NapiValue(env, dca);
@@ -553,7 +553,7 @@ napi_value DeviceCpuArch(napi_env env, napi_callback_info info)
 
 #pragma mark JsonDecoder
     
-napi_value JsonReadType(napi_env env, napi_callback_info info)
+napi_value jsonReadType(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -563,7 +563,7 @@ napi_value JsonReadType(napi_env env, napi_callback_info info)
     return int2NapiValue(env, res);
 }
 
-napi_value JsonDecoderInit(napi_env env, napi_callback_info info)
+napi_value jsonDecoderInit(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -576,7 +576,7 @@ napi_value JsonDecoderInit(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info)
+napi_value jsonDecoderReadNode(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -591,7 +591,7 @@ napi_value JsonDecoderReadNode(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info)
+napi_value jsonDecoderReadChild(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -602,7 +602,7 @@ napi_value JsonDecoderReadChild(napi_env env, napi_callback_info info)
     return long2NapiValue(env, res);
 }
 
-napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info)
+napi_value jsonDecoderReadNext(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -613,7 +613,7 @@ napi_value JsonDecoderReadNext(napi_env env, napi_callback_info info)
     return long2NapiValue(env, res);
 }
 
-napi_value JsonDecoderReadString(napi_env env, napi_callback_info info)
+napi_value jsonDecoderReadString(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -627,7 +627,7 @@ napi_value JsonDecoderReadString(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info)
+napi_value jsonDecoderReadNumber(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -638,7 +638,7 @@ napi_value JsonDecoderReadNumber(napi_env env, napi_callback_info info)
     return double2NapiValue(env, res);
 }
 
-napi_value JsonDecoderRelease(napi_env env, napi_callback_info info)
+napi_value jsonDecoderRelease(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -651,7 +651,7 @@ napi_value JsonDecoderRelease(napi_env env, napi_callback_info info)
 
 #pragma mark Coding
 
-napi_value CodingHexBytes2str(napi_env env, napi_callback_info info)
+napi_value codingHexBytes2str(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -666,7 +666,7 @@ napi_value CodingHexBytes2str(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info)
+napi_value codingHexStr2Bytes(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -683,7 +683,7 @@ napi_value CodingHexStr2Bytes(napi_env env, napi_callback_info info)
 
 #pragma mark Crypto
 
-napi_value CryptoRand(napi_env env, napi_callback_info info)
+napi_value cryptoRand(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -697,7 +697,7 @@ napi_value CryptoRand(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info)
+napi_value cryptoAesEncrypt(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -716,7 +716,7 @@ napi_value CryptoAesEncrypt(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info)
+napi_value cryptoAesDecrypt(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -735,7 +735,7 @@ napi_value CryptoAesDecrypt(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
+napi_value cryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -764,7 +764,7 @@ napi_value CryptoAesGcmEncrypt(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
+napi_value cryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -793,7 +793,7 @@ napi_value CryptoAesGcmDecrypt(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value CryptoHashMd5(napi_env env, napi_callback_info info)
+napi_value cryptoHashMd5(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -809,7 +809,7 @@ napi_value CryptoHashMd5(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value CryptoHashSha256(napi_env env, napi_callback_info info)
+napi_value cryptoHashSha256(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -825,7 +825,7 @@ napi_value CryptoHashSha256(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value CryptoBase64Encode(napi_env env, napi_callback_info info)
+napi_value cryptoBase64Encode(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -841,7 +841,7 @@ napi_value CryptoBase64Encode(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value CryptoBase64Decode(napi_env env, napi_callback_info info)
+napi_value cryptoBase64Decode(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -859,7 +859,7 @@ napi_value CryptoBase64Decode(napi_env env, napi_callback_info info)
 
 #pragma mark Lua
 
-napi_value LLoadF(napi_env env, napi_callback_info info)
+napi_value lLoadF(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -872,7 +872,7 @@ napi_value LLoadF(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value LLoadS(napi_env env, napi_callback_info info)
+napi_value lLoadS(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -885,7 +885,7 @@ napi_value LLoadS(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value LCall(napi_env env, napi_callback_info info)
+napi_value lCall(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -906,7 +906,7 @@ napi_value LCall(napi_env env, napi_callback_info info)
 
 #pragma mark JS
 
-napi_value JLoadF(napi_env env, napi_callback_info info)
+napi_value jLoadF(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -920,7 +920,7 @@ napi_value JLoadF(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value JLoadS(napi_env env, napi_callback_info info)
+napi_value jLoadS(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -936,7 +936,7 @@ napi_value JLoadS(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value JLoadB(napi_env env, napi_callback_info info)
+napi_value jLoadB(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -952,7 +952,7 @@ napi_value JLoadB(napi_env env, napi_callback_info info)
     return v;
 }
 
-napi_value JCall(napi_env env, napi_callback_info info)
+napi_value jCall(napi_env env, napi_callback_info info)
 {
     Args args(env, info);
 
@@ -972,7 +972,7 @@ napi_value JCall(napi_env env, napi_callback_info info)
     return nv;
 }
 
-#define NAPI(sig, fp) {sig, NULL, fp, NULL, NULL, NULL, napi_default, NULL}
+#define NAPI(f) {#f, NULL, f, NULL, NULL, NULL, napi_default, NULL}
 
 }
 
@@ -983,74 +983,74 @@ napi_value NAPI_NGenXX_RegisterFuncs(napi_env env, napi_value exports)
 {
     napi_property_descriptor desc[] = 
     {
-        NAPI("getVersion", GetVersion),
-        NAPI("init", Init),
-        NAPI("release", Release),
+        NAPI(getVersion),
+        NAPI(init),
+        NAPI(release),
 
-        NAPI("logSetLevel", LogSetLevel),
-        NAPI("logSetCallback", LogSetCallback),
-        NAPI("logPrint", LogPrint),
+        NAPI(logSetLevel),
+        NAPI(logSetCallback),
+        NAPI(logPrint),
 
-        NAPI("netHttpRequest", NetHttpRequest),
+        NAPI(netHttpRequest),
 
-        NAPI("lLoadF", LLoadF),
-        NAPI("lLoadS", LLoadS),
-        NAPI("lCall", LCall),
+        NAPI(lLoadF),
+        NAPI(lLoadS),
+        NAPI(lCall),
 
-        NAPI("jLoadF", JLoadF),
-        NAPI("jLoadS", JLoadS),
-        NAPI("jLoadB", JLoadB),
-        NAPI("jCall", JCall),
+        NAPI(jLoadF),
+        NAPI(jLoadS),
+        NAPI(jLoadB),
+        NAPI(jCall),
 
-        NAPI("storeSQLiteOpen", StoreSQLiteOpen),
-        NAPI("storeSQLiteExecute", StoreSQLiteExecute),
-        NAPI("storeSQLiteQueryDo", StoreSQLiteQueryDo),
-        NAPI("storeSQLiteQueryReadRow", StoreSQLiteQueryReadRow),
-        NAPI("storeSQLiteQueryReadColumnText", StoreSQLiteQueryReadColumnText),
-        NAPI("storeSQLiteQueryReadColumnInteger", StoreSQLiteQueryReadColumnInteger),
-        NAPI("storeSQLiteQueryReadColumnFloat", StoreSQLiteQueryReadColumnFloat),
-        NAPI("storeSQLiteQueryDrop", StoreSQLiteQueryDrop),
-        NAPI("storeSQLiteClose", StoreSQLiteClose),
+        NAPI(storeSQLiteOpen),
+        NAPI(storeSQLiteExecute),
+        NAPI(storeSQLiteQueryDo),
+        NAPI(storeSQLiteQueryReadRow),
+        NAPI(storeSQLiteQueryReadColumnText),
+        NAPI(storeSQLiteQueryReadColumnInteger),
+        NAPI(storeSQLiteQueryReadColumnFloat),
+        NAPI(storeSQLiteQueryDrop),
+        NAPI(storeSQLiteClose),
 
-        NAPI("storeKVOpen", StoreKVOpen),
-        NAPI("storeKVReadString", StoreKVReadString),
-        NAPI("storeKVWriteString", StoreKVWriteString),
-        NAPI("storeKVReadInteger", StoreKVReadInteger),
-        NAPI("storeKVWriteInteger", StoreKVWriteInteger),
-        NAPI("storeKVReadFloat", StoreKVReadFloat),
-        NAPI("storeKVWriteFloat", StoreKVWriteFloat),
-        NAPI("storeKVContains", StoreKVContains),
-        NAPI("storeKVRemove", StoreKVRemove),
-        NAPI("storeKVClear", StoreKVClear),
-        NAPI("storeKVClose", StoreKVClose),
+        NAPI(storeKVOpen),
+        NAPI(storeKVReadString),
+        NAPI(storeKVWriteString),
+        NAPI(storeKVReadInteger),
+        NAPI(storeKVWriteInteger),
+        NAPI(storeKVReadFloat),
+        NAPI(storeKVWriteFloat),
+        NAPI(storeKVContains),
+        NAPI(storeKVRemove),
+        NAPI(storeKVClear),
+        NAPI(storeKVClose),
 
-        NAPI("deviceType", DeviceType),
-        NAPI("deviceName", DeviceName),
-        NAPI("deviceManufacturer", DeviceManufacturer),
-        NAPI("deviceOsVersion", DeviceOsVersion),
-        NAPI("deviceCpuArch", DeviceCpuArch),
+        NAPI(deviceType),
+        NAPI(deviceName),
+        NAPI(deviceManufacturer),
+        NAPI(deviceOsVersion),
+        NAPI(deviceCpuArch),
 
-        NAPI("jsonReadType", JsonReadType),
-        NAPI("jsonDecoderInit", JsonDecoderInit),
-        NAPI("jsonDecoderReadNode", JsonDecoderReadNode),
-        NAPI("jsonDecoderReadChild", JsonDecoderReadChild),
-        NAPI("jsonDecoderReadNext", JsonDecoderReadNext),
-        NAPI("jsonDecoderReadString", JsonDecoderReadString),
-        NAPI("jsonDecoderReadNumber", JsonDecoderReadNumber),
-        NAPI("jsonDecoderRelease", JsonDecoderRelease),
+        NAPI(jsonReadType),
+        NAPI(jsonDecoderInit),
+        NAPI(jsonDecoderReadNode),
+        NAPI(jsonDecoderReadChild),
+        NAPI(jsonDecoderReadNext),
+        NAPI(jsonDecoderReadString),
+        NAPI(jsonDecoderReadNumber),
+        NAPI(jsonDecoderRelease),
 
-        NAPI("codingHexBytes2str", CodingHexBytes2str),
-        NAPI("codingHexStr2Bytes", CodingHexStr2Bytes),
+        NAPI(codingHexBytes2str),
+        NAPI(codingHexStr2Bytes),
 
-        NAPI("cryptoRand", CryptoRand),
-        NAPI("cryptoAesEncrypt", CryptoAesEncrypt),
-        NAPI("cryptoAesDecrypt", CryptoAesDecrypt),
-        NAPI("cryptoAesGcmEncrypt", CryptoAesGcmEncrypt),
-        NAPI("cryptoAesGcmDecrypt", CryptoAesGcmDecrypt),
-        NAPI("cryptoHashMd5", CryptoHashMd5),
-        NAPI("cryptoHashSha256", CryptoHashSha256),
-        NAPI("cryptoBase64Encode", CryptoBase64Encode),
-        NAPI("cryptoBase64Decode", CryptoBase64Decode),
+        NAPI(cryptoRand),
+        NAPI(cryptoAesEncrypt),
+        NAPI(cryptoAesDecrypt),
+        NAPI(cryptoAesGcmEncrypt),
+        NAPI(cryptoAesGcmDecrypt),
+        NAPI(cryptoHashMd5),
+        NAPI(cryptoHashSha256),
+        NAPI(cryptoBase64Encode),
+        NAPI(cryptoBase64Decode),
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
