@@ -944,7 +944,6 @@ napi_value jLoadB(napi_env env, napi_callback_info info)
     auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
     auto isModule = napiValue2bool(env, args.v[1]);
 
-    size_t outLen;
     auto b = ngenxx_js_loadB(inBytes, inLen, isModule);
     auto v = bool2NapiValue(env, b);
 
