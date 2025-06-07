@@ -4,7 +4,12 @@
 
 #include <NGenXXLog.hxx>
 
-#define PRINT_ERR(rc, db) ngenxxLogPrint(NGenXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
+namespace
+{
+    #define PRINT_ERR(rc, db) ngenxxLogPrint(NGenXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
+
+    constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
+}
 
 NGenXX::Store::SQLite::SQLite()
 {
@@ -58,7 +63,7 @@ NGenXX::Store::SQLite::~SQLite()
 
 NGenXX::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
 {
-    if (constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;"; !this->execute(sEnableWAL)) [[unlikely]]
+    if (!this->execute(sEnableWAL)) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Warn, "SQLite enable WAL failed");
     }

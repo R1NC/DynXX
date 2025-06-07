@@ -32,6 +32,22 @@ namespace
     std::function<void(int level, const char *content)> _callback = nullptr;
     std::mutex _mutex;
 
+    constexpr auto TAG = "NGENXX";
+
+    void stdLogPrint(int level, const std::string &content)
+    {
+        auto cContent = content.c_str();
+#if defined(__ANDROID__)
+        __android_log_print(level, TAG, "%s", cContent);
+#elif defined(__OHOS__)
+        OH_LOG_Print(LOG_APP, static_cast<LogLevel>(level), 0xC0DE, TAG, "%{public}s", cContent);
+#elif defined(__APPLE__)
+        _ngenxx_log_apple(cContent);
+#else
+        std::cout << TAG << "_" << level << " -> " << cContent << std::endl;
+#endif
+    }
+
 #if defined(USE_SPDLOG)
     void spdlogPrepare() 
     {
@@ -125,24 +141,15 @@ void NGenXX::Log::print(int level, const std::string &content)
         return;
     }
 
-    auto cContent = content.c_str();
     if (_callback)
     {
-        _callback(level, cContent);
+        _callback(level, content.c_str());
     }
     else
     {
-        static const std::string tag = "NGENXX";
-#if defined(__ANDROID__)
-        __android_log_print(level, tag.c_str(), "%s", cContent);
-#elif defined(__OHOS__)
-        OH_LOG_Print(LOG_APP, static_cast<LogLevel>(level), 0xC0DE, tag.c_str(), "%{public}s", cContent);
-#elif defined(__APPLE__)
-        _ngenxx_log_apple(cContent);
-#else
-        std::cout << tag << "_" << level << " -> " << cContent << std::endl;
-#endif
+        stdLogPrint(level, content);
     }
+    
 #if defined(USE_SPDLOG)
     spdlogPrint(level, content);
 #endif
