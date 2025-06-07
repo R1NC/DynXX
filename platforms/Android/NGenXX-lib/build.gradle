@@ -41,7 +41,7 @@ android {
             path file('src/main/cxx/CMakeLists.txt')
         }
     }
-    ndkVersion '28.1.13356709'
+    ndkVersion '29.0.13113456'
 }
 
 dependencies {
