@@ -428,7 +428,7 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
         }
         ssParams << k << "=";
         std::visit(
-            [&ssParams](auto &x)
+            [&ssParams](const auto &x)
             { 
                 ssParams << x; 
             }, 

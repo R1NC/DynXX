@@ -91,7 +91,7 @@ bool NGenXX::Store::KV::Connection::write(const std::string_view &k, const Any &
 {
     auto lock = std::unique_lock(this->mutex);
     return std::visit(
-        [k, kv = this->kv](auto &x)
+        [k, kv = this->kv](const auto &x)
         { 
             return kv->set(x, k); 
         },
