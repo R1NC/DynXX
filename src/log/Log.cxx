@@ -42,7 +42,7 @@ namespace
         }
         try 
         {
-            const auto logger = spdlog::daily_logger_mt(
+            const auto& logger = spdlog::daily_logger_mt(
                 "ngenxx_spdlog",
                 ngenxxRootPath() + "/log.txt",
                 0,

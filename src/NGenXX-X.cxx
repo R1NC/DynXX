@@ -43,9 +43,11 @@ namespace
         {
             return defaultV;
         }
+        const auto begin = str.data();
+        const auto end = begin + str.size();
         T v;
-        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), v);
-        if (ec == std::errc() && ptr == str.data() + str.size()) [[likely]]
+        auto [ptr, ec] = std::from_chars(begin, end, v);
+        if (ec == std::errc() && ptr == end) [[likely]]
         {
             return v;
         }
@@ -54,7 +56,7 @@ namespace
 #endif
 
     template<IntegerT T>
-    T stox(const std::string& str, T defaultValue, T (*f)(const std::string&, size_t*, int)) 
+    T s2n(const std::string& str, T defaultValue, T (*f)(const std::string&, size_t*, int)) 
     {
         try 
         {
@@ -68,7 +70,7 @@ namespace
     }
 
     template<FloatT T>
-    T stox(const std::string& str, T defaultValue, T (*f)(const std::string&, size_t*))
+    T s2n(const std::string& str, T defaultValue, T (*f)(const std::string&, size_t*))
     {
         try
         {
@@ -87,7 +89,7 @@ int32_t str2int32(const std::string &str, const int32_t defaultI)
 #if defined(USE_STD_FROM_CHARS)
     return from_chars<int32_t>(str, defaultI);
 #else
-    return stox<int32_t>(str, defaultI, std::stoi);
+    return s2n<int32_t>(str, defaultI, std::stoi);
 #endif
 }
 
@@ -96,7 +98,7 @@ int64_t str2int64(const std::string &str, const int64_t defaultI)
 #if defined(USE_STD_FROM_CHARS)
     return from_chars<int64_t>(str, defaultI);
 #else
-    return stox<int64_t>(str, defaultI, std::stoll);
+    return s2n<int64_t>(str, defaultI, std::stoll);
 #endif
 }
 
@@ -105,7 +107,7 @@ float str2float32(const std::string &str, const float defaultF)
 #if defined(USE_STD_FROM_CHARS_FLOAT)
     return from_chars<float>(str, defaultF);
 #else
-    return stox<float>(str, defaultF, std::stof);
+    return s2n<float>(str, defaultF, std::stof);
 #endif
 }
 
@@ -114,7 +116,7 @@ double str2float64(const std::string &str, const double defaultF)
 #if defined(USE_STD_FROM_CHARS_FLOAT)
     return from_chars<double>(str, defaultF);
 #else
-    return stox<double>(str, defaultF, std::stod);
+    return s2n<double>(str, defaultF, std::stod);
 #endif
 }
 
@@ -358,30 +360,49 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
         });
     }
 
-    auto [code, contentType, headers, data] = _http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize, timeout);
-    rsp = {
-        .code = code,
-        .contentType = contentType,
-        .headers = headers,
-        .data = data
-    };
-    return rsp;
+    return _http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize, timeout);
 }
 
 std::string NGenXXHttpResponse::toJson() const
 {
     const auto cj = cJSON_CreateObject();
-    cJSON_AddItemToObject(cj, "code", cJSON_CreateNumber(this->code));
-    cJSON_AddItemToObject(cj, "contentType", cJSON_CreateString(this->contentType.c_str()));
+
+    if (!cJSON_AddNumberToObject(cj, "code", this->code)) [[unlikely]]
+    {
+        cJSON_Delete(cj);
+        return {};
+    }
+
+    if (!cJSON_AddStringToObject(cj, "contentType", this->contentType.c_str())) [[unlikely]]
+    {
+        cJSON_Delete(cj);
+        return {};
+    }
 
     const auto cjHeaders = cJSON_CreateObject();
     for (const auto &[k, v] : this->headers)
     {
-        cJSON_AddItemToObject(cjHeaders, k.c_str(), cJSON_CreateString(v.c_str()));
+        if (!cJSON_AddStringToObject(cjHeaders, k.c_str(), v.c_str())) [[unlikely]]
+        {
+            cJSON_Delete(cjHeaders);
+            cJSON_Delete(cj);
+            return {};
+        }
     }
-    cJSON_AddItemToObject(cj, "headers", cjHeaders);
 
-    cJSON_AddItemToObject(cj, "data", cJSON_CreateString(this->data.c_str()));
+    if (!cJSON_AddItemToObject(cj, "headers", cjHeaders)) [[unlikely]]
+    {
+        cJSON_Delete(cjHeaders);
+        cJSON_Delete(cj);
+        return {};
+    }
+
+    if (!cJSON_AddStringToObject(cj, "data", this->data.c_str())) [[unlikely]]
+    {
+        cJSON_Delete(cj);
+        return {};
+    }
+    
     auto json = ngenxxJsonToStr(cj);
     cJSON_Delete(cj);
     return json;

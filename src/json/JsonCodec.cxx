@@ -82,7 +82,11 @@ std::string NGenXX::Json::jsonFromDictAny(const DictAny &dict)
         }
         if (node) [[likely]]
         {
-            cJSON_AddItemToObject(cjson, k.c_str(), node);
+            if (!cJSON_AddItemToObject(cjson, k.c_str(), node)) [[unlikely]]
+            {
+                ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO ADD JSON VALUE: {}", k);
+                cJSON_Delete(node);
+            }
         }
     }
     auto json = cJSONToStr(cjson);

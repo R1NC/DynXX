@@ -48,8 +48,8 @@ namespace
         std::string header(buffer, size * nitems);
         if (const auto colonPos = header.find(':'); colonPos != std::string::npos) [[likely]]
         {
-            const auto k = header.substr(0, colonPos);
-            const auto v = header.substr(colonPos + 2);
+            const auto& k = header.substr(0, colonPos);
+            const auto& v = header.substr(colonPos + 2);
             pHeaders->emplace(ngenxxCodingStrTrim(k), ngenxxCodingStrTrim(v));
         }
         return size * nitems;
