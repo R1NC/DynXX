@@ -82,7 +82,8 @@ bool ngenxx_lua_loadS(const char *script)
 EXPORT
 const char *ngenxx_lua_call(const char *f, const char *ps)
 {
-    return copyStr(ngenxxLuaCall(wrapStr(f), wrapStr(ps)).value_or(""));
+    const auto& s = ngenxxLuaCall(wrapStr(f), wrapStr(ps)).value_or("");
+    return NGenXX::Util::Type::copyStr(s);
 }
 
 #pragma mark Lua API - Declaration

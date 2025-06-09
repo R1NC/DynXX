@@ -30,23 +30,23 @@ NGenXXJsonNodeTypeX NGenXX::Json::cJSONReadType(void *const cjson)
     }
 }
 
-std::string NGenXX::Json::cJSONToStr(void *const cjson)
+std::optional<std::string> NGenXX::Json::cJSONToStr(void *const cjson)
 {
     if (!cjson) [[unlikely]]
     {
-        return {};
+        return std::nullopt;
     }
     const auto jsonChars = cJSON_PrintUnformatted(static_cast<cJSON *>(cjson));
     if (!jsonChars) [[unlikely]]
     {
-        return {};
+        return std::nullopt;
     }
     std::string json(jsonChars);
     //std::free(jsonChars);
-    return json;
+    return std::make_optional(json);
 }
 
-std::string NGenXX::Json::jsonFromDictAny(const DictAny &dict)
+std::optional<std::string> NGenXX::Json::jsonFromDictAny(const DictAny &dict)
 {
     const auto cjson = cJSON_CreateObject();
     for (const auto &[k, v] : dict) 
@@ -118,7 +118,7 @@ DictAny NGenXX::Json::jsonToDictAny(const std::string &json)
             }
             else
             {
-                dict.emplace(k, cJSONToStr(node));
+                dict.emplace(k, cJSONToStr(node).value_or(""));
             }
         }
     }
@@ -192,7 +192,7 @@ void *NGenXX::Json::Decoder::operator[](const std::string &k) const
     return this->readNode(nullptr, k);
 }
 
-std::string NGenXX::Json::Decoder::readString(void *const node) const
+std::optional<std::string> NGenXX::Json::Decoder::readString(void *const node) const
 {
     const auto cj = this->reinterpretNode(node);
     switch(cJSONReadType(node))
@@ -204,19 +204,19 @@ std::string NGenXX::Json::Decoder::readString(void *const node) const
         }
         case NGenXXJsonNodeTypeX::String:
         {
-            return cj->valuestring;
+            return std::make_optional(cj->valuestring);
         }
         case NGenXXJsonNodeTypeX::Number:
         {
-            return std::to_string(cj->valuedouble);
+            return std::make_optional(std::to_string(cj->valuedouble));
         }
         case NGenXXJsonNodeTypeX::Boolean:
         {
-            return cj->valueint? "true" : "false";
+            return std::make_optional(cj->valueint? "true" : "false");
         }
         default:
         {
-            return {};
+            return std::nullopt;
         }
     }
 }

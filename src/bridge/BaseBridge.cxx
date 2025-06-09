@@ -13,7 +13,7 @@ namespace
 
 bool NGenXX::Bridge::BaseBridge::tryLockMutex(std::recursive_timed_mutex &mtx)
 {
-    const auto timeout = steady_clock::now() + milliseconds(SleepMilliSecs);
+    const auto timeout = std::chrono::steady_clock::now() + std::chrono::milliseconds(SleepMilliSecs);
     return mtx.try_lock_until(timeout);
 }
 
@@ -24,7 +24,7 @@ void NGenXX::Bridge::BaseBridge::unlockMutex(std::recursive_timed_mutex &mtx)
 
 void NGenXX::Bridge::BaseBridge::sleep()
 {
-    sleepForMilliSecs(SleepMilliSecs);
+    NGenXX::Util::Time::sleepForMilliSecs(SleepMilliSecs);
 }
 
 void NGenXX::Bridge::BaseBridge::enqueueTask(const std::function<void()> &&taskF)
@@ -33,7 +33,7 @@ void NGenXX::Bridge::BaseBridge::enqueueTask(const std::function<void()> &&taskF
 
     this->taskQueue.emplace(std::move(taskF));
 
-    auto cpuCores = countCPUCore();
+    auto cpuCores = NGenXX::Util::Concurrent::countCPUCore();
     if (this->threadPool.size() >= cpuCores)
     {
         return;
@@ -64,7 +64,7 @@ void NGenXX::Bridge::BaseBridge::enqueueTask(const std::function<void()> &&taskF
 
             if (func)
             {
-                ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Bridge task running on thread:{}", currentThreadId());
+                ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Bridge task running on thread:{}", NGenXX::Util::Concurrent::currentThreadId());
                 func();
             }
             else

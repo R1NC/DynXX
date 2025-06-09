@@ -73,7 +73,7 @@ EXTERN_C_BEGIN
      * @param len A pointer to read the length of the key array
      * @return A pointer to the key array
      */
-    const char **ngenxx_store_kv_all_keys(void *const conn, size_t *len);
+    char *const *ngenxx_store_kv_all_keys(void *const conn, size_t *len);
 
     /**
      * @brief Search key from KV Store

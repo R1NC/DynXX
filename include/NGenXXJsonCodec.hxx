@@ -2,6 +2,7 @@
 #define NGENXX_INCLUDE_JSON_CODEC_HXX_
 
 #include <string>
+#include <optional>
 #include <functional>
 
 #include "NGenXXTypes.hxx"
@@ -18,16 +19,16 @@ enum class NGenXXJsonNodeTypeX : int
 };
 
 NGenXXJsonNodeTypeX ngenxxJsonReadType(void *const json);
-std::string ngenxxJsonToStr(void *const cjson);
+std::optional<std::string> ngenxxJsonToStr(void *const cjson);
 
-std::string ngenxxJsonFromDictAny(const DictAny &dict);
+std::optional<std::string> ngenxxJsonFromDictAny(const DictAny &dict);
 DictAny ngenxxJsonToDictAny(const std::string &json);
 
 void *ngenxxJsonDecoderInit(const std::string &json);
 
 void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node = nullptr);
 
-std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node = nullptr);
+std::optional<std::string> ngenxxJsonDecoderReadString(void *const decoder, void *const node = nullptr);
 
 double ngenxxJsonDecoderReadNumber(void *const decoder, void *const node = nullptr);
 

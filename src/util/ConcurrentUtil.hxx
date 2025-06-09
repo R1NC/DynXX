@@ -7,11 +7,16 @@
 #include <new>
 #include <thread>
 
+namespace NGenXX::Util::Concurrent
+{
+
+static constexpr size_t CacheLineSize = 
 #if defined(__cpp_lib_hardware_interference_size)
-static constexpr size_t CacheLineSize = std::hardware_destructive_interference_size;
+    std::hardware_destructive_interference_size
 #else
-    static constexpr size_t CacheLineSize = 64;
+    64
 #endif
+;
 
 class alignas(CacheLineSize) SpinLock 
 {
@@ -55,6 +60,8 @@ inline std::string currentThreadId()
         cachedCurrentThreadId = std::to_string(std::hash<std::thread::id>{}(id));
     }
     return cachedCurrentThreadId;
+}
+
 }
 
 #endif

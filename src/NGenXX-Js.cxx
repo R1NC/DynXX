@@ -130,7 +130,8 @@ bool ngenxx_js_loadB(const byte *bytes, size_t len, bool is_module)
 EXPORT_AUTO
 const char *ngenxx_js_call(const char *func, const char *params, bool await)
 {
-    return copyStr(ngenxxJsCall(wrapStr(func), wrapStr(params), await).value_or(""));
+    const auto& s = ngenxxJsCall(wrapStr(func), wrapStr(params), await).value_or("");
+    return NGenXX::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO

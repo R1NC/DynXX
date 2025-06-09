@@ -6,6 +6,7 @@
 #if defined(__cplusplus)
 
 #include <string>
+#include <optional>
 #include <functional>
 
 #include <NGenXXTypes.hxx>
@@ -14,9 +15,9 @@
 namespace NGenXX::Json
     {
         NGenXXJsonNodeTypeX cJSONReadType(void *const cjson);
-        std::string cJSONToStr(void *const cjson);
+        std::optional<std::string> cJSONToStr(void *const cjson);
 
-        std::string jsonFromDictAny(const DictAny &dict);
+        std::optional<std::string> jsonFromDictAny(const DictAny &dict);
         DictAny jsonToDictAny(const std::string &json);
         
         class Decoder
@@ -38,7 +39,7 @@ namespace NGenXX::Json
             void *readNode(void *const node, const std::string &k) const;
             void *operator[](const std::string &k) const;
 
-            std::string readString(void *const node) const;
+            std::optional<std::string> readString(void *const node) const;
 
             double readNumber(void *const node) const;
 

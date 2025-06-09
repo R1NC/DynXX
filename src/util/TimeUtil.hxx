@@ -6,6 +6,9 @@
 #include <chrono>
 #include <thread>
 
+namespace NGenXX::Util::Time
+{
+
 using namespace std::chrono;
 
 template <typename clockT, typename durationT>
@@ -32,6 +35,8 @@ inline uint64_t nowInNanoSecs()
 inline void sleepForMilliSecs(const size_t milliSecs)
 {
     std::this_thread::sleep_for(milliseconds(milliSecs));
+}
+
 }
 
 #endif

@@ -5,7 +5,10 @@
 
 #include <NGenXXTypes.hxx>
 
-inline char *copyStr(const std::string &s)
+namespace NGenXX::Util::Type
+{
+
+inline const char *copyStr(const std::string &s)
 {
     const char *c = s.c_str();
     const auto len = std::strlen(c);
@@ -14,7 +17,7 @@ inline char *copyStr(const std::string &s)
     return nc;
 }
 
-inline char **copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen)
+inline char *const *copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen)
 {
     auto size = sv.size();
     const auto sArr = mallocX<char *>(size);
@@ -37,6 +40,8 @@ inline byte *copyBytes(const Bytes &t)
     const auto ncs = mallocX<byte>(len);
     std::memcpy(ncs, cs, len);
     return ncs;
+}
+
 }
 
 #endif // NGENXX_SRC_UTIL_TYPE_HXX_

@@ -363,20 +363,20 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     return _http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize, timeout);
 }
 
-std::string NGenXXHttpResponse::toJson() const
+std::optional<std::string> NGenXXHttpResponse::toJson() const
 {
     const auto cj = cJSON_CreateObject();
 
     if (!cJSON_AddNumberToObject(cj, "code", this->code)) [[unlikely]]
     {
         cJSON_Delete(cj);
-        return {};
+        return std::nullopt;
     }
 
     if (!cJSON_AddStringToObject(cj, "contentType", this->contentType.c_str())) [[unlikely]]
     {
         cJSON_Delete(cj);
-        return {};
+        return std::nullopt;
     }
 
     const auto cjHeaders = cJSON_CreateObject();
@@ -386,7 +386,7 @@ std::string NGenXXHttpResponse::toJson() const
         {
             cJSON_Delete(cjHeaders);
             cJSON_Delete(cj);
-            return {};
+            return std::nullopt;
         }
     }
 
@@ -394,13 +394,13 @@ std::string NGenXXHttpResponse::toJson() const
     {
         cJSON_Delete(cjHeaders);
         cJSON_Delete(cj);
-        return {};
+        return std::nullopt;
     }
 
     if (!cJSON_AddStringToObject(cj, "data", this->data.c_str())) [[unlikely]]
     {
         cJSON_Delete(cj);
-        return {};
+        return std::nullopt;
     }
     
     auto json = ngenxxJsonToStr(cj);
@@ -701,12 +701,12 @@ NGenXXJsonNodeTypeX ngenxxJsonReadType(void *const cjson)
     return NGenXX::Json::cJSONReadType(cjson);
 }
 
-std::string ngenxxJsonToStr(void *const cjson)
+std::optional<std::string> ngenxxJsonToStr(void *const cjson)
 {
     return NGenXX::Json::cJSONToStr(cjson);
 }
 
-std::string ngenxxJsonFromDictAny(const DictAny &dict)
+std::optional<std::string> ngenxxJsonFromDictAny(const DictAny &dict)
 {
     return NGenXX::Json::jsonFromDictAny(dict);
 }
@@ -731,11 +731,11 @@ void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void 
     return xdecoder->readNode(node, k);
 }
 
-std::string ngenxxJsonDecoderReadString(void *const decoder, void *const node)
+std::optional<std::string> ngenxxJsonDecoderReadString(void *const decoder, void *const node)
 {
     if (decoder == nullptr)
     {
-        return {};
+        return std::nullopt;
     }
     const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
     return xdecoder->readString(node);
