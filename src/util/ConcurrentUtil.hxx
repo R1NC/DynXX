@@ -5,6 +5,8 @@
 
 #include <atomic>
 #include <new>
+#include <thread>
+#include <sstream>
 
 #if defined(__cpp_lib_hardware_interference_size)
 static constexpr size_t CacheLineSize = std::hardware_destructive_interference_size;
@@ -40,6 +42,18 @@ public:
 private:
     std::atomic<bool> lockFlag = {false};
 };
+
+inline unsigned int countCPUCore() {
+    return std::thread::hardware_concurrency();
+}
+
+inline std::string currentThreadId()
+{
+    const auto& id = std::this_thread::get_id();
+    std::ostringstream oss;
+    oss << id;
+    return oss.str();
+}
 
 #endif
 

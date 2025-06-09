@@ -80,14 +80,14 @@ namespace NGenXX::Bridge
          * @param file Lua file path
          * @return success or not
          */
-        [[nodiscard]] bool loadFile(const std::string &file) const;
+        [[nodiscard]] bool loadFile(const std::string &file);
 
         /**
          * @brief Load Lua script content
          * @param script Lua script content
          * @return success or not
          */
-        [[nodiscard]] bool loadScript(const std::string &script) const;
+        [[nodiscard]] bool loadScript(const std::string &script);
 
         /**
          * @brief export C function to Lua environment
@@ -102,7 +102,7 @@ namespace NGenXX::Bridge
          * @param params Lua function params（wrap multiple params with json）
          * @return return value of Lua function
          */
-        std::optional<std::string> callFunc(const std::string &func, const std::string &params) const;
+        std::optional<std::string> callFunc(const std::string &func, const std::string &params);
 
         /**
          * @brief Release Lua environment

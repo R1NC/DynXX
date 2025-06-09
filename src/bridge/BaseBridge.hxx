@@ -7,6 +7,8 @@
 #include <mutex>
 #include <functional>
 #include <thread>
+#include <queue>
+#include <vector>
 
 namespace NGenXX::Bridge
 {
@@ -24,9 +26,17 @@ namespace NGenXX::Bridge
         virtual ~BaseBridge();
 
     protected:
-        std::atomic<bool> shouldStop{false};
+        std::atomic<bool> active{false};
+        std::recursive_timed_mutex vmMutex;
 
-        std::unique_ptr<std::thread> schedule(std::function<void()> &&cbk, std::recursive_timed_mutex &mtx);
+        void sleep();
+
+        void enqueueTask(const std::function<void()> &&taskF);
+
+    private:
+        std::recursive_timed_mutex threadPoolMutex;
+        std::vector<std::thread> threadPool;
+        std::queue<std::function<void()>> taskQueue;
     };
 }
 

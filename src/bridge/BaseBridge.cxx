@@ -4,6 +4,7 @@
 
 #include <NGenXXLog.hxx>
 #include "../util/TimeUtil.hxx"
+#include "../util/ConcurrentUtil.hxx"
 
 namespace
 {
@@ -21,30 +22,76 @@ void NGenXX::Bridge::BaseBridge::unlockMutex(std::recursive_timed_mutex &mtx)
     mtx.unlock();
 }
 
-std::unique_ptr<std::thread> NGenXX::Bridge::BaseBridge::schedule(std::function<void()> &&cbk, std::recursive_timed_mutex &mtx)
+void NGenXX::Bridge::BaseBridge::sleep()
 {
-    auto ptr = std::make_unique<std::thread>([&stopFlag = this->shouldStop, &mtx = mtx, cbk = std::move(cbk)]
+    sleepForMilliSecs(SleepMilliSecs);
+}
+
+void NGenXX::Bridge::BaseBridge::enqueueTask(const std::function<void()> &&taskF)
+{
+    std::lock_guard lock(this->threadPoolMutex);
+
+    this->taskQueue.emplace(std::move(taskF));
+
+    auto cpuCores = countCPUCore();
+    if (this->threadPool.size() >= cpuCores)
     {
-        while (!stopFlag)
+        return;
+    }
+
+    this->threadPool.emplace_back([this] {
+        while (active)
         {
-            if (tryLockMutex(mtx))
+            if (!tryLockMutex(threadPoolMutex))
             {
-                cbk();
-                unlockMutex(mtx);
+                sleep();
+                continue;
             }
-            sleepForMilliSecs(SleepMilliSecs);
+
+            std::function<void()> func;
+            {
+                if (taskQueue.empty())
+                {
+                    unlockMutex(threadPoolMutex);
+                    sleep();
+                    continue;
+                }
+
+                func = std::move(taskQueue.front());
+                taskQueue.pop();
+                unlockMutex(threadPoolMutex);
+            }
+
+            if (func)
+            {
+                ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Bridge task running on thread:{}", currentThreadId());
+                func();
+            }
+            else
+            {
+                sleep();
+            }
         }
     });
-    ptr->detach();
-    return ptr;
+
+    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Bridge created new thread, poolSize:{} cpuCoreCount:{}", this->threadPool.size(), cpuCores);
 }
 
 NGenXX::Bridge::BaseBridge::BaseBridge()
 {
-    this->shouldStop = false;
+    this->active = true;
 }
 
 NGenXX::Bridge::BaseBridge::~BaseBridge()
 {
-    this->shouldStop = true;
+    this->active = false;
+
+    std::lock_guard lock(this->threadPoolMutex);
+    for (auto& thread : this->threadPool) 
+    {
+        if (thread.joinable()) 
+        {
+            thread.join();
+        }
+    }
 }

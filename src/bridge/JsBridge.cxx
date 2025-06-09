@@ -6,7 +6,6 @@
 #include <utility>
 
 #include <NGenXXLog.hxx>
-#include "../util/TimeUtil.hxx"
 
 namespace
 {
@@ -14,8 +13,6 @@ namespace
                                          "import * as os from 'qjs:os';\n"
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
-
-    constexpr auto SleepMilliSecs = 1uz;
 
 #pragma mark JsBridge dump error
 
@@ -147,9 +144,9 @@ JSValue NGenXX::Bridge::JsBridge::jAwait(const JSValue obj)
     for (;;)
     {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-        if (!tryLockMutex(this->mutex)) [[unlikely]]
+        if (!tryLockMutex(this->vmMutex)) [[unlikely]]
         {
-            sleepForMilliSecs(SleepMilliSecs);
+            this->sleep();
             continue;
         }
         if (const auto state = JS_PromiseState(this->context, obj); state == JS_PROMISE_FULFILLED)
@@ -167,8 +164,8 @@ JSValue NGenXX::Bridge::JsBridge::jAwait(const JSValue obj)
         else if (state == JS_PROMISE_PENDING)
         {
             /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
-            unlockMutex(this->mutex);
-            sleepForMilliSecs(SleepMilliSecs);
+            unlockMutex(this->vmMutex);
+            this->sleep();
             continue;
         }
         else
@@ -178,7 +175,7 @@ JSValue NGenXX::Bridge::JsBridge::jAwait(const JSValue obj)
             break;
         }
     }
-    unlockMutex(this->mutex);
+    unlockMutex(this->vmMutex);
     return ret;
 }
 
@@ -223,12 +220,20 @@ NGenXX::Bridge::JsBridge::JsBridge()
     this->context = _newContext(this->runtime);
     this->jGlobal = JS_GetGlobalObject(this->context);// Can not free here, will be called in future
 
-    this->threadPromise = this->schedule([ctx = this->context]() {
-        js_std_loop_promise(ctx);
-    }, this->mutex);
-    this->threadTimer = this->schedule([ctx = this->context]() {
-        js_std_loop_timer(ctx);
-    }, this->mutex);
+    this->enqueueTask([ctx = this->context, &mtx = this->vmMutex]() {
+        if (tryLockMutex(mtx))
+        {
+            js_std_loop_promise(ctx);
+            unlockMutex(mtx);
+        }
+    });
+    this->enqueueTask([ctx = this->context, &mtx = this->vmMutex]() {
+        if (tryLockMutex(mtx))
+        {
+            js_std_loop_timer(ctx);
+            unlockMutex(mtx);
+        }
+    });
 }
 
 bool NGenXX::Bridge::JsBridge::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -265,18 +270,18 @@ bool NGenXX::Bridge::JsBridge::loadFile(const std::string &file, bool isModule)
 }
 
 bool NGenXX::Bridge::JsBridge::loadScript(const std::string &script, const std::string &name, bool isModule) {
-    auto lock = std::lock_guard(this->mutex);
+    auto lock = std::lock_guard(this->vmMutex);
     return _loadScript(this->context, script, name, isModule);
 }
 
 bool NGenXX::Bridge::JsBridge::loadBinary(const Bytes &bytes, bool isModule) {
-    auto lock = std::lock_guard(this->mutex);
+    auto lock = std::lock_guard(this->vmMutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
 std::optional<std::string> NGenXX::Bridge::JsBridge::callFunc(const std::string &func, const std::string &params, bool await) {
-    auto lock = std::unique_lock(this->mutex);
+    auto lock = std::unique_lock(this->vmMutex);
     std::string s;
     auto success = false;
 
@@ -326,13 +331,13 @@ JSValue NGenXX::Bridge::JsBridge::newPromise(std::function<JSValue()> &&jf)
         return JS_EXCEPTION;
     }
     
-    std::thread([&mtx = this->mutex, ctx = this->context, jPromise, jf = std::move(jf)] {
+    this->enqueueTask([&mtx = this->vmMutex, ctx = this->context, jPromise, jf = std::move(jf)] {
         auto lock = std::lock_guard(mtx);
 
         const auto jRet = jf();
 
         _callbackPromise(ctx, jPromise, jRet);
-    }).detach();
+    });
 
     return jPromise->p;
 }
@@ -387,13 +392,8 @@ JSValue NGenXX::Bridge::JsBridge::newPromiseString(std::function<const std::stri
 
 NGenXX::Bridge::JsBridge::~JsBridge()
 {
+    this->active = false;
     js_std_loop_cancel(this->runtime);
-
-    this->shouldStop = true;
-    this->threadPromise->join();
-    this->threadPromise.reset();
-    this->threadTimer->join();
-    this->threadTimer.reset();
 
     js_std_set_worker_new_context_func(nullptr);
 

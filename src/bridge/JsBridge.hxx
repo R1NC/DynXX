@@ -203,10 +203,6 @@ namespace NGenXX::Bridge
         };
         std::unordered_set<JSValue, JSValueHash, JSValueEqual> jValueCache;
 
-        std::unique_ptr<std::thread> threadPromise{nullptr};
-        std::unique_ptr<std::thread> threadTimer{nullptr};
-        std::recursive_timed_mutex mutex;
-
         JSValue newPromise(std::function<JSValue()> &&jf);
         JSValue jAwait(const JSValue obj);
     };

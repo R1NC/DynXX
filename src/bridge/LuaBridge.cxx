@@ -7,10 +7,9 @@
 
 #include <NGenXXLog.hxx>
 #include <NGenXXTypes.hxx>
+
 namespace
 {
-    std::recursive_timed_mutex mutex;
-
 #if defined(USE_LIBUV)
     struct Timer
     {
@@ -141,7 +140,7 @@ NGenXX::Bridge::LuaBridge::LuaBridge()
 
 NGenXX::Bridge::LuaBridge::~LuaBridge()
 {
-    this->shouldStop = true;
+    this->active = false;
 #if defined(USE_LIBUV)
     _loop_stop();
 #endif    
@@ -153,9 +152,9 @@ void NGenXX::Bridge::LuaBridge::bindFunc(const std::string &funcName, int (*func
 }
 
 #if !defined(__EMSCRIPTEN__)
-bool NGenXX::Bridge::LuaBridge::loadFile(const std::string &file) const
+bool NGenXX::Bridge::LuaBridge::loadFile(const std::string &file)
 {
-    auto lock = std::lock_guard(mutex);
+    auto lock = std::lock_guard(this->vmMutex);
     if (const auto ret = luaL_dofile(this->lstate, file.c_str()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dofile` error:");
@@ -165,9 +164,9 @@ bool NGenXX::Bridge::LuaBridge::loadFile(const std::string &file) const
 }
 #endif
 
-bool NGenXX::Bridge::LuaBridge::loadScript(const std::string &script) const
+bool NGenXX::Bridge::LuaBridge::loadScript(const std::string &script)
 {
-    auto lock = std::lock_guard(mutex);
+    auto lock = std::lock_guard(this->vmMutex);
     if (const auto ret = luaL_dostring(this->lstate, script.c_str()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dostring` error:");
@@ -177,9 +176,9 @@ bool NGenXX::Bridge::LuaBridge::loadScript(const std::string &script) const
 }
 
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
-std::optional<std::string> NGenXX::Bridge::LuaBridge::callFunc(const std::string &func, const std::string &params) const
+std::optional<std::string> NGenXX::Bridge::LuaBridge::callFunc(const std::string &func, const std::string &params)
 {
-    auto lock = std::lock_guard(mutex);
+    auto lock = std::lock_guard(this->vmMutex);
     lua_getglobal(this->lstate, func.c_str());
     lua_pushstring(this->lstate, params.c_str());
     if (const auto ret = lua_pcall(lstate, 1, 1, 0); ret != LUA_OK) [[unlikely]]
