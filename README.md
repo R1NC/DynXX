@@ -1,10 +1,10 @@
 # NGenXX
 
-[![Build for Android on Ubuntu](../../actions/workflows/Android.yml/badge.svg)](../../actions/workflows/Android.yml) <br/> 
-[![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)](../../actions/workflows/iOS.yml) [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)](../../actions/workflows/macOS.yml) <br/> 
-[![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)](../../actions/workflows/Win-MSVC.yml) [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)](../../actions/workflows/Win-MinGW.yml) <br/> 
-[![Build for Linux on Ubuntu](../../actions/workflows/Linux.yml/badge.svg)](../../actions/workflows/Linux.yml) <br/> 
-[![Build for WASM on macOS](../../actions/workflows/WASM-mac.yml/badge.svg)](../../actions/workflows/WASM-mac.yml)
+[![Build for Android on Ubuntu](../../actions/workflows/Android.yml/badge.svg)][32]  
+[![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)][33] [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)][34]  
+[![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)][35] [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)][36]  
+[![Build for Linux on Ubuntu](../../actions/workflows/Linux.yml/badge.svg)][37]  
+[![Build for WASM on macOS](../../actions/workflows/WASM-mac.yml/badge.svg)][38]
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
@@ -25,7 +25,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 ## Progress
 
 | | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WASM |
-| :-- | :--: | :--: |:--: |:--: | :--: | :--: |:--: |
+| :-- | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
 | Lua Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|
 | JS Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
 | Network |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_exclamation_mark:|
@@ -67,7 +67,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 ## C++ New Features Compatibility
 
 | Feature                             | Standard | Unsupported Platforms              |
-|:------------------------------------|:---------|:-----------------------------------|
+| :---------------------------------- | :------: | :--------------------------------- |
 | [std::from_chars][19] for integer   | C++17    | iOS 16.5-, macOS 13.4-;            |
 | [std::from_chars][19] for float     | C++17    | All;                               |
 | [std::format][12]                   | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
@@ -131,3 +131,10 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [29]: https://docs.rs/objc2/latest/objc2/
 [30]: https://ohos.rs/
 [31]: https://github.com/R1NC/NGenRS
+[32]: ../../actions/workflows/Android.yml
+[33]: ../../actions/workflows/iOS.yml
+[34]: ../../actions/workflows/macOS.yml
+[35]: ../../actions/workflows/Win-MSVC.yml
+[36]: ../../actions/workflows/Win-MinGW.yml
+[37]: ../../actions/workflows/Linux.yml
+[38]: ../../actions/workflows/WASM-mac.yml
