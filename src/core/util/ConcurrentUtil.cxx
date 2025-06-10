@@ -25,7 +25,7 @@ void NGenXX::Core::Util::Concurrent::SpinLock::unlock()
 
 #pragma mark - Executor
 
-NGenXX::Core::Util::Concurrent::Executor::Executor() : sleepMilliSecs(1uz)
+NGenXX::Core::Util::Concurrent::Executor::Executor() : Executor(1uz)
 {
 }
 
