@@ -62,7 +62,7 @@ class alignas(CacheLineSize) Executor final
 {
 public:
     Executor();
-    Executor(size_t sleepMilliSecs);
+    explicit Executor(size_t sleepMilliSecs);
     Executor(const Executor &) = delete;
     Executor &operator=(const Executor &) = delete;
     Executor(Executor &&) = delete;
