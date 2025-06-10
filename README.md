@@ -54,16 +54,6 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 </details>
 
-## Requirements
-
-* C99, C++23;
-* Clang 15+;
-* CMake 3.10+;
-* Xcode 14.0+, for iOS & macOS;
-* Android Studio(or IntelliJ IDEA) with NDK r25+;
-* DevEco Studio with Native SDK, for HarmonyOS;
-* [Emscripten][1], for WebAssembly.
-
 ## C++ New Features Compatibility
 
 | Feature                             | Standard | Unsupported Platforms              |
