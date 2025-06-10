@@ -10,6 +10,7 @@
 #include <functional>
 #include <queue>
 #include <vector>
+#include <string>
 
 namespace NGenXX::Core::Util::Concurrent
 {
