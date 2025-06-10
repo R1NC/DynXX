@@ -22,6 +22,8 @@
 #include <NGenXX.hxx>
 #endif
 
+#include "../util/ConcurrentUtil.hxx"
+
 #if defined(__APPLE__)
 void _ngenxx_log_apple(const char*);
 #endif
@@ -51,45 +53,41 @@ namespace
 #if defined(USE_SPDLOG)
     void spdlogPrepare() 
     {
-        static bool isInited = false;
-        if (isInited) 
-        {
-            return;
-        }
-        try 
-        {
-            const auto& logger = spdlog::daily_logger_mt(
-                "ngenxx_spdlog",
-                ngenxxRootPath() + "/log.txt",
-                0,
-                0 
-            );
-            spdlog::set_default_logger(logger);
-            spdlog::set_pattern("[%Y-%m-%d_%H:%M:%S.%e] [%l] [%t] %v");
-            switch(_level)
+        NGenXX::Core::Util::Concurrent::callOnce([]() {
+            try 
             {
-                case NGenXXLogLevelDebug:
-                    spdlog::set_level(spdlog::level::debug);
-                    break;
-                case NGenXXLogLevelInfo:
-                    spdlog::set_level(spdlog::level::info);
-                    break;
-                case NGenXXLogLevelWarn:
-                    spdlog::set_level(spdlog::level::warn);
-                    break;
-                case NGenXXLogLevelError:
-                    spdlog::set_level(spdlog::level::err);
-                    break;
-                default:
-                    spdlog::set_level(spdlog::level::off);
+                const auto& logger = spdlog::daily_logger_mt(
+                    "ngenxx_spdlog",
+                    ngenxxRootPath() + "/log.txt",
+                    0,
+                    0 
+                );
+                spdlog::set_default_logger(logger);
+                spdlog::set_pattern("[%Y-%m-%d_%H:%M:%S.%e] [%l] [%t] %v");
+                switch(_level)
+                {
+                    case NGenXXLogLevelDebug:
+                        spdlog::set_level(spdlog::level::debug);
+                        break;
+                    case NGenXXLogLevelInfo:
+                        spdlog::set_level(spdlog::level::info);
+                        break;
+                    case NGenXXLogLevelWarn:
+                        spdlog::set_level(spdlog::level::warn);
+                        break;
+                    case NGenXXLogLevelError:
+                        spdlog::set_level(spdlog::level::err);
+                        break;
+                    default:
+                        spdlog::set_level(spdlog::level::off);
+                }
+                spdlog::flush_on(spdlog::level::debug);
             }
-            spdlog::flush_on(spdlog::level::debug);
-        }
-        catch (const spdlog::spdlog_ex& ex) 
-        {
-            std::cerr << "SpdLog init failed: " << ex.what() << std::endl;
-        }
-        isInited = true;
+            catch (const spdlog::spdlog_ex& ex) 
+            {
+                std::cerr << "SpdLog init failed: " << ex.what() << std::endl;
+            }
+        });
     }
 
     void spdlogPrint(const int level, const std::string &content)

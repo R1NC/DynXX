@@ -15,6 +15,8 @@
 namespace NGenXX::Core::Util::Concurrent
 {
 
+#pragma mark Utils
+
 static constexpr size_t CacheLineSize = 
 #if defined(__cpp_lib_hardware_interference_size)
     std::hardware_destructive_interference_size
@@ -39,6 +41,14 @@ inline std::string currentThreadId()
     return cachedCurrentThreadId;
 }
 
+template<typename F>
+void callOnce(F&& func) 
+{
+    static std::once_flag flag;
+    std::call_once(flag, std::forward<F>(func));
+}
+
+#pragma mark SpinLock
 
 class alignas(CacheLineSize) SpinLock final
 {
@@ -57,6 +67,7 @@ private:
     std::atomic<bool> lockFlag = {false};
 };
 
+#pragma mark Executor
 
 class alignas(CacheLineSize) Executor final
 {
