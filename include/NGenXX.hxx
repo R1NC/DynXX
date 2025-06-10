@@ -8,11 +8,11 @@
 #include "NGenXXLua.hxx"
 #include "NGenXXJs.hxx"
 #include "NGenXXLog.hxx"
-#include "NGenXXJsonCodec.hxx"
+#include "NGenXXJson.hxx"
 #include "NGenXXCoding.hxx"
 #include "NGenXXCrypto.hxx"
 #include "NGenXXZip.hxx"
-#include "NGenXXDeviceInfo.hxx"
+#include "NGenXXDevice.hxx"
 
 std::string ngenxxGetVersion();
 

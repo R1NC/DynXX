@@ -1,194 +1,250 @@
 #if defined(USE_LUA)
 #include "LuaBridge.hxx"
 
-#if defined(USE_LIBUV)
-#include <uv.h>
-#endif
+#include <memory>
 
-#include <NGenXXLog.hxx>
-#include <NGenXXTypes.hxx>
+#include "../core/vm/LuaVM.hxx"
+#include "../core/util/TypeUtil.hxx"
+#include "../core/util/ExportUtil.hxx"
+#include "ScriptBridge.hxx"
 
-namespace
+namespace {
+    std::unique_ptr<NGenXX::Core::VM::LuaVM> vm = nullptr;
+
+    #define DEF_API(f, T) DEF_LUA_FUNC_##T(f##L, f##S)
+
+    #define BIND_API(f)                                                  \
+        if (vm) [[likely]] {                                         \
+            vm->bindFunc(#f, f##L);                                  \
+        }
+
+    bool loadF(const std::string &f)
+    {
+        if (!vm || f.empty()) [[unlikely]]
+        {
+            return false;
+        }
+        return vm->loadFile(f);
+    }
+
+    bool loadS(const std::string &s)
+    {
+        if (!vm || s.empty()) [[unlikely]]
+        {
+            return false;
+        }
+        return vm->loadScript(s);
+    }
+
+    std::optional<std::string> call(const std::string &f, const std::string &ps)
+    {
+        if (!vm || f.empty()) [[unlikely]]
+        {
+            return std::nullopt;
+        }
+        return vm->callFunc(f, ps);
+    }
+}
+
+#pragma mark C++ API
+
+bool ngenxxLuaLoadF(const std::string &f)
 {
-#if defined(USE_LIBUV)
-    struct Timer
-    {
-        lua_State *lState{nullptr};
-        int lFuncRef{0};
-        lua_Integer timeout{1};
-        bool repeat{false};
-        bool finished{false};
-    };
-
-    void _loop_init()
-    {
-        uv_loop_init(uv_default_loop());
-    }
-
-    void _loop_prepare()
-    {
-        uv_run(uv_default_loop(), UV_RUN_DEFAULT);
-    }
-
-    void _loop_stop()
-    {
-        if (!uv_loop_alive(uv_default_loop())) [[unlikely]]
-        {
-            return;
-        }
-        uv_stop(uv_default_loop());
-        uv_loop_close(uv_default_loop());
-    }
-
-    void _timer_cb(uv_timer_t *timer)
-    {
-        const auto timer_data = static_cast<Timer *>(timer->data);
-        lua_rawgeti(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
-        lua_pcall(timer_data->lState, 0, 0, 0);
-    }
-
-    uv_timer_t *_timer_start(Timer *timer_data)
-    {
-        auto timerP = mallocX<uv_timer_t>();
-        timerP->data = timer_data;
-
-        std::thread([timerP] {
-            uv_timer_init(uv_default_loop(), timerP);
-            const auto data = static_cast<Timer *>(timerP->data);
-            uv_timer_start(timerP, _timer_cb, data->timeout, data->repeat ? data->timeout : 0);
-            _loop_prepare();
-        }).detach();
-
-        return timerP;
-    }
-
-    void _timer_stop(uv_timer_t *timer, bool release)
-    {
-        const auto timer_data = static_cast<Timer *>(timer->data);
-        luaL_unref(timer_data->lState, LUA_REGISTRYINDEX, timer_data->lFuncRef);
-        if (!timer_data->finished)
-        {
-            uv_timer_set_repeat(timer, 0);
-            uv_timer_stop(timer);
-            timer_data->finished = true;
-        }
-        if (release)
-        {
-            freeX(timer->data);
-            freeX(timer);
-        }
-    }
-
-    int _util_timer_add(lua_State *L)
-    {
-        const auto timer_data = mallocX<Timer>();
-        *timer_data = {
-            .lState = L,
-            .lFuncRef = luaL_ref(L, LUA_REGISTRYINDEX),
-            .timeout = lua_tointeger(L, 1),
-            .repeat = static_cast<bool>(lua_toboolean(L, 2))
-        };
-
-        const auto timer = _timer_start(timer_data);
-
-        lua_pushlightuserdata(L, timer);
-        return LUA_OK;
-    }
-
-    int _util_timer_remove(lua_State *L)
-    {
-        if (const auto timer = static_cast<uv_timer_t *>(lua_touserdata(L, 1)); timer != nullptr) [[likely]]
-        {
-            _timer_stop(timer, true);
-        }
-        return LUA_OK;
-    }
-
-    constexpr luaL_Reg lib_timer_funcs[] = {
-        {"add", _util_timer_add},
-        {"remove", _util_timer_remove},
-        {nullptr, nullptr} /* sentinel */
-    };
-#endif
-
-    #define lua_register_lib(L, lib, funcs)    \
-    {                                          \
-        luaL_newlib(L, funcs);                 \
-        lua_setglobal(L, lib);                 \
-    }
-
-    #define PRINT_L_ERROR(L, prefix)                                            \
-    do                                                                          \
-    {                                                                           \
-        const char *luaErrMsg = lua_tostring(L, -1);                            \
-        if (luaErrMsg != nullptr)                                               \
-        {                                                                       \
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "{}{}", prefix, luaErrMsg); \
-        }                                                                       \
-    } while (0);
+    return loadF(f);
 }
 
-NGenXX::Bridge::LuaBridge::LuaBridge()
+bool ngenxxLuaLoadS(const std::string &s)
 {
-    this->lstate = luaL_newstate();
-    luaL_openlibs(this->lstate);
-#if defined(USE_LIBUV)
-    lua_register_lib(this->lstate, "Timer", lib_timer_funcs);
-    _loop_init();
-#endif
+    return loadS(s);
 }
 
-NGenXX::Bridge::LuaBridge::~LuaBridge()
+std::optional<std::string> ngenxxLuaCall(const std::string &f, const std::string &ps)
 {
-    this->active = false;
-#if defined(USE_LIBUV)
-    _loop_stop();
-#endif    
-    lua_close(this->lstate);
+    return call(f, ps);
 }
 
-void NGenXX::Bridge::LuaBridge::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
-    lua_register(this->lstate, funcName.c_str(), funcPointer);
-}
+#pragma mark C API
 
 #if !defined(__EMSCRIPTEN__)
-bool NGenXX::Bridge::LuaBridge::loadFile(const std::string &file)
+EXPORT
+bool ngenxx_lua_loadF(const char *file)
 {
-    auto lock = std::lock_guard(this->vmMutex);
-    if (const auto ret = luaL_dofile(this->lstate, file.c_str()); ret != LUA_OK) [[unlikely]]
-    {
-        PRINT_L_ERROR(this->lstate, "`luaL_dofile` error:");
-        return false;
-    }
-    return true;
+    return ngenxxLuaLoadF(wrapStr(file));
 }
 #endif
 
-bool NGenXX::Bridge::LuaBridge::loadScript(const std::string &script)
+EXPORT
+bool ngenxx_lua_loadS(const char *script)
 {
-    auto lock = std::lock_guard(this->vmMutex);
-    if (const auto ret = luaL_dostring(this->lstate, script.c_str()); ret != LUA_OK) [[unlikely]]
-    {
-        PRINT_L_ERROR(this->lstate, "`luaL_dostring` error:");
-        return false;
-    }
-    return true;
+    return ngenxxLuaLoadS(wrapStr(script));
 }
 
-/// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
-std::optional<std::string> NGenXX::Bridge::LuaBridge::callFunc(const std::string &func, const std::string &params)
+EXPORT
+const char *ngenxx_lua_call(const char *f, const char *ps)
 {
-    auto lock = std::lock_guard(this->vmMutex);
-    lua_getglobal(this->lstate, func.c_str());
-    lua_pushstring(this->lstate, params.c_str());
-    if (const auto ret = lua_pcall(lstate, 1, 1, 0); ret != LUA_OK) [[unlikely]]
-    {
-        PRINT_L_ERROR(this->lstate, "`lua_pcall` error:");
-        return std::nullopt;
-    }
-    const auto &s = wrapStr(lua_tostring(this->lstate, -1));
+    const auto& s = ngenxxLuaCall(wrapStr(f), wrapStr(ps)).value_or("");
+    return NGenXX::Core::Util::Type::copyStr(s);
+}
 
-    lua_pop(this->lstate, 1);
-    return std::make_optional(s);
+#pragma mark Lua API - Declaration
+
+DEF_API(ngenxx_get_version, STRING)
+DEF_API(ngenxx_root_path, STRING)
+
+DEF_API(ngenxx_device_type, INTEGER)
+DEF_API(ngenxx_device_name, STRING)
+DEF_API(ngenxx_device_manufacturer, STRING)
+DEF_API(ngenxx_device_os_version, STRING)
+DEF_API(ngenxx_device_cpu_arch, INTEGER)
+
+DEF_API(ngenxx_log_print, VOID)
+
+DEF_API(ngenxx_net_http_request, STRING)
+DEF_API(ngenxx_net_http_download, BOOL)
+
+DEF_API(ngenxx_store_sqlite_open, STRING)
+DEF_API(ngenxx_store_sqlite_execute, BOOL)
+DEF_API(ngenxx_store_sqlite_query_do, STRING)
+DEF_API(ngenxx_store_sqlite_query_read_row, BOOL)
+DEF_API(ngenxx_store_sqlite_query_read_column_text, STRING)
+DEF_API(ngenxx_store_sqlite_query_read_column_integer, INTEGER)
+DEF_API(ngenxx_store_sqlite_query_read_column_float, FLOAT)
+DEF_API(ngenxx_store_sqlite_query_drop, VOID)
+DEF_API(ngenxx_store_sqlite_close, VOID)
+
+DEF_API(ngenxx_store_kv_open, STRING)
+DEF_API(ngenxx_store_kv_read_string, STRING)
+DEF_API(ngenxx_store_kv_write_string, BOOL)
+DEF_API(ngenxx_store_kv_read_integer, INTEGER)
+DEF_API(ngenxx_store_kv_write_integer, BOOL)
+DEF_API(ngenxx_store_kv_read_float, FLOAT)
+DEF_API(ngenxx_store_kv_write_float, BOOL)
+DEF_API(ngenxx_store_kv_all_keys, STRING)
+DEF_API(ngenxx_store_kv_contains, BOOL)
+DEF_API(ngenxx_store_kv_remove, BOOL)
+DEF_API(ngenxx_store_kv_clear, VOID)
+DEF_API(ngenxx_store_kv_close, VOID)
+
+DEF_API(ngenxx_coding_hex_bytes2str, STRING)
+DEF_API(ngenxx_coding_hex_str2bytes, STRING)
+DEF_API(ngenxx_coding_case_upper, STRING)
+DEF_API(ngenxx_coding_case_lower, STRING)
+DEF_API(ngenxx_coding_bytes2str, STRING)
+DEF_API(ngenxx_coding_str2bytes, STRING)
+
+DEF_API(ngenxx_crypto_rand, STRING)
+DEF_API(ngenxx_crypto_aes_encrypt, STRING)
+DEF_API(ngenxx_crypto_aes_decrypt, STRING)
+DEF_API(ngenxx_crypto_aes_gcm_encrypt, STRING)
+DEF_API(ngenxx_crypto_aes_gcm_decrypt, STRING)
+DEF_API(ngenxx_crypto_hash_md5, STRING)
+DEF_API(ngenxx_crypto_hash_sha256, STRING)
+DEF_API(ngenxx_crypto_base64_encode, STRING)
+DEF_API(ngenxx_crypto_base64_decode, STRING)
+
+DEF_API(ngenxx_z_zip_init, STRING)
+DEF_API(ngenxx_z_zip_input, INTEGER)
+DEF_API(ngenxx_z_zip_process_do, STRING)
+DEF_API(ngenxx_z_zip_process_finished, BOOL)
+DEF_API(ngenxx_z_zip_release, VOID)
+DEF_API(ngenxx_z_unzip_init, STRING)
+DEF_API(ngenxx_z_unzip_input, INTEGER)
+DEF_API(ngenxx_z_unzip_process_do, STRING)
+DEF_API(ngenxx_z_unzip_process_finished, BOOL)
+DEF_API(ngenxx_z_unzip_release, VOID)
+DEF_API(ngenxx_z_bytes_zip, STRING)
+DEF_API(ngenxx_z_bytes_unzip, STRING)
+
+#pragma mark Lua API - Binding
+
+static void registerFuncs()
+{
+    BIND_API(ngenxx_get_version);
+    BIND_API(ngenxx_root_path);
+
+    BIND_API(ngenxx_log_print);
+
+    BIND_API(ngenxx_device_type);
+    BIND_API(ngenxx_device_name);
+    BIND_API(ngenxx_device_manufacturer);
+    BIND_API(ngenxx_device_os_version);
+    BIND_API(ngenxx_device_cpu_arch);
+
+    BIND_API(ngenxx_net_http_request);
+    BIND_API(ngenxx_net_http_download);
+
+    BIND_API(ngenxx_store_sqlite_open);
+    BIND_API(ngenxx_store_sqlite_execute);
+    BIND_API(ngenxx_store_sqlite_query_do);
+    BIND_API(ngenxx_store_sqlite_query_read_row);
+    BIND_API(ngenxx_store_sqlite_query_read_column_text);
+    BIND_API(ngenxx_store_sqlite_query_read_column_integer);
+    BIND_API(ngenxx_store_sqlite_query_read_column_float);
+    BIND_API(ngenxx_store_sqlite_query_drop);
+    BIND_API(ngenxx_store_sqlite_close);
+
+    BIND_API(ngenxx_store_kv_open);
+    BIND_API(ngenxx_store_kv_read_string);
+    BIND_API(ngenxx_store_kv_write_string);
+    BIND_API(ngenxx_store_kv_read_integer);
+    BIND_API(ngenxx_store_kv_write_integer);
+    BIND_API(ngenxx_store_kv_read_float);
+    BIND_API(ngenxx_store_kv_write_float);
+    BIND_API(ngenxx_store_kv_all_keys);
+    BIND_API(ngenxx_store_kv_contains);
+    BIND_API(ngenxx_store_kv_remove);
+    BIND_API(ngenxx_store_kv_clear);
+    BIND_API(ngenxx_store_kv_close);
+
+    BIND_API(ngenxx_coding_hex_bytes2str);
+    BIND_API(ngenxx_coding_hex_str2bytes);
+    BIND_API(ngenxx_coding_case_upper);
+    BIND_API(ngenxx_coding_case_lower);
+    BIND_API(ngenxx_coding_bytes2str);
+    BIND_API(ngenxx_coding_str2bytes);
+
+    BIND_API(ngenxx_crypto_rand);
+    BIND_API(ngenxx_crypto_aes_encrypt);
+    BIND_API(ngenxx_crypto_aes_decrypt);
+    BIND_API(ngenxx_crypto_aes_gcm_encrypt);
+    BIND_API(ngenxx_crypto_aes_gcm_decrypt);
+    BIND_API(ngenxx_crypto_hash_md5);
+    BIND_API(ngenxx_crypto_hash_sha256);
+    BIND_API(ngenxx_crypto_base64_encode);
+    BIND_API(ngenxx_crypto_base64_decode);
+
+    BIND_API(ngenxx_z_zip_init);
+    BIND_API(ngenxx_z_zip_input);
+    BIND_API(ngenxx_z_zip_process_do);
+    BIND_API(ngenxx_z_zip_process_finished);
+    BIND_API(ngenxx_z_zip_release);
+    BIND_API(ngenxx_z_unzip_init);
+    BIND_API(ngenxx_z_unzip_input);
+    BIND_API(ngenxx_z_unzip_process_do);
+    BIND_API(ngenxx_z_unzip_process_finished);
+    BIND_API(ngenxx_z_unzip_release);
+    BIND_API(ngenxx_z_bytes_zip)
+    BIND_API(ngenxx_z_bytes_unzip)
+}
+
+#pragma mark Inner API
+
+void ngenxx_lua_init()
+{
+    if (vm) [[unlikely]]
+    {
+        return;
+    }
+    vm = std::make_unique<NGenXX::Core::VM::LuaVM>();
+    registerFuncs();
+}
+
+void ngenxx_lua_release()
+{
+    if (!vm) [[unlikely]]
+    {
+        return;
+    }
+    vm.reset();
 }
 #endif

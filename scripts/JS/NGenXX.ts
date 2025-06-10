@@ -4,7 +4,7 @@ declare function NGenXXGetVersion(): string
 
 declare function NGenXXRootPath(): string
 
-declare function NGenXXAskPlatform(msg: string): string
+declare function NGenXXCallPlatform(msg: string): string
 
 /// Log
 

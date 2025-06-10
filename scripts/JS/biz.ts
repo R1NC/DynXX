@@ -225,6 +225,6 @@ function jTestZip(): void {
 }
 
 function jTestCallPlatform(): void {
-    let res = NGenXXAskPlatform("tsCallPlatformParam")
+    let res = NGenXXCallPlatform("tsCallPlatformParam")
     NGenXXLogPrint(NGenXXLogLevel.Debug, `Return value from Platform: ${res}`)
 }

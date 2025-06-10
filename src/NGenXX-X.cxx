@@ -6,20 +6,20 @@
 #include <memory>
 
 #include <NGenXX.hxx>
-#include "net/HttpClient.hxx"
-#include "store/SQLite.hxx"
-#include "store/KV.hxx"
-#include "json/JsonCodec.hxx"
-#include "zip/Zip.hxx"
-#include "coding/Coding.hxx"
-#include "crypto/Crypto.hxx"
-#include "device/DeviceInfo.hxx"
-#include "log/Log.hxx"
+#include "core/net/HttpClient.hxx"
+#include "core/store/SQLite.hxx"
+#include "core/store/KV.hxx"
+#include "core/json/JsonCodec.hxx"
+#include "core/zip/Zip.hxx"
+#include "core/coding/Coding.hxx"
+#include "core/crypto/Crypto.hxx"
+#include "core/device/Device.hxx"
+#include "core/log/Log.hxx"
 #if defined(USE_LUA)
-#include "NGenXX-Lua.hxx"
+#include "bridge/LuaBridge.hxx"
 #endif
 #if defined(USE_QJS)
-#include "NGenXX-Js.hxx"
+#include "bridge/JSBridge.hxx"
 #endif
 #if defined(USE_STD_FROM_CHARS)
 #include <charconv>
@@ -30,9 +30,9 @@ namespace
 {
     auto constexpr VERSION = "1.0.0";
 
-    std::unique_ptr<NGenXX::Net::HttpClient> _http_client = nullptr;
-    std::unique_ptr<NGenXX::Store::SQLite> _sqlite = nullptr;
-    std::unique_ptr<NGenXX::Store::KV> _kv = nullptr;
+    std::unique_ptr<NGenXX::Core::Net::HttpClient> _http_client = nullptr;
+    std::unique_ptr<NGenXX::Core::Store::SQLite> _sqlite = nullptr;
+    std::unique_ptr<NGenXX::Core::Store::KV> _kv = nullptr;
     std::unique_ptr<const std::string> _root = nullptr;   
 
 #if defined(USE_STD_FROM_CHARS)
@@ -145,14 +145,14 @@ bool ngenxxInit(const std::string &root)
         return false;
     }
     _root = std::make_unique<const std::string>(root);
-    _sqlite = std::make_unique<NGenXX::Store::SQLite>();
-    _kv = std::make_unique<NGenXX::Store::KV>(*_root);
-    _http_client = std::make_unique<NGenXX::Net::HttpClient>();
+    _sqlite = std::make_unique<NGenXX::Core::Store::SQLite>();
+    _kv = std::make_unique<NGenXX::Core::Store::KV>(*_root);
+    _http_client = std::make_unique<NGenXX::Core::Net::HttpClient>();
 #if defined(USE_LUA)
-    _ngenxx_lua_init();
+    ngenxx_lua_init();
 #endif
 #if defined(USE_QJS)
-    _ngenxx_js_init();
+    ngenxx_js_init();
 #endif
     return true;
 }
@@ -171,159 +171,159 @@ void ngenxxRelease()
     _kv.reset();
     ngenxxLogSetCallback(nullptr);
 #if defined(USE_LUA)
-    _ngenxx_lua_release();
+    ngenxx_lua_release();
 #endif
 #if defined(USE_QJS)
-    _ngenxx_js_release();
+    ngenxx_js_release();
 #endif
 }
 
-#pragma mark Device.DeviceInfo
+#pragma mark Device.Device
 
 NGenXXDeviceTypeX ngenxxDeviceType()
 {
-    return static_cast<NGenXXDeviceTypeX>(NGenXX::DeviceInfo::deviceType());
+    return static_cast<NGenXXDeviceTypeX>(NGenXX::Core::Device::deviceType());
 }
 
 std::string ngenxxDeviceName()
 {
-    return NGenXX::DeviceInfo::deviceName();
+    return NGenXX::Core::Device::deviceName();
 }
 
 std::string ngenxxDeviceManufacturer()
 {
-    return NGenXX::DeviceInfo::deviceManufacturer();
+    return NGenXX::Core::Device::deviceManufacturer();
 }
 
 std::string ngenxxDeviceModel()
 {
-    return NGenXX::DeviceInfo::deviceModel();
+    return NGenXX::Core::Device::deviceModel();
 }
 
 std::string ngenxxDeviceOsVersion()
 {
-    return NGenXX::DeviceInfo::osVersion();
+    return NGenXX::Core::Device::osVersion();
 }
 
 NGenXXDeviceCpuArchX ngenxxDeviceCpuArch()
 {
-    return static_cast<NGenXXDeviceCpuArchX>(NGenXX::DeviceInfo::cpuArch());
+    return static_cast<NGenXXDeviceCpuArchX>(NGenXX::Core::Device::cpuArch());
 }
 
 #pragma mark Log
 
 void ngenxxLogSetLevel(NGenXXLogLevelX level)
 {
-    NGenXX::Log::setLevel(static_cast<int>(level));
+    NGenXX::Core::Log::setLevel(static_cast<int>(level));
 }
 
 void ngenxxLogSetCallback(const std::function<void(int level, const char *content)> &callback)
 {
-    NGenXX::Log::setCallback(callback);
+    NGenXX::Core::Log::setCallback(callback);
 }
 
 void ngenxxLogPrint(NGenXXLogLevelX level, const std::string &content)
 {
-    NGenXX::Log::print(static_cast<int>(level), content);
+    NGenXX::Core::Log::print(static_cast<int>(level), content);
 }
 
 #pragma mark Coding
 
 std::string ngenxxCodingCaseUpper(const std::string_view &str)
 {
-    return NGenXX::Coding::Case::upper(str);
+    return NGenXX::Core::Coding::Case::upper(str);
 }
 
 std::string ngenxxCodingCaseLower(const std::string_view &str)
 {
-    return NGenXX::Coding::Case::lower(str);
+    return NGenXX::Core::Coding::Case::lower(str);
 }
 
 std::string ngenxxCodingHexBytes2str(const Bytes &bytes)
 {
-    return NGenXX::Coding::Hex::bytes2str(bytes);
+    return NGenXX::Core::Coding::Hex::bytes2str(bytes);
 }
 
 Bytes ngenxxCodingHexStr2bytes(const std::string &str)
 {
-    return NGenXX::Coding::Hex::str2bytes(str);
+    return NGenXX::Core::Coding::Hex::str2bytes(str);
 }
 
 std::string ngenxxCodingBytes2str(const Bytes &bytes)
 {
-    return NGenXX::Coding::bytes2str(bytes);
+    return NGenXX::Core::Coding::bytes2str(bytes);
 }
 
 Bytes ngenxxCodingStr2bytes(const std::string_view &str)
 {
-    return NGenXX::Coding::str2bytes(str);
+    return NGenXX::Core::Coding::str2bytes(str);
 }
 
 std::string ngenxxCodingStrTrim(const std::string_view &str)
 {
-    return NGenXX::Coding::strTrim(str);
+    return NGenXX::Core::Coding::strTrim(str);
 }
 
 #pragma mark Crypto
 
 bool ngenxxCryptoRand(size_t len, byte *bytes)
 {
-    return NGenXX::Crypto::rand(len, bytes);
+    return NGenXX::Core::Crypto::rand(len, bytes);
 }
 
 Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key)
 {
-    return NGenXX::Crypto::AES::encrypt(in, key);
+    return NGenXX::Core::Crypto::AES::encrypt(in, key);
 }
 
 Bytes ngenxxCryptoAesDecrypt(const Bytes &in, const Bytes &key)
 {
-    return NGenXX::Crypto::AES::decrypt(in, key);
+    return NGenXX::Core::Crypto::AES::decrypt(in, key);
 }
 
 Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, size_t tagBits, const Bytes &aad)
 {
-    return NGenXX::Crypto::AES::gcmEncrypt(in, key, initVector, aad, tagBits);
+    return NGenXX::Core::Crypto::AES::gcmEncrypt(in, key, initVector, aad, tagBits);
 }
 
 Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, size_t tagBits, const Bytes &aad)
 {
-    return NGenXX::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
+    return NGenXX::Core::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }
 
 Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding)
 {
-    return NGenXX::Crypto::RSA::encrypt(in, key, static_cast<int>(padding));
+    return NGenXX::Core::Crypto::RSA::encrypt(in, key, static_cast<int>(padding));
 }
 
 Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding)
 {
-    return NGenXX::Crypto::RSA::decrypt(in, key, static_cast<int>(padding));
+    return NGenXX::Core::Crypto::RSA::decrypt(in, key, static_cast<int>(padding));
 }
 
 Bytes ngenxxCryptoHashMd5(const Bytes &in)
 {
-    return NGenXX::Crypto::Hash::md5(in);
+    return NGenXX::Core::Crypto::Hash::md5(in);
 }
 
 Bytes ngenxxCryptoHashSha1(const Bytes &in)
 {
-    return NGenXX::Crypto::Hash::sha1(in);
+    return NGenXX::Core::Crypto::Hash::sha1(in);
 }
 
 Bytes ngenxxCryptoHashSha256(const Bytes &in)
 {
-    return NGenXX::Crypto::Hash::sha256(in);
+    return NGenXX::Core::Crypto::Hash::sha256(in);
 }
 
 Bytes ngenxxCryptoBase64Encode(const Bytes &in)
 {
-    return NGenXX::Crypto::Base64::encode(in);
+    return NGenXX::Core::Crypto::Base64::encode(in);
 }
 
 Bytes ngenxxCryptoBase64Decode(const Bytes &in)
 {
-    return NGenXX::Crypto::Base64::decode(in);
+    return NGenXX::Core::Crypto::Base64::decode(in);
 }
 
 #pragma mark Net.Http
@@ -345,7 +345,7 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
         return rsp;
     }
 
-    std::vector<NGenXX::Net::HttpFormField> vFormFields;
+    std::vector<NGenXX::Core::Net::HttpFormField> vFormFields;
     auto fieldNameCount = formFieldNameV.size();
     if (fieldNameCount > 0)
     {
@@ -353,7 +353,7 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     }
     for (decltype(fieldNameCount) i(0); i < fieldNameCount && i < formFieldMimeV.size() && i < formFieldDataV.size(); i++)
     {
-        vFormFields.emplace_back(NGenXX::Net::HttpFormField{
+        vFormFields.emplace_back(NGenXX::Core::Net::HttpFormField{
             formFieldNameV[i],
             formFieldMimeV[i],
             formFieldDataV[i],
@@ -483,7 +483,7 @@ bool ngenxxStoreSqliteExecute(void *const conn, const std::string &sql)
     {
         return false;
     }
-    const auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::SQLite::Connection *>(conn);
     return xconn->execute(sql);
 }
 
@@ -493,7 +493,7 @@ void *ngenxxStoreSqliteQueryDo(void *const conn, const std::string &sql)
     {
         return nullptr;
     }
-    const auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::SQLite::Connection *>(conn);
     auto ptrQr = xconn->query(sql);
     return ptrQr? ptrQr.release() : nullptr;//trans ownership to C API, not release the memory.
 }
@@ -504,7 +504,7 @@ bool ngenxxStoreSqliteQueryReadRow(void *const query_result)
     {
         return false;
     }
-    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = static_cast<NGenXX::Core::Store::SQLite::Connection::QueryResult *>(query_result);
     return xqr->readRow();
 }
 
@@ -514,7 +514,7 @@ std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const quer
     {
         return std::nullopt;
     }
-    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = static_cast<NGenXX::Core::Store::SQLite::Connection::QueryResult *>(query_result);
     auto v = (*xqr)[column];
     if (!v.has_value()) [[unlikely]]
     {
@@ -529,7 +529,7 @@ std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query
     {
         return std::nullopt;
     }
-    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = static_cast<NGenXX::Core::Store::SQLite::Connection::QueryResult *>(query_result);
     const auto v = (*xqr)[column];
     if (!v.has_value()) [[unlikely]]
     {
@@ -544,7 +544,7 @@ std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_re
     {
         return std::nullopt;
     }
-    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = static_cast<NGenXX::Core::Store::SQLite::Connection::QueryResult *>(query_result);
     const auto v = (*xqr)[column];
     if (!v.has_value()) [[unlikely]]
     {
@@ -559,7 +559,7 @@ void ngenxxStoreSqliteQueryDrop(void *const query_result)
     {
         return;
     }
-    const auto xqr = static_cast<NGenXX::Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = static_cast<NGenXX::Core::Store::SQLite::Connection::QueryResult *>(query_result);
     delete xqr;
 }
 
@@ -567,7 +567,7 @@ void ngenxxStoreSqliteClose(void *const conn)
 {
     /*if (conn == nullptr)
         return;
-    const auto xconn = static_cast<NGenXX::Store::SQLite::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::SQLite::Connection *>(conn);
     delete xconn;*/
 }
 
@@ -592,7 +592,7 @@ std::optional<std::string> ngenxxStoreKvReadString(void *const conn, const std::
     {
         return std::nullopt;
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     return xconn->readString(k);
 }
 
@@ -602,7 +602,7 @@ bool ngenxxStoreKvWriteString(void *const conn, const std::string_view &k, const
     {
         return false;
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     return xconn->write(k, v);
 }
 
@@ -612,7 +612,7 @@ std::optional<int64_t> ngenxxStoreKvReadInteger(void *const conn, const std::str
     {
         return std::nullopt;
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     return xconn->readInteger(k);
 }
 
@@ -622,7 +622,7 @@ bool ngenxxStoreKvWriteInteger(void *const conn, const std::string_view &k, int6
     {
         return false;
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     return xconn->write(k, v);
 }
 
@@ -632,7 +632,7 @@ std::optional<double> ngenxxStoreKvReadFloat(void *const conn, const std::string
     {
         return std::nullopt;
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     return xconn->readFloat(k);
 }
 
@@ -642,7 +642,7 @@ bool ngenxxStoreKvWriteFloat(void *const conn, const std::string_view &k, double
     {
         return false;
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     return xconn->write(k, v);
 }
 
@@ -652,7 +652,7 @@ std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn)
     {
         return {};
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     return xconn->allKeys();
 }
 
@@ -662,7 +662,7 @@ bool ngenxxStoreKvContains(void *const conn, const std::string_view &k)
     {
         return false;
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     return xconn->contains(k);
 }
 
@@ -672,7 +672,7 @@ bool ngenxxStoreKvRemove(void *const conn, const std::string_view &k)
     {
         return false;
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     return xconn->remove(k);
 }
 
@@ -682,7 +682,7 @@ void ngenxxStoreKvClear(void *const conn)
     {
         return;
     }
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     xconn->clear();
 }
 
@@ -690,7 +690,7 @@ void ngenxxStoreKvClose(void *const conn)
 {
     /*if (conn == nullptr)
         return;
-    const auto xconn = static_cast<NGenXX::Store::KV::Connection *>(conn);
+    const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     delete xconn;*/
 }
 
@@ -698,27 +698,27 @@ void ngenxxStoreKvClose(void *const conn)
 
 NGenXXJsonNodeTypeX ngenxxJsonReadType(void *const cjson)
 {
-    return NGenXX::Json::cJSONReadType(cjson);
+    return NGenXX::Core::Json::cJSONReadType(cjson);
 }
 
 std::optional<std::string> ngenxxJsonToStr(void *const cjson)
 {
-    return NGenXX::Json::cJSONToStr(cjson);
+    return NGenXX::Core::Json::cJSONToStr(cjson);
 }
 
 std::optional<std::string> ngenxxJsonFromDictAny(const DictAny &dict)
 {
-    return NGenXX::Json::jsonFromDictAny(dict);
+    return NGenXX::Core::Json::jsonFromDictAny(dict);
 }
 
 DictAny ngenxxJsonToDictAny(const std::string &json)
 {
-    return NGenXX::Json::jsonToDictAny(json);
+    return NGenXX::Core::Json::jsonToDictAny(json);
 }
 
 void *ngenxxJsonDecoderInit(const std::string &json)
 {
-    return new NGenXX::Json::Decoder(json);
+    return new NGenXX::Core::Json::Decoder(json);
 }
 
 void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node)
@@ -727,7 +727,7 @@ void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void 
     {
         return nullptr;
     }
-    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Core::Json::Decoder *>(decoder);
     return xdecoder->readNode(node, k);
 }
 
@@ -737,17 +737,17 @@ std::optional<std::string> ngenxxJsonDecoderReadString(void *const decoder, void
     {
         return std::nullopt;
     }
-    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Core::Json::Decoder *>(decoder);
     return xdecoder->readString(node);
 }
 
-double ngenxxJsonDecoderReadNumber(void *const decoder, void *const node)
+std::optional<double> ngenxxJsonDecoderReadNumber(void *const decoder, void *const node)
 {
     if (decoder == nullptr)
     {
-        return 0;
+        return std::nullopt;
     }
-    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Core::Json::Decoder *>(decoder);
     return xdecoder->readNumber(node);
 }
 
@@ -757,7 +757,7 @@ void *ngenxxJsonDecoderReadChild(void *const decoder, void *const node)
     {
         return nullptr;
     }
-    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Core::Json::Decoder *>(decoder);
     return xdecoder->readChild(node);
 }
 
@@ -767,7 +767,7 @@ void ngenxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_
     {
         return;
     }
-    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Core::Json::Decoder *>(decoder);
     xdecoder->readChildren(node, std::move(callback));
 }
 
@@ -777,7 +777,7 @@ void *ngenxxJsonDecoderReadNext(void *const decoder, void *const node)
     {
         return nullptr;
     }
-    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Core::Json::Decoder *>(decoder);
     return xdecoder->readNext(node);
 }
 
@@ -787,7 +787,7 @@ void ngenxxJsonDecoderRelease(void *const decoder)
     {
         return;
     }
-    const auto xdecoder = static_cast<NGenXX::Json::Decoder *>(decoder);
+    const auto xdecoder = static_cast<NGenXX::Core::Json::Decoder *>(decoder);
     delete xdecoder;
 }
 
@@ -798,7 +798,7 @@ void *ngenxxZZipInit(const NGenXXZipCompressModeX mode, size_t bufferSize, const
     void *zip = nullptr;
     try
     {
-        zip = new NGenXX::Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
+        zip = new NGenXX::Core::Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
     }
     catch (const std::exception &e)
     {
@@ -813,7 +813,7 @@ size_t ngenxxZZipInput(void *const zip, const Bytes &inBytes, bool inFinish)
     {
         return 0;
     }
-    const auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
+    const auto xzip = static_cast<NGenXX::Core::Z::Zip *>(zip);
     return xzip->input(inBytes, inFinish);
 }
 
@@ -823,7 +823,7 @@ Bytes ngenxxZZipProcessDo(void *const zip)
     {
         return {};
     }
-    const auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
+    const auto xzip = static_cast<NGenXX::Core::Z::Zip *>(zip);
     return xzip->processDo();
 }
 
@@ -833,7 +833,7 @@ bool ngenxxZZipProcessFinished(void *const zip)
     {
         return false;
     }
-    const auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
+    const auto xzip = static_cast<NGenXX::Core::Z::Zip *>(zip);
     return xzip->processFinished();
 }
 
@@ -843,7 +843,7 @@ void ngenxxZZipRelease(void *const zip)
     {
         return;
     }
-    const auto xzip = static_cast<NGenXX::Z::Zip *>(zip);
+    const auto xzip = static_cast<NGenXX::Core::Z::Zip *>(zip);
     delete xzip;
 }
 
@@ -852,7 +852,7 @@ void *ngenxxZUnzipInit(size_t bufferSize, const NGenXXZFormatX format)
     void *unzip = nullptr;
     try
     {
-        unzip = new NGenXX::Z::UnZip(bufferSize, static_cast<int>(format));
+        unzip = new NGenXX::Core::Z::UnZip(bufferSize, static_cast<int>(format));
     }
     catch (const std::exception &e)
     {
@@ -867,7 +867,7 @@ size_t ngenxxZUnzipInput(void *const unzip, const Bytes &inBytes, bool inFinish)
     {
         return 0;
     }
-    const auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
+    const auto xunzip = static_cast<NGenXX::Core::Z::UnZip *>(unzip);
     return xunzip->input(inBytes, inFinish);
 }
 
@@ -877,7 +877,7 @@ Bytes ngenxxZUnzipProcessDo(void *const unzip)
     {
         return {};
     }
-    const auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
+    const auto xunzip = static_cast<NGenXX::Core::Z::UnZip *>(unzip);
     return xunzip->processDo();
 }
 
@@ -887,7 +887,7 @@ bool ngenxxZUnzipProcessFinished(void *const unzip)
     {
         return false;
     }
-    const auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
+    const auto xunzip = static_cast<NGenXX::Core::Z::UnZip *>(unzip);
     return xunzip->processFinished();
 }
 
@@ -897,7 +897,7 @@ void ngenxxZUnzipRelease(void *const unzip)
     {
         return;
     }
-    const auto xunzip = static_cast<NGenXX::Z::UnZip *>(unzip);
+    const auto xunzip = static_cast<NGenXX::Core::Z::UnZip *>(unzip);
     delete xunzip;
 }
 
@@ -911,7 +911,7 @@ bool ngenxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut, const NGenXXZipCom
     {
         return false;
     }
-    return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), cFILEIn, cFILEOut);
+    return NGenXX::Core::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), cFILEIn, cFILEOut);
 }
 
 bool ngenxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut, size_t bufferSize, const NGenXXZFormatX format)
@@ -924,7 +924,7 @@ bool ngenxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut, size_t bufferSiz
     {
         return false;
     }
-    return NGenXX::Z::unzip(bufferSize, static_cast<int>(format), cFILEIn, cFILEOut);
+    return NGenXX::Core::Z::unzip(bufferSize, static_cast<int>(format), cFILEIn, cFILEOut);
 }
 
 bool ngenxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, const NGenXXZipCompressModeX mode, size_t bufferSize, const NGenXXZFormatX format)
@@ -937,7 +937,7 @@ bool ngenxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, 
     {
         return false;
     }
-    return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
+    return NGenXX::Core::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
 }
 
 bool ngenxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, size_t bufferSize, const NGenXXZFormatX format)
@@ -950,7 +950,7 @@ bool ngenxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut
     {
         return false;
     }
-    return NGenXX::Z::unzip(bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
+    return NGenXX::Core::Z::unzip(bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
 }
 
 Bytes ngenxxZBytesZip(const Bytes &inBytes, const NGenXXZipCompressModeX mode, size_t bufferSize, const NGenXXZFormatX format)
@@ -963,7 +963,7 @@ Bytes ngenxxZBytesZip(const Bytes &inBytes, const NGenXXZipCompressModeX mode, s
     {
         return {};
     }
-    return NGenXX::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), inBytes);
+    return NGenXX::Core::Z::zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), inBytes);
 }
 
 Bytes ngenxxZBytesUnzip(const Bytes &inBytes, size_t bufferSize, const NGenXXZFormatX format)
@@ -976,5 +976,5 @@ Bytes ngenxxZBytesUnzip(const Bytes &inBytes, size_t bufferSize, const NGenXXZFo
     {
         return {};
     }
-    return NGenXX::Z::unzip(bufferSize, static_cast<int>(format), inBytes);
+    return NGenXX::Core::Z::unzip(bufferSize, static_cast<int>(format), inBytes);
 }

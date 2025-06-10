@@ -47,9 +47,9 @@ function NGenXXRootPath() {
     return ngenxx_root_path();
 }
 
-function NGenXXAskPlatform(msg) {
+function NGenXXCallPlatform(msg) {
     msg = msg || '';
-    return ngenxx_ask_platform(msg);
+    return ngenxx_call_platform(msg);
 }
 
 /*const NGenXXLogLevel = Object.freeze({

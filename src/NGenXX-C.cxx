@@ -3,8 +3,8 @@
 #include <NGenXX.hxx>
 #include <NGenXXStoreKV.h>
 #include <NGenXXTypes.hxx>
-#include "NGenXX-inner.hxx"
-#include "util/TypeUtil.hxx"
+#include "core/util/ExportUtil.hxx"
+#include "core/util/TypeUtil.hxx"
 #endif
 
 namespace
@@ -15,7 +15,7 @@ namespace
         {
             *outLen = bytes.size();
         }
-        return NGenXX::Util::Type::copyBytes(bytes);
+        return NGenXX::Core::Util::Type::copyBytes(bytes);
     }
 }
 
@@ -23,14 +23,14 @@ EXPORT_AUTO
 const char *ngenxx_get_version()
 {
     const auto s = ngenxxGetVersion();
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_root_path()
 {
     const auto& s = ngenxxRootPath();
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT
@@ -57,28 +57,28 @@ EXPORT_AUTO
 const char *ngenxx_device_name()
 {
     const auto& s = ngenxxDeviceName();
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_device_manufacturer()
 {
     const auto& s = ngenxxDeviceManufacturer();
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_device_model()
 {
     const auto& s = ngenxxDeviceModel();
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_device_os_version()
 {
     const auto& s = ngenxxDeviceOsVersion();
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
@@ -120,14 +120,14 @@ EXPORT_AUTO
 const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, size_t inLen)
 {
     const auto& s = ngenxxCodingHexBytes2str(wrapBytes(inBytes, inLen));
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_coding_bytes2str(const byte *inBytes, size_t inLen)
 {
     const auto& s = ngenxxCodingBytes2str(wrapBytes(inBytes, inLen));
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
@@ -141,14 +141,14 @@ EXPORT_AUTO
 const char *ngenxx_coding_case_upper(const char *str)
 {
     const auto& s = ngenxxCodingCaseUpper(str);
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_coding_case_lower(const char *str)
 {
     const auto& s = ngenxxCodingCaseLower(str);
-    return NGenXX::Util::Type::copyStr(s);
+    return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 #pragma mark Crypto
@@ -289,7 +289,7 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
                                   vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
                                   static_cast<std::FILE *>(cFILE), file_size, timeout);
     const auto& s = t.toJson();
-    return NGenXX::Util::Type::copyStr(s.value_or(""));
+    return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
 EXPORT_AUTO
@@ -328,7 +328,7 @@ EXPORT_AUTO
 const char *ngenxx_store_sqlite_query_read_column_text(void *const query_result, const char *column)
 {
     const auto& s = ngenxxStoreSqliteQueryReadColumnText(query_result, wrapStr(column));
-    return NGenXX::Util::Type::copyStr(s.value_or(""));
+    return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
 EXPORT_AUTO
@@ -369,7 +369,7 @@ EXPORT_AUTO
 const char *ngenxx_store_kv_read_string(void *const conn, const char *k)
 {
     const auto& s = ngenxxStoreKvReadString(conn, wrapStr(k));
-    return NGenXX::Util::Type::copyStr(s.value_or(""));
+    return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
 EXPORT_AUTO
@@ -412,7 +412,7 @@ char *const *ngenxx_store_kv_all_keys(void *const conn, size_t *len)
     {
         *len = t.size();
     }
-    return NGenXX::Util::Type::copyStrVector(t, NGENXX_STORE_KV_KEY_MAX_LENGTH);
+    return NGenXX::Core::Util::Type::copyStrVector(t, NGENXX_STORE_KV_KEY_MAX_LENGTH);
 }
 
 EXPORT_AUTO
@@ -451,7 +451,7 @@ EXPORT_AUTO
 const char *ngenxx_json_to_str(void *const cjson)
 {
     const auto& s = ngenxxJsonToStr(cjson);
-    return NGenXX::Util::Type::copyStr(s.value_or(""));
+    return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
 EXPORT_AUTO
@@ -470,13 +470,13 @@ EXPORT_AUTO
 const char *ngenxx_json_decoder_read_string(void *const decoder, void *const node)
 {
     const auto& s = ngenxxJsonDecoderReadString(decoder, node);
-    return NGenXX::Util::Type::copyStr(s.value_or(""));
+    return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
 EXPORT_AUTO
 double ngenxx_json_decoder_read_number(void *const decoder, void *const node)
 {
-    return ngenxxJsonDecoderReadNumber(decoder, node);
+    return ngenxxJsonDecoderReadNumber(decoder, node).value_or(0.0);
 }
 
 EXPORT_AUTO
