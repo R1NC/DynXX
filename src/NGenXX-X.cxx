@@ -91,7 +91,7 @@ int32_t str2int32(const std::string &str, const int32_t defaultI)
 #if defined(USE_STD_CHAR_CONV_INT)
     return fromChars<int32_t>(str, defaultI);
 #else
-    return s2n<int>(str, static_cast<int>(defaultI), std::stoi);
+    return s2n<int>(str, defaultI, std::stoi);
 #endif
 }
 
@@ -100,7 +100,7 @@ int64_t str2int64(const std::string &str, const int64_t defaultI)
 #if defined(USE_STD_CHAR_CONV_INT)
     return fromChars<int64_t>(str, defaultI);
 #else
-    return s2n<long long>(str, static_cast<long long>(defaultI), std::stoll);
+    return s2n<long long>(str, defaultI, std::stoll);
 #endif
 }
 

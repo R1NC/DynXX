@@ -105,7 +105,8 @@ Bytes NGenXX::Core::Coding::Hex::str2bytes(const std::string &str)
     }
     auto sLen = str.length();
       
-    auto transF = [](const std::string &s) { 
+    auto transF = [](const auto& chunk) { 
+        std::string s(chunk.begin(), chunk.end());
         auto hex = 0;
         if (auto [_, errCode] = std::from_chars(s.data(), s.data() + s.size(), hex, 16); errCode != std::errc()) [[unlikely]]
         {
