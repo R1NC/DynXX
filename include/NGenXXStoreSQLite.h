@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include "NGenXXInternal.h"
+#include "NGenXXMacro.h"
 
 EXTERN_C_BEGIN
 

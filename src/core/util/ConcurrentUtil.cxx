@@ -70,7 +70,7 @@ void NGenXX::Core::Util::Concurrent::Executor::sleep()
     Util::Time::sleepForMilliSecs(this->sleepMilliSecs);
 }
 
-void NGenXX::Core::Util::Concurrent::Executor::add(const std::function<void()> &&task)
+NGenXX::Core::Util::Concurrent::Executor& NGenXX::Core::Util::Concurrent::Executor::operator>>(TaskT&& task)
 {
     std::lock_guard lock(this->mutex);
 
@@ -79,7 +79,7 @@ void NGenXX::Core::Util::Concurrent::Executor::add(const std::function<void()> &
     const auto cpuCores = Util::Concurrent::countCPUCore();
     if (this->pool.size() >= cpuCores)
     {
-        return;
+        return *this;
     }
 
     this->pool.emplace_back([this]
@@ -124,4 +124,6 @@ void NGenXX::Core::Util::Concurrent::Executor::add(const std::function<void()> &
     });
 
     ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Executor created new thread, poolSize:{} cpuCoreCount:{}", this->pool.size(), cpuCores);
+
+	return *this;
 }

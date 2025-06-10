@@ -4,6 +4,8 @@
 #include <string>
 #include <functional>
 
+#include "NGenXXMacro.hxx"
+
 #if defined(USE_STD_FORMAT)
 #include <format>
 #else
@@ -48,11 +50,13 @@ inline std::string _ngenxxLogFormat(const std::string &format, Args... args)
 template <typename... Args>
 inline void ngenxxLogPrintF(NGenXXLogLevelX level, const std::string &format, Args... args)
 {
+    auto fContent = 
 #if !defined(USE_STD_FORMAT)
-    auto fContent = _ngenxxLogFormat(format, args...);
+    _ngenxxLogFormat(format, args...)
 #else
-    auto fContent = std::vformat(format, std::make_format_args(args...));
+    std::vformat(format, std::make_format_args(args...))
 #endif
+    ;
     ngenxxLogPrint(level, fContent);
 }
 

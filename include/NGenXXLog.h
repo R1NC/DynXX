@@ -1,7 +1,7 @@
 #ifndef NGENXX_INCLUDE_LOG_LOG_H_
 #define NGENXX_INCLUDE_LOG_LOG_H_
 
-#include "NGenXXInternal.h"
+#include "NGenXXMacro.h"
 
 EXTERN_C_BEGIN
 

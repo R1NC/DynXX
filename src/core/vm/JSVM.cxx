@@ -220,20 +220,20 @@ NGenXX::Core::VM::JSVM::JSVM()
     this->context = _newContext(this->runtime);
     this->jGlobal = JS_GetGlobalObject(this->context);// Can not free here, will be called in future
 
-    this->executor.add([ctx = this->context, &mtx = this->vmMutex]() {
+    this->executor >> [ctx = this->context, &mtx = this->vmMutex]() {
         if (tryLockMutex(mtx))
         {
             js_std_loop_promise(ctx);
             unlockMutex(mtx);
         }
-    });
-    this->executor.add([ctx = this->context, &mtx = this->vmMutex]() {
+    };
+    this->executor >> [ctx = this->context, &mtx = this->vmMutex]() {
         if (tryLockMutex(mtx))
         {
             js_std_loop_timer(ctx);
             unlockMutex(mtx);
         }
-    });
+    };
 }
 
 bool NGenXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -331,13 +331,13 @@ JSValue NGenXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
         return JS_EXCEPTION;
     }
     
-    this->executor.add([&mtx = this->vmMutex, ctx = this->context, jPromise, jf = std::move(jf)] {
+    this->executor >> [&mtx = this->vmMutex, ctx = this->context, jPromise, jf = std::move(jf)] {
         auto lock = std::lock_guard(mtx);
 
         const auto jRet = jf();
 
         _callbackPromise(ctx, jPromise, jRet);
-    });
+    };
 
     return jPromise->p;
 }

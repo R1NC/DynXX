@@ -40,41 +40,13 @@ if(USE_SPDLOG)
     add_definitions(-DUSE_SPDLOG)
 endif()
 
-# Support of `std::from_chars`(for integral types) in C++17
-if(APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.5") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.4")))
-    option(USE_STD_FROM_CHARS "Use std::from_chars for int" OFF)
-else()
-    option(USE_STD_FROM_CHARS "Use std::from_chars for int" ON)
-    add_definitions(-DUSE_STD_FROM_CHARS)
-endif()
-
-# Support of `std::from_chars`(for floating-point types) in C++17
-option(USE_STD_FROM_CHARS_FLOAT "Use std::from_chars for float" OFF)
-#add_definitions(-DUSE_STD_FROM_CHARS_FLOAT)
-
-# Support of `std::format` in C++20
+# ada uses `std::ranges` in C++20
 if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
-    option(USE_STD_FORMAT "Use std::format" OFF)
+    option(USE_ADA "Use Ada" OFF)
 else()
-    option(USE_STD_FORMAT "Use std::format" ON)
-    add_definitions(-DUSE_STD_FORMAT)
+    option(USE_ADA "Use Ada" ON)
+    add_definitions(-DUSE_ADA)
 endif()
-
-# Support of `std::ranges` in C++20
-if(OHOS OR (APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "16.3") OR (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.3"))))
-    option(USE_STD_RANGES "Use std::ranges" OFF)
-else()
-    option(USE_STD_RANGES "Use std::ranges" ON)
-    add_definitions(-DUSE_STD_RANGES)
-endif()
-
-# Support of `std::ranges::views::enumerate` in C++23
-option(USE_STD_RANGES_ENUMERATE "std::ranges::views::enumerate" OFF)
-#add_definitions(-DUSE_STD_RANGES_ENUMERATE)
-
-# Support of `std::ranges::views::trunk` in C++23
-option(USE_STD_RANGES_CHUNK "Use std::ranges::views::trunk" OFF)
-#add_definitions(-DUSE_STD_RANGES_CHUNK)
 
 ## Source & Output:
 
@@ -170,7 +142,7 @@ if(USE_LIBUV AND NOT OHOS)
     list(APPEND INC_DIRS ${UV_ROOT}/include)
 endif()
 
-if(USE_STD_RANGES)
+if(USE_ADA)
     set(ADAURL_ROOT external/AdaURL)
     add_subdirectory(${ADAURL_ROOT} AdaURL.output)
     list(APPEND INC_DIRS ${ADAURL_ROOT}/include)
@@ -222,7 +194,7 @@ if(USE_LIBUV AND NOT OHOS)
     list(APPEND LINK_LIBS libuv)
 endif()
 
-if(USE_STD_RANGES)
+if(USE_ADA)
     list(APPEND LINK_LIBS ada::ada)
 endif()
 
@@ -253,10 +225,7 @@ message(STATUS "  USE_LUA: ${USE_LUA}")
 message(STATUS "  USE_QJS: ${USE_QJS}")
 message(STATUS "  USE_LIBUV: ${USE_LIBUV}")
 message(STATUS "  USE_SPDLOG: ${USE_SPDLOG}")
-message(STATUS "  USE_STD_FROM_CHARS: ${USE_STD_FROM_CHARS}")
-message(STATUS "  USE_STD_FROM_CHARS_FLOAT: ${USE_STD_FROM_CHARS_FLOAT}")
-message(STATUS "  USE_STD_FORMAT: ${USE_STD_FORMAT}")
-message(STATUS "  USE_STD_RANGES: ${USE_STD_RANGES}")
+message(STATUS "  USE_ADA: ${USE_ADA}")
 message(STATUS "  LINK_LIBS:")
 foreach(x IN LISTS LINK_LIBS)
     message(STATUS "    ${x}")

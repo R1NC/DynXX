@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "NGenXXInternal.h"
+#include "NGenXXMacro.h"
 #include "NGenXXTypes.h"
 
 EXTERN_C_BEGIN

@@ -15,13 +15,15 @@
 #include "core/crypto/Crypto.hxx"
 #include "core/device/Device.hxx"
 #include "core/log/Log.hxx"
+
+#include <NGenXXMacro.hxx>
 #if defined(USE_LUA)
 #include "bridge/LuaBridge.hxx"
 #endif
 #if defined(USE_QJS)
 #include "bridge/JSBridge.hxx"
 #endif
-#if defined(USE_STD_FROM_CHARS)
+#if defined(USE_STD_CHAR_CONV_INT)
 #include <charconv>
 #endif
 #endif
@@ -35,9 +37,9 @@ namespace
     std::unique_ptr<NGenXX::Core::Store::KV> _kv = nullptr;
     std::unique_ptr<const std::string> _root = nullptr;   
 
-#if defined(USE_STD_FROM_CHARS)
+#if defined(USE_STD_CHAR_CONV_INT)
     template <NumberT T>
-    T from_chars(const std::string &str, const T defaultV)
+    T fromChars(const std::string &str, const T defaultV)
     {
         if (str.empty())
         {
@@ -64,7 +66,7 @@ namespace
         } 
         catch (const std::exception& e)
         {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "stox failed: {}", e.what());
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "s2n<i> err: {}", e.what());
             return defaultValue;
         }
     }
@@ -78,7 +80,7 @@ namespace
         }
         catch (const std::exception& e)
         {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "stox failed: {}", e.what());
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "s2n<f> err: {}", e.what());
             return defaultValue;
         }
     }
@@ -86,26 +88,26 @@ namespace
 
 int32_t str2int32(const std::string &str, const int32_t defaultI)
 {
-#if defined(USE_STD_FROM_CHARS)
-    return from_chars<int32_t>(str, defaultI);
+#if defined(USE_STD_CHAR_CONV_INT)
+    return fromChars<int32_t>(str, defaultI);
 #else
-    return s2n<int32_t>(str, defaultI, std::stoi);
+    return s2n<int>(str, static_cast<int>(defaultI), std::stoi);
 #endif
 }
 
 int64_t str2int64(const std::string &str, const int64_t defaultI)
 {
-#if defined(USE_STD_FROM_CHARS)
-    return from_chars<int64_t>(str, defaultI);
+#if defined(USE_STD_CHAR_CONV_INT)
+    return fromChars<int64_t>(str, defaultI);
 #else
-    return s2n<int64_t>(str, defaultI, std::stoll);
+    return s2n<long long>(str, static_cast<long long>(defaultI), std::stoll);
 #endif
 }
 
 float str2float32(const std::string &str, const float defaultF)
 {
-#if defined(USE_STD_FROM_CHARS_FLOAT)
-    return from_chars<float>(str, defaultF);
+#if defined(USE_STD_CHAR_CONV_FLOAT)
+    return fromChars<float>(str, defaultF);
 #else
     return s2n<float>(str, defaultF, std::stof);
 #endif
@@ -113,8 +115,8 @@ float str2float32(const std::string &str, const float defaultF)
 
 double str2float64(const std::string &str, const double defaultF)
 {
-#if defined(USE_STD_FROM_CHARS_FLOAT)
-    return from_chars<double>(str, defaultF);
+#if defined(USE_STD_CHAR_CONV_FLOAT)
+    return fromChars<double>(str, defaultF);
 #else
     return s2n<double>(str, defaultF, std::stod);
 #endif

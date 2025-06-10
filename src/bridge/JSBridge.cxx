@@ -7,8 +7,9 @@
 #include <memory>
 #include <functional>
 
+#include <NGenXXMacro.hxx>
+
 #include "../core/util/TypeUtil.hxx"
-#include "../core/util/ExportUtil.hxx"
 #include "../core/vm/JSVM.hxx"
 #include "ScriptBridge.hxx"
 

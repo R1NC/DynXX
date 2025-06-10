@@ -124,8 +124,8 @@ constexpr auto MaxFloat64 = MaxV<double>();
 
 int32_t str2int32(const std::string &str, const int32_t defaultI = MinInt32);
 int64_t str2int64(const std::string &str, const int64_t defaultI = MinInt64);
-float str2float32(const std::string &str, const float defaultI = MinFloat32);
-double str2float64(const std::string &str, const double defaultI = MinFloat64);
+float str2float32(const std::string &str, const float defaultF = MinFloat32);
+double str2float64(const std::string &str, const double defaultF = MinFloat64);
 
 #pragma mark Pointer cast
 

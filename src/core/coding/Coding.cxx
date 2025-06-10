@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <charconv>
-#if defined(USE_STD_RANGES)
+#if defined(__cpp_lib_ranges)
 #include <ranges>
 #include <numeric>
 #endif
@@ -12,7 +12,7 @@ std::string NGenXX::Core::Coding::Case::upper(const std::string_view &str)
 {
     std::string s(str);
     s.reserve(str.size());
-#if defined(USE_STD_RANGES)
+#if defined(__cpp_lib_ranges)
     std::ranges::transform(s, s.begin(), toupper);
 #else
     std::transform(s.begin(), s.end(), s.begin(), toupper);
@@ -24,7 +24,7 @@ std::string NGenXX::Core::Coding::Case::lower(const std::string_view &str)
 {
     std::string s(str);
     s.reserve(str.size());
-#if defined(USE_STD_RANGES)
+#if defined(__cpp_lib_ranges)
     std::ranges::transform(s, s.begin(), tolower);
 #else
     std::transform(s.begin(), s.end(), s.begin(), tolower);
@@ -54,8 +54,8 @@ std::string NGenXX::Core::Coding::Hex::bytes2str(const Bytes &bytes)
         }
     };
 
-#if defined(USE_STD_RANGES)
-#if defined(USE_STD_RANGES_ENUMERATE)
+#if defined(__cpp_lib_ranges)
+#if defined(__cpp_lib_ranges_enumerate)
     auto hexView = bytes | std::ranges::views::enumerate
 #else
     auto indices = std::views::iota(size_t{0}, bytes.size());
@@ -85,7 +85,7 @@ Bytes NGenXX::Core::Coding::Hex::str2bytes(const std::string &str)
     std::string filteredStr;
     filteredStr.reserve(str.size());
 
-#if defined(USE_STD_RANGES)
+#if defined(__cpp_lib_ranges)
     std::ranges::copy_if(str, std::back_inserter(filteredStr),
                          [](const char c) { return std::isxdigit(static_cast<unsigned char>(c)); });
 #else
@@ -113,7 +113,7 @@ Bytes NGenXX::Core::Coding::Hex::str2bytes(const std::string &str)
         }
         return static_cast<byte>(hex);
     };
-#if defined(USE_STD_RANGES_CHUNK)
+#if defined(__cpp_lib_ranges_chunk)
     auto byteView = fixedStr 
         | std::ranges::views::chunk(2) 
         | std::ranges::views::transform(transF);
@@ -142,7 +142,7 @@ Bytes NGenXX::Core::Coding::str2bytes(const std::string_view &str)
 
 std::string NGenXX::Core::Coding::strTrim(const std::string_view &str) 
 {
-#if defined(USE_STD_RANGES)
+#if defined(__cpp_lib_ranges)
     auto findSpaceF = [](char c) { return std::isspace(static_cast<int>(c)); };
     auto trimmed = str 
         | std::ranges::views::drop_while(findSpaceF)

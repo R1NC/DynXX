@@ -3,7 +3,7 @@
 #include <NGenXX.hxx>
 #include <NGenXXStoreKV.h>
 #include <NGenXXTypes.hxx>
-#include "core/util/ExportUtil.hxx"
+#include <NGenXXMacro.hxx>
 #include "core/util/TypeUtil.hxx"
 #endif
 

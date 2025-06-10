@@ -1,7 +1,7 @@
 #ifndef NGENXX_SRC_CORE_VM_LUAVM_HXX_
 #define NGENXX_SRC_CORE_VM_LUAVM_HXX_
 
-#include <NGenXXInternal.h>
+#include <NGenXXMacro.h>
 
 EXTERN_C_BEGIN
 #include <lua.h>

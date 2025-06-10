@@ -3,9 +3,10 @@
 
 #include <memory>
 
+#include <NGenXXMacro.hxx>
+
 #include "../core/vm/LuaVM.hxx"
 #include "../core/util/TypeUtil.hxx"
-#include "../core/util/ExportUtil.hxx"
 #include "ScriptBridge.hxx"
 
 namespace {

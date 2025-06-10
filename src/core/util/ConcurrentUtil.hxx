@@ -82,7 +82,7 @@ public:
 
     using TaskT = std::function<void()>;
 
-    void add(const TaskT &&task);
+    Executor& operator>>(TaskT&& task);
 
 private:
     size_t sleepMilliSecs{1uz};
