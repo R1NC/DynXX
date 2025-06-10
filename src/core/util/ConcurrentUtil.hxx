@@ -90,9 +90,9 @@ private:
     std::queue<TaskT> queue;
 #if defined(__cpp_lib_jthread)
     std::vector<std::jthread> pool;
-    std::atomic<bool> active{false};
 #else
     std::vector<std::thread> pool;
+    std::atomic<bool> active{false};
 #endif
 
     bool tryLock();
