@@ -72,6 +72,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | [std::from_chars][19] for float     | C++17    | All;                               |
 | [std::format][12]                   | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
 | [std::ranges][13]                   | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
+| [std::jthread][39]                  | C++20    | Apple Clang;                       |
 | [std::ranges::views::enumerate][20] | C++23    | All;                               |
 | [std::ranges::views::chunk][14]     | C++23    | All;                               |
 
@@ -138,3 +139,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [36]: ../../actions/workflows/Win-MinGW.yml
 [37]: ../../actions/workflows/Linux.yml
 [38]: ../../actions/workflows/WASM-mac.yml
+[39]: https://en.cppreference.com/w/cpp/thread/jthread.html

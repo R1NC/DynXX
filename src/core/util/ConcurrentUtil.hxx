@@ -85,11 +85,15 @@ public:
     void add(const TaskT &&task);
 
 private:
-    std::atomic<bool> active{false};
     size_t sleepMilliSecs{1uz};
     std::recursive_timed_mutex mutex;
-    std::vector<std::thread> pool;
     std::queue<TaskT> queue;
+#if defined(__cpp_lib_jthread)
+    std::vector<std::jthread> pool;
+    std::atomic<bool> active{false};
+#else
+    std::vector<std::thread> pool;
+#endif
 
     bool tryLock();
     void unlock();

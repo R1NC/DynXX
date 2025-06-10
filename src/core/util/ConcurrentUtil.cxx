@@ -31,13 +31,17 @@ NGenXX::Core::Util::Concurrent::Executor::Executor() : Executor(1uz)
 
 NGenXX::Core::Util::Concurrent::Executor::Executor(size_t sleepMilliSecs) : sleepMilliSecs(sleepMilliSecs)
 {
+#if !defined(__cpp_lib_jthread)
     this->active = true;
+#endif
 }
 
 NGenXX::Core::Util::Concurrent::Executor::~Executor()
 {
-    this->active = false;
     std::lock_guard lock(this->mutex);
+
+#if !defined(__cpp_lib_jthread)
+    this->active = false;
     for (auto& thread : this->pool)
     {
         if (thread.joinable())
@@ -45,6 +49,9 @@ NGenXX::Core::Util::Concurrent::Executor::~Executor()
             thread.join();
         }
     }
+#endif
+    
+    pool.clear();
 }
 
 bool NGenXX::Core::Util::Concurrent::Executor::tryLock()
@@ -75,8 +82,14 @@ void NGenXX::Core::Util::Concurrent::Executor::add(const std::function<void()> &
         return;
     }
 
-    this->pool.emplace_back([this] {
+    this->pool.emplace_back([this]
+#if defined(__cpp_lib_jthread)
+        (std::stop_token stoken) {
+        while (!stoken.stop_requested())
+#else
+        () {
         while (active)
+#endif
         {
             if (!tryLock())
             {
