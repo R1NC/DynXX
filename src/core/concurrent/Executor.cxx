@@ -1,6 +1,5 @@
 #include "Executor.hxx"
 
-#include "../util/TimeUtil.hxx"
 #include <NGenXXLog.hxx>
 
 NGenXX::Core::Concurrent::Executor::Executor() : Executor(0uz, 1uz)
@@ -50,7 +49,7 @@ void NGenXX::Core::Concurrent::Executor::unlock()
 
 void NGenXX::Core::Concurrent::Executor::sleep()
 {
-    Util::Time::sleepForMilliSecs(this->sleepMilliSecs);
+    sleepForMilliSecs(this->sleepMilliSecs);
 }
 
 NGenXX::Core::Concurrent::Executor& NGenXX::Core::Concurrent::Executor::operator>>(TaskT&& task)

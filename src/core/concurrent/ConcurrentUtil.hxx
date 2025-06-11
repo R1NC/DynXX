@@ -8,6 +8,7 @@
 #include <mutex>
 #include <thread>
 #include <string>
+#include <chrono>
 
 namespace NGenXX::Core::Concurrent
 {
@@ -34,6 +35,11 @@ inline std::string currentThreadId()
         cachedCurrentThreadId = std::to_string(std::hash<std::thread::id>{}(id));
     }
     return cachedCurrentThreadId;
+}
+
+inline void sleepForMilliSecs(const size_t milliSecs)
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliSecs));
 }
 
 template<typename F>

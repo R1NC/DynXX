@@ -3,7 +3,6 @@
 #include <utility>
 
 #include <NGenXXLog.hxx>
-#include "../util/TimeUtil.hxx"
 #include "../concurrent/ConcurrentUtil.hxx"
 
 namespace
@@ -13,7 +12,7 @@ namespace
 
 void NGenXX::Core::VM::BaseVM::sleep()
 {
-    Util::Time::sleepForMilliSecs(SleepMilliSecs);
+    NGenXX::Core::Concurrent::sleepForMilliSecs(SleepMilliSecs);
 }
 
 bool NGenXX::Core::VM::BaseVM::tryLockMutex(std::recursive_timed_mutex &mtx)
