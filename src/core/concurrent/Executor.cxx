@@ -2,11 +2,11 @@
 
 #include <NGenXXLog.hxx>
 
-NGenXX::Core::Concurrent::Executor::Executor() : Executor(0uz, 1uz)
+NGenXX::Core::Concurrent::Executor::Executor() : Executor(0uz, 1000uz)
 {
 }
 
-NGenXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity, size_t sleepMilliSecs) : workerPoolCapacity{workerPoolCapacity}, sleepMilliSecs{sleepMilliSecs}
+NGenXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity, size_t sleepMicroSecs) : workerPoolCapacity{workerPoolCapacity}, sleepMicroSecs{sleepMicroSecs}
 {
 #if !defined(__cpp_lib_jthread)
     this->active = true;
@@ -38,8 +38,7 @@ NGenXX::Core::Concurrent::Executor::~Executor()
 
 bool NGenXX::Core::Concurrent::Executor::tryLock()
 {
-    const auto timeout = std::chrono::steady_clock::now() + std::chrono::milliseconds(this->sleepMilliSecs);
-    return this->mutex.try_lock_until(timeout);
+	return NGenXX::Core::Concurrent::tryLockMutex(this->mutex, sleepMicroSecs);
 }
 
 void NGenXX::Core::Concurrent::Executor::unlock()
@@ -49,7 +48,7 @@ void NGenXX::Core::Concurrent::Executor::unlock()
 
 void NGenXX::Core::Concurrent::Executor::sleep()
 {
-    sleepForMilliSecs(this->sleepMilliSecs);
+    NGenXX::Core::Concurrent::sleep(this->sleepMicroSecs);
 }
 
 NGenXX::Core::Concurrent::Executor& NGenXX::Core::Concurrent::Executor::operator>>(TaskT&& task)

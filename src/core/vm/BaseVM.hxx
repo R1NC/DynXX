@@ -15,9 +15,6 @@ namespace NGenXX::Core::VM
         BaseVM(BaseVM &&) = delete;
         BaseVM &operator=(BaseVM &&) = delete;
 
-        static bool tryLockMutex(std::recursive_timed_mutex &mtx);
-        static void unlockMutex(std::recursive_timed_mutex &mtx);
-
         virtual ~BaseVM();
 
     protected:
@@ -25,7 +22,9 @@ namespace NGenXX::Core::VM
         std::recursive_timed_mutex vmMutex;
         Concurrent::Executor executor;
 
-        static void sleep();
+        void sleep();
+        bool tryLock();
+        void unlock();
     };
 }
 

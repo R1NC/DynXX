@@ -7,23 +7,22 @@
 
 namespace
 {
-    constexpr auto SleepMilliSecs = 1uz;
+    constexpr auto SleepMicroSecs = 1000uz;
 }
 
 void NGenXX::Core::VM::BaseVM::sleep()
 {
-    NGenXX::Core::Concurrent::sleepForMilliSecs(SleepMilliSecs);
+    NGenXX::Core::Concurrent::sleep(SleepMicroSecs);
 }
 
-bool NGenXX::Core::VM::BaseVM::tryLockMutex(std::recursive_timed_mutex &mtx)
+bool NGenXX::Core::VM::BaseVM::tryLock()
 {
-    const auto timeout = std::chrono::steady_clock::now() + std::chrono::milliseconds(SleepMilliSecs);
-    return mtx.try_lock_until(timeout);
+    NGenXX::Core::Concurrent::tryLockMutex(this->vmMutex, SleepMicroSecs);
 }
 
-void NGenXX::Core::VM::BaseVM::unlockMutex(std::recursive_timed_mutex &mtx)
+void NGenXX::Core::VM::BaseVM::unlock()
 {
-    mtx.unlock();
+    this->vmMutex.unlock();
 }
 
 NGenXX::Core::VM::BaseVM::BaseVM()

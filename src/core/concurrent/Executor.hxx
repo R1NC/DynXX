@@ -16,7 +16,7 @@ class alignas(CacheLineSize) Executor final
 {
 public:
     Executor();
-    explicit Executor(size_t workerPoolCapacity, size_t sleepMilliSecs);
+    explicit Executor(size_t workerPoolCapacity, size_t sleepMicroSecs);
     Executor(const Executor &) = delete;
     Executor &operator=(const Executor &) = delete;
     Executor(Executor &&) = delete;
@@ -29,7 +29,7 @@ public:
 
 private:
     size_t workerPoolCapacity{0uz};
-    size_t sleepMilliSecs{1uz};
+    size_t sleepMicroSecs{1000uz};
     std::recursive_timed_mutex mutex;
     std::queue<TaskT> taskQueue;
 #if defined(__cpp_lib_jthread)

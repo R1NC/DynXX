@@ -37,9 +37,22 @@ inline std::string currentThreadId()
     return cachedCurrentThreadId;
 }
 
-inline void sleepForMilliSecs(const size_t milliSecs)
+inline void sleep(const size_t microSecs)
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(milliSecs));
+    std::this_thread::sleep_for(std::chrono::microseconds(microSecs));
+}
+
+template<typename T>
+concept TimedLockableT = requires(T mtx)
+{
+    {mtx.try_lock_until(std::declval<std::chrono::time_point<std::chrono::steady_clock>>()) } -> std::convertible_to<bool>;
+};
+
+template<TimedLockableT T>
+bool tryLockMutex(T& mtx, const size_t microSecs)
+{
+    const auto timeout = std::chrono::steady_clock::now() + std::chrono::microseconds(microSecs);
+    return mtx.try_lock_until(timeout);
 }
 
 template<typename F>

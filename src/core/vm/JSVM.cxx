@@ -144,7 +144,7 @@ JSValue NGenXX::Core::VM::JSVM::jAwait(const JSValue obj)
     for (;;)
     {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
-        if (!tryLockMutex(this->vmMutex)) [[unlikely]]
+        if (!tryLock()) [[unlikely]]
         {
             sleep();
             continue;
@@ -164,7 +164,7 @@ JSValue NGenXX::Core::VM::JSVM::jAwait(const JSValue obj)
         else if (state == JS_PROMISE_PENDING)
         {
             /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
-            unlockMutex(this->vmMutex);
+            unlock();
             sleep();
             continue;
         }
@@ -175,7 +175,7 @@ JSValue NGenXX::Core::VM::JSVM::jAwait(const JSValue obj)
             break;
         }
     }
-    unlockMutex(this->vmMutex);
+    unlock();
     return ret;
 }
 
@@ -220,18 +220,18 @@ NGenXX::Core::VM::JSVM::JSVM()
     this->context = _newContext(this->runtime);
     this->jGlobal = JS_GetGlobalObject(this->context);// Can not free here, will be called in future
 
-    this->executor >> [ctx = this->context, &mtx = this->vmMutex]() {
-        if (tryLockMutex(mtx))
+    this->executor >> [this]() {
+        if (tryLock())
         {
-            js_std_loop_promise(ctx);
-            unlockMutex(mtx);
+            js_std_loop_promise(context);
+            unlock();
         }
     };
-    this->executor >> [ctx = this->context, &mtx = this->vmMutex]() {
-        if (tryLockMutex(mtx))
+    this->executor >> [this]() {
+        if (tryLock())
         {
-            js_std_loop_timer(ctx);
-            unlockMutex(mtx);
+            js_std_loop_timer(context);
+            unlock();
         }
     };
 }
