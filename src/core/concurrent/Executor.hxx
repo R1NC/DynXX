@@ -3,7 +3,6 @@
 
 #if defined(__cplusplus)
 
-#include <mutex>
 #include <functional>
 #include <queue>
 #include <vector>

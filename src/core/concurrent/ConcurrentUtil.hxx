@@ -3,8 +3,9 @@
 
 #if defined(__cplusplus)
 
-#include <atomic>
 #include <new>
+#include <atomic>
+#include <mutex>
 #include <thread>
 #include <string>
 
