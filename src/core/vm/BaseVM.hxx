@@ -3,9 +3,7 @@
 
 #if defined(__cplusplus)
 
-#include <functional>
-
-#include "../util/ConcurrentUtil.hxx"
+#include "../concurrent/Executor.hxx"
 
 namespace NGenXX::Core::VM
 {
@@ -25,7 +23,7 @@ namespace NGenXX::Core::VM
     protected:
         std::atomic<bool> active{false};
         std::recursive_timed_mutex vmMutex;
-        NGenXX::Core::Util::Concurrent::Executor executor;
+        Concurrent::Executor executor;
 
         static void sleep();
     };

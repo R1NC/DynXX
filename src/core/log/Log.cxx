@@ -22,7 +22,7 @@
 #include <NGenXX.hxx>
 #endif
 
-#include "../util/ConcurrentUtil.hxx"
+#include "../concurrent/ConcurrentUtil.hxx"
 
 #if defined(__APPLE__)
 void _ngenxx_log_apple(const char*);
@@ -53,7 +53,7 @@ namespace
 #if defined(USE_SPDLOG)
     void spdlogPrepare() 
     {
-        NGenXX::Core::Util::Concurrent::callOnce([]() {
+        NGenXX::Core::Concurrent::callOnce([]() {
             try 
             {
                 const auto& logger = spdlog::daily_logger_mt(

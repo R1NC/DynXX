@@ -4,7 +4,7 @@
 
 #include <NGenXXLog.hxx>
 #include "../util/TimeUtil.hxx"
-#include "../util/ConcurrentUtil.hxx"
+#include "../concurrent/ConcurrentUtil.hxx"
 
 namespace
 {

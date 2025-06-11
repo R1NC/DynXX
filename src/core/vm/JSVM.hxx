@@ -5,8 +5,6 @@
 
 #if defined(__cplusplus)
 
-#include <cstdint>
-
 #include <unordered_set>
 
 #include <NGenXXTypes.hxx>
