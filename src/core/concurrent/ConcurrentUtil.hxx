@@ -6,6 +6,7 @@
 #include <atomic>
 #include <new>
 #include <thread>
+#include <string>
 
 namespace NGenXX::Core::Concurrent
 {
