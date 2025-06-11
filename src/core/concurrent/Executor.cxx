@@ -73,7 +73,7 @@ NGenXX::Core::Concurrent::Executor& NGenXX::Core::Concurrent::Executor::operator
         while (active)
 #endif
         {
-            if (!tryLock())
+            if (!tryLock()) [[unlikely]]
             {
                 sleep();
                 continue;
@@ -81,7 +81,7 @@ NGenXX::Core::Concurrent::Executor& NGenXX::Core::Concurrent::Executor::operator
 
             std::function<void()> func;
             {
-                if (taskQueue.empty())
+                if (taskQueue.empty()) [[unlikely]]
                 {
                     unlock();
                     sleep();
@@ -93,19 +93,18 @@ NGenXX::Core::Concurrent::Executor& NGenXX::Core::Concurrent::Executor::operator
                 unlock();
             }
 
-            if (func)
+            if (func) [[likely]]
             {
                 ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Executor task running on thread:{}", currentThreadId());
                 func();
             }
-            else
+            else [[unlikely]]
             {
                 sleep();
             }
         }
     });
-
+    
     ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Executor created new worker, poolSize:{} poolCapacity:{} cpuCores:{}", this->workerPool.size(), this->workerPoolCapacity, countCPUCore());
-
-	return *this;
+    return *this;
 }
