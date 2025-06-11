@@ -39,7 +39,7 @@ private:
     std::atomic<bool> active{false};
 #endif
 
-    bool tryLock();
+    [[nodiscard]] bool tryLock();
     void unlock();
     void sleep();
 };

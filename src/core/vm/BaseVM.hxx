@@ -22,9 +22,9 @@ namespace NGenXX::Core::VM
         std::recursive_timed_mutex vmMutex;
         Concurrent::Executor executor;
 
-        void sleep();
-        bool tryLock();
+        [[nodiscard]] bool tryLock();
         void unlock();
+        void sleep();
     };
 }
 

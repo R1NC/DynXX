@@ -10,19 +10,19 @@ namespace
     constexpr auto SleepMicroSecs = 1000uz;
 }
 
-void NGenXX::Core::VM::BaseVM::sleep()
-{
-    NGenXX::Core::Concurrent::sleep(SleepMicroSecs);
-}
-
 bool NGenXX::Core::VM::BaseVM::tryLock()
 {
-    NGenXX::Core::Concurrent::tryLockMutex(this->vmMutex, SleepMicroSecs);
+    return NGenXX::Core::Concurrent::tryLock(this->vmMutex, SleepMicroSecs);
 }
 
 void NGenXX::Core::VM::BaseVM::unlock()
 {
     this->vmMutex.unlock();
+}
+
+void NGenXX::Core::VM::BaseVM::sleep()
+{
+    NGenXX::Core::Concurrent::sleep(SleepMicroSecs);
 }
 
 NGenXX::Core::VM::BaseVM::BaseVM()

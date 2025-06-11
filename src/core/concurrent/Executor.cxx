@@ -38,7 +38,7 @@ NGenXX::Core::Concurrent::Executor::~Executor()
 
 bool NGenXX::Core::Concurrent::Executor::tryLock()
 {
-	return NGenXX::Core::Concurrent::tryLockMutex(this->mutex, sleepMicroSecs);
+	return NGenXX::Core::Concurrent::tryLock(this->mutex, sleepMicroSecs);
 }
 
 void NGenXX::Core::Concurrent::Executor::unlock()
