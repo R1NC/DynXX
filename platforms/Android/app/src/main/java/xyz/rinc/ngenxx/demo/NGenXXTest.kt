@@ -20,11 +20,11 @@ class NGenXXTest {
         private var sLuaLoaded: Boolean = false
 
         fun init(application: Application) {
+            NGenXXHelper.logSetLevel(LogLevel.Debug)
+            
             sApplication = application
             val dir = sApplication?.filesDir?.absolutePath ?: return
             if (!NGenXX.init(dir)) return
-
-            NGenXXHelper.logSetLevel(LogLevel.Debug)
 
             NGenXX.jSetMsgCallback { msg ->
                 "Android->$msg@${System.currentTimeMillis()}"

@@ -19,10 +19,10 @@ static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=
 
 - (instancetype)init {
     if (self = [super init]) {
+        ngenxx_log_set_level(NGenXXLogLevelDebug);
         if (!ngenxx_init(NSString2CharP(self.root))) {
             NSLog(@"!!! SDK INIT FAILED !!!");
         }
-        ngenxx_log_set_level(NGenXXLogLevelDebug);
     }
     return self;
 }

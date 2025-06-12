@@ -3,11 +3,33 @@
 
 #if defined(__cplusplus)
 
+#include <random>
+
 #include <NGenXXTypes.hxx>
+
+#include "../concurrent/ConcurrentUtil.hxx"
 
 namespace NGenXX::Core::Crypto
     {
         bool rand(size_t len, byte *bytes);
+
+        template<NumberT T>
+        std::optional<T> rand(T min, T max) 
+        {
+            if (min > max || max <= 0) 
+            {
+                return std::nullopt;
+            }
+
+            static std::mt19937 generator;
+            Concurrent::callOnce([]() {
+                std::random_device rd;
+                generator.seed(rd());
+            });
+            
+            std::uniform_int_distribution<T> distribution(min, max);
+            return std::make_optional(distribution(generator));
+        }
 
         namespace AES
         {

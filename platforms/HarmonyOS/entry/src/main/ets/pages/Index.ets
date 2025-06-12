@@ -13,10 +13,10 @@ struct Index {
           .fontSize(23)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
+            NGenXX.logSetLevel(LogLevel.Debug)
+            
             let root = getContext().filesDir;
             NGenXX.init(root);
-
-            NGenXX.logSetLevel(LogLevel.Debug)
 
             NGenXX.logPrint(LogLevel.Debug, `DeviceType: ${NGenXX.deviceType()}`);
             NGenXX.logPrint(LogLevel.Debug, `DeviceName: ${NGenXX.deviceName()}`);
