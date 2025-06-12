@@ -1,3 +1,7 @@
+--[[
+    Required [json.lua](https://gist.github.com/tylerneylon/59f4bcf316be525b30ab)
+]]
+
 NGenXX = {}
 
 local InJsonVoid = ''

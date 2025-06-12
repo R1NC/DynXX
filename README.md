@@ -82,6 +82,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 * [curl][4]: Networking;
 * [cJSON][5]: JSON codec;
 * [iOS-cmake][18]: CMake toolchain for Apple platforms;
+* [json.lua][40]: JSON codec for Lua;
 * [libuv][6]: Asynchronous I/O;
 * [lua][7]: Lua runtime;
 * [MMKV][8]: Key-value storage;
@@ -130,3 +131,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [37]: ../../actions/workflows/Linux.yml
 [38]: ../../actions/workflows/WASM-mac.yml
 [39]: https://en.cppreference.com/w/cpp/thread/jthread.html
+[40]: https://gist.github.com/tylerneylon/59f4bcf316be525b30ab
