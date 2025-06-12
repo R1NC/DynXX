@@ -22,6 +22,7 @@ res/* linguist-vendored=true
 *.webp linguist-vendored=true
 *.toml linguist-vendored=true
 *.storyboard linguist-vendored=true
+hvigorfile.ts linguist-vendored=true
 gradlew linguist-vendored=true
 gradlew.bat linguist-vendored=true
 *.ets linguist-vendored=false
