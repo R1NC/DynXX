@@ -1,6 +1,6 @@
 //
 //  ViewController.m
-//  SdkEngineDemo
+//  NGenXX
 //
 //  Created by Rinc on 2024/8/23.
 //
@@ -28,10 +28,6 @@
     [_na testCrypto];
     [_na testJsonDecoder];
     [_na testZip];
-}
-
-- (void)setRepresentedObject:(id)representedObject {
-    [super setRepresentedObject:representedObject];
 }
 
 @end
