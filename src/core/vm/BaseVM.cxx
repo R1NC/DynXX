@@ -1,7 +1,5 @@
 #include "BaseVM.hxx"
 
-#include <utility>
-
 #include <NGenXXLog.hxx>
 #include "../concurrent/ConcurrentUtil.hxx"
 

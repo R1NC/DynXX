@@ -1,7 +1,6 @@
 #ifndef NGENXX_INCLUDE_HXX_
 #define NGENXX_INCLUDE_HXX_
 
-#include "NGenXXTypes.hxx"
 #include "NGenXXNetHttp.hxx"
 #include "NGenXXStoreKV.hxx"
 #include "NGenXXStoreSQLite.hxx"

@@ -1,9 +1,7 @@
 #ifndef NGENXX_INCLUDE_STORE_KV_H_
 #define NGENXX_INCLUDE_STORE_KV_H_
 
-#include <stddef.h>
-
-#include "NGenXXMacro.h"
+#include "NGenXXTypes.h"
 
 EXTERN_C_BEGIN
 

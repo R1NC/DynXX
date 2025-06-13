@@ -5,8 +5,6 @@
 #define NOMINMAX  // prevent windows redefining min/max
 #endif
 
-#include "NGenXXMacro.h"
-#include "NGenXXTypes.h"
 #include "NGenXXLog.h"
 #include "NGenXXCrypto.h"
 #include "NGenXXCoding.h"

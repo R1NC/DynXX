@@ -1,9 +1,7 @@
 #ifndef NGENXX_INCLUDE_JSON_H_
 #define NGENXX_INCLUDE_JSON_H_
 
-#include <stdbool.h>
-
-#include "NGenXXMacro.h"
+#include "NGenXXTypes.h"
 
 EXTERN_C_BEGIN
 

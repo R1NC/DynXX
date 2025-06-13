@@ -1,9 +1,6 @@
 #ifndef NGENXX_INCLUDE_CODING_H_
 #define NGENXX_INCLUDE_CODING_H_
 
-#include <stddef.h>
-
-#include "NGenXXMacro.h"
 #include "NGenXXTypes.h"
 
 EXTERN_C_BEGIN
