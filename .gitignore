@@ -16,3 +16,4 @@ scripts/JS/dist
 *.qjsb
 build
 .cache/clangd/index
+.idea

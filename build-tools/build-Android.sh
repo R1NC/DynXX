@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/29.0.13113456/"}
+NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/29.0.13599879/"}
 ARCH=arm64-v8a
 
 BUILD_DIR=../build.Android
