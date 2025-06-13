@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # TODO
-OHOS_ROOT=${OHOS_ROOT:-"~/Library/OpenHarmony/Sdk/15/native"}
+OHOS_ROOT=${OHOS_ROOT:-"~/Library/OpenHarmony/Sdk/18/native"}
 ARCH=arm64-v8a
 
 BUILD_DIR=../build.HarmonyOS
