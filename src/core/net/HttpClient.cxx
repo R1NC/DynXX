@@ -74,8 +74,6 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::request(const std::string &url
                                                                  const std::FILE *cFILE, size_t fileSize,
                                                                  size_t timeout) {
     return this->req(url, headers, params, method, timeout, [&url, method, &params, &rawBody, &formFields, cFILE, fileSize](CURL *const curl, const NGenXXHttpResponse &rsp) {
-        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request params: {}", url, params);
-
         if (cFILE != nullptr)
         {
             curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
@@ -147,8 +145,6 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(const std::string &url, co
         return {};
     }
 
-    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.createRequest url: {}", url);
-
     auto curl = curl_easy_init();
     if (!curl) [[unlikely]]
     {
@@ -176,7 +172,7 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(const std::string &url, co
     curl_slist *headerList = nullptr;
     for (const auto &it : headers)
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.request header: {}", it);
+        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.req header: {}", it);
         headerList = curl_slist_append(headerList, it.c_str());
     }
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
@@ -191,7 +187,9 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(const std::string &url, co
         }
         ssUrl << params;
     }
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    const auto& fixedUrl = ssUrl.str();
+    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.req url: {}", fixedUrl);
+    curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
 
     NGenXXHttpResponse rsp;
     std::move(func)(curl, rsp);
