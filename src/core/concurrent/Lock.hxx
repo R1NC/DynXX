@@ -3,6 +3,8 @@
 
 #if defined(__cplusplus)
 
+#include <atomic>
+
 #include "ConcurrentUtil.hxx"
 
 namespace NGenXX::Core::Concurrent

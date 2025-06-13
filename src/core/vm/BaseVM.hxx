@@ -3,6 +3,8 @@
 
 #if defined(__cplusplus)
 
+#include <atomic>
+
 #include "../concurrent/Executor.hxx"
 
 namespace NGenXX::Core::VM

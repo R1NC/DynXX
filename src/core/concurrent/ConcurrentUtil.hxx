@@ -4,11 +4,11 @@
 #if defined(__cplusplus)
 
 #include <new>
-#include <atomic>
 #include <mutex>
 #include <thread>
 #include <string>
 #include <chrono>
+#include <functional>
 
 namespace NGenXX::Core::Concurrent
 {
@@ -57,11 +57,17 @@ template<TimedLockableT T>
     return mtx.try_lock_until(timeout);
 }
 
-template<typename F>
-void callOnce(F&& func) 
+template <typename T>
+concept RunnableT = requires(T t) 
+{
+    { t() } -> std::same_as<void>;
+};
+
+template <RunnableT T>
+inline void callOnce(T&& func) 
 {
     static std::once_flag flag;
-    std::call_once(flag, std::forward<F>(func));
+    std::call_once(flag, std::forward<T>(func));
 }
 
 }
