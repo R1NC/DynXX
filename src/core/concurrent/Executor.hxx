@@ -11,6 +11,44 @@
 #include "ConcurrentUtil.hxx"
 
 namespace NGenXX::Core::Concurrent {
+    using TaskT = std::function<void()>;
+
+    class alignas(CacheLineSize) Worker final {
+    public:
+        Worker();
+
+        explicit Worker(size_t sleepMicroSecs);
+
+        Worker(const Worker &) = delete;
+
+        Worker &operator=(const Worker &) = delete;
+
+        Worker(Worker &&) = delete;
+
+        Worker &operator=(Worker &&) = delete;
+
+        ~Worker();
+
+        Worker &operator>>(TaskT &&task);
+
+    private:
+        size_t sleepMicroSecs{1000uz};
+        std::recursive_timed_mutex mutex;
+        std::queue<TaskT> taskQueue;
+#if defined(__cpp_lib_jthread)
+        std::jthread thread;
+#else
+        std::thread thread;
+        std::atomic<bool> active{false};
+#endif
+
+        [[nodiscard]] bool tryLock();
+
+        void unlock();
+
+        void sleep();
+    };
+
     class alignas(CacheLineSize) Executor final {
     public:
         Executor();
@@ -27,27 +65,14 @@ namespace NGenXX::Core::Concurrent {
 
         ~Executor();
 
-        using TaskT = std::function<void()>;
-
         Executor &operator>>(TaskT &&task);
 
     private:
         size_t workerPoolCapacity{0uz};
         size_t sleepMicroSecs{1000uz};
-        std::recursive_timed_mutex mutex;
-        std::queue<TaskT> taskQueue;
-#if defined(__cpp_lib_jthread)
-    std::vector<std::jthread> workerPool;
-#else
-        std::vector<std::thread> workerPool;
-        std::atomic<bool> active{false};
-#endif
-
-        [[nodiscard]] bool tryLock();
-
-        void unlock();
-
-        void sleep();
+        std::vector<std::unique_ptr<Worker>> workerPool;
+        std::recursive_mutex mutex;
+        unsigned workerIndex{0uz};
     };
 }
 
