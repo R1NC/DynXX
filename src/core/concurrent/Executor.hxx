@@ -13,7 +13,11 @@
 namespace NGenXX::Core::Concurrent {
     using TaskT = std::function<void()>;
 
-    class alignas(CacheLineSize) Worker final {
+    class
+#if !defined(__cpp_lib_jthread)
+            alignas(CacheLineSize)
+#endif
+            Worker final {
     public:
         Worker();
 
@@ -49,7 +53,7 @@ namespace NGenXX::Core::Concurrent {
         void sleep();
     };
 
-    class alignas(CacheLineSize) Executor final {
+    class Executor final {
     public:
         Executor();
 
