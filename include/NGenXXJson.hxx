@@ -7,8 +7,7 @@
 
 #include "NGenXXTypes.hxx"
 
-enum class NGenXXJsonNodeTypeX : int
-{
+enum class NGenXXJsonNodeTypeX : int {
     Unknown,
     Object,
     Array,
@@ -19,9 +18,11 @@ enum class NGenXXJsonNodeTypeX : int
 };
 
 NGenXXJsonNodeTypeX ngenxxJsonReadType(void *const json);
+
 std::optional<std::string> ngenxxJsonToStr(void *const cjson);
 
 std::optional<std::string> ngenxxJsonFromDictAny(const DictAny &dict);
+
 DictAny ngenxxJsonToDictAny(const std::string &json);
 
 void *ngenxxJsonDecoderInit(const std::string &json);
@@ -34,7 +35,8 @@ std::optional<double> ngenxxJsonDecoderReadNumber(void *const decoder, void *con
 
 void *ngenxxJsonDecoderReadChild(void *const decoder, void *const node = nullptr);
 
-void ngenxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void * child)> &&callback, void *const node = nullptr);
+void ngenxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void *child)> &&callback,
+                                   void *const node = nullptr);
 
 void *ngenxxJsonDecoderReadNext(void *const decoder, void *const node = nullptr);
 

@@ -26,93 +26,78 @@
 #define LKF1_ LKF1 _
 #define LKF2_ LKF2 _
 
-inline JNIEnv *currentEnv(JavaVM *vm)
-{
+inline JNIEnv *currentEnv(JavaVM *vm) {
     JNIEnv *env = nullptr;
-    if (vm != nullptr)
-    {
+    if (vm != nullptr) {
         vm->AttachCurrentThread(&env, nullptr);
     }
     return env;
 }
 
-template <NumberT T>
-jobject boxJNum(JNIEnv *env, const T j, const char *cls, const char *sig)
-{
+template<NumberT T>
+jobject boxJNum(JNIEnv *env, const T j, const char *cls, const char *sig) {
     auto jClass = env->FindClass(cls);
     auto jValueOf = env->GetStaticMethodID(jClass, "valueOf", sig);
     return env->CallStaticObjectMethod(jClass, jValueOf, j);
 }
 
-inline jobject boxJBoolean(JNIEnv *env, const jboolean j)
-{
+inline jobject boxJBoolean(JNIEnv *env, const jboolean j) {
     return boxJNum<jboolean>(env, j, JNumCls(Boolean), JNumSig(Boolean, Z));
 }
 
-inline jobject boxJInt(JNIEnv *env, const jint j)
-{
+inline jobject boxJInt(JNIEnv *env, const jint j) {
     return boxJNum<jint>(env, j, JNumCls(Integer), JNumSig(Integer, I));
 }
 
-inline jobject boxJLong(JNIEnv *env, const jlong j)
-{
+inline jobject boxJLong(JNIEnv *env, const jlong j) {
     return boxJNum<jlong>(env, j, JNumCls(Long), JNumSig(Long, J));
 }
 
-inline jobject boxJFloat(JNIEnv *env, const jfloat j)
-{
+inline jobject boxJFloat(JNIEnv *env, const jfloat j) {
     return boxJNum<jfloat>(env, j, JNumCls(Float), JNumSig(Float, F));
 }
 
-inline jobject boxJDouble(JNIEnv *env, const jdouble j)
-{
+inline jobject boxJDouble(JNIEnv *env, const jdouble j) {
     return boxJNum<jdouble>(env, j, JNumCls(Double), JNumSig(Double, D));
 }
 
-inline jstring boxJString(JNIEnv *env, const char *str)
-{
-    if (str == nullptr) 
-    {
+inline jstring boxJString(JNIEnv *env, const char *str) {
+    if (str == nullptr) {
         str = "";
     }
     auto sLen = static_cast<jsize>(strlen(str));
-    auto p = reinterpret_cast<const unsigned char*>(str);
+    auto p = reinterpret_cast<const unsigned char *>(str);
     std::ostringstream oss;
     size_t i = 0;
-    
-    while (i < sLen)
-    {
-        if (p[i] < 0x80) 
-        { // 1-byte character
+
+    while (i < sLen) {
+        if (p[i] < 0x80) {
+            // 1-byte character
             oss << p[i];
             i++;
-        } 
-        else if ((p[i] >> 5) == 0b110 && 
-                 i + 1 < sLen &&
-                 (p[i + 1] >> 6) == 0b10) 
-        { // valid 2-byte character
+        } else if ((p[i] >> 5) == 0b110 &&
+                   i + 1 < sLen &&
+                   (p[i + 1] >> 6) == 0b10) {
+            // valid 2-byte character
             oss << p[i] << p[i + 1];
             i += 2;
-        } 
-        else if ((p[i] >> 4) == 0b1110 && 
-                 i + 2 < sLen &&
-                 (p[i + 1] >> 6) == 0b10 && 
-                 (p[i + 2] >> 6) == 0b10) 
-        { // valid 3-byte character
+        } else if ((p[i] >> 4) == 0b1110 &&
+                   i + 2 < sLen &&
+                   (p[i + 1] >> 6) == 0b10 &&
+                   (p[i + 2] >> 6) == 0b10) {
+            // valid 3-byte character
             oss << p[i] << p[i + 1] << p[i + 2];
             i += 3;
-        } 
-        else if ((p[i] >> 3) == 0b11110 && 
-                 i + 3 < sLen &&
-                 (p[i + 1] >> 6) == 0b10 && 
-                 (p[i + 2] >> 6) == 0b10 && 
-                 (p[i + 3] >> 6) == 0b10) 
-        { // valid 4-byte character
+        } else if ((p[i] >> 3) == 0b11110 &&
+                   i + 3 < sLen &&
+                   (p[i + 1] >> 6) == 0b10 &&
+                   (p[i + 2] >> 6) == 0b10 &&
+                   (p[i + 3] >> 6) == 0b10) {
+            // valid 4-byte character
             oss << p[i] << p[i + 1] << p[i + 2] << p[i + 3];
             i += 4;
-        } 
-        else [[unlikely]]
-        { // invalid UTF-8 sequence
+        } else [[unlikely]] {
+            // invalid UTF-8 sequence
             oss << '?';
             i++;
         }
@@ -122,7 +107,7 @@ inline jstring boxJString(JNIEnv *env, const char *str)
     auto fixedLen = static_cast<jsize>(fixedStr.length());
     auto strBytes = env->NewByteArray(fixedLen);
     env->SetByteArrayRegion(strBytes, 0, fixedLen,
-                           reinterpret_cast<const jbyte*>(fixedStr.c_str()));
+                            reinterpret_cast<const jbyte *>(fixedStr.c_str()));
     auto strClass = env->FindClass(JLS);
     auto strConstructor = env->GetMethodID(strClass, "<init>", "([B" LJLS_ ")V");
     auto charsetName = env->NewStringUTF("UTF-8");
@@ -134,26 +119,22 @@ inline jstring boxJString(JNIEnv *env, const char *str)
     return jStr;
 }
 
-inline jmethodID getLambdaMethod(JNIEnv *env, const char* cls, const char *sig)
-{
+inline jmethodID getLambdaMethod(JNIEnv *env, const char *cls, const char *sig) {
     auto function1Class = env->FindClass(cls);
     return env->GetMethodID(function1Class, "invoke", sig);
 }
 
-inline jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, const bool needFree)
-{
+inline jbyteArray
+moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, const bool needFree) {
     jbyteArray jba;
-    if (bytes && outLen > 0)
-    {
+    if (bytes && outLen > 0) {
         jba = env->NewByteArray(static_cast<jsize>(outLen));
-        env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen), const_cast<jbyte *>(reinterpret_cast<const jbyte *>(bytes)));
-        if (needFree)
-        {
+        env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen),
+                                const_cast<jbyte *>(reinterpret_cast<const jbyte *>(bytes)));
+        if (needFree) {
             freeX(bytes);
         }
-    }
-    else
-    {
+    } else {
         jba = env->NewByteArray(0);
     }
     return jba;

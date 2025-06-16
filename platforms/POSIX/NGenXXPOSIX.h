@@ -20,4 +20,3 @@ void ngenxx_posix_testZip();
 void ngenxx_posix_release();
 
 #endif // NGENXX_POSIX_H_
-

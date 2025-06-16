@@ -8,9 +8,8 @@
 #include "NGenXXMacro.h"
 
 EXTERN_C_BEGIN
-
-    typedef unsigned char byte;
-    typedef intptr_t address;
+typedef unsigned char byte;
+typedef intptr_t address;
 
 EXTERN_C_END
 

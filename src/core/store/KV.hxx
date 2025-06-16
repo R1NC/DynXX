@@ -14,63 +14,70 @@
 
 #include <NGenXXTypes.hxx>
 
-namespace NGenXX::Core::Store
-    {
-        class KV
-        {
+namespace NGenXX::Core::Store {
+    class KV {
+    public:
+        KV() = delete;
+
+        explicit KV(const std::string &root);
+
+        KV(const KV &) = delete;
+
+        KV &operator=(const KV &) = delete;
+
+        KV(KV &&) = delete;
+
+        KV &operator=(KV &&) = delete;
+
+        class Connection {
         public:
-            KV() = delete;
-            explicit KV(const std::string &root);
-            KV(const KV &) = delete;
-            KV &operator=(const KV &) = delete;
-            KV(KV &&) = delete;
-            KV &operator=(KV &&) = delete;
+            Connection() = delete;
 
-            class Connection
-            {
-            public:
-                Connection() = delete;
-                explicit Connection(const std::string &_id);
-                Connection(const Connection &) = delete;
-                Connection &operator=(const Connection &) = delete;
-                Connection(Connection &&) = delete;
-                Connection &operator=(Connection &&) = delete;
+            explicit Connection(const std::string &_id);
 
-                std::optional<std::string> readString(const std::string_view &k) const;
+            Connection(const Connection &) = delete;
 
-                std::optional<int64_t> readInteger(const std::string_view &k) const;
+            Connection &operator=(const Connection &) = delete;
 
-                std::optional<double> readFloat(const std::string_view &k) const;
+            Connection(Connection &&) = delete;
 
-                [[nodiscard]] bool write(const std::string_view &k, const Any &v) const;
+            Connection &operator=(Connection &&) = delete;
 
-                std::vector<std::string> allKeys() const;
+            std::optional<std::string> readString(const std::string_view &k) const;
 
-                bool contains(const std::string_view &k) const;
+            std::optional<int64_t> readInteger(const std::string_view &k) const;
 
-                [[nodiscard]] bool remove(const std::string_view &k) const;
+            std::optional<double> readFloat(const std::string_view &k) const;
 
-                void clear() const;
+            [[nodiscard]] bool write(const std::string_view &k, const Any &v) const;
 
-                ~Connection();
+            std::vector<std::string> allKeys() const;
 
-            private:
-                MMKV *kv{nullptr};
-                mutable std::shared_mutex mutex;
-            };
+            bool contains(const std::string_view &k) const;
 
-            std::weak_ptr<Connection> open(const std::string &_id);
+            [[nodiscard]] bool remove(const std::string_view &k) const;
 
-            void close(const std::string &_id);
+            void clear() const;
 
-            void closeAll();
-
-            ~KV();
+            ~Connection();
 
         private:
-            std::unordered_map<std::string, std::shared_ptr<Connection>> conns;
-            std::mutex mutex;
+            MMKV *kv{nullptr};
+            mutable std::shared_mutex mutex;
         };
+
+        std::weak_ptr<Connection> open(const std::string &_id);
+
+        void close(const std::string &_id);
+
+        void closeAll();
+
+        ~KV();
+
+    private:
+        std::unordered_map<std::string, std::shared_ptr<Connection> > conns;
+        std::mutex mutex;
+    };
 }
 
 #endif

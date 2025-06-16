@@ -5,15 +5,13 @@
 
 constexpr size_t NGenXXHttpDefaultTimeout = 15 * 1000;
 
-enum class NGenXXHttpMethodX : int
-{
+enum class NGenXXHttpMethodX : int {
     Get,
     Post,
     Put,
 };
 
-struct NGenXXHttpResponse
-{
+struct NGenXXHttpResponse {
     int code{0};
     std::string contentType;
     std::unordered_map<std::string, std::string> headers;
@@ -21,30 +19,32 @@ struct NGenXXHttpResponse
 
     [[nodiscard]] std::optional<std::string> toJson() const;
 };
+
 using NGenXXHttpResponse = NGenXXHttpResponse;
 
 NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                            NGenXXHttpMethodX method,
-                                              const std::string &params,
-                                              const Bytes &rawBody = {},
-                                              const std::vector<std::string> &headerV = {},
-                                              const std::vector<std::string> &formFieldNameV = {},
-                                              const std::vector<std::string> &formFieldMimeV = {},
-                                              const std::vector<std::string> &formFieldDataV = {},
-                                              const std::FILE *cFILE = nullptr, size_t fileSize = 0,
-                                              size_t timeout = NGenXXHttpDefaultTimeout);
+                                        NGenXXHttpMethodX method,
+                                        const std::string &params,
+                                        const Bytes &rawBody = {},
+                                        const std::vector<std::string> &headerV = {},
+                                        const std::vector<std::string> &formFieldNameV = {},
+                                        const std::vector<std::string> &formFieldMimeV = {},
+                                        const std::vector<std::string> &formFieldDataV = {},
+                                        const std::FILE *cFILE = nullptr, size_t fileSize = 0,
+                                        size_t timeout = NGenXXHttpDefaultTimeout);
 
 NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
-                                            NGenXXHttpMethodX method,
-                                              const std::unordered_map<std::string, Any> &params,
-                                              const Bytes &rawBody = {},
-                                              const std::unordered_map<std::string, std::string> &headers = {},
-                                              const std::vector<std::string> &formFieldNameV = {},
-                                              const std::vector<std::string> &formFieldMimeV = {},
-                                              const std::vector<std::string> &formFieldDataV = {},
-                                              const std::FILE *cFILE = nullptr, size_t fileSize = 0,
-                                              size_t timeout = NGenXXHttpDefaultTimeout);
+                                        NGenXXHttpMethodX method,
+                                        const std::unordered_map<std::string, Any> &params,
+                                        const Bytes &rawBody = {},
+                                        const std::unordered_map<std::string, std::string> &headers = {},
+                                        const std::vector<std::string> &formFieldNameV = {},
+                                        const std::vector<std::string> &formFieldMimeV = {},
+                                        const std::vector<std::string> &formFieldDataV = {},
+                                        const std::FILE *cFILE = nullptr, size_t fileSize = 0,
+                                        size_t timeout = NGenXXHttpDefaultTimeout);
 
-bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath, size_t timeout = NGenXXHttpDefaultTimeout);
+bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath,
+                           size_t timeout = NGenXXHttpDefaultTimeout);
 
 #endif // NGENXX_INCLUDE_NET_HTTP_HXX_

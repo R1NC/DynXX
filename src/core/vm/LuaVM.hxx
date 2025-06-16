@@ -60,18 +60,20 @@ EXTERN_C_END
         return 1;                           \
     }
 
-namespace NGenXX::Core::VM
-{
-    class LuaVM final : public BaseVM
-    {
+namespace NGenXX::Core::VM {
+    class LuaVM final : public BaseVM {
     public:
         /**
          * @brief Create Lua environment
          */
         LuaVM();
+
         LuaVM(const LuaVM &) = delete;
+
         LuaVM &operator=(const LuaVM &) = delete;
+
         LuaVM(LuaVM &&) = delete;
+
         LuaVM &operator=(LuaVM &&) = delete;
 
         /**

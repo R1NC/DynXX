@@ -7,14 +7,17 @@
 
 #include "../concurrent/Executor.hxx"
 
-namespace NGenXX::Core::VM
-{
+namespace NGenXX::Core::VM {
     class BaseVM {
     public:
         BaseVM();
+
         BaseVM(const BaseVM &) = delete;
+
         BaseVM &operator=(const BaseVM &) = delete;
+
         BaseVM(BaseVM &&) = delete;
+
         BaseVM &operator=(BaseVM &&) = delete;
 
         virtual ~BaseVM();
@@ -25,7 +28,9 @@ namespace NGenXX::Core::VM
         Concurrent::Executor executor;
 
         [[nodiscard]] bool tryLock();
+
         void unlock();
+
         void sleep();
     };
 }

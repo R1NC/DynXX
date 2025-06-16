@@ -17,64 +17,52 @@ namespace {
     std::unique_ptr<NGenXX::Core::VM::JSVM> vm = nullptr;
     std::function<const char *(const char *msg)> msgCbk = nullptr;
 
-    #define DEF_API(f, T) DEF_JS_FUNC_##T(f##J, f##S)
-    #define DEF_API_ASYNC(f, T) DEF_JS_FUNC_##T##_ASYNC(vm, f##J, f##S)
+#define DEF_API(f, T) DEF_JS_FUNC_##T(f##J, f##S)
+#define DEF_API_ASYNC(f, T) DEF_JS_FUNC_##T##_ASYNC(vm, f##J, f##S)
 
-    #define BIND_API(f)                                                    \
+#define BIND_API(f)                                                    \
         if (vm) [[likely]] {                                           \
             vm->bindFunc(#f, f##J);                                    \
         }
 
-    bool loadF(const std::string &file, const bool isModule)
-    {
-        if (!vm || file.empty()) [[unlikely]]
-        {
+    bool loadF(const std::string &file, const bool isModule) {
+        if (!vm || file.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadFile(file, isModule);
     }
 
-    bool loadS(const std::string &script, const std::string &name, const bool isModule)
-    {
-        if (!vm || script.empty() || name.empty()) [[unlikely]]
-        {
+    bool loadS(const std::string &script, const std::string &name, const bool isModule) {
+        if (!vm || script.empty() || name.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadScript(script, name, isModule);
     }
 
-    bool loadB(const Bytes &bytes, const bool isModule)
-    {
-        if (!vm || bytes.empty()) [[unlikely]]
-        {
+    bool loadB(const Bytes &bytes, const bool isModule) {
+        if (!vm || bytes.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadBinary(bytes, isModule);
     }
 
-    std::optional<std::string> call(const std::string &func, const std::string &params, const bool await)
-    {
-        if (!vm || func.empty()) [[unlikely]]
-        {
+    std::optional<std::string> call(const std::string &func, const std::string &params, const bool await) {
+        if (!vm || func.empty()) [[unlikely]] {
             return std::nullopt;
         }
         return vm->callFunc(func, params, await);
     }
 
-    void setMsgCallback(const std::function<const char *(const char *msg)> &callback)
-    {
+    void setMsgCallback(const std::function<const char *(const char *msg)> &callback) {
         msgCbk = callback;
     }
 
-    std::string ngenxx_call_platformS(const char *msg)
-    {
-        if (msg == nullptr || msgCbk == nullptr)
-        {
+    std::string ngenxx_call_platformS(const char *msg) {
+        if (msg == nullptr || msgCbk == nullptr) {
             return {};
         }
         const auto res = msgCbk(msg);
-        if (res == nullptr) [[unlikely]]
-        {
+        if (res == nullptr) [[unlikely]] {
             return {};
         }
         return {res};
@@ -83,61 +71,51 @@ namespace {
 
 #pragma mark C++ API
 
-bool ngenxxJsLoadF(const std::string &file, bool isModule)
-{
+bool ngenxxJsLoadF(const std::string &file, bool isModule) {
     return loadF(file, isModule);
 }
 
-bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isModule)
-{
+bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isModule) {
     return loadS(script, name, isModule);
 }
 
-bool ngenxxJsLoadB(const Bytes &bytes, bool isModule)
-{
+bool ngenxxJsLoadB(const Bytes &bytes, bool isModule) {
     return loadB(bytes, isModule);
 }
 
-std::optional<std::string> ngenxxJsCall(const std::string &func, const std::string &params, bool await)
-{
+std::optional<std::string> ngenxxJsCall(const std::string &func, const std::string &params, bool await) {
     return call(func, params, await);
 }
 
-void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback)
-{
+void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback) {
     setMsgCallback(callback);
 }
 
 #pragma mark C API
 
 EXPORT_AUTO
-bool ngenxx_js_loadF(const char *file, bool is_module)
-{
+bool ngenxx_js_loadF(const char *file, bool is_module) {
     return ngenxxJsLoadF(wrapStr(file), is_module);
 }
 
 EXPORT_AUTO
-bool ngenxx_js_loadS(const char *script, const char *name, bool is_module)
-{
+bool ngenxx_js_loadS(const char *script, const char *name, bool is_module) {
     return ngenxxJsLoadS(wrapStr(script), wrapStr(name), is_module);
 }
 
 EXPORT_AUTO
-bool ngenxx_js_loadB(const byte *bytes, size_t len, bool is_module)
-{
+bool ngenxx_js_loadB(const byte *bytes, size_t len, bool is_module) {
     return ngenxxJsLoadB(wrapBytes(bytes, len), is_module);
 }
 
 EXPORT_AUTO
-const char *ngenxx_js_call(const char *func, const char *params, bool await)
-{
-    const auto& s = ngenxxJsCall(wrapStr(func), wrapStr(params), await).value_or("");
+const char *ngenxx_js_call(const char *func, const char *params, bool await) {
+    const auto &s = ngenxxJsCall(wrapStr(func), wrapStr(params), await).value_or("");
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
-void ngenxx_js_set_msg_callback(const char *(*const callback)(const char *msg))
-{
+void ngenxx_js_set_msg_callback(const char *(*const callback)(const char *msg)) {
     ngenxxJsSetMsgCallback(callback);
 }
 
@@ -214,8 +192,7 @@ DEF_API_ASYNC(ngenxx_z_bytes_unzip, STRING)
 
 #pragma mark JS API - Binding
 
-static void registerFuncs()
-{
+static void registerFuncs() {
     BIND_API(ngenxx_call_platform);
 
     BIND_API(ngenxx_get_version);
@@ -288,20 +265,16 @@ static void registerFuncs()
 
 #pragma mark Inner API
 
-void ngenxx_js_init()
-{
-    if (vm) [[unlikely]]
-    {
+void ngenxx_js_init() {
+    if (vm) [[unlikely]] {
         return;
     }
     vm = std::make_unique<NGenXX::Core::VM::JSVM>();
     registerFuncs();
 }
 
-void ngenxx_js_release()
-{
-    if (!vm) [[unlikely]]
-    {
+void ngenxx_js_release() {
+    if (!vm) [[unlikely]] {
         return;
     }
     vm.reset();

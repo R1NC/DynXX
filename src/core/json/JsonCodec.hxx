@@ -12,47 +12,54 @@
 #include <NGenXXTypes.hxx>
 #include <NGenXXJson.hxx>
 
-namespace NGenXX::Core::Json
-    {
-        NGenXXJsonNodeTypeX cJSONReadType(void *const cjson);
-        std::optional<std::string> cJSONToStr(void *const cjson);
+namespace NGenXX::Core::Json {
+    NGenXXJsonNodeTypeX cJSONReadType(void *const cjson);
 
-        std::optional<std::string> jsonFromDictAny(const DictAny &dict);
-        DictAny jsonToDictAny(const std::string &json);
-        
-        class Decoder
-        {
-        public:
-            Decoder() = delete;
-            explicit Decoder(const std::string &json);
-            Decoder(const Decoder &) = delete;
-            Decoder &operator=(const Decoder &) = delete;
-            Decoder(Decoder &&) noexcept;
-            Decoder &operator=(Decoder &&) noexcept;
+    std::optional<std::string> cJSONToStr(void *const cjson);
 
-            void *readChild(void *const node) const;
+    std::optional<std::string> jsonFromDictAny(const DictAny &dict);
 
-            void *readNext(void *const node) const;
+    DictAny jsonToDictAny(const std::string &json);
 
-            void readChildren(void *const node, std::function<void(size_t idx, void *const child)> &&callback) const;
+    class Decoder {
+    public:
+        Decoder() = delete;
 
-            void *readNode(void *const node, const std::string &k) const;
-            void *operator[](const std::string &k) const;
+        explicit Decoder(const std::string &json);
 
-            std::optional<std::string> readString(void *const node) const;
+        Decoder(const Decoder &) = delete;
 
-            std::optional<double> readNumber(void *const node) const;
+        Decoder &operator=(const Decoder &) = delete;
 
-            ~Decoder();
+        Decoder(Decoder &&) noexcept;
 
-        private:
-            cJSON *cjson{nullptr};
+        Decoder &operator=(Decoder &&) noexcept;
 
-            void moveImp(Decoder&& other) noexcept;
-            void cleanup() noexcept;
+        void *readChild(void *const node) const;
 
-            const cJSON *reinterpretNode(void *const node) const;
-        };
+        void *readNext(void *const node) const;
+
+        void readChildren(void *const node, std::function<void(size_t idx, void *const child)> &&callback) const;
+
+        void *readNode(void *const node, const std::string &k) const;
+
+        void *operator[](const std::string &k) const;
+
+        std::optional<std::string> readString(void *const node) const;
+
+        std::optional<double> readNumber(void *const node) const;
+
+        ~Decoder();
+
+    private:
+        cJSON *cjson{nullptr};
+
+        void moveImp(Decoder &&other) noexcept;
+
+        void cleanup() noexcept;
+
+        const cJSON *reinterpretNode(void *const node) const;
+    };
 }
 
 #endif

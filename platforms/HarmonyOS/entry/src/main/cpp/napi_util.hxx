@@ -53,19 +53,18 @@
     } while (0);
 
 
-class Args 
-{
+class Args {
 public:
     size_t c{0};
     napi_value *v{nullptr};
-    
+
     Args() = delete;
     Args(napi_env env, napi_callback_info info);
     Args(const Args &) = delete;
-    Args &operator=(const Args &) = delete;
+    Args & operator = (const Args &) = delete;
     Args(Args &&) = delete;
-    Args &operator=(Args &&) = delete;
-    
+    Args & operator = (Args &&) = delete;
+
     ~Args();
 private:
     napi_env env;

@@ -5,19 +5,18 @@
 
 #include <string>
 
-namespace NGenXX::Core::Device
-        {
-            int deviceType();
+namespace NGenXX::Core::Device {
+    int deviceType();
 
-            std::string deviceName();
+    std::string deviceName();
 
-            std::string deviceManufacturer();
+    std::string deviceManufacturer();
 
-            std::string deviceModel();
+    std::string deviceModel();
 
-            std::string osVersion();
+    std::string osVersion();
 
-            int cpuArch();
+    int cpuArch();
 }
 
 #endif

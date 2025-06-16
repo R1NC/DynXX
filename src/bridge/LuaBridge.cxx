@@ -12,35 +12,29 @@
 namespace {
     std::unique_ptr<NGenXX::Core::VM::LuaVM> vm = nullptr;
 
-    #define DEF_API(f, T) DEF_LUA_FUNC_##T(f##L, f##S)
+#define DEF_API(f, T) DEF_LUA_FUNC_##T(f##L, f##S)
 
-    #define BIND_API(f)                                                  \
+#define BIND_API(f)                                                  \
         if (vm) [[likely]] {                                         \
             vm->bindFunc(#f, f##L);                                  \
         }
 
-    bool loadF(const std::string &f)
-    {
-        if (!vm || f.empty()) [[unlikely]]
-        {
+    bool loadF(const std::string &f) {
+        if (!vm || f.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadFile(f);
     }
 
-    bool loadS(const std::string &s)
-    {
-        if (!vm || s.empty()) [[unlikely]]
-        {
+    bool loadS(const std::string &s) {
+        if (!vm || s.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadScript(s);
     }
 
-    std::optional<std::string> call(const std::string &f, const std::string &ps)
-    {
-        if (!vm || f.empty()) [[unlikely]]
-        {
+    std::optional<std::string> call(const std::string &f, const std::string &ps) {
+        if (!vm || f.empty()) [[unlikely]] {
             return std::nullopt;
         }
         return vm->callFunc(f, ps);
@@ -49,18 +43,15 @@ namespace {
 
 #pragma mark C++ API
 
-bool ngenxxLuaLoadF(const std::string &f)
-{
+bool ngenxxLuaLoadF(const std::string &f) {
     return loadF(f);
 }
 
-bool ngenxxLuaLoadS(const std::string &s)
-{
+bool ngenxxLuaLoadS(const std::string &s) {
     return loadS(s);
 }
 
-std::optional<std::string> ngenxxLuaCall(const std::string &f, const std::string &ps)
-{
+std::optional<std::string> ngenxxLuaCall(const std::string &f, const std::string &ps) {
     return call(f, ps);
 }
 
@@ -68,22 +59,19 @@ std::optional<std::string> ngenxxLuaCall(const std::string &f, const std::string
 
 #if !defined(__EMSCRIPTEN__)
 EXPORT
-bool ngenxx_lua_loadF(const char *file)
-{
+bool ngenxx_lua_loadF(const char *file) {
     return ngenxxLuaLoadF(wrapStr(file));
 }
 #endif
 
 EXPORT
-bool ngenxx_lua_loadS(const char *script)
-{
+bool ngenxx_lua_loadS(const char *script) {
     return ngenxxLuaLoadS(wrapStr(script));
 }
 
 EXPORT
-const char *ngenxx_lua_call(const char *f, const char *ps)
-{
-    const auto& s = ngenxxLuaCall(wrapStr(f), wrapStr(ps)).value_or("");
+const char *ngenxx_lua_call(const char *f, const char *ps) {
+    const auto &s = ngenxxLuaCall(wrapStr(f), wrapStr(ps)).value_or("");
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
@@ -158,8 +146,7 @@ DEF_API(ngenxx_z_bytes_unzip, STRING)
 
 #pragma mark Lua API - Binding
 
-static void registerFuncs()
-{
+static void registerFuncs() {
     BIND_API(ngenxx_get_version);
     BIND_API(ngenxx_root_path);
 
@@ -230,20 +217,16 @@ static void registerFuncs()
 
 #pragma mark Inner API
 
-void ngenxx_lua_init()
-{
-    if (vm) [[unlikely]]
-    {
+void ngenxx_lua_init() {
+    if (vm) [[unlikely]] {
         return;
     }
     vm = std::make_unique<NGenXX::Core::VM::LuaVM>();
     registerFuncs();
 }
 
-void ngenxx_lua_release()
-{
-    if (!vm) [[unlikely]]
-    {
+void ngenxx_lua_release() {
+    if (!vm) [[unlikely]] {
         return;
     }
     vm.reset();

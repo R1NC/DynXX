@@ -119,18 +119,20 @@
         [arg = json]() { return fS(arg.c_str()); });                           \
   }
 
-namespace NGenXX::Core::VM
-{
-    class JSVM final : public BaseVM
-    {
+namespace NGenXX::Core::VM {
+    class JSVM final : public BaseVM {
     public:
         /**
          * Create JS VM
          */
         JSVM();
+
         JSVM(const JSVM &) = delete;
+
         JSVM &operator=(const JSVM &) = delete;
+
         JSVM(JSVM &&) = delete;
+
         JSVM &operator=(JSVM &&) = delete;
 
         /**
@@ -168,7 +170,8 @@ namespace NGenXX::Core::VM
          * @param params parameters(json)
          * @param await Whether wait for the promise result or not
          */
-        [[nodiscard]] std::optional<std::string> callFunc(const std::string &func, const std::string &params, bool await);
+        [[nodiscard]] std::optional<std::string> callFunc(const std::string &func, const std::string &params,
+                                                          bool await);
 
         /**
          * @brief New JS `Promise`
@@ -176,10 +179,15 @@ namespace NGenXX::Core::VM
          * @return JSValue of the `Promise`
          */
         JSValue newPromiseVoid(std::function<void()> &&f);
+
         JSValue newPromiseBool(std::function<bool()> &&f);
+
         JSValue newPromiseInt32(std::function<int32_t()> &&f);
+
         JSValue newPromiseInt64(std::function<int64_t()> &&f);
+
         JSValue newPromiseFloat(std::function<double()> &&f);
+
         JSValue newPromiseString(std::function<const std::string()> &&f);
 
         ~JSVM() override;
@@ -190,18 +198,19 @@ namespace NGenXX::Core::VM
         JSValue jGlobal{JS_UNDEFINED};
 
         // Custom hash function for JSValue
-        struct JSValueHash 
-        {
-          std::size_t operator()(const JSValue &jv) const;
+        struct JSValueHash {
+            std::size_t operator()(const JSValue &jv) const;
         };
+
         // Custom equality function for JSValue
-        struct JSValueEqual 
-        {
-          bool operator()(const JSValue &left, const JSValue &right) const;
+        struct JSValueEqual {
+            bool operator()(const JSValue &left, const JSValue &right) const;
         };
+
         std::unordered_set<JSValue, JSValueHash, JSValueEqual> jValueCache;
 
         JSValue newPromise(std::function<JSValue()> &&jf);
+
         JSValue jAwait(const JSValue obj);
     };
 }

@@ -7,27 +7,24 @@
 
 #include <NGenXXTypes.hxx>
 
-namespace NGenXX::Core::Coding
-    {
-        namespace Case
-        {
-            std::string upper(const std::string_view &str);
+namespace NGenXX::Core::Coding {
+    namespace Case {
+        std::string upper(const std::string_view &str);
 
-            std::string lower(const std::string_view &str);
-        }
-        
-        namespace Hex
-        {
-            std::string bytes2str(const Bytes &bytes);
+        std::string lower(const std::string_view &str);
+    }
 
-            Bytes str2bytes(const std::string &str);
-        }
-
+    namespace Hex {
         std::string bytes2str(const Bytes &bytes);
 
-        Bytes str2bytes(const std::string_view &str);
+        Bytes str2bytes(const std::string &str);
+    }
 
-        std::string strTrim(const std::string_view &str);
+    std::string bytes2str(const Bytes &bytes);
+
+    Bytes str2bytes(const std::string_view &str);
+
+    std::string strTrim(const std::string_view &str);
 }
 
 #endif

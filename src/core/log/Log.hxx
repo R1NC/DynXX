@@ -6,13 +6,12 @@
 #include <string>
 #include <functional>
 
-namespace NGenXX::Core::Log
-    {
-        void setLevel(int level);
+namespace NGenXX::Core::Log {
+    void setLevel(int level);
 
-        void setCallback(const std::function<void(int level, const char *content)> &callback);
+    void setCallback(const std::function<void(int level, const char *content)> &callback);
 
-        void print(int level, const std::string &content);
+    void print(int level, const std::string &content);
 }
 
 #endif

@@ -5,7 +5,7 @@
 #include "NGenXXStoreKV.hxx"
 #include "NGenXXStoreSQLite.hxx"
 #include "NGenXXLua.hxx"
-#include "NGenXXJs.hxx"
+#include "NGenXXJS.hxx"
 #include "NGenXXLog.hxx"
 #include "NGenXXJson.hxx"
 #include "NGenXXCoding.hxx"

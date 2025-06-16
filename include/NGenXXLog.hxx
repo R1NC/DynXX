@@ -13,8 +13,7 @@
 #include <sstream>
 #endif
 
-enum class NGenXXLogLevelX : int
-{
+enum class NGenXXLogLevelX : int {
     Debug = 3,
     Info,
     Warn,
@@ -47,16 +46,15 @@ inline std::string _ngenxxLogFormat(const std::string &format, Args... args)
 }
 #endif
 
-template <typename... Args>
-inline void ngenxxLogPrintF(NGenXXLogLevelX level, const std::string &format, Args... args)
-{
-    auto fContent = 
+template<typename... Args>
+void ngenxxLogPrintF(NGenXXLogLevelX level, const std::string &format, Args... args) {
+    auto fContent =
 #if !defined(USE_STD_FORMAT)
     _ngenxxLogFormat(format, args...)
 #else
-    std::vformat(format, std::make_format_args(args...))
+                    std::vformat(format, std::make_format_args(args...))
 #endif
-    ;
+            ;
     ngenxxLogPrint(level, fContent);
 }
 
