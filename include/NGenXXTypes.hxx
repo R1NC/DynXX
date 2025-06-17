@@ -40,7 +40,7 @@ concept EnumT = NumberT<T> && std::is_enum_v<T>;
 
 template<typename T>
 concept CharacterT =
-        std::is_same_v<T, char> || std::is_same_v<T, wchar_t>
+        std::is_same_v<T, char> || std::is_same_v<T, unsigned char> || std::is_same_v<T, wchar_t>
 #ifdef __cpp_char8_t
         || std::is_same_v<T, char8_t>
 #endif
@@ -216,7 +216,7 @@ inline Bytes wrapBytes(const byte *data, const size_t len) {
     return {data, data + len};
 }
 
-template<typename T>
+template<CharacterT T>
 std::string wrapStr(const T *ptr) {
     if (ptr == nullptr) [[unlikely]] {
         return {};
