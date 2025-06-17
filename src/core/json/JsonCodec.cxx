@@ -3,6 +3,7 @@
 #include <utility>
 
 #include <NGenXXLog.hxx>
+#include <NGenXXTypes.hxx>
 
 NGenXXJsonNodeTypeX NGenXX::Core::Json::cJSONReadType(void *const cjson)
 {
@@ -111,6 +112,10 @@ std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json
     DictAny dict;
     for (auto node = cjson->child; node != nullptr; node = node->next)
     {
+        if (node->string == nullptr)
+        {
+            continue;
+        }
         std::string k(node->string);
         if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Number)
         {
@@ -118,7 +123,7 @@ std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json
         }
         else if (type == NGenXXJsonNodeTypeX::String)
         {
-            dict.emplace(k, node->valuestring);
+            dict.emplace(k, wrapStr(node->valuestring));
         }
         else
         {
@@ -207,7 +212,7 @@ std::optional<std::string> NGenXX::Core::Json::Decoder::readString(void *const n
         }
         case NGenXXJsonNodeTypeX::String:
         {
-            return std::make_optional(cj->valuestring);
+            return std::make_optional(wrapStr(cj->valuestring));
         }
         case NGenXXJsonNodeTypeX::Number:
         {
@@ -228,16 +233,20 @@ std::optional<double> NGenXX::Core::Json::Decoder::readNumber(void *const node) 
 {
     const auto type = cJSONReadType(node);
     const auto cj = this->reinterpretNode(node);
+    if (cj->string == nullptr) [[unlikely]]
+    {
+        return std::nullopt;
+    }
     if (type == NGenXXJsonNodeTypeX::Number) [[likely]]
     {
         return std::make_optional(cj->valuedouble);
     } 
     if (type == NGenXXJsonNodeTypeX::String) [[likely]]
     {
-        return std::make_optional(str2float64(cj->valuestring));
+        return std::make_optional(str2float64(wrapStr(cj->valuestring)));
     }
     ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
-                cj->string != nullptr ? cj->string: "", cj->type);
+                cj->string, cj->type);
     return std::nullopt;
 }
 

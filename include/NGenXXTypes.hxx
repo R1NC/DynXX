@@ -210,12 +210,15 @@ inline auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const 
 using Bytes = std::vector<byte>;
 
 inline Bytes wrapBytes(const byte *data, const size_t len) {
+    if (data == nullptr || len == 0) [[unlikely]] {
+        return {};
+    }
     return {data, data + len};
 }
 
 template<typename T>
 std::string wrapStr(const T *ptr) {
-    if (ptr == nullptr) {
+    if (ptr == nullptr) [[unlikely]] {
         return {};
     }
     return {reinterpret_cast<const char *>(ptr)};
