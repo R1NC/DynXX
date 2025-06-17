@@ -101,6 +101,7 @@ NGenXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity, size_t s
     {
         this->workerPoolCapacity = countCPUCore();
     }
+    this->workerPool.reserve(this->workerPoolCapacity);
 }
 
 NGenXX::Core::Concurrent::Executor::~Executor()
