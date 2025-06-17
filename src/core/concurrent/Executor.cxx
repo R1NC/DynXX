@@ -114,13 +114,13 @@ NGenXX::Core::Concurrent::Executor& NGenXX::Core::Concurrent::Executor::operator
 
     if (this->workerPool.size() < this->workerPoolCapacity)
     {
-        auto worker = std::unique_ptr<Worker>(new Worker(this->sleepMicroSecs));
-        this->workerPool.push_back(std::move(worker));
+        auto worker = std::make_unique<Worker>(this->sleepMicroSecs);
+        this->workerPool.emplace_back(std::move(worker));
         ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Executor created new worker, poolSize:{} poolCapacity:{} cpuCores:{}", 
                         this->workerPool.size(), this->workerPoolCapacity, countCPUCore());
     }
     
-    *(this->workerPool[this->workerIndex]) >> std::move(task);
+    *(this->workerPool.at(this->workerIndex)) >> std::move(task);
     
     this->workerIndex = (this->workerIndex + 1) % this->workerPoolCapacity;
     
