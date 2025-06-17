@@ -38,7 +38,7 @@ namespace NGenXX::Core::Concurrent {
     private:
         size_t sleepMicroSecs{1000uz};
         std::timed_mutex mutex;
-        std::queue<std::unique_ptr<TaskT>> taskQueue;
+        std::queue<TaskT> taskQueue;
 #if defined(__cpp_lib_jthread)
         std::jthread thread;
 #else
