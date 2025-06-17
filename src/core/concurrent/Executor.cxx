@@ -83,10 +83,10 @@ void NGenXX::Core::Concurrent::Worker::sleep()
 NGenXX::Core::Concurrent::Worker& NGenXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
 {
     std::lock_guard lock(this->mutex);
-    this->taskQueue.emplace(std::move(task));
-	ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Worker@{} taskCount:{}",  reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
+    this->taskQueue.emplace_back(std::move(task));
+    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Worker@{} taskCount:{}",  reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
 
-	return *this;
+    return *this;
 }
 
 #pragma mark - Executor
