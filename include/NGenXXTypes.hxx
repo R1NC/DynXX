@@ -40,11 +40,11 @@ concept EnumT = NumberT<T> && std::is_enum_v<T>;
 
 template<typename T>
 concept CharacterT =
-        std::is_same_v<T, char> || std::is_same_v<T, unsigned char> || std::is_same_v<T, wchar_t>
+        std::is_same_v<T, char> || std::is_same_v<T, unsigned char> || std::is_same_v<T, signed char>
 #ifdef __cpp_char8_t
         || std::is_same_v<T, char8_t>
 #endif
-        || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t>;
+        || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> || std::is_same_v<T, wchar_t>;
 
 template<class T, class U>
 concept DerivedT = std::is_base_of_v<U, T>;
