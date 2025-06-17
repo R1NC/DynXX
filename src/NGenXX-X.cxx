@@ -601,7 +601,7 @@ std::optional<std::string> ngenxxJsonFromDictAny(const DictAny &dict) {
     return NGenXX::Core::Json::jsonFromDictAny(dict);
 }
 
-DictAny ngenxxJsonToDictAny(const std::string &json) {
+std::optional<DictAny> ngenxxJsonToDictAny(const std::string &json) {
     return NGenXX::Core::Json::jsonToDictAny(json);
 }
 

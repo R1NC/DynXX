@@ -23,7 +23,7 @@ std::optional<std::string> ngenxxJsonToStr(void *const cjson);
 
 std::optional<std::string> ngenxxJsonFromDictAny(const DictAny &dict);
 
-DictAny ngenxxJsonToDictAny(const std::string &json);
+std::optional<DictAny> ngenxxJsonToDictAny(const std::string &json);
 
 void *ngenxxJsonDecoderInit(const std::string &json);
 

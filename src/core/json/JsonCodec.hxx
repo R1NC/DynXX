@@ -19,7 +19,7 @@ namespace NGenXX::Core::Json {
 
     std::optional<std::string> jsonFromDictAny(const DictAny &dict);
 
-    DictAny jsonToDictAny(const std::string &json);
+    std::optional<DictAny> jsonToDictAny(const std::string &json);
 
     class Decoder {
     public:

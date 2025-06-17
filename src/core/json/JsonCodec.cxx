@@ -94,37 +94,40 @@ std::optional<std::string> NGenXX::Core::Json::jsonFromDictAny(const DictAny &di
     return json;
 }
 
-DictAny NGenXX::Core::Json::jsonToDictAny(const std::string &json)
+std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json)
 {
-    DictAny dict;
     const auto cjson = cJSON_Parse(json.c_str());
     if (!cjson) [[unlikely]]
     {
-        return dict;
+        return std::nullopt;
     }
 
-    if (cJSONReadType(cjson) == NGenXXJsonNodeTypeX::Object) [[likely]]
+    if (cJSONReadType(cjson) != NGenXXJsonNodeTypeX::Object) [[unlikely]]
     {
-        for (auto node = cjson->child; node != nullptr; node = node->next)
+        cJSON_Delete(cjson);
+        return std::nullopt;
+    }
+
+    DictAny dict;
+    for (auto node = cjson->child; node != nullptr; node = node->next)
+    {
+        std::string k(node->string);
+        if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Number)
         {
-            std::string k(node->string);
-            if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Number)
-            {
-                dict.emplace(k, node->valuedouble);
-            }
-            else if (type == NGenXXJsonNodeTypeX::String)
-            {
-                dict.emplace(k, node->valuestring);
-            }
-            else
-            {
-                dict.emplace(k, cJSONToStr(node).value_or(""));
-            }
+            dict.emplace(k, node->valuedouble);
+        }
+        else if (type == NGenXXJsonNodeTypeX::String)
+        {
+            dict.emplace(k, node->valuestring);
+        }
+        else
+        {
+            dict.emplace(k, cJSONToStr(node).value_or(""));
         }
     }
 
     cJSON_Delete(cjson);
-    return dict;
+    return std::make_optional(dict);
 }
 
 #pragma mark Decoder
