@@ -551,7 +551,7 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
 
     auto outLen = inLen * 3 / 4;
-    bytes outBytes(outLen, 0);
+    Bytes outBytes(outLen, 0);
     outLen = BIO_read(bio, outBytes.data(), static_cast<int>(inLen));
     if (outLen == 0) [[unlikely]]
     {
