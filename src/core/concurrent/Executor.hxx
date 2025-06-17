@@ -37,7 +37,7 @@ namespace NGenXX::Core::Concurrent {
 
     private:
         size_t sleepMicroSecs{1000uz};
-        std::recursive_timed_mutex mutex;
+        std::timed_mutex mutex;
         std::queue<TaskT> taskQueue;
 #if defined(__cpp_lib_jthread)
         std::jthread thread;
@@ -75,7 +75,7 @@ namespace NGenXX::Core::Concurrent {
         size_t workerPoolCapacity{0uz};
         size_t sleepMicroSecs{1000uz};
         std::vector<std::unique_ptr<Worker>> workerPool;
-        std::recursive_mutex mutex;
+        std::mutex mutex;
         unsigned workerIndex{0uz};
     };
 }
