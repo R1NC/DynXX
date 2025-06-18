@@ -732,7 +732,7 @@ std::string ngenxx_crypto_randS(const char *json)
     {
         return {};
     }
-    std::vector<byte> outBytes(outLen.value());
+    Bytes outBytes(outLen.value());
     ngenxxCryptoRand(outBytes.size(), outBytes.data());
     return bytes2json(outBytes);
 }
