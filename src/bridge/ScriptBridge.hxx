@@ -89,6 +89,12 @@ std::string ngenxx_crypto_aes_gcm_encryptS(const char *json);
 
 std::string ngenxx_crypto_aes_gcm_decryptS(const char *json);
 
+std::string ngenxx_crypto_rsa_gen_keyS(const char *json);
+
+std::string ngenxx_crypto_rsa_encryptS(const char *json);
+
+std::string ngenxx_crypto_rsa_decryptS(const char *json);
+
 std::string ngenxx_crypto_hash_md5S(const char *json);
 
 std::string ngenxx_crypto_hash_sha256S(const char *json);

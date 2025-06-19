@@ -3,6 +3,8 @@
 
 #include "NGenXXTypes.hxx"
 
+#include <string_view>
+
 bool ngenxxCryptoRand(size_t len, byte *bytes);
 
 Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key);
@@ -23,6 +25,8 @@ enum class NGenXXCryptoRSAPaddingX : int {
     X931 = 5,
     PKCS1_PSS = 6
 };
+
+std::string ngenxxCryptoRsaGenKey(const std::string_view &base64, bool isPublic);
 
 Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding);
 

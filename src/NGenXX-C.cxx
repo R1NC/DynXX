@@ -174,6 +174,13 @@ const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, size_t inLen,
     return handleBytes(bytes, outLen);
 }
 
+EXPORT_AUTO
+const char *ngenxx_crypto_rsa_gen_key(const char *base64, bool isPublic) {
+    const auto s = ngenxxCryptoRsaGenKey(base64, isPublic);
+    return NGenXX::Core::Util::Type::copyStr(s);
+}
+
+EXPORT_AUTO
 const byte *ngenxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
                                       const byte *keyBytes, size_t keyLen, int padding, size_t *outLen) {
     const auto &bytes = ngenxxCryptoRsaEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),
@@ -181,6 +188,7 @@ const byte *ngenxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
     return handleBytes(bytes, outLen);
 }
 
+EXPORT_AUTO
 const byte *ngenxx_crypto_rsa_decrypt(const byte *inBytes, size_t inLen,
                                       const byte *keyBytes, size_t keyLen, int padding, size_t *outLen) {
     const auto &bytes = ngenxxCryptoRsaDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),

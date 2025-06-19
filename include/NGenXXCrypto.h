@@ -89,6 +89,8 @@ enum NGenXXCryptoRSAPadding {
     NGenXXCryptoRSAPaddingPKCS1_PSS = 6
 };
 
+const char *ngenxx_crypto_rsa_gen_key(const char *base64, bool isPublic);
+
 /**
  * @brief RSA Encrypt
  * @param inBytes input bytes data

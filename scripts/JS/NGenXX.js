@@ -411,6 +411,33 @@ function NGenXXCryptoAesGcmDecrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes
     return _json2Array(outJson);
 }
 
+function NGenXXCryptoRsaGenKey(base64, isPublic) {
+    let inJson = JSON.stringify({
+        "base64": base64,
+        "isPublic": isPublic
+    });
+    let outJson = ngenxx_crypto_rsa_gen_key(inJson);
+    return _json2Array(outJson);
+}
+
+function NGenXXCryptoRsaEncrypt(inBytes, keyBytes) {
+    let inJson = JSON.stringify({
+        "inBytes": inBytes || [],
+        "keyBytes": keyBytes || []
+    });
+    let outJson = ngenxx_crypto_rsa_encrypt(inJson);
+    return _json2Array(outJson);
+}
+
+function NGenXXCryptoRsaDecrypt(inBytes, keyBytes) {
+    let inJson = JSON.stringify({
+        "inBytes": inBytes || [],
+        "keyBytes": keyBytes || []
+    });
+    let outJson = ngenxx_crypto_rsa_decrypt(inJson);
+    return _json2Array(outJson);
+}
+
 function NGenXXCryptoHashMD5(inBytes) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({

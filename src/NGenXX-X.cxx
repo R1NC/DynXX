@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <string>
-#include <sstream>
 #include <memory>
 
 #include <NGenXX.hxx>
@@ -253,6 +252,10 @@ Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &
     return NGenXX::Core::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }
 
+std::string ngenxxCryptoRsaGenKey(const std::string &base64, bool isPublic) {
+    return NGenXX::Core::Crypto::RSA::genKey(base64, isPublic);
+}
+
 Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding) {
     return NGenXX::Core::Crypto::RSA::encrypt(in, key, static_cast<int>(padding));
 }
@@ -381,10 +384,12 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
     if (auto headersCount = headers.size(); headersCount > 0) {
         headerV.reserve(headersCount);
     }
-    for (const auto &[k, v]: headers) {
-        std::ostringstream ss;
-        ss << k << ":" << v;
-        headerV.emplace_back(ss.str());
+    for (const auto &[k, v]: headers) 
+    {
+        std::string header;
+        header.reserve(k.size() + 1 + v.size());
+        header.append(k).append(":").append(v);
+        headerV.emplace_back(std::move(header));
     }
     return ngenxxNetHttpRequest(url, method, ssParams.str(), rawBody, headerV,
                                 formFieldNameV, formFieldMimeV, formFieldDataV,
@@ -404,9 +409,8 @@ void *ngenxxStoreSqliteOpen(const std::string &_id) {
     if (!_sqlite || !_root || _id.empty()) {
         return nullptr;
     }
-    std::ostringstream ss;
-    ss << *_root << "/" << _id << ".db";
-    if (const auto ptr = _sqlite->connect(ss.str()).lock()) [[likely]] {
+    std::string dbPath = *_root + "/" + _id + ".db";
+    if (const auto ptr = _sqlite->connect(dbPath).lock()) [[likely]] {
         return ptr.get();
     }
     return nullptr;

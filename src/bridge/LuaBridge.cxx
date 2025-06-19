@@ -126,6 +126,9 @@ DEF_API(ngenxx_crypto_aes_encrypt, STRING)
 DEF_API(ngenxx_crypto_aes_decrypt, STRING)
 DEF_API(ngenxx_crypto_aes_gcm_encrypt, STRING)
 DEF_API(ngenxx_crypto_aes_gcm_decrypt, STRING)
+DEF_API(ngenxx_crypto_rsa_gen_key, STRING)
+DEF_API(ngenxx_crypto_rsa_encrypt, STRING)
+DEF_API(ngenxx_crypto_rsa_decrypt, STRING)
 DEF_API(ngenxx_crypto_hash_md5, STRING)
 DEF_API(ngenxx_crypto_hash_sha256, STRING)
 DEF_API(ngenxx_crypto_base64_encode, STRING)
@@ -196,6 +199,9 @@ static void registerFuncs() {
     BIND_API(ngenxx_crypto_aes_decrypt);
     BIND_API(ngenxx_crypto_aes_gcm_encrypt);
     BIND_API(ngenxx_crypto_aes_gcm_decrypt);
+    BIND_API(ngenxx_crypto_rsa_gen_key);
+    BIND_API(ngenxx_crypto_rsa_encrypt);
+    BIND_API(ngenxx_crypto_rsa_decrypt);
     BIND_API(ngenxx_crypto_hash_md5);
     BIND_API(ngenxx_crypto_hash_sha256);
     BIND_API(ngenxx_crypto_base64_encode);

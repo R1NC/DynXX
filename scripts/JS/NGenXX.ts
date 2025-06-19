@@ -175,6 +175,12 @@ declare function NGenXXCryptoAesGcmDecrypt(
     aadBytes?: number[]
 ): number[]
 
+declare function NGenXXCryptoRsaGenKey(base64: string, isPublic: boolean): number[]
+
+declare function NGenXXCryptoRsaEncrypt(inBytes: number[], keyBytes: number[]): number[]
+
+declare function NGenXXCryptoRsaDecrypt(inBytes: number[], keyBytes: number[]): number[]
+
 declare function NGenXXCryptoHashMD5(inBytes: number[]): number[]
 
 declare function NGenXXCryptoHashSHA256(inBytes: number[]): number[]

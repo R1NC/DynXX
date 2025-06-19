@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <vector>
-#include <sstream>
 
 #if defined(USE_ADA)
 #include <ada.h>
@@ -48,8 +47,8 @@ namespace
         std::string header(buffer, size * nitems);
         if (const auto colonPos = header.find(':'); colonPos != std::string::npos) [[likely]]
         {
-            const auto& k = header.substr(0, colonPos);
-            const auto& v = header.substr(colonPos + 2);
+            const auto k = header.substr(0, colonPos);
+            const auto v = header.substr(colonPos + 2);
             pHeaders->emplace(ngenxxCodingStrTrim(k), ngenxxCodingStrTrim(v));
         }
         return size * nitems;
@@ -177,17 +176,18 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(const std::string &url, co
     }
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
 
-    std::stringstream ssUrl;
-    ssUrl << url;
+    std::string fixedUrl;
+    fixedUrl.reserve(url.size() + (method == NGenXXNetHttpMethodGet && !params.empty() ? params.size() + 1 : 0));
+    fixedUrl = url;
     if (method == NGenXXNetHttpMethodGet && !params.empty())
     {
         if (!checkUrlHasSearch(url))
         {
-            ssUrl << "?";
+            fixedUrl += "?";
         }
-        ssUrl << params;
+        fixedUrl += params;
     }
-    const auto& fixedUrl = ssUrl.str();
+    
     ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.req url: {}", fixedUrl);
     curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
 

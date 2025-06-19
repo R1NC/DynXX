@@ -72,13 +72,14 @@ namespace
             ngenxxLogPrint(NGenXXLogLevelX::Error, "RSA Failed to create BIO");
             return rsa;
         }
+        BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL) ;
         if (isPublic) 
         {
-            rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, nullptr, nullptr);
+            rsa = PEM_read_bio_RSA_PUBKEY(bio, nullptr, nullptr, nullptr);
         } 
         else 
         {
-            rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, nullptr, nullptr);
+            rsa = PEM_read_bio_RSAPrivateKey(bio, nullptr, nullptr, nullptr);
         }
         if (!rsa) [[unlikely]]
         {
@@ -472,6 +473,37 @@ Bytes NGenXX::Core::Crypto::Hash::sha256(const Bytes &inBytes)
 }
 
 #pragma mark RSA
+
+std::string NGenXX::Core::Crypto::RSA::genKey(const std::string_view &base64, bool isPublic) 
+{ 
+    constexpr auto chunkSize = 64; 
+    using namespace std::string_view_literals;
+    
+    constexpr auto divider = "-----"sv;
+    constexpr auto beginStr = "BEGIN "sv;
+    constexpr auto endStr = "END "sv;
+    constexpr auto keyStr = " KEY"sv;
+    constexpr auto newLineStr = "\n"sv;
+    const auto mid = isPublic ? "PUBLIC"sv : "RSA PRIVATE"sv;
+    
+    const auto headerSize = divider.size() + beginStr.size() + mid.size() + keyStr.size() + divider.size() + newLineStr.size(); 
+    const auto footerSize = divider.size() + endStr.size() + mid.size() + keyStr.size() + divider.size() + newLineStr.size(); 
+    const auto contentSize = base64.size() + (base64.size() / chunkSize) + (base64.size() % chunkSize ? 1 : 0); 
+    
+    std::string result; 
+    result.reserve(headerSize + contentSize + footerSize); 
+    
+    result.append(divider).append(beginStr).append(mid).append(keyStr).append(divider).append(newLineStr); 
+    
+    for (size_t i = 0; i < base64.size(); i += chunkSize) 
+    { 
+        result.append(base64.substr(i, chunkSize)).append(newLineStr); 
+    } 
+    
+    result.append(divider).append(endStr).append(mid).append(keyStr).append(divider).append(newLineStr); 
+    
+    return result; 
+}
 
 Bytes NGenXX::Core::Crypto::RSA::encrypt(const Bytes &in, const Bytes &key, int padding)
 {

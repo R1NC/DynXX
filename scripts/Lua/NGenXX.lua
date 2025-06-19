@@ -245,6 +245,35 @@ function NGenXX.Crypto.Aes.Gcm.decrypt(inBytes, keyBytes, ivBytes, tagBits, aadB
     return JSON.parse(outJson)
 end
 
+NGenXX.Crypto.Rsa = {}
+
+function NGenXX.Crypto.Rsa.genKey(base64, isPublic)
+    local inJson = JSON.stringify({
+        ["base64"] = base64,
+        ["isPublic"] = isPublic
+    })
+    local outJson = ngenxx_crypto_rsa_gen_key(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Crypto.Rsa.encrypt(inBytes, keyBytes)
+    local inJson = JSON.stringify({
+        ["inBytes"] = inBytes,
+        ["keyBytes"] = keyBytes
+    })
+    local outJson = ngenxx_crypto_rsa_encrypt(inJson)
+    return JSON.parse(outJson)
+end
+
+function NGenXX.Crypto.Rsa.decrypt(inBytes, keyBytes)
+    local inJson = JSON.stringify({
+        ["inBytes"] = inBytes,
+        ["keyBytes"] = keyBytes
+    })
+    local outJson = ngenxx_crypto_rsa_decrypt(inJson)
+    return JSON.parse(outJson)
+end
+
 NGenXX.Crypto.Hash = {}
 
 function NGenXX.Crypto.Hash.md5(inBytes)
