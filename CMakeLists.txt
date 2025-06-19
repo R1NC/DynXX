@@ -18,7 +18,22 @@ project(NGenXX)
 
 include(build-tools/toolchains/CPM/cmake/CPM.cmake)
 
+function(checkAppleVersionLimit iosV macV RESULT_VAR)
+    if(APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "${iosV}") OR 
+                  (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "${macV}")))
+        set(${RESULT_VAR} FALSE PARENT_SCOPE)
+    else()
+        set(${RESULT_VAR} TRUE PARENT_SCOPE)
+    endif()
+endfunction()
+
 ## Definitions:
+
+set(USE_STD_TO_CHARS FALSE)
+checkAppleVersionLimit("16.5" "13.4" USE_STD_TO_CHARS)
+if(USE_STD_TO_CHARS)
+    add_definitions(-DUSE_STD_TO_CHARS)
+endif()
 
 option(USE_LUA "Use Lua" ON)
 if(USE_LUA)
@@ -263,6 +278,7 @@ message("\n")
 message(STATUS "${PROJECT_NAME}")
 message(STATUS "  SYS_NAME: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "  IS_ROOT: ${IS_ROOT}")
+message(STATUS "  USE_STD_TO_CHARS: ${USE_STD_TO_CHARS}")
 message(STATUS "  USE_LUA: ${USE_LUA}")
 message(STATUS "  USE_QJS: ${USE_QJS}")
 message(STATUS "  USE_LIBUV: ${USE_LIBUV}")
