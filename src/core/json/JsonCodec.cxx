@@ -6,32 +6,34 @@
 #include <NGenXXLog.hxx>
 #include <NGenXXTypes.hxx>
 
-namespace{
-    bool shouldReadDouble(const cJSON *const cj)
+namespace
+{
+    bool isLargeInteger(const cJSON *const cj)
     {
         if (cj == nullptr || cj->type != cJSON_Number) [[unlikely]]
         {
             return false;
         }
-        if ((cj->valueint == INT_MAX && cj->valuedouble > INT_MAX) || 
-            (cj->valueint == INT_MIN && cj->valuedouble < INT_MIN))
-        {//Large integer numbers
-            return true;
-        }
-        return cj->valuedouble != static_cast<double>(cj->valueint);
+        return (cj->valueint == INT_MAX && cj->valuedouble > INT_MAX) || 
+            (cj->valueint == INT_MIN && cj->valuedouble < INT_MIN);
     }
 }
 
 NGenXXJsonNodeTypeX NGenXX::Core::Json::cJSONReadType(void *const cjson)
 {
-    if (cjson == nullptr) [[unlikely]]
+    const auto cj = static_cast<cJSON *>(cjson);
+    if (cj == nullptr) [[unlikely]]
     {
         return NGenXXJsonNodeTypeX::Unknown;
     }
-    switch (static_cast<cJSON *>(cjson)->type)
+    switch (cj->type)
     {
         case cJSON_Number:
-            return NGenXXJsonNodeTypeX::Number;
+            if (isLargeInteger(cj))
+            {
+                return NGenXXJsonNodeTypeX::Integer;
+            }
+            return cj->valuedouble != static_cast<double>(cj->valueint) ? NGenXXJsonNodeTypeX::Float : NGenXXJsonNodeTypeX::Integer;
         case cJSON_String:
             return NGenXXJsonNodeTypeX::String;
         case cJSON_True:
@@ -134,9 +136,20 @@ std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json
             continue;
         }
         std::string k(node->string);
-        if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Number)
+        if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Float)
         {
-            dict.emplace(k, shouldReadDouble(node) ? node->valuedouble : node->valueint);
+            dict.emplace(k, node->valuedouble);
+        }
+        else if (type == NGenXXJsonNodeTypeX::Integer)
+        {
+            if (isLargeInteger(node))
+            {
+                dict.emplace(k, static_cast<int64_t>(node->valuedouble));
+            }
+            else
+            {
+                dict.emplace(k, node->valueint);
+            }
         }
         else if (type == NGenXXJsonNodeTypeX::String)
         {
@@ -231,9 +244,20 @@ std::optional<std::string> NGenXX::Core::Json::Decoder::readString(void *const n
         {
             return std::make_optional(wrapStr(cj->valuestring));
         }
-        case NGenXXJsonNodeTypeX::Number:
+        case NGenXXJsonNodeTypeX::Integer:
         {
-            return std::make_optional(std::to_string(shouldReadDouble(cj) ? cj->valuedouble : cj->valueint));
+            if (isLargeInteger(cj))
+            {
+                return std::make_optional(std::to_string(static_cast<int64_t>(cj->valuedouble)));
+            }
+            else
+            {
+                return std::make_optional(std::to_string(cj->valueint));
+            }
+        }
+        case NGenXXJsonNodeTypeX::Float:
+        {
+            return std::make_optional(std::to_string(cj->valuedouble));
         }
         case NGenXXJsonNodeTypeX::Boolean:
         {
@@ -254,9 +278,13 @@ std::optional<double> NGenXX::Core::Json::Decoder::readNumber(void *const node) 
     {
         return std::nullopt;
     }
-    if (type == NGenXXJsonNodeTypeX::Number) [[likely]]
+    if (type == NGenXXJsonNodeTypeX::Integer) [[likely]]
     {
-        return std::make_optional(shouldReadDouble(cj) ? cj->valuedouble : cj->valueint);
+        return std::make_optional(isLargeInteger(cj) ? cj->valuedouble : cj->valueint);
+    } 
+    if (type == NGenXXJsonNodeTypeX::Float) [[likely]]
+    {
+        return std::make_optional(cj->valuedouble);
     } 
     if (type == NGenXXJsonNodeTypeX::String) [[likely]]
     {

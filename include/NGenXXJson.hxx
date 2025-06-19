@@ -12,7 +12,8 @@ enum class NGenXXJsonNodeTypeX : int {
     Object,
     Array,
     String,
-    Number,
+    Integer,
+    Float,
     Boolean,
     Null,
 };

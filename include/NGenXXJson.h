@@ -10,7 +10,8 @@ enum NGenXXJsonNodeType {
     NGenXXJsonNodeTypeObject,
     NGenXXJsonNodeTypeArray,
     NGenXXJsonNodeTypeString,
-    NGenXXJsonNodeTypeNumber,
+    NGenXXJsonNodeTypeInteger,
+    NGenXXJsonNodeTypeFloat,
     NGenXXJsonNodeTypeBoolean,
     NGenXXJsonNodeTypeNull
 };
