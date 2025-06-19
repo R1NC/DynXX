@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 
+#include <openssl/err.h>
 #include <openssl/bio.h>
 #include <openssl/rand.h>
 #include <openssl/evp.h>
@@ -81,7 +82,9 @@ namespace
         }
         if (!rsa) [[unlikely]]
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "RSA Failed to create key");
+            char sErr[256];
+            ERR_error_string_n(ERR_get_error(), sErr, sizeof(sErr));
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA Failed to create key: {}", std::string(sErr));
         }
         BIO_free(bio);
         return rsa;
@@ -473,6 +476,10 @@ Bytes NGenXX::Core::Crypto::Hash::sha256(const Bytes &inBytes)
 Bytes NGenXX::Core::Crypto::RSA::encrypt(const Bytes &in, const Bytes &key, int padding)
 {
     const auto rsa = createRSA(key, true);
+    if (rsa == nullptr) [[unlikely]]
+    {
+        return {};
+    }
     const auto outLen = RSA_size(rsa);
     Bytes outBytes(outLen, 0);
     if (const auto ret = RSA_public_encrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), rsa, padding); ret == -1) [[unlikely]]
@@ -488,6 +495,10 @@ Bytes NGenXX::Core::Crypto::RSA::encrypt(const Bytes &in, const Bytes &key, int 
 Bytes NGenXX::Core::Crypto::RSA::decrypt(const Bytes &in, const Bytes &key, int padding)
 {
     const auto rsa = createRSA(key, false);
+    if (rsa == nullptr) [[unlikely]]
+    {
+        return {};
+    }
     const auto outLen = RSA_size(rsa);
     Bytes outBytes(outLen, 0);
     if (const auto ret = RSA_private_decrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), rsa, padding); ret == -1) [[unlikely]]
