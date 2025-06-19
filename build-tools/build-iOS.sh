@@ -77,17 +77,17 @@ ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/mmkv.a"
 )
 ${COMMAND} ${LIB_DIR}libNGenXX.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/NGenXX.a
-${COMMAND} curl.output/lib/${LIB_DIR}libcurl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/curl.a
-${COMMAND} openssl.output/ssl/${LIB_DIR}libssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ssl.a
-${COMMAND} openssl.output/crypto/${LIB_DIR}libcrypto.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/crypto.a
-${COMMAND} lua.output/${LIB_DIR}liblua.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/lua.a
-${COMMAND} quickjs.output/${LIB_DIR}libqjs.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/qjs.a
-${COMMAND} spdlog.output/${LIB_DIR}libspdlog.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/spdlog.a
-${COMMAND} libuv.output/${LIB_DIR}libuv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/uv.a
-${COMMAND} cjson.output/${LIB_DIR}libcjson.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/cjson.a
-${COMMAND} mmkv.output/Core/${LIB_DIR}/libmmkvcore.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkvcore.a
-${COMMAND} mmkv.output/${LIB_DIR}libmmkv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkv.a
-ADA_OUT_FILE=AdaURL.output/src/${LIB_DIR}libada.a
+${COMMAND} _deps/curl-build/lib/${LIB_DIR}libcurl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/curl.a
+${COMMAND} _deps/openssl-build/ssl/${LIB_DIR}libssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ssl.a
+${COMMAND} _deps/openssl-build/crypto/${LIB_DIR}libcrypto.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/crypto.a
+${COMMAND} _deps/lua-build/${LIB_DIR}liblua.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/lua.a
+${COMMAND} _deps/quickjs-build/${LIB_DIR}libqjs.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/qjs.a
+${COMMAND} _deps/spdlog-build/${LIB_DIR}libspdlog.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/spdlog.a
+${COMMAND} _deps/libuv-build/${LIB_DIR}libuv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/uv.a
+${COMMAND} _deps/cjson-build/${LIB_DIR}libcjson.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/cjson.a
+${COMMAND} _deps/mmkv-build/Core/${LIB_DIR}/libmmkvcore.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkvcore.a
+${COMMAND} _deps/mmkv-build/${LIB_DIR}libmmkv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkv.a
+ADA_OUT_FILE=_deps/AdaURL-build/src/${LIB_DIR}libada.a
 if [ -f "$ADA_OUT_FILE" ]; then
     libAda=${LIB_OUTPUT_DIR}/ada.a
     ${COMMAND} ${ADA_OUT_FILE} ${COMMAND_ARG} ${libAda}

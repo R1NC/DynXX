@@ -1,39 +1,6 @@
-[submodule "external/cjson"]
-	path = external/cjson
-	url = git@github.com:R1NC/cJSON.git
-[submodule "external/curl"]
-	path = external/curl
-	url = git@github.com:R1NC/curl.git
-[submodule "external/lua"]
-	path = external/lua
-	url = git@github.com:R1NC/lua.git
 [submodule "build-tools/toolchains/Apple"]
 	path = build-tools/toolchains/Apple
 	url = git@github.com:R1NC/apple.cmake.git
-[submodule "external/openssl"]
-	path = external/openssl
-	url = git@github.com:R1NC/openssl.git
-[submodule "external/sqlite"]
-	path = external/sqlite
-	url = git@github.com:R1NC/sqlite.git
-[submodule "external/mmkv"]
-	path = external/mmkv
-	url = git@github.com:R1NC/MMKV.git
-[submodule "external/quickjs"]
-	path = external/quickjs
-	url = git@github.com:R1NC/quickjs-ng.git
-[submodule "external/zlib"]
-	path = external/zlib
-	url = git@github.com:R1NC/zlib.git
-[submodule "external/libuv"]
-	path = external/libuv
-	url = git@github.com:R1NC/libuv.git
-[submodule "external/AdaURL"]
-	path = external/AdaURL
-	url = git@github.com:R1NC/AdaURL.git
-[submodule "external/android-ifaddrs"]
-	path = external/android-ifaddrs
-	url = git@github.com:R1NC/android-ifaddrs.git
-[submodule "external/spdlog"]
-	path = external/spdlog
-	url = git@github.com:R1NC/spdlog.git
+[submodule "build-tools/toolchains/CPM"]
+	path = build-tools/toolchains/CPM
+	url = git@github.com:R1NC/CPM.git

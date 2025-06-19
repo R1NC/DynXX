@@ -63,17 +63,17 @@ ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/mmkv.a"
 )
 mv libNGenXX.a ${LIB_OUTPUT_DIR}/NGenXX.a
-mv curl.output/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
-mv openssl.output/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
-mv openssl.output/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
-mv lua.output/liblua.a ${LIB_OUTPUT_DIR}/lua.a
-mv quickjs.output/libqjs.a ${LIB_OUTPUT_DIR}/qjs.a
-mv spdlog.output/libspdlog.a ${LIB_OUTPUT_DIR}/spdlog.a
-mv libuv.output/libuv.a ${LIB_OUTPUT_DIR}/uv.a
-mv cjson.output/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
-mv mmkv.output/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
-mv mmkv.output/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
-ADA_OUT_FILE=AdaURL.output/src/libada.a
+mv _deps/curl-build/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
+mv _deps/openssl-build/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
+mv _deps/openssl-build/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
+mv _deps/lua-build/liblua.a ${LIB_OUTPUT_DIR}/lua.a
+mv _deps/quickjs-build/libqjs.a ${LIB_OUTPUT_DIR}/qjs.a
+mv _deps/spdlog-build/libspdlog.a ${LIB_OUTPUT_DIR}/spdlog.a
+mv _deps/libuv-build/libuv.a ${LIB_OUTPUT_DIR}/uv.a
+mv _deps/cjson-build/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
+mv _deps/mmkv-build/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
+mv _deps/mmkv-build/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
+ADA_OUT_FILE=_deps/AdaURL-build/src/libada.a
 if [ -f "$ADA_OUT_FILE" ]; then
     libAda=${LIB_OUTPUT_DIR}/ada.a
     mv ${ADA_OUT_FILE} ${libAda}
@@ -84,7 +84,7 @@ fi
 TOOLS_OUTPUT_DIR=output/tools
 mkdir -p ${TOOLS_OUTPUT_DIR}
 qjsc=${TOOLS_OUTPUT_DIR}/qjsc
-mv quickjs.output/qjsc.app/Contents/MacOS/qjsc ${qjsc}
+mv _deps/quickjs-build/qjsc.app/Contents/MacOS/qjsc ${qjsc}
 ARTIFACTS+=(${qjsc})
 
 #Checking Artifacts

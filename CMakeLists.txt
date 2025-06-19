@@ -16,6 +16,8 @@ string(
 
 project(NGenXX)
 
+include(build-tools/toolchains/CPM/cmake/CPM.cmake)
+
 ## Definitions:
 
 option(USE_LUA "Use Lua" ON)
@@ -52,8 +54,13 @@ endif()
 
 file(GLOB_RECURSE SRC_FILES "src/*.cxx" "src/*.mm")
 if(ANDROID) # Android can not find built-in `ifaddrs.h`;
-    set(ANDROID_IFADDRS_ROOT external/android-ifaddrs)
-    list(APPEND SRC_FILES ${ANDROID_IFADDRS_ROOT}/ifaddrs.c)
+    CPMAddPackage(
+        NAME ifaddrs
+        GIT_TAG dev
+        GITHUB_REPOSITORY R1NC/android-ifaddrs
+        DOWNLOAD_ONLY YES
+    )
+    list(APPEND SRC_FILES ${ifaddrs_SOURCE_DIR}/ifaddrs.c)
 endif()
 
 if(EMSCRIPTEN)
@@ -78,78 +85,113 @@ endif()
 
 list(APPEND INC_DIRS include)
 
-set(CJSON_ROOT external/cjson)
-add_subdirectory(${CJSON_ROOT} cjson.output)
-list(APPEND INC_DIRS ${CJSON_ROOT})
+CPMAddPackage(
+    NAME cjson
+    GIT_TAG dev
+    GITHUB_REPOSITORY R1NC/cjson
+)
+list(APPEND INC_DIRS ${cjson_SOURCE_DIR})
 
-set(MMKV_ROOT external/mmkv)
-add_subdirectory(${MMKV_ROOT}/POSIX/src mmkv.output)
-list(APPEND INC_DIRS ${MMKV_ROOT}/Core)
+CPMAddPackage(
+    NAME mmkv
+    GIT_TAG dev
+    GITHUB_REPOSITORY R1NC/mmkv
+    DOWNLOAD_ONLY YES
+)
+add_subdirectory(${mmkv_SOURCE_DIR}/POSIX/src _deps/mmkv-build)
+list(APPEND INC_DIRS ${mmkv_SOURCE_DIR}/Core)
 
-set(OPENSSL_ROOT external/openssl)
-add_subdirectory(${OPENSSL_ROOT} openssl.output)
-list(APPEND INC_DIRS ${OPENSSL_ROOT}/include)
+CPMAddPackage(
+    NAME openssl
+    GIT_TAG dev
+    GITHUB_REPOSITORY R1NC/openssl
+)
+list(APPEND INC_DIRS ${openssl_SOURCE_DIR}/include)
 
 ## Config OpenSSL for libcurl to find libssl and libcrypto
-set(OPENSSL_ROOT_DIR ${OPENSSL_ROOT})
-set(OPENSSL_INCLUDE_DIR ${OPENSSL_ROOT_DIR}/include)
+set(OPENSSL_ROOT_DIR ${openssl_SOURCE_DIR})
+set(OPENSSL_INCLUDE_DIR ${openssl_SOURCE_DIR}/include)
 add_library(OpenSSL::SSL ALIAS ssl)
 add_library(OpenSSL::Crypto ALIAS crypto)
 set(OPENSSL_SSL_LIBRARY ssl)
 set(OPENSSL_CRYPTO_LIBRARY crypto)
 
-set(CURL_ROOT external/curl)
-add_subdirectory(${CURL_ROOT} curl.output)
-list(APPEND INC_DIRS ${CURL_ROOT}/include)
+CPMAddPackage(
+    NAME curl
+    GIT_TAG dev
+    GITHUB_REPOSITORY R1NC/curl
+)
+list(APPEND INC_DIRS ${curl_SOURCE_DIR}/include)
 
 if(USE_LUA)
-    set(LUA_ROOT external/lua)
-    add_subdirectory(${LUA_ROOT} lua.output)
-    list(APPEND INC_DIRS ${LUA_ROOT})
+    CPMAddPackage(
+        NAME lua
+        GIT_TAG dev
+        GITHUB_REPOSITORY R1NC/lua
+    )
+    list(APPEND INC_DIRS ${lua_SOURCE_DIR})
 endif()
 
 if(USE_QJS)
-    set(QJS_ROOT external/quickjs)
-    add_subdirectory(${QJS_ROOT} quickjs.output)
-    list(APPEND INC_DIRS ${QJS_ROOT})
+    CPMAddPackage(
+        NAME quickjs
+        GIT_TAG dev
+        GITHUB_REPOSITORY R1NC/quickjs-ng
+    )
+    list(APPEND INC_DIRS ${quickjs_SOURCE_DIR})
 endif()
 
 if(USE_SPDLOG)
-    set(SPDLOG_ROOT external/spdlog)
-    add_subdirectory(${SPDLOG_ROOT} spdlog.output)
-    list(APPEND INC_DIRS ${SPDLOG_ROOT}/include)
+    CPMAddPackage(
+        NAME spdlog
+        GIT_TAG dev
+        GITHUB_REPOSITORY R1NC/spdlog
+    )
+    list(APPEND INC_DIRS ${spdlog_SOURCE_DIR}/include)
 endif()
 
 # The buillt-in sqlite in iOS/macOS is available，no need to compile；
 # For Android, it's only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
 if(NOT APPLE)
-    set(SQLITE_ROOT external/sqlite)
-    add_subdirectory(${SQLITE_ROOT} sqlite.output)
-    list(APPEND INC_DIRS ${SQLITE_ROOT})
+    CPMAddPackage(
+        NAME sqlite
+        GIT_TAG dev
+        GITHUB_REPOSITORY R1NC/sqlite
+    )
+    list(APPEND INC_DIRS ${sqlite_SOURCE_DIR})
 endif()
 
 # WASM has no built-in zlib;
 if(EMSCRIPTEN OR WIN32)
-    set(Z_ROOT external/zlib)
-    add_subdirectory(${Z_ROOT} zlib.output)
-    list(APPEND INC_DIRS ${Z_ROOT})
+    CPMAddPackage(
+        NAME zlib
+        GIT_TAG dev
+        GITHUB_REPOSITORY R1NC/zlib
+    )
+    list(APPEND INC_DIRS ${zlib_SOURCE_DIR})
 endif()
 
 # HarmonyOS has built-in libuv;
 if(USE_LIBUV AND NOT OHOS)
-    set(UV_ROOT external/libuv)
-    add_subdirectory(${UV_ROOT} libuv.output)
-    list(APPEND INC_DIRS ${UV_ROOT}/include)
+    CPMAddPackage(
+        NAME libuv
+        GIT_TAG dev
+        GITHUB_REPOSITORY R1NC/libuv
+    )
+    list(APPEND INC_DIRS ${libuv_SOURCE_DIR}/include)
 endif()
 
 if(USE_ADA)
-    set(ADAURL_ROOT external/AdaURL)
-    add_subdirectory(${ADAURL_ROOT} AdaURL.output)
-    list(APPEND INC_DIRS ${ADAURL_ROOT}/include)
+    CPMAddPackage(
+        NAME adaurl
+        GIT_TAG dev
+        GITHUB_REPOSITORY R1NC/adaurl
+    )
+    list(APPEND INC_DIRS ${adaurl_SOURCE_DIR}/include)
 endif()
 
 if(ANDROID)
-    list(APPEND INC_DIRS ${ANDROID_IFADDRS_ROOT})
+    list(APPEND INC_DIRS ${ifaddrs_SOURCE_DIR})
 endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${INC_DIRS})
