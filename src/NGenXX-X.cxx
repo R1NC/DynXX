@@ -252,7 +252,7 @@ Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &
     return NGenXX::Core::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }
 
-std::string ngenxxCryptoRsaGenKey(const std::string &base64, bool isPublic) {
+std::string ngenxxCryptoRsaGenKey(const std::string_view &base64, bool isPublic) {
     return NGenXX::Core::Crypto::RSA::genKey(base64, isPublic);
 }
 
