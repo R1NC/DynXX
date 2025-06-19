@@ -2,7 +2,6 @@
 #define NGENXX_JNI_UTIL_HXX_
 
 #include <jni.h>
-#include <sstream>
 #include <string>
 
 #include "../../../../../../build.Android/output/include/NGenXXTypes.hxx"
@@ -67,26 +66,31 @@ inline jstring boxJString(JNIEnv *env, const char *str) {
     }
     auto sLen = static_cast<jsize>(strlen(str));
     auto p = reinterpret_cast<const unsigned char *>(str);
-    std::ostringstream oss;
+    
+    std::string fixedStr;
+    fixedStr.reserve(sLen);
+    
     size_t i = 0;
-
     while (i < sLen) {
         if (p[i] < 0x80) {
             // 1-byte character
-            oss << p[i];
+            fixedStr.push_back(static_cast<char>(p[i]));
             i++;
         } else if ((p[i] >> 5) == 0b110 &&
                    i + 1 < sLen &&
                    (p[i + 1] >> 6) == 0b10) {
             // valid 2-byte character
-            oss << p[i] << p[i + 1];
+            fixedStr.push_back(static_cast<char>(p[i]));
+            fixedStr.push_back(static_cast<char>(p[i + 1]));
             i += 2;
         } else if ((p[i] >> 4) == 0b1110 &&
                    i + 2 < sLen &&
                    (p[i + 1] >> 6) == 0b10 &&
                    (p[i + 2] >> 6) == 0b10) {
             // valid 3-byte character
-            oss << p[i] << p[i + 1] << p[i + 2];
+            fixedStr.push_back(static_cast<char>(p[i]));
+            fixedStr.push_back(static_cast<char>(p[i + 1]));
+            fixedStr.push_back(static_cast<char>(p[i + 2]));
             i += 3;
         } else if ((p[i] >> 3) == 0b11110 &&
                    i + 3 < sLen &&
@@ -94,25 +98,25 @@ inline jstring boxJString(JNIEnv *env, const char *str) {
                    (p[i + 2] >> 6) == 0b10 &&
                    (p[i + 3] >> 6) == 0b10) {
             // valid 4-byte character
-            oss << p[i] << p[i + 1] << p[i + 2] << p[i + 3];
+            fixedStr.push_back(static_cast<char>(p[i]));
+            fixedStr.push_back(static_cast<char>(p[i + 1]));
+            fixedStr.push_back(static_cast<char>(p[i + 2]));
+            fixedStr.push_back(static_cast<char>(p[i + 3]));
             i += 4;
         } else [[unlikely]] {
             // invalid UTF-8 sequence
-            oss << '?';
+            fixedStr.push_back('?');
             i++;
         }
     }
-
-    auto fixedStr = oss.str();
+    
     auto fixedLen = static_cast<jsize>(fixedStr.length());
     auto strBytes = env->NewByteArray(fixedLen);
-    env->SetByteArrayRegion(strBytes, 0, fixedLen,
-                            reinterpret_cast<const jbyte *>(fixedStr.c_str()));
+    env->SetByteArrayRegion(strBytes, 0, fixedLen, reinterpret_cast<const jbyte *>(fixedStr.c_str()));
     auto strClass = env->FindClass(JLS);
     auto strConstructor = env->GetMethodID(strClass, "<init>", "([B" LJLS_ ")V");
     auto charsetName = env->NewStringUTF("UTF-8");
-    auto jStr = reinterpret_cast<jstring>(env->NewObject(strClass, strConstructor,
-                                                         strBytes, charsetName));
+    auto jStr = reinterpret_cast<jstring>(env->NewObject(strClass, strConstructor, strBytes, charsetName));
     env->DeleteLocalRef(strBytes);
     env->DeleteLocalRef(charsetName);
     env->DeleteLocalRef(strClass);
