@@ -5,6 +5,13 @@
 #include <NGenXXLog.hxx>
 #include <NGenXXTypes.hxx>
 
+namespace{
+    bool isFloat(cJSON* cj)
+    {
+        return cj != nullptr && cj->type == cJSON_Number && cj->valuedouble != cj->valueint;
+    }
+}
+
 NGenXXJsonNodeTypeX NGenXX::Core::Json::cJSONReadType(void *const cjson)
 {
     if (cjson == nullptr) [[unlikely]]
@@ -119,7 +126,7 @@ std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json
         std::string k(node->string);
         if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Number)
         {
-            dict.emplace(k, node->valuedouble);
+            dict.emplace(k, isFloat(node) ? node->valuedouble : node->valueint);
         }
         else if (type == NGenXXJsonNodeTypeX::String)
         {
@@ -216,7 +223,7 @@ std::optional<std::string> NGenXX::Core::Json::Decoder::readString(void *const n
         }
         case NGenXXJsonNodeTypeX::Number:
         {
-            return std::make_optional(std::to_string(cj->valuedouble));
+            return std::make_optional(std::to_string(isFloat(cj) ? cj->valuedouble : cj->valueint));
         }
         case NGenXXJsonNodeTypeX::Boolean:
         {
@@ -239,7 +246,7 @@ std::optional<double> NGenXX::Core::Json::Decoder::readNumber(void *const node) 
     }
     if (type == NGenXXJsonNodeTypeX::Number) [[likely]]
     {
-        return std::make_optional(cj->valuedouble);
+        return std::make_optional(isFloat(cj) ? cj->valuedouble : cj->valueint);
     } 
     if (type == NGenXXJsonNodeTypeX::String) [[likely]]
     {
