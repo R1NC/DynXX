@@ -1,14 +1,24 @@
 #include "JsonCodec.hxx"
 
 #include <utility>
+#include <climits>
 
 #include <NGenXXLog.hxx>
 #include <NGenXXTypes.hxx>
 
 namespace{
-    bool isFloat(cJSON* cj)
+    bool shouldReadDouble(const cJSON *const cj)
     {
-        return cj != nullptr && cj->type == cJSON_Number && cj->valuedouble != cj->valueint;
+        if (cj == nullptr || cj->type != cJSON_Number) [[unlikely]]
+        {
+            return false;
+        }
+        if ((cj->valueint == INT_MAX && cj->valuedouble > INT_MAX) || 
+            (cj->valueint == INT_MIN && cj->valuedouble < INT_MIN))
+        {//Large integer numbers
+            return true;
+        }
+        return cj->valuedouble != static_cast<double>(cj->valueint);
     }
 }
 
@@ -126,7 +136,7 @@ std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json
         std::string k(node->string);
         if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Number)
         {
-            dict.emplace(k, isFloat(node) ? node->valuedouble : node->valueint);
+            dict.emplace(k, shouldReadDouble(node) ? node->valuedouble : node->valueint);
         }
         else if (type == NGenXXJsonNodeTypeX::String)
         {
@@ -223,7 +233,7 @@ std::optional<std::string> NGenXX::Core::Json::Decoder::readString(void *const n
         }
         case NGenXXJsonNodeTypeX::Number:
         {
-            return std::make_optional(std::to_string(isFloat(cj) ? cj->valuedouble : cj->valueint));
+            return std::make_optional(std::to_string(shouldReadDouble(cj) ? cj->valuedouble : cj->valueint));
         }
         case NGenXXJsonNodeTypeX::Boolean:
         {
@@ -246,7 +256,7 @@ std::optional<double> NGenXX::Core::Json::Decoder::readNumber(void *const node) 
     }
     if (type == NGenXXJsonNodeTypeX::Number) [[likely]]
     {
-        return std::make_optional(isFloat(cj) ? cj->valuedouble : cj->valueint);
+        return std::make_optional(shouldReadDouble(cj) ? cj->valuedouble : cj->valueint);
     } 
     if (type == NGenXXJsonNodeTypeX::String) [[likely]]
     {
