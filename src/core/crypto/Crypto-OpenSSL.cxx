@@ -1,8 +1,5 @@
 #include "Crypto.hxx"
 
-#include <string>
-#include <cstring>
-
 #include <openssl/err.h>
 #include <openssl/bio.h>
 #include <openssl/rand.h>

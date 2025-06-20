@@ -1,7 +1,5 @@
 #if defined(__cplusplus)
 
-#include <vector>
-#include <string>
 #include <memory>
 
 #include <NGenXX.hxx>

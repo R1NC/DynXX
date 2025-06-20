@@ -1,9 +1,6 @@
 #include "HttpClient.hxx"
 
-#include <cstring>
-
 #include <algorithm>
-#include <vector>
 
 #if defined(USE_ADA)
 #include <ada.h>

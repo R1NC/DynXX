@@ -11,8 +11,7 @@ EXTERN_C_END
 
 #if defined(__cplusplus)
 
-#include <string>
-#include <optional>
+#include <NGenXXTypes.hxx>
 
 #include "BaseVM.hxx"
 

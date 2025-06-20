@@ -5,8 +5,6 @@
 
 #if defined(__cplusplus)
 
-#include <string>
-#include <optional>
 #include <functional>
 
 #include <NGenXXTypes.hxx>

@@ -1,10 +1,10 @@
 #ifndef NGENXX_INCLUDE_LOG_HXX_
 #define NGENXX_INCLUDE_LOG_HXX_
 
-#include <string>
 #include <functional>
 
 #include "NGenXXMacro.hxx"
+#include "NGenXXTypes.hxx"
 
 #if defined(USE_STD_FORMAT)
 #include <format>

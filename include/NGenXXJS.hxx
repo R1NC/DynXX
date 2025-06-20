@@ -4,7 +4,6 @@
 #include "NGenXXTypes.hxx"
 
 #include <functional>
-#include <optional>
 
 bool ngenxxJsLoadF(const std::string &file, bool isModule);
 

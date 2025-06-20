@@ -3,8 +3,6 @@
 
 #include "NGenXXTypes.hxx"
 
-#include <string_view>
-
 bool ngenxxCryptoRand(size_t len, byte *bytes);
 
 Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key);

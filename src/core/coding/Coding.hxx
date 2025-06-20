@@ -3,8 +3,6 @@
 
 #if defined(__cplusplus)
 
-#include <string_view>
-
 #include <NGenXXTypes.hxx>
 
 namespace NGenXX::Core::Coding {

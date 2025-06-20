@@ -1,8 +1,6 @@
 #ifndef NGENXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
 #define NGENXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
 
-#include <cstring>
-
 #include <NGenXXTypes.hxx>
 
 namespace NGenXX::Core::Util::Type {

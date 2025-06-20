@@ -1,7 +1,7 @@
 #ifndef NGENXX_INCLUDE_DEVICE_HXX_
 #define NGENXX_INCLUDE_DEVICE_HXX_
 
-#include <string>
+#include "NGenXXTypes.hxx"
 
 enum class NGenXXDeviceTypeX: int {
     Unknown,

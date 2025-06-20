@@ -1,7 +1,5 @@
 #include "SQLite.hxx"
 
-#include <cstring>
-
 #include <NGenXXLog.hxx>
 
 namespace

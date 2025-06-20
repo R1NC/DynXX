@@ -1,11 +1,8 @@
 #include "Zip.hxx"
 
-#include <cstring>
-
 #include <algorithm>
 #include <stdexcept>
 #include <functional>
-#include <vector>
 
 #include <NGenXXLog.hxx>
 #include "NGenXXZip.h"

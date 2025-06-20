@@ -1,8 +1,6 @@
 #ifndef NGENXX_INCLUDE_JSON_HXX_
 #define NGENXX_INCLUDE_JSON_HXX_
 
-#include <string>
-#include <optional>
 #include <functional>
 
 #include "NGenXXTypes.hxx"

@@ -1,8 +1,7 @@
 #ifndef NGENXX_INCLUDE_STORE_SQLITE_HXX_
 #define NGENXX_INCLUDE_STORE_SQLITE_HXX_
 
-#include <string>
-#include <optional>
+#include "NGenXXTypes.hxx"
 
 void *ngenxxStoreSqliteOpen(const std::string &_id);
 

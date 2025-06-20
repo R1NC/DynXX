@@ -1,8 +1,7 @@
 #ifndef NGENXX_INCLUDE_LUA_HXX_
 #define NGENXX_INCLUDE_LUA_HXX_
 
-#include <string>
-#include <optional>
+#include "NGenXXTypes.hxx"
 
 bool ngenxxLuaLoadF(const std::string &f);
 

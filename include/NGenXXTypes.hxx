@@ -6,7 +6,7 @@
 #ifdef __cplusplus
 
 #include <cstring>
-
+#include <string_view>
 #include <string>
 #include <optional>
 #include <vector>

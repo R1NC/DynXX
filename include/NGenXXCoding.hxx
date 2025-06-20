@@ -1,8 +1,6 @@
 #ifndef NGENXX_INCLUDE_CODING_HXX_
 #define NGENXX_INCLUDE_CODING_HXX_
 
-#include <string_view>
-
 #include "NGenXXTypes.hxx"
 
 std::string ngenxxCodingCaseUpper(const std::string_view &str);

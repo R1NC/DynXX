@@ -3,8 +3,6 @@
 
 #if defined(__cplusplus)
 
-#include <optional>
-#include <string_view>
 #include <unordered_map>
 #include <memory>
 #include <mutex>

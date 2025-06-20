@@ -1,11 +1,7 @@
 #ifndef NGENXX_INCLUDE_STORE_KV_HXX_
 #define NGENXX_INCLUDE_STORE_KV_HXX_
 
-#include <cstdint>
-#include <string>
-#include <optional>
-#include <string_view>
-#include <vector>
+#include "NGenXXTypes.hxx"
 
 void *ngenxxStoreKvOpen(const std::string &_id);
 
