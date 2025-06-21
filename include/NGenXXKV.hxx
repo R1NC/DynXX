@@ -1,5 +1,5 @@
-#ifndef NGENXX_INCLUDE_STORE_KV_HXX_
-#define NGENXX_INCLUDE_STORE_KV_HXX_
+#ifndef NGENXX_INCLUDE_KV_HXX_
+#define NGENXX_INCLUDE_KV_HXX_
 
 #include "NGenXXTypes.hxx"
 
@@ -27,4 +27,4 @@ void ngenxxStoreKvClear(void *const conn);
 
 void ngenxxStoreKvClose(void *const conn);
 
-#endif // NGENXX_INCLUDE_STORE_KV_HXX_
+#endif // NGENXX_INCLUDE_KV_HXX_

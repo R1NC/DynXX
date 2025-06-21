@@ -7,7 +7,7 @@
 #endif
 
 #include <NGenXX.hxx>
-#include <NGenXXNetHttp.h>
+#include <NGenXXNet.h>
 #include "../core/json/JsonCodec.hxx"
 
 namespace

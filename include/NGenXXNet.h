@@ -1,5 +1,5 @@
-#ifndef NGENXX_INCLUDE_NET_HTTP_H_
-#define NGENXX_INCLUDE_NET_HTTP_H_
+#ifndef NGENXX_INCLUDE_NET_H_
+#define NGENXX_INCLUDE_NET_H_
 
 #include "NGenXXTypes.h"
 
@@ -60,4 +60,4 @@ bool ngenxx_net_http_download(const char *url, const char *file_path, size_t tim
 
 EXTERN_C_END
 
-#endif // NGENXX_INCLUDE_NET_HTTP_H_
+#endif // NGENXX_INCLUDE_NET_H_

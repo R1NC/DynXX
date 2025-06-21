@@ -7,7 +7,7 @@
 #endif
 
 #include <NGenXXLog.hxx>
-#include <NGenXXNetHttp.h>
+#include <NGenXXNet.h>
 #include <NGenXXCoding.hxx>
 
 namespace

@@ -8,7 +8,7 @@
 #include <curl/curl.h>
 
 #include <NGenXXTypes.hxx>
-#include <NGenXXNetHttp.hxx>
+#include <NGenXXNet.hxx>
 
 namespace NGenXX::Core::Net {
     struct HttpFormField {

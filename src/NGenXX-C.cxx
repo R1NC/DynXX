@@ -1,7 +1,7 @@
 #if defined(__cplusplus)
 
 #include <NGenXX.hxx>
-#include <NGenXXStoreKV.h>
+#include <NGenXXKV.h>
 #include <NGenXXTypes.hxx>
 #include <NGenXXMacro.hxx>
 #include "core/util/TypeUtil.hxx"

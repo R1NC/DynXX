@@ -1,5 +1,5 @@
-#ifndef NGENXX_INCLUDE_NET_HTTP_HXX_
-#define NGENXX_INCLUDE_NET_HTTP_HXX_
+#ifndef NGENXX_INCLUDE_NET_HXX_
+#define NGENXX_INCLUDE_NET_HXX_
 
 #include "NGenXXTypes.hxx"
 
@@ -47,4 +47,4 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
 bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath,
                            size_t timeout = NGenXXHttpDefaultTimeout);
 
-#endif // NGENXX_INCLUDE_NET_HTTP_HXX_
+#endif // NGENXX_INCLUDE_NET_HXX_

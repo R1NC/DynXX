@@ -1,5 +1,5 @@
-#ifndef NGENXX_INCLUDE_STORE_KV_H_
-#define NGENXX_INCLUDE_STORE_KV_H_
+#ifndef NGENXX_INCLUDE_KV_H_
+#define NGENXX_INCLUDE_KV_H_
 
 #include "NGenXXTypes.h"
 
@@ -102,4 +102,4 @@ void ngenxx_store_kv_close(void *const conn);
 
 EXTERN_C_END
 
-#endif // NGENXX_INCLUDE_STORE_KV_H_
+#endif // NGENXX_INCLUDE_KV_H_

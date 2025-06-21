@@ -1,5 +1,5 @@
-#ifndef NGENXX_INCLUDE_STORE_SQLITE_H_
-#define NGENXX_INCLUDE_STORE_SQLITE_H_
+#ifndef NGENXX_INCLUDE_DB_H_
+#define NGENXX_INCLUDE_DB_H_
 
 #include "NGenXXTypes.h"
 
@@ -73,4 +73,4 @@ void ngenxx_store_sqlite_close(void *const conn);
 
 EXTERN_C_END
 
-#endif // NGENXX_INCLUDE_STORE_SQLITE_H_
+#endif // NGENXX_INCLUDE_DB_H_

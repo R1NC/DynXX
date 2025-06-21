@@ -1,5 +1,5 @@
-#ifndef NGENXX_INCLUDE_STORE_SQLITE_HXX_
-#define NGENXX_INCLUDE_STORE_SQLITE_HXX_
+#ifndef NGENXX_INCLUDE_DB_HXX_
+#define NGENXX_INCLUDE_DB_HXX_
 
 #include "NGenXXTypes.hxx"
 
@@ -21,4 +21,4 @@ void ngenxxStoreSqliteQueryDrop(void *const query_result);
 
 void ngenxxStoreSqliteClose(void *const conn);
 
-#endif // NGENXX_INCLUDE_STORE_SQLITE_HXX_
+#endif // NGENXX_INCLUDE_DB_HXX_

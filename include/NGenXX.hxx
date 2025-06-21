@@ -1,9 +1,9 @@
 #ifndef NGENXX_INCLUDE_HXX_
 #define NGENXX_INCLUDE_HXX_
 
-#include "NGenXXNetHttp.hxx"
-#include "NGenXXStoreKV.hxx"
-#include "NGenXXStoreSQLite.hxx"
+#include "NGenXXNet.hxx"
+#include "NGenXXKV.hxx"
+#include "NGenXXDB.hxx"
 #include "NGenXXLua.hxx"
 #include "NGenXXJS.hxx"
 #include "NGenXXLog.hxx"
