@@ -45,7 +45,7 @@ if(USE_QJS)
     add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
 endif()
 
-if(EMSCRIPTEN)
+if(EMSCRIPTEN OR (NOT USE_LUA))
     option(USE_LIBUV "Use LibUV" OFF)
 else()
     option(USE_LIBUV "Use LibUV" ON)
