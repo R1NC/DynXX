@@ -41,19 +41,19 @@ ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/mmkv.a"
 )
 mv libNGenXX.a ${LIB_OUTPUT_DIR}/NGenXX.a
-mv _deps/curl-build/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
-mv _deps/openssl-build/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
-mv _deps/openssl-build/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
-mv _deps/lua-build/liblua.a ${LIB_OUTPUT_DIR}/lua.a
-mv _deps/quickjs-build/libqjs.a ${LIB_OUTPUT_DIR}/qjs.a
-mv _deps/spdlog-build/libspdlog.a ${LIB_OUTPUT_DIR}/spdlog.a
-mv _deps/libuv-build/libuv.a ${LIB_OUTPUT_DIR}/uv.a
-mv _deps/cjson-build/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
-mv _deps/sqlite-build/libsqlite3.a ${LIB_OUTPUT_DIR}/sqlite3.a
-mv _deps/mmkv-build/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
-mv _deps/mmkv-build/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
+mv curl-build/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
+mv openssl-build/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
+mv openssl-build/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
+mv lua-build/liblua.a ${LIB_OUTPUT_DIR}/lua.a
+mv quickjs-build/libqjs.a ${LIB_OUTPUT_DIR}/qjs.a
+mv spdlog-build/libspdlog.a ${LIB_OUTPUT_DIR}/spdlog.a
+mv libuv-build/libuv.a ${LIB_OUTPUT_DIR}/uv.a
+mv cjson-build/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
+mv sqlite-build/libsqlite3.a ${LIB_OUTPUT_DIR}/sqlite3.a
+mv mmkv-build/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
+mv mmkv-build/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
 
-ADA_OUT_FILE=_deps/AdaURL-build/src/libada.a
+ADA_OUT_FILE=AdaURL-build/src/libada.a
 if [ -f "$ADA_OUT_FILE" ]; then
     libAda=${LIB_OUTPUT_DIR}/ada.a
     mv ${ADA_OUT_FILE} ${libAda}

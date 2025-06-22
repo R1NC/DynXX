@@ -1,6 +1,39 @@
 [submodule "build-tools/toolchains/Apple"]
 	path = build-tools/toolchains/Apple
 	url = git@github.com:R1NC/apple.cmake.git
-[submodule "build-tools/toolchains/CPM"]
-	path = build-tools/toolchains/CPM
-	url = git@github.com:R1NC/CPM.git
+[submodule "third_party/cJSON"]
+	path = third_party/cJSON
+	url = git@github.com:R1NC/cJSON.git
+[submodule "third_party/curl"]
+	path = third_party/curl
+	url = git@github.com:R1NC/curl.git
+[submodule "third_party/openssl"]
+	path = third_party/openssl
+	url = git@github.com:R1NC/openssl.git
+[submodule "third_party/sqlite"]
+	path = third_party/sqlite
+	url = git@github.com:R1NC/sqlite.git
+[submodule "third_party/MMKV"]
+	path = third_party/MMKV
+	url = git@github.com:R1NC/MMKV.git
+[submodule "third_party/zlib"]
+	path = third_party/zlib
+	url = git@github.com:R1NC/zlib.git
+[submodule "third_party/lua"]
+	path = third_party/lua
+	url = git@github.com:R1NC/lua.git
+[submodule "third_party/quickjs"]
+	path = third_party/quickjs
+	url = git@github.com:R1NC/quickjs-ng.git
+[submodule "third_party/libuv"]
+	path = third_party/libuv
+	url = git@github.com:R1NC/libuv.git
+[submodule "third_party/AdaURL"]
+	path = third_party/AdaURL
+	url = git@github.com:R1NC/AdaURL.git
+[submodule "third_party/spdlog"]
+	path = third_party/spdlog
+	url = git@github.com:R1NC/spdlog.git
+[submodule "third_party/android-ifaddrs"]
+	path = third_party/android-ifaddrs
+	url = git@github.com:R1NC/android-ifaddrs.git
