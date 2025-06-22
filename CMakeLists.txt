@@ -97,7 +97,7 @@ set(CJSON_ROOT third_party/cJSON)
 add_subdirectory(${CJSON_ROOT} cjson-build)
 list(APPEND INC_DIRS ${CJSON_ROOT})
 
-set(MMKV_ROOT third_party/mmkv)
+set(MMKV_ROOT third_party/MMKV)
 add_subdirectory(${MMKV_ROOT}/POSIX/src mmkv-build)
 list(APPEND INC_DIRS ${MMKV_ROOT}/Core)
 
