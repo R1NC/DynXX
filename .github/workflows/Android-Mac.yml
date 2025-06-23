@@ -1,0 +1,56 @@
+name: Build for Android on macOS
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install Dependencies
+        run: |
+          brew install cmake ninja
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: 29.0.13599879
+          local-cache: true
+
+      - name: Build
+        env:
+          NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          cd build-tools
+          chmod +x build-Android.sh
+          ./build-Android.sh
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-macOS-build
+          path: |
+            build.Android/output/libs/
+            build.Android/output/include/
+          if-no-files-found: error

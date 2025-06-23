@@ -31,7 +31,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r28b
+          ndk-version: 29.0.13599879
           local-cache: true
 
       - name: Install Build Tools

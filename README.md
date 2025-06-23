@@ -1,10 +1,10 @@
 # NGenXX
 
-[![Build for Android on Ubuntu](../../actions/workflows/Android.yml/badge.svg)][32]  
+[![Build for Android on Ubuntu](../../actions/workflows/Android-Ubuntu.yml/badge.svg)][32] [![Build for Android on macOS](../../actions/workflows/Android-Mac.yml/badge.svg)][41]  
 [![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)][33] [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)][34]  
 [![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)][35] [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)][36]  
 [![Build for Linux on Ubuntu](../../actions/workflows/Linux.yml/badge.svg)][37]  
-[![Build for WASM on macOS](../../actions/workflows/WASM-mac.yml/badge.svg)][38]
+[![Build for WASM on macOS](../../actions/workflows/WASM-Mac.yml/badge.svg)][38]
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
@@ -123,12 +123,13 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [29]: https://docs.rs/objc2/latest/objc2/
 [30]: https://ohos.rs/
 [31]: https://github.com/R1NC/NGenRS
-[32]: ../../actions/workflows/Android.yml
+[32]: ../../actions/workflows/Android-Ubuntu.yml
 [33]: ../../actions/workflows/iOS.yml
 [34]: ../../actions/workflows/macOS.yml
 [35]: ../../actions/workflows/Win-MSVC.yml
 [36]: ../../actions/workflows/Win-MinGW.yml
 [37]: ../../actions/workflows/Linux.yml
-[38]: ../../actions/workflows/WASM-mac.yml
+[38]: ../../actions/workflows/WASM-Mac.yml
 [39]: https://en.cppreference.com/w/cpp/thread/jthread.html
 [40]: https://gist.github.com/tylerneylon/59f4bcf316be525b30ab
+[41]: ../../actions/workflows/Android-Mac.yml
