@@ -1,10 +1,10 @@
 # NGenXX
 
-[![Build for Android on Ubuntu](../../actions/workflows/Android-Ubuntu.yml/badge.svg)][32] [![Build for Android on macOS](../../actions/workflows/Android-Mac.yml/badge.svg)][41]  
+[![Build for Android on macOS](../../actions/workflows/Android-Mac.yml/badge.svg)][41] [![Build for Android on Ubuntu](../../actions/workflows/Android-Ubuntu.yml/badge.svg)][32]  
 [![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)][33] [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)][34]  
 [![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)][35] [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)][36]  
+[![Build for WASM on macOS](../../actions/workflows/WASM-Mac.yml/badge.svg)][38]  
 [![Build for Linux on Ubuntu](../../actions/workflows/Linux.yml/badge.svg)][37]  
-[![Build for WASM on macOS](../../actions/workflows/WASM-Mac.yml/badge.svg)][38]
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 

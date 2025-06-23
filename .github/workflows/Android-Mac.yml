@@ -35,7 +35,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: 29.0.13599879
+          ndk-version: r29-beta2
           local-cache: true
 
       - name: Build
