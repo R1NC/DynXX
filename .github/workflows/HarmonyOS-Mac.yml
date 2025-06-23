@@ -25,13 +25,12 @@ jobs:
 
     - name: Setup HarmonyOS SDK
       run: |
-        mkdir -p ohos-sdk
-        cd ohos-sdk
         curl -L -o ohos-sdk-mac-public.tar.gz "https://mirrors.huaweicloud.com/harmonyos/os/5.1.0-Release/ohos-sdk-mac-public.tar.gz"
         tar -xzf ohos-sdk-mac-public.tar.gz
-        ls -la
-        export OHOS_ROOT="${{ github.workspace }}/ohos-sdk/native"
-        echo "OHOS_ROOT=${{ github.workspace }}/ohos-sdk/native" >> $GITHUB_ENV
+        cd sdk/packages/ohos-sdk/darwin
+        unzip native-darwin-x64-5.1.0.107-Release.zip
+        export OHOS_ROOT="${{ github.workspace }}/sdk/packages/ohos-sdk/darwin/native"
+        echo "OHOS_ROOT=${{ github.workspace }}/sdk/packages/ohos-sdk/darwin/native" >> $GITHUB_ENV
 
     - name: Build
       run: |
