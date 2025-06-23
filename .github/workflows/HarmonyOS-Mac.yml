@@ -1,0 +1,49 @@
+name: Build for HarmonyOS on macOS
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+
+    - name: Install Dependencies
+      run: |
+        brew install cmake ninja
+
+    - name: Setup HarmonyOS SDK
+      run: |
+        mkdir -p ohos-sdk
+        cd ohos-sdk
+        curl -L -o ohos-sdk-mac-public.tar.gz "https://mirrors.huaweicloud.com/harmonyos/os/5.1.0-Release/ohos-sdk-mac-public.tar.gz"
+        tar -xzf ohos-sdk-mac-public.tar.gz
+        ls -la
+        export OHOS_ROOT="${{ github.workspace }}/ohos-sdk/native"
+        echo "OHOS_ROOT=${{ github.workspace }}/ohos-sdk/native" >> $GITHUB_ENV
+
+    - name: Build
+      run: |
+        cd build-tools
+        chmod +x build-HarmonyOS.sh
+        ./build-HarmonyOS.sh
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: HarmonyOS-build
+        path: |
+          build.HarmonyOS/output/libs/
+          build.HarmonyOS/output/include/
+        if-no-files-found: error
