@@ -9,13 +9,11 @@ rm -rf ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
-build4macos() {
-    PLATFORM=$1
-    ARCHS=$2
-    SYSTEM_VERSION=$3
-    BUILD_TYPE=$4
+build4mac() {
+    ARCHS=$1
+    SYSTEM_VERSION=$2
+    BUILD_TYPE=$3
 
-    #Generate xcode project for debug
     GEN_XCODE_PROJ=""
     if [ $BUILD_TYPE = "Debug" ]; then
         GEN_XCODE_PROJ="-GXcode"
@@ -26,7 +24,7 @@ build4macos() {
     -DCMAKE_INSTALL_PREFIX=. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DARCHS=${ARCHS} \
-    -DPLATFORM=${PLATFORM} \
+    -DPLATFORM=MAC_UNIVERSAL \
     -DDEPLOYMENT_TARGET=${SYSTEM_VERSION} \
     ${GEN_XCODE_PROJ}
 
@@ -38,8 +36,8 @@ if [ $DEBUG == 1 ]; then
     LIB_TYPE="Debug"
 fi
 
-build4macos MAC_UNIVERSAL arm64 ${TARGET_VERSION} ${LIB_TYPE}
-#build4macos MAC_UNIVERSAL x86_64 ${TARGET_VERSION} ${LIB_TYPE}
+build4mac arm64 ${TARGET_VERSION} ${LIB_TYPE}
+#build4mac x86_64 ${TARGET_VERSION} ${LIB_TYPE}
 
 #Copy headers
 HEADER_OUTPUT_DIR=output/include
