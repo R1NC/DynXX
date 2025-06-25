@@ -7,6 +7,7 @@
 #include <ranges>
 #include <numeric>
 #endif
+#include <regex>
 
 std::string NGenXX::Core::Coding::Case::upper(const std::string_view &str)
 {
@@ -161,4 +162,9 @@ std::string NGenXX::Core::Coding::strTrim(const std::string_view &str)
     const auto end = str.find_last_not_of(invalidChars);
     return std::string(str.substr(begin, end - begin + 1));
 #endif
+}
+
+std::string NGenXX::Core::Coding::strEscapeQuotes(const std::string& str) 
+{
+    return std::regex_replace(str, std::regex("\""), "\\\"");
 }

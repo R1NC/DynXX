@@ -23,6 +23,8 @@ namespace NGenXX::Core::Coding {
     Bytes str2bytes(const std::string_view &str);
 
     std::string strTrim(const std::string_view &str);
+
+    std::string strEscapeQuotes(const std::string& str);
 }
 
 #endif
