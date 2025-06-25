@@ -1,6 +1,5 @@
 #include "Coding.hxx"
 
-#include <iomanip>
 #include <algorithm>
 #include <charconv>
 #if defined(__cpp_lib_ranges)
