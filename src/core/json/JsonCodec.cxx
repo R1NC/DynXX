@@ -83,7 +83,7 @@ std::optional<std::string> NGenXX::Core::Json::cJSONToStr(void *const cjson)
         return std::nullopt;
     }
     std::string json(jsonChars);
-    //std::free(jsonChars);
+    std::free(jsonChars);
     return std::make_optional(json);
 }
 
