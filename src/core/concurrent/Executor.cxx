@@ -2,7 +2,7 @@
 
 #include <NGenXXLog.hxx>
 
-#pragma mark - Wroker
+#pragma mark - Worker
 
 NGenXX::Core::Concurrent::Worker::Worker() : Worker(1000uz)
 {
@@ -14,39 +14,50 @@ NGenXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs
     this->thread = std::jthread([this](std::stop_token stoken) {
         while (!stoken.stop_requested())
 #else
-	this->active = true;
     this->thread = std::thread([this]() {
-        while (active)
+        while (!shouldStop.load())
 #endif
         {
-            if (!tryLock()) [[unlikely]]
+            std::unique_lock<std::mutex> lock(this->mutex);
+            // Wait for tasks or stop signal
+            this->cv.wait(lock, [this
+#if defined(__cpp_lib_jthread)
+                , &stoken
+#endif
+                ]() {
+                return !this->taskQueue.empty() || 
+#if defined(__cpp_lib_jthread)
+                stoken.stop_requested()
+#else
+                shouldStop.load()
+#endif
+                ;
+            });
+            
+            if (
+#if defined(__cpp_lib_jthread)
+                stoken.stop_requested()
+#else
+                shouldStop.load()
+#endif
+            ) 
             {
-                sleep();
+                break;
+            }
+
+            if (taskQueue.empty()) [[unlikely]] 
+            {
                 continue;
             }
 
-            std::function<void()> func;
-            {
-                if (taskQueue.empty()) [[unlikely]]
-                {
-                    unlock();
-                    sleep();
-                    continue;
-                }
+            auto func = std::move(taskQueue.front());
+            taskQueue.pop();
+            lock.unlock();
 
-                func = std::move(taskQueue.front());
-                taskQueue.pop();
-                unlock();
-            }
-
-            if (func) [[likely]]
+            if (func) [[likely]] 
             {
                 ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Worker@{} run task on thread:{}", reinterpret_cast<uintptr_t>(this), currentThreadId());
                 func();
-            }
-            else [[unlikely]]
-            {
-                sleep();
             }
         }
     });
@@ -54,25 +65,20 @@ NGenXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs
 
 NGenXX::Core::Concurrent::Worker::~Worker()
 {
-    std::lock_guard lock(this->mutex);
-
-#if !defined(__cpp_lib_jthread)
-    this->active = false;
-    if (thread.joinable())
+#if defined(__cpp_lib_jthread)
+    // jthread automatically handles stop request and join
+#else
     {
-        thread.join();
+        std::lock_guard<std::mutex> lock(this->mutex);
+        this->shouldStop = true;
+    }
+    this->cv.notify_one();
+    
+    if (this->thread.joinable()) 
+    {
+        this->thread.join();
     }
 #endif
-}
-
-bool NGenXX::Core::Concurrent::Worker::tryLock()
-{
-	return NGenXX::Core::Concurrent::tryLock(this->mutex, sleepMicroSecs);
-}
-
-void NGenXX::Core::Concurrent::Worker::unlock()
-{
-    this->mutex.unlock();
 }
 
 void NGenXX::Core::Concurrent::Worker::sleep()
@@ -82,10 +88,14 @@ void NGenXX::Core::Concurrent::Worker::sleep()
 
 NGenXX::Core::Concurrent::Worker& NGenXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
 {
-    std::lock_guard lock(this->mutex);
-    this->taskQueue.emplace(std::move(task));
-    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Worker@{} taskCount:{}",  reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
-
+    {
+        std::lock_guard<std::mutex> lock(this->mutex);
+        this->taskQueue.emplace(std::move(task));
+        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Worker@{} taskCount:{}", reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
+    }
+    
+    this->cv.notify_one();
+    
     return *this;
 }
 
@@ -111,7 +121,7 @@ NGenXX::Core::Concurrent::Executor::~Executor()
 
 NGenXX::Core::Concurrent::Executor& NGenXX::Core::Concurrent::Executor::operator>>(TaskT&& task)
 {
-    std::lock_guard lock(this->mutex);
+    std::lock_guard<std::mutex> lock(this->mutex);
 
     if (this->workerPool.size() < this->workerPoolCapacity)
     {

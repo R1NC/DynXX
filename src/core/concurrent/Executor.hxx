@@ -4,6 +4,7 @@
 #if defined(__cplusplus)
 
 #include <atomic>
+#include <condition_variable>
 #include <functional>
 #include <queue>
 #include <vector>
@@ -37,18 +38,15 @@ namespace NGenXX::Core::Concurrent {
 
     private:
         size_t sleepMicroSecs{1000uz};
-        std::timed_mutex mutex;
+        std::mutex mutex;
+        std::condition_variable cv;
         std::queue<TaskT> taskQueue;
 #if defined(__cpp_lib_jthread)
         std::jthread thread;
 #else
         std::thread thread;
-        std::atomic<bool> active{false};
+        std::atomic<bool> shouldStop{false};
 #endif
-
-        [[nodiscard]] bool tryLock();
-
-        void unlock();
 
         void sleep();
     };
