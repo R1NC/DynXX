@@ -24,7 +24,7 @@ namespace NGenXX::Core::Coding {
 
     std::string strTrim(const std::string_view &str);
 
-    std::string strEscapeQuotes(const std::string& str);
+    std::string strEscapeQuotes(const std::string_view& str);
 }
 
 #endif

@@ -6,8 +6,9 @@
 #if defined(__cpp_lib_ranges)
 #include <ranges>
 #include <numeric>
-#endif
+#else
 #include <regex>
+#endif
 
 std::string NGenXX::Core::Coding::Case::upper(const std::string_view &str)
 {
@@ -164,7 +165,24 @@ std::string NGenXX::Core::Coding::strTrim(const std::string_view &str)
 #endif
 }
 
-std::string NGenXX::Core::Coding::strEscapeQuotes(const std::string& str) 
+std::string NGenXX::Core::Coding::strEscapeQuotes(const std::string_view& str) 
 {
-    return std::regex_replace(str, std::regex("\""), "\\\"");
+#if defined(__cpp_lib_ranges)
+    std::string result;
+    result.reserve(str.size() * 2);
+    std::ranges::for_each(str, [&result](char c) {
+        if (c == '"') 
+        {
+            result.append("\\\"");
+        } 
+        else 
+        {
+            result.append(1, c);
+        }
+    });
+    return result;
+#else 
+    std::string input(str);
+    return std::regex_replace(input, std::regex("\""), "\\\"");
+#endif
 }
