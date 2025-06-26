@@ -326,9 +326,10 @@ void NGenXX::Core::Json::Decoder::readChildren(void *const node, std::function<v
         return;
     }
     auto idx = 0;
+    const auto& cbk = std::move(callback);
     for (auto childNode = this->readChild(node); childNode != nullptr; childNode = this->readNext(childNode))
     {
-        std::move(callback)(idx++, childNode);
+        cbk(idx++, childNode);
     }
 }
 
