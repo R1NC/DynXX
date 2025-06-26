@@ -66,10 +66,9 @@ namespace
         const auto bio = BIO_new_mem_buf(key.data(), -1);
         if (!bio) [[unlikely]]
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "RSA Failed to create BIO");
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO mem buffer for RSA");
             return rsa;
         }
-        BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL) ;
         if (isPublic) 
         {
             rsa = PEM_read_bio_RSA_PUBKEY(bio, nullptr, nullptr, nullptr);
@@ -596,13 +595,26 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
     }
 
     BIO *bio = BIO_new_mem_buf(in, -1);
+    if (!bio) [[unlikely]]
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO mem buffer for Base64");
+        return {};
+    }
+
     BIO *b64 = BIO_new(BIO_f_base64());
+    if (!b64) [[unlikely]]
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO for Base64");
+        BIO_free_all(bio);
+        return {};
+    }
+
     bio = BIO_push(b64, bio);
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
 
     auto outLen = inLen * 3 / 4;
     Bytes outBytes(outLen, 0);
-    outLen = BIO_read(bio, outBytes.data(), static_cast<int>(inLen));
+    outLen = BIO_read(bio, outBytes.data(), static_cast<int>(outLen));
     if (outLen == 0) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to decode Base64");
@@ -611,5 +623,6 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
     }
 
     BIO_free_all(bio);
+    outBytes.resize(outLen);
     return outBytes;
 }
