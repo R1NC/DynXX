@@ -592,7 +592,6 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
             continue;
         }
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "Invalid Base64 character:{}", in[i]);
-        BIO_free_all(bio);
         return {};
     }
 
