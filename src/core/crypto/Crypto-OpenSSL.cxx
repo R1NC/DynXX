@@ -551,7 +551,18 @@ Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
     }
 
     BIO *b64 = BIO_new(BIO_f_base64());
+    if (!b64) [[unlikely]]
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO for Base64");
+        return {};
+    }
+
     BIO *bmem = BIO_new(BIO_s_mem());
+    if (!bmem) [[unlikely]]
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO mem for Base64");
+        return {};
+    }
 
     BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
     b64 = BIO_push(b64, bmem);
