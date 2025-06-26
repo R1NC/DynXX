@@ -561,25 +561,41 @@ Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
     if (!bmem) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO mem for Base64");
+        BIO_free(b64);
         return {};
     }
 
     BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
     b64 = BIO_push(b64, bmem);
 
-    BIO_write(b64, in, static_cast<int>(inLen));
-    BIO_flush(b64);
-
-    char *outBytes = nullptr;
-    const auto outLen = BIO_get_mem_data(bmem, &outBytes);
-    if (outLen == 0) [[unlikely]]
+    const int writeResult = BIO_write(b64, in, static_cast<int>(inLen));
+    if (writeResult <= 0) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to encode Base64");
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to write to Base64 BIO");
         BIO_free_all(b64);
         return {};
     }
 
-    auto out = wrapBytes(reinterpret_cast<byte *>(outBytes), outLen);
+    const int flushResult = BIO_flush(b64);
+    if (flushResult <= 0) [[unlikely]]
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to flush Base64 BIO");
+        BIO_free_all(b64);
+        return {};
+    }
+
+    char *outBytes = nullptr;
+    const auto outLen = BIO_get_mem_data(bmem, &outBytes);
+    if (outLen <= 0 || outBytes == nullptr) [[unlikely]]
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to get Base64 encoded data");
+        BIO_free_all(b64);
+        return {};
+    }
+
+    // Copy data before freeing BIO to avoid potential memory issues
+    Bytes out(outLen);
+    std::memcpy(out.data(), outBytes, outLen);
 
     BIO_free_all(b64);
 
@@ -595,6 +611,7 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
         return {};
     }
 
+    // Validate Base64 characters
     for (size_t i = 0; i < inLen; i++)
     {
         if (std::isalnum(in[i]) || in[i] == '+' || in[i] == '/' || in[i] == '=')
@@ -605,8 +622,9 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
         return {};
     }
 
-    BIO *bio = BIO_new_mem_buf(in, -1);
-    if (!bio) [[unlikely]]
+    // Create memory BIO with explicit length
+    BIO *bmem = BIO_new_mem_buf(in, static_cast<int>(inLen));
+    if (!bmem) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO mem buffer for Base64");
         return {};
@@ -616,24 +634,35 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
     if (!b64) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO for Base64");
-        BIO_free_all(bio);
+        BIO_free(bmem);
         return {};
     }
 
-    bio = BIO_push(b64, bio);
+    BIO *bio = BIO_push(b64, bmem);
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
 
-    auto outLen = inLen * 3 / 4;
+    auto outLen = (inLen * 3) / 4 + 3; // Add padding for safety
     Bytes outBytes(outLen, 0);
-    outLen = BIO_read(bio, outBytes.data(), static_cast<int>(outLen));
-    if (outLen == 0) [[unlikely]]
+    
+    const auto bytesRead = BIO_read(bio, outBytes.data(), static_cast<int>(outLen));
+    if (bytesRead <= 0) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to decode Base64");
+        unsigned long err = ERR_get_error();
+        if (err != 0)
+        {
+            char errBuf[256];
+            ERR_error_string_n(err, errBuf, sizeof(errBuf));
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to decode Base64: {}", std::string(errBuf));
+        }
+        else
+        {
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to decode Base64: No data read");
+        }
         BIO_free_all(bio);
         return {};
     }
 
     BIO_free_all(bio);
-    outBytes.resize(outLen);
+    outBytes.resize(bytesRead);
     return outBytes;
 }
