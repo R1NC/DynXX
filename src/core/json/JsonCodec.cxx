@@ -289,10 +289,6 @@ std::optional<double> NGenXX::Core::Json::Decoder::readNumber(void *const node) 
 {
     const auto type = cJSONReadType(node);
     const auto cj = this->reinterpretNode(node);
-    if (cj->string == nullptr) [[unlikely]]
-    {
-        return std::nullopt;
-    }
     if (type == NGenXXJsonNodeTypeX::Int32)
     {
         return std::make_optional(readInt32(cj));
