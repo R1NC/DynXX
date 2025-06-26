@@ -82,25 +82,25 @@ namespace
     RSA *createRSA(const Bytes &key, bool isPublic)
     {
         RSA *rsa = nullptr;
-        const auto bio = BIO_new_mem_buf(key.data(), -1);
-        if (!bio) [[unlikely]]
+        const auto bmem = BIO_new_mem_buf(key.data(), static_cast<int>(key.size()));
+        if (!bmem) [[unlikely]]
         {
             ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO mem buffer for RSA");
             return rsa;
         }
         if (isPublic) 
         {
-            rsa = PEM_read_bio_RSA_PUBKEY(bio, nullptr, nullptr, nullptr);
+            rsa = PEM_read_bio_RSA_PUBKEY(bmem, nullptr, nullptr, nullptr);
         } 
         else 
         {
-            rsa = PEM_read_bio_RSAPrivateKey(bio, nullptr, nullptr, nullptr);
+            rsa = PEM_read_bio_RSAPrivateKey(bmem, nullptr, nullptr, nullptr);
         }
         if (!rsa) [[unlikely]]
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA Failed to create key, err: {}", readErrMsg().value_or(""));
         }
-        BIO_free(bio);
+        BIO_free(bmem);
         return rsa;
     }
 }
@@ -567,15 +567,15 @@ Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
         return {};
     }
 
-    BIO *b64 = BIO_new(BIO_f_base64());
+    const auto b64 = BIO_new(BIO_f_base64());
     if (!b64) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO for Base64");
         return {};
     }
 
-    BIO *bmem = BIO_new(BIO_s_mem());
-    if (!bmem) [[unlikely]]
+    const auto bsmem = BIO_new(BIO_s_mem());
+    if (!bsmem) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO mem for Base64");
         BIO_free(b64);
@@ -583,7 +583,14 @@ Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
     }
 
     BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-    b64 = BIO_push(b64, bmem);
+    
+    const auto bpush = BIO_push(b64, bsmem);
+    if (!bpush) [[unlikely]]
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
+        BIO_free_all(b64);
+        return {};
+    }
 
     const int writeResult = BIO_write(b64, in, static_cast<int>(inLen));
     if (writeResult <= 0) [[unlikely]]
@@ -602,7 +609,7 @@ Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
     }
 
     char *outBytes = nullptr;
-    const auto outLen = BIO_get_mem_data(bmem, &outBytes);
+    const auto outLen = BIO_get_mem_data(bpush, &outBytes);
     if (outLen <= 0 || outBytes == nullptr) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to get Base64 encoded data");
@@ -640,36 +647,43 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
     }
 
     // Create memory BIO with explicit length
-    BIO *bmem = BIO_new_mem_buf(in, static_cast<int>(inLen));
+    const auto bmem = BIO_new_mem_buf(in, static_cast<int>(inLen));
     if (!bmem) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO mem buffer for Base64");
         return {};
     }
 
-    BIO *b64 = BIO_new(BIO_f_base64());
+    const auto b64 = BIO_new(BIO_f_base64());
     if (!b64) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to create BIO for Base64");
-        BIO_free(bmem);
+        BIO_free_all(bmem);
         return {};
     }
 
-    BIO *bio = BIO_push(b64, bmem);
-    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
+    const auto bpush = BIO_push(b64, bmem);
+    if (!bpush) [[unlikely]]
+    {
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
+        BIO_free_all(b64);
+        return {};
+    }
+
+    BIO_set_flags(bpush, BIO_FLAGS_BASE64_NO_NL);
 
     auto outLen = (inLen * 3) / 4 + 3; // Add padding for safety
     Bytes outBytes(outLen, 0);
     
-    const auto bytesRead = BIO_read(bio, outBytes.data(), static_cast<int>(outLen));
+    const auto bytesRead = BIO_read(bpush, outBytes.data(), static_cast<int>(outLen));
     if (bytesRead <= 0) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to decode Base64, err: {}", readErrMsg().value_or(""));
-        BIO_free_all(bio);
+        BIO_free_all(bpush);
         return {};
     }
 
-    BIO_free_all(bio);
+    BIO_free_all(bpush);
     outBytes.resize(bytesRead);
     return outBytes;
 }
