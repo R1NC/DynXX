@@ -585,6 +585,17 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
         return {};
     }
 
+    for (size_t i = 0; i < inLen; i++)
+    {
+        if (std::isalnum(in[i]) || in[i] == '+' || in[i] == '/' || in[i] == '=')
+        {
+            continue;
+        }
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Invalid Base64 character:{}", in[i]);
+        BIO_free_all(bio);
+        return {};
+    }
+
     BIO *bio = BIO_new_mem_buf(in, -1);
     BIO *b64 = BIO_new(BIO_f_base64());
     bio = BIO_push(b64, bio);
