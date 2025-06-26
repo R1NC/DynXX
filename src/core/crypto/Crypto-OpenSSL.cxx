@@ -22,14 +22,21 @@ namespace
 
     std::optional<std::string> readErrMsg()
     {
-        char sErr[256];
-        ERR_error_string_n(ERR_get_error(), sErr, sizeof(sErr));
-        const auto actualLen = std::strlen(sErr);
-        if (actualLen > 0)
+        const auto err = ERR_get_error();
+        if (err == 0) [[unlikely]]
         {
-            return std::make_optional(std::string(sErr, actualLen));
+            return std::nullopt;
         }
-        return std::nullopt;
+
+        char errMsg[256];
+        ERR_error_string_n(err, errMsg, sizeof(errMsg));
+        const auto actualLen = std::strlen(errMsg);
+        if (actualLen <= 0) [[unlikely]]
+        {
+            return std::nullopt;
+        }
+        
+        return std::make_optional(std::string(errMsg, actualLen));
     }
 
     class EvpCipherCtx
@@ -91,7 +98,7 @@ namespace
         }
         if (!rsa) [[unlikely]]
         {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA Failed to create key: {}", readErrMsg().value_or(""));
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA Failed to create key, err: {}", readErrMsg().value_or(""));
         }
         BIO_free(bio);
         return rsa;
@@ -135,7 +142,7 @@ Bytes NGenXX::Core::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
 
     if (const auto ret = AES_set_encrypt_key(key, AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_encrypt_key error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_encrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
     
@@ -164,7 +171,7 @@ Bytes NGenXX::Core::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
     AES_KEY aes_key;
     if (const auto ret = AES_set_decrypt_key(key, AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -214,28 +221,28 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
     const EvpCipherCtx evpCipherCtx;
     if (evpCipherCtx.raw == nullptr) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
     auto ret = EVP_EncryptInit_ex(evpCipherCtx.raw, cipher, nullptr, nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_EncryptInit_ex(evpCipherCtx.raw, nullptr, nullptr, key, initVector);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -246,7 +253,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
         ret = EVP_EncryptUpdate(evpCipherCtx.raw, nullptr, &len, aad, static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate aad error:{}", ret);
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
             return {};
         }
     }
@@ -254,21 +261,21 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
     ret = EVP_EncryptUpdate(evpCipherCtx.raw, out.data(), &len, in, static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_EncryptFinal_ex(evpCipherCtx.raw, out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptFinal_ex error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptFinal_ex encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
     out.insert(out.end(), tag.begin(), tag.end());
@@ -297,28 +304,28 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
     const EvpCipherCtx evpCipherCtx;
     if (evpCipherCtx.raw == nullptr) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
     auto ret = EVP_DecryptInit_ex(evpCipherCtx.raw, cipher, nullptr, nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmdDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DecryptInit_ex(evpCipherCtx.raw, nullptr, nullptr, key, initVector);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -329,7 +336,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
         ret = EVP_DecryptUpdate(evpCipherCtx.raw, nullptr, &len, aad, static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate aad error:{}", ret);
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
             return {};
         }
     }
@@ -337,21 +344,21 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
     ret = EVP_DecryptUpdate(evpCipherCtx.raw, out.data(), &len, in, static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DecryptFinal_ex(evpCipherCtx.raw, out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptFinal_ex error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptFinal_ex decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -377,21 +384,21 @@ Bytes NGenXX::Core::Crypto::Hash::md5(const Bytes &inBytes)
     auto ret = MD5_Init(&md5);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Init error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Init failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = MD5_Update(&md5, in, inLen);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Update error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Update failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = MD5_Final(out.data(), &md5);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Final error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Final failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -417,21 +424,21 @@ Bytes NGenXX::Core::Crypto::Hash::sha1(const Bytes &inBytes)
     auto ret = EVP_DigestInit_ex(ctx, md, nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestInit_ex error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestInit_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DigestUpdate(ctx, in, inLen);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestUpdate error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestUpdate failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DigestFinal_ex(ctx, out.data(), &outLen);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestFinal_ex error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestFinal_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -457,21 +464,21 @@ Bytes NGenXX::Core::Crypto::Hash::sha256(const Bytes &inBytes)
     auto ret = SHA256_Init(&sha256);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Init error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Init failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = SHA256_Update(&sha256, in, inLen);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Update error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Update failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = SHA256_Final(out.data(), &sha256);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Final error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Final failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -522,7 +529,7 @@ Bytes NGenXX::Core::Crypto::RSA::encrypt(const Bytes &in, const Bytes &key, int 
     Bytes outBytes(outLen, 0);
     if (const auto ret = RSA_public_encrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), rsa, padding); ret == -1) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA encrypt error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         RSA_free(rsa);
         return {};
     }
@@ -541,7 +548,7 @@ Bytes NGenXX::Core::Crypto::RSA::decrypt(const Bytes &in, const Bytes &key, int 
     Bytes outBytes(outLen, 0);
     if (const auto ret = RSA_private_decrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), rsa, padding); ret == -1) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA decrypt error:{}", ret);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         RSA_free(rsa);
         return {};
     }
@@ -628,7 +635,7 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
         {
             continue;
         }
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Invalid Base64 character:{}", in[i]);
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Invalid Base64 char: {}", in[i]);
         return {};
     }
 
@@ -657,7 +664,7 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
     const auto bytesRead = BIO_read(bio, outBytes.data(), static_cast<int>(outLen));
     if (bytesRead <= 0) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to decode Base64: {}", readErrMsg().value_or(""));
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to decode Base64, err: {}", readErrMsg().value_or(""));
         BIO_free_all(bio);
         return {};
     }
