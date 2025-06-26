@@ -20,6 +20,18 @@ namespace
     constexpr auto MD5_BYTES_LEN = 16uz;
     constexpr auto SHA256_BYTES_LEN = 32uz;
 
+    std::optional<std::string> readErrMsg()
+    {
+        char sErr[256];
+        ERR_error_string_n(ERR_get_error(), sErr, sizeof(sErr));
+        const auto actualLen = std::strlen(sErr);
+        if (actualLen > 0)
+        {
+            return std::make_optional(std::string(sErr, actualLen));
+        }
+        return std::nullopt;
+    }
+
     class EvpCipherCtx
     {
     public:
@@ -79,9 +91,7 @@ namespace
         }
         if (!rsa) [[unlikely]]
         {
-            char sErr[256];
-            ERR_error_string_n(ERR_get_error(), sErr, sizeof(sErr));
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA Failed to create key: {}", std::string(sErr));
+            ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA Failed to create key: {}", readErrMsg().value_or(""));
         }
         BIO_free(bio);
         return rsa;
@@ -647,17 +657,7 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
     const auto bytesRead = BIO_read(bio, outBytes.data(), static_cast<int>(outLen));
     if (bytesRead <= 0) [[unlikely]]
     {
-        unsigned long err = ERR_get_error();
-        if (err != 0)
-        {
-            char errBuf[256];
-            ERR_error_string_n(err, errBuf, sizeof(errBuf));
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to decode Base64: {}", std::string(errBuf));
-        }
-        else
-        {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "Failed to decode Base64: No data read");
-        }
+        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to decode Base64: {}", readErrMsg().value_or(""));
         BIO_free_all(bio);
         return {};
     }
