@@ -89,6 +89,10 @@ std::optional<std::string> NGenXX::Core::Json::cJSONToStr(void *const cjson)
 
 std::optional<std::string> NGenXX::Core::Json::jsonFromDictAny(const DictAny &dict)
 {
+    if (dict.empty()) [[unlikely]]
+    {
+        return std::nullopt;
+    }
     const auto cjson = cJSON_CreateObject();
     for (const auto &[k, v] : dict) 
     {
@@ -137,6 +141,10 @@ std::optional<std::string> NGenXX::Core::Json::jsonFromDictAny(const DictAny &di
 
 std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json)
 {
+    if (json.empty()) [[unlikely]]
+    {
+        return std::nullopt;
+    }
     const auto cjson = cJSON_Parse(json.c_str());
     if (!cjson) [[unlikely]]
     {
