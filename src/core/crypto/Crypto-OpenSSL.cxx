@@ -500,16 +500,14 @@ NGenXX::Core::Crypto::RSA::Codec::Codec(const Bytes &key, int padding) : padding
     }
 }
 
-std::size_t NGenXX::Core::Crypto::RSA::Codec::outLen() const
+void NGenXX::Core::Crypto::RSA::Codec::moveImp(Codec &&other) noexcept
 {
-    if (this->rsa == nullptr) [[unlikely]]
-    {
-        return 0;
-    }
-    return RSA_size(this->rsa);
+    const_cast<int&>(this->padding) = other.padding;
+    this->bmem = std::exchange(other.bmem, nullptr);
+    this->rsa = std::exchange(other.rsa, nullptr);
 }
 
-NGenXX::Core::Crypto::RSA::Codec::~Codec()
+void NGenXX::Core::Crypto::RSA::Codec::cleanup() noexcept
 {
     if (this->bmem != nullptr) [[likely]]
     {
@@ -521,6 +519,36 @@ NGenXX::Core::Crypto::RSA::Codec::~Codec()
         RSA_free(this->rsa);
         this->rsa = nullptr;
     }
+}
+
+NGenXX::Core::Crypto::RSA::Codec::Codec(Codec &&other) noexcept
+    : padding(other.padding)
+{
+    this->moveImp(std::move(other));
+}
+
+NGenXX::Core::Crypto::RSA::Codec& NGenXX::Core::Crypto::RSA::Codec::operator=(Codec &&other) noexcept
+{
+    if (this != &other) [[likely]]
+    {
+        this->cleanup();
+        this->moveImp(std::move(other));
+    }
+    return *this;
+}
+
+NGenXX::Core::Crypto::RSA::Codec::~Codec()
+{
+    this->cleanup();
+}
+
+std::size_t NGenXX::Core::Crypto::RSA::Codec::outLen() const
+{
+    if (this->rsa == nullptr) [[unlikely]]
+    {
+        return 0;
+    }
+    return RSA_size(this->rsa);
 }
 
 NGenXX::Core::Crypto::RSA::Encrypt::Encrypt(const Bytes &key, int padding) : Codec(key, padding)

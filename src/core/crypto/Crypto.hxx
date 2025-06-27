@@ -77,50 +77,53 @@ namespace NGenXX::Core::Crypto {
             Codec() = delete;
             Codec(const Codec &) = delete;
             Codec &operator=(const Codec &) = delete;
-            Codec(Codec &&) = delete;
-            Codec &operator=(Codec &&) = delete;
-
+            Codec(Codec &&other) noexcept;
+            Codec &operator=(Codec &&other) noexcept;
+        
             explicit Codec(const Bytes &key, int padding);
-
+        
             virtual std::optional<Bytes> process(const Bytes &in) const = 0;
-
+        
             size_t outLen() const;
-
+        
             virtual ~Codec();
-
+        
         protected:
+            void moveImp(Codec &&other) noexcept;
+            void cleanup() noexcept;
+            
             BIO *bmem{nullptr};
             rsa_st *rsa{nullptr};
             const int padding;
         };
-
+    
         class Encrypt final : public Codec
         {
         public:
             Encrypt() = delete;
             Encrypt(const Encrypt &) = delete;
             Encrypt &operator=(const Encrypt &) = delete;
-            Encrypt(Encrypt &&) = delete;
-            Encrypt &operator=(Encrypt &&) = delete;
+            Encrypt(Encrypt &&other) noexcept = default;
+            Encrypt &operator=(Encrypt &&other) noexcept = default;
             ~Encrypt() = default;
-
+        
             explicit Encrypt(const Bytes &key, int padding);
-
+        
             std::optional<Bytes> process(const Bytes &in) const override;
         };
-
+    
         class Decrypt final : public Codec
         {
         public:
             Decrypt() = delete;
             Decrypt(const Decrypt &) = delete;
             Decrypt &operator=(const Decrypt &) = delete;
-            Decrypt(Decrypt &&) = delete;
-            Decrypt &operator=(Decrypt &&) = delete;
+            Decrypt(Decrypt &&other) noexcept = default;
+            Decrypt &operator=(Decrypt &&other) noexcept = default;
             ~Decrypt() = default;
-
+        
             explicit Decrypt(const Bytes &key, int padding);
-
+        
             std::optional<Bytes> process(const Bytes &in) const override;
         };
     }
