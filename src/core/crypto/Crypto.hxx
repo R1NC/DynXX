@@ -82,9 +82,9 @@ namespace NGenXX::Core::Crypto {
     }
 
     namespace Base64 {
-        Bytes encode(const Bytes &in);
+        Bytes encode(const Bytes &in, bool noNewLines = true);
 
-        Bytes decode(const Bytes &in);
+        Bytes decode(const Bytes &in, bool noNewLines = true);
     }
 }
 

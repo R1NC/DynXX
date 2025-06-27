@@ -274,12 +274,12 @@ Bytes ngenxxCryptoHashSha256(const Bytes &in) {
     return NGenXX::Core::Crypto::Hash::sha256(in);
 }
 
-Bytes ngenxxCryptoBase64Encode(const Bytes &in) {
-    return NGenXX::Core::Crypto::Base64::encode(in);
+Bytes ngenxxCryptoBase64Encode(const Bytes &in, bool noNewLines) {
+    return NGenXX::Core::Crypto::Base64::encode(in, noNewLines);
 }
 
-Bytes ngenxxCryptoBase64Decode(const Bytes &in) {
-    return NGenXX::Core::Crypto::Base64::decode(in);
+Bytes ngenxxCryptoBase64Decode(const Bytes &in, bool noNewLines) {
+    return NGenXX::Core::Crypto::Base64::decode(in, noNewLines);
 }
 
 #pragma mark Net.Http

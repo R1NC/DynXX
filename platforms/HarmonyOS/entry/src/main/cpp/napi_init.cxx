@@ -764,9 +764,10 @@ napi_value cryptoBase64Encode(napi_env env, napi_callback_info info) {
 
     auto inLen = napiValueArrayLen(env, args.v[0]);
     auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+    auto noNewLines = napiValue2bool(env, args.v[1]);
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, &outLen);
+    auto outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, noNewLines, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -779,9 +780,10 @@ napi_value cryptoBase64Decode(napi_env env, napi_callback_info info) {
 
     auto inLen = napiValueArrayLen(env, args.v[0]);
     auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+    auto noNewLines = napiValue2bool(env, args.v[1]);
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, &outLen);
+    auto outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, noNewLines, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);

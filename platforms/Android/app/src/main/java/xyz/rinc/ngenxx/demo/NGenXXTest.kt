@@ -79,8 +79,8 @@ class NGenXXTest {
             val sha256bytes = NGenXX.cryptoHashSha256(inputBytes)
             val sha256hex = NGenXX.codingHexBytes2Str(sha256bytes)
             NGenXXHelper.logPrint(LogLevel.Debug,"sha256->$sha256hex")
-            val base64Encoded = NGenXX.cryptoBase64Encode(inputBytes)
-            val base64Decoded = NGenXX.cryptoBase64Decode(base64Encoded)
+            val base64Encoded = NGenXX.cryptoBase64Encode(inputBytes, true)
+            val base64Decoded = NGenXX.cryptoBase64Decode(base64Encoded, true)
             val base64DecodedStr = base64Decoded.toString(Charsets.UTF_8)
             NGenXXHelper.logPrint(LogLevel.Debug,"base64->$base64DecodedStr")
 

@@ -36,8 +36,8 @@ Bytes ngenxxCryptoHashSha1(const Bytes &in);
 
 Bytes ngenxxCryptoHashSha256(const Bytes &in);
 
-Bytes ngenxxCryptoBase64Encode(const Bytes &in);
+Bytes ngenxxCryptoBase64Encode(const Bytes &in, bool noNewLines = true);
 
-Bytes ngenxxCryptoBase64Decode(const Bytes &in);
+Bytes ngenxxCryptoBase64Decode(const Bytes &in, bool noNewLines = true);
 
 #endif // NGENXX_INCLUDE_CRYPTO_HXX_

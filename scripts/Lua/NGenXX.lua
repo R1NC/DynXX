@@ -294,17 +294,19 @@ end
 
 NGenXX.Crypto.Base64 = {}
 
-function NGenXX.Crypto.Base64.encode(inBytes)
+function NGenXX.Crypto.Base64.encode(inBytes, noNewLines)
     local inJson = JSON.stringify({
-        ["inBytes"] = inBytes
+        ["inBytes"] = inBytes,
+        ["noNewLines"] = noNewLines
     })
     local outJson = ngenxx_crypto_base64_encode(inJson)
     return JSON.parse(outJson)
 end
 
-function NGenXX.Crypto.Base64.decode(inBytes)
+function NGenXX.Crypto.Base64.decode(inBytes, noNewLines)
     local inJson = JSON.stringify({
-        ["inBytes"] = inBytes
+        ["inBytes"] = inBytes,
+        ["noNewLines"] = noNewLines
     })
     local outJson = ngenxx_crypto_base64_decode(inJson)
     return JSON.parse(outJson)

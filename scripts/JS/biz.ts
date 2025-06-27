@@ -157,12 +157,13 @@ function jTestStoreSQLite(): void {
 }
 
 function jTestCryptoBase64(s: string): void {
+    let noNewLines: boolean = true
     let inBytes: number[] = NGenXXStr2Bytes(s)
-    let enBytes: number[] = NGenXXCryptoBase64Encode(inBytes)
+    let enBytes: number[] = NGenXXCryptoBase64Encode(inBytes, noNewLines)
     let enS: string = NGenXXBytes2Str(enBytes)
     NGenXXLogPrint(NGenXXLogLevel.Debug, `Base64 encoded: ${enS}`)
 
-    let deBytes: number[] = NGenXXCryptoBase64Decode(enBytes)
+    let deBytes: number[] = NGenXXCryptoBase64Decode(enBytes, noNewLines)
     let deS: string = NGenXXBytes2Str(deBytes)
     NGenXXLogPrint(NGenXXLogLevel.Debug, `Base64 decoded: ${deS}`)
 }

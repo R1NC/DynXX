@@ -456,19 +456,21 @@ function NGenXXCryptoHashSHA256(inBytes) {
     return _json2Array(outJson);
 }
 
-function NGenXXCryptoBase64Encode(inBytes) {
+function NGenXXCryptoBase64Encode(inBytes, noNewLines) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({
-        "inBytes": inBytes
+        "inBytes": inBytes,
+        "noNewLines": noNewLines
     });
     let outJson = ngenxx_crypto_base64_encode(inJson);
     return _json2Array(outJson);
 }
 
-function NGenXXCryptoBase64Decode(inBytes) {
+function NGenXXCryptoBase64Decode(inBytes, noNewLines) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({
-        "inBytes": inBytes
+        "inBytes": inBytes,
+        "noNewLines": noNewLines
     });
     let outJson = ngenxx_crypto_base64_decode(inJson);
     return _json2Array(outJson);

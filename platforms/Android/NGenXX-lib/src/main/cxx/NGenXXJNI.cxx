@@ -645,13 +645,14 @@ namespace {
     }
 
     jbyteArray cryptoBase64Encode(JNIEnv *env, jobject thiz,
-                                  jbyteArray input) {
+                                  jbyteArray input,
+                                  jboolean noNewLines) {
         auto cIn = env->GetByteArrayElements(input, nullptr);
         auto inLen = env->GetArrayLength(input);
 
         size_t outLen;
         const auto cRes = ngenxx_crypto_base64_encode(reinterpret_cast<const byte *>(cIn), inLen,
-                                                      &outLen);
+                                                      noNewLines, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
         env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
@@ -659,13 +660,14 @@ namespace {
     }
 
     jbyteArray cryptoBase64Decode(JNIEnv *env, jobject thiz,
-                                  jbyteArray input) {
+                                  jbyteArray input,
+                                  jboolean noNewLines) {
         auto cIn = env->GetByteArrayElements(input, nullptr);
         auto inLen = env->GetArrayLength(input);
 
         size_t outLen;
         const auto cRes = ngenxx_crypto_base64_decode(reinterpret_cast<const byte *>(cIn), inLen,
-                                                      &outLen);
+                                                      noNewLines, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
         env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
@@ -894,8 +896,8 @@ namespace {
             DECLARE_JNI_FUNC(cryptoAesGcmDecrypt, "([B[B[B[BI)[B"),
             DECLARE_JNI_FUNC(cryptoHashMd5, "([B)[B"),
             DECLARE_JNI_FUNC(cryptoHashSha256, "([B)[B"),
-            DECLARE_JNI_FUNC(cryptoBase64Encode, "([B)[B"),
-            DECLARE_JNI_FUNC(cryptoBase64Decode, "([B)[B"),
+            DECLARE_JNI_FUNC(cryptoBase64Encode, "([BZ)[B"),
+            DECLARE_JNI_FUNC(cryptoBase64Decode, "([BZ)[B"),
 
             DECLARE_JNI_FUNC(jsonReadType, "(J)I"),
             DECLARE_JNI_FUNC(jsonDecoderInit, "(" LJLS_ ")J"),

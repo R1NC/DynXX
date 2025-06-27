@@ -215,14 +215,14 @@ const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, size_t inLen, size_t 
 }
 
 EXPORT_AUTO
-const byte *ngenxx_crypto_base64_encode(const byte *inBytes, size_t inLen, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoBase64Encode(wrapBytes(inBytes, inLen));
+const byte *ngenxx_crypto_base64_encode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen) {
+    const auto &bytes = ngenxxCryptoBase64Encode(wrapBytes(inBytes, inLen), noNewLines);
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
-const byte *ngenxx_crypto_base64_decode(const byte *inBytes, size_t inLen, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoBase64Decode(wrapBytes(inBytes, inLen));
+const byte *ngenxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen) {
+    const auto &bytes = ngenxxCryptoBase64Decode(wrapBytes(inBytes, inLen), noNewLines);
     return handleBytes(bytes, outLen);
 }
 

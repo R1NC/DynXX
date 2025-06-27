@@ -46,10 +46,11 @@ function TestCrypto(s)
     local sha256HexStr = NGenXX.Coding.Hex.bytes2Str(sha256Bytes)
     NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Hash.sha256: ' .. sha256HexStr)
 
-    local base64EncodedBytes = NGenXX.Crypto.Base64.encode(bytes)
+    local noNewLines = true
+    local base64EncodedBytes = NGenXX.Crypto.Base64.encode(bytes, noNewLines)
     local base64EncodedStr = NGenXX.Coding.bytes2Str(base64EncodedBytes)
     NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Base64.encode: ' .. base64EncodedStr)
-    local base64DecodedBytes = NGenXX.Crypto.Base64.decode(base64EncodedBytes)
+    local base64DecodedBytes = NGenXX.Crypto.Base64.decode(base64EncodedBytes, noNewLines)
     local base64DecodedStr = NGenXX.Coding.bytes2Str(base64DecodedBytes)
     NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Base64.decode: ' .. base64DecodedStr)
 

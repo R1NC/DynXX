@@ -981,12 +981,13 @@ std::string ngenxx_crypto_base64_encodeS(const char *json)
     const NGenXX::Core::Json::Decoder decoder(json);
 
     const auto in = parseByteArray(decoder, "inBytes");
+    const auto noNewLines = parseNum<bool>(decoder, "noNewLines");
     if (in.empty())
     {
         return {};
     }
 
-    const auto outBytes = ngenxxCryptoBase64Encode(in);
+    const auto outBytes = ngenxxCryptoBase64Encode(in, noNewLines.value_or(true));
     return bytes2json(outBytes);
 }
 
@@ -999,12 +1000,13 @@ std::string ngenxx_crypto_base64_decodeS(const char *json)
     const NGenXX::Core::Json::Decoder decoder(json);
 
     const auto in = parseByteArray(decoder, "inBytes");
+    const auto noNewLines = parseNum<bool>(decoder, "noNewLines");
     if (in.empty())
     {
         return {};
     }
 
-    const auto outBytes = ngenxxCryptoBase64Decode(in);
+    const auto outBytes = ngenxxCryptoBase64Decode(in, noNewLines.value_or(true));
     return bytes2json(outBytes);
 }
 

@@ -148,19 +148,21 @@ const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, size_t inLen, size_t 
  * @brief Base64 encode
  * @param inBytes input bytes data
  * @param inLen input bytes length
+ * @param noNewLines whether to add newlines
  * @param outLen a pointer to read output bytes length
  * @return output bytes data
  */
-const byte *ngenxx_crypto_base64_encode(const byte *inBytes, size_t inLen, size_t *outLen);
+const byte *ngenxx_crypto_base64_encode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen);
 
 /**
  * @brief Base64 decode
  * @param inBytes input bytes data
  * @param inLen input bytes length
+ * @param noNewLines whether to add newlines
  * @param outLen a pointer to read output bytes length
  * @return output bytes data
  */
-const byte *ngenxx_crypto_base64_decode(const byte *inBytes, size_t inLen, size_t *outLen);
+const byte *ngenxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen);
 
 EXTERN_C_END
 

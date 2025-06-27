@@ -35,7 +35,7 @@ namespace
         {
             return std::nullopt;
         }
-        
+
         return std::make_optional(std::string(errMsg, actualLen));
     }
 
@@ -558,7 +558,7 @@ Bytes NGenXX::Core::Crypto::RSA::decrypt(const Bytes &in, const Bytes &key, int 
 
 #pragma mark Base64
 
-Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
+Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes, bool noNewLines)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -582,7 +582,10 @@ Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
         return {};
     }
 
-    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+    if (noNewLines)
+    {
+        BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+    }
     
     const auto bpush = BIO_push(b64, bsmem);
     if (!bpush) [[unlikely]]
@@ -626,7 +629,7 @@ Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
     return out;
 }
 
-Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
+Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes, bool noNewLines)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -670,7 +673,10 @@ Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
         return {};
     }
 
-    BIO_set_flags(bpush, BIO_FLAGS_BASE64_NO_NL);
+    if (noNewLines)
+    {
+        BIO_set_flags(bpush, BIO_FLAGS_BASE64_NO_NL);
+    }
 
     auto outLen = (inLen * 3) / 4 + 3; // Add padding for safety
     Bytes outBytes(outLen, 0);

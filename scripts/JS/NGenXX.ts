@@ -185,9 +185,9 @@ declare function NGenXXCryptoHashMD5(inBytes: number[]): number[]
 
 declare function NGenXXCryptoHashSHA256(inBytes: number[]): number[]
 
-declare function NGenXXCryptoBase64Encode(inBytes: number[]): number[]
+declare function NGenXXCryptoBase64Encode(inBytes: number[], noNewLines?: boolean): number[]
 
-declare function NGenXXCryptoBase64Decode(inBytes: number[]): number[]
+declare function NGenXXCryptoBase64Decode(inBytes: number[], noNewLines?: boolean): number[]
 
 /// Zip
 

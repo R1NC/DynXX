@@ -307,7 +307,7 @@ Bytes NGenXX::Core::Crypto::Hash::sha256(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
-Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
+Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes, bool noNewLines)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -332,7 +332,7 @@ Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes)
     return wrapBytes(outBuffer, outLen);
 }
 
-Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes)
+Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes, bool noNewLines)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
