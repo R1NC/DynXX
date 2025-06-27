@@ -1,5 +1,7 @@
 #include "Crypto.hxx"
 
+#include <utility>
+
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #include <openssl/evp.h>
