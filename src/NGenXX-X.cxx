@@ -255,11 +255,13 @@ std::string ngenxxCryptoRsaGenKey(const std::string_view &base64, bool isPublic)
 }
 
 Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding) {
-    return NGenXX::Core::Crypto::RSA::encrypt(in, key, static_cast<int>(padding));
+    const auto enc = NGenXX::Core::Crypto::RSA::Encrypt(key, static_cast<int>(padding));
+    return enc.process(in).value_or(Bytes{});
 }
 
 Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding) {
-    return NGenXX::Core::Crypto::RSA::decrypt(in, key, static_cast<int>(padding));
+    const auto dec = NGenXX::Core::Crypto::RSA::Decrypt(key, static_cast<int>(padding));
+    return dec.process(in).value_or(Bytes{});
 }
 
 Bytes ngenxxCryptoHashMd5(const Bytes &in) {

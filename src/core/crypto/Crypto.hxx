@@ -5,6 +5,9 @@
 
 #include <random>
 
+#include <openssl/bio.h>
+#include <openssl/rsa.h>
+
 #include <NGenXXTypes.hxx>
 
 #include "../concurrent/ConcurrentUtil.hxx"
@@ -68,9 +71,58 @@ namespace NGenXX::Core::Crypto {
     namespace RSA {
         std::string genKey(const std::string_view &base64, bool isPublic);
         
-        Bytes encrypt(const Bytes &in, const Bytes &key, int padding);
+        class Codec
+        {
+        public:
+            Codec() = delete;
+            Codec(const Codec &) = delete;
+            Codec &operator=(const Codec &) = delete;
+            Codec(Codec &&) = delete;
+            Codec &operator=(Codec &&) = delete;
 
-        Bytes decrypt(const Bytes &in, const Bytes &key, int padding);
+            explicit Codec(const Bytes &key, int padding);
+
+            virtual std::optional<Bytes> process(const Bytes &in) const = 0;
+
+            size_t outLen() const;
+
+            virtual ~Codec();
+
+        protected:
+            BIO *bmem{nullptr};
+            rsa_st *rsa{nullptr};
+            const int padding;
+        };
+
+        class Encrypt final : public Codec
+        {
+        public:
+            Encrypt() = delete;
+            Encrypt(const Encrypt &) = delete;
+            Encrypt &operator=(const Encrypt &) = delete;
+            Encrypt(Encrypt &&) = delete;
+            Encrypt &operator=(Encrypt &&) = delete;
+            ~Encrypt() = default;
+
+            explicit Encrypt(const Bytes &key, int padding);
+
+            std::optional<Bytes> process(const Bytes &in) const override;
+        };
+
+        class Decrypt final : public Codec
+        {
+        public:
+            Decrypt() = delete;
+            Decrypt(const Decrypt &) = delete;
+            Decrypt &operator=(const Decrypt &) = delete;
+            Decrypt(Decrypt &&) = delete;
+            Decrypt &operator=(Decrypt &&) = delete;
+            ~Decrypt() = default;
+
+            explicit Decrypt(const Bytes &key, int padding);
+
+            std::optional<Bytes> process(const Bytes &in) const override;
+        };
     }
 
     namespace Hash {
