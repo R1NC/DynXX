@@ -391,7 +391,8 @@ Bytes NGenXX::Core::Crypto::Hash::sha1(const Bytes &inBytes)
         return {};
     }
     unsigned int outLen = EVP_MAX_MD_SIZE;
-    Bytes out(outLen, 0);
+    Bytes out;
+    out.reserve(outLen);
 
     const auto ctx = EVP_MD_CTX_create();
     const auto md = EVP_sha1();
@@ -432,7 +433,8 @@ Bytes NGenXX::Core::Crypto::Hash::sha256(const Bytes &inBytes)
         return {};
     }
     constexpr auto outLen = SHA256_BYTES_LEN;
-    Bytes out(outLen, 0);
+    Bytes out;
+    out.reserve(outLen);
 
     SHA256_CTX sha256;
 
