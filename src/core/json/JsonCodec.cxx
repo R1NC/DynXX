@@ -5,6 +5,7 @@
 
 #include <NGenXXLog.hxx>
 #include <NGenXXTypes.hxx>
+#include <NGenXXCoding.hxx>
 
 namespace
 {
@@ -84,6 +85,7 @@ std::optional<std::string> NGenXX::Core::Json::cJSONToStr(void *const cjson)
     }
     std::string json(jsonChars);
     std::free(jsonChars);
+    json = ngenxxCodingStrTrim(json);
     return std::make_optional(json);
 }
 
