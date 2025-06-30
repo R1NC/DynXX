@@ -39,45 +39,48 @@ namespace
         return std::make_optional(std::string(errMsg, actualLen));
     }
 
-    class EvpCipherCtx
+    class Evp
     {
     public:
-        EvpCipherCtx()
-        {
-            raw = EVP_CIPHER_CTX_new();
-        }
-        ~EvpCipherCtx()
-        {
-            if (raw != nullptr) [[likely]]
-            {
-                EVP_CIPHER_CTX_free(raw);
-                raw = nullptr;
-            }
-        }
-        EvpCipherCtx(const EvpCipherCtx &) = delete;
-        EvpCipherCtx &operator=(const EvpCipherCtx &) = delete;
-        EvpCipherCtx(EvpCipherCtx &&) = delete;
-        EvpCipherCtx &operator=(EvpCipherCtx &&) = delete;
-        EVP_CIPHER_CTX *raw;
-    };
+        Evp() = delete;
+        Evp(const Evp &) = delete;
+        Evp &operator=(const Evp &) = delete;
+        Evp(Evp &&) = delete;
+        Evp &operator=(Evp &&) = delete;
 
-    const EVP_CIPHER *aesGcmCipher(const Bytes &keyBytes)
-    {
-        const auto key = keyBytes.data();
-        const auto keyLen = keyBytes.size();
-        if (key != nullptr && keyLen > 0) [[likely]]
+        explicit Evp(size_t keyLen) : keyLen(keyLen)
         {
-            if (keyLen == 16)
+            this->ctx = EVP_CIPHER_CTX_new();
+        }
+
+        const EVP_CIPHER* cipher() const
+        {
+            switch (this->keyLen)
             {
+            case 16:
                 return EVP_aes_128_gcm();
-            }
-            if (keyLen == 24 || keyLen == 32)
-            {
+            case 24:
+            case 32:
                 return EVP_aes_256_gcm();
+            default:
+                return nullptr;
             }
         }
-        return nullptr;
-    }
+
+        ~Evp()
+        {
+            if (this->ctx != nullptr) [[likely]]
+            {
+                EVP_CIPHER_CTX_free(this->ctx);
+                this->ctx = nullptr;
+            }
+        }
+
+        EVP_CIPHER_CTX *ctx;
+
+    private:
+        int keyLen;
+    };
 }
 
 #pragma mark Rand
@@ -191,30 +194,28 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
     const auto outLen = inLen;
     Bytes out(outLen, 0);
 
-    const auto cipher = aesGcmCipher(keyBytes);
-
-    const EvpCipherCtx evpCipherCtx;
-    if (evpCipherCtx.raw == nullptr) [[unlikely]]
+    const auto evp = Evp(keyLen);
+    if (evp.ctx == nullptr) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
-    auto ret = EVP_EncryptInit_ex(evpCipherCtx.raw, cipher, nullptr, nullptr, nullptr);
+    auto ret = EVP_EncryptInit_ex(evp.ctx, evp.cipher(), nullptr, nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
+    ret = EVP_CIPHER_CTX_ctrl(evp.ctx, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_EncryptInit_ex(evpCipherCtx.raw, nullptr, nullptr, key, initVector);
+    ret = EVP_EncryptInit_ex(evp.ctx, nullptr, nullptr, key, initVector);
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -225,7 +226,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
 
     if (aad != nullptr && aadLen > 0) [[likely]]
     {
-        ret = EVP_EncryptUpdate(evpCipherCtx.raw, nullptr, &len, aad, static_cast<int>(aadLen));
+        ret = EVP_EncryptUpdate(evp.ctx, nullptr, &len, aad, static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -233,21 +234,21 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
         }
     }
 
-    ret = EVP_EncryptUpdate(evpCipherCtx.raw, out.data(), &len, in, static_cast<int>(inLen));
+    ret = EVP_EncryptUpdate(evp.ctx, out.data(), &len, in, static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_EncryptFinal_ex(evpCipherCtx.raw, out.data(), &len);
+    ret = EVP_EncryptFinal_ex(evp.ctx, out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptFinal_ex encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag.data());
+    ret = EVP_CIPHER_CTX_ctrl(evp.ctx, EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -274,30 +275,28 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
     const auto outLen = inLen;
     Bytes out(outLen, 0);
 
-    const auto cipher = aesGcmCipher(keyBytes);
-
-    const EvpCipherCtx evpCipherCtx;
-    if (evpCipherCtx.raw == nullptr) [[unlikely]]
+    const auto evp = Evp(keyLen);
+    if (evp.ctx == nullptr) [[unlikely]]
     {
         ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
-    auto ret = EVP_DecryptInit_ex(evpCipherCtx.raw, cipher, nullptr, nullptr, nullptr);
+    auto ret = EVP_DecryptInit_ex(evp.ctx, evp.cipher(), nullptr, nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
+    ret = EVP_CIPHER_CTX_ctrl(evp.ctx, EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_DecryptInit_ex(evpCipherCtx.raw, nullptr, nullptr, key, initVector);
+    ret = EVP_DecryptInit_ex(evp.ctx, nullptr, nullptr, key, initVector);
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -308,7 +307,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
 
     if (aad != nullptr && aadLen > 0) [[likely]]
     {
-        ret = EVP_DecryptUpdate(evpCipherCtx.raw, nullptr, &len, aad, static_cast<int>(aadLen));
+        ret = EVP_DecryptUpdate(evp.ctx, nullptr, &len, aad, static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
             ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -316,21 +315,21 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
         }
     }
 
-    ret = EVP_DecryptUpdate(evpCipherCtx.raw, out.data(), &len, in, static_cast<int>(inLen));
+    ret = EVP_DecryptUpdate(evp.ctx, out.data(), &len, in, static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_CIPHER_CTX_ctrl(evpCipherCtx.raw, EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag.data());
+    ret = EVP_CIPHER_CTX_ctrl(evp.ctx, EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_DecryptFinal_ex(evpCipherCtx.raw, out.data(), &len);
+    ret = EVP_DecryptFinal_ex(evp.ctx, out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
         ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptFinal_ex decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
