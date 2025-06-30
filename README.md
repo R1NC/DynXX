@@ -1,11 +1,11 @@
 # NGenXX
 
-[![Build for Android on macOS](../../actions/workflows/Android-Mac.yml/badge.svg)][41] [![Build for Android on Ubuntu](../../actions/workflows/Android-Ubuntu.yml/badge.svg)][32]  
-[![Build for iOS](../../actions/workflows/iOS.yml/badge.svg)][33] [![Build for macOS](../../actions/workflows/macOS.yml/badge.svg)][34]  
-[![Build for HarmonyOS on macOS](../../actions/workflows/HarmonyOS-Mac.yml/badge.svg)][43]  
-[![Build for Windows with MSVC](../../actions/workflows/Win-MSVC.yml/badge.svg)][35] [![Build for Windows with MinGW ](../../actions/workflows/Win-MinGW.yml/badge.svg)][36]  
-[![Build for WASM on macOS](../../actions/workflows/WASM-Mac.yml/badge.svg)][38] [![Build for WASM on Ubuntu](../../actions/workflows/WASM-Ubuntu.yml/badge.svg)][42]  
-[![Build for Linux on Ubuntu](../../actions/workflows/Linux-Ubuntu.yml/badge.svg)][37]  
+[![Build for Android on macOS](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Android-Mac.yml?branch=main&label=Build%20for%20Android%20on%20macOS&logo=android&logoColor=3DDC84)][41] [![Build for Android on Ubuntu](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Android-Ubuntu.yml?branch=main&label=Build%20for%20Android%20on%20Ubuntu&logo=android&logoColor=3DDC84)][32]  
+[![Build for iOS](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/iOS.yml?branch=main&label=Build%20for%20iOS&logo=Apple&logoColor=white)][33] [![Build for macOS](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/macOS.yml?branch=main&label=Build%20for%20macOS&logo=Apple&logoColor=white)][34]  
+[![Build for HarmonyOS on macOS](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/HarmonyOS-Mac.yml?branch=main&label=Build%20for%20HarmonyOS%20on%20macOS&logo=Huawei&logoColor=FF0000)][43]  
+[![Build for Windows with MSVC](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Win-MSVC.yml?branch=main&label=Build%20for%20Windows%20with%20MSVC&logo=gitforwindows&logoColor=0078D4)][35] [![Build for Windows with MinGW ](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Win-MinGW.yml?branch=main&label=Build%20for%20Windows%20with%20MinGW&logo=gitforwindows&logoColor=0078D4)][36]  
+[![Build for WASM on macOS](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/WASM-Mac.yml?branch=main&label=Build%20for%20WASM%20on%20macOS&logo=WebAssembly&logoColor=654FF0)][38] [![Build for WASM on Ubuntu](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/WASM-Ubuntu.yml?branch=main&label=Build%20for%20WASM%20on%20Ubuntu&logo=WebAssembly&logoColor=654FF0)][42]  
+[![Build for Linux on Ubuntu](https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Linux-Ubuntu.yml?branch=main&label=Build%20for%20Linux%20on%20Ubuntu&logo=Linux&logoColor=FBB726)][37]  
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
