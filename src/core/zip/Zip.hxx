@@ -44,8 +44,8 @@ namespace NGenXX::Core::Z {
     private:
         byte *inBuffer{nullptr};
         byte *outBuffer{nullptr};
-        size_t bufferSize;
-        int format;
+        const size_t bufferSize;
+        const int format;
     };
 
     class Zip final : public ZBase<Zip> {

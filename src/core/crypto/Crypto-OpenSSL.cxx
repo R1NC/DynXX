@@ -82,7 +82,7 @@ namespace
         }
 
     private:
-        int keyLen;
+        const size_t keyLen;
         EVP_CIPHER_CTX *ctx;
     };
 }

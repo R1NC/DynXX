@@ -37,7 +37,7 @@ namespace NGenXX::Core::Concurrent {
         Worker &operator>>(TaskT &&task);
 
     private:
-        size_t sleepMicroSecs{1000uz};
+        const size_t sleepMicroSecs{1000uz};
         std::mutex mutex;
         std::condition_variable cv;
         std::queue<TaskT> taskQueue;
