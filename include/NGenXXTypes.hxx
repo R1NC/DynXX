@@ -46,6 +46,9 @@ concept CharacterT =
 #endif
         || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> || std::is_same_v<T, wchar_t>;
 
+template<typename T>
+concept CStringT = std::is_same_v<T, const char*> || std::is_same_v<T, char*>;
+
 template<class T, class U>
 concept DerivedT = std::is_base_of_v<U, T>;
 
