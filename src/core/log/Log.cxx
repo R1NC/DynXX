@@ -50,40 +50,6 @@ namespace
 #endif
     }
 
-    void stdLogPrintInBlocks(int level, const std::string_view &content)
-    {
-        if (content.length() <= MAX_LEN) [[likely]]
-        {
-            stdLogPrint(level, content);
-        }
-        else
-        {
-            const auto totalLen = content.length();
-            const auto blockCount = (totalLen + MAX_LEN - 1) / MAX_LEN;
-            const auto blockCountStr = std::to_string(blockCount);
-
-            std::string blockBuffer;
-            blockBuffer.reserve(MAX_LEN + 50);
-            
-            for (size_t i = 0; i < blockCount; ++i)
-            {
-                blockBuffer.clear();
-                
-                const auto start = i * MAX_LEN;
-                const auto blockLen = std::min(MAX_LEN, totalLen - start);
-                
-                blockBuffer.append("[");
-                blockBuffer.append(std::to_string(i + 1));
-                blockBuffer.append("/");
-                blockBuffer.append(blockCountStr);
-                blockBuffer.append("] ");
-                blockBuffer.append(content, start, blockLen);
-                
-                stdLogPrint(level, blockBuffer);
-            }
-        }
-    }
-
 #if defined(USE_SPDLOG)
     void spdlogPrepare() 
     {
@@ -145,6 +111,56 @@ namespace
         }
     }
 #endif
+
+    void logPrint(int level, const std::string_view &content)
+    {
+        if (_callback)
+        {
+            _callback(level, content.data());
+        }
+        else
+        {
+            stdLogPrint(level, content);
+        }
+    
+#if defined(USE_SPDLOG)
+        spdlogPrint(level, content);
+#endif
+    }
+
+    void logPrintInBlocks(int level, const std::string_view &content)
+    {
+        if (content.length() <= MAX_LEN) [[likely]]
+        {
+            logPrint(level, content);
+        }
+        else
+        {
+            const auto totalLen = content.length();
+            const auto blockCount = (totalLen + MAX_LEN - 1) / MAX_LEN;
+            const auto blockCountStr = std::to_string(blockCount);
+
+            std::string blockBuffer;
+            blockBuffer.reserve(MAX_LEN + 50);
+            
+            for (size_t i = 0; i < blockCount; ++i)
+            {
+                blockBuffer.clear();
+                
+                const auto start = i * MAX_LEN;
+                const auto blockLen = std::min(MAX_LEN, totalLen - start);
+                
+                blockBuffer.append("[");
+                blockBuffer.append(std::to_string(i + 1));
+                blockBuffer.append("/");
+                blockBuffer.append(blockCountStr);
+                blockBuffer.append("] ");
+                blockBuffer.append(content, start, blockLen);
+                
+                logPrint(level, blockBuffer);
+            }
+        }
+    }
 }
 
 void NGenXX::Core::Log::setLevel(int level)
@@ -153,14 +169,18 @@ void NGenXX::Core::Log::setLevel(int level)
     {
         return;
     }
-    _level = level;
+
 #if defined(USE_SPDLOG)
     spdlogPrepare();
 #endif
+
+    auto lock = std::lock_guard(_mutex);
+    _level = level;
 }
 
 void NGenXX::Core::Log::setCallback(const std::function<void(int level, const char *content)> &callback)
 {
+    auto lock = std::lock_guard(_mutex);
     _callback = callback;
 }
 
@@ -173,16 +193,5 @@ void NGenXX::Core::Log::print(int level, const std::string_view &content)
         return;
     }
 
-    if (_callback)
-    {
-        _callback(level, content.data());
-    }
-    else
-    {
-        stdLogPrintInBlocks(level, content);
-    }
-    
-#if defined(USE_SPDLOG)
-    spdlogPrint(level, content);
-#endif
+    logPrintInBlocks(level, content);
 }
