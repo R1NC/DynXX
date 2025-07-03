@@ -92,7 +92,7 @@ namespace
 
     void spdLogPrint(const int level, const std::string_view &content)
     {
-        spdlogPrepare();
+        spdLogPrepare();
         if (level == NGenXXLogLevelDebug)
         {
             spdlog::debug(content);
