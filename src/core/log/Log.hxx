@@ -3,7 +3,7 @@
 
 #if defined(__cplusplus)
 
-#include <string>
+#include <string_view>
 #include <functional>
 
 namespace NGenXX::Core::Log {
@@ -11,7 +11,7 @@ namespace NGenXX::Core::Log {
 
     void setCallback(const std::function<void(int level, const char *content)> &callback);
 
-    void print(int level, const std::string &content);
+    void print(int level, const std::string_view &content);
 }
 
 #endif

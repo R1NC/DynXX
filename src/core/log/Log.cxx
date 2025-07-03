@@ -35,19 +35,53 @@ namespace
     std::mutex _mutex;
 
     constexpr auto TAG = "NGENXX";
+    constexpr size_t MAX_LEN = 1023;
 
-    void stdLogPrint(int level, const std::string &content)
+    void stdLogPrint(int level, const std::string_view &content)
     {
-        auto cContent = content.c_str();
 #if defined(__ANDROID__)
-        __android_log_print(level, TAG, "%s", cContent);
+        __android_log_print(level, TAG, "%.*s", static_cast<int>(content.length()), content.data());
 #elif defined(__OHOS__)
-        OH_LOG_Print(LOG_APP, static_cast<LogLevel>(level), 0xC0DE, TAG, "%{public}s", cContent);
+        OH_LOG_Print(LOG_APP, static_cast<LogLevel>(level), 0xC0DE, TAG, "%{public}.*s", static_cast<int>(content.length()), content.data());
 #elif defined(__APPLE__)
-        _ngenxx_log_apple(cContent);
+        _ngenxx_log_apple(content.data());
 #else
-        std::cout << TAG << "_" << level << " -> " << cContent << std::endl;
+        std::cout << TAG << "_" << level << " -> " << content << std::endl;
 #endif
+    }
+
+    void stdLogPrintInBlocks(int level, const std::string_view &content)
+    {
+        if (content.length() <= MAX_LEN) [[likely]]
+        {
+            stdLogPrint(level, content);
+        }
+        else
+        {
+            const auto totalLen = content.length();
+            const auto blockCount = (totalLen + MAX_LEN - 1) / MAX_LEN;
+            const auto blockCountStr = std::to_string(blockCount);
+
+            std::string blockBuffer;
+            blockBuffer.reserve(MAX_LEN + 50);
+            
+            for (size_t i = 0; i < blockCount; ++i)
+            {
+                blockBuffer.clear();
+                
+                const auto start = i * MAX_LEN;
+                const auto blockLen = std::min(MAX_LEN, totalLen - start);
+                
+                blockBuffer.append("[");
+                blockBuffer.append(std::to_string(i + 1));
+                blockBuffer.append("/");
+                blockBuffer.append(blockCountStr);
+                blockBuffer.append("] ");
+                blockBuffer.append(content, start, blockLen);
+                
+                stdLogPrint(level, blockBuffer);
+            }
+        }
     }
 
 #if defined(USE_SPDLOG)
@@ -90,7 +124,7 @@ namespace
         });
     }
 
-    void spdlogPrint(const int level, const std::string &content)
+    void spdlogPrint(const int level, const std::string_view &content)
     {
         spdlogPrepare();
         if (level == NGenXXLogLevelDebug)
@@ -130,7 +164,7 @@ void NGenXX::Core::Log::setCallback(const std::function<void(int level, const ch
     _callback = callback;
 }
 
-void NGenXX::Core::Log::print(int level, const std::string &content)
+void NGenXX::Core::Log::print(int level, const std::string_view &content)
 {
     auto lock = std::lock_guard(_mutex);
 
@@ -141,11 +175,11 @@ void NGenXX::Core::Log::print(int level, const std::string &content)
 
     if (_callback)
     {
-        _callback(level, content.c_str());
+        _callback(level, content.data());
     }
     else
     {
-        stdLogPrint(level, content);
+        stdLogPrintInBlocks(level, content);
     }
     
 #if defined(USE_SPDLOG)
