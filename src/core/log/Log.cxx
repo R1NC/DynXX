@@ -51,7 +51,7 @@ namespace
     }
 
 #if defined(USE_SPDLOG)
-    void spdlogPrepare() 
+    void spdLogPrepare() 
     {
         NGenXX::Core::Concurrent::callOnce([]() {
             try 
@@ -90,7 +90,7 @@ namespace
         });
     }
 
-    void spdlogPrint(const int level, const std::string_view &content)
+    void spdLogPrint(const int level, const std::string_view &content)
     {
         spdlogPrepare();
         if (level == NGenXXLogLevelDebug)
@@ -124,7 +124,7 @@ namespace
         }
     
 #if defined(USE_SPDLOG)
-        spdlogPrint(level, content);
+        spdLogPrint(level, content);
 #endif
     }
 
@@ -171,7 +171,7 @@ void NGenXX::Core::Log::setLevel(int level)
     }
 
 #if defined(USE_SPDLOG)
-    spdlogPrepare();
+    spdLogPrepare();
 #endif
 
     auto lock = std::lock_guard(_mutex);
