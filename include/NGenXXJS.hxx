@@ -11,7 +11,7 @@ bool ngenxxJsLoadS(const std::string &script, const std::string &name, bool isMo
 
 bool ngenxxJsLoadB(const Bytes &bytes, bool isModule);
 
-std::optional<std::string> ngenxxJsCall(const std::string &func, const std::string &params, bool await);
+std::optional<std::string> ngenxxJsCall(std::string_view func, std::string_view params, bool await);
 
 void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback);
 

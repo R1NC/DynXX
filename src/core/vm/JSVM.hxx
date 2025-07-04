@@ -170,7 +170,7 @@ namespace NGenXX::Core::VM {
          * @param params parameters(json)
          * @param await Whether wait for the promise result or not
          */
-        [[nodiscard]] std::optional<std::string> callFunc(const std::string &func, const std::string &params,
+        [[nodiscard]] std::optional<std::string> callFunc(std::string_view func, std::string_view params,
                                                           bool await);
 
         /**

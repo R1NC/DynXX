@@ -46,7 +46,7 @@ namespace {
         return vm->loadBinary(bytes, isModule);
     }
 
-    std::optional<std::string> call(const std::string &func, const std::string &params, const bool await) {
+    std::optional<std::string> call(std::string_view func, std::string_view params, const bool await) {
         if (!vm || func.empty()) [[unlikely]] {
             return std::nullopt;
         }
@@ -110,7 +110,10 @@ bool ngenxx_js_loadB(const byte *bytes, size_t len, bool is_module) {
 
 EXPORT_AUTO
 const char *ngenxx_js_call(const char *func, const char *params, bool await) {
-    const auto s = ngenxxJsCall(wrapStr(func), wrapStr(params), await).value_or("");
+    if (func == nullptr) [[unlikely]] {
+        return "";
+    }
+    const auto s = ngenxxJsCall(func, params ? params : "", await).value_or("");
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 

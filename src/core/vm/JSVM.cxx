@@ -280,14 +280,14 @@ bool NGenXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
-std::optional<std::string> NGenXX::Core::VM::JSVM::callFunc(const std::string &func, const std::string &params, bool await) {
+std::optional<std::string> NGenXX::Core::VM::JSVM::callFunc(std::string_view func, std::string_view params, bool await) {
     auto lock = std::unique_lock(this->vmMutex);
     std::string s;
     auto success = false;
 
-    if (const auto jFunc = JS_GetPropertyStr(this->context, this->jGlobal, func.c_str()); JS_IsFunction(this->context, jFunc)) [[likely]]
+    if (const auto jFunc = JS_GetPropertyStr(this->context, this->jGlobal, func.data()); JS_IsFunction(this->context, jFunc)) [[likely]]
     {
-        const auto jParams = JS_NewString(this->context, params.c_str());
+        const auto jParams = JS_NewString(this->context, params.data());
         JSValue argv[] = {jParams};
 
         auto jRes = JS_Call(this->context, jFunc, this->jGlobal, sizeof(argv), argv);
