@@ -31,27 +31,27 @@ namespace NGenXX::Core::Net {
 
         HttpClient &operator=(HttpClient &&) = delete;
 
-        [[nodiscard]] NGenXXHttpResponse request(const std::string &url, int method,
+        [[nodiscard]] NGenXXHttpResponse request(std::string_view url, int method,
                                                  const std::vector<std::string> &headers,
-                                                 const std::string &params,
+                                                std::string_view params,
                                                  const Bytes &rawBody,
                                                  const std::vector<HttpFormField> &formFields,
                                                  const std::FILE *cFILE, size_t fileSize,
                                                  size_t timeout);
 
-        [[nodiscard]] bool download(const std::string &url, const std::string &filePath, size_t timeout);
+        [[nodiscard]] bool download(std::string_view url, const std::string &filePath, size_t timeout);
 
         ~HttpClient();
 
     private:
-        static bool checkUrlValid(const std::string &url);
+        static bool checkUrlValid(std::string_view url);
 
-        static bool checkUrlHasSearch(const std::string &url);
+        static bool checkUrlHasSearch(std::string_view url);
 
-        bool handleSSL(CURL *curl, const std::string &url);
+        bool handleSSL(CURL *curl, std::string_view url);
 
-        NGenXXHttpResponse req(const std::string &url, const std::vector<std::string> &headers,
-                               const std::string &params, int method, size_t timeout,
+        NGenXXHttpResponse req(std::string_view url, const std::vector<std::string> &headers,
+                            std::string_view params, int method, size_t timeout,
                                std::function<void(CURL *const, const NGenXXHttpResponse &rsp)> &&func);
     };
 }

@@ -62,9 +62,9 @@ NGenXX::Core::Net::HttpClient::~HttpClient()
     curl_global_cleanup();
 }
 
-NGenXXHttpResponse NGenXX::Core::Net::HttpClient::request(const std::string &url, int method,
+NGenXXHttpResponse NGenXX::Core::Net::HttpClient::request(std::string_view url, int method,
                                                                  const std::vector<std::string> &headers,
-                                                                 const std::string &params,
+                                                                std::string_view params,
                                                                  const Bytes &rawBody,
                                                                  const std::vector<HttpFormField> &formFields,
                                                                  const std::FILE *cFILE, size_t fileSize,
@@ -96,8 +96,8 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::request(const std::string &url
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
             if (rawBody.empty())
             {
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.c_str());
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, params.length());
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.data());
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, params.size());
             }
             else
             {
@@ -116,7 +116,7 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::request(const std::string &url
     });
 }
 
-bool NGenXX::Core::Net::HttpClient::download(const std::string &url, const std::string &filePath, size_t timeout) {
+bool NGenXX::Core::Net::HttpClient::download(std::string_view url, const std::string &filePath, size_t timeout) {
     auto file = std::fopen(filePath.c_str(), "wb");
     if (!file) [[unlikely]]
     {
@@ -135,7 +135,7 @@ bool NGenXX::Core::Net::HttpClient::download(const std::string &url, const std::
     return rsp.code == 200;
 }
 
-NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(const std::string &url, const std::vector<std::string> &headers, const std::string &params, int method, size_t timeout, std::function<void(CURL *const, const NGenXXHttpResponse &rsp)> &&func) {
+NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(std::string_view url, const std::vector<std::string> &headers, std::string_view params, int method, size_t timeout, std::function<void(CURL *const, const NGenXXHttpResponse &rsp)> &&func) {
     if (!checkUrlValid(url)) [[unlikely]]
     {
         return {};
@@ -212,7 +212,7 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(const std::string &url, co
     return rsp;
 }
 
-bool NGenXX::Core::Net::HttpClient::checkUrlValid(const std::string &url)
+bool NGenXX::Core::Net::HttpClient::checkUrlValid(std::string_view url)
 {
     if (url.empty()) [[unlikely]]
     {
@@ -229,7 +229,7 @@ bool NGenXX::Core::Net::HttpClient::checkUrlValid(const std::string &url)
     return true;
 }
 
-bool NGenXX::Core::Net::HttpClient::checkUrlHasSearch(const std::string &url)
+bool NGenXX::Core::Net::HttpClient::checkUrlHasSearch(std::string_view url)
 {
 #if defined(USE_ADA)
     auto aUrl = ada::parse(url);
@@ -239,7 +239,7 @@ bool NGenXX::Core::Net::HttpClient::checkUrlHasSearch(const std::string &url)
 #endif
 }
 
-bool NGenXX::Core::Net::HttpClient::handleSSL(CURL * curl, const std::string &url)
+bool NGenXX::Core::Net::HttpClient::handleSSL(CURL * curl, std::string_view url)
 {
 #if defined(USE_ADA)
     auto aUrl = ada::parse(url);

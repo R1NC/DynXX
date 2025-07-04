@@ -286,9 +286,9 @@ Bytes ngenxxCryptoBase64Decode(const Bytes &in, bool noNewLines) {
 
 #pragma mark Net.Http
 
-NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
+NGenXXHttpResponse ngenxxNetHttpRequest(std::string_view url,
                                         NGenXXHttpMethodX method,
-                                        const std::string &params,
+                                        std::string_view params,
                                         const Bytes &rawBody,
                                         const std::vector<std::string> &headerV,
                                         const std::vector<std::string> &formFieldNameV,
@@ -357,7 +357,7 @@ std::optional<std::string> NGenXXHttpResponse::toJson() const {
     return json;
 }
 
-NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
+NGenXXHttpResponse ngenxxNetHttpRequest(std::string_view url,
                                         NGenXXHttpMethodX method,
                                         const std::unordered_map<std::string, Any> &params,
                                         const Bytes &rawBody,
@@ -396,7 +396,7 @@ NGenXXHttpResponse ngenxxNetHttpRequest(const std::string &url,
                                 cFILE, fileSize, timeout);
 }
 
-bool ngenxxNetHttpDownload(const std::string &url, const std::string &filePath, size_t timeout) {
+bool ngenxxNetHttpDownload(std::string_view url, const std::string &filePath, size_t timeout) {
     if (!_http_client || url.empty() || filePath.empty()) {
         return false;
     }

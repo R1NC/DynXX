@@ -252,6 +252,10 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
                                     size_t form_field_count,
                                     void *const cFILE, size_t file_size,
                                     size_t timeout) {
+    if (url == nullptr) {
+        return "";
+    }
+
     std::vector<std::string> vHeaders;
     if (header_v != nullptr && header_c > 0) {
         vHeaders = std::vector<std::string>(header_v, header_v + header_c);
@@ -272,9 +276,9 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
         vFormFieldData = std::vector<std::string>(form_field_data_v, form_field_data_v + form_field_count);
     }
 
-    const auto t = ngenxxNetHttpRequest(wrapStr(url),
+    const auto t = ngenxxNetHttpRequest(url,
                                          static_cast<NGenXXHttpMethodX>(method),
-                                         wrapStr(params),
+                                         params ? params : "",
                                          {},
                                          vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
                                          static_cast<std::FILE *>(cFILE), file_size, timeout);
@@ -284,7 +288,10 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
 
 EXPORT_AUTO
 bool ngenxx_net_http_download(const char *url, const char *file_path, size_t timeout) {
-    return ngenxxNetHttpDownload(wrapStr(url), wrapStr(file_path), timeout);
+    if (url == nullptr || file_path == nullptr) {
+        return false;
+    }
+    return ngenxxNetHttpDownload(url, wrapStr(file_path), timeout);
 }
 
 #pragma mark Store.SQLite
