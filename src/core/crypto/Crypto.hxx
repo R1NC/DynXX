@@ -69,7 +69,7 @@ namespace NGenXX::Core::Crypto {
     }
 
     namespace RSA {
-        std::string genKey(const std::string_view &base64, bool isPublic);
+        std::string genKey(std::string_view base64, bool isPublic);
         
         class Codec
         {

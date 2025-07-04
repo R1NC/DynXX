@@ -467,7 +467,7 @@ Bytes NGenXX::Core::Crypto::Hash::sha256(const Bytes &inBytes)
 
 #pragma mark RSA
 
-std::string NGenXX::Core::Crypto::RSA::genKey(const std::string_view &base64, bool isPublic) 
+std::string NGenXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPublic) 
 { 
     constexpr auto chunkSize = 64; 
     using namespace std::string_view_literals;

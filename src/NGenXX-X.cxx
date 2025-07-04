@@ -192,17 +192,17 @@ void ngenxxLogSetCallback(const std::function<void(int level, const char *conten
     NGenXX::Core::Log::setCallback(callback);
 }
 
-void ngenxxLogPrint(NGenXXLogLevelX level, const std::string_view &content) {
+void ngenxxLogPrint(NGenXXLogLevelX level, std::string_view content) {
     NGenXX::Core::Log::print(static_cast<int>(level), content);
 }
 
 #pragma mark Coding
 
-std::string ngenxxCodingCaseUpper(const std::string_view &str) {
+std::string ngenxxCodingCaseUpper(std::string_view str) {
     return NGenXX::Core::Coding::Case::upper(str);
 }
 
-std::string ngenxxCodingCaseLower(const std::string_view &str) {
+std::string ngenxxCodingCaseLower(std::string_view str) {
     return NGenXX::Core::Coding::Case::lower(str);
 }
 
@@ -218,11 +218,11 @@ std::string ngenxxCodingBytes2str(const Bytes &bytes) {
     return NGenXX::Core::Coding::bytes2str(bytes);
 }
 
-Bytes ngenxxCodingStr2bytes(const std::string_view &str) {
+Bytes ngenxxCodingStr2bytes(std::string_view str) {
     return NGenXX::Core::Coding::str2bytes(str);
 }
 
-std::string ngenxxCodingStrTrim(const std::string_view &str) {
+std::string ngenxxCodingStrTrim(std::string_view str) {
     return NGenXX::Core::Coding::strTrim(str);
 }
 
@@ -250,7 +250,7 @@ Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &
     return NGenXX::Core::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }
 
-std::string ngenxxCryptoRsaGenKey(const std::string_view &base64, bool isPublic) {
+std::string ngenxxCryptoRsaGenKey(std::string_view base64, bool isPublic) {
     return NGenXX::Core::Crypto::RSA::genKey(base64, isPublic);
 }
 
@@ -416,7 +416,7 @@ void *ngenxxStoreSqliteOpen(const std::string &_id) {
     return nullptr;
 }
 
-bool ngenxxStoreSqliteExecute(void *const conn, const std::string &sql) {
+bool ngenxxStoreSqliteExecute(void *const conn, std::string_view sql) {
     if (conn == nullptr || sql.empty()) {
         return false;
     }
@@ -424,7 +424,7 @@ bool ngenxxStoreSqliteExecute(void *const conn, const std::string &sql) {
     return xconn->execute(sql);
 }
 
-void *ngenxxStoreSqliteQueryDo(void *const conn, const std::string &sql) {
+void *ngenxxStoreSqliteQueryDo(void *const conn, std::string_view sql) {
     if (conn == nullptr || sql.empty()) {
         return nullptr;
     }
@@ -441,7 +441,7 @@ bool ngenxxStoreSqliteQueryReadRow(void *const query_result) {
     return xqr->readRow();
 }
 
-std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string_view &column) {
+std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const query_result, std::string_view column) {
     if (query_result == nullptr || column.empty()) {
         return std::nullopt;
     }
@@ -453,7 +453,7 @@ std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const quer
     return std::make_optional(*std::get_if<std::string>(&v.value()));
 }
 
-std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string_view &column) {
+std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, std::string_view column) {
     if (query_result == nullptr || column.empty()) {
         return std::nullopt;
     }
@@ -465,7 +465,7 @@ std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query
     return std::make_optional(*std::get_if<int64_t>(&v.value()));
 }
 
-std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string_view &column) {
+std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, std::string_view column) {
     if (query_result == nullptr || column.empty()) {
         return std::nullopt;
     }
@@ -504,7 +504,7 @@ void *ngenxxStoreKvOpen(const std::string &_id) {
     return nullptr;
 }
 
-std::optional<std::string> ngenxxStoreKvReadString(void *const conn, const std::string_view &k) {
+std::optional<std::string> ngenxxStoreKvReadString(void *const conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return std::nullopt;
     }
@@ -512,7 +512,7 @@ std::optional<std::string> ngenxxStoreKvReadString(void *const conn, const std::
     return xconn->readString(k);
 }
 
-bool ngenxxStoreKvWriteString(void *const conn, const std::string_view &k, const std::string &v) {
+bool ngenxxStoreKvWriteString(void *const conn, std::string_view k, const std::string &v) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -520,7 +520,7 @@ bool ngenxxStoreKvWriteString(void *const conn, const std::string_view &k, const
     return xconn->write(k, v);
 }
 
-std::optional<int64_t> ngenxxStoreKvReadInteger(void *const conn, const std::string_view &k) {
+std::optional<int64_t> ngenxxStoreKvReadInteger(void *const conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return std::nullopt;
     }
@@ -528,7 +528,7 @@ std::optional<int64_t> ngenxxStoreKvReadInteger(void *const conn, const std::str
     return xconn->readInteger(k);
 }
 
-bool ngenxxStoreKvWriteInteger(void *const conn, const std::string_view &k, int64_t v) {
+bool ngenxxStoreKvWriteInteger(void *const conn, std::string_view k, int64_t v) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -536,7 +536,7 @@ bool ngenxxStoreKvWriteInteger(void *const conn, const std::string_view &k, int6
     return xconn->write(k, v);
 }
 
-std::optional<double> ngenxxStoreKvReadFloat(void *const conn, const std::string_view &k) {
+std::optional<double> ngenxxStoreKvReadFloat(void *const conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return std::nullopt;
     }
@@ -544,7 +544,7 @@ std::optional<double> ngenxxStoreKvReadFloat(void *const conn, const std::string
     return xconn->readFloat(k);
 }
 
-bool ngenxxStoreKvWriteFloat(void *const conn, const std::string_view &k, double v) {
+bool ngenxxStoreKvWriteFloat(void *const conn, std::string_view k, double v) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -560,7 +560,7 @@ std::vector<std::string> ngenxxStoreKvAllKeys(void *const conn) {
     return xconn->allKeys();
 }
 
-bool ngenxxStoreKvContains(void *const conn, const std::string_view &k) {
+bool ngenxxStoreKvContains(void *const conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -568,7 +568,7 @@ bool ngenxxStoreKvContains(void *const conn, const std::string_view &k) {
     return xconn->contains(k);
 }
 
-bool ngenxxStoreKvRemove(void *const conn, const std::string_view &k) {
+bool ngenxxStoreKvRemove(void *const conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -613,7 +613,7 @@ void *ngenxxJsonDecoderInit(const std::string &json) {
     return new NGenXX::Core::Json::Decoder(json);
 }
 
-void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string_view &k, void *const node) {
+void *ngenxxJsonDecoderReadNode(void *const decoder, std::string_view k, void *const node) {
     if (decoder == nullptr || k.empty()) {
         return nullptr;
     }

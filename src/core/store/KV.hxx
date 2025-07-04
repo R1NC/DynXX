@@ -41,19 +41,19 @@ namespace NGenXX::Core::Store {
 
             Connection &operator=(Connection &&) = delete;
 
-            std::optional<std::string> readString(const std::string_view &k) const;
+            std::optional<std::string> readString(std::string_view k) const;
 
-            std::optional<int64_t> readInteger(const std::string_view &k) const;
+            std::optional<int64_t> readInteger(std::string_view k) const;
 
-            std::optional<double> readFloat(const std::string_view &k) const;
+            std::optional<double> readFloat(std::string_view k) const;
 
-            [[nodiscard]] bool write(const std::string_view &k, const Any &v) const;
+            [[nodiscard]] bool write(std::string_view k, const Any &v) const;
 
             std::vector<std::string> allKeys() const;
 
-            bool contains(const std::string_view &k) const;
+            bool contains(std::string_view k) const;
 
-            [[nodiscard]] bool remove(const std::string_view &k) const;
+            [[nodiscard]] bool remove(std::string_view k) const;
 
             void clear() const;
 

@@ -37,7 +37,7 @@ namespace
     constexpr auto TAG = "NGENXX";
     constexpr size_t MAX_LEN = 1023;
 
-    void stdLogPrint(int level, const std::string_view &content)
+    void stdLogPrint(int level, std::string_view content)
     {
 #if defined(__ANDROID__)
         __android_log_print(level, TAG, "%.*s", static_cast<int>(content.length()), content.data());
@@ -90,7 +90,7 @@ namespace
         });
     }
 
-    void spdLogPrint(const int level, const std::string_view &content)
+    void spdLogPrint(const int level, std::string_view content)
     {
         spdLogPrepare();
         if (level == NGenXXLogLevelDebug)
@@ -112,7 +112,7 @@ namespace
     }
 #endif
 
-    void logPrint(int level, const std::string_view &content)
+    void logPrint(int level, std::string_view content)
     {
         if (_callback)
         {
@@ -128,7 +128,7 @@ namespace
 #endif
     }
 
-    void logPrintInBlocks(int level, const std::string_view &content)
+    void logPrintInBlocks(int level, std::string_view content)
     {
         if (content.length() <= MAX_LEN) [[likely]]
         {
@@ -184,7 +184,7 @@ void NGenXX::Core::Log::setCallback(const std::function<void(int level, const ch
     _callback = callback;
 }
 
-void NGenXX::Core::Log::print(int level, const std::string_view &content)
+void NGenXX::Core::Log::print(int level, std::string_view content)
 {
     auto lock = std::lock_guard(_mutex);
 

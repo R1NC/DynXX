@@ -24,7 +24,7 @@ enum class NGenXXCryptoRSAPaddingX : int {
     PKCS1_PSS = 6
 };
 
-std::string ngenxxCryptoRsaGenKey(const std::string_view &base64, bool isPublic);
+std::string ngenxxCryptoRsaGenKey(std::string_view base64, bool isPublic);
 
 Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding);
 

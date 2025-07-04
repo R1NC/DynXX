@@ -11,7 +11,7 @@ namespace NGenXX::Core::Log {
 
     void setCallback(const std::function<void(int level, const char *content)> &callback);
 
-    void print(int level, const std::string_view &content);
+    void print(int level, std::string_view content);
 }
 
 #endif

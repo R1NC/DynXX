@@ -72,9 +72,9 @@ namespace NGenXX::Core::Store {
                  * @param column Column name
                  * @return column data
                  */
-                std::optional<Any> readColumn(const std::string_view &column) const;
+                std::optional<Any> readColumn(std::string_view column) const;
 
-                std::optional<Any> operator[](const std::string_view &column) const;
+                std::optional<Any> operator[](std::string_view column) const;
 
                 /**
                  * @brief Release QueryResult
@@ -91,14 +91,14 @@ namespace NGenXX::Core::Store {
              * @param sql SQL
              * @return Successfull or not.
              */
-            [[nodiscard]] bool execute(const std::string &sql) const;
+            [[nodiscard]] bool execute(std::string_view sql) const;
 
             /**
              * @brief Query with a SQL
              * @param sql SQL
              * @return A QueryResult, or `nullptr` if execute failed.
              */
-            std::unique_ptr<QueryResult> query(const std::string &sql) const;
+            std::unique_ptr<QueryResult> query(std::string_view sql) const;
 
             /**
              * @brief Release DB resource

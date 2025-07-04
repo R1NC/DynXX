@@ -7,7 +7,7 @@
 #include <numeric>
 #endif
 
-std::string NGenXX::Core::Coding::Case::upper(const std::string_view &str)
+std::string NGenXX::Core::Coding::Case::upper(std::string_view str)
 {
     std::string s(str);
     s.reserve(str.size());
@@ -19,7 +19,7 @@ std::string NGenXX::Core::Coding::Case::upper(const std::string_view &str)
     return s;
 }
 
-std::string NGenXX::Core::Coding::Case::lower(const std::string_view &str)
+std::string NGenXX::Core::Coding::Case::lower(std::string_view str)
 {
     std::string s(str);
     s.reserve(str.size());
@@ -135,12 +135,12 @@ std::string NGenXX::Core::Coding::bytes2str(const Bytes &bytes)
     return {bytes.begin(), bytes.end()};
 }
 
-Bytes NGenXX::Core::Coding::str2bytes(const std::string_view &str)
+Bytes NGenXX::Core::Coding::str2bytes(std::string_view str)
 {
     return {str.begin(), str.end()};
 }
 
-std::string NGenXX::Core::Coding::strTrim(const std::string_view &str) 
+std::string NGenXX::Core::Coding::strTrim(std::string_view str) 
 {
 #if defined(__cpp_lib_ranges)
     auto findSpaceF = [](char c) { return std::isspace(static_cast<int>(c)); };

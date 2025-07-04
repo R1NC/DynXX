@@ -55,7 +55,7 @@ NGenXX::Core::Store::KV::Connection::Connection(const std::string &_id)
     MMKV::setLogLevel(MMKVLogNone);
 }
 
-std::optional<std::string> NGenXX::Core::Store::KV::Connection::readString(const std::string_view &k) const
+std::optional<std::string> NGenXX::Core::Store::KV::Connection::readString(std::string_view k) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (!this->kv->containsKey(k)) [[unlikely]]
@@ -67,7 +67,7 @@ std::optional<std::string> NGenXX::Core::Store::KV::Connection::readString(const
     return std::make_optional(s);
 }
 
-std::optional<int64_t> NGenXX::Core::Store::KV::Connection::readInteger(const std::string_view &k) const
+std::optional<int64_t> NGenXX::Core::Store::KV::Connection::readInteger(std::string_view k) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (!this->kv->containsKey(k)) [[unlikely]]
@@ -77,7 +77,7 @@ std::optional<int64_t> NGenXX::Core::Store::KV::Connection::readInteger(const st
     return std::make_optional(this->kv->getInt64(k));
 }
 
-std::optional<double> NGenXX::Core::Store::KV::Connection::readFloat(const std::string_view &k) const
+std::optional<double> NGenXX::Core::Store::KV::Connection::readFloat(std::string_view k) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (!this->kv->containsKey(k)) [[unlikely]]
@@ -87,7 +87,7 @@ std::optional<double> NGenXX::Core::Store::KV::Connection::readFloat(const std::
     return std::make_optional(this->kv->getDouble(k));
 }
 
-bool NGenXX::Core::Store::KV::Connection::write(const std::string_view &k, const Any &v) const
+bool NGenXX::Core::Store::KV::Connection::write(std::string_view k, const Any &v) const
 {
     auto lock = std::unique_lock(this->mutex);
     return std::visit(
@@ -105,13 +105,13 @@ std::vector<std::string> NGenXX::Core::Store::KV::Connection::allKeys() const
     return this->kv->allKeys(false);
 }
 
-bool NGenXX::Core::Store::KV::Connection::contains(const std::string_view &k) const
+bool NGenXX::Core::Store::KV::Connection::contains(std::string_view k) const
 {
     auto lock = std::shared_lock(this->mutex);
     return this->kv->containsKey(k);
 }
 
-bool NGenXX::Core::Store::KV::Connection::remove(const std::string_view &k) const
+bool NGenXX::Core::Store::KV::Connection::remove(std::string_view k) const
 {
     auto lock = std::unique_lock(this->mutex);
     return this->kv->removeValueForKey(k);

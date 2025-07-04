@@ -244,7 +244,7 @@ const cJSON *NGenXX::Core::Json::Decoder::reinterpretNode(void *const node) cons
     return static_cast<const cJSON *>(node);
 }
 
-void *NGenXX::Core::Json::Decoder::readNode(void *const node, const std::string_view &k) const
+void *NGenXX::Core::Json::Decoder::readNode(void *const node, std::string_view k) const
 {
     if (const auto cj = this->reinterpretNode(node); cj != nullptr) [[likely]]
     {
@@ -253,7 +253,7 @@ void *NGenXX::Core::Json::Decoder::readNode(void *const node, const std::string_
     return nullptr;
 }
 
-void *NGenXX::Core::Json::Decoder::operator[](const std::string_view &k) const
+void *NGenXX::Core::Json::Decoder::operator[](std::string_view k) const
 {
     return this->readNode(nullptr, k);
 }

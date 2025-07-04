@@ -26,11 +26,11 @@ void ngenxxLogSetLevel(NGenXXLogLevelX level);
 
 void ngenxxLogSetCallback(const std::function<void(int level, const char *content)> &callback);
 
-void ngenxxLogPrint(NGenXXLogLevelX level, const std::string_view &content);
+void ngenxxLogPrint(NGenXXLogLevelX level, std::string_view content);
 
 #if !defined(USE_STD_FORMAT)
 template <typename... Args>
-inline std::string _ngenxxLogFormat(const std::string_view &format, Args... args)
+inline std::string _ngenxxLogFormat(std::string_view format, Args... args)
 {
     std::ostringstream oss;
     
@@ -47,7 +47,7 @@ inline std::string _ngenxxLogFormat(const std::string_view &format, Args... args
 #endif
 
 template<typename... Args>
-void ngenxxLogPrintF(NGenXXLogLevelX level, const std::string_view &format, Args... args) {
+void ngenxxLogPrintF(NGenXXLogLevelX level, std::string_view format, Args... args) {
     auto fContent =
 #if !defined(USE_STD_FORMAT)
     _ngenxxLogFormat(format, args...)

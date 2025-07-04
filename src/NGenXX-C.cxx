@@ -188,6 +188,9 @@ const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, size_t inLen,
 
 EXPORT_AUTO
 const char *ngenxx_crypto_rsa_gen_key(const char *base64, bool isPublic) {
+    if (base64 == nullptr) {
+        return "";
+    }
     const auto s = ngenxxCryptoRsaGenKey(base64, isPublic);
     return NGenXX::Core::Util::Type::copyStr(s);
 }
@@ -293,12 +296,18 @@ void *ngenxx_store_sqlite_open(const char *_id) {
 
 EXPORT_AUTO
 bool ngenxx_store_sqlite_execute(void *const conn, const char *sql) {
-    return ngenxxStoreSqliteExecute(conn, wrapStr(sql));
+    if (conn == nullptr || sql == nullptr) {
+        return false;
+    }
+    return ngenxxStoreSqliteExecute(conn, sql);
 }
 
 EXPORT_AUTO
 void *ngenxx_store_sqlite_query_do(void *const conn, const char *sql) {
-    return ngenxxStoreSqliteQueryDo(conn, wrapStr(sql));
+    if (conn == nullptr || sql == nullptr) {
+        return nullptr;
+    }
+    return ngenxxStoreSqliteQueryDo(conn, sql);
 }
 
 EXPORT_AUTO
