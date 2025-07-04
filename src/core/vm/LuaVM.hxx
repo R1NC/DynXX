@@ -103,7 +103,7 @@ namespace NGenXX::Core::VM {
          * @param params Lua function params（wrap multiple params with json）
          * @return return value of Lua function
          */
-        std::optional<std::string> callFunc(const std::string &func, const std::string &params);
+        std::optional<std::string> callFunc(std::string_view func, std::string_view params);
 
         /**
          * @brief Release Lua environment

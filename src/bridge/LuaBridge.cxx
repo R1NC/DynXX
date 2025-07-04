@@ -33,7 +33,7 @@ namespace {
         return vm->loadScript(s);
     }
 
-    std::optional<std::string> call(const std::string &f, const std::string &ps) {
+    std::optional<std::string> call(std::string_view f, std::string_view ps) {
         if (!vm || f.empty()) [[unlikely]] {
             return std::nullopt;
         }
@@ -51,7 +51,7 @@ bool ngenxxLuaLoadS(const std::string &s) {
     return loadS(s);
 }
 
-std::optional<std::string> ngenxxLuaCall(const std::string &f, const std::string &ps) {
+std::optional<std::string> ngenxxLuaCall(std::string_view f, std::string_view ps) {
     return call(f, ps);
 }
 
@@ -71,7 +71,11 @@ bool ngenxx_lua_loadS(const char *script) {
 
 EXPORT
 const char *ngenxx_lua_call(const char *f, const char *ps) {
-    const auto s = ngenxxLuaCall(wrapStr(f), wrapStr(ps)).value_or("");
+    if (f == nullptr) [[unlikely]] 
+    {
+        return nullptr;
+    }
+    const auto s = ngenxxLuaCall(f, ps ? ps : "").value_or("");
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 

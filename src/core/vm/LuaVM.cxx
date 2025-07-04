@@ -176,12 +176,12 @@ bool NGenXX::Core::VM::LuaVM::loadScript(const std::string &script)
 }
 
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
-std::optional<std::string> NGenXX::Core::VM::LuaVM::callFunc(const std::string &func, const std::string &params)
+std::optional<std::string> NGenXX::Core::VM::LuaVM::callFunc(std::string_view func, std::string_view params)
 {
     auto lock = std::lock_guard(this->vmMutex);
-    lua_getglobal(this->lstate, func.c_str());
-    lua_pushstring(this->lstate, params.c_str());
-    if (const auto ret = lua_pcall(lstate, 1, 1, 0); ret != LUA_OK) [[unlikely]]
+    lua_getglobal(this->lstate, func.data());
+    lua_pushstring(this->lstate, params.data());
+    if (const auto ret = lua_pcall(this->lstate, 1, 1, 0); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`lua_pcall` error:");
         return std::nullopt;

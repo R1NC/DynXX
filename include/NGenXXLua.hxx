@@ -7,6 +7,6 @@ bool ngenxxLuaLoadF(const std::string &f);
 
 bool ngenxxLuaLoadS(const std::string &s);
 
-std::optional<std::string> ngenxxLuaCall(const std::string &f, const std::string &ps);
+std::optional<std::string> ngenxxLuaCall(std::string_view f, std::string_view ps);
 
 #endif // NGENXX_INCLUDE_LUA_HXX_
