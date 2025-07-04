@@ -26,7 +26,7 @@ void ngenxxLogSetLevel(NGenXXLogLevelX level);
 
 void ngenxxLogSetCallback(const std::function<void(int level, const char *content)> &callback);
 
-void ngenxxLogPrint(NGenXXLogLevelX level, const std::string &content);
+void ngenxxLogPrint(NGenXXLogLevelX level, const std::string_view &content);
 
 #if !defined(USE_STD_FORMAT)
 template <typename... Args>

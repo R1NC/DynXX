@@ -192,7 +192,7 @@ void ngenxxLogSetCallback(const std::function<void(int level, const char *conten
     NGenXX::Core::Log::setCallback(callback);
 }
 
-void ngenxxLogPrint(NGenXXLogLevelX level, const std::string &content) {
+void ngenxxLogPrint(NGenXXLogLevelX level, const std::string_view &content) {
     NGenXX::Core::Log::print(static_cast<int>(level), content);
 }
 
