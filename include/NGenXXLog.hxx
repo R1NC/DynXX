@@ -30,12 +30,12 @@ void ngenxxLogPrint(NGenXXLogLevelX level, const std::string_view &content);
 
 #if !defined(USE_STD_FORMAT)
 template <typename... Args>
-inline std::string _ngenxxLogFormat(const std::string &format, Args... args)
+inline std::string _ngenxxLogFormat(const std::string_view &format, Args... args)
 {
     std::ostringstream oss;
     
     auto formatWithArgs = [&oss, &format](auto... xArgs) {
-        auto tmpFormat = format;
+        std::string tmpFormat{format};
         constexpr auto flag = "{}";
         ((oss << tmpFormat.substr(0, tmpFormat.find(flag)) << xArgs, tmpFormat.erase(0, tmpFormat.find(flag) + 2)), ...);
         oss << tmpFormat;
@@ -47,14 +47,14 @@ inline std::string _ngenxxLogFormat(const std::string &format, Args... args)
 #endif
 
 template<typename... Args>
-void ngenxxLogPrintF(NGenXXLogLevelX level, const std::string &format, Args... args) {
+void ngenxxLogPrintF(NGenXXLogLevelX level, const std::string_view &format, Args... args) {
     auto fContent =
 #if !defined(USE_STD_FORMAT)
     _ngenxxLogFormat(format, args...)
 #else
-                    std::vformat(format, std::make_format_args(args...))
+    std::vformat(std::string{format}, std::make_format_args(args...))
 #endif
-            ;
+    ;
     ngenxxLogPrint(level, fContent);
 }
 

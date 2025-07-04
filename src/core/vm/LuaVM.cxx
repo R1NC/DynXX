@@ -186,7 +186,7 @@ std::optional<std::string> NGenXX::Core::VM::LuaVM::callFunc(const std::string &
         PRINT_L_ERROR(this->lstate, "`lua_pcall` error:");
         return std::nullopt;
     }
-    const auto &s = wrapStr(lua_tostring(this->lstate, -1));
+    const auto s = wrapStr(lua_tostring(this->lstate, -1));
 
     lua_pop(this->lstate, 1);
     return std::make_optional(s);

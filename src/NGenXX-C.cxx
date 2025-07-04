@@ -24,7 +24,7 @@ const char *ngenxx_get_version() {
 
 EXPORT_AUTO
 const char *ngenxx_root_path() {
-    const auto &s = ngenxxRootPath();
+    const auto s = ngenxxRootPath();
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
@@ -47,25 +47,25 @@ int ngenxx_device_type() {
 
 EXPORT_AUTO
 const char *ngenxx_device_name() {
-    const auto &s = ngenxxDeviceName();
+    const auto s = ngenxxDeviceName();
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_device_manufacturer() {
-    const auto &s = ngenxxDeviceManufacturer();
+    const auto s = ngenxxDeviceManufacturer();
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_device_model() {
-    const auto &s = ngenxxDeviceModel();
+    const auto s = ngenxxDeviceModel();
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_device_os_version() {
-    const auto &s = ngenxxDeviceOsVersion();
+    const auto s = ngenxxDeviceOsVersion();
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
@@ -88,44 +88,56 @@ void ngenxx_log_set_callback(void (*const callback)(int level, const char *conte
 
 EXPORT_AUTO
 void ngenxx_log_print(int level, const char *content) {
-    ngenxxLogPrint(static_cast<NGenXXLogLevelX>(level), wrapStr(content));
+    if (content == nullptr) {
+        return;
+    }
+    ngenxxLogPrint(static_cast<NGenXXLogLevelX>(level), content);
 }
 
 #pragma mark Coding
 
 EXPORT_AUTO
 const byte *ngenxx_coding_hex_str2bytes(const char *str, size_t *outLen) {
-    const auto &bytes = ngenxxCodingHexStr2bytes(wrapStr(str));
+    const auto bytes = ngenxxCodingHexStr2bytes(wrapStr(str));
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
 const char *ngenxx_coding_hex_bytes2str(const byte *inBytes, size_t inLen) {
-    const auto &s = ngenxxCodingHexBytes2str(wrapBytes(inBytes, inLen));
+    const auto s = ngenxxCodingHexBytes2str(wrapBytes(inBytes, inLen));
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_coding_bytes2str(const byte *inBytes, size_t inLen) {
-    const auto &s = ngenxxCodingBytes2str(wrapBytes(inBytes, inLen));
+    const auto s = ngenxxCodingBytes2str(wrapBytes(inBytes, inLen));
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_coding_str2bytes(const char *str, size_t *outLen) {
-    const auto &bytes = ngenxxCodingStr2bytes(wrapStr(str));
+    if (str == nullptr) {
+        return nullptr;
+    }
+    const auto bytes = ngenxxCodingStr2bytes(str);
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
 const char *ngenxx_coding_case_upper(const char *str) {
-    const auto &s = ngenxxCodingCaseUpper(str);
+    if (str == nullptr) {
+        return "";
+    }
+    const auto s = ngenxxCodingCaseUpper(str);
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
 EXPORT_AUTO
 const char *ngenxx_coding_case_lower(const char *str) {
-    const auto &s = ngenxxCodingCaseLower(str);
+    if (str == nullptr) {
+        return "";
+    }
+    const auto s = ngenxxCodingCaseLower(str);
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
@@ -139,14 +151,14 @@ bool ngenxx_crypto_rand(size_t len, byte *bytes) {
 EXPORT_AUTO
 const byte *ngenxx_crypto_aes_encrypt(const byte *inBytes, size_t inLen, const byte *keyBytes, size_t keyLen,
                                       size_t *outLen) {
-    const auto &bytes = ngenxxCryptoAesEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen));
+    const auto bytes = ngenxxCryptoAesEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen));
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_aes_decrypt(const byte *inBytes, size_t inLen, const byte *keyBytes, size_t keyLen,
                                       size_t *outLen) {
-    const auto &bytes = ngenxxCryptoAesDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen));
+    const auto bytes = ngenxxCryptoAesDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen));
     return handleBytes(bytes, outLen);
 }
 
@@ -156,7 +168,7 @@ const byte *ngenxx_crypto_aes_gcm_encrypt(const byte *inBytes, size_t inLen,
                                           const byte *initVectorBytes, size_t initVectorLen,
                                           const byte *aadBytes, size_t aadLen,
                                           size_t tagBits, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoAesGcmEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),
+    const auto bytes = ngenxxCryptoAesGcmEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),
                                                   wrapBytes(initVectorBytes, initVectorLen), tagBits,
                                                   wrapBytes(aadBytes, aadLen));
     return handleBytes(bytes, outLen);
@@ -168,7 +180,7 @@ const byte *ngenxx_crypto_aes_gcm_decrypt(const byte *inBytes, size_t inLen,
                                           const byte *initVectorBytes, size_t initVectorLen,
                                           const byte *aadBytes, size_t aadLen,
                                           size_t tagBits, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoAesGcmDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),
+    const auto bytes = ngenxxCryptoAesGcmDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),
                                                   wrapBytes(initVectorBytes, initVectorLen), tagBits,
                                                   wrapBytes(aadBytes, aadLen));
     return handleBytes(bytes, outLen);
@@ -183,7 +195,7 @@ const char *ngenxx_crypto_rsa_gen_key(const char *base64, bool isPublic) {
 EXPORT_AUTO
 const byte *ngenxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
                                       const byte *keyBytes, size_t keyLen, int padding, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoRsaEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),
+    const auto bytes = ngenxxCryptoRsaEncrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),
                                                static_cast<NGenXXCryptoRSAPaddingX>(padding));
     return handleBytes(bytes, outLen);
 }
@@ -191,38 +203,38 @@ const byte *ngenxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
 EXPORT_AUTO
 const byte *ngenxx_crypto_rsa_decrypt(const byte *inBytes, size_t inLen,
                                       const byte *keyBytes, size_t keyLen, int padding, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoRsaDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),
+    const auto bytes = ngenxxCryptoRsaDecrypt(wrapBytes(inBytes, inLen), wrapBytes(keyBytes, keyLen),
                                                static_cast<NGenXXCryptoRSAPaddingX>(padding));
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_hash_md5(const byte *inBytes, size_t inLen, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoHashMd5(wrapBytes(inBytes, inLen));
+    const auto bytes = ngenxxCryptoHashMd5(wrapBytes(inBytes, inLen));
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_hash_sha1(const byte *inBytes, size_t inLen, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoHashSha1(wrapBytes(inBytes, inLen));
+    const auto bytes = ngenxxCryptoHashSha1(wrapBytes(inBytes, inLen));
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_hash_sha256(const byte *inBytes, size_t inLen, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoHashSha256(wrapBytes(inBytes, inLen));
+    const auto bytes = ngenxxCryptoHashSha256(wrapBytes(inBytes, inLen));
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_base64_encode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoBase64Encode(wrapBytes(inBytes, inLen), noNewLines);
+    const auto bytes = ngenxxCryptoBase64Encode(wrapBytes(inBytes, inLen), noNewLines);
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
 const byte *ngenxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen) {
-    const auto &bytes = ngenxxCryptoBase64Decode(wrapBytes(inBytes, inLen), noNewLines);
+    const auto bytes = ngenxxCryptoBase64Decode(wrapBytes(inBytes, inLen), noNewLines);
     return handleBytes(bytes, outLen);
 }
 
@@ -257,13 +269,13 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
         vFormFieldData = std::vector<std::string>(form_field_data_v, form_field_data_v + form_field_count);
     }
 
-    const auto &t = ngenxxNetHttpRequest(wrapStr(url),
+    const auto t = ngenxxNetHttpRequest(wrapStr(url),
                                          static_cast<NGenXXHttpMethodX>(method),
                                          wrapStr(params),
                                          {},
                                          vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
                                          static_cast<std::FILE *>(cFILE), file_size, timeout);
-    const auto &s = t.toJson();
+    const auto s = t.toJson();
     return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
@@ -296,19 +308,28 @@ bool ngenxx_store_sqlite_query_read_row(void *const query_result) {
 
 EXPORT_AUTO
 const char *ngenxx_store_sqlite_query_read_column_text(void *const query_result, const char *column) {
-    const auto &s = ngenxxStoreSqliteQueryReadColumnText(query_result, wrapStr(column));
+    if (query_result == nullptr || column == nullptr) {
+        return "";
+    }
+    const auto s = ngenxxStoreSqliteQueryReadColumnText(query_result, column);
     return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
 EXPORT_AUTO
 int64_t ngenxx_store_sqlite_query_read_column_integer(void *const query_result, const char *column) {
-    const auto &i = ngenxxStoreSqliteQueryReadColumnInteger(query_result, wrapStr(column));
+    if (query_result == nullptr || column == nullptr) {
+        return 0;
+    }
+    const auto i = ngenxxStoreSqliteQueryReadColumnInteger(query_result, column);
     return i.value_or(0);
 }
 
 EXPORT_AUTO
 double ngenxx_store_sqlite_query_read_column_float(void *const query_result, const char *column) {
-    const auto &f = ngenxxStoreSqliteQueryReadColumnFloat(query_result, wrapStr(column));
+    if (query_result == nullptr || column == nullptr) {
+        return 0.0;
+    }
+    const auto f = ngenxxStoreSqliteQueryReadColumnFloat(query_result, column);
     return f.value_or(0.0);
 }
 
@@ -331,40 +352,58 @@ void *ngenxx_store_kv_open(const char *_id) {
 
 EXPORT_AUTO
 const char *ngenxx_store_kv_read_string(void *const conn, const char *k) {
-    const auto &s = ngenxxStoreKvReadString(conn, wrapStr(k));
+    if (conn == nullptr || k == nullptr) {
+        return nullptr;
+    }
+    const auto s = ngenxxStoreKvReadString(conn, k);
     return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
 EXPORT_AUTO
 bool ngenxx_store_kv_write_string(void *const conn, const char *k, const char *v) {
-    return ngenxxStoreKvWriteString(conn, wrapStr(k), wrapStr(v));
+    if (conn == nullptr || k == nullptr) {
+        return false;
+    }
+    return ngenxxStoreKvWriteString(conn, k, v == nullptr ? "" : v);
 }
 
 EXPORT_AUTO
 int64_t ngenxx_store_kv_read_integer(void *const conn, const char *k) {
-    const auto &i = ngenxxStoreKvReadInteger(conn, wrapStr(k));
+    if (conn == nullptr || k == nullptr) {
+        return 0;
+    }
+    const auto i = ngenxxStoreKvReadInteger(conn, k);
     return i.value_or(0);
 }
 
 EXPORT_AUTO
 bool ngenxx_store_kv_write_integer(void *const conn, const char *k, int64_t v) {
-    return ngenxxStoreKvWriteInteger(conn, wrapStr(k), v);
+    if (conn == nullptr || k == nullptr) {
+        return false;
+    }
+    return ngenxxStoreKvWriteInteger(conn, k, v);
 }
 
 EXPORT_AUTO
 double ngenxx_store_kv_read_float(void *const conn, const char *k) {
-    const auto &f = ngenxxStoreKvReadFloat(conn, wrapStr(k));
+    if (conn == nullptr || k == nullptr) {
+        return 0.0;
+    }
+    const auto f = ngenxxStoreKvReadFloat(conn, k);
     return f.value_or(0.0);
 }
 
 EXPORT_AUTO
 bool ngenxx_store_kv_write_float(void *const conn, const char *k, double v) {
-    return ngenxxStoreKvWriteFloat(conn, wrapStr(k), v);
+    if (conn == nullptr || k == nullptr) {
+        return false;
+    }
+    return ngenxxStoreKvWriteFloat(conn, k, v);
 }
 
 EXPORT_AUTO
 char *const *ngenxx_store_kv_all_keys(void *const conn, size_t *len) {
-    const auto &t = ngenxxStoreKvAllKeys(conn);
+    const auto t = ngenxxStoreKvAllKeys(conn);
     if (len) {
         *len = t.size();
     }
@@ -373,12 +412,18 @@ char *const *ngenxx_store_kv_all_keys(void *const conn, size_t *len) {
 
 EXPORT_AUTO
 bool ngenxx_store_kv_contains(void *const conn, const char *k) {
-    return ngenxxStoreKvContains(conn, wrapStr(k));
+    if (conn == nullptr || k == nullptr) {
+        return false;
+    }
+    return ngenxxStoreKvContains(conn, k);
 }
 
 EXPORT_AUTO
 bool ngenxx_store_kv_remove(void *const conn, const char *k) {
-    return ngenxxStoreKvRemove(conn, wrapStr(k));
+    if (conn == nullptr || k == nullptr) {
+        return false;
+    }
+    return ngenxxStoreKvRemove(conn, k);
 }
 
 EXPORT_AUTO
@@ -400,7 +445,7 @@ int ngenxx_json_read_type(void *const cjson) {
 
 EXPORT_AUTO
 const char *ngenxx_json_to_str(void *const cjson) {
-    const auto &s = ngenxxJsonToStr(cjson);
+    const auto s = ngenxxJsonToStr(cjson);
     return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
@@ -411,12 +456,15 @@ void *ngenxx_json_decoder_init(const char *json) {
 
 EXPORT_AUTO
 void *ngenxx_json_decoder_read_node(void *const decoder, void *const node, const char *k) {
-    return ngenxxJsonDecoderReadNode(decoder, wrapStr(k), node);
+    if (decoder == nullptr || k == nullptr) {
+        return nullptr;
+    }
+    return ngenxxJsonDecoderReadNode(decoder, k, node);
 }
 
 EXPORT_AUTO
 const char *ngenxx_json_decoder_read_string(void *const decoder, void *const node) {
-    const auto &s = ngenxxJsonDecoderReadString(decoder, node);
+    const auto s = ngenxxJsonDecoderReadString(decoder, node);
     return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
@@ -454,7 +502,7 @@ size_t ngenxx_z_zip_input(void *const zip, const byte *inBytes, size_t inLen, bo
 
 EXPORT_AUTO
 const byte *ngenxx_z_zip_process_do(void *const zip, size_t *outLen) {
-    const auto &bytes = ngenxxZZipProcessDo(zip);
+    const auto bytes = ngenxxZZipProcessDo(zip);
     return handleBytes(bytes, outLen);
 }
 
@@ -480,7 +528,7 @@ size_t ngenxx_z_unzip_input(void *const unzip, const byte *inBytes, size_t inLen
 
 EXPORT_AUTO
 const byte *ngenxx_z_unzip_process_do(void *const unzip, size_t *outLen) {
-    const auto &bytes = ngenxxZUnzipProcessDo(unzip);
+    const auto bytes = ngenxxZUnzipProcessDo(unzip);
     return handleBytes(bytes, outLen);
 }
 
@@ -523,7 +571,7 @@ bool ngenxx_z_cxxstream_unzip(size_t bufferSize, int format, void *const cxxStre
 EXPORT_AUTO
 const byte *ngenxx_z_bytes_zip(int mode, size_t bufferSize, int format, const byte *inBytes, size_t inLen,
                                size_t *outLen) {
-    const auto &bytes = ngenxxZBytesZip(wrapBytes(inBytes, inLen),
+    const auto bytes = ngenxxZBytesZip(wrapBytes(inBytes, inLen),
                                         static_cast<NGenXXZipCompressModeX>(mode), bufferSize,
                                         static_cast<NGenXXZFormatX>(format));
     return handleBytes(bytes, outLen);
@@ -531,7 +579,7 @@ const byte *ngenxx_z_bytes_zip(int mode, size_t bufferSize, int format, const by
 
 EXPORT_AUTO
 const byte *ngenxx_z_bytes_unzip(size_t bufferSize, int format, const byte *inBytes, size_t inLen, size_t *outLen) {
-    const auto &bytes = ngenxxZBytesUnzip(wrapBytes(inBytes, inLen),
+    const auto bytes = ngenxxZBytesUnzip(wrapBytes(inBytes, inLen),
                                           bufferSize, static_cast<NGenXXZFormatX>(format));
     return handleBytes(bytes, outLen);
 }
