@@ -132,7 +132,7 @@ bool NGenXX::Core::Store::SQLite::Connection::QueryResult::readRow() const
     return rc == SQLITE_ROW;
 }
 
-std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::readColumn(const std::string &column) const
+std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::readColumn(const std::string_view &column) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
@@ -143,7 +143,7 @@ std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::readCol
     auto colCount = sqlite3_column_count(this->stmt);
     for (decltype(colCount) i(0); i < colCount; i++)
     {
-        if (strcmp(sqlite3_column_name(this->stmt, i), column.c_str()) != 0)
+        if (strcmp(sqlite3_column_name(this->stmt, i), column.data()) != 0)
         {
             continue;
         }
@@ -162,7 +162,7 @@ std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::readCol
     return std::nullopt;
 }
 
-std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::operator[](const std::string &column) const {
+std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::operator[](const std::string_view &column) const {
     return this->readColumn(column);
 }
 

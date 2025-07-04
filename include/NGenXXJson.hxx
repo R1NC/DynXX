@@ -27,7 +27,7 @@ std::optional<DictAny> ngenxxJsonToDictAny(const std::string &json);
 
 void *ngenxxJsonDecoderInit(const std::string &json);
 
-void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node = nullptr);
+void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string_view &k, void *const node = nullptr);
 
 std::optional<std::string> ngenxxJsonDecoderReadString(void *const decoder, void *const node = nullptr);
 

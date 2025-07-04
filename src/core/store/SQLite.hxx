@@ -72,9 +72,9 @@ namespace NGenXX::Core::Store {
                  * @param column Column name
                  * @return column data
                  */
-                std::optional<Any> readColumn(const std::string &column) const;
+                std::optional<Any> readColumn(const std::string_view &column) const;
 
-                std::optional<Any> operator[](const std::string &column) const;
+                std::optional<Any> operator[](const std::string_view &column) const;
 
                 /**
                  * @brief Release QueryResult

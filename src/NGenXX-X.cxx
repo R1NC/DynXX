@@ -441,7 +441,7 @@ bool ngenxxStoreSqliteQueryReadRow(void *const query_result) {
     return xqr->readRow();
 }
 
-std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column) {
+std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string_view &column) {
     if (query_result == nullptr || column.empty()) {
         return std::nullopt;
     }
@@ -453,7 +453,7 @@ std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const quer
     return std::make_optional(*std::get_if<std::string>(&v.value()));
 }
 
-std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column) {
+std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string_view &column) {
     if (query_result == nullptr || column.empty()) {
         return std::nullopt;
     }
@@ -465,7 +465,7 @@ std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query
     return std::make_optional(*std::get_if<int64_t>(&v.value()));
 }
 
-std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string &column) {
+std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string_view &column) {
     if (query_result == nullptr || column.empty()) {
         return std::nullopt;
     }
@@ -613,7 +613,7 @@ void *ngenxxJsonDecoderInit(const std::string &json) {
     return new NGenXX::Core::Json::Decoder(json);
 }
 
-void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string &k, void *const node) {
+void *ngenxxJsonDecoderReadNode(void *const decoder, const std::string_view &k, void *const node) {
     if (decoder == nullptr || k.empty()) {
         return nullptr;
     }

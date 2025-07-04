@@ -244,16 +244,16 @@ const cJSON *NGenXX::Core::Json::Decoder::reinterpretNode(void *const node) cons
     return static_cast<const cJSON *>(node);
 }
 
-void *NGenXX::Core::Json::Decoder::readNode(void *const node, const std::string &k) const
+void *NGenXX::Core::Json::Decoder::readNode(void *const node, const std::string_view &k) const
 {
     if (const auto cj = this->reinterpretNode(node); cj != nullptr) [[likely]]
     {
-        return cJSON_GetObjectItemCaseSensitive(cj, k.c_str());
+        return cJSON_GetObjectItemCaseSensitive(cj, k.data());
     }
     return nullptr;
 }
 
-void *NGenXX::Core::Json::Decoder::operator[](const std::string &k) const
+void *NGenXX::Core::Json::Decoder::operator[](const std::string_view &k) const
 {
     return this->readNode(nullptr, k);
 }

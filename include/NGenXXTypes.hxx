@@ -49,6 +49,11 @@ concept CharacterT =
 template<typename T>
 concept CStringT = std::is_same_v<T, const char*> || std::is_same_v<T, char*>;
 
+template<typename T>
+concept KeyType = std::convertible_to<T, std::string_view> || 
+                  std::convertible_to<T, std::string> ||
+                  std::convertible_to<T, const char*>;
+
 template<class T, class U>
 concept DerivedT = std::is_base_of_v<U, T>;
 

@@ -11,11 +11,11 @@ void *ngenxxStoreSqliteQueryDo(void *const conn, const std::string &sql);
 
 bool ngenxxStoreSqliteQueryReadRow(void *const query_result);
 
-std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string &column);
+std::optional<std::string> ngenxxStoreSqliteQueryReadColumnText(void *const query_result, const std::string_view &column);
 
-std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string &column);
+std::optional<int64_t> ngenxxStoreSqliteQueryReadColumnInteger(void *const query_result, const std::string_view &column);
 
-std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string &column);
+std::optional<double> ngenxxStoreSqliteQueryReadColumnFloat(void *const query_result, const std::string_view &column);
 
 void ngenxxStoreSqliteQueryDrop(void *const query_result);
 
