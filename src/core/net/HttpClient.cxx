@@ -178,7 +178,7 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(std::string_view url, cons
     fixedUrl = url;
     if (method == NGenXXNetHttpMethodGet && !params.empty())
     {
-        if (!checkUrlHasSearch(url))
+        if (!checkUrlHasSearch(fixedUrl) && !checkUrlHasSearch(params))
         {
             fixedUrl += "?";
         }
