@@ -16,8 +16,11 @@ namespace
 
     bool isBigInt(const cJSON *const cj)
     {
-        return isNum(cj) && (cj->valueint == INT_MAX && cj->valuedouble > INT_MAX) || 
-            (cj->valueint == INT_MIN && cj->valuedouble < INT_MIN);
+        return isNum(cj) && (
+            (cj->valueint == INT_MAX && cj->valuedouble > INT_MAX) 
+            ||
+            (cj->valueint == INT_MIN && cj->valuedouble < INT_MIN)
+        );
     }
 
     bool isFloat(const cJSON *const cj)
