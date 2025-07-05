@@ -72,10 +72,6 @@ if(ANDROID) # Android can not find built-in `ifaddrs.h`;
 endif()
 
 if(EMSCRIPTEN)
-    add_compile_options(
-        -Wno-error=conversion
-        -Wno-error=old-style-cast
-    )
     add_executable(${PROJECT_NAME} ${SRC_FILES})
     set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
     # WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
@@ -126,6 +122,15 @@ endif()
 if(USE_QJS)
     set(QJS_ROOT third_party/quickjs)
     add_subdirectory(${QJS_ROOT} quickjs-build)
+
+    if(TARGET quickjs)
+        target_compile_options(quickjs PRIVATE
+            -Wno-error=conversion
+            -Wno-error=old-style-cast
+            -Wno-shorten-64-to-32
+        )
+    endif()
+    
     list(APPEND INC_DIRS ${QJS_ROOT})
 endif()
 
