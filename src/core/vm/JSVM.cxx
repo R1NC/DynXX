@@ -331,10 +331,10 @@ JSValue NGenXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
         return JS_EXCEPTION;
     }
     
-    this->executor >> [&mtx = this->vmMutex, ctx = this->context, jPromise, jf = std::move(jf)] {
+    this->executor >> [&mtx = this->vmMutex, ctx = this->context, jPromise, cbk = std::move(jf)] {
         auto lock = std::lock_guard(mtx);
 
-        const auto jRet = jf();
+        const auto jRet = cbk();
 
         _callbackPromise(ctx, jPromise, jRet);
     };
@@ -342,50 +342,50 @@ JSValue NGenXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
     return jPromise->p;
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&f)
+JSValue NGenXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&vf)
 {
-    return this->newPromise([f = std::move(f)]() {
-        f();
+    return this->newPromise([cbk = std::move(vf)]() {
+        cbk();
         return JS_UNDEFINED;
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseBool(std::function<bool()> &&f)
+JSValue NGenXX::Core::VM::JSVM::newPromiseBool(std::function<bool()> &&bf)
 {
-    return this->newPromise([ctx = this->context, f = std::move(f)]{
-        const auto ret = f();
+    return this->newPromise([ctx = this->context, cbk = std::move(bf)]{
+        const auto ret = cbk();
         return JS_NewBool(ctx, ret);
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseInt32(std::function<int32_t()> &&f)
+JSValue NGenXX::Core::VM::JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
 {
-    return this->newPromise([ctx = this->context, f = std::move(f)]{
-        const auto ret = f();
+    return this->newPromise([ctx = this->context, cbk = std::move(i32f)]{
+        const auto ret = cbk();
         return JS_NewInt32(ctx, ret);
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseInt64(std::function<int64_t()> &&f)
+JSValue NGenXX::Core::VM::JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
 {
-    return this->newPromise([ctx = this->context, f = std::move(f)]{
-        const auto ret = f();
+    return this->newPromise([ctx = this->context, cbk = std::move(i64f)]{
+        const auto ret = cbk();
         return JS_NewInt64(ctx, ret);
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseFloat(std::function<double()> &&f)
+JSValue NGenXX::Core::VM::JSVM::newPromiseFloat(std::function<double()> &&ff)
 {
-    return this->newPromise([ctx = this->context, f = std::move(f)]{
-        const auto ret = f();
+    return this->newPromise([ctx = this->context, cbk = std::move(ff)]{
+        const auto ret = cbk();
         return JS_NewFloat64(ctx, ret);
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseString(std::function<const std::string()> &&f)
+JSValue NGenXX::Core::VM::JSVM::newPromiseString(std::function<const std::string()> &&sf)
 {
-    return this->newPromise([ctx = this->context, f = std::move(f)]{
-        const auto ret = f();
+    return this->newPromise([ctx = this->context, cbk = std::move(sf)]{
+        const auto ret = cbk();
         return JS_NewString(ctx, ret.c_str() != nullptr ? ret.c_str() : "");
     });
 }
