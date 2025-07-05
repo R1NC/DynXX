@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:">
+      location = "container:../../build.macOS/NGenXX.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:./NGenXX-wrapper.xcodeproj">
    </FileRef>
 </Workspace>
