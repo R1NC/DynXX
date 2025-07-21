@@ -52,7 +52,7 @@ namespace NGenXX::Core::Z {
     public:
         Zip() = delete;
 
-        explicit Zip(int mode, size_t bufferSize, int format);
+        explicit Zip(int mode, size_t bufferSize, int format) noexcept(false);
 
         Zip(const Zip &) = delete;
 
@@ -74,7 +74,7 @@ namespace NGenXX::Core::Z {
     public:
         UnZip() = delete;
 
-        explicit UnZip(size_t bufferSize, int format);
+        explicit UnZip(size_t bufferSize, int format) noexcept(false);
 
         UnZip(const UnZip &) = delete;
 

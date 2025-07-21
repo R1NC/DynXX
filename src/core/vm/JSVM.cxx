@@ -106,7 +106,11 @@ namespace
 
     Promise *_newPromise(JSContext *ctx)
     {
-        const auto jPromise = new Promise();
+        const auto jPromise = new(std::nothrow) Promise();
+        if (jPromise == nullptr) {
+            ngenxxLogPrint(NGenXXLogLevelX::Error, "new Promise failed");
+            return nullptr;
+        }
         jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
         if (JS_IsException(jPromise->p)) [[unlikely]]
         {

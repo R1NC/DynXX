@@ -610,7 +610,11 @@ std::optional<DictAny> ngenxxJsonToDictAny(const std::string &json) {
 }
 
 void *ngenxxJsonDecoderInit(const std::string &json) {
-    return new NGenXX::Core::Json::Decoder(json);
+    auto decoder = new(std::nothrow) NGenXX::Core::Json::Decoder(json);
+    if (decoder == nullptr) {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "new JsonDecoder failed");
+    }
+    return decoder;
 }
 
 void *ngenxxJsonDecoderReadNode(void *const decoder, std::string_view k, void *const node) {
