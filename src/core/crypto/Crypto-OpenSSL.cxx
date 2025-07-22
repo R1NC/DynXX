@@ -3,6 +3,9 @@
 #include <utility>
 #include <algorithm>
 #include <array>
+#if defined(__cpp_lib_ranges)
+#include <ranges>
+#endif
 
 #include <openssl/err.h>
 #include <openssl/rand.h>

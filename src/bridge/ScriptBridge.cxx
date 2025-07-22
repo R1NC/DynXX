@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <functional>
-#if defined(USE_STD_RANGES)
+#if defined(__cpp_lib_ranges)
 #include <ranges>
 #endif
 
@@ -20,7 +20,7 @@ namespace
         {
             return {};
         }
-#if defined(USE_STD_RANGES)
+#if defined(__cpp_lib_ranges)
         auto intV = bytes 
             | std::views::transform([](const auto b) { return static_cast<int>(b); })
             | std::ranges::to<std::vector>();
