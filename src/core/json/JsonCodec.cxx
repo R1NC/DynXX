@@ -184,7 +184,7 @@ std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json
         }
         else if (type == NGenXXJsonNodeTypeX::String)
         {
-            dict.emplace(k, wrapStr(node->valuestring));
+            dict.emplace(k, makeStr(node->valuestring));
         }
         else
         {
@@ -273,7 +273,7 @@ std::optional<std::string> NGenXX::Core::Json::Decoder::readString(void *const n
         }
         case NGenXXJsonNodeTypeX::String:
         {
-            return std::make_optional(wrapStr(cj->valuestring));
+            return std::make_optional(makeStr(cj->valuestring));
         }
         case NGenXXJsonNodeTypeX::Int32:
         {
@@ -316,7 +316,7 @@ std::optional<double> NGenXX::Core::Json::Decoder::readNumber(void *const node) 
     } 
     if (type == NGenXXJsonNodeTypeX::String)
     {
-        return std::make_optional(str2float64(wrapStr(cj->valuestring)));
+        return std::make_optional(str2float64(makeStr(cj->valuestring)));
     }
     ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
                 cj->string, cj->type);

@@ -32,12 +32,12 @@ namespace NGenXX::Core::Crypto {
     }
 
     namespace AES {
-        Bytes encrypt(const Bytes &in, const Bytes &key);
+        Bytes encrypt(BytesView in, BytesView key);
 
-        Bytes decrypt(const Bytes &in, const Bytes &key);
+        Bytes decrypt(BytesView in, BytesView key);
 
-        static constexpr auto checkGcmParams(const Bytes &in, const Bytes &key, const Bytes &initVector,
-                                             const Bytes &aad, const size_t tagBits) {
+        static constexpr auto checkGcmParams(BytesView in, BytesView key, BytesView initVector,
+                                             BytesView aad, const size_t tagBits) {
             const auto inBytes = in.data(), keyBytes = key.data(), initVectorBytes = initVector.data(), aadBytes = aad.
                     data();
             const auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
@@ -63,9 +63,9 @@ namespace NGenXX::Core::Crypto {
             return true;
         }
 
-        Bytes gcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, size_t tagBits);
+        Bytes gcmEncrypt(BytesView in, BytesView key, BytesView initVector, BytesView aad, size_t tagBits);
 
-        Bytes gcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, const Bytes &aad, size_t tagBits);
+        Bytes gcmDecrypt(BytesView in, BytesView key, BytesView initVector, BytesView aad, size_t tagBits);
     }
 
     namespace RSA {
@@ -80,9 +80,9 @@ namespace NGenXX::Core::Crypto {
             Codec(Codec &&other) noexcept;
             Codec &operator=(Codec &&other) noexcept;
         
-            explicit Codec(const Bytes &key, int padding);
+            explicit Codec(BytesView key, int padding);
         
-            virtual std::optional<Bytes> process(const Bytes &in) const = 0;
+            virtual std::optional<Bytes> process(BytesView in) const = 0;
         
             size_t outLen() const;
         
@@ -107,9 +107,9 @@ namespace NGenXX::Core::Crypto {
             Encrypt &operator=(Encrypt &&other) noexcept = default;
             ~Encrypt() = default;
         
-            explicit Encrypt(const Bytes &key, int padding);
+            explicit Encrypt(BytesView key, int padding);
         
-            std::optional<Bytes> process(const Bytes &in) const override;
+            std::optional<Bytes> process(BytesView in) const override;
         };
     
         class Decrypt final : public Codec
@@ -122,24 +122,24 @@ namespace NGenXX::Core::Crypto {
             Decrypt &operator=(Decrypt &&other) noexcept = default;
             ~Decrypt() = default;
         
-            explicit Decrypt(const Bytes &key, int padding);
+            explicit Decrypt(BytesView key, int padding);
         
-            std::optional<Bytes> process(const Bytes &in) const override;
+            std::optional<Bytes> process(BytesView in) const override;
         };
     }
 
     namespace Hash {
-        Bytes md5(const Bytes &in);
+        Bytes md5(BytesView in);
 
-        Bytes sha1(const Bytes &in);
+        Bytes sha1(BytesView in);
 
-        Bytes sha256(const Bytes &in);
+        Bytes sha256(BytesView in);
     }
 
     namespace Base64 {
-        Bytes encode(const Bytes &in, bool noNewLines = true);
+        Bytes encode(BytesView in, bool noNewLines = true);
 
-        Bytes decode(const Bytes &in, bool noNewLines = true);
+        Bytes decode(BytesView in, bool noNewLines = true);
     }
 }
 

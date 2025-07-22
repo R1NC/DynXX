@@ -101,7 +101,7 @@ bool NGenXX::Core::Crypto::rand(size_t len, byte *bytes)
 
 #pragma mark AES
 
-Bytes NGenXX::Core::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
+Bytes NGenXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
 {
     const auto in = inBytes.data(), key = keyBytes.data();
     const auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -136,7 +136,7 @@ Bytes NGenXX::Core::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyB
     return out;
 }
 
-Bytes NGenXX::Core::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
+Bytes NGenXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
 {
     const auto in = inBytes.data(), key = keyBytes.data();
     const auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -184,7 +184,7 @@ Bytes NGenXX::Core::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyB
 
 #pragma mark AES-GCM
 
-Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, size_t tagBits)
+Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
 {
     if (!checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
@@ -263,7 +263,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &k
     return out;
 }
 
-Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, size_t tagBits)
+Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
 {
     if (!checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
@@ -346,7 +346,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &k
 
 #pragma mark MD5
 
-Bytes NGenXX::Core::Crypto::Hash::md5(const Bytes &inBytes)
+Bytes NGenXX::Core::Crypto::Hash::md5(BytesView inBytes)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -385,7 +385,7 @@ Bytes NGenXX::Core::Crypto::Hash::md5(const Bytes &inBytes)
 
 #pragma mark SHA1
 
-Bytes NGenXX::Core::Crypto::Hash::sha1(const Bytes &inBytes)
+Bytes NGenXX::Core::Crypto::Hash::sha1(BytesView inBytes)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -427,7 +427,8 @@ Bytes NGenXX::Core::Crypto::Hash::sha1(const Bytes &inBytes)
 }
 
 #pragma mark SHA256
-Bytes NGenXX::Core::Crypto::Hash::sha256(const Bytes &inBytes)
+
+Bytes NGenXX::Core::Crypto::Hash::sha256(BytesView inBytes)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -498,7 +499,7 @@ std::string NGenXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPu
     return result; 
 }
 
-NGenXX::Core::Crypto::RSA::Codec::Codec(const Bytes &key, int padding) : padding(padding)
+NGenXX::Core::Crypto::RSA::Codec::Codec(BytesView key, int padding) : padding(padding)
 {
     this->bmem = BIO_new_mem_buf(key.data(), static_cast<int>(key.size()));
     if (!this->bmem) [[unlikely]]
@@ -558,7 +559,7 @@ std::size_t NGenXX::Core::Crypto::RSA::Codec::outLen() const
     return RSA_size(this->rsa);
 }
 
-NGenXX::Core::Crypto::RSA::Encrypt::Encrypt(const Bytes &key, int padding) : Codec(key, padding)
+NGenXX::Core::Crypto::RSA::Encrypt::Encrypt(BytesView key, int padding) : Codec(key, padding)
 {
     if (this->bmem == nullptr) [[unlikely]]
     {
@@ -571,7 +572,7 @@ NGenXX::Core::Crypto::RSA::Encrypt::Encrypt(const Bytes &key, int padding) : Cod
     }
 }
 
-std::optional<Bytes> NGenXX::Core::Crypto::RSA::Encrypt::process(const Bytes &in) const
+std::optional<Bytes> NGenXX::Core::Crypto::RSA::Encrypt::process(BytesView in) const
 {
     if (this->rsa == nullptr) [[unlikely]]
     {
@@ -586,7 +587,7 @@ std::optional<Bytes> NGenXX::Core::Crypto::RSA::Encrypt::process(const Bytes &in
     return std::make_optional(outBytes);
 }
 
-NGenXX::Core::Crypto::RSA::Decrypt::Decrypt(const Bytes &key, int padding) : Codec(key, padding)
+NGenXX::Core::Crypto::RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(key, padding)
 {
     if (this->bmem == nullptr) [[unlikely]]
     {
@@ -599,7 +600,7 @@ NGenXX::Core::Crypto::RSA::Decrypt::Decrypt(const Bytes &key, int padding) : Cod
     }
 }
 
-std::optional<Bytes> NGenXX::Core::Crypto::RSA::Decrypt::process(const Bytes &in) const
+std::optional<Bytes> NGenXX::Core::Crypto::RSA::Decrypt::process(BytesView in) const
 {
     if (this->rsa == nullptr) [[unlikely]]
     {
@@ -616,7 +617,7 @@ std::optional<Bytes> NGenXX::Core::Crypto::RSA::Decrypt::process(const Bytes &in
 
 #pragma mark Base64
 
-Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes, bool noNewLines)
+Bytes NGenXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -687,7 +688,7 @@ Bytes NGenXX::Core::Crypto::Base64::encode(const Bytes &inBytes, bool noNewLines
     return out;
 }
 
-Bytes NGenXX::Core::Crypto::Base64::decode(const Bytes &inBytes, bool noNewLines)
+Bytes NGenXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();

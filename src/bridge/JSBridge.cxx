@@ -95,17 +95,17 @@ void ngenxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &
 
 EXPORT_AUTO
 bool ngenxx_js_loadF(const char *file, bool is_module) {
-    return ngenxxJsLoadF(wrapStr(file), is_module);
+    return ngenxxJsLoadF(makeStr(file), is_module);
 }
 
 EXPORT_AUTO
 bool ngenxx_js_loadS(const char *script, const char *name, bool is_module) {
-    return ngenxxJsLoadS(wrapStr(script), wrapStr(name), is_module);
+    return ngenxxJsLoadS(makeStr(script), makeStr(name), is_module);
 }
 
 EXPORT_AUTO
 bool ngenxx_js_loadB(const byte *bytes, size_t len, bool is_module) {
-    return ngenxxJsLoadB(wrapBytes(bytes, len), is_module);
+    return ngenxxJsLoadB(makeBytes(bytes, len), is_module);
 }
 
 EXPORT_AUTO

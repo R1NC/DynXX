@@ -190,7 +190,7 @@ Bytes NGenXX::Core::Z::ZBase<T>::processDo()
     }
 
     auto outLen = this->bufferSize - (this->zs).avail_out;
-    return wrapBytes(this->outBuffer, outLen);
+    return makeBytes(this->outBuffer, outLen);
 }
 
 template <typename T>

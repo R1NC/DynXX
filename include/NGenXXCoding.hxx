@@ -7,13 +7,13 @@ std::string ngenxxCodingCaseUpper(std::string_view str);
 
 std::string ngenxxCodingCaseLower(std::string_view str);
 
-std::string ngenxxCodingHexBytes2str(const Bytes &bytes);
+std::string ngenxxCodingHexBytes2str(BytesView bytes);
 
 Bytes ngenxxCodingHexStr2bytes(const std::string &str);
 
 Bytes ngenxxCodingStr2bytes(std::string_view str);
 
-std::string ngenxxCodingBytes2str(const Bytes &bytes);
+std::string ngenxxCodingBytes2str(BytesView bytes);
 
 std::string ngenxxCodingStrTrim(std::string_view str);
 

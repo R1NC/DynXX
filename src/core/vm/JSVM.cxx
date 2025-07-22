@@ -312,7 +312,7 @@ std::optional<std::string> NGenXX::Core::VM::JSVM::callFunc(std::string_view fun
                 jRes = this->jAwait(jRes); // Handle promise if needed
             }
             const auto cS = JS_ToCString(this->context, jRes);
-            s = std::move(wrapStr(cS));
+            s = std::move(makeStr(cS));
             JS_FreeCString(this->context, cS);
         }
         JS_FreeValue(this->context, jRes);

@@ -165,7 +165,7 @@ std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::readCol
         switch(sqlite3_column_type(this->stmt, i))
         {
             case SQLITE_TEXT:
-                return std::make_optional(wrapStr(sqlite3_column_text(this->stmt, i)));
+                return std::make_optional(makeStr(sqlite3_column_text(this->stmt, i)));
             case SQLITE_INTEGER:
                 return sqlite3_column_int64(this->stmt, i);
             case SQLITE_FLOAT:

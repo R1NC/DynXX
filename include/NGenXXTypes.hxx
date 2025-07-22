@@ -9,6 +9,7 @@
 #include <string_view>
 #include <string>
 #include <optional>
+#include <span>
 #include <vector>
 #include <variant>
 #include <unordered_map>
@@ -215,9 +216,17 @@ inline auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const 
 
 #pragma mark Bytes Type
 
+using BytesView = std::span<const byte>;
 using Bytes = std::vector<byte>;
 
-inline Bytes wrapBytes(const byte *data, const size_t len) {
+inline BytesView makeBytesView(const byte *data, const size_t len) {
+    if (data == nullptr || len == 0) [[unlikely]] {
+        return {};
+    }
+    return {data, len};
+}
+
+inline Bytes makeBytes(const byte *data, const size_t len) {
     if (data == nullptr || len == 0) [[unlikely]] {
         return {};
     }
@@ -225,7 +234,7 @@ inline Bytes wrapBytes(const byte *data, const size_t len) {
 }
 
 template<CharacterT T>
-std::string wrapStr(const T *ptr) {
+std::string makeStr(const T *ptr) {
     if (ptr == nullptr) [[unlikely]] {
         return {};
     }

@@ -60,13 +60,13 @@ std::optional<std::string> ngenxxLuaCall(std::string_view f, std::string_view ps
 #if !defined(__EMSCRIPTEN__)
 EXPORT
 bool ngenxx_lua_loadF(const char *file) {
-    return ngenxxLuaLoadF(wrapStr(file));
+    return ngenxxLuaLoadF(makeStr(file));
 }
 #endif
 
 EXPORT
 bool ngenxx_lua_loadS(const char *script) {
-    return ngenxxLuaLoadS(wrapStr(script));
+    return ngenxxLuaLoadS(makeStr(script));
 }
 
 EXPORT

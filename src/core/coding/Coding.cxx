@@ -31,7 +31,7 @@ std::string NGenXX::Core::Coding::Case::lower(std::string_view str)
     return s;
 }
 
-std::string NGenXX::Core::Coding::Hex::bytes2str(const Bytes &bytes)
+std::string NGenXX::Core::Coding::Hex::bytes2str(BytesView bytes)
 {
     if (bytes.empty()) [[unlikely]]
     {
@@ -130,7 +130,7 @@ Bytes NGenXX::Core::Coding::Hex::str2bytes(const std::string &str)
 #endif
 }
 
-std::string NGenXX::Core::Coding::bytes2str(const Bytes &bytes)
+std::string NGenXX::Core::Coding::bytes2str(BytesView bytes)
 {
     return {bytes.begin(), bytes.end()};
 }

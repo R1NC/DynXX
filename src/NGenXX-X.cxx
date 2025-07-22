@@ -206,7 +206,7 @@ std::string ngenxxCodingCaseLower(std::string_view str) {
     return NGenXX::Core::Coding::Case::lower(str);
 }
 
-std::string ngenxxCodingHexBytes2str(const Bytes &bytes) {
+std::string ngenxxCodingHexBytes2str(BytesView bytes) {
     return NGenXX::Core::Coding::Hex::bytes2str(bytes);
 }
 
@@ -214,7 +214,7 @@ Bytes ngenxxCodingHexStr2bytes(const std::string &str) {
     return NGenXX::Core::Coding::Hex::str2bytes(str);
 }
 
-std::string ngenxxCodingBytes2str(const Bytes &bytes) {
+std::string ngenxxCodingBytes2str(BytesView bytes) {
     return NGenXX::Core::Coding::bytes2str(bytes);
 }
 
@@ -232,21 +232,21 @@ bool ngenxxCryptoRand(size_t len, byte *bytes) {
     return NGenXX::Core::Crypto::rand(len, bytes);
 }
 
-Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key) {
+Bytes ngenxxCryptoAesEncrypt(BytesView in, BytesView key) {
     return NGenXX::Core::Crypto::AES::encrypt(in, key);
 }
 
-Bytes ngenxxCryptoAesDecrypt(const Bytes &in, const Bytes &key) {
+Bytes ngenxxCryptoAesDecrypt(BytesView in, BytesView key) {
     return NGenXX::Core::Crypto::AES::decrypt(in, key);
 }
 
-Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, size_t tagBits,
-                                const Bytes &aad) {
+Bytes ngenxxCryptoAesGcmEncrypt(BytesView in, BytesView key, BytesView initVector, size_t tagBits,
+                                BytesView aad) {
     return NGenXX::Core::Crypto::AES::gcmEncrypt(in, key, initVector, aad, tagBits);
 }
 
-Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, size_t tagBits,
-                                const Bytes &aad) {
+Bytes ngenxxCryptoAesGcmDecrypt(BytesView in, BytesView key, BytesView initVector, size_t tagBits,
+                                BytesView aad) {
     return NGenXX::Core::Crypto::AES::gcmDecrypt(in, key, initVector, aad, tagBits);
 }
 
@@ -254,33 +254,33 @@ std::string ngenxxCryptoRsaGenKey(std::string_view base64, bool isPublic) {
     return NGenXX::Core::Crypto::RSA::genKey(base64, isPublic);
 }
 
-Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding) {
+Bytes ngenxxCryptoRsaEncrypt(BytesView in, BytesView key, NGenXXCryptoRSAPaddingX padding) {
     const auto enc = NGenXX::Core::Crypto::RSA::Encrypt(key, static_cast<int>(padding));
     return enc.process(in).value_or(Bytes{});
 }
 
-Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding) {
+Bytes ngenxxCryptoRsaDecrypt(BytesView in, BytesView key, NGenXXCryptoRSAPaddingX padding) {
     const auto dec = NGenXX::Core::Crypto::RSA::Decrypt(key, static_cast<int>(padding));
     return dec.process(in).value_or(Bytes{});
 }
 
-Bytes ngenxxCryptoHashMd5(const Bytes &in) {
+Bytes ngenxxCryptoHashMd5(BytesView in) {
     return NGenXX::Core::Crypto::Hash::md5(in);
 }
 
-Bytes ngenxxCryptoHashSha1(const Bytes &in) {
+Bytes ngenxxCryptoHashSha1(BytesView in) {
     return NGenXX::Core::Crypto::Hash::sha1(in);
 }
 
-Bytes ngenxxCryptoHashSha256(const Bytes &in) {
+Bytes ngenxxCryptoHashSha256(BytesView in) {
     return NGenXX::Core::Crypto::Hash::sha256(in);
 }
 
-Bytes ngenxxCryptoBase64Encode(const Bytes &in, bool noNewLines) {
+Bytes ngenxxCryptoBase64Encode(BytesView in, bool noNewLines) {
     return NGenXX::Core::Crypto::Base64::encode(in, noNewLines);
 }
 
-Bytes ngenxxCryptoBase64Decode(const Bytes &in, bool noNewLines) {
+Bytes ngenxxCryptoBase64Decode(BytesView in, bool noNewLines) {
     return NGenXX::Core::Crypto::Base64::decode(in, noNewLines);
 }
 

@@ -5,15 +5,15 @@
 
 bool ngenxxCryptoRand(size_t len, byte *bytes);
 
-Bytes ngenxxCryptoAesEncrypt(const Bytes &in, const Bytes &key);
+Bytes ngenxxCryptoAesEncrypt(BytesView in, BytesView key);
 
-Bytes ngenxxCryptoAesDecrypt(const Bytes &in, const Bytes &key);
+Bytes ngenxxCryptoAesDecrypt(BytesView in, BytesView key);
 
-Bytes ngenxxCryptoAesGcmEncrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, size_t tagBits,
-                                const Bytes &aad = {});
+Bytes ngenxxCryptoAesGcmEncrypt(BytesView in, BytesView key, BytesView initVector, size_t tagBits,
+                                BytesView aad = {});
 
-Bytes ngenxxCryptoAesGcmDecrypt(const Bytes &in, const Bytes &key, const Bytes &initVector, size_t tagBits,
-                                const Bytes &aad = {});
+Bytes ngenxxCryptoAesGcmDecrypt(BytesView in, BytesView key, BytesView initVector, size_t tagBits,
+                                BytesView aad = {});
 
 enum class NGenXXCryptoRSAPaddingX : int {
     PKCS1 = 1,
@@ -26,18 +26,18 @@ enum class NGenXXCryptoRSAPaddingX : int {
 
 std::string ngenxxCryptoRsaGenKey(std::string_view base64, bool isPublic);
 
-Bytes ngenxxCryptoRsaEncrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding);
+Bytes ngenxxCryptoRsaEncrypt(BytesView in, BytesView key, NGenXXCryptoRSAPaddingX padding);
 
-Bytes ngenxxCryptoRsaDecrypt(const Bytes &in, const Bytes &key, NGenXXCryptoRSAPaddingX padding);
+Bytes ngenxxCryptoRsaDecrypt(BytesView in, BytesView key, NGenXXCryptoRSAPaddingX padding);
 
-Bytes ngenxxCryptoHashMd5(const Bytes &in);
+Bytes ngenxxCryptoHashMd5(BytesView in);
 
-Bytes ngenxxCryptoHashSha1(const Bytes &in);
+Bytes ngenxxCryptoHashSha1(BytesView in);
 
-Bytes ngenxxCryptoHashSha256(const Bytes &in);
+Bytes ngenxxCryptoHashSha256(BytesView in);
 
-Bytes ngenxxCryptoBase64Encode(const Bytes &in, bool noNewLines = true);
+Bytes ngenxxCryptoBase64Encode(BytesView in, bool noNewLines = true);
 
-Bytes ngenxxCryptoBase64Decode(const Bytes &in, bool noNewLines = true);
+Bytes ngenxxCryptoBase64Decode(BytesView in, bool noNewLines = true);
 
 #endif // NGENXX_INCLUDE_CRYPTO_HXX_
