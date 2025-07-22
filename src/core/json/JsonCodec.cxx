@@ -332,6 +332,16 @@ void *NGenXX::Core::Json::Decoder::readChild(void *const node) const
     return nullptr;
 }
 
+size_t NGenXX::Core::Json::Decoder::readChildrenCount(void *const node) const
+{
+    if (const auto type = cJSONReadType(node); type != NGenXXJsonNodeTypeX::Object && type != NGenXXJsonNodeTypeX::Array) [[unlikely]]
+    {
+        return 0;
+    }
+    auto cj = this->reinterpretNode(node);
+    return cJSON_GetArraySize(cj);
+}
+
 void NGenXX::Core::Json::Decoder::readChildren(void *const node, std::function<void(size_t idx, void *const child)> &&callback) const
 {
     if (const auto type = cJSONReadType(node); type != NGenXXJsonNodeTypeX::Object && type != NGenXXJsonNodeTypeX::Array) [[unlikely]]

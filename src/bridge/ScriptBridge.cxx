@@ -98,6 +98,8 @@ namespace
         Bytes data;
         if (const auto byte_vNode = decoder[bytesK])
         {
+            const auto len = decoder.readChildrenCount(byte_vNode);
+            data.resize(len);
             decoder.readChildren(byte_vNode, 
                             [&data, &decoder](size_t, void *const child)
                             {
@@ -112,6 +114,8 @@ namespace
         std::vector<std::string> v;
         if (const auto str_vNode = decoder[strVK])
         {
+            const auto len = decoder.readChildrenCount(str_vNode);
+            v.resize(len);
             decoder.readChildren(str_vNode,
                              [&v, &decoder](size_t, void *const child)
                              {

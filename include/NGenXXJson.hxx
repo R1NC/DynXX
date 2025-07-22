@@ -35,6 +35,8 @@ std::optional<double> ngenxxJsonDecoderReadNumber(void *const decoder, void *con
 
 void *ngenxxJsonDecoderReadChild(void *const decoder, void *const node = nullptr);
 
+size_t ngenxxJsonDecoderReadChildrenCount(void *const decoder, void *const node = nullptr);
+
 void ngenxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void *child)> &&callback,
                                    void *const node = nullptr);
 

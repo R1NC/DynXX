@@ -649,6 +649,14 @@ void *ngenxxJsonDecoderReadChild(void *const decoder, void *const node) {
     return xdecoder->readChild(node);
 }
 
+size_t ngenxxJsonDecoderReadChildrenCount(void *const decoder, void *const node) {
+    if (decoder == nullptr) {
+        return 0;
+    }
+    const auto xdecoder = static_cast<NGenXX::Core::Json::Decoder *>(decoder);
+    return xdecoder->readChildrenCount(node);
+}
+
 void ngenxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void *child)> &&callback,
                                    void *const node) {
     if (decoder == nullptr) {

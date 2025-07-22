@@ -37,6 +37,8 @@ namespace NGenXX::Core::Json {
 
         void *readNext(void *const node) const;
 
+        size_t readChildrenCount(void *const node) const;
+
         void readChildren(void *const node, std::function<void(size_t idx, void *const child)> &&callback) const;
 
         void *readNode(void *const node, std::string_view k) const;
