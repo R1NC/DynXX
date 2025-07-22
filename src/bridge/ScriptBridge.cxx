@@ -99,7 +99,7 @@ namespace
         if (const auto byte_vNode = decoder[bytesK])
         {
             const auto len = decoder.readChildrenCount(byte_vNode);
-            data.resize(len);
+            data.reserve(len);
             decoder.readChildren(byte_vNode, 
                             [&data, &decoder](size_t, void *const child)
                             {
@@ -115,7 +115,7 @@ namespace
         if (const auto str_vNode = decoder[strVK])
         {
             const auto len = decoder.readChildrenCount(str_vNode);
-            v.resize(len);
+            v.reserve(len);
             decoder.readChildren(str_vNode,
                              [&v, &decoder](size_t, void *const child)
                              {
