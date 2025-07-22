@@ -137,6 +137,8 @@ namespace NGenXX::Core::Crypto {
     }
 
     namespace Base64 {
+        bool validate(std::string_view in);
+        
         Bytes encode(BytesView in, bool noNewLines = true);
 
         Bytes decode(BytesView in, bool noNewLines = true);

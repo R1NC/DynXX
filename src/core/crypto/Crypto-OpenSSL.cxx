@@ -1,6 +1,7 @@
 #include "Crypto.hxx"
 
 #include <utility>
+#include <algorithm>
 
 #include <openssl/err.h>
 #include <openssl/rand.h>
@@ -11,6 +12,7 @@
 #include <openssl/md5.h>
 
 #include <NGenXXLog.hxx>
+#include <NGenXXCoding.hxx>
 
 namespace
 {
@@ -84,6 +86,22 @@ namespace
     private:
         const size_t keyLen;
         EVP_CIPHER_CTX *ctx;
+    };
+
+    struct Base64CharValidator {
+        constexpr Base64CharValidator() {
+            for (int i = 'A'; i <= 'Z'; ++i) validTable[i] = true;
+            for (int i = 'a'; i <= 'z'; ++i) validTable[i] = true;
+            for (int i = '0'; i <= '9'; ++i) validTable[i] = true;
+            validTable['+'] = validTable['/'] = validTable['='] = true;
+        }
+        
+        constexpr bool operator()(char c) const {
+            return validTable[static_cast<unsigned char>(c)];
+        }
+
+    private:
+        std::array<bool, 256> validTable{};
     };
 }
 
@@ -469,8 +487,21 @@ Bytes NGenXX::Core::Crypto::Hash::sha256(BytesView inBytes)
 #pragma mark RSA
 
 std::string NGenXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPublic) 
-{ 
-    constexpr auto chunkSize = 64; 
+{
+    if (base64.empty()) [[unlikely]]
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "RSA genKey: empty base64 input");
+        return {};
+    }
+    
+    const auto cleanedBase64 = ngenxxCodingStrTrim(base64);
+    if (!Base64::validate(cleanedBase64)) [[unlikely]]
+    {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "RSA genKey: invalid cleanedBase64");
+        return {};
+    }
+    
+    constexpr auto chunkSize = 64uz; 
     using namespace std::string_view_literals;
     
     constexpr auto divider = "-----"sv;
@@ -480,18 +511,21 @@ std::string NGenXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPu
     constexpr auto newLineStr = "\n"sv;
     const auto mid = isPublic ? "PUBLIC"sv : "RSA PRIVATE"sv;
     
+    const auto numChunks = (cleanedBase64.size() + chunkSize - 1) / chunkSize;
     const auto headerSize = divider.size() + beginStr.size() + mid.size() + keyStr.size() + divider.size() + newLineStr.size(); 
     const auto footerSize = divider.size() + endStr.size() + mid.size() + keyStr.size() + divider.size() + newLineStr.size(); 
-    const auto contentSize = base64.size() + (base64.size() / chunkSize) + (base64.size() % chunkSize ? 1 : 0); 
+    const auto contentSize = cleanedBase64.size() + numChunks * newLineStr.size();
     
     std::string result; 
     result.reserve(headerSize + contentSize + footerSize); 
     
     result.append(divider).append(beginStr).append(mid).append(keyStr).append(divider).append(newLineStr); 
     
-    for (size_t i = 0; i < base64.size(); i += chunkSize) 
+    for (size_t i = 0; i < cleanedBase64.size(); i += chunkSize) 
     { 
-        result.append(base64.substr(i, chunkSize)).append(newLineStr); 
+        const auto remainingSize = cleanedBase64.size() - i;
+        const auto currentChunkSize = std::min(chunkSize, remainingSize);
+        result.append(cleanedBase64.substr(i, currentChunkSize)).append(newLineStr); 
     } 
     
     result.append(divider).append(endStr).append(mid).append(keyStr).append(divider).append(newLineStr); 
@@ -616,6 +650,29 @@ std::optional<Bytes> NGenXX::Core::Crypto::RSA::Decrypt::process(BytesView in) c
 }
 
 #pragma mark Base64
+
+bool NGenXX::Core::Crypto::Base64::validate(std::string_view in)
+{
+    if (in.empty() || in.size() % 4 != 0) [[unlikely]]
+    {
+        return false;
+    }
+    
+    static constexpr Base64CharValidator validator{};
+    
+#if defined(__cpp_lib_ranges)
+    return std::ranges::all_of(in, validator);
+#else
+    for (const auto c : in)
+    {
+        if (!validator(c)) [[unlikely]]
+        {
+            return false;
+        }
+    }
+    return true;
+#endif
+}
 
 Bytes NGenXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
 {
