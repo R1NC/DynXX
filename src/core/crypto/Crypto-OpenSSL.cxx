@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <algorithm>
+#include <array>
 
 #include <openssl/err.h>
 #include <openssl/rand.h>
