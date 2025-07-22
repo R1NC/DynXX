@@ -93,19 +93,24 @@ namespace
     };
 
     struct Base64CharValidator {
-        constexpr Base64CharValidator() {
-            for (int i = 'A'; i <= 'Z'; ++i) validTable[i] = true;
-            for (int i = 'a'; i <= 'z'; ++i) validTable[i] = true;
-            for (int i = '0'; i <= '9'; ++i) validTable[i] = true;
-            validTable['+'] = validTable['/'] = validTable['='] = true;
+        static constexpr size_t charIdx(char c) noexcept {
+            //The range of byte(unsigned char) is just [0, 255], same as the size of validTable!
+            return static_cast<byte>(c);
         }
         
-        constexpr bool operator()(char c) const {
-            return validTable[static_cast<unsigned char>(c)];
+        static constexpr std::array<bool, 256> createValidTable() noexcept {
+            std::array<bool, 256> table{};
+            constexpr const std::string_view validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+            for (const auto c : validChars) {
+                table[charIdx(c)] = true;
+            }
+            return table;
         }
-
-    private:
-        std::array<bool, 256> validTable{};
+        
+        constexpr bool operator()(char c) const noexcept {
+            static const auto table = createValidTable();
+            return table[charIdx(c)];
+        }
     };
 }
 
