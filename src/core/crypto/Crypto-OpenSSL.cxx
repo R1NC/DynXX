@@ -501,36 +501,36 @@ std::string NGenXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPu
         return {};
     }
     
-    constexpr auto chunkSize = 64uz; 
     using namespace std::string_view_literals;
     
-    constexpr auto divider = "-----"sv;
-    constexpr auto beginStr = "BEGIN "sv;
-    constexpr auto endStr = "END "sv;
-    constexpr auto keyStr = " KEY"sv;
-    constexpr auto newLineStr = "\n"sv;
-    constexpr auto publicStr = "PUBLIC"sv;
-    constexpr auto privateStr = "PRIVATE"sv;
-    
-    const auto mid = isPublic ? publicStr : privateStr;
-    const auto numChunks = (cleanedBase64.size() + chunkSize - 1) / chunkSize;
-    const auto headerSize = divider.size() + beginStr.size() + mid.size() + keyStr.size() + divider.size() + newLineStr.size(); 
-    const auto footerSize = divider.size() + endStr.size() + mid.size() + keyStr.size() + divider.size() + newLineStr.size(); 
-    const auto contentSize = cleanedBase64.size() + numChunks * newLineStr.size();
+    constexpr auto ChunkSize = 64uz; 
+    constexpr auto DividerS = "-----"sv;
+    constexpr auto BeginS = "BEGIN "sv;
+    constexpr auto EndS = "END "sv;
+    constexpr auto KeyS = " KEY"sv;
+    constexpr auto NewLineS = "\n"sv;
+    constexpr auto PublicS = "PUBLIC"sv;
+    constexpr auto PrivateS = "PRIVATE"sv;
+
+    const auto mid = isPublic ? PublicS : PrivateS;
+    const auto numChunks = (cleanedBase64.size() + ChunkSize - 1) / ChunkSize;
+    const auto headerSize = DividerS.size() + BeginS.size() + mid.size() + KeyS.size() + DividerS.size() + NewLineS.size(); 
+    const auto footerSize = DividerS.size() + EndS.size() + mid.size() + KeyS.size() + DividerS.size() + NewLineS.size(); 
+    const auto contentSize = cleanedBase64.size() + numChunks * NewLineS.size();
     
     std::string result; 
     result.reserve(headerSize + contentSize + footerSize); 
     
-    result.append(divider).append(beginStr).append(mid).append(keyStr).append(divider).append(newLineStr); 
+    result.append(DividerS).append(BeginS).append(mid).append(KeyS).append(DividerS).append(NewLineS); 
     
-    for (size_t i = 0; i < cleanedBase64.size(); i += chunkSize) 
+    for (size_t i = 0; i < cleanedBase64.size(); i += ChunkSize) 
     { 
         const auto remainingSize = cleanedBase64.size() - i;
-        const auto currentChunkSize = std::min(chunkSize, remainingSize);
-        result.append(cleanedBase64.substr(i, currentChunkSize)).append(newLineStr); 
+        const auto currentChunkSize = std::min(ChunkSize, remainingSize);
+        result.append(cleanedBase64.substr(i, currentChunkSize)).append(NewLineS); 
     } 
     
-    result.append(divider).append(endStr).append(mid).append(keyStr).append(divider).append(newLineStr); 
+    result.append(DividerS).append(EndS).append(mid).append(KeyS).append(DividerS).append(NewLineS); 
     
     return result; 
 }
