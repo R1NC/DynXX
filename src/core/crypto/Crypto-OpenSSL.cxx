@@ -107,7 +107,7 @@ namespace
             return table;
         }
         
-        constexpr bool operator()(char c) const noexcept {
+        bool operator()(char c) const noexcept {
             static const auto table = createValidTable();
             return table[charIdx(c)];
         }
