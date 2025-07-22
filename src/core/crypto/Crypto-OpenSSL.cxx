@@ -509,8 +509,10 @@ std::string NGenXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPu
     constexpr auto endStr = "END "sv;
     constexpr auto keyStr = " KEY"sv;
     constexpr auto newLineStr = "\n"sv;
-    const auto mid = isPublic ? "PUBLIC"sv : "RSA PRIVATE"sv;
+    constexpr auto publicStr = "PUBLIC"sv;
+    constexpr auto privateStr = "PRIVATE"sv;
     
+    const auto mid = isPublic ? publicStr : privateStr;
     const auto numChunks = (cleanedBase64.size() + chunkSize - 1) / chunkSize;
     const auto headerSize = divider.size() + beginStr.size() + mid.size() + keyStr.size() + divider.size() + newLineStr.size(); 
     const auto footerSize = divider.size() + endStr.size() + mid.size() + keyStr.size() + divider.size() + newLineStr.size(); 
