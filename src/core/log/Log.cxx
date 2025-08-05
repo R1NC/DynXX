@@ -9,6 +9,8 @@
 #include <android/log.h>
 #elif defined(__OHOS__)
 #include <hilog/log.h>
+#elif defined(__EMSCRIPTEN__)
+#include <emscripten/emscripten.h>
 #endif
 
 #if defined(USE_SPDLOG)
@@ -45,6 +47,14 @@ namespace
         OH_LOG_Print(LOG_APP, static_cast<LogLevel>(level), 0xC0DE, TAG, "%{public}.*s", static_cast<int>(content.length()), content.data());
 #elif defined(__APPLE__)
         _ngenxx_log_apple(content.data());
+#elif defined(__EMSCRIPTEN__)
+        EM_ASM({
+            var tag = UTF8ToString($0);
+            var level = $1;
+            var msg = UTF8ToString($2);
+            var txt = tag + "_" + level + " -> " + msg;
+            console.log(txt);
+        }, tag, level, ch);
 #else
         std::cout << TAG << "_" << level << " -> " << content << std::endl;
 #endif
