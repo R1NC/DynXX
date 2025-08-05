@@ -54,7 +54,7 @@ namespace
             var msg = UTF8ToString($2);
             var txt = tag + "_" + level + " -> " + msg;
             console.log(txt);
-        }, tag, level, ch);
+        }, TAG, level, content);
 #else
         std::cout << TAG << "_" << level << " -> " << content << std::endl;
 #endif
