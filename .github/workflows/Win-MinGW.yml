@@ -26,7 +26,7 @@ jobs:
 
       - name: Install OpenSSL
         run: |
-          choco install openssl
+          choco install openssl.light -y --no-progress
           echo "OPENSSL_ROOT_DIR=C:\Program Files\OpenSSL" >> $env:GITHUB_ENV
           echo "OPENSSL_LIBRARIES=C:\Program Files\OpenSSL\lib" >> $env:GITHUB_ENV
           echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
