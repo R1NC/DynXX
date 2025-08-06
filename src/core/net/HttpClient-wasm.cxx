@@ -126,14 +126,14 @@ NGenXXHttpResponse NGenXX::Core::Net::WasmHttpClient::request(const std::string_
     }
             
     auto const fetch = emscripten_fetch(&attr, fullUrl.c_str());
-            
-    if (fetch) {
-        parseResponse(fetch, response);
-
-        emscripten_fetch_close(fetch);
-    } else {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "WasmHttpClient.request failed: fetch returned null");
+    if (!fetch) [[unlikely]] {
+        ngenxxLogPrint(NGenXXLogLevelX::Error, "WasmHttpClient.request failed");
+        return response;
     }
+            
+    parseResponse(fetch, response);
+
+    emscripten_fetch_close(fetch);
             
     ngenxxLogPrintF(NGenXXLogLevelX::Debug, "WasmHttpClient.request response code: {}", response.code);
             
