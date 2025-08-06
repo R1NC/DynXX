@@ -59,8 +59,6 @@ endif()
 set(USE_ADA FALSE)
 checkAppleVersionLimit("16.3" "13.3" USE_ADA)
 if(USE_ADA)
-    option(USE_ADA "Use Ada" OFF)
-else()
     add_definitions(-DUSE_ADA)
 endif()
 
