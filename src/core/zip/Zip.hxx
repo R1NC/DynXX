@@ -92,6 +92,8 @@ namespace NGenXX::Core::Z {
         void processImp();
     };
 
+#if !defined(__EMSCRIPTEN__)
+
     bool zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream);
 
     bool unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream);
@@ -99,6 +101,8 @@ namespace NGenXX::Core::Z {
     bool zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile);
 
     bool unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile);
+
+#endif
 
     Bytes zip(int mode, size_t bufferSize, int format, const Bytes &bytes);
 

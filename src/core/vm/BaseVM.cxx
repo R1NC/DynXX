@@ -1,3 +1,5 @@
+#if defined(USE_QJS) || defined(USE_LUA)
+
 #include "BaseVM.hxx"
 
 #include <NGenXXLog.hxx>
@@ -32,3 +34,5 @@ NGenXX::Core::VM::BaseVM::~BaseVM()
 {
     this->active = false;
 }
+
+#endif

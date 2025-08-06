@@ -22,11 +22,13 @@ const char *ngenxx_get_version() {
     return NGenXX::Core::Util::Type::copyStr(s);
 }
 
+#if defined(USE_DB) || defined(USE_KV)
 EXPORT_AUTO
 const char *ngenxx_root_path() {
     const auto s = ngenxxRootPath();
     return NGenXX::Core::Util::Type::copyStr(s);
 }
+#endif
 
 EXPORT
 bool ngenxx_init(const char *root) {
@@ -286,6 +288,8 @@ const char *ngenxx_net_http_request(const char *url, const char *params, int met
     return NGenXX::Core::Util::Type::copyStr(s.value_or(""));
 }
 
+#if defined(USE_CURL)
+
 EXPORT_AUTO
 bool ngenxx_net_http_download(const char *url, const char *file_path, size_t timeout) {
     if (url == nullptr || file_path == nullptr) {
@@ -294,7 +298,11 @@ bool ngenxx_net_http_download(const char *url, const char *file_path, size_t tim
     return ngenxxNetHttpDownload(url, makeStr(file_path), timeout);
 }
 
+#endif
+
 #pragma mark Store.SQLite
+
+#if defined(USE_DB)
 
 EXPORT_AUTO
 void *ngenxx_store_sqlite_open(const char *_id) {
@@ -359,7 +367,11 @@ void ngenxx_store_sqlite_close(void *const conn) {
     ngenxxStoreSqliteClose(conn);
 }
 
+#endif
+
 #pragma mark Store.KV
+
+#if defined(USE_KV)
 
 EXPORT_AUTO
 void *ngenxx_store_kv_open(const char *_id) {
@@ -451,6 +463,8 @@ EXPORT_AUTO
 void ngenxx_store_kv_close(void *const conn) {
     ngenxxStoreKvClose(conn);
 }
+
+#endif
 
 #pragma mark Json.Decoder
 
@@ -558,6 +572,8 @@ void ngenxx_z_unzip_release(void *const unzip) {
     ngenxxZUnzipRelease(unzip);
 }
 
+#if !defined(__EMSCRIPTEN__)
+
 EXPORT_AUTO
 bool ngenxx_z_cfile_zip(int mode, size_t bufferSize, int format, void *const cFILEIn, void *const cFILEOut) {
     return ngenxxZCFileZip(static_cast<std::FILE *>(cFILEIn), static_cast<std::FILE *>(cFILEOut),
@@ -583,6 +599,8 @@ bool ngenxx_z_cxxstream_unzip(size_t bufferSize, int format, void *const cxxStre
     return ngenxxZCxxStreamUnzip(static_cast<std::istream *>(cxxStreamIn), static_cast<std::ostream *>(cxxStreamOut),
                                  bufferSize, static_cast<NGenXXZFormatX>(format));
 }
+
+#endif
 
 EXPORT_AUTO
 const byte *ngenxx_z_bytes_zip(int mode, size_t bufferSize, int format, const byte *inBytes, size_t inLen,

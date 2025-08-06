@@ -1,3 +1,5 @@
+#if defined(USE_KV)
+
 #include "KV.hxx"
 
 #include <NGenXXLog.hxx>
@@ -129,3 +131,5 @@ NGenXX::Core::Store::KV::Connection::~Connection()
     this->kv->close();
     this->kv = nullptr;
 }
+
+#endif

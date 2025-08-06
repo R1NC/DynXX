@@ -1,3 +1,5 @@
+#if defined(USE_QJS) || defined(USE_LUA)
+
 #include "ScriptBridge.hxx"
 
 #include <algorithm>
@@ -1305,3 +1307,5 @@ std::string ngenxx_z_bytes_unzipS(const char *json)
     const auto outBytes = ngenxxZBytesUnzip(in, bufferSize.value(), format.value());
     return bytes2json(outBytes);
 }
+
+#endif

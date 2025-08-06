@@ -53,6 +53,8 @@ namespace {
         return true;
     }
 
+#if !defined(__EMSCRIPTEN__)
+
     template <typename T>
     bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Core::Z::ZBase<T> &zb)
     {
@@ -96,6 +98,8 @@ namespace {
             zb
         );
     }
+
+#endif
 
     template <typename T>
     Bytes processBytes(size_t bufferSize, const Bytes &in, NGenXX::Core::Z::ZBase<T> &zb)
@@ -254,6 +258,8 @@ NGenXX::Core::Z::UnZip::~UnZip()
     inflateEnd(&this->zs);
 }
 
+#if !defined(__EMSCRIPTEN__)
+
 #pragma mark Cxx stream
 
 bool NGenXX::Core::Z::zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
@@ -281,6 +287,8 @@ bool NGenXX::Core::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, st
     UnZip unzip(bufferSize, format);
     return processCFILE(bufferSize, inFile, outFile, unzip);
 }
+
+#endif
 
 #pragma mark Bytes
 

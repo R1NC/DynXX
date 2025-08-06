@@ -1,3 +1,5 @@
+#if defined(USE_CURL)
+
 #include "HttpClient.hxx"
 
 #include <algorithm>
@@ -255,3 +257,5 @@ bool NGenXX::Core::Net::HttpClient::handleSSL(CURL * curl, std::string_view url)
     }
     return true;
 }
+
+#endif

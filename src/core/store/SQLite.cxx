@@ -1,3 +1,5 @@
+#if defined(USE_DB)
+
 #include "SQLite.hxx"
 
 #include <NGenXXLog.hxx>
@@ -188,3 +190,5 @@ NGenXX::Core::Store::SQLite::Connection::QueryResult::~QueryResult()
         sqlite3_finalize(this->stmt);
     }
 }
+
+#endif

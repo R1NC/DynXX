@@ -3,9 +3,6 @@
 #include <memory>
 
 #include <NGenXX.hxx>
-#include "core/net/HttpClient.hxx"
-#include "core/store/SQLite.hxx"
-#include "core/store/KV.hxx"
 #include "core/json/JsonCodec.hxx"
 #include "core/zip/Zip.hxx"
 #include "core/coding/Coding.hxx"
@@ -13,25 +10,54 @@
 #include "core/device/Device.hxx"
 #include "core/log/Log.hxx"
 
+#if defined(USE_CURL)
+#include "core/net/HttpClient.hxx"
+#else
+#include "core/net/HttpClient-wasm.hxx"
+#endif
+
 #include <NGenXXMacro.hxx>
+
 #if defined(USE_LUA)
 #include "bridge/LuaBridge.hxx"
 #endif
+
 #if defined(USE_QJS)
 #include "bridge/JSBridge.hxx"
 #endif
+
+#if defined(USE_DB)
+#include "core/store/SQLite.hxx"
+#endif
+
+#if defined(USE_KV)
+#include "core/store/KV.hxx"
+#endif
+
 #if defined(USE_STD_CHAR_CONV_INT)
 #include <charconv>
 #endif
+
 #endif
 
 namespace {
     auto constexpr VERSION = "1.0.0";
 
+#if defined(USE_CURL)
     std::unique_ptr<NGenXX::Core::Net::HttpClient> _http_client = nullptr;
+#endif
+
+#if defined(USE_DB)
     std::unique_ptr<NGenXX::Core::Store::SQLite> _sqlite = nullptr;
+#endif
+
+#if defined(USE_KV)
     std::unique_ptr<NGenXX::Core::Store::KV> _kv = nullptr;
+#endif
+
+#if defined(USE_KV) || defined(USE_DB)
     std::unique_ptr<const std::string> _root = nullptr;
+#endif
 
 #if defined(USE_STD_CHAR_CONV_INT)
     template <NumberT T>
@@ -110,14 +136,17 @@ std::string ngenxxGetVersion() {
     return VERSION;
 }
 
+#if defined(USE_KV) || defined(USE_DB)
 std::string ngenxxRootPath() {
     if (!_root) {
         return {};
     }
     return *_root;
 }
+#endif
 
 bool ngenxxInit(const std::string &root) {
+#if defined(USE_KV) || defined(USE_DB)
     if (_root) {
         return true;
     }
@@ -125,32 +154,59 @@ bool ngenxxInit(const std::string &root) {
         return false;
     }
     _root = std::make_unique<const std::string>(root);
+#endif
+    
+#if defined(USE_DB)
     _sqlite = std::make_unique<NGenXX::Core::Store::SQLite>();
+#endif
+
+#if defined(USE_KV)
     _kv = std::make_unique<NGenXX::Core::Store::KV>(*_root);
+#endif
+
+#if defined(USE_CURL)
     _http_client = std::make_unique<NGenXX::Core::Net::HttpClient>();
+#endif
+
 #if defined(USE_LUA)
     ngenxx_lua_init();
 #endif
+
 #if defined(USE_QJS)
     ngenxx_js_init();
 #endif
+
     return true;
 }
 
 void ngenxxRelease() {
+#if defined(USE_KV) || defined(USE_DB)
     if (!_root) {
         return;
     }
     _root.reset();
+#endif
+
+#if defined(USE_CURL)
     _http_client.reset();
+#endif
+
+#if defined(USE_DB)
     _sqlite->closeAll();
     _sqlite.reset();
+#endif
+
+#if defined(USE_KV)
     _kv->closeAll();
     _kv.reset();
+#endif
+
     ngenxxLogSetCallback(nullptr);
+
 #if defined(USE_LUA)
     ngenxx_lua_release();
 #endif
+
 #if defined(USE_QJS)
     ngenxx_js_release();
 #endif
@@ -297,10 +353,16 @@ NGenXXHttpResponse ngenxxNetHttpRequest(std::string_view url,
                                         const std::FILE *cFILE, size_t fileSize,
                                         size_t timeout) {
     NGenXXHttpResponse rsp;
-    if (!_http_client || url.empty()) {
+#if defined(USE_CURL)
+    if (!_http_client) {
+        return rsp;
+    }
+#endif
+    if (url.empty()) {
         return rsp;
     }
 
+#if defined(USE_CURL)
     std::vector<NGenXX::Core::Net::HttpFormField> vFormFields;
     auto fieldNameCount = formFieldNameV.size();
     if (fieldNameCount > 0) {
@@ -317,6 +379,9 @@ NGenXXHttpResponse ngenxxNetHttpRequest(std::string_view url,
 
     return _http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize,
                                  timeout);
+#else
+    return NGenXX::Core::Net::WasmHttpClient::request(url, static_cast<int>(method), headerV, params, rawBody, timeout);
+#endif
 }
 
 std::optional<std::string> NGenXXHttpResponse::toJson() const {
@@ -396,14 +461,18 @@ NGenXXHttpResponse ngenxxNetHttpRequest(std::string_view url,
                                 cFILE, fileSize, timeout);
 }
 
+#if defined(USE_CURL)
 bool ngenxxNetHttpDownload(std::string_view url, const std::string &filePath, size_t timeout) {
     if (!_http_client || url.empty() || filePath.empty()) {
         return false;
     }
     return _http_client->download(url, filePath, timeout);
 }
+#endif
 
 #pragma mark Store.SQLite
+
+#if defined(USE_DB)
 
 void *ngenxxStoreSqliteOpen(const std::string &_id) {
     if (!_sqlite || !_root || _id.empty()) {
@@ -492,7 +561,11 @@ void ngenxxStoreSqliteClose(void *const conn) {
     delete xconn;*/
 }
 
+#endif
+
 #pragma mark Store.KV
+
+#if defined(USE_KV)
 
 void *ngenxxStoreKvOpen(const std::string &_id) {
     if (!_kv || _id.empty()) {
@@ -590,6 +663,8 @@ void ngenxxStoreKvClose(void *const conn) {
     const auto xconn = static_cast<NGenXX::Core::Store::KV::Connection *>(conn);
     delete xconn;*/
 }
+
+#endif
 
 #pragma mark Json
 
@@ -768,6 +843,8 @@ void ngenxxZUnzipRelease(void *const unzip) {
     delete xunzip;
 }
 
+#if !defined(__EMSCRIPTEN__)
+
 bool ngenxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut, const NGenXXZipCompressModeX mode, size_t bufferSize,
                      const NGenXXZFormatX format) {
     if (bufferSize == 0) {
@@ -811,6 +888,8 @@ bool ngenxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut
     }
     return NGenXX::Core::Z::unzip(bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
 }
+
+#endif
 
 Bytes ngenxxZBytesZip(const Bytes &inBytes, const NGenXXZipCompressModeX mode, size_t bufferSize,
                       const NGenXXZFormatX format) {

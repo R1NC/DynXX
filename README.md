@@ -1,11 +1,11 @@
 # NGenXX
 
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Android-Mac.yml?branch=main&label=Build%20for%20Android%20on%20macOS&logo=android&logoColor=3DDC84" height="22px"/>][41] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Android-Ubuntu.yml?branch=main&label=Build%20for%20Android%20on%20Ubuntu&logo=android&logoColor=3DDC84" height="22px"/>][32]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/iOS.yml?branch=main&label=Build%20for%20iOS&logo=Apple&logoColor=white" height="22px"/>][33] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/macOS.yml?branch=main&label=Build%20for%20macOS&logo=Apple&logoColor=white" height="22px"/>][34]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/HarmonyOS-Mac.yml?branch=main&label=Build%20for%20HarmonyOS%20on%20macOS&logo=Huawei&logoColor=FF0000" height="22px"/>][43]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Win-MSVC.yml?branch=main&label=Build%20for%20Windows%20with%20MSVC&logo=gitforwindows&logoColor=0078D4" height="22px"/>][35] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Win-MinGW.yml?branch=main&label=Build%20for%20Windows%20with%20MinGW&logo=gitforwindows&logoColor=0078D4" height="22px"/>][36]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/WASM-Mac.yml?branch=main&label=Build%20for%20WASM%20on%20macOS&logo=WebAssembly&logoColor=654FF0" height="22px"/>][38] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/WASM-Ubuntu.yml?branch=main&label=Build%20for%20WASM%20on%20Ubuntu&logo=WebAssembly&logoColor=654FF0" height="22px"/>][42]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Linux-Ubuntu.yml?branch=main&label=Build%20for%20Linux%20on%20Ubuntu&logo=Linux&logoColor=FBB726" height="22px"/>][37]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Android-Mac.yml?branch=main&label=Build%20for%20Android%20on%20macOS&logo=android&logoColor=3DDC84"/>][41] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Android-Ubuntu.yml?branch=main&label=Build%20for%20Android%20on%20Ubuntu&logo=android&logoColor=3DDC84"/>][32]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/iOS.yml?branch=main&label=Build%20for%20iOS&logo=Apple&logoColor=white"/>][33] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/macOS.yml?branch=main&label=Build%20for%20macOS&logo=Apple&logoColor=white"/>][34]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/HarmonyOS-Mac.yml?branch=main&label=Build%20for%20HarmonyOS%20on%20macOS&logo=Huawei&logoColor=FF0000"/>][43]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Win-MSVC.yml?branch=main&label=Build%20for%20Windows%20with%20MSVC&logo=gitforwindows&logoColor=0078D4"/>][35] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Win-MinGW.yml?branch=main&label=Build%20for%20Windows%20with%20MinGW&logo=gitforwindows&logoColor=0078D4"/>][36]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/WASM-Mac.yml?branch=main&label=Build%20for%20WASM%20on%20macOS&logo=WebAssembly&logoColor=654FF0"/>][38] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/WASM-Ubuntu.yml?branch=main&label=Build%20for%20WASM%20on%20Ubuntu&logo=WebAssembly&logoColor=654FF0"/>][42]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Linux-Ubuntu.yml?branch=main&label=Build%20for%20Linux%20on%20Ubuntu&logo=Linux&logoColor=FBB726"/>][37]  
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
@@ -27,21 +27,22 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 | | Android | iOS | HarmonyOS  | Windows | macOS | Linux | WASM |
 | :-- | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
-| Lua Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|
-| JS Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
-| Network |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_exclamation_mark:|
-| SQLite |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
-| Key-Value Store |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
+| Lua Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:o:|
+| JS Runtime |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:o:|
+| Network |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|
+| SQLite |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:x:|
+| Key-Value Store |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:x:|
 | JSON Codec |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
 | Crypto |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
 | Zip |:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|
-| Device Info |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:hammer:|:heavy_check_mark:|:hammer:|:grey_question:|
-| Log |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:grey_question:|
+| Device Info |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:hammer:|:heavy_check_mark:|:hammer:|:x:|
+| Log |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:grey_exclamation:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|
 
 * :grey_question: : Unknown;
-* :o: : Not supported;
+* :x: : Not supported;
+* :o: : Limited supported;
 * :hammer: : Under developing;
-* :x: : Failed to compile;
+* :interrobang: : Failed to compile;
 * :grey_exclamation: : Succeed to compile, not tested;
 * :heavy_exclamation_mark: : With running error;
 * :heavy_check_mark: : Tested.
