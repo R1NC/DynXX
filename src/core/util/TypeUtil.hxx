@@ -19,6 +19,7 @@ namespace NGenXX::Core::Util::Type {
             sArr[i] = mallocX<char>(strMaxLen);
             std::strncpy(sArr[i], sv[i].c_str(), strMaxLen);
         }
+        sArr[size] = nullptr;
         return sArr;
     }
 
