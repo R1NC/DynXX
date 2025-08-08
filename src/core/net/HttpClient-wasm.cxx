@@ -5,11 +5,14 @@
 #include <NGenXXNet.h>
 #include <NGenXXCoding.hxx>
 
+#include <emscripten/emscripten.h>
 #include <emscripten/fetch.h>
 
 namespace {
     constexpr auto GET_METHOD = "GET";
     constexpr auto POST_METHOD = "POST";
+
+    constexpr auto SLEEP_MS = 5;
 
     std::string buildUrl(const std::string_view baseUrl, const std::string_view params) {
         if (params.empty()) [[unlikely]] {
@@ -63,31 +66,38 @@ namespace {
         }
     }
 
-    void parseResponse(emscripten_fetch_t* fetch, NGenXXHttpResponse& response) {
+    void parseResponse(emscripten_fetch_t* fetch) {
         if (fetch == nullptr) [[unlikely]] {
             return;
         }
 
-        response.code = fetch->status;
+        auto rsp = new NGenXXHttpResponse();
+
+        rsp->code = fetch->status;
                 
         if (fetch->data && fetch->numBytes > 0) [[likely]] {
-            response.data.assign(fetch->data, fetch->numBytes);
+            rsp->data.reserve(fetch->numBytes);
+            rsp->data.assign(fetch->data, fetch->numBytes);
         }
                 
         const auto headersLength = emscripten_fetch_get_response_headers_length(fetch);
         if (headersLength <= 0) [[unlikely]] {
+            fetch->userData = rsp;
             return;
         }
         std::string headersBuffer(headersLength, '\0');
         const auto actualLength = emscripten_fetch_get_response_headers(fetch, headersBuffer.data(), headersBuffer.size());
         if (actualLength <= 0) [[unlikely]] {
+            fetch->userData = rsp;
             return;
         }
         headersBuffer.resize(actualLength);
 
-        parseRspHeaders(headersBuffer, response.headers);
+        parseRspHeaders(headersBuffer, rsp->headers);
 
-        response.contentType = response.headers["Content-Type"];
+        rsp->contentType = rsp->headers["Content-Type"];
+
+        fetch->userData = rsp;
     }
 }
 
@@ -124,6 +134,9 @@ NGenXXHttpResponse NGenXX::Core::Net::WasmHttpClient::request(const std::string_
         attr.requestData = reinterpret_cast<const char*>(rawBody.data());
         attr.requestDataSize = rawBody.size();
     }
+
+    attr.onsuccess = parseResponse;
+    attr.onerror = parseResponse;
             
     auto const fetch = emscripten_fetch(&attr, fullUrl.c_str());
     if (!fetch) [[unlikely]] {
@@ -131,7 +144,16 @@ NGenXXHttpResponse NGenXX::Core::Net::WasmHttpClient::request(const std::string_
         return response;
     }
             
-    parseResponse(fetch, response);
+    while (!fetch->userData) {
+        emscripten_sleep(SLEEP_MS);
+    }
+
+    auto rsp = static_cast<NGenXXHttpResponse*>(fetch->userData);
+    response.code = rsp->code;
+    response.data = std::move(rsp->data);
+    response.headers = std::move(rsp->headers);
+    response.contentType = std::move(rsp->contentType);
+    delete rsp;
 
     emscripten_fetch_close(fetch);
             

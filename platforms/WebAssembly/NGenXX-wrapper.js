@@ -37,37 +37,31 @@ function jstr2wasm(jstr) {
     return ptr;
 }
 
-function testGetVersion() {
-    _version = Module._ngenxx_get_version();
-
-    version = Module.UTF8ToString(_version);
-    window.alert("version:\n" + version);
-
-    Module._free(_version);
-}
-
 function testHttpReq() {
-    _url = jstr2wasm("https://rinc.xyz");
-    _params = jstr2wasm("");
-    _rsp = Module._ngenxx_net_http_request(_url, _params, 0, 0, 0, 0);
+    var cRrl = jstr2wasm("https://rinc.xyz");
+    var cParams = jstr2wasm("");
 
-    rsp = Module.UTF8ToString(_rsp);
-    window.alert("http rsp:\n" + rsp);
-
-    Module._free(_rsp);
-    Module._free(_params);
-    Module._free(_url);
+    new Promise((resolve, reject) => {
+        var cRsp = Module._ngenxx_net_http_request(cRrl, cParams, 0, 0, 0, 0);
+        var sRsp = Module.UTF8ToString(cRsp);
+        Module._free(cRsp);
+        Module._free(cParams);
+        Module._free(cRrl);
+        resolve(sRsp);
+    }).then((sRsp) => {
+        console.log("http rsp:\n" + sRsp);
+    });
 }
 
 function testCallLua() {
-    _funcName = jstr2wasm("lNetHttpRequest");
-    _funcParams = jstr2wasm('{"url":"https://rinc.xyz","params":""}');
-    _callRes = Module._ngenxx_lua_call(_funcName, _funcParams);
+    var cFuncName = jstr2wasm("lNetHttpRequest");
+    var cFuncParams = jstr2wasm('{"url":"https://rinc.xyz","params":""}');
+    var cCallRes = Module._ngenxx_lua_call(cFuncName, cFuncParams);
 
-    callRes = Module.UTF8ToString(_callRes);
-    window.alert("Lua running result:\n" + callRes);
+    var sCallRes = Module.UTF8ToString(cCallRes);
+    window.alert("Lua running result:\n" + sCallRes);
 
-    Module._free(_callRes);
-    Module._free(_funcParams);
-    Module._free(_funcName);
+    Module._free(cCallRes);
+    Module._free(cFuncParams);
+    Module._free(cFuncName);
 }
