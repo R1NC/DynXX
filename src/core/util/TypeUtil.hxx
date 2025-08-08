@@ -2,6 +2,7 @@
 #define NGENXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
 
 #include <NGenXXTypes.hxx>
+#include <algorithm>
 
 namespace NGenXX::Core::Util::Type {
     inline const char *copyStr(const std::string &s) {
@@ -16,8 +17,9 @@ namespace NGenXX::Core::Util::Type {
         auto size = sv.size();
         const auto sArr = mallocX<char *>(size);
         for (decltype(size) i = 0; i < size; i++) {
-            sArr[i] = mallocX<char>(strMaxLen);
-            std::strncpy(sArr[i], sv[i].c_str(), strMaxLen);
+            const auto len = std::min(sv[i].size(), strMaxLen);
+            sArr[i] = mallocX<char>(len);
+            std::strncpy(sArr[i], sv[i].c_str(), len);
         }
         sArr[size] = nullptr;
         return sArr;
