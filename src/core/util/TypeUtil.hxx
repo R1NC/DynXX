@@ -6,11 +6,7 @@
 
 namespace NGenXX::Core::Util::Type {
     inline const char *copyStr(const std::string &s) {
-        const char *c = s.c_str();
-        const auto len = s.length();
-        const auto nc = mallocX<char>(len);
-        std::strncpy(nc, c, len);
-        return nc;
+        return strdup(s.c_str());
     }
 
     inline char *const *copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen) {
@@ -18,8 +14,7 @@ namespace NGenXX::Core::Util::Type {
         const auto sArr = mallocX<char *>(size);
         for (decltype(size) i = 0; i < size; i++) {
             const auto len = std::min(sv[i].size(), strMaxLen);
-            sArr[i] = mallocX<char>(len);
-            std::strncpy(sArr[i], sv[i].c_str(), len);
+            sArr[i] = strdup(sv[i].c_str());
         }
         sArr[size] = nullptr;
         return sArr;

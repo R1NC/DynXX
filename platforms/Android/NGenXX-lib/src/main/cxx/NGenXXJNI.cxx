@@ -28,7 +28,6 @@ namespace {
         }
         auto env = currentEnv(sVM);
         auto jContent = boxJString(env, content);
-        //freeX(content);
         //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
         auto jLevel = boxJInt(env, static_cast<jint>(level));
         env->CallObjectMethod(sLogCallback, sLogCallbackMethodId, jLevel, jContent);
@@ -41,9 +40,14 @@ namespace {
         }
         auto env = currentEnv(sVM);
         auto jMsg = boxJString(env, msg);
-        //freeX(msg);
         auto jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
-        return env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
+        const auto cRes = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
+        auto res = nullptr; 
+        if (cRes) {
+           res = strdup(cRes);
+           env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jRes), cRes);
+        }
+        return res;
     }
 
 #pragma mark Engine base API
@@ -158,19 +162,24 @@ namespace {
 
         for (int i = 0; i < headerCount; i++) {
             env->ReleaseStringUTFChars(jStrHeaderV[i], cHeaderV[i]);
-            freeX(jStrHeaderV[i]);
         }
         for (int i = 0; i < formFieldCount; i++) {
             env->ReleaseStringUTFChars(jStrFormFieldNameV[i], cFormFieldNameV[i]);
-            freeX(jStrFormFieldNameV[i]);
             env->ReleaseStringUTFChars(jStrFormFieldMimeV[i], cFormFieldMimeV[i]);
-            freeX(jStrFormFieldMimeV[i]);
             env->ReleaseStringUTFChars(jStrFormFieldDataV[i], cFormFieldDataV[i]);
-            freeX(jStrFormFieldDataV[i]);
         }
 
+        freeX(cHeaderV);
+        freeX(cFormFieldNameV);
+        freeX(cFormFieldMimeV);
+        freeX(cFormFieldDataV);
+        freeX(jStrHeaderV);
+        freeX(jStrFormFieldNameV);
+        freeX(jStrFormFieldMimeV);
+        freeX(jStrFormFieldDataV);
+
         if (filePath) {
-            freeX(cFilePath);
+            env->ReleaseStringUTFChars(filePath, cFilePath);
         }
         if (cFILE) {
             std::fclose(cFILE);

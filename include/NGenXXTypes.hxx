@@ -264,7 +264,11 @@ T *mallocX(const size_t count = 1) {
 template<typename T>
     requires (!CharacterT<T>)
 T *mallocX(const size_t count = 1) {
-    auto ptr = std::calloc(count, sizeof(T));
+    size_t allocCount = count;
+    if constexpr (std::is_pointer_v<T>) {
+        allocCount = count + 1;
+    }
+    auto ptr = std::calloc(allocCount, sizeof(T));
     if (!ptr) [[unlikely]] {
         return nullptr;
     }
