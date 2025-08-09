@@ -2,7 +2,6 @@
 
 #include "ScriptBridge.hxx"
 
-#include <algorithm>
 #include <functional>
 #if defined(__cpp_lib_ranges)
 #include <ranges>
@@ -16,7 +15,7 @@ namespace
 {
     using namespace NGenXX::Core::Json;
 
-    std::string bytes2json(const Bytes &bytes)
+    std::string bytes2json(const BytesView bytes)
     {
         if (bytes.empty()) [[unlikely]]
         {
