@@ -14,9 +14,9 @@ namespace NGenXX::Core::Util::Type {
         const auto sArr = mallocX<char *>(size);
         for (decltype(size) i = 0; i < size; i++) {
             const auto len = std::min(sv[i].size(), strMaxLen);
-            sArr[i] = strdup(sv[i].c_str());
+            sArr[i] = mallocX<char>(len);
+            std::memcpy(sArr[i], sv[i].c_str(), len);
         }
-        sArr[size] = nullptr;
         return sArr;
     }
 
