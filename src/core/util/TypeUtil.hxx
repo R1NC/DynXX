@@ -5,8 +5,8 @@
 #include <algorithm>
 
 namespace NGenXX::Core::Util::Type {
-    inline const char *copyStr(const std::string &s) {
-        return strdup(s.c_str());
+    inline const char *copyStr(const std::string_view s) {
+        return strdup(s.data());
     }
 
     inline char *const *copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen) {
@@ -20,7 +20,7 @@ namespace NGenXX::Core::Util::Type {
         return sArr;
     }
 
-    inline byte *copyBytes(const Bytes &t) {
+    inline byte *copyBytes(const BytesView t) {
         const auto cs = t.data();
         const auto len = t.size();
         if (cs == nullptr || len == 0) [[unlikely]] {

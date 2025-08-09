@@ -34,7 +34,7 @@ namespace NGenXX::Core::Net {
         [[nodiscard]] NGenXXHttpResponse request(std::string_view url, int method,
                                                  const std::vector<std::string> &headers,
                                                 std::string_view params,
-                                                 const Bytes &rawBody,
+                                                 const BytesView rawBody,
                                                  const std::vector<HttpFormField> &formFields,
                                                  const std::FILE *cFILE, size_t fileSize,
                                                  size_t timeout);

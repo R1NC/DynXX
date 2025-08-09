@@ -42,7 +42,7 @@ namespace {
         auto jMsg = boxJString(env, msg);
         auto jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
         const auto cRes = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
-        auto res = nullptr; 
+        char *res = nullptr;
         if (cRes) {
            res = strdup(cRes);
            env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jRes), cRes);

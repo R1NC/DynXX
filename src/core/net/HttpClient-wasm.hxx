@@ -14,7 +14,7 @@ namespace NGenXX::Core::Net
                                      const int method,
                                      const std::vector<std::string> &headers,
                                      const std::string_view params,
-                                     const Bytes &rawBody,
+                                     const BytesView rawBody,
                                      const size_t timeout);
         };
 }

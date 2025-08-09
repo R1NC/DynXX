@@ -8,7 +8,7 @@
 #endif
 
 namespace {
-    byte *handleBytes(const Bytes &bytes, size_t *outLen) {
+    byte *handleBytes(const BytesView bytes, size_t *outLen) {
         if (outLen) [[likely]] {
             *outLen = bytes.size();
         }
