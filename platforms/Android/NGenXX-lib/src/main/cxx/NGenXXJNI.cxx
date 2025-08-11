@@ -31,6 +31,8 @@ namespace {
         //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
         auto jLevel = boxJInt(env, static_cast<jint>(level));
         env->CallObjectMethod(sLogCallback, sLogCallbackMethodId, jLevel, jContent);
+        env->DeleteLocalRef(jLevel);
+        env->DeleteLocalRef(jContent);
     }
 
     const char *js_msg_callback(const char *msg) {
@@ -47,6 +49,8 @@ namespace {
            res = strdup(cRes);
            env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jRes), cRes);
         }
+        env->DeleteLocalRef(jMsg);
+        env->DeleteLocalRef(jRes);
         return res;
     }
 
