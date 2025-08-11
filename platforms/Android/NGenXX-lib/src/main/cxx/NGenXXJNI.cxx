@@ -30,7 +30,10 @@ namespace {
         auto jContent = boxJString(env, content);
         //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
         auto jLevel = boxJInt(env, static_cast<jint>(level));
-        env->CallObjectMethod(sLogCallback, sLogCallbackMethodId, jLevel, jContent);
+        auto jRet = env->CallObjectMethod(sLogCallback, sLogCallbackMethodId, jLevel, jContent);
+        if (jRet) {
+            env->DeleteLocalRef(jRet);
+        }
         env->DeleteLocalRef(jLevel);
         env->DeleteLocalRef(jContent);
     }
