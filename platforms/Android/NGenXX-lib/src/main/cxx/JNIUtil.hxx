@@ -35,9 +35,11 @@ inline JNIEnv *currentEnv(JavaVM *vm) {
 
 template<NumberT T>
 jobject boxJNum(JNIEnv *env, const T j, const char *cls, const char *sig) {
-    auto jClass = env->FindClass(cls);
-    auto jValueOf = env->GetStaticMethodID(jClass, "valueOf", sig);
-    return env->CallStaticObjectMethod(jClass, jValueOf, j);
+    const auto jClass = env->FindClass(cls);
+    const auto jValueOf = env->GetStaticMethodID(jClass, "valueOf", sig);
+    const auto ret = env->CallStaticObjectMethod(jClass, jValueOf, j);
+    env->DeleteLocalRef(jClass);
+    return ret;
 }
 
 inline jobject boxJBoolean(JNIEnv *env, const jboolean j) {
@@ -124,8 +126,10 @@ inline jstring boxJString(JNIEnv *env, const char *str) {
 }
 
 inline jmethodID getLambdaMethod(JNIEnv *env, const char *cls, const char *sig) {
-    auto function1Class = env->FindClass(cls);
-    return env->GetMethodID(function1Class, "invoke", sig);
+    const auto function1Class = env->FindClass(cls);
+    const auto ret = env->GetMethodID(function1Class, "invoke", sig);
+    env->DeleteLocalRef(function1Class);
+    return ret;
 }
 
 inline jbyteArray
