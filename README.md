@@ -1,15 +1,15 @@
-# NGenXX
+# DynXX
 
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Android-Mac.yml?branch=main&label=Build%20for%20Android%20on%20macOS&logo=android&logoColor=3DDC84"/>][41] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Android-Ubuntu.yml?branch=main&label=Build%20for%20Android%20on%20Ubuntu&logo=android&logoColor=3DDC84"/>][32]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/iOS.yml?branch=main&label=Build%20for%20iOS&logo=Apple&logoColor=white"/>][33] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/macOS.yml?branch=main&label=Build%20for%20macOS&logo=Apple&logoColor=white"/>][34]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/HarmonyOS-Mac.yml?branch=main&label=Build%20for%20HarmonyOS%20on%20macOS&logo=Huawei&logoColor=FF0000"/>][43]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Win-MSVC.yml?branch=main&label=Build%20for%20Windows%20with%20MSVC&logo=gitforwindows&logoColor=0078D4"/>][35] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Win-MinGW.yml?branch=main&label=Build%20for%20Windows%20with%20MinGW&logo=gitforwindows&logoColor=0078D4"/>][36]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/WASM-Mac.yml?branch=main&label=Build%20for%20WASM%20on%20macOS&logo=WebAssembly&logoColor=654FF0"/>][38] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/WASM-Ubuntu.yml?branch=main&label=Build%20for%20WASM%20on%20Ubuntu&logo=WebAssembly&logoColor=654FF0"/>][42]  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/NGenXX/Linux-Ubuntu.yml?branch=main&label=Build%20for%20Linux%20on%20Ubuntu&logo=Linux&logoColor=FBB726"/>][37]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/Android-Mac.yml?branch=main&label=Build%20for%20Android%20on%20macOS&logo=android&logoColor=3DDC84"/>][41] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/Android-Ubuntu.yml?branch=main&label=Build%20for%20Android%20on%20Ubuntu&logo=android&logoColor=3DDC84"/>][32]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/iOS.yml?branch=main&label=Build%20for%20iOS&logo=Apple&logoColor=white"/>][33] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/macOS.yml?branch=main&label=Build%20for%20macOS&logo=Apple&logoColor=white"/>][34]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/HarmonyOS-Mac.yml?branch=main&label=Build%20for%20HarmonyOS%20on%20macOS&logo=Huawei&logoColor=FF0000"/>][43]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/Win-MSVC.yml?branch=main&label=Build%20for%20Windows%20with%20MSVC&logo=gitforwindows&logoColor=0078D4"/>][35] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/Win-MinGW.yml?branch=main&label=Build%20for%20Windows%20with%20MinGW&logo=gitforwindows&logoColor=0078D4"/>][36]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/WASM-Mac.yml?branch=main&label=Build%20for%20WASM%20on%20macOS&logo=WebAssembly&logoColor=654FF0"/>][38] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/WASM-Ubuntu.yml?branch=main&label=Build%20for%20WASM%20on%20Ubuntu&logo=WebAssembly&logoColor=654FF0"/>][42]  
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/Linux-Ubuntu.yml?branch=main&label=Build%20for%20Linux%20on%20Ubuntu&logo=Linux&logoColor=FBB726"/>][37]  
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
-> :point_right: The Rust version([NGenRS][31]) is in works.
+> :point_right: The Rust version([DynRS][31]) is in works.
 > <details>
 > <summary>Why Rust?</summary>
 > 
@@ -124,7 +124,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [28]: https://docs.rs/jni/latest/jni/
 [29]: https://docs.rs/objc2/latest/objc2/
 [30]: https://ohos.rs/
-[31]: https://github.com/R1NC/NGenRS
+[31]: https://github.com/R1NC/DynRS
 [32]: ../../actions/workflows/Android-Ubuntu.yml
 [33]: ../../actions/workflows/iOS.yml
 [34]: ../../actions/workflows/macOS.yml
