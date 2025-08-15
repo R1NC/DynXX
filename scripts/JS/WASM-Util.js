@@ -34,6 +34,10 @@ function jNumArrFromWasm(ptr, len) {
   return Array.from(heap);
 }
 
+function newOutLen() {
+  return Module._malloc(8);
+}
+
 function readOutLen(outLenPtr) {
   if (outLenPtr === 0) {
     return 0;
