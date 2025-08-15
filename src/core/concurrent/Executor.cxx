@@ -1,14 +1,14 @@
 #include "Executor.hxx"
 
-#include <NGenXXLog.hxx>
+#include <DynXX/CXX/Log.hxx>
 
 #pragma mark - Worker
 
-NGenXX::Core::Concurrent::Worker::Worker() : Worker(1000uz)
+DynXX::Core::Concurrent::Worker::Worker() : Worker(1000uz)
 {
 }
 
-NGenXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs{sleepMicroSecs}
+DynXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs{sleepMicroSecs}
 {
 #if defined(__cpp_lib_jthread)
     this->thread = std::jthread([this](std::stop_token stoken) {
@@ -56,14 +56,14 @@ NGenXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs
 
             if (func) [[likely]] 
             {
-                ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Worker@{} run task on thread:{}", reinterpret_cast<uintptr_t>(this), currentThreadId());
+                dynxxLogPrintF(DynXXLogLevelX::Debug, "Worker@{} run task on thread:{}", reinterpret_cast<uintptr_t>(this), currentThreadId());
                 func();
             }
         }
     });
 }
 
-NGenXX::Core::Concurrent::Worker::~Worker()
+DynXX::Core::Concurrent::Worker::~Worker()
 {
 #if defined(__cpp_lib_jthread)
     // jthread automatically handles stop request and join
@@ -81,17 +81,17 @@ NGenXX::Core::Concurrent::Worker::~Worker()
 #endif
 }
 
-void NGenXX::Core::Concurrent::Worker::sleep()
+void DynXX::Core::Concurrent::Worker::sleep()
 {
-    NGenXX::Core::Concurrent::sleep(this->sleepMicroSecs);
+    DynXX::Core::Concurrent::sleep(this->sleepMicroSecs);
 }
 
-NGenXX::Core::Concurrent::Worker& NGenXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
+DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
 {
     {
         std::lock_guard<std::mutex> lock(this->mutex);
         this->taskQueue.emplace(std::move(task));
-        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Worker@{} taskCount:{}", reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
+        dynxxLogPrintF(DynXXLogLevelX::Debug, "Worker@{} taskCount:{}", reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
     }
     
     this->cv.notify_one();
@@ -101,11 +101,11 @@ NGenXX::Core::Concurrent::Worker& NGenXX::Core::Concurrent::Worker::operator>>(T
 
 #pragma mark - Executor
 
-NGenXX::Core::Concurrent::Executor::Executor() : Executor(0uz, 1000uz)
+DynXX::Core::Concurrent::Executor::Executor() : Executor(0uz, 1000uz)
 {
 }
 
-NGenXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity, size_t sleepMicroSecs) : workerPoolCapacity{workerPoolCapacity}, sleepMicroSecs{sleepMicroSecs}
+DynXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity, size_t sleepMicroSecs) : workerPoolCapacity{workerPoolCapacity}, sleepMicroSecs{sleepMicroSecs}
 {
     if (this->workerPoolCapacity == 0)
     {
@@ -114,12 +114,12 @@ NGenXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity, size_t s
     this->workerPool.reserve(this->workerPoolCapacity);
 }
 
-NGenXX::Core::Concurrent::Executor::~Executor()
+DynXX::Core::Concurrent::Executor::~Executor()
 {
     this->workerPool.clear();
 }
 
-NGenXX::Core::Concurrent::Executor& NGenXX::Core::Concurrent::Executor::operator>>(TaskT&& task)
+DynXX::Core::Concurrent::Executor& DynXX::Core::Concurrent::Executor::operator>>(TaskT&& task)
 {
     std::lock_guard<std::mutex> lock(this->mutex);
 
@@ -127,7 +127,7 @@ NGenXX::Core::Concurrent::Executor& NGenXX::Core::Concurrent::Executor::operator
     {
         auto worker = std::make_unique<Worker>(this->sleepMicroSecs);
         this->workerPool.emplace_back(std::move(worker));
-        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "Executor created new worker, poolSize:{} poolCapacity:{} cpuCores:{}", 
+        dynxxLogPrintF(DynXXLogLevelX::Debug, "Executor created new worker, poolSize:{} poolCapacity:{} cpuCores:{}", 
                         this->workerPool.size(), this->workerPoolCapacity, countCPUCore());
     }
     

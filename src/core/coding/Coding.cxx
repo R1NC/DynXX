@@ -7,7 +7,7 @@
 #include <numeric>
 #endif
 
-std::string NGenXX::Core::Coding::Case::upper(std::string_view str)
+std::string DynXX::Core::Coding::Case::upper(std::string_view str)
 {
     std::string s(str);
     s.reserve(str.size());
@@ -19,7 +19,7 @@ std::string NGenXX::Core::Coding::Case::upper(std::string_view str)
     return s;
 }
 
-std::string NGenXX::Core::Coding::Case::lower(std::string_view str)
+std::string DynXX::Core::Coding::Case::lower(std::string_view str)
 {
     std::string s(str);
     s.reserve(str.size());
@@ -31,7 +31,7 @@ std::string NGenXX::Core::Coding::Case::lower(std::string_view str)
     return s;
 }
 
-std::string NGenXX::Core::Coding::Hex::bytes2str(BytesView bytes)
+std::string DynXX::Core::Coding::Hex::bytes2str(BytesView bytes)
 {
     if (bytes.empty()) [[unlikely]]
     {
@@ -79,7 +79,7 @@ std::string NGenXX::Core::Coding::Hex::bytes2str(BytesView bytes)
 #endif
 }
 
-Bytes NGenXX::Core::Coding::Hex::str2bytes(const std::string &str)
+Bytes DynXX::Core::Coding::Hex::str2bytes(const std::string &str)
 {
     std::string filteredStr;
     filteredStr.reserve(str.size());
@@ -130,17 +130,17 @@ Bytes NGenXX::Core::Coding::Hex::str2bytes(const std::string &str)
 #endif
 }
 
-std::string NGenXX::Core::Coding::bytes2str(BytesView bytes)
+std::string DynXX::Core::Coding::bytes2str(BytesView bytes)
 {
     return {bytes.begin(), bytes.end()};
 }
 
-Bytes NGenXX::Core::Coding::str2bytes(std::string_view str)
+Bytes DynXX::Core::Coding::str2bytes(std::string_view str)
 {
     return {str.begin(), str.end()};
 }
 
-std::string NGenXX::Core::Coding::strTrim(std::string_view str) 
+std::string DynXX::Core::Coding::strTrim(std::string_view str) 
 {
 #if defined(__cpp_lib_ranges)
     auto findSpaceF = [](char c) { return std::isspace(static_cast<int>(c)); };
@@ -162,7 +162,7 @@ std::string NGenXX::Core::Coding::strTrim(std::string_view str)
 #endif
 }
 
-std::string NGenXX::Core::Coding::strEscapeQuotes(const std::string_view& str) 
+std::string DynXX::Core::Coding::strEscapeQuotes(const std::string_view& str) 
 {
     std::string result;
     result.reserve(str.size() * 2);

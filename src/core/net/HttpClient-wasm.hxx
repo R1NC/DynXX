@@ -1,16 +1,16 @@
-#ifndef NGENXX_SRC_CORE_NET_HTTP_CLIENT_WASM_HXX_
-#define NGENXX_SRC_CORE_NET_HTTP_CLIENT_WASM_HXX_
+#ifndef DYNXX_SRC_CORE_NET_HTTP_CLIENT_WASM_HXX_
+#define DYNXX_SRC_CORE_NET_HTTP_CLIENT_WASM_HXX_
 
 #if defined(__EMSCRIPTEN__)
 
-#include <NGenXXTypes.hxx>
-#include <NGenXXNet.hxx>
+#include <DynXX/CXX/Types.hxx>
+#include <DynXX/CXX/Net.hxx>
 
-namespace NGenXX::Core::Net
+namespace DynXX::Core::Net
 {
         class WasmHttpClient {
                 public:
-                [[nodiscard]] static NGenXXHttpResponse request(const std::string_view url, 
+                [[nodiscard]] static DynXXHttpResponse request(const std::string_view url, 
                                      const int method,
                                      const std::vector<std::string> &headers,
                                      const std::string_view params,
@@ -21,4 +21,4 @@ namespace NGenXX::Core::Net
 
 #endif
 
-#endif // NGENXX_SRC_CORE_NET_HTTP_CLIENT_WASM_HXX_
+#endif // DYNXX_SRC_CORE_NET_HTTP_CLIENT_WASM_HXX_

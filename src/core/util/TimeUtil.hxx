@@ -1,11 +1,11 @@
-#ifndef NGENXX_SRC_CORE_UTIL_TIMEUTIL_HXX_
-#define NGENXX_SRC_CORE_UTIL_TIMEUTIL_HXX_
+#ifndef DYNXX_SRC_CORE_UTIL_TIMEUTIL_HXX_
+#define DYNXX_SRC_CORE_UTIL_TIMEUTIL_HXX_
 
 #if defined(__cplusplus)
 
 #include <chrono>
 
-namespace NGenXX::Core::Util::Time
+namespace DynXX::Core::Util::Time
 {
 
 using namespace std::chrono;
@@ -35,4 +35,4 @@ inline uint64_t nowInNanoSecs()
 
 #endif
 
-#endif // NGENXX_SRC_CORE_UTIL_TIMEUTIL_HXX_
+#endif // DYNXX_SRC_CORE_UTIL_TIMEUTIL_HXX_

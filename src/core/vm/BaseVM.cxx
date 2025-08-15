@@ -2,7 +2,7 @@
 
 #include "BaseVM.hxx"
 
-#include <NGenXXLog.hxx>
+#include <DynXX/CXX/Log.hxx>
 #include "../concurrent/ConcurrentUtil.hxx"
 
 namespace
@@ -10,27 +10,27 @@ namespace
     constexpr auto SleepMicroSecs = 1000uz;
 }
 
-bool NGenXX::Core::VM::BaseVM::tryLock()
+bool DynXX::Core::VM::BaseVM::tryLock()
 {
-    return NGenXX::Core::Concurrent::tryLock(this->vmMutex, SleepMicroSecs);
+    return DynXX::Core::Concurrent::tryLock(this->vmMutex, SleepMicroSecs);
 }
 
-void NGenXX::Core::VM::BaseVM::unlock()
+void DynXX::Core::VM::BaseVM::unlock()
 {
     this->vmMutex.unlock();
 }
 
-void NGenXX::Core::VM::BaseVM::sleep()
+void DynXX::Core::VM::BaseVM::sleep()
 {
-    NGenXX::Core::Concurrent::sleep(SleepMicroSecs);
+    DynXX::Core::Concurrent::sleep(SleepMicroSecs);
 }
 
-NGenXX::Core::VM::BaseVM::BaseVM()
+DynXX::Core::VM::BaseVM::BaseVM()
 {
     this->active = true;
 }
 
-NGenXX::Core::VM::BaseVM::~BaseVM()
+DynXX::Core::VM::BaseVM::~BaseVM()
 {
     this->active = false;
 }

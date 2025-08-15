@@ -1,12 +1,12 @@
-#ifndef NGENXX_SRC_BRIDGE_JSBRIDGE_HXX_
-#define NGENXX_SRC_BRIDGE_JSBRIDGE_HXX_
+#ifndef DYNXX_SRC_BRIDGE_JSBRIDGE_HXX_
+#define DYNXX_SRC_BRIDGE_JSBRIDGE_HXX_
 
 #if defined(__cplusplus)
 
-void ngenxx_js_init();
+void dynxx_js_init();
 
-void ngenxx_js_release();
+void dynxx_js_release();
 
 #endif
 
-#endif // NGENXX_SRC_BRIDGE_JSBRIDGE_HXX_
+#endif // DYNXX_SRC_BRIDGE_JSBRIDGE_HXX_

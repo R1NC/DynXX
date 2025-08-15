@@ -1,9 +1,9 @@
 #if defined(__EMSCRIPTEN__)
 
 #include "HttpClient-wasm.hxx"
-#include <NGenXXLog.hxx>
-#include <NGenXXNet.h>
-#include <NGenXXCoding.hxx>
+#include <DynXX/CXX/Log.hxx>
+#include <DynXX/C/Net.h>
+#include <DynXX/CXX/Coding.hxx>
 
 #include <emscripten/emscripten.h>
 #include <emscripten/fetch.h>
@@ -29,7 +29,7 @@ namespace {
     }
 
     void setMethod(emscripten_fetch_attr_t& attr, const int method) {
-        if (method == NGenXXNetHttpMethodPost) {
+        if (method == DynXXNetHttpMethodPost) {
             std::copy_n(POST_METHOD, std::strlen(POST_METHOD) + 1, attr.requestMethod);
         } else {
             std::copy_n(GET_METHOD, std::strlen(GET_METHOD) + 1, attr.requestMethod);
@@ -44,7 +44,7 @@ namespace {
             const auto lineLength = (lineEnd != std::string_view::npos) ? lineEnd : remaining.size();
             
             auto line = remaining.substr(0, lineLength);
-            auto trimmedLine = ngenxxCodingStrTrim(line);
+            auto trimmedLine = dynxxCodingStrTrim(line);
             if (trimmedLine.empty()) [[unlikely]] {
                 continue;
             }
@@ -55,8 +55,8 @@ namespace {
             }
             auto keyView = std::string_view(trimmedLine).substr(0, colonPos);
             auto valueView = std::string_view(trimmedLine).substr(colonPos + 1);
-            auto key = ngenxxCodingStrTrim(keyView);
-            auto value = ngenxxCodingStrTrim(valueView);
+            auto key = dynxxCodingStrTrim(keyView);
+            auto value = dynxxCodingStrTrim(valueView);
             if (!key.empty()) [[likely]] {
                 headers.emplace(std::move(key), std::move(value));
             }
@@ -71,7 +71,7 @@ namespace {
             return;
         }
 
-        auto rsp = new NGenXXHttpResponse();
+        auto rsp = new DynXXHttpResponse();
 
         rsp->code = fetch->status;
                 
@@ -101,29 +101,29 @@ namespace {
     }
 }
 
-NGenXXHttpResponse NGenXX::Core::Net::WasmHttpClient::request(const std::string_view url, 
+DynXXHttpResponse DynXX::Core::Net::WasmHttpClient::request(const std::string_view url, 
                                                  const int method,
                                                  const std::vector<std::string> &headers,
                                                  const std::string_view params,
                                                  const BytesView rawBody,
                                                  const size_t timeout) {
-    NGenXXHttpResponse response;
+    DynXXHttpResponse response;
 
     auto const fullUrl = buildUrl(url, params);
             
-    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "WasmHttpClient.request url: {}", fullUrl);
+    dynxxLogPrintF(DynXXLogLevelX::Debug, "WasmHttpClient.request url: {}", fullUrl);
 
     emscripten_fetch_attr_t attr;
     emscripten_fetch_attr_init(&attr);
     attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-    attr.timeoutMSecs = timeout > 0 ? timeout : NGENXX_HTTP_DEFAULT_TIMEOUT;
+    attr.timeoutMSecs = timeout > 0 ? timeout : DYNXX_HTTP_DEFAULT_TIMEOUT;
             
     setMethod(attr, method);
             
     std::vector<const char*> headerPtrs;
     for (const auto& header : headers) {
         headerPtrs.push_back(header.c_str());
-        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "WasmHttpClient.request header: {}", header);
+        dynxxLogPrintF(DynXXLogLevelX::Debug, "WasmHttpClient.request header: {}", header);
     }
     headerPtrs.push_back(nullptr);
     if (!headers.empty()) [[likely]] {
@@ -140,7 +140,7 @@ NGenXXHttpResponse NGenXX::Core::Net::WasmHttpClient::request(const std::string_
             
     auto const fetch = emscripten_fetch(&attr, fullUrl.c_str());
     if (!fetch) [[unlikely]] {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "WasmHttpClient.request failed");
+        dynxxLogPrint(DynXXLogLevelX::Error, "WasmHttpClient.request failed");
         return response;
     }
             
@@ -148,7 +148,7 @@ NGenXXHttpResponse NGenXX::Core::Net::WasmHttpClient::request(const std::string_
         emscripten_sleep(SLEEP_MS);
     }
 
-    auto rsp = static_cast<NGenXXHttpResponse*>(fetch->userData);
+    auto rsp = static_cast<DynXXHttpResponse*>(fetch->userData);
     response.code = rsp->code;
     response.data = std::move(rsp->data);
     response.headers = std::move(rsp->headers);
@@ -157,7 +157,7 @@ NGenXXHttpResponse NGenXX::Core::Net::WasmHttpClient::request(const std::string_
 
     emscripten_fetch_close(fetch);
             
-    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "WasmHttpClient.request response code: {}", response.code);
+    dynxxLogPrintF(DynXXLogLevelX::Debug, "WasmHttpClient.request response code: {}", response.code);
             
     return response;
 }

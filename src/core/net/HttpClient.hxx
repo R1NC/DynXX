@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_NET_HTTP_CLIENT_HXX_
-#define NGENXX_SRC_CORE_NET_HTTP_CLIENT_HXX_
+#ifndef DYNXX_SRC_CORE_NET_HTTP_CLIENT_HXX_
+#define DYNXX_SRC_CORE_NET_HTTP_CLIENT_HXX_
 
 #if defined(__cplusplus)
 
@@ -7,10 +7,10 @@
 
 #include <curl/curl.h>
 
-#include <NGenXXTypes.hxx>
-#include <NGenXXNet.hxx>
+#include <DynXX/CXX/Types.hxx>
+#include <DynXX/CXX/Net.hxx>
 
-namespace NGenXX::Core::Net {
+namespace DynXX::Core::Net {
     struct HttpFormField {
         std::string name;
         std::string mime;
@@ -31,7 +31,7 @@ namespace NGenXX::Core::Net {
 
         HttpClient &operator=(HttpClient &&) = delete;
 
-        [[nodiscard]] NGenXXHttpResponse request(std::string_view url, int method,
+        [[nodiscard]] DynXXHttpResponse request(std::string_view url, int method,
                                                  const std::vector<std::string> &headers,
                                                 std::string_view params,
                                                  const BytesView rawBody,
@@ -50,12 +50,12 @@ namespace NGenXX::Core::Net {
 
         bool handleSSL(CURL *curl, std::string_view url);
 
-        NGenXXHttpResponse req(std::string_view url, const std::vector<std::string> &headers,
+        DynXXHttpResponse req(std::string_view url, const std::vector<std::string> &headers,
                             std::string_view params, int method, size_t timeout,
-                               std::function<void(CURL *const, const NGenXXHttpResponse &rsp)> &&func);
+                               std::function<void(CURL *const, const DynXXHttpResponse &rsp)> &&func);
     };
 }
 
 #endif
 
-#endif // NGENXX_SRC_CORE_NET_HTTP_CLIENT_HXX_
+#endif // DYNXX_SRC_CORE_NET_HTTP_CLIENT_HXX_

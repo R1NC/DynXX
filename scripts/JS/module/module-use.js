@@ -1,3 +1,3 @@
 function testModule(msg) {
-    NGenXXModule.logD(msg);
+    DynXXModule.logD(msg);
 }

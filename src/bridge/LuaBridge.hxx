@@ -1,12 +1,12 @@
-#ifndef NGENXX_SRC_BRIDGE_LUABRIDGE_HXX_
-#define NGENXX_SRC_BRIDGE_LUABRIDGE_HXX_
+#ifndef DYNXX_SRC_BRIDGE_LUABRIDGE_HXX_
+#define DYNXX_SRC_BRIDGE_LUABRIDGE_HXX_
 
 #if defined(__cplusplus)
 
-void ngenxx_lua_init();
+void dynxx_lua_init();
 
-void ngenxx_lua_release();
+void dynxx_lua_release();
 
 #endif
 
-#endif // NGENXX_SRC_BRIDGE_LUABRIDGE_HXX_
+#endif // DYNXX_SRC_BRIDGE_LUABRIDGE_HXX_

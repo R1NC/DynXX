@@ -15,8 +15,8 @@
 #include <openssl/sha.h>
 #include <openssl/md5.h>
 
-#include <NGenXXLog.hxx>
-#include <NGenXXCoding.hxx>
+#include <DynXX/CXX/Log.hxx>
+#include <DynXX/CXX/Coding.hxx>
 
 namespace
 {
@@ -116,7 +116,7 @@ namespace
 
 #pragma mark Rand
 
-bool NGenXX::Core::Crypto::rand(size_t len, byte *bytes)
+bool DynXX::Core::Crypto::rand(size_t len, byte *bytes)
 {
     if (len == 0 || bytes == nullptr) [[unlikely]]
     {
@@ -128,7 +128,7 @@ bool NGenXX::Core::Crypto::rand(size_t len, byte *bytes)
 
 #pragma mark AES
 
-Bytes NGenXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
+Bytes DynXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
 {
     const auto in = inBytes.data(), key = keyBytes.data();
     const auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -151,7 +151,7 @@ Bytes NGenXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
 
     if (const auto ret = AES_set_encrypt_key(key, AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_encrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "AES_set_encrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
     
@@ -163,7 +163,7 @@ Bytes NGenXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
     return out;
 }
 
-Bytes NGenXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
+Bytes DynXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
 {
     const auto in = inBytes.data(), key = keyBytes.data();
     const auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -180,7 +180,7 @@ Bytes NGenXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
     AES_KEY aes_key;
     if (const auto ret = AES_set_decrypt_key(key, AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "AES_set_decrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "AES_set_decrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -211,7 +211,7 @@ Bytes NGenXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
 
 #pragma mark AES-GCM
 
-Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
+Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
 {
     if (!checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
@@ -228,28 +228,28 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyByte
     const auto evp = Evp(keyLen);
     if (evp.context() == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
+        dynxxLogPrint(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
     auto ret = EVP_EncryptInit_ex(evp.context(), evp.cipher(), nullptr, nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_EncryptInit_ex(evp.context(), nullptr, nullptr, key, initVector);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -260,7 +260,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyByte
         ret = EVP_EncryptUpdate(evp.context(), nullptr, &len, aad, static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
             return {};
         }
     }
@@ -268,21 +268,21 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyByte
     ret = EVP_EncryptUpdate(evp.context(), out.data(), &len, in, static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_EncryptFinal_ex(evp.context(), out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptFinal_ex encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptFinal_ex encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
     out.insert(out.end(), tag.begin(), tag.end());
@@ -290,7 +290,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyByte
     return out;
 }
 
-Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
+Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
 {
     if (!checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
@@ -309,28 +309,28 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyByte
     const auto evp = Evp(keyLen);
     if (evp.context() == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
+        dynxxLogPrint(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
     auto ret = EVP_DecryptInit_ex(evp.context(), evp.cipher(), nullptr, nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DecryptInit_ex(evp.context(), nullptr, nullptr, key, initVector);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -341,7 +341,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyByte
         ret = EVP_DecryptUpdate(evp.context(), nullptr, &len, aad, static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
             return {};
         }
     }
@@ -349,21 +349,21 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyByte
     ret = EVP_DecryptUpdate(evp.context(), out.data(), &len, in, static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DecryptFinal_ex(evp.context(), out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptFinal_ex decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptFinal_ex decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -373,7 +373,7 @@ Bytes NGenXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyByte
 
 #pragma mark MD5
 
-Bytes NGenXX::Core::Crypto::Hash::md5(BytesView inBytes)
+Bytes DynXX::Core::Crypto::Hash::md5(BytesView inBytes)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -389,21 +389,21 @@ Bytes NGenXX::Core::Crypto::Hash::md5(BytesView inBytes)
     auto ret = MD5_Init(&md5);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Init failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "MD5_Init failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = MD5_Update(&md5, in, inLen);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Update failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "MD5_Update failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = MD5_Final(out.data(), &md5);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "MD5_Final failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "MD5_Final failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -412,7 +412,7 @@ Bytes NGenXX::Core::Crypto::Hash::md5(BytesView inBytes)
 
 #pragma mark SHA1
 
-Bytes NGenXX::Core::Crypto::Hash::sha1(BytesView inBytes)
+Bytes DynXX::Core::Crypto::Hash::sha1(BytesView inBytes)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -430,21 +430,21 @@ Bytes NGenXX::Core::Crypto::Hash::sha1(BytesView inBytes)
     auto ret = EVP_DigestInit_ex(ctx, md, nullptr);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestInit_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestInit_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DigestUpdate(ctx, in, inLen);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestUpdate failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestUpdate failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DigestFinal_ex(ctx, out.data(), &outLen);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "EVP_DigestFinal_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestFinal_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -455,7 +455,7 @@ Bytes NGenXX::Core::Crypto::Hash::sha1(BytesView inBytes)
 
 #pragma mark SHA256
 
-Bytes NGenXX::Core::Crypto::Hash::sha256(BytesView inBytes)
+Bytes DynXX::Core::Crypto::Hash::sha256(BytesView inBytes)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -472,21 +472,21 @@ Bytes NGenXX::Core::Crypto::Hash::sha256(BytesView inBytes)
     auto ret = SHA256_Init(&sha256);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Init failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "SHA256_Init failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = SHA256_Update(&sha256, in, inLen);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Update failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "SHA256_Update failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = SHA256_Final(out.data(), &sha256);
     if (ret != OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "SHA256_Final failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "SHA256_Final failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -495,18 +495,18 @@ Bytes NGenXX::Core::Crypto::Hash::sha256(BytesView inBytes)
 
 #pragma mark RSA
 
-std::string NGenXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPublic) 
+std::string DynXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPublic) 
 {
     if (base64.empty()) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "RSA genKey: empty base64 input");
+        dynxxLogPrint(DynXXLogLevelX::Error, "RSA genKey: empty base64 input");
         return {};
     }
     
-    const auto cleanedBase64 = ngenxxCodingStrTrim(base64);
+    const auto cleanedBase64 = dynxxCodingStrTrim(base64);
     if (!Base64::validate(cleanedBase64)) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "RSA genKey: invalid cleanedBase64");
+        dynxxLogPrint(DynXXLogLevelX::Error, "RSA genKey: invalid cleanedBase64");
         return {};
     }
     
@@ -544,23 +544,23 @@ std::string NGenXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPu
     return result; 
 }
 
-NGenXX::Core::Crypto::RSA::Codec::Codec(BytesView key, int padding) : padding(padding)
+DynXX::Core::Crypto::RSA::Codec::Codec(BytesView key, int padding) : padding(padding)
 {
     this->bmem = BIO_new_mem_buf(key.data(), static_cast<int>(key.size()));
     if (!this->bmem) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to create BIO mem buffer for RSA, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO mem buffer for RSA, err: {}", readErrMsg().value_or(""));
     }
 }
 
-void NGenXX::Core::Crypto::RSA::Codec::moveImp(Codec &&other) noexcept
+void DynXX::Core::Crypto::RSA::Codec::moveImp(Codec &&other) noexcept
 {
     const_cast<int&>(this->padding) = other.padding;
     this->bmem = std::exchange(other.bmem, nullptr);
     this->rsa = std::exchange(other.rsa, nullptr);
 }
 
-void NGenXX::Core::Crypto::RSA::Codec::cleanup() noexcept
+void DynXX::Core::Crypto::RSA::Codec::cleanup() noexcept
 {
     if (this->bmem != nullptr) [[likely]]
     {
@@ -574,13 +574,13 @@ void NGenXX::Core::Crypto::RSA::Codec::cleanup() noexcept
     }
 }
 
-NGenXX::Core::Crypto::RSA::Codec::Codec(Codec &&other) noexcept
+DynXX::Core::Crypto::RSA::Codec::Codec(Codec &&other) noexcept
     : padding(other.padding)
 {
     this->moveImp(std::move(other));
 }
 
-NGenXX::Core::Crypto::RSA::Codec& NGenXX::Core::Crypto::RSA::Codec::operator=(Codec &&other) noexcept
+DynXX::Core::Crypto::RSA::Codec& DynXX::Core::Crypto::RSA::Codec::operator=(Codec &&other) noexcept
 {
     if (this != &other) [[likely]]
     {
@@ -590,12 +590,12 @@ NGenXX::Core::Crypto::RSA::Codec& NGenXX::Core::Crypto::RSA::Codec::operator=(Co
     return *this;
 }
 
-NGenXX::Core::Crypto::RSA::Codec::~Codec()
+DynXX::Core::Crypto::RSA::Codec::~Codec()
 {
     this->cleanup();
 }
 
-std::size_t NGenXX::Core::Crypto::RSA::Codec::outLen() const
+std::size_t DynXX::Core::Crypto::RSA::Codec::outLen() const
 {
     if (this->rsa == nullptr) [[unlikely]]
     {
@@ -604,7 +604,7 @@ std::size_t NGenXX::Core::Crypto::RSA::Codec::outLen() const
     return RSA_size(this->rsa);
 }
 
-NGenXX::Core::Crypto::RSA::Encrypt::Encrypt(BytesView key, int padding) : Codec(key, padding)
+DynXX::Core::Crypto::RSA::Encrypt::Encrypt(BytesView key, int padding) : Codec(key, padding)
 {
     if (this->bmem == nullptr) [[unlikely]]
     {
@@ -613,11 +613,11 @@ NGenXX::Core::Crypto::RSA::Encrypt::Encrypt(BytesView key, int padding) : Codec(
     this->rsa = PEM_read_bio_RSA_PUBKEY(this->bmem, nullptr, nullptr, nullptr);
     if (!this->rsa) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA Failed to create public key, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "RSA Failed to create public key, err: {}", readErrMsg().value_or(""));
     }
 }
 
-std::optional<Bytes> NGenXX::Core::Crypto::RSA::Encrypt::process(BytesView in) const
+std::optional<Bytes> DynXX::Core::Crypto::RSA::Encrypt::process(BytesView in) const
 {
     if (this->rsa == nullptr) [[unlikely]]
     {
@@ -626,13 +626,13 @@ std::optional<Bytes> NGenXX::Core::Crypto::RSA::Encrypt::process(BytesView in) c
     Bytes outBytes(this->outLen(), 0);
     if (const auto ret = RSA_public_encrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, this->padding); ret == -1) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "RSA encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return std::nullopt;
     }
     return std::make_optional(outBytes);
 }
 
-NGenXX::Core::Crypto::RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(key, padding)
+DynXX::Core::Crypto::RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(key, padding)
 {
     if (this->bmem == nullptr) [[unlikely]]
     {
@@ -641,11 +641,11 @@ NGenXX::Core::Crypto::RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(
     this->rsa = PEM_read_bio_RSAPrivateKey(this->bmem, nullptr, nullptr, nullptr);
     if (!this->rsa) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA Failed to create private key, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "RSA Failed to create private key, err: {}", readErrMsg().value_or(""));
     }
 }
 
-std::optional<Bytes> NGenXX::Core::Crypto::RSA::Decrypt::process(BytesView in) const
+std::optional<Bytes> DynXX::Core::Crypto::RSA::Decrypt::process(BytesView in) const
 {
     if (this->rsa == nullptr) [[unlikely]]
     {
@@ -654,7 +654,7 @@ std::optional<Bytes> NGenXX::Core::Crypto::RSA::Decrypt::process(BytesView in) c
     Bytes outBytes(this->outLen(), 0);
     if (const auto ret = RSA_private_decrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, this->padding); ret == -1) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "RSA decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "RSA decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return std::nullopt;
     }
     return std::make_optional(outBytes);
@@ -662,7 +662,7 @@ std::optional<Bytes> NGenXX::Core::Crypto::RSA::Decrypt::process(BytesView in) c
 
 #pragma mark Base64
 
-bool NGenXX::Core::Crypto::Base64::validate(std::string_view in)
+bool DynXX::Core::Crypto::Base64::validate(std::string_view in)
 {
     if (in.empty() || in.size() % 4 != 0) [[unlikely]]
     {
@@ -685,7 +685,7 @@ bool NGenXX::Core::Crypto::Base64::validate(std::string_view in)
 #endif
 }
 
-Bytes NGenXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
+Bytes DynXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -697,14 +697,14 @@ Bytes NGenXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     const auto b64 = BIO_new(BIO_f_base64());
     if (!b64) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to create BIO for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO for Base64, err: {}", readErrMsg().value_or(""));
         return {};
     }
 
     const auto bsmem = BIO_new(BIO_s_mem());
     if (!bsmem) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to create BIO mem for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO mem for Base64, err: {}", readErrMsg().value_or(""));
         BIO_free(b64);
         return {};
     }
@@ -717,7 +717,7 @@ Bytes NGenXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     const auto bpush = BIO_push(b64, bsmem);
     if (!bpush) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
@@ -725,7 +725,7 @@ Bytes NGenXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     const int writeResult = BIO_write(b64, in, static_cast<int>(inLen));
     if (writeResult <= 0) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to write to Base64 BIO, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to write to Base64 BIO, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
@@ -733,7 +733,7 @@ Bytes NGenXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     const int flushResult = BIO_flush(b64);
     if (flushResult <= 0) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to flush Base64 BIO, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to flush Base64 BIO, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
@@ -742,7 +742,7 @@ Bytes NGenXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     const auto outLen = BIO_get_mem_data(bpush, &outBytes);
     if (outLen <= 0 || outBytes == nullptr) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to get Base64 encoded data, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to get Base64 encoded data, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
@@ -756,7 +756,7 @@ Bytes NGenXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     return out;
 }
 
-Bytes NGenXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
+Bytes DynXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -772,7 +772,7 @@ Bytes NGenXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
         {
             continue;
         }
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Invalid Base64 char: {}", in[i]);
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Invalid Base64 char: {}", in[i]);
         return {};
     }
 
@@ -780,14 +780,14 @@ Bytes NGenXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
     const auto bmem = BIO_new_mem_buf(in, static_cast<int>(inLen));
     if (!bmem) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to create BIO mem buffer for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO mem buffer for Base64, err: {}", readErrMsg().value_or(""));
         return {};
     }
 
     const auto b64 = BIO_new(BIO_f_base64());
     if (!b64) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to create BIO for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO for Base64, err: {}", readErrMsg().value_or(""));
         BIO_free_all(bmem);
         return {};
     }
@@ -795,7 +795,7 @@ Bytes NGenXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
     const auto bpush = BIO_push(b64, bmem);
     if (!bpush) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
@@ -811,7 +811,7 @@ Bytes NGenXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
     const auto bytesRead = BIO_read(bpush, outBytes.data(), static_cast<int>(outLen));
     if (bytesRead <= 0) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Failed to decode Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to decode Base64, err: {}", readErrMsg().value_or(""));
         BIO_free_all(bpush);
         return {};
     }

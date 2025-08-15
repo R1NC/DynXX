@@ -2,22 +2,22 @@
 
 #include "SQLite.hxx"
 
-#include <NGenXXLog.hxx>
+#include <DynXX/CXX/Log.hxx>
 
 namespace
 {
-    #define PRINT_ERR(rc, db) ngenxxLogPrint(NGenXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
+    #define PRINT_ERR(rc, db) dynxxLogPrint(DynXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
 
     constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
 }
 
-NGenXX::Core::Store::SQLite::SQLite()
+DynXX::Core::Store::SQLite::SQLite()
 {
     sqlite3_config(SQLITE_CONFIG_SERIALIZED);
     sqlite3_initialize();
 }
 
-std::weak_ptr<NGenXX::Core::Store::SQLite::Connection> NGenXX::Core::Store::SQLite::connect(const std::string &file)
+std::weak_ptr<DynXX::Core::Store::SQLite::Connection> DynXX::Core::Store::SQLite::connect(const std::string &file)
 {
     auto lock = std::lock_guard(this->mutex);
     if (this->conns.contains(file))
@@ -26,7 +26,7 @@ std::weak_ptr<NGenXX::Core::Store::SQLite::Connection> NGenXX::Core::Store::SQLi
     }
     sqlite3 *db;
     const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
+    // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
     if (rc != SQLITE_OK) [[unlikely]]
     {
         PRINT_ERR(rc, db);
@@ -36,7 +36,7 @@ std::weak_ptr<NGenXX::Core::Store::SQLite::Connection> NGenXX::Core::Store::SQLi
     return this->conns.at(file);
 }
 
-void NGenXX::Core::Store::SQLite::close(const std::string &file)
+void DynXX::Core::Store::SQLite::close(const std::string &file)
 {
     auto lock = std::lock_guard(this->mutex);
     if (this->conns.contains(file))
@@ -46,7 +46,7 @@ void NGenXX::Core::Store::SQLite::close(const std::string &file)
     }
 }
 
-void NGenXX::Core::Store::SQLite::closeAll()
+void DynXX::Core::Store::SQLite::closeAll()
 {
     auto lock = std::lock_guard(this->mutex);
     for (auto &[_, v] : this->conns)
@@ -56,25 +56,25 @@ void NGenXX::Core::Store::SQLite::closeAll()
     this->conns.clear();
 }
 
-NGenXX::Core::Store::SQLite::~SQLite()
+DynXX::Core::Store::SQLite::~SQLite()
 {
     sqlite3_shutdown();
 }
 
-NGenXX::Core::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
+DynXX::Core::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
 {
     if (!this->execute(sEnableWAL)) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Warn, "SQLite enable WAL failed");
+        dynxxLogPrint(DynXXLogLevelX::Warn, "SQLite enable WAL failed");
     }
 }
 
-bool NGenXX::Core::Store::SQLite::Connection::execute(std::string_view sql) const
+bool DynXX::Core::Store::SQLite::Connection::execute(std::string_view sql) const
 {
     auto lock = std::lock_guard(this->mutex);
     if (this->db == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.execute DB nullptr");
+        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.execute DB nullptr");
         return false;
     }
     
@@ -93,7 +93,7 @@ bool NGenXX::Core::Store::SQLite::Connection::execute(std::string_view sql) cons
     }
     
     const auto rc = sqlite3_exec(this->db, sql_cstr, nullptr, nullptr, nullptr);
-    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
+    // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -101,26 +101,26 @@ bool NGenXX::Core::Store::SQLite::Connection::execute(std::string_view sql) cons
     return rc == SQLITE_OK;
 }
 
-std::unique_ptr<NGenXX::Core::Store::SQLite::Connection::QueryResult> NGenXX::Core::Store::SQLite::Connection::query(std::string_view sql) const
+std::unique_ptr<DynXX::Core::Store::SQLite::Connection::QueryResult> DynXX::Core::Store::SQLite::Connection::query(std::string_view sql) const
 {
     auto lock = std::lock_guard(this->mutex);
     if (this->db == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.query DB nullptr");
+        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.query DB nullptr");
         return nullptr;
     }
     sqlite3_stmt *stmt;
     const auto rc = sqlite3_prepare_v2(this->db, sql.data(), static_cast<int>(sql.size()), &stmt, nullptr);
-    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.query ret:{}", rc);
+    // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.query ret:{}", rc);
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
         return nullptr;
     }
-    return std::make_unique<NGenXX::Core::Store::SQLite::Connection::QueryResult>(stmt);
+    return std::make_unique<DynXX::Core::Store::SQLite::Connection::QueryResult>(stmt);
 }
 
-NGenXX::Core::Store::SQLite::Connection::~Connection()
+DynXX::Core::Store::SQLite::Connection::~Connection()
 {
     if (this->db != nullptr) [[likely]]
     {
@@ -128,20 +128,20 @@ NGenXX::Core::Store::SQLite::Connection::~Connection()
     }
 }
 
-NGenXX::Core::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) : stmt{stmt}
+DynXX::Core::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) : stmt{stmt}
 {
 }
 
-bool NGenXX::Core::Store::SQLite::Connection::QueryResult::readRow() const
+bool DynXX::Core::Store::SQLite::Connection::QueryResult::readRow() const
 {
     auto lock = std::unique_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readRow STMT nullptr");
+        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.readRow STMT nullptr");
         return false;
     }
     const auto rc = sqlite3_step(this->stmt);
-    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "SQLite.step ret:{}", rc);
+    // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.step ret:{}", rc);
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
         PRINT_ERR(rc, nullptr);
@@ -149,12 +149,12 @@ bool NGenXX::Core::Store::SQLite::Connection::QueryResult::readRow() const
     return rc == SQLITE_ROW;
 }
 
-std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::readColumn(std::string_view column) const
+std::optional<Any> DynXX::Core::Store::SQLite::Connection::QueryResult::readColumn(std::string_view column) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "SQLite.readColumn STMT nullptr");
+        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.readColumn STMT nullptr");
         return std::nullopt;
     }
     auto colCount = sqlite3_column_count(this->stmt);
@@ -179,11 +179,11 @@ std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::readCol
     return std::nullopt;
 }
 
-std::optional<Any> NGenXX::Core::Store::SQLite::Connection::QueryResult::operator[](std::string_view column) const {
+std::optional<Any> DynXX::Core::Store::SQLite::Connection::QueryResult::operator[](std::string_view column) const {
     return this->readColumn(column);
 }
 
-NGenXX::Core::Store::SQLite::Connection::QueryResult::~QueryResult()
+DynXX::Core::Store::SQLite::Connection::QueryResult::~QueryResult()
 {
     if (this->stmt != nullptr) [[likely]]
     {

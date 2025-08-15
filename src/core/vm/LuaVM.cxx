@@ -5,8 +5,8 @@
 #include <uv.h>
 #endif
 
-#include <NGenXXLog.hxx>
-#include <NGenXXTypes.hxx>
+#include <DynXX/CXX/Log.hxx>
+#include <DynXX/CXX/Types.hxx>
 
 namespace
 {
@@ -123,12 +123,12 @@ namespace
         const char *luaErrMsg = lua_tostring(L, -1);                            \
         if (luaErrMsg != nullptr)                                               \
         {                                                                       \
-            ngenxxLogPrintF(NGenXXLogLevelX::Error, "{}{}", prefix, luaErrMsg); \
+            dynxxLogPrintF(DynXXLogLevelX::Error, "{}{}", prefix, luaErrMsg); \
         }                                                                       \
     } while (0);
 }
 
-NGenXX::Core::VM::LuaVM::LuaVM()
+DynXX::Core::VM::LuaVM::LuaVM()
 {
     this->lstate = luaL_newstate();
     luaL_openlibs(this->lstate);
@@ -138,7 +138,7 @@ NGenXX::Core::VM::LuaVM::LuaVM()
 #endif
 }
 
-NGenXX::Core::VM::LuaVM::~LuaVM()
+DynXX::Core::VM::LuaVM::~LuaVM()
 {
     this->active = false;
 #if defined(USE_LIBUV)
@@ -147,12 +147,12 @@ NGenXX::Core::VM::LuaVM::~LuaVM()
     lua_close(this->lstate);
 }
 
-void NGenXX::Core::VM::LuaVM::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
+void DynXX::Core::VM::LuaVM::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
     lua_register(this->lstate, funcName.c_str(), funcPointer);
 }
 
 #if !defined(__EMSCRIPTEN__)
-bool NGenXX::Core::VM::LuaVM::loadFile(const std::string &file)
+bool DynXX::Core::VM::LuaVM::loadFile(const std::string &file)
 {
     auto lock = std::lock_guard(this->vmMutex);
     if (const auto ret = luaL_dofile(this->lstate, file.c_str()); ret != LUA_OK) [[unlikely]]
@@ -164,7 +164,7 @@ bool NGenXX::Core::VM::LuaVM::loadFile(const std::string &file)
 }
 #endif
 
-bool NGenXX::Core::VM::LuaVM::loadScript(const std::string &script)
+bool DynXX::Core::VM::LuaVM::loadScript(const std::string &script)
 {
     auto lock = std::lock_guard(this->vmMutex);
     if (const auto ret = luaL_dostring(this->lstate, script.c_str()); ret != LUA_OK) [[unlikely]]
@@ -176,7 +176,7 @@ bool NGenXX::Core::VM::LuaVM::loadScript(const std::string &script)
 }
 
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
-std::optional<std::string> NGenXX::Core::VM::LuaVM::callFunc(std::string_view func, std::string_view params)
+std::optional<std::string> DynXX::Core::VM::LuaVM::callFunc(std::string_view func, std::string_view params)
 {
     auto lock = std::lock_guard(this->vmMutex);
     lua_getglobal(this->lstate, func.data());

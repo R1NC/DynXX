@@ -18,25 +18,25 @@
 #include <spdlog/sinks/daily_file_sink.h>
 #endif
 
-#include <NGenXXLog.h>
-#include <NGenXXTypes.hxx>
+#include <DynXX/C/Log.h>
+#include <DynXX/CXX/Types.hxx>
 #if defined(USE_SPDLOG)
-#include <NGenXX.hxx>
+#include <DynXX/CXX/DynXX.hxx>
 #endif
 
 #include "../concurrent/ConcurrentUtil.hxx"
 
 #if defined(__APPLE__)
-void _ngenxx_log_apple(const char*);
+void _dynxx_log_apple(const char*);
 #endif
 
 namespace
 {
-    int _level = NGenXXLogLevelNone;
+    int _level = DynXXLogLevelNone;
     std::function<void(int level, const char *content)> _callback = nullptr;
     std::mutex _mutex;
 
-    constexpr auto TAG = "NGENXX";
+    constexpr auto TAG = "DYNXX";
     constexpr size_t MAX_LEN = 1023;
 
     void stdLogPrint(int level, std::string_view content)
@@ -46,7 +46,7 @@ namespace
 #elif defined(__OHOS__)
         OH_LOG_Print(LOG_APP, static_cast<LogLevel>(level), 0xC0DE, TAG, "%{public}.*s", static_cast<int>(content.length()), content.data());
 #elif defined(__APPLE__)
-        _ngenxx_log_apple(content.data());
+        _dynxx_log_apple(content.data());
 #elif defined(__EMSCRIPTEN__)
         EM_ASM({
             var tag = UTF8ToString($0);
@@ -63,12 +63,12 @@ namespace
 #if defined(USE_SPDLOG)
     void spdLogPrepare() 
     {
-        NGenXX::Core::Concurrent::callOnce([]() {
+        DynXX::Core::Concurrent::callOnce([]() {
             try 
             {
                 const auto& logger = spdlog::daily_logger_mt(
-                    "ngenxx_spdlog",
-                    ngenxxRootPath() + "/log.txt",
+                    "dynxx_spdlog",
+                    dynxxRootPath() + "/log.txt",
                     0,
                     0 
                 );
@@ -76,16 +76,16 @@ namespace
                 spdlog::set_pattern("[%Y-%m-%d_%H:%M:%S.%e] [%l] [%t] %v");
                 switch(_level)
                 {
-                    case NGenXXLogLevelDebug:
+                    case DynXXLogLevelDebug:
                         spdlog::set_level(spdlog::level::debug);
                         break;
-                    case NGenXXLogLevelInfo:
+                    case DynXXLogLevelInfo:
                         spdlog::set_level(spdlog::level::info);
                         break;
-                    case NGenXXLogLevelWarn:
+                    case DynXXLogLevelWarn:
                         spdlog::set_level(spdlog::level::warn);
                         break;
-                    case NGenXXLogLevelError:
+                    case DynXXLogLevelError:
                         spdlog::set_level(spdlog::level::err);
                         break;
                     default:
@@ -103,19 +103,19 @@ namespace
     void spdLogPrint(const int level, std::string_view content)
     {
         spdLogPrepare();
-        if (level == NGenXXLogLevelDebug)
+        if (level == DynXXLogLevelDebug)
         {
             spdlog::debug(content);
         }
-        else if (level == NGenXXLogLevelInfo)
+        else if (level == DynXXLogLevelInfo)
         {
             spdlog::info(content);
         }
-        else if (level == NGenXXLogLevelWarn)
+        else if (level == DynXXLogLevelWarn)
         {
             spdlog::warn(content);
         }
-        else if (level == NGenXXLogLevelError)
+        else if (level == DynXXLogLevelError)
         {
             spdlog::error(content);
         }
@@ -173,9 +173,9 @@ namespace
     }
 }
 
-void NGenXX::Core::Log::setLevel(int level)
+void DynXX::Core::Log::setLevel(int level)
 {
-    if (level < NGenXXLogLevelDebug || level > NGenXXLogLevelNone) [[unlikely]]
+    if (level < DynXXLogLevelDebug || level > DynXXLogLevelNone) [[unlikely]]
     {
         return;
     }
@@ -188,17 +188,17 @@ void NGenXX::Core::Log::setLevel(int level)
     _level = level;
 }
 
-void NGenXX::Core::Log::setCallback(const std::function<void(int level, const char *content)> &callback)
+void DynXX::Core::Log::setCallback(const std::function<void(int level, const char *content)> &callback)
 {
     auto lock = std::lock_guard(_mutex);
     _callback = callback;
 }
 
-void NGenXX::Core::Log::print(int level, std::string_view content)
+void DynXX::Core::Log::print(int level, std::string_view content)
 {
     auto lock = std::lock_guard(_mutex);
 
-    if (level < _level || level < NGenXXLogLevelDebug || level >= NGenXXLogLevelNone) [[unlikely]]
+    if (level < _level || level < DynXXLogLevelDebug || level >= DynXXLogLevelNone) [[unlikely]]
     {
         return;
     }

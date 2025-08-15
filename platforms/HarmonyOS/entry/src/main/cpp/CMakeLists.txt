@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5.0)
 
-project(ngenxx)
+project(dynxx)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -76,10 +76,10 @@ set(libmmkvPath ${libDir}/libmmkv.a)
 add_library(libmmkv STATIC IMPORTED)
 set_property(TARGET libmmkv PROPERTY IMPORTED_LOCATION ${libmmkvPath})
 
-#Find NGenXX
-set(NGenXXPath ${libDir}/libNGenXX.a)
-add_library(libNGenXX STATIC IMPORTED)
-set_property(TARGET libNGenXX PROPERTY IMPORTED_LOCATION ${NGenXXPath})
+#Find DynXX
+set(DynXXPath ${libDir}/libDynXX.a)
+add_library(libDynXX STATIC IMPORTED)
+set_property(TARGET libDynXX PROPERTY IMPORTED_LOCATION ${DynXXPath})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     libcrypto
@@ -93,7 +93,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     #libadaurl
     libmmkvcore
     libmmkv
-    libNGenXX
+    libDynXX
     z
     uv
     libace_napi.z.so

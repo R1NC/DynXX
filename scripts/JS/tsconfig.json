@@ -21,7 +21,7 @@
         "declarationMap": false
     },
     "include": [
-        "NGenXX.ts",
+        "DynXX.ts",
         "biz.ts",
     ]
 }

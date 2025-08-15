@@ -13,7 +13,7 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "iphlpapi.lib")
 
-std::string NGenXX::Core::Net::Util::macAddress()
+std::string DynXX::Core::Net::Util::macAddress()
 {
     PIP_ADAPTER_ADDRESSES pAddresses = NULL;
     ULONG outBufLen = 0;
@@ -41,7 +41,7 @@ std::string NGenXX::Core::Net::Util::macAddress()
     return macAddress;
 }
 
-NGenXX::Core::Net::Util::NetType NGenXX::Core::Net::Util::netType() 
+DynXX::Core::Net::Util::NetType DynXX::Core::Net::Util::netType() 
 {
     PIP_ADAPTER_ADDRESSES pAddresses = NULL;
     ULONG outBufLen = 0;
@@ -77,7 +77,7 @@ NGenXX::Core::Net::Util::NetType NGenXX::Core::Net::Util::netType()
     return result;
 }
 
-std::string NGenXX::Core::Net::Util::publicIpV4()
+std::string DynXX::Core::Net::Util::publicIpV4()
 {
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
@@ -121,7 +121,7 @@ std::string NGenXX::Core::Net::Util::publicIpV4()
     return std::string(ipStr);
 }
 
-std::string NGenXX::Core::Net::Util::publicIpV6()
+std::string DynXX::Core::Net::Util::publicIpV6()
 {
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 

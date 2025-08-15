@@ -14,7 +14,7 @@ string(
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #endif()
 
-project(NGenXX)
+project(DynXX)
 
 function(checkAppleVersionLimit iosV macV RESULT_VAR)
     if(APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "${iosV}") OR 
@@ -112,10 +112,10 @@ if(EMSCRIPTEN)
     set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
     set(WASM_LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s FETCH -s ASYNCIFY=1")
     set(WASM_EXPORTS_RUNTIME_METHODS "['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction']")
-    set(WASM_BASE_EXPORTS_FUNCS "'_malloc','_free','_ngenxx_init','_ngenxx_release'")
+    set(WASM_BASE_EXPORTS_FUNCS "'_malloc','_free','_dynxx_init','_dynxx_release'")
     if(USE_LUA)
         # WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
-        set(WASM_EXTRA_EXPORTS_FUNCS ",'_ngenxx_lua_loadS','_ngenxx_lua_call'")
+        set(WASM_EXTRA_EXPORTS_FUNCS ",'_dynxx_lua_loadS','_dynxx_lua_call'")
     else()
         set(WASM_EXTRA_EXPORTS_FUNCS "")
     endif()

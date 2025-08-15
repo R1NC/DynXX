@@ -7,13 +7,13 @@
 #include <ranges>
 #endif
 
-#include <NGenXX.hxx>
-#include <NGenXXNet.h>
+#include <DynXX/CXX/DynXX.hxx>
+#include <DynXX/C/Net.h>
 #include "../core/json/JsonCodec.hxx"
 
 namespace
 {
-    using namespace NGenXX::Core::Json;
+    using namespace DynXX::Core::Json;
 
     std::string bytes2json(const BytesView bytes)
     {
@@ -32,7 +32,7 @@ namespace
         });
 #endif
         const auto cj = cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));
-        const auto json = ngenxxJsonToStr(cj);
+        const auto json = dynxxJsonToStr(cj);
         cJSON_Delete(cj);
         return json.value_or("");
     }
@@ -44,7 +44,7 @@ namespace
         {
             cJSON_AddItemToArray(cj, cJSON_CreateString(it.c_str()));
         }
-        const auto json = ngenxxJsonToStr(cj);
+        const auto json = dynxxJsonToStr(cj);
         cJSON_Delete(cj);
         return json.value_or("");
     }
@@ -176,65 +176,65 @@ namespace
     };
 }
 
-std::string ngenxx_get_versionS(const char *json)
+std::string dynxx_get_versionS(const char *json)
 {
-    return ngenxxGetVersion();
+    return dynxxGetVersion();
 }
 
-std::string ngenxx_root_pathS(const char *json)
+std::string dynxx_root_pathS(const char *json)
 {
-    return ngenxxRootPath();
+    return dynxxRootPath();
 }
 
 #pragma mark Device.DeviceInfo
 
-int ngenxx_device_typeS(const char *json)
+int dynxx_device_typeS(const char *json)
 {
-    return static_cast<int>(ngenxxDeviceType());
+    return static_cast<int>(dynxxDeviceType());
 }
 
-std::string ngenxx_device_nameS(const char *json)
+std::string dynxx_device_nameS(const char *json)
 {
-    return ngenxxDeviceName();
+    return dynxxDeviceName();
 }
 
-std::string ngenxx_device_manufacturerS(const char *json)
+std::string dynxx_device_manufacturerS(const char *json)
 {
-    return ngenxxDeviceManufacturer();
+    return dynxxDeviceManufacturer();
 }
 
-std::string ngenxx_device_os_versionS(const char *json)
+std::string dynxx_device_os_versionS(const char *json)
 {
-    return ngenxxDeviceOsVersion();
+    return dynxxDeviceOsVersion();
 }
 
-int ngenxx_device_cpu_archS(const char *json)
+int dynxx_device_cpu_archS(const char *json)
 {
-    return static_cast<int>(ngenxxDeviceCpuArch());
+    return static_cast<int>(dynxxDeviceCpuArch());
 }
 
 #pragma mark Log
 
-void ngenxx_log_printS(const char *json)
+void dynxx_log_printS(const char *json)
 {
     if (json == nullptr)
     {
         return;
     }
     const JsonParser parser(json);
-    const auto level = parser.num<NGenXXLogLevelX>("level");
+    const auto level = parser.num<DynXXLogLevelX>("level");
     const auto content = parser.str("content");
     if (level == std::nullopt || content == std::nullopt)
     {
         return;
     }
 
-    ngenxxLogPrint(level.value(), content.value());
+    dynxxLogPrint(level.value(), content.value());
 }
 
 #pragma mark Net.Http
 
-std::string ngenxx_net_http_requestS(const char *json)
+std::string dynxx_net_http_requestS(const char *json)
 {
     if (json == nullptr)
     {
@@ -242,7 +242,7 @@ std::string ngenxx_net_http_requestS(const char *json)
     }
     const JsonParser parser(json);
     const auto [url, params] = parser.strX("url", "params");
-    const auto [method, fileSize, timeout] = parser.numX<NGenXXHttpMethodX, size_t, size_t>("method", "fileSize", "timeout");
+    const auto [method, fileSize, timeout] = parser.numX<DynXXHttpMethodX, size_t, size_t>("method", "fileSize", "timeout");
 
     const auto rawBody = parser.byteArray("rawBodyBytes");
 
@@ -256,7 +256,7 @@ std::string ngenxx_net_http_requestS(const char *json)
 
     const auto header_c = header_v.size();
     const auto form_field_count = form_field_name_v.size();
-    if (url == std::nullopt || method == std::nullopt || header_c > NGENXX_HTTP_HEADER_MAX_COUNT)
+    if (url == std::nullopt || method == std::nullopt || header_c > DYNXX_HTTP_HEADER_MAX_COUNT)
     {
         return {};
     }
@@ -273,7 +273,7 @@ std::string ngenxx_net_http_requestS(const char *json)
         return {};
     }
 
-    const auto t = ngenxxNetHttpRequest(url.value(), method.value(), 
+    const auto t = dynxxNetHttpRequest(url.value(), method.value(), 
                         params.value_or(""), rawBody, header_v,
                         form_field_name_v, form_field_mime_v, form_field_data_v,
                         cFILE, fileSize.value_or(0), 
@@ -281,7 +281,7 @@ std::string ngenxx_net_http_requestS(const char *json)
     return t.toJson().value_or("");
 }
 
-bool ngenxx_net_http_downloadS(const char *json)
+bool dynxx_net_http_downloadS(const char *json)
 {
     if (json == nullptr)
     {
@@ -296,12 +296,12 @@ bool ngenxx_net_http_downloadS(const char *json)
         return false;
     }
 
-    return ngenxxNetHttpDownload(url.value(), file.value(), timeout.value_or(0));
+    return dynxxNetHttpDownload(url.value(), file.value(), timeout.value_or(0));
 }
 
 #pragma mark Store.SQLite
 
-std::string ngenxx_store_sqlite_openS(const char *json)
+std::string dynxx_store_sqlite_openS(const char *json)
 {
     if (json == nullptr)
     {
@@ -314,7 +314,7 @@ std::string ngenxx_store_sqlite_openS(const char *json)
         return {};
     }
 
-    const auto db = ngenxxStoreSqliteOpen(_id.value());
+    const auto db = dynxxStoreSqliteOpen(_id.value());
     if (db == nullptr)
     {
         return {};
@@ -322,7 +322,7 @@ std::string ngenxx_store_sqlite_openS(const char *json)
     return std::to_string(ptr2addr(db));
 }
 
-bool ngenxx_store_sqlite_executeS(const char *json)
+bool dynxx_store_sqlite_executeS(const char *json)
 {
     if (json == nullptr)
     {
@@ -336,10 +336,10 @@ bool ngenxx_store_sqlite_executeS(const char *json)
         return false;
     }
 
-    return ngenxxStoreSqliteExecute(conn, sql.value());
+    return dynxxStoreSqliteExecute(conn, sql.value());
 }
 
-std::string ngenxx_store_sqlite_query_doS(const char *json)
+std::string dynxx_store_sqlite_query_doS(const char *json)
 {
     if (json == nullptr)
     {
@@ -353,7 +353,7 @@ std::string ngenxx_store_sqlite_query_doS(const char *json)
         return {};
     }
 
-    const auto res = ngenxxStoreSqliteQueryDo(conn, sql.value());
+    const auto res = dynxxStoreSqliteQueryDo(conn, sql.value());
     if (res == nullptr)
     {
         return {};
@@ -361,7 +361,7 @@ std::string ngenxx_store_sqlite_query_doS(const char *json)
     return std::to_string(ptr2addr(res));
 }
 
-bool ngenxx_store_sqlite_query_read_rowS(const char *json)
+bool dynxx_store_sqlite_query_read_rowS(const char *json)
 {
     if (json == nullptr)
     {
@@ -374,10 +374,10 @@ bool ngenxx_store_sqlite_query_read_rowS(const char *json)
         return false;
     }
 
-    return ngenxxStoreSqliteQueryReadRow(query_result);
+    return dynxxStoreSqliteQueryReadRow(query_result);
 }
 
-std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
+std::string dynxx_store_sqlite_query_read_column_textS(const char *json)
 {
     if (json == nullptr)
     {
@@ -391,11 +391,11 @@ std::string ngenxx_store_sqlite_query_read_column_textS(const char *json)
         return {};
     }
 
-    const auto s = ngenxxStoreSqliteQueryReadColumnText(query_result, column.value());
+    const auto s = dynxxStoreSqliteQueryReadColumnText(query_result, column.value());
     return s.value_or(std::string{});
 }
 
-int64_t ngenxx_store_sqlite_query_read_column_integerS(const char *json)
+int64_t dynxx_store_sqlite_query_read_column_integerS(const char *json)
 {
     if (json == nullptr)
     {
@@ -409,11 +409,11 @@ int64_t ngenxx_store_sqlite_query_read_column_integerS(const char *json)
         return 0;
     }
 
-    const auto i = ngenxxStoreSqliteQueryReadColumnInteger(query_result, column.value());
+    const auto i = dynxxStoreSqliteQueryReadColumnInteger(query_result, column.value());
     return i.value_or(0);
 }
 
-double ngenxx_store_sqlite_query_read_column_floatS(const char *json)
+double dynxx_store_sqlite_query_read_column_floatS(const char *json)
 {
     if (json == nullptr)
     {
@@ -427,11 +427,11 @@ double ngenxx_store_sqlite_query_read_column_floatS(const char *json)
         return 0;
     }
 
-    const auto f = ngenxxStoreSqliteQueryReadColumnFloat(query_result, column.value());
+    const auto f = dynxxStoreSqliteQueryReadColumnFloat(query_result, column.value());
     return f.value_or(0.0);
 }
 
-void ngenxx_store_sqlite_query_dropS(const char *json)
+void dynxx_store_sqlite_query_dropS(const char *json)
 {
     if (json == nullptr)
     {
@@ -444,10 +444,10 @@ void ngenxx_store_sqlite_query_dropS(const char *json)
         return;
     }
 
-    ngenxxStoreSqliteQueryDrop(query_result);
+    dynxxStoreSqliteQueryDrop(query_result);
 }
 
-void ngenxx_store_sqlite_closeS(const char *json)
+void dynxx_store_sqlite_closeS(const char *json)
 {
     if (json == nullptr)
     {
@@ -460,12 +460,12 @@ void ngenxx_store_sqlite_closeS(const char *json)
         return;
     }
 
-    ngenxxStoreSqliteClose(conn);
+    dynxxStoreSqliteClose(conn);
 }
 
 #pragma mark Store.KV
 
-std::string ngenxx_store_kv_openS(const char *json)
+std::string dynxx_store_kv_openS(const char *json)
 {
     if (json == nullptr)
     {
@@ -478,7 +478,7 @@ std::string ngenxx_store_kv_openS(const char *json)
         return {};
     }
 
-    const auto res = ngenxxStoreKvOpen(_id.value());
+    const auto res = dynxxStoreKvOpen(_id.value());
     if (res == nullptr)
     {
         return {};
@@ -486,7 +486,7 @@ std::string ngenxx_store_kv_openS(const char *json)
     return std::to_string(ptr2addr(res));
 }
 
-std::string ngenxx_store_kv_read_stringS(const char *json)
+std::string dynxx_store_kv_read_stringS(const char *json)
 {
     if (json == nullptr)
     {
@@ -500,11 +500,11 @@ std::string ngenxx_store_kv_read_stringS(const char *json)
         return {};
     }
 
-    const auto s = ngenxxStoreKvReadString(conn, k.value());
+    const auto s = dynxxStoreKvReadString(conn, k.value());
     return s.value_or(std::string{});
 }
 
-bool ngenxx_store_kv_write_stringS(const char *json)
+bool dynxx_store_kv_write_stringS(const char *json)
 {
     if (json == nullptr)
     {
@@ -518,10 +518,10 @@ bool ngenxx_store_kv_write_stringS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvWriteString(conn, k.value(), v.value_or(""));
+    return dynxxStoreKvWriteString(conn, k.value(), v.value_or(""));
 }
 
-int64_t ngenxx_store_kv_read_integerS(const char *json)
+int64_t dynxx_store_kv_read_integerS(const char *json)
 {
     if (json == nullptr)
     {
@@ -535,11 +535,11 @@ int64_t ngenxx_store_kv_read_integerS(const char *json)
         return 0;
     }
 
-    const auto i = ngenxxStoreKvReadInteger(conn, k.value());
+    const auto i = dynxxStoreKvReadInteger(conn, k.value());
     return i.value_or(0);
 }
 
-bool ngenxx_store_kv_write_integerS(const char *json)
+bool dynxx_store_kv_write_integerS(const char *json)
 {
     if (json == nullptr)
     {
@@ -554,10 +554,10 @@ bool ngenxx_store_kv_write_integerS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvWriteInteger(conn, k.value(), v.value_or(0));
+    return dynxxStoreKvWriteInteger(conn, k.value(), v.value_or(0));
 }
 
-double ngenxx_store_kv_read_floatS(const char *json)
+double dynxx_store_kv_read_floatS(const char *json)
 {
     if (json == nullptr)
     {
@@ -571,11 +571,11 @@ double ngenxx_store_kv_read_floatS(const char *json)
         return false;
     }
 
-    const auto f = ngenxxStoreKvReadFloat(conn, k.value());
+    const auto f = dynxxStoreKvReadFloat(conn, k.value());
     return f.value_or(0.0);
 }
 
-bool ngenxx_store_kv_write_floatS(const char *json)
+bool dynxx_store_kv_write_floatS(const char *json)
 {
     if (json == nullptr)
     {
@@ -590,10 +590,10 @@ bool ngenxx_store_kv_write_floatS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvWriteFloat(conn, k.value(), v.value_or(0.0));
+    return dynxxStoreKvWriteFloat(conn, k.value(), v.value_or(0.0));
 }
 
-std::string ngenxx_store_kv_all_keysS(const char *json)
+std::string dynxx_store_kv_all_keysS(const char *json)
 {
     if (json == nullptr)
     {
@@ -606,11 +606,11 @@ std::string ngenxx_store_kv_all_keysS(const char *json)
         return {};
     }
 
-    const auto res = ngenxxStoreKvAllKeys(conn);
+    const auto res = dynxxStoreKvAllKeys(conn);
     return strArray2json(res);
 }
 
-bool ngenxx_store_kv_containsS(const char *json)
+bool dynxx_store_kv_containsS(const char *json)
 {
     if (json == nullptr)
     {
@@ -624,10 +624,10 @@ bool ngenxx_store_kv_containsS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvContains(conn, k.value());
+    return dynxxStoreKvContains(conn, k.value());
 }
 
-bool ngenxx_store_kv_removeS(const char *json)
+bool dynxx_store_kv_removeS(const char *json)
 {
     if (json == nullptr)
     {
@@ -641,10 +641,10 @@ bool ngenxx_store_kv_removeS(const char *json)
         return false;
     }
 
-    return ngenxxStoreKvRemove(conn, k.value());
+    return dynxxStoreKvRemove(conn, k.value());
 }
 
-void ngenxx_store_kv_clearS(const char *json)
+void dynxx_store_kv_clearS(const char *json)
 {
     if (json == nullptr)
     {
@@ -657,10 +657,10 @@ void ngenxx_store_kv_clearS(const char *json)
         return;
     }
 
-    ngenxxStoreKvClear(conn);
+    dynxxStoreKvClear(conn);
 }
 
-void ngenxx_store_kv_closeS(const char *json)
+void dynxx_store_kv_closeS(const char *json)
 {
     if (json == nullptr)
     {
@@ -673,12 +673,12 @@ void ngenxx_store_kv_closeS(const char *json)
         return;
     }
 
-    ngenxxStoreKvClose(conn);
+    dynxxStoreKvClose(conn);
 }
 
 #pragma mark Coding
 
-std::string ngenxx_coding_hex_bytes2strS(const char *json)
+std::string dynxx_coding_hex_bytes2strS(const char *json)
 {
     if (json == nullptr)
     {
@@ -692,10 +692,10 @@ std::string ngenxx_coding_hex_bytes2strS(const char *json)
         return {};
     }
 
-    return ngenxxCodingHexBytes2str(in);
+    return dynxxCodingHexBytes2str(in);
 }
 
-std::string ngenxx_coding_hex_str2bytesS(const char *json)
+std::string dynxx_coding_hex_str2bytesS(const char *json)
 {
     if (json == nullptr)
     {
@@ -709,11 +709,11 @@ std::string ngenxx_coding_hex_str2bytesS(const char *json)
         return {};
     }
 
-    const auto bytes = ngenxxCodingHexStr2bytes(str.value());
+    const auto bytes = dynxxCodingHexStr2bytes(str.value());
     return bytes2json(bytes);
 }
 
-std::string ngenxx_coding_bytes2strS(const char *json)
+std::string dynxx_coding_bytes2strS(const char *json)
 {
     if (json == nullptr)
     {
@@ -727,10 +727,10 @@ std::string ngenxx_coding_bytes2strS(const char *json)
         return {};
     }
 
-    return ngenxxCodingBytes2str(in);
+    return dynxxCodingBytes2str(in);
 }
 
-std::string ngenxx_coding_str2bytesS(const char *json)
+std::string dynxx_coding_str2bytesS(const char *json)
 {
     if (json == nullptr)
     {
@@ -744,11 +744,11 @@ std::string ngenxx_coding_str2bytesS(const char *json)
         return {};
     }
 
-    const auto bytes = ngenxxCodingStr2bytes(str.value());
+    const auto bytes = dynxxCodingStr2bytes(str.value());
     return bytes2json(bytes);
 }
 
-std::string ngenxx_coding_case_upperS(const char *json)
+std::string dynxx_coding_case_upperS(const char *json)
 {
     if (json == nullptr)
     {
@@ -761,10 +761,10 @@ std::string ngenxx_coding_case_upperS(const char *json)
     {
         return {};
     }
-    return ngenxxCodingCaseUpper(str.value());
+    return dynxxCodingCaseUpper(str.value());
 }
 
-std::string ngenxx_coding_case_lowerS(const char *json)
+std::string dynxx_coding_case_lowerS(const char *json)
 {
     if (json == nullptr)
     {
@@ -777,12 +777,12 @@ std::string ngenxx_coding_case_lowerS(const char *json)
     {
         return {};
     }
-    return ngenxxCodingCaseLower(str.value());
+    return dynxxCodingCaseLower(str.value());
 }
 
 #pragma mark Crypto
 
-std::string ngenxx_crypto_randS(const char *json)
+std::string dynxx_crypto_randS(const char *json)
 {
     if (json == nullptr)
     {
@@ -795,11 +795,11 @@ std::string ngenxx_crypto_randS(const char *json)
         return {};
     }
     Bytes outBytes(outLen.value());
-    ngenxxCryptoRand(outBytes.size(), outBytes.data());
+    dynxxCryptoRand(outBytes.size(), outBytes.data());
     return bytes2json(outBytes);
 }
 
-std::string ngenxx_crypto_aes_encryptS(const char *json)
+std::string dynxx_crypto_aes_encryptS(const char *json)
 {
     if (json == nullptr)
     {
@@ -819,11 +819,11 @@ std::string ngenxx_crypto_aes_encryptS(const char *json)
         return {};
     }
 
-    const auto outBytes = ngenxxCryptoAesEncrypt(in, key);
+    const auto outBytes = dynxxCryptoAesEncrypt(in, key);
     return bytes2json(outBytes);
 }
 
-std::string ngenxx_crypto_aes_decryptS(const char *json)
+std::string dynxx_crypto_aes_decryptS(const char *json)
 {
     if (json == nullptr)
     {
@@ -843,45 +843,11 @@ std::string ngenxx_crypto_aes_decryptS(const char *json)
         return {};
     }
 
-    const auto outBytes = ngenxxCryptoAesDecrypt(in, key);
+    const auto outBytes = dynxxCryptoAesDecrypt(in, key);
     return bytes2json(outBytes);
 }
 
-std::string ngenxx_crypto_aes_gcm_encryptS(const char *json)
-{
-    if (json == nullptr)
-    {
-        return {};
-    }
-    const JsonParser parser(json);
-
-    const auto in = parser.byteArray("inBytes");
-    if (in.empty())
-    {
-        return {};
-    }
-
-    const auto key = parser.byteArray("keyBytes");
-    if (key.empty())
-    {
-        return {};
-    }
-
-    const auto iv = parser.byteArray("initVectorBytes");
-    if (iv.empty())
-    {
-        return {};
-    }
-
-    const auto aad = parser.byteArray("aadBytes");
-
-    const auto tagBits = parser.num<size_t>("tagBits");
-
-    const auto outBytes = ngenxxCryptoAesGcmEncrypt(in, key, iv, tagBits.value_or(0), aad);
-    return bytes2json(outBytes);
-}
-
-std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
+std::string dynxx_crypto_aes_gcm_encryptS(const char *json)
 {
     if (json == nullptr)
     {
@@ -911,11 +877,45 @@ std::string ngenxx_crypto_aes_gcm_decryptS(const char *json)
 
     const auto tagBits = parser.num<size_t>("tagBits");
 
-    const auto outBytes = ngenxxCryptoAesGcmDecrypt(in, key, iv, tagBits.value_or(0), aad);
+    const auto outBytes = dynxxCryptoAesGcmEncrypt(in, key, iv, tagBits.value_or(0), aad);
     return bytes2json(outBytes);
 }
 
-std::string ngenxx_crypto_rsa_gen_keyS(const char *json)
+std::string dynxx_crypto_aes_gcm_decryptS(const char *json)
+{
+    if (json == nullptr)
+    {
+        return {};
+    }
+    const JsonParser parser(json);
+
+    const auto in = parser.byteArray("inBytes");
+    if (in.empty())
+    {
+        return {};
+    }
+
+    const auto key = parser.byteArray("keyBytes");
+    if (key.empty())
+    {
+        return {};
+    }
+
+    const auto iv = parser.byteArray("initVectorBytes");
+    if (iv.empty())
+    {
+        return {};
+    }
+
+    const auto aad = parser.byteArray("aadBytes");
+
+    const auto tagBits = parser.num<size_t>("tagBits");
+
+    const auto outBytes = dynxxCryptoAesGcmDecrypt(in, key, iv, tagBits.value_or(0), aad);
+    return bytes2json(outBytes);
+}
+
+std::string dynxx_crypto_rsa_gen_keyS(const char *json)
 {
     if (json == nullptr)
     {
@@ -935,10 +935,10 @@ std::string ngenxx_crypto_rsa_gen_keyS(const char *json)
         return {};
     }
 
-    return ngenxxCryptoRsaGenKey(base64.value(), isPublic.value());
+    return dynxxCryptoRsaGenKey(base64.value(), isPublic.value());
 }
 
-std::string ngenxx_crypto_rsa_encryptS(const char *json)
+std::string dynxx_crypto_rsa_encryptS(const char *json)
 {
     if (json == nullptr)
     {
@@ -958,17 +958,17 @@ std::string ngenxx_crypto_rsa_encryptS(const char *json)
         return {};
     }
 
-    const auto padding = parser.num<NGenXXCryptoRSAPaddingX>("padding");
+    const auto padding = parser.num<DynXXCryptoRSAPaddingX>("padding");
     if (padding == std::nullopt)
     {
         return {};
     }
 
-    const auto outBytes = ngenxxCryptoRsaEncrypt(in, key, padding.value());
+    const auto outBytes = dynxxCryptoRsaEncrypt(in, key, padding.value());
     return bytes2json(outBytes);
 }
 
-std::string ngenxx_crypto_rsa_decryptS(const char *json)
+std::string dynxx_crypto_rsa_decryptS(const char *json)
 {
     if (json == nullptr)
     {
@@ -988,17 +988,17 @@ std::string ngenxx_crypto_rsa_decryptS(const char *json)
         return {};
     }
 
-    const auto padding = parser.num<NGenXXCryptoRSAPaddingX>("padding");
+    const auto padding = parser.num<DynXXCryptoRSAPaddingX>("padding");
     if (padding == std::nullopt)
     {
         return {};
     }
 
-    const auto outBytes = ngenxxCryptoRsaDecrypt(in, key, padding.value());
+    const auto outBytes = dynxxCryptoRsaDecrypt(in, key, padding.value());
     return bytes2json(outBytes);
 }
 
-std::string ngenxx_crypto_hash_md5S(const char *json)
+std::string dynxx_crypto_hash_md5S(const char *json)
 {
     if (json == nullptr)
     {
@@ -1012,11 +1012,11 @@ std::string ngenxx_crypto_hash_md5S(const char *json)
         return {};
     }
 
-    const auto outBytes = ngenxxCryptoHashMd5(in);
+    const auto outBytes = dynxxCryptoHashMd5(in);
     return bytes2json(outBytes);
 }
 
-std::string ngenxx_crypto_hash_sha256S(const char *json)
+std::string dynxx_crypto_hash_sha256S(const char *json)
 {
     if (json == nullptr)
     {
@@ -1030,30 +1030,11 @@ std::string ngenxx_crypto_hash_sha256S(const char *json)
         return {};
     }
 
-    const auto outBytes = ngenxxCryptoHashSha256(in);
+    const auto outBytes = dynxxCryptoHashSha256(in);
     return bytes2json(outBytes);
 }
 
-std::string ngenxx_crypto_base64_encodeS(const char *json)
-{
-    if (json == nullptr)
-    {
-        return {};
-    }
-    const JsonParser parser(json);
-
-    const auto in = parser.byteArray("inBytes");
-    const auto noNewLines = parser.num<bool>("noNewLines");
-    if (in.empty())
-    {
-        return {};
-    }
-
-    const auto outBytes = ngenxxCryptoBase64Encode(in, noNewLines.value_or(true));
-    return bytes2json(outBytes);
-}
-
-std::string ngenxx_crypto_base64_decodeS(const char *json)
+std::string dynxx_crypto_base64_encodeS(const char *json)
 {
     if (json == nullptr)
     {
@@ -1068,27 +1049,46 @@ std::string ngenxx_crypto_base64_decodeS(const char *json)
         return {};
     }
 
-    const auto outBytes = ngenxxCryptoBase64Decode(in, noNewLines.value_or(true));
+    const auto outBytes = dynxxCryptoBase64Encode(in, noNewLines.value_or(true));
+    return bytes2json(outBytes);
+}
+
+std::string dynxx_crypto_base64_decodeS(const char *json)
+{
+    if (json == nullptr)
+    {
+        return {};
+    }
+    const JsonParser parser(json);
+
+    const auto in = parser.byteArray("inBytes");
+    const auto noNewLines = parser.num<bool>("noNewLines");
+    if (in.empty())
+    {
+        return {};
+    }
+
+    const auto outBytes = dynxxCryptoBase64Decode(in, noNewLines.value_or(true));
     return bytes2json(outBytes);
 }
 
 #pragma mark Zip
 
-std::string ngenxx_z_zip_initS(const char *json)
+std::string dynxx_z_zip_initS(const char *json)
 {
     if (json == nullptr)
     {
         return {};
     }
     const JsonParser parser(json);
-    const auto [mode, bufferSize, format] = parser.numX<NGenXXZipCompressModeX, size_t, NGenXXZFormatX>("mode", "bufferSize", "format");
+    const auto [mode, bufferSize, format] = parser.numX<DynXXZipCompressModeX, size_t, DynXXZFormatX>("mode", "bufferSize", "format");
 
     if (mode == std::nullopt || bufferSize == std::nullopt || format == std::nullopt)
     {
         return {};
     }
 
-    const auto zip = ngenxxZZipInit(mode.value(), bufferSize.value(), format.value());
+    const auto zip = dynxxZZipInit(mode.value(), bufferSize.value(), format.value());
     if (zip == nullptr)
     {
         return {};
@@ -1096,7 +1096,7 @@ std::string ngenxx_z_zip_initS(const char *json)
     return std::to_string(ptr2addr(zip));
 }
 
-size_t ngenxx_z_zip_inputS(const char *json)
+size_t dynxx_z_zip_inputS(const char *json)
 {
     if (json == nullptr)
     {
@@ -1121,10 +1121,10 @@ size_t ngenxx_z_zip_inputS(const char *json)
         return 0;
     }
 
-    return ngenxxZZipInput(zip, in, inFinish.value());
+    return dynxxZZipInput(zip, in, inFinish.value());
 }
 
-std::string ngenxx_z_zip_process_doS(const char *json)
+std::string dynxx_z_zip_process_doS(const char *json)
 {
     if (json == nullptr)
     {
@@ -1137,11 +1137,11 @@ std::string ngenxx_z_zip_process_doS(const char *json)
         return {};
     }
 
-    const auto outBytes = ngenxxZZipProcessDo(zip);
+    const auto outBytes = dynxxZZipProcessDo(zip);
     return bytes2json(outBytes);
 }
 
-bool ngenxx_z_zip_process_finishedS(const char *json)
+bool dynxx_z_zip_process_finishedS(const char *json)
 {
     if (json == nullptr)
     {
@@ -1154,10 +1154,10 @@ bool ngenxx_z_zip_process_finishedS(const char *json)
         return false;
     }
 
-    return ngenxxZZipProcessFinished(zip);
+    return dynxxZZipProcessFinished(zip);
 }
 
-void ngenxx_z_zip_releaseS(const char *json)
+void dynxx_z_zip_releaseS(const char *json)
 {
     if (json == nullptr)
     {
@@ -1170,23 +1170,23 @@ void ngenxx_z_zip_releaseS(const char *json)
         return;
     }
 
-    ngenxxZZipRelease(zip);
+    dynxxZZipRelease(zip);
 }
 
-std::string ngenxx_z_unzip_initS(const char *json)
+std::string dynxx_z_unzip_initS(const char *json)
 {
     if (json == nullptr)
     {
         return {};
     }
     const JsonParser parser(json);
-    const auto [bufferSize, format] = parser.numX<size_t, NGenXXZFormatX>("bufferSize", "format");
+    const auto [bufferSize, format] = parser.numX<size_t, DynXXZFormatX>("bufferSize", "format");
     if (bufferSize == std::nullopt || format == std::nullopt)
     {
         return {};
     }
 
-    const auto unzip = ngenxxZUnzipInit(bufferSize.value(), format.value());
+    const auto unzip = dynxxZUnzipInit(bufferSize.value(), format.value());
     if (unzip == nullptr)
     {
         return {};
@@ -1194,7 +1194,7 @@ std::string ngenxx_z_unzip_initS(const char *json)
     return std::to_string(ptr2addr(unzip));
 }
 
-size_t ngenxx_z_unzip_inputS(const char *json)
+size_t dynxx_z_unzip_inputS(const char *json)
 {
     if (json == nullptr)
     {
@@ -1219,10 +1219,10 @@ size_t ngenxx_z_unzip_inputS(const char *json)
         return 0;
     }
 
-    return ngenxxZUnzipInput(unzip, in, inFinish.value());
+    return dynxxZUnzipInput(unzip, in, inFinish.value());
 }
 
-std::string ngenxx_z_unzip_process_doS(const char *json)
+std::string dynxx_z_unzip_process_doS(const char *json)
 {
     if (json == nullptr)
     {
@@ -1235,11 +1235,11 @@ std::string ngenxx_z_unzip_process_doS(const char *json)
         return {};
     }
 
-    const auto outBytes = ngenxxZUnzipProcessDo(unzip);
+    const auto outBytes = dynxxZUnzipProcessDo(unzip);
     return bytes2json(outBytes);
 }
 
-bool ngenxx_z_unzip_process_finishedS(const char *json)
+bool dynxx_z_unzip_process_finishedS(const char *json)
 {
     if (json == nullptr)
     {
@@ -1252,10 +1252,10 @@ bool ngenxx_z_unzip_process_finishedS(const char *json)
         return false;
     }
 
-    return ngenxxZUnzipProcessFinished(unzip);
+    return dynxxZUnzipProcessFinished(unzip);
 }
 
-void ngenxx_z_unzip_releaseS(const char *json)
+void dynxx_z_unzip_releaseS(const char *json)
 {
     if (json == nullptr)
     {
@@ -1268,42 +1268,42 @@ void ngenxx_z_unzip_releaseS(const char *json)
         return;
     }
 
-    ngenxxZUnzipRelease(unzip);
+    dynxxZUnzipRelease(unzip);
 }
 
-std::string ngenxx_z_bytes_zipS(const char *json)
+std::string dynxx_z_bytes_zipS(const char *json)
 {
     if (json == nullptr)
     {
         return {};
     }
     const JsonParser parser(json);
-    const auto [mode, bufferSize, format] = parser.numX<NGenXXZipCompressModeX, size_t, NGenXXZFormatX>("mode", "bufferSize", "format");
+    const auto [mode, bufferSize, format] = parser.numX<DynXXZipCompressModeX, size_t, DynXXZFormatX>("mode", "bufferSize", "format");
     const auto in = parser.byteArray("inBytes");
     if (in.empty() || mode == std::nullopt || bufferSize == std::nullopt || format == std::nullopt)
     {
         return {};
     }
 
-    const auto outBytes = ngenxxZBytesZip(in, mode.value(), bufferSize.value(), format.value());
+    const auto outBytes = dynxxZBytesZip(in, mode.value(), bufferSize.value(), format.value());
     return bytes2json(outBytes);
 }
 
-std::string ngenxx_z_bytes_unzipS(const char *json)
+std::string dynxx_z_bytes_unzipS(const char *json)
 {
     if (json == nullptr)
     {
         return {};
     }
     const JsonParser parser(json);
-    const auto [bufferSize, format] = parser.numX<size_t, NGenXXZFormatX>("bufferSize", "format");
+    const auto [bufferSize, format] = parser.numX<size_t, DynXXZFormatX>("bufferSize", "format");
     const auto in = parser.byteArray("inBytes");
     if (in.empty() || bufferSize == std::nullopt || format == std::nullopt)
     {
         return {};
     }
 
-    const auto outBytes = ngenxxZBytesUnzip(in, bufferSize.value(), format.value());
+    const auto outBytes = dynxxZBytesUnzip(in, bufferSize.value(), format.value());
     return bytes2json(outBytes);
 }
 

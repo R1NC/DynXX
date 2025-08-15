@@ -1,11 +1,11 @@
-#ifndef NGENXX_SRC_CORE_DEVICE_HXX_
-#define NGENXX_SRC_CORE_DEVICE_HXX_
+#ifndef DYNXX_SRC_CORE_DEVICE_HXX_
+#define DYNXX_SRC_CORE_DEVICE_HXX_
 
 #if defined(__cplusplus)
 
 #include <string>
 
-namespace NGenXX::Core::Device {
+namespace DynXX::Core::Device {
     int deviceType();
 
     std::string deviceName();
@@ -21,4 +21,4 @@ namespace NGenXX::Core::Device {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_DEVICE_HXX_
+#endif // DYNXX_SRC_CORE_DEVICE_HXX_

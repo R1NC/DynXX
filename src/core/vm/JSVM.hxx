@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_VM_JSVM_HXX_
-#define NGENXX_SRC_CORE_VM_JSVM_HXX_
+#ifndef DYNXX_SRC_CORE_VM_JSVM_HXX_
+#define DYNXX_SRC_CORE_VM_JSVM_HXX_
 
 #include <quickjs-libc.h>
 
@@ -7,7 +7,7 @@
 
 #include <unordered_set>
 
-#include <NGenXXTypes.hxx>
+#include <DynXX/CXX/Types.hxx>
 
 #include "BaseVM.hxx"
 
@@ -119,7 +119,7 @@
         [arg = json]() { return fS(arg.c_str()); });                           \
   }
 
-namespace NGenXX::Core::VM {
+namespace DynXX::Core::VM {
     class JSVM final : public BaseVM {
     public:
         /**
@@ -217,4 +217,4 @@ namespace NGenXX::Core::VM {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_VM_JSVM_HXX_
+#endif // DYNXX_SRC_CORE_VM_JSVM_HXX_

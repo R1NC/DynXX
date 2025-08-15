@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_CRYPTO_HXX_
-#define NGENXX_SRC_CORE_CRYPTO_HXX_
+#ifndef DYNXX_SRC_CORE_CRYPTO_HXX_
+#define DYNXX_SRC_CORE_CRYPTO_HXX_
 
 #if defined(__cplusplus)
 
@@ -8,11 +8,11 @@
 #include <openssl/bio.h>
 #include <openssl/rsa.h>
 
-#include <NGenXXTypes.hxx>
+#include <DynXX/CXX/Types.hxx>
 
 #include "../concurrent/ConcurrentUtil.hxx"
 
-namespace NGenXX::Core::Crypto {
+namespace DynXX::Core::Crypto {
     bool rand(size_t len, byte *bytes);
 
     template<NumberT T>
@@ -147,4 +147,4 @@ namespace NGenXX::Core::Crypto {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_CRYPTO_HXX_
+#endif // DYNXX_SRC_CORE_CRYPTO_HXX_

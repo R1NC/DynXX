@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_VM_BASEVM_HXX_
-#define NGENXX_SRC_CORE_VM_BASEVM_HXX_
+#ifndef DYNXX_SRC_CORE_VM_BASEVM_HXX_
+#define DYNXX_SRC_CORE_VM_BASEVM_HXX_
 
 #if defined(__cplusplus)
 
@@ -7,7 +7,7 @@
 
 #include "../concurrent/Executor.hxx"
 
-namespace NGenXX::Core::VM {
+namespace DynXX::Core::VM {
     class BaseVM {
     public:
         BaseVM();
@@ -37,4 +37,4 @@ namespace NGenXX::Core::VM {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_VM_BASEVM_HXX_
+#endif // DYNXX_SRC_CORE_VM_BASEVM_HXX_

@@ -1,9 +1,9 @@
-#ifndef NGENXX_NAPI_UTIL_HXX_
-#define NGENXX_NAPI_UTIL_HXX_
+#ifndef DYNXX_NAPI_UTIL_HXX_
+#define DYNXX_NAPI_UTIL_HXX_
 
 #include <napi/native_api.h>
 
-#include "../../../../../../build.HarmonyOS/output/include/NGenXXTypes.hxx"
+#include "../../../../../../build.HarmonyOS/output/include/DynXX/CXX/Types.hxx"
 
 #define PRINT_NAPI_STATUS_ERR(env, status, errMsg)                                                                     \
     do {                                                                                                               \

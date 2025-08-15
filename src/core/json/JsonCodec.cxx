@@ -3,9 +3,9 @@
 #include <utility>
 #include <climits>
 
-#include <NGenXXLog.hxx>
-#include <NGenXXTypes.hxx>
-#include <NGenXXCoding.hxx>
+#include <DynXX/CXX/Log.hxx>
+#include <DynXX/CXX/Types.hxx>
+#include <DynXX/CXX/Coding.hxx>
 
 namespace
 {
@@ -44,38 +44,38 @@ namespace
     }
 }
 
-NGenXXJsonNodeTypeX NGenXX::Core::Json::cJSONReadType(void *const cjson)
+DynXXJsonNodeTypeX DynXX::Core::Json::cJSONReadType(void *const cjson)
 {
     const auto cj = static_cast<cJSON *>(cjson);
     if (cj == nullptr) [[unlikely]]
     {
-        return NGenXXJsonNodeTypeX::Unknown;
+        return DynXXJsonNodeTypeX::Unknown;
     }
     switch (cj->type)
     {
         case cJSON_Number:
             if (isBigInt(cj))
             {
-                return NGenXXJsonNodeTypeX::Int64;
+                return DynXXJsonNodeTypeX::Int64;
             }
-            return isFloat(cj) ? NGenXXJsonNodeTypeX::Float : NGenXXJsonNodeTypeX::Int32;
+            return isFloat(cj) ? DynXXJsonNodeTypeX::Float : DynXXJsonNodeTypeX::Int32;
         case cJSON_String:
-            return NGenXXJsonNodeTypeX::String;
+            return DynXXJsonNodeTypeX::String;
         case cJSON_True:
         case cJSON_False:
-            return NGenXXJsonNodeTypeX::Boolean;
+            return DynXXJsonNodeTypeX::Boolean;
         case cJSON_Array:
-            return NGenXXJsonNodeTypeX::Array;
+            return DynXXJsonNodeTypeX::Array;
         case cJSON_Object:
-            return NGenXXJsonNodeTypeX::Object;
+            return DynXXJsonNodeTypeX::Object;
         case cJSON_NULL:
-            return NGenXXJsonNodeTypeX::Null;
+            return DynXXJsonNodeTypeX::Null;
         default:
-            return NGenXXJsonNodeTypeX::Unknown;
+            return DynXXJsonNodeTypeX::Unknown;
     }
 }
 
-std::optional<std::string> NGenXX::Core::Json::cJSONToStr(void *const cjson)
+std::optional<std::string> DynXX::Core::Json::cJSONToStr(void *const cjson)
 {
     if (!cjson) [[unlikely]]
     {
@@ -88,11 +88,11 @@ std::optional<std::string> NGenXX::Core::Json::cJSONToStr(void *const cjson)
     }
     std::string json(jsonChars);
     std::free(jsonChars);
-    json = ngenxxCodingStrTrim(json);
+    json = dynxxCodingStrTrim(json);
     return std::make_optional(json);
 }
 
-std::optional<std::string> NGenXX::Core::Json::jsonFromDictAny(const DictAny &dict)
+std::optional<std::string> DynXX::Core::Json::jsonFromDictAny(const DictAny &dict)
 {
     if (dict.empty()) [[unlikely]]
     {
@@ -122,7 +122,7 @@ std::optional<std::string> NGenXX::Core::Json::jsonFromDictAny(const DictAny &di
                 }
                 else [[unlikely]]
                 {
-                    ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON VALUE: {}", s);
+                    dynxxLogPrintF(DynXXLogLevelX::Error, "FAILED TO PARSE JSON VALUE: {}", s);
                 }
             }
             else
@@ -134,7 +134,7 @@ std::optional<std::string> NGenXX::Core::Json::jsonFromDictAny(const DictAny &di
         {
             if (!cJSON_AddItemToObject(cjson, k.c_str(), node)) [[unlikely]]
             {
-                ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO ADD JSON VALUE: {}", k);
+                dynxxLogPrintF(DynXXLogLevelX::Error, "FAILED TO ADD JSON VALUE: {}", k);
                 cJSON_Delete(node);
             }
         }
@@ -144,7 +144,7 @@ std::optional<std::string> NGenXX::Core::Json::jsonFromDictAny(const DictAny &di
     return json;
 }
 
-std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json)
+std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
 {
     if (json.empty()) [[unlikely]]
     {
@@ -156,7 +156,7 @@ std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json
         return std::nullopt;
     }
 
-    if (cJSONReadType(cjson) != NGenXXJsonNodeTypeX::Object) [[unlikely]]
+    if (cJSONReadType(cjson) != DynXXJsonNodeTypeX::Object) [[unlikely]]
     {
         cJSON_Delete(cjson);
         return std::nullopt;
@@ -170,19 +170,19 @@ std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json
             continue;
         }
         std::string k(node->string);
-        if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Float)
+        if (const auto type = cJSONReadType(node); type == DynXXJsonNodeTypeX::Float)
         {
             dict.emplace(k, readFloat(node));
         }
-        else if (type == NGenXXJsonNodeTypeX::Int32)
+        else if (type == DynXXJsonNodeTypeX::Int32)
         {
             dict.emplace(k, readInt32(node));
         }
-        else if (type == NGenXXJsonNodeTypeX::Int64)
+        else if (type == DynXXJsonNodeTypeX::Int64)
         {
             dict.emplace(k, readInt64(node));
         }
-        else if (type == NGenXXJsonNodeTypeX::String)
+        else if (type == DynXXJsonNodeTypeX::String)
         {
             dict.emplace(k, makeStr(node->valuestring));
         }
@@ -198,12 +198,12 @@ std::optional<DictAny> NGenXX::Core::Json::jsonToDictAny(const std::string &json
 
 #pragma mark Decoder
 
-void NGenXX::Core::Json::Decoder::moveImp(Decoder&& other) noexcept
+void DynXX::Core::Json::Decoder::moveImp(Decoder&& other) noexcept
 {
     this->cjson = std::exchange(other.cjson, nullptr);
 }
 
-void NGenXX::Core::Json::Decoder::cleanup() noexcept
+void DynXX::Core::Json::Decoder::cleanup() noexcept
 {
     if (this->cjson == nullptr) [[unlikely]]
     {
@@ -213,22 +213,22 @@ void NGenXX::Core::Json::Decoder::cleanup() noexcept
     this->cjson = nullptr;
 }
 
-NGenXX::Core::Json::Decoder::Decoder(const std::string &json)
+DynXX::Core::Json::Decoder::Decoder(const std::string &json)
 {
     this->cjson = cJSON_Parse(json.c_str());
 }
 
-NGenXX::Core::Json::Decoder::~Decoder()
+DynXX::Core::Json::Decoder::~Decoder()
 {
     this->cleanup();
 }
 
-NGenXX::Core::Json::Decoder::Decoder(Decoder &&other) noexcept
+DynXX::Core::Json::Decoder::Decoder(Decoder &&other) noexcept
 {
     this->moveImp(std::move(other));
 }
 
-NGenXX::Core::Json::Decoder &NGenXX::Core::Json::Decoder::operator=(Decoder &&other) noexcept
+DynXX::Core::Json::Decoder &DynXX::Core::Json::Decoder::operator=(Decoder &&other) noexcept
 {
     if (this != &other) [[likely]]
     {
@@ -238,7 +238,7 @@ NGenXX::Core::Json::Decoder &NGenXX::Core::Json::Decoder::operator=(Decoder &&ot
     return *this;
 }
 
-const cJSON *NGenXX::Core::Json::Decoder::reinterpretNode(void *const node) const
+const cJSON *DynXX::Core::Json::Decoder::reinterpretNode(void *const node) const
 {
     if (node == nullptr)
     {
@@ -247,7 +247,7 @@ const cJSON *NGenXX::Core::Json::Decoder::reinterpretNode(void *const node) cons
     return static_cast<const cJSON *>(node);
 }
 
-void *NGenXX::Core::Json::Decoder::readNode(void *const node, std::string_view k) const
+void *DynXX::Core::Json::Decoder::readNode(void *const node, std::string_view k) const
 {
     if (const auto cj = this->reinterpretNode(node); cj != nullptr) [[likely]]
     {
@@ -256,38 +256,38 @@ void *NGenXX::Core::Json::Decoder::readNode(void *const node, std::string_view k
     return nullptr;
 }
 
-void *NGenXX::Core::Json::Decoder::operator[](std::string_view k) const
+void *DynXX::Core::Json::Decoder::operator[](std::string_view k) const
 {
     return this->readNode(nullptr, k);
 }
 
-std::optional<std::string> NGenXX::Core::Json::Decoder::readString(void *const node) const
+std::optional<std::string> DynXX::Core::Json::Decoder::readString(void *const node) const
 {
     const auto cj = this->reinterpretNode(node);
     switch(cJSONReadType(node))
     {
-        case NGenXXJsonNodeTypeX::Object:
-        case NGenXXJsonNodeTypeX::Array:
+        case DynXXJsonNodeTypeX::Object:
+        case DynXXJsonNodeTypeX::Array:
         {
             return cJSONToStr(node);
         }
-        case NGenXXJsonNodeTypeX::String:
+        case DynXXJsonNodeTypeX::String:
         {
             return std::make_optional(makeStr(cj->valuestring));
         }
-        case NGenXXJsonNodeTypeX::Int32:
+        case DynXXJsonNodeTypeX::Int32:
         {
             return std::make_optional(std::to_string(readInt32(cj)));
         }
-        case NGenXXJsonNodeTypeX::Int64:
+        case DynXXJsonNodeTypeX::Int64:
         {
             return std::make_optional(std::to_string(readInt64(cj)));
         }
-        case NGenXXJsonNodeTypeX::Float:
+        case DynXXJsonNodeTypeX::Float:
         {
             return std::make_optional(std::to_string(readFloat(cj)));
         }
-        case NGenXXJsonNodeTypeX::Boolean:
+        case DynXXJsonNodeTypeX::Boolean:
         {
             return std::make_optional(cj->valueint? "true" : "false");
         }
@@ -298,43 +298,43 @@ std::optional<std::string> NGenXX::Core::Json::Decoder::readString(void *const n
     }
 }
 
-std::optional<double> NGenXX::Core::Json::Decoder::readNumber(void *const node) const
+std::optional<double> DynXX::Core::Json::Decoder::readNumber(void *const node) const
 {
     const auto type = cJSONReadType(node);
     const auto cj = this->reinterpretNode(node);
-    if (type == NGenXXJsonNodeTypeX::Int32)
+    if (type == DynXXJsonNodeTypeX::Int32)
     {
         return std::make_optional(readInt32(cj));
     } 
-    if (type == NGenXXJsonNodeTypeX::Int64)
+    if (type == DynXXJsonNodeTypeX::Int64)
     {
         return std::make_optional(readInt64(cj));
     } 
-    if (type == NGenXXJsonNodeTypeX::Float)
+    if (type == DynXXJsonNodeTypeX::Float)
     {
         return std::make_optional(readFloat(cj));
     } 
-    if (type == NGenXXJsonNodeTypeX::String)
+    if (type == DynXXJsonNodeTypeX::String)
     {
         return std::make_optional(str2float64(makeStr(cj->valuestring)));
     }
-    ngenxxLogPrintF(NGenXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
+    dynxxLogPrintF(DynXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
                 cj->string, cj->type);
     return std::nullopt;
 }
 
-void *NGenXX::Core::Json::Decoder::readChild(void *const node) const
+void *DynXX::Core::Json::Decoder::readChild(void *const node) const
 {
-    if (const auto type = cJSONReadType(node); type == NGenXXJsonNodeTypeX::Object || type == NGenXXJsonNodeTypeX::Array) [[likely]]
+    if (const auto type = cJSONReadType(node); type == DynXXJsonNodeTypeX::Object || type == DynXXJsonNodeTypeX::Array) [[likely]]
     {
         return this->reinterpretNode(node)->child;
     }
     return nullptr;
 }
 
-size_t NGenXX::Core::Json::Decoder::readChildrenCount(void *const node) const
+size_t DynXX::Core::Json::Decoder::readChildrenCount(void *const node) const
 {
-    if (const auto type = cJSONReadType(node); type != NGenXXJsonNodeTypeX::Object && type != NGenXXJsonNodeTypeX::Array) [[unlikely]]
+    if (const auto type = cJSONReadType(node); type != DynXXJsonNodeTypeX::Object && type != DynXXJsonNodeTypeX::Array) [[unlikely]]
     {
         return 0;
     }
@@ -342,9 +342,9 @@ size_t NGenXX::Core::Json::Decoder::readChildrenCount(void *const node) const
     return cJSON_GetArraySize(cj);
 }
 
-void NGenXX::Core::Json::Decoder::readChildren(void *const node, std::function<void(size_t idx, void *const child)> &&callback) const
+void DynXX::Core::Json::Decoder::readChildren(void *const node, std::function<void(size_t idx, void *const child)> &&callback) const
 {
-    if (const auto type = cJSONReadType(node); type != NGenXXJsonNodeTypeX::Object && type != NGenXXJsonNodeTypeX::Array) [[unlikely]]
+    if (const auto type = cJSONReadType(node); type != DynXXJsonNodeTypeX::Object && type != DynXXJsonNodeTypeX::Array) [[unlikely]]
     {
         return;
     }
@@ -356,7 +356,7 @@ void NGenXX::Core::Json::Decoder::readChildren(void *const node, std::function<v
     }
 }
 
-void *NGenXX::Core::Json::Decoder::readNext(void *const node) const
+void *DynXX::Core::Json::Decoder::readNext(void *const node) const
 {
     const auto cj = this->reinterpretNode(node);
     return cj ? cj->next : nullptr;

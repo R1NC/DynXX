@@ -1,11 +1,11 @@
 {
-  "name": "ngenxx",
+  "name": "dynxx",
   "version": "1.0.0",
-  "description": "NGenXX HarmonyOS Demo.",
+  "description": "DynXX HarmonyOS Demo.",
   "main": "",
   "author": "",
   "license": "",
   "dependencies": {
-    "libngenxx.so": "file:./src/main/cpp/types/libngenxx"
+    "libdynxx.so": "file:./src/main/cpp/types/libdynxx"
   }
 }

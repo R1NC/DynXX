@@ -47,7 +47,7 @@ cp -R ../include/ ${HEADER_OUTPUT_DIR}/
 
 ASSETS_APP_DIR=../platforms/Android/app/src/main/assets/
 mkdir -p ${ASSETS_APP_DIR}
-cp ../scripts/JS/NGenXX.js ${ASSETS_APP_DIR}
+cp ../scripts/JS/DynXX.js ${ASSETS_APP_DIR}
 cp -a ../scripts/Lua/. ${ASSETS_APP_DIR}
 BIZ_JS=../scripts/JS/dist/biz.js
 if [ -f "$BIZ_JS" ]; then
@@ -59,7 +59,7 @@ fi
 #Checking Artifacts
 LIB_OUTPUT_DIR=output/libs/${ARCH}
 ARTIFACTS=(
-    "${LIB_OUTPUT_DIR}/libNGenXX.a"
+    "${LIB_OUTPUT_DIR}/libDynXX.a"
     "${LIB_OUTPUT_DIR}/libcurl.a"
     "${LIB_OUTPUT_DIR}/libssl.a"
     "${LIB_OUTPUT_DIR}/libcrypto.a"

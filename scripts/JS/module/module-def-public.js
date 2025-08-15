@@ -1,4 +1,4 @@
-import {ngenxxLog} from "./module-def-private.js";
+import {dynxxLog} from "./module-def-private.js";
 
 export function logD(content) {
     _log(3, content);
@@ -6,5 +6,5 @@ export function logD(content) {
 
 function _log(level, content) {
     content = content || '';
-    ngenxxLog(level, content);
+    dynxxLog(level, content);
 }

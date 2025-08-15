@@ -1,10 +1,10 @@
-#ifndef NGENXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
-#define NGENXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
+#ifndef DYNXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
+#define DYNXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
 
-#include <NGenXXTypes.hxx>
+#include <DynXX/CXX/Types.hxx>
 #include <algorithm>
 
-namespace NGenXX::Core::Util::Type {
+namespace DynXX::Core::Util::Type {
     inline const char *copyStr(const std::string_view s) {
         return strdup(s.data());
     }
@@ -32,4 +32,4 @@ namespace NGenXX::Core::Util::Type {
     }
 }
 
-#endif // NGENXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
+#endif // DYNXX_SRC_CORE_UTIL_TYPEUTIL_HXX_

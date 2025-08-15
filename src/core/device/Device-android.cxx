@@ -7,7 +7,7 @@
 #include <sys/system_properties.h>
 #include <android/api-level.h>
 
-#include <NGenXXDevice.h>
+#include <DynXX/C/Device.h>
 
 namespace
 {
@@ -49,37 +49,37 @@ namespace
     }
 }
 
-int NGenXX::Core::Device::deviceType()
+int DynXX::Core::Device::deviceType()
 {
-    return NGenXXDeviceTypeAndroid;
+    return DynXXDeviceTypeAndroid;
 }
 
-std::string NGenXX::Core::Device::deviceName()
+std::string DynXX::Core::Device::deviceName()
 {
     return sysProperty(SYS_PROPERTY_MODEL);
 }
 
-std::string NGenXX::Core::Device::deviceManufacturer()
+std::string DynXX::Core::Device::deviceManufacturer()
 {
     return sysProperty(SYS_PROPERTY_MANUFACTURER);
 }
 
-std::string NGenXX::Core::Device::deviceModel()
+std::string DynXX::Core::Device::deviceModel()
 {
     return sysProperty(SYS_PROPERTY_MODEL);
 }
 
-std::string NGenXX::Core::Device::osVersion()
+std::string DynXX::Core::Device::osVersion()
 {
     return sysProperty(SYS_PROPERTY_VERSION_RELEASE);
 }
 
-int NGenXX::Core::Device::cpuArch()
+int DynXX::Core::Device::cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
-    return NGenXXDeviceCpuArchARM_64;
+    return DynXXDeviceCpuArchARM_64;
 #endif
-    return NGenXXDeviceCpuArchARM;
+    return DynXXDeviceCpuArchARM;
 }
 
 #endif

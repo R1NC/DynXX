@@ -4,8 +4,8 @@
 #include <stdexcept>
 #include <functional>
 
-#include <NGenXXLog.hxx>
-#include "NGenXXZip.h"
+#include <DynXX/CXX/Log.hxx>
+#include "DynXX/C/Zip.h"
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -22,7 +22,7 @@ namespace {
               std::function<const Bytes()> &&sReadF,
               std::function<void(const Bytes &)> &&sWriteF,
               std::function<void()> &&sFlushF,
-              NGenXX::Core::Z::ZBase<T> &zb)
+              DynXX::Core::Z::ZBase<T> &zb)
     {
         auto inputFinished = false;
         do
@@ -56,7 +56,7 @@ namespace {
 #if !defined(__EMSCRIPTEN__)
 
     template <typename T>
-    bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, NGenXX::Core::Z::ZBase<T> &zb)
+    bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, DynXX::Core::Z::ZBase<T> &zb)
     {
         return process(bufferSize,
             [bufferSize, inStream]
@@ -78,7 +78,7 @@ namespace {
     }
 
     template <typename T>
-    bool processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, NGenXX::Core::Z::ZBase<T> &zb)
+    bool processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, DynXX::Core::Z::ZBase<T> &zb)
     {
         return process(bufferSize,
             [bufferSize, inFile]
@@ -102,7 +102,7 @@ namespace {
 #endif
 
     template <typename T>
-    Bytes processBytes(size_t bufferSize, const Bytes &in, NGenXX::Core::Z::ZBase<T> &zb)
+    Bytes processBytes(size_t bufferSize, const Bytes &in, DynXX::Core::Z::ZBase<T> &zb)
     {
         long pos(0);
         Bytes outBytes;
@@ -130,13 +130,13 @@ namespace {
 }
 
 template <typename T>
-int NGenXX::Core::Z::ZBase<T>::windowBits() const
+int DynXX::Core::Z::ZBase<T>::windowBits() const
 {
-    if (this->format == NGenXXZFormatGZip)
+    if (this->format == DynXXZFormatGZip)
     {
         return 16 | MAX_WBITS;
     }
-    if (this->format == NGenXXZFormatRaw)
+    if (this->format == DynXXZFormatRaw)
     {
         return -MAX_WBITS;
     }
@@ -144,13 +144,13 @@ int NGenXX::Core::Z::ZBase<T>::windowBits() const
 }
 
 template <typename T>
-NGenXX::Core::Z::ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{bufferSize}, format{format}
+DynXX::Core::Z::ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{bufferSize}, format{format}
 {
     if (bufferSize == 0) [[unlikely]]
     {
         throw std::invalid_argument("bufferSize invalid");
     }
-    if (format != NGenXXZFormatRaw && format != NGenXXZFormatZLib && format != NGenXXZFormatGZip) [[unlikely]]
+    if (format != DynXXZFormatRaw && format != DynXXZFormatZLib && format != DynXXZFormatGZip) [[unlikely]]
     {
         throw std::invalid_argument("format invalid");
     }
@@ -159,7 +159,7 @@ NGenXX::Core::Z::ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{buf
 }
 
 template <typename T>
-size_t NGenXX::Core::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
+size_t DynXX::Core::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
 {
     if (bytes.empty()) [[unlikely]]
     {
@@ -177,19 +177,19 @@ size_t NGenXX::Core::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
 }
 
 template <typename T>
-Bytes NGenXX::Core::Z::ZBase<T>::processDo()
+Bytes DynXX::Core::Z::ZBase<T>::processDo()
 {
     std::memset(this->outBuffer, 0, this->bufferSize);
     this->zs.avail_out = static_cast<unsigned int>(this->bufferSize);
     this->zs.next_out = this->outBuffer;
 
-    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
+    // dynxxLogPrintF(DynXXLogLevelX::Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
     static_cast<T *>(this)->processImp();
-    // ngenxxLogPrintF(NGenXXLogLevelX::Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
+    // dynxxLogPrintF(DynXXLogLevelX::Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
 
     if (this->ret != Z_OK && ret != Z_STREAM_END) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "z process error:{}", this->ret);
+        dynxxLogPrintF(DynXXLogLevelX::Error, "z process error:{}", this->ret);
         return {};
     }
 
@@ -198,62 +198,62 @@ Bytes NGenXX::Core::Z::ZBase<T>::processDo()
 }
 
 template <typename T>
-bool NGenXX::Core::Z::ZBase<T>::processFinished() const
+bool DynXX::Core::Z::ZBase<T>::processFinished() const
 {
     return this->zs.avail_out != 0;
 }
 
 template <typename T>
-NGenXX::Core::Z::ZBase<T>::~ZBase()
+DynXX::Core::Z::ZBase<T>::~ZBase()
 {
     freeX(inBuffer);
     freeX(outBuffer);
 }
 
 // Explicit template instantiation
-template class NGenXX::Core::Z::ZBase<NGenXX::Core::Z::Zip>;
-template class NGenXX::Core::Z::ZBase<NGenXX::Core::Z::UnZip>;
+template class DynXX::Core::Z::ZBase<DynXX::Core::Z::Zip>;
+template class DynXX::Core::Z::ZBase<DynXX::Core::Z::UnZip>;
 
-NGenXX::Core::Z::Zip::Zip(int mode, size_t bufferSize, int format) : ZBase(bufferSize, format)
+DynXX::Core::Z::Zip::Zip(int mode, size_t bufferSize, int format) : ZBase(bufferSize, format)
 {
-    if (mode != NGenXXZipCompressModeDefault && mode != NGenXXZipCompressModePreferSize && mode != NGenXXZipCompressModePreferSpeed) [[unlikely]]
+    if (mode != DynXXZipCompressModeDefault && mode != DynXXZipCompressModePreferSize && mode != DynXXZipCompressModePreferSpeed) [[unlikely]]
     {
         throw std::invalid_argument("mode invalid");
     }
     this->ret = deflateInit2(&(this->zs), mode, Z_DEFLATED, this->windowBits(), 8, Z_DEFAULT_STRATEGY);
     if (this->ret != Z_OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "deflateInit error:{}", this->ret);
+        dynxxLogPrintF(DynXXLogLevelX::Error, "deflateInit error:{}", this->ret);
         throw std::runtime_error("deflateInit failed");
     }
 }
 
-void NGenXX::Core::Z::Zip::processImp()
+void DynXX::Core::Z::Zip::processImp()
 {
     this->ret = deflate(&(this->zs), this->inFinish ? Z_FINISH : Z_NO_FLUSH);
 }
 
-NGenXX::Core::Z::Zip::~Zip()
+DynXX::Core::Z::Zip::~Zip()
 {
     deflateEnd(&(this->zs));
 }
 
-NGenXX::Core::Z::UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, format)
+DynXX::Core::Z::UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, format)
 {
     this->ret = inflateInit2(&this->zs, this->windowBits());
     if (this->ret != Z_OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "inflateInit error:{}", this->ret);
+        dynxxLogPrintF(DynXXLogLevelX::Error, "inflateInit error:{}", this->ret);
         throw std::runtime_error("inflateInit failed");
     }
 }
 
-void NGenXX::Core::Z::UnZip::processImp()
+void DynXX::Core::Z::UnZip::processImp()
 {
     this->ret = inflate(&(this->zs), Z_NO_FLUSH);
 }
 
-NGenXX::Core::Z::UnZip::~UnZip()
+DynXX::Core::Z::UnZip::~UnZip()
 {
     inflateEnd(&this->zs);
 }
@@ -262,13 +262,13 @@ NGenXX::Core::Z::UnZip::~UnZip()
 
 #pragma mark Cxx stream
 
-bool NGenXX::Core::Z::zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
+bool DynXX::Core::Z::zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
 {
     Zip zip(mode, bufferSize, format);
     return processCxxStream(bufferSize, inStream, outStream, zip);
 }
 
-bool NGenXX::Core::Z::unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
+bool DynXX::Core::Z::unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
 {
     UnZip unzip(bufferSize, format);
     return processCxxStream(bufferSize, inStream, outStream, unzip);
@@ -276,13 +276,13 @@ bool NGenXX::Core::Z::unzip(size_t bufferSize, int format, std::istream *inStrea
 
 #pragma mark C FILE
 
-bool NGenXX::Core::Z::zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
+bool DynXX::Core::Z::zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 {
     Zip zip(mode, bufferSize, format);
     return processCFILE(bufferSize, inFile, outFile, zip);
 }
 
-bool NGenXX::Core::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
+bool DynXX::Core::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 {
     UnZip unzip(bufferSize, format);
     return processCFILE(bufferSize, inFile, outFile, unzip);
@@ -292,13 +292,13 @@ bool NGenXX::Core::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, st
 
 #pragma mark Bytes
 
-Bytes NGenXX::Core::Z::zip(int mode, size_t bufferSize, int format, const Bytes &bytes)
+Bytes DynXX::Core::Z::zip(int mode, size_t bufferSize, int format, const Bytes &bytes)
 {
     Zip zip(mode, bufferSize, format);
     return processBytes(bufferSize, bytes, zip);
 }
 
-Bytes NGenXX::Core::Z::unzip(size_t bufferSize, int format, const Bytes &bytes)
+Bytes DynXX::Core::Z::unzip(size_t bufferSize, int format, const Bytes &bytes)
 {
     UnZip unzip(bufferSize, format);
     return processBytes(bufferSize, bytes, unzip);

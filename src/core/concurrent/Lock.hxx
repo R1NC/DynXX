@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_CONCURRENT_LOCK_HXX_
-#define NGENXX_SRC_CORE_CONCURRENT_LOCK_HXX_
+#ifndef DYNXX_SRC_CORE_CONCURRENT_LOCK_HXX_
+#define DYNXX_SRC_CORE_CONCURRENT_LOCK_HXX_
 
 #if defined(__cplusplus)
 
@@ -7,7 +7,7 @@
 
 #include "ConcurrentUtil.hxx"
 
-namespace NGenXX::Core::Concurrent
+namespace DynXX::Core::Concurrent
 {
 
 class alignas(CacheLineSize) SpinLock final
@@ -31,4 +31,4 @@ private:
 
 #endif
 
-#endif // NGENXX_SRC_CORE_CONCURRENT_LOCK_HXX_
+#endif // DYNXX_SRC_CORE_CONCURRENT_LOCK_HXX_

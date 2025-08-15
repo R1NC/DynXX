@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_CONCURRENT_EXECUTOR_HXX_
-#define NGENXX_SRC_CORE_CONCURRENT_EXECUTOR_HXX_
+#ifndef DYNXX_SRC_CORE_CONCURRENT_EXECUTOR_HXX_
+#define DYNXX_SRC_CORE_CONCURRENT_EXECUTOR_HXX_
 
 #if defined(__cplusplus)
 
@@ -11,7 +11,7 @@
 
 #include "ConcurrentUtil.hxx"
 
-namespace NGenXX::Core::Concurrent {
+namespace DynXX::Core::Concurrent {
     using TaskT = std::function<void()>;
 
     class
@@ -80,4 +80,4 @@ namespace NGenXX::Core::Concurrent {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_CONCURRENT_EXECUTOR_HXX_
+#endif // DYNXX_SRC_CORE_CONCURRENT_EXECUTOR_HXX_

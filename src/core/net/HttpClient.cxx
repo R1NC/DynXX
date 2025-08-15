@@ -8,9 +8,9 @@
 #include <ada.h>
 #endif
 
-#include <NGenXXLog.hxx>
-#include <NGenXXNet.h>
-#include <NGenXXCoding.hxx>
+#include <DynXX/CXX/Log.hxx>
+#include <DynXX/C/Net.h>
+#include <DynXX/CXX/Coding.hxx>
 
 namespace
 {
@@ -29,7 +29,7 @@ namespace
     size_t on_upload_read(char *ptr, const size_t size, size_t nmemb, void *stream)
     {
         const auto ret = std::fread(ptr, size, nmemb, static_cast<std::FILE *>(stream));
-        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient read {} bytes from file", ret);
+        dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient read {} bytes from file", ret);
         return ret;
     }
 
@@ -48,30 +48,30 @@ namespace
         {
             const auto k = header.substr(0, colonPos);
             const auto v = header.substr(colonPos + 2);
-            pHeaders->emplace(ngenxxCodingStrTrim(k), ngenxxCodingStrTrim(v));
+            pHeaders->emplace(dynxxCodingStrTrim(k), dynxxCodingStrTrim(v));
         }
         return size * nitems;
     }
 }
 
-NGenXX::Core::Net::HttpClient::HttpClient()
+DynXX::Core::Net::HttpClient::HttpClient()
 {
     curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
-NGenXX::Core::Net::HttpClient::~HttpClient()
+DynXX::Core::Net::HttpClient::~HttpClient()
 {
     curl_global_cleanup();
 }
 
-NGenXXHttpResponse NGenXX::Core::Net::HttpClient::request(std::string_view url, int method,
+DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, int method,
                                                                  const std::vector<std::string> &headers,
                                                                 std::string_view params,
                                                                  const BytesView rawBody,
                                                                  const std::vector<HttpFormField> &formFields,
                                                                  const std::FILE *cFILE, size_t fileSize,
                                                                  size_t timeout) {
-    return this->req(url, headers, params, method, timeout, [&url, method, &params, &rawBody, &formFields, cFILE, fileSize](CURL *const curl, const NGenXXHttpResponse &rsp) {
+    return this->req(url, headers, params, method, timeout, [&url, method, &params, &rawBody, &formFields, cFILE, fileSize](CURL *const curl, const DynXXHttpResponse &rsp) {
         if (cFILE != nullptr)
         {
             curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
@@ -93,7 +93,7 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::request(std::string_view url, 
 
             curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
         }
-        else if (method == NGenXXNetHttpMethodPost)
+        else if (method == DynXXNetHttpMethodPost)
         {
             curl_easy_setopt(curl, CURLOPT_POST, 1L);
             if (rawBody.empty())
@@ -118,15 +118,15 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::request(std::string_view url, 
     });
 }
 
-bool NGenXX::Core::Net::HttpClient::download(std::string_view url, const std::string &filePath, size_t timeout) {
+bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::string &filePath, size_t timeout) {
     auto file = std::fopen(filePath.c_str(), "wb");
     if (!file) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "HttpClient.download fopen error");
+        dynxxLogPrint(DynXXLogLevelX::Error, "HttpClient.download fopen error");
         return false;
     }
 
-    const auto rsp = this->req(url, {}, {}, NGenXXNetHttpMethodGet, timeout, [file](CURL *const curl, const NGenXXHttpResponse &) {
+    const auto rsp = this->req(url, {}, {}, DynXXNetHttpMethodGet, timeout, [file](CURL *const curl, const DynXXHttpResponse &) {
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::fwrite);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
@@ -137,7 +137,7 @@ bool NGenXX::Core::Net::HttpClient::download(std::string_view url, const std::st
     return rsp.code == 200;
 }
 
-NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(std::string_view url, const std::vector<std::string> &headers, std::string_view params, int method, size_t timeout, std::function<void(CURL *const, const NGenXXHttpResponse &rsp)> &&func) {
+DynXXHttpResponse DynXX::Core::Net::HttpClient::req(std::string_view url, const std::vector<std::string> &headers, std::string_view params, int method, size_t timeout, std::function<void(CURL *const, const DynXXHttpResponse &rsp)> &&func) {
     if (!checkUrlValid(url)) [[unlikely]]
     {
         return {};
@@ -157,28 +157,28 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(std::string_view url, cons
     auto _timeout = timeout;
     if (_timeout == 0) [[unlikely]]
     {
-        _timeout = NGENXX_HTTP_DEFAULT_TIMEOUT;
+        _timeout = DYNXX_HTTP_DEFAULT_TIMEOUT;
     }
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
     curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
-    //curl_easy_setopt(curl, CURLOPT_USERAGENT, "NGenXX");
-    curl_easy_setopt(curl, CURLOPT_HTTPGET, method == NGenXXNetHttpMethodGet ? 1L : 0L);
+    //curl_easy_setopt(curl, CURLOPT_USERAGENT, "DynXX");
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
     //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     curl_slist *headerList = nullptr;
     for (const auto &it : headers)
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.req header: {}", it);
+        dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient.req header: {}", it);
         headerList = curl_slist_append(headerList, it.c_str());
     }
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
 
     std::string fixedUrl;
-    fixedUrl.reserve(url.size() + (method == NGenXXNetHttpMethodGet && !params.empty() ? params.size() + 1 : 0));
+    fixedUrl.reserve(url.size() + (method == DynXXNetHttpMethodGet && !params.empty() ? params.size() + 1 : 0));
     fixedUrl = url;
-    if (method == NGenXXNetHttpMethodGet && !params.empty())
+    if (method == DynXXNetHttpMethodGet && !params.empty())
     {
         if (!checkUrlHasSearch(fixedUrl))
         {
@@ -187,10 +187,10 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(std::string_view url, cons
         fixedUrl += params;
     }
     
-    ngenxxLogPrintF(NGenXXLogLevelX::Debug, "HttpClient.req url: {}", fixedUrl);
+    dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient.req url: {}", fixedUrl);
     curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
 
-    NGenXXHttpResponse rsp;
+    DynXXHttpResponse rsp;
     std::move(func)(curl, rsp);
 
     auto curlCode = curl_easy_perform(curl);
@@ -206,7 +206,7 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(std::string_view url, cons
 
     if (curlCode != CURLE_OK) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient.req error:{}", curl_easy_strerror(curlCode));
+        dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient.req error:{}", curl_easy_strerror(curlCode));
     }
 
     curl_easy_cleanup(curl);
@@ -214,7 +214,7 @@ NGenXXHttpResponse NGenXX::Core::Net::HttpClient::req(std::string_view url, cons
     return rsp;
 }
 
-bool NGenXX::Core::Net::HttpClient::checkUrlValid(std::string_view url)
+bool DynXX::Core::Net::HttpClient::checkUrlValid(std::string_view url)
 {
     if (url.empty()) [[unlikely]]
     {
@@ -224,14 +224,14 @@ bool NGenXX::Core::Net::HttpClient::checkUrlValid(std::string_view url)
     auto aUrl = ada::parse(url);
     if (!aUrl) [[unlikely]]
     {
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "HttpClient INVALID URL: {}", url);
+        dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient INVALID URL: {}", url);
         return false;
     }
 #endif
     return true;
 }
 
-bool NGenXX::Core::Net::HttpClient::checkUrlHasSearch(std::string_view url)
+bool DynXX::Core::Net::HttpClient::checkUrlHasSearch(std::string_view url)
 {
 #if defined(USE_ADA)
     auto aUrl = ada::parse(url);
@@ -241,7 +241,7 @@ bool NGenXX::Core::Net::HttpClient::checkUrlHasSearch(std::string_view url)
 #endif
 }
 
-bool NGenXX::Core::Net::HttpClient::handleSSL(CURL * curl, std::string_view url)
+bool DynXX::Core::Net::HttpClient::handleSSL(CURL * curl, std::string_view url)
 {
 #if defined(USE_ADA)
     auto aUrl = ada::parse(url);

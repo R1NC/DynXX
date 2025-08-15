@@ -1,11 +1,11 @@
-#ifndef NGENXX_SRC_CORE_NET_UTIL_HXX_
-#define NGENXX_SRC_CORE_NET_UTIL_HXX_
+#ifndef DYNXX_SRC_CORE_NET_UTIL_HXX_
+#define DYNXX_SRC_CORE_NET_UTIL_HXX_
 
 #if defined(__cplusplus)
 
 #include <string>
 
-namespace NGenXX::Core::Net::Util
+namespace DynXX::Core::Net::Util
         {
             enum class NetType : int 
             {
@@ -39,4 +39,4 @@ namespace NGenXX::Core::Net::Util
 
 #endif
 
-#endif // NGENXX_SRC_CORE_NET_UTIL_HXX_
+#endif // DYNXX_SRC_CORE_NET_UTIL_HXX_

@@ -4,7 +4,7 @@
 
 #include <napi_util.hxx>
 
-#include "../../../../../../build.HarmonyOS/output/include/NGenXX.h"
+#include "../../../../../../build.HarmonyOS/output/include/DynXX/C/DynXX.h"
 
 namespace {
 
@@ -12,7 +12,7 @@ napi_env sNapiEnv;
 napi_ref sTsLogCallbackRef;
 
 napi_value getVersion(napi_env env, napi_callback_info info) {
-    auto c = ngenxx_get_version();
+    auto c = dynxx_get_version();
     auto v = chars2NapiValue(env, c);
     freeX(c);
     return v;
@@ -23,7 +23,7 @@ napi_value init(napi_env env, napi_callback_info info) {
 
     auto root = napiValue2chars(env, args.v[0]);
 
-    auto b = ngenxx_init(root);
+    auto b = dynxx_init(root);
     auto v = bool2NapiValue(env, b);
 
     freeX(root);
@@ -31,7 +31,7 @@ napi_value init(napi_env env, napi_callback_info info) {
 }
 
 napi_value release(napi_env env, napi_callback_info info) {
-    ngenxx_release();
+    dynxx_release();
 
     return int2NapiValue(env, napi_ok);
 }
@@ -130,7 +130,7 @@ napi_value logSetLevel(napi_env env, napi_callback_info info) {
 
     auto level = napiValue2int(env, args.v[0]);
 
-    ngenxx_log_set_level(level);
+    dynxx_log_set_level(level);
 
     return int2NapiValue(env, napi_ok);
 }
@@ -146,14 +146,14 @@ napi_value logSetCallback(napi_env env, napi_callback_info info) {
         status = napi_delete_reference(env, sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_delete_reference() failed");
 
-        ngenxx_log_set_callback(nullptr);
+        dynxx_log_set_callback(nullptr);
     } else {
         sNapiEnv = env;
 
         status = napi_create_reference(env, vLogCallback, 1, &sTsLogCallbackRef);
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_reference() failed");
 
-        ngenxx_log_set_callback(engineLogCallback);
+        dynxx_log_set_callback(engineLogCallback);
     }
 
     return int2NapiValue(env, napi_ok);
@@ -165,7 +165,7 @@ napi_value logPrint(napi_env env, napi_callback_info info) {
     auto level = napiValue2int(env, args.v[0]);
     auto content = napiValue2chars(env, args.v[1]);
 
-    ngenxx_log_print(level, content);
+    dynxx_log_print(level, content);
     freeX(content);
 
     return int2NapiValue(env, napi_ok);
@@ -195,7 +195,7 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
     auto lTimeout = args.c > 9 ? napiValue2long(env, args.v[9]) : 15000;
 
     auto res =
-        ngenxx_net_http_request(cUrl, cParams, iMethod, header_v, header_c, form_field_name_v, form_field_mime_v,
+        dynxx_net_http_request(cUrl, cParams, iMethod, header_v, header_c, form_field_name_v, form_field_mime_v,
                                 form_field_data_v, form_field_count, static_cast<void *>(cFILE), fileLength, lTimeout);
     auto nv = chars2NapiValue(env, res);
 
@@ -226,7 +226,7 @@ napi_value storeSQLiteOpen(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto _id = napiValue2chars(env, args.v[0]);
-    auto res = ptr2addr(ngenxx_store_sqlite_open(_id));
+    auto res = ptr2addr(dynxx_store_sqlite_open(_id));
     auto nv = long2NapiValue(env, res);
 
     freeX(_id);
@@ -239,7 +239,7 @@ napi_value storeSQLiteExecute(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto sql = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_store_sqlite_execute(addr2ptr(conn), sql);
+    auto res = dynxx_store_sqlite_execute(addr2ptr(conn), sql);
     auto nv = bool2NapiValue(env, res);
 
     freeX(sql);
@@ -252,7 +252,7 @@ napi_value storeSQLiteQueryDo(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto sql = napiValue2chars(env, args.v[1]);
 
-    auto res = ptr2addr(ngenxx_store_sqlite_query_do(addr2ptr(conn), sql));
+    auto res = ptr2addr(dynxx_store_sqlite_query_do(addr2ptr(conn), sql));
     auto nv = long2NapiValue(env, res);
 
     freeX(sql);
@@ -264,7 +264,7 @@ napi_value storeSQLiteQueryReadRow(napi_env env, napi_callback_info info) {
 
     auto query_result = napiValue2long(env, args.v[0]);
 
-    auto res = ngenxx_store_sqlite_query_read_row(addr2ptr(query_result));
+    auto res = dynxx_store_sqlite_query_read_row(addr2ptr(query_result));
     return bool2NapiValue(env, res);
 }
 
@@ -274,7 +274,7 @@ napi_value storeSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
     auto query_result = napiValue2long(env, args.v[0]);
     auto column = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_store_sqlite_query_read_column_text(addr2ptr(query_result), column);
+    auto res = dynxx_store_sqlite_query_read_column_text(addr2ptr(query_result), column);
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
@@ -288,7 +288,7 @@ napi_value storeSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info in
     auto query_result = napiValue2long(env, args.v[0]);
     auto column = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_store_sqlite_query_read_column_integer(addr2ptr(query_result), column);
+    auto res = dynxx_store_sqlite_query_read_column_integer(addr2ptr(query_result), column);
     auto nv = long2NapiValue(env, res);
 
     freeX(column);
@@ -301,7 +301,7 @@ napi_value storeSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info
     auto query_result = napiValue2long(env, args.v[0]);
     auto column = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_store_sqlite_query_read_column_float(addr2ptr(query_result), column);
+    auto res = dynxx_store_sqlite_query_read_column_float(addr2ptr(query_result), column);
     auto nv = double2NapiValue(env, res);
 
     freeX(column);
@@ -312,7 +312,7 @@ napi_value storeSQLiteQueryDrop(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto query_result = napiValue2long(env, args.v[0]);
-    ngenxx_store_sqlite_query_drop(addr2ptr(query_result));
+    dynxx_store_sqlite_query_drop(addr2ptr(query_result));
 
     return int2NapiValue(env, napi_ok);
 }
@@ -321,7 +321,7 @@ napi_value storeSQLiteClose(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
-    ngenxx_store_sqlite_close(addr2ptr(conn));
+    dynxx_store_sqlite_close(addr2ptr(conn));
 
     return int2NapiValue(env, napi_ok);
 }
@@ -332,7 +332,7 @@ napi_value storeKVOpen(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto _id = napiValue2chars(env, args.v[0]);
-    auto res = ptr2addr(ngenxx_store_kv_open(_id));
+    auto res = ptr2addr(dynxx_store_kv_open(_id));
     auto nv = long2NapiValue(env, res);
 
     freeX(_id);
@@ -345,7 +345,7 @@ napi_value storeKVReadString(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_store_kv_read_string(addr2ptr(conn), k);
+    auto res = dynxx_store_kv_read_string(addr2ptr(conn), k);
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
@@ -360,7 +360,7 @@ napi_value storeKVWriteString(napi_env env, napi_callback_info info) {
     auto k = napiValue2chars(env, args.v[1]);
     auto v = napiValue2chars(env, args.v[2]);
 
-    auto res = ngenxx_store_kv_write_string(addr2ptr(conn), k, v);
+    auto res = dynxx_store_kv_write_string(addr2ptr(conn), k, v);
     auto nv = bool2NapiValue(env, res);
 
     freeX(v);
@@ -374,7 +374,7 @@ napi_value storeKVReadInteger(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_store_kv_read_integer(addr2ptr(conn), k);
+    auto res = dynxx_store_kv_read_integer(addr2ptr(conn), k);
     auto nv = long2NapiValue(env, res);
 
     freeX(k);
@@ -388,7 +388,7 @@ napi_value storeKVWriteInteger(napi_env env, napi_callback_info info) {
     auto k = napiValue2chars(env, args.v[1]);
     auto v = napiValue2long(env, args.v[2]);
 
-    auto res = ngenxx_store_kv_write_integer(addr2ptr(conn), k, v);
+    auto res = dynxx_store_kv_write_integer(addr2ptr(conn), k, v);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
@@ -401,7 +401,7 @@ napi_value storeKVReadFloat(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_store_kv_read_integer(addr2ptr(conn), k);
+    auto res = dynxx_store_kv_read_integer(addr2ptr(conn), k);
     auto nv = double2NapiValue(env, res);
 
     freeX(k);
@@ -415,7 +415,7 @@ napi_value storeKVWriteFloat(napi_env env, napi_callback_info info) {
     auto k = napiValue2chars(env, args.v[1]);
     auto v = napiValue2double(env, args.v[2]);
 
-    auto res = ngenxx_store_kv_write_integer(addr2ptr(conn), k, v);
+    auto res = dynxx_store_kv_write_integer(addr2ptr(conn), k, v);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
@@ -428,7 +428,7 @@ napi_value storeKVContains(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_store_kv_contains(addr2ptr(conn), k);
+    auto res = dynxx_store_kv_contains(addr2ptr(conn), k);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
@@ -441,7 +441,7 @@ napi_value storeKVRemove(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_store_kv_remove(addr2ptr(conn), k);
+    auto res = dynxx_store_kv_remove(addr2ptr(conn), k);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
@@ -452,7 +452,7 @@ napi_value storeKVClear(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
-    ngenxx_store_kv_clear(addr2ptr(conn));
+    dynxx_store_kv_clear(addr2ptr(conn));
 
     return int2NapiValue(env, napi_ok);
 }
@@ -461,7 +461,7 @@ napi_value storeKVClose(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
-    ngenxx_store_kv_close(addr2ptr(conn));
+    dynxx_store_kv_close(addr2ptr(conn));
 
     return int2NapiValue(env, napi_ok);
 }
@@ -469,13 +469,13 @@ napi_value storeKVClose(napi_env env, napi_callback_info info) {
 #pragma mark DeviceInfo
 
 napi_value deviceType(napi_env env, napi_callback_info info) {
-    auto dt = ngenxx_device_type();
+    auto dt = dynxx_device_type();
     auto v = int2NapiValue(env, dt);
     return v;
 }
 
 napi_value deviceName(napi_env env, napi_callback_info info) {
-    auto cDN = ngenxx_device_name();
+    auto cDN = dynxx_device_name();
     auto v = chars2NapiValue(env, cDN);
     freeX(cDN);
 
@@ -483,21 +483,21 @@ napi_value deviceName(napi_env env, napi_callback_info info) {
 }
 
 napi_value deviceManufacturer(napi_env env, napi_callback_info info) {
-    auto cDM = ngenxx_device_manufacturer();
+    auto cDM = dynxx_device_manufacturer();
     auto v = chars2NapiValue(env, cDM);
     freeX(cDM);
     return v;
 }
 
 napi_value deviceOsVersion(napi_env env, napi_callback_info info) {
-    auto cOV = ngenxx_device_name();
+    auto cOV = dynxx_device_name();
     auto v = chars2NapiValue(env, cOV);
     freeX(cOV);
     return v;
 }
 
 napi_value deviceCpuArch(napi_env env, napi_callback_info info) {
-    auto dca = ngenxx_device_cpu_arch();
+    auto dca = dynxx_device_cpu_arch();
     auto v = int2NapiValue(env, dca);
     return v;
 }
@@ -509,7 +509,7 @@ napi_value jsonReadType(napi_env env, napi_callback_info info) {
 
     auto node = args.c > 1 ? napiValue2long(env, args.v[0]) : 0;
 
-    auto res = ngenxx_json_read_type(addr2ptr(node));
+    auto res = dynxx_json_read_type(addr2ptr(node));
     return int2NapiValue(env, res);
 }
 
@@ -518,7 +518,7 @@ napi_value jsonDecoderInit(napi_env env, napi_callback_info info) {
 
     auto cJson = napiValue2chars(env, args.v[0]);
 
-    auto res = ptr2addr(ngenxx_json_decoder_init(cJson));
+    auto res = ptr2addr(dynxx_json_decoder_init(cJson));
     auto v = long2NapiValue(env, res);
 
     freeX(cJson);
@@ -532,7 +532,7 @@ napi_value jsonDecoderReadNode(napi_env env, napi_callback_info info) {
     auto cK = napiValue2chars(env, args.v[1]);
     auto node = args.c > 2 ? napiValue2long(env, args.v[2]) : 0;
 
-    auto res = ptr2addr(ngenxx_json_decoder_read_node(addr2ptr(decoder), addr2ptr(node), cK));
+    auto res = ptr2addr(dynxx_json_decoder_read_node(addr2ptr(decoder), addr2ptr(node), cK));
     auto v = long2NapiValue(env, res);
 
     freeX(cK);
@@ -545,7 +545,7 @@ napi_value jsonDecoderReadChild(napi_env env, napi_callback_info info) {
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto res = ptr2addr(ngenxx_json_decoder_read_child(addr2ptr(decoder), addr2ptr(node)));
+    auto res = ptr2addr(dynxx_json_decoder_read_child(addr2ptr(decoder), addr2ptr(node)));
     return long2NapiValue(env, res);
 }
 
@@ -555,7 +555,7 @@ napi_value jsonDecoderReadNext(napi_env env, napi_callback_info info) {
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto res = ptr2addr(ngenxx_json_decoder_read_next(addr2ptr(decoder), addr2ptr(node)));
+    auto res = ptr2addr(dynxx_json_decoder_read_next(addr2ptr(decoder), addr2ptr(node)));
     return long2NapiValue(env, res);
 }
 
@@ -565,7 +565,7 @@ napi_value jsonDecoderReadString(napi_env env, napi_callback_info info) {
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto cRes = ngenxx_json_decoder_read_string(addr2ptr(decoder), addr2ptr(node));
+    auto cRes = dynxx_json_decoder_read_string(addr2ptr(decoder), addr2ptr(node));
     auto v = chars2NapiValue(env, cRes);
 
     freeX(cRes);
@@ -578,7 +578,7 @@ napi_value jsonDecoderReadNumber(napi_env env, napi_callback_info info) {
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto res = ngenxx_json_decoder_read_number(addr2ptr(decoder), addr2ptr(node));
+    auto res = dynxx_json_decoder_read_number(addr2ptr(decoder), addr2ptr(node));
     return double2NapiValue(env, res);
 }
 
@@ -587,7 +587,7 @@ napi_value jsonDecoderRelease(napi_env env, napi_callback_info info) {
 
     auto decoder = napiValue2long(env, args.v[0]);
 
-    ngenxx_json_decoder_release(addr2ptr(decoder));
+    dynxx_json_decoder_release(addr2ptr(decoder));
 
     return int2NapiValue(env, napi_ok);
 }
@@ -600,7 +600,7 @@ napi_value codingHexBytes2str(napi_env env, napi_callback_info info) {
     auto inLen = napiValueArrayLen(env, args.v[0]);
     auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
 
-    auto cRes = ngenxx_coding_hex_bytes2str(inBytes, inLen);
+    auto cRes = dynxx_coding_hex_bytes2str(inBytes, inLen);
     auto v = chars2NapiValue(env, cRes);
 
     freeX(cRes);
@@ -614,7 +614,7 @@ napi_value codingHexStr2Bytes(napi_env env, napi_callback_info info) {
     auto cStr = napiValue2chars(env, args.v[0]);
 
     size_t outLen;
-    auto cRes = ngenxx_coding_hex_str2bytes(cStr, &outLen);
+    auto cRes = dynxx_coding_hex_str2bytes(cStr, &outLen);
     auto v = byteArray2NapiValue(env, cRes, outLen);
 
     freeX(cRes);
@@ -631,7 +631,7 @@ napi_value cryptoRand(napi_env env, napi_callback_info info) {
     byte out[len];
     std::memset(out, 0, len);
 
-    ngenxx_crypto_rand(len, out);
+    dynxx_crypto_rand(len, out);
     auto v = byteArray2NapiValue(env, out, len);
 
     return v;
@@ -646,7 +646,7 @@ napi_value cryptoAesEncrypt(napi_env env, napi_callback_info info) {
     auto keyBytes = napiValue2byteArray(env, args.v[1], keyLen);
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
+    auto outBytes = dynxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -664,7 +664,7 @@ napi_value cryptoAesDecrypt(napi_env env, napi_callback_info info) {
     auto keyBytes = napiValue2byteArray(env, args.v[1], keyLen);
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_aes_decrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
+    auto outBytes = dynxx_crypto_aes_decrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -687,7 +687,7 @@ napi_value cryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
     auto aadBytes = args.c > 4 ? napiValue2byteArray(env, args.v[4], aadLen) : nullptr;
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen,
+    auto outBytes = dynxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen,
                                                   aadBytes, aadLen, tagBits, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
@@ -715,7 +715,7 @@ napi_value cryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
     auto aadBytes = args.c > 4 ? napiValue2byteArray(env, args.v[4], aadLen) : nullptr;
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen,
+    auto outBytes = dynxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen,
                                                   aadBytes, aadLen, tagBits, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
@@ -736,7 +736,7 @@ napi_value cryptoHashMd5(napi_env env, napi_callback_info info) {
     auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_hash_md5(inBytes, inLen, &outLen);
+    auto outBytes = dynxx_crypto_hash_md5(inBytes, inLen, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -751,7 +751,7 @@ napi_value cryptoHashSha256(napi_env env, napi_callback_info info) {
     auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_hash_sha256(inBytes, inLen, &outLen);
+    auto outBytes = dynxx_crypto_hash_sha256(inBytes, inLen, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -767,7 +767,7 @@ napi_value cryptoBase64Encode(napi_env env, napi_callback_info info) {
     auto noNewLines = napiValue2bool(env, args.v[1]);
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_base64_encode(inBytes, inLen, noNewLines, &outLen);
+    auto outBytes = dynxx_crypto_base64_encode(inBytes, inLen, noNewLines, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -783,7 +783,7 @@ napi_value cryptoBase64Decode(napi_env env, napi_callback_info info) {
     auto noNewLines = napiValue2bool(env, args.v[1]);
 
     size_t outLen;
-    auto outBytes = ngenxx_crypto_base64_decode(inBytes, inLen, noNewLines, &outLen);
+    auto outBytes = dynxx_crypto_base64_decode(inBytes, inLen, noNewLines, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -798,7 +798,7 @@ napi_value lLoadF(napi_env env, napi_callback_info info) {
 
     auto file = napiValue2chars(env, args.v[0]);
 
-    auto res = ngenxx_lua_loadF(file);
+    auto res = dynxx_lua_loadF(file);
     auto nv = bool2NapiValue(env, res);
 
     freeX(file);
@@ -810,7 +810,7 @@ napi_value lLoadS(napi_env env, napi_callback_info info) {
 
     auto script = napiValue2chars(env, args.v[0]);
 
-    auto res = ngenxx_lua_loadS(script);
+    auto res = dynxx_lua_loadS(script);
     auto nv = bool2NapiValue(env, res);
 
     freeX(script);
@@ -823,7 +823,7 @@ napi_value lCall(napi_env env, napi_callback_info info) {
     auto func = napiValue2chars(env, args.v[0]);
     auto params = napiValue2chars(env, args.v[1]);
 
-    auto res = ngenxx_lua_call(func, params);
+    auto res = dynxx_lua_call(func, params);
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
@@ -842,7 +842,7 @@ napi_value jLoadF(napi_env env, napi_callback_info info) {
     auto file = napiValue2chars(env, args.v[0]);
     auto isModule = napiValue2bool(env, args.v[1]);
 
-    auto res = ngenxx_js_loadF(file, isModule);
+    auto res = dynxx_js_loadF(file, isModule);
     auto nv = bool2NapiValue(env, res);
 
     freeX(file);
@@ -856,7 +856,7 @@ napi_value jLoadS(napi_env env, napi_callback_info info) {
     auto name = napiValue2chars(env, args.v[1]);
     auto isModule = napiValue2bool(env, args.v[2]);
 
-    auto res = ngenxx_js_loadS(script, name, isModule);
+    auto res = dynxx_js_loadS(script, name, isModule);
     auto nv = bool2NapiValue(env, res);
 
     freeX(script);
@@ -871,7 +871,7 @@ napi_value jLoadB(napi_env env, napi_callback_info info) {
     auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
     auto isModule = napiValue2bool(env, args.v[1]);
 
-    auto b = ngenxx_js_loadB(inBytes, inLen, isModule);
+    auto b = dynxx_js_loadB(inBytes, inLen, isModule);
     auto v = bool2NapiValue(env, b);
 
     freeX(inBytes);
@@ -885,7 +885,7 @@ napi_value jCall(napi_env env, napi_callback_info info) {
     auto params = napiValue2chars(env, args.v[1]);
     auto await = napiValue2bool(env, args.v[2]);
 
-    auto res = ngenxx_js_call(func, params, await);
+    auto res = dynxx_js_call(func, params, await);
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
@@ -904,7 +904,7 @@ napi_value jCall(napi_env env, napi_callback_info info) {
 #pragma mark Register Module
 
 EXTERN_C_START
-napi_value NAPI_NGenXX_RegisterFuncs(napi_env env, napi_value exports) {
+napi_value NAPI_DynXX_RegisterFuncs(napi_env env, napi_value exports) {
     napi_property_descriptor desc[] = {
         NAPI(getVersion),
         NAPI(init),
@@ -980,14 +980,14 @@ napi_value NAPI_NGenXX_RegisterFuncs(napi_env env, napi_value exports) {
 }
 EXTERN_C_END
 
-static napi_module ngenxxModule = {
+static napi_module dynxxModule = {
     .nm_version = 1,
     .nm_flags = 0,
     .nm_filename = NULL,
-    .nm_register_func = NAPI_NGenXX_RegisterFuncs,
-    .nm_modname = "ngenxx",
+    .nm_register_func = NAPI_DynXX_RegisterFuncs,
+    .nm_modname = "dynxx",
     .nm_priv = ((void *)(0)),
     .reserved = {0},
 };
 
-extern "C" __attribute__((constructor)) void RegisterNGenXXModule(void) { napi_module_register(&ngenxxModule); }
+extern "C" __attribute__((constructor)) void RegisterDynXXModule(void) { napi_module_register(&dynxxModule); }

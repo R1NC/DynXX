@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_JSON_CODEC_HXX_
-#define NGENXX_SRC_CORE_JSON_CODEC_HXX_
+#ifndef DYNXX_SRC_CORE_JSON_CODEC_HXX_
+#define DYNXX_SRC_CORE_JSON_CODEC_HXX_
 
 #include <cJSON.h>
 
@@ -7,11 +7,11 @@
 
 #include <functional>
 
-#include <NGenXXTypes.hxx>
-#include <NGenXXJson.hxx>
+#include <DynXX/CXX/Types.hxx>
+#include <DynXX/CXX/Json.hxx>
 
-namespace NGenXX::Core::Json {
-    NGenXXJsonNodeTypeX cJSONReadType(void *const cjson);
+namespace DynXX::Core::Json {
+    DynXXJsonNodeTypeX cJSONReadType(void *const cjson);
 
     std::optional<std::string> cJSONToStr(void *const cjson);
 
@@ -64,4 +64,4 @@ namespace NGenXX::Core::Json {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_JSON_CODEC_HXX_
+#endif // DYNXX_SRC_CORE_JSON_CODEC_HXX_

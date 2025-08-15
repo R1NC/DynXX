@@ -1,95 +1,95 @@
 function TestNetHttpRequest(url)
-    local method = NGenXX.Net.Http.Method.Post
+    local method = DynXX.Net.Http.Method.Post
     local paramMap = {
         p0 = 123,
         p1 = 'abc'
     }
     local headerMap = {
-        ['User-Agent'] = 'NGenXX',
+        ['User-Agent'] = 'DynXX',
         ['Cache-Control'] = 'no-cache',
     }
     local rawNodyBytes = {}
     local timeout = 10 * 1000
-    return NGenXX.Net.Http.request(url, method, paramMap, headerMap, rawNodyBytes, timeout)
+    return DynXX.Net.Http.request(url, method, paramMap, headerMap, rawNodyBytes, timeout)
 end
 
 function TestDeviceInfo()
     local deviceInfo = {
-        platform = NGenXX.Device.platform(),
-        manufacturer = NGenXX.Device.manufacturer(),
-        name = NGenXX.Device.name(),
-        osVersion = NGenXX.Device.osVersion(),
-        cpuArch = NGenXX.Device.cpuArch()
+        platform = DynXX.Device.platform(),
+        manufacturer = DynXX.Device.manufacturer(),
+        name = DynXX.Device.name(),
+        osVersion = DynXX.Device.osVersion(),
+        cpuArch = DynXX.Device.cpuArch()
     }
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, JSON.stringify(deviceInfo))
+    DynXX.Log.print(DynXX.Log.Level.Debug, JSON.stringify(deviceInfo))
 end
 
 function TestCoding()
-    local s = 'NGenXX'
+    local s = 'DynXX'
 
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Case.Upper: ' .. NGenXX.Coding.Case.upper(s))
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Case.Lower: ' .. NGenXX.Coding.Case.lower(s))
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Case.Upper: ' .. DynXX.Coding.Case.upper(s))
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Case.Lower: ' .. DynXX.Coding.Case.lower(s))
 
-    local bytes = NGenXX.Coding.str2Bytes(s)
-    local str = NGenXX.Coding.bytes2Str(bytes)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'str2Bytes: ' .. JSON.stringify(bytes))
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'bytes2Str: ' .. str)
+    local bytes = DynXX.Coding.str2Bytes(s)
+    local str = DynXX.Coding.bytes2Str(bytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'str2Bytes: ' .. JSON.stringify(bytes))
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'bytes2Str: ' .. str)
 end
 
 function TestCrypto(s)
-    local bytes = NGenXX.Coding.str2Bytes(s)
+    local bytes = DynXX.Coding.str2Bytes(s)
 
-    local md5Bytes = NGenXX.Crypto.Hash.md5(bytes)
-    local md5HexStr = NGenXX.Coding.Hex.bytes2Str(md5Bytes)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Hash.md5: ' .. md5HexStr)
-    local sha256Bytes = NGenXX.Crypto.Hash.sha256(bytes)
-    local sha256HexStr = NGenXX.Coding.Hex.bytes2Str(sha256Bytes)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Hash.sha256: ' .. sha256HexStr)
+    local md5Bytes = DynXX.Crypto.Hash.md5(bytes)
+    local md5HexStr = DynXX.Coding.Hex.bytes2Str(md5Bytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Hash.md5: ' .. md5HexStr)
+    local sha256Bytes = DynXX.Crypto.Hash.sha256(bytes)
+    local sha256HexStr = DynXX.Coding.Hex.bytes2Str(sha256Bytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Hash.sha256: ' .. sha256HexStr)
 
     local noNewLines = true
-    local base64EncodedBytes = NGenXX.Crypto.Base64.encode(bytes, noNewLines)
-    local base64EncodedStr = NGenXX.Coding.bytes2Str(base64EncodedBytes)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Base64.encode: ' .. base64EncodedStr)
-    local base64DecodedBytes = NGenXX.Crypto.Base64.decode(base64EncodedBytes, noNewLines)
-    local base64DecodedStr = NGenXX.Coding.bytes2Str(base64DecodedBytes)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Base64.decode: ' .. base64DecodedStr)
+    local base64EncodedBytes = DynXX.Crypto.Base64.encode(bytes, noNewLines)
+    local base64EncodedStr = DynXX.Coding.bytes2Str(base64EncodedBytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Base64.encode: ' .. base64EncodedStr)
+    local base64DecodedBytes = DynXX.Crypto.Base64.decode(base64EncodedBytes, noNewLines)
+    local base64DecodedStr = DynXX.Coding.bytes2Str(base64DecodedBytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Base64.decode: ' .. base64DecodedStr)
 
     local key = 'qwertyuiop123456'
-    local keyBytes = NGenXX.Coding.str2Bytes(key)
-    local aesEncodedBytes = NGenXX.Crypto.Aes.encrypt(bytes, keyBytes)
-    local aesEncodedStr = NGenXX.Coding.Hex.bytes2Str(aesEncodedBytes)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Aes.encrypt: ' .. aesEncodedStr)
-    local aesDecodedBytes = NGenXX.Crypto.Aes.decrypt(aesEncodedBytes, keyBytes)
-    local aesDecodedStr = NGenXX.Coding.bytes2Str(aesDecodedBytes)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Aes.decrypt: ' .. aesDecodedStr)
+    local keyBytes = DynXX.Coding.str2Bytes(key)
+    local aesEncodedBytes = DynXX.Crypto.Aes.encrypt(bytes, keyBytes)
+    local aesEncodedStr = DynXX.Coding.Hex.bytes2Str(aesEncodedBytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Aes.encrypt: ' .. aesEncodedStr)
+    local aesDecodedBytes = DynXX.Crypto.Aes.decrypt(aesEncodedBytes, keyBytes)
+    local aesDecodedStr = DynXX.Coding.bytes2Str(aesDecodedBytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Aes.decrypt: ' .. aesDecodedStr)
 
-    local ivBytes = NGenXX.Crypto.rand(12)
+    local ivBytes = DynXX.Crypto.rand(12)
     local tagBits = 15 * 8
-    local aesGcmEncodedBytes = NGenXX.Crypto.Aes.Gcm.encrypt(bytes, keyBytes, ivBytes, tagBits)
-    local aesGcmEncodedStr = NGenXX.Coding.Hex.bytes2Str(aesGcmEncodedBytes)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Aes.Gcm.encrypt: ' .. aesGcmEncodedStr)
-    local aesGcmDecodedBytes = NGenXX.Crypto.Aes.Gcm.decrypt(aesGcmEncodedBytes, keyBytes, ivBytes, tagBits)
-    local aesGcmDecodedStr = NGenXX.Coding.bytes2Str(aesGcmDecodedBytes)
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'Aes.Gcm.decrypt: ' .. aesGcmDecodedStr)
+    local aesGcmEncodedBytes = DynXX.Crypto.Aes.Gcm.encrypt(bytes, keyBytes, ivBytes, tagBits)
+    local aesGcmEncodedStr = DynXX.Coding.Hex.bytes2Str(aesGcmEncodedBytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Aes.Gcm.encrypt: ' .. aesGcmEncodedStr)
+    local aesGcmDecodedBytes = DynXX.Crypto.Aes.Gcm.decrypt(aesGcmEncodedBytes, keyBytes, ivBytes, tagBits)
+    local aesGcmDecodedStr = DynXX.Coding.bytes2Str(aesGcmDecodedBytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Aes.Gcm.decrypt: ' .. aesGcmDecodedStr)
 end
 
 function TestStoreKV()
-    local conn = NGenXX.Store.KV.open('test4lua')
-    NGenXX.Store.KV.writeString(conn, 's', 'NGenXX')
-    NGenXX.Store.KV.writeInteger(conn, 'i', 1234567890)
-    NGenXX.Store.KV.writeFloat(conn, 'f', 0.987654321)
-    local keys = NGenXX.Store.KV.allKeys(conn)
+    local conn = DynXX.Store.KV.open('test4lua')
+    DynXX.Store.KV.writeString(conn, 's', 'DynXX')
+    DynXX.Store.KV.writeInteger(conn, 'i', 1234567890)
+    DynXX.Store.KV.writeFloat(conn, 'f', 0.987654321)
+    local keys = DynXX.Store.KV.allKeys(conn)
     for _, k in ipairs(keys) do
-        local v = NGenXX.Store.KV.readString(conn, k)
+        local v = DynXX.Store.KV.readString(conn, k)
         if k == 's' then
-            NGenXX.Log.print(NGenXX.Log.Level.Debug, k .. ': ' .. NGenXX.Store.KV.readString(conn, k))
+            DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.Store.KV.readString(conn, k))
         elseif k == 'i' then
-            NGenXX.Log.print(NGenXX.Log.Level.Debug, k .. ': ' .. NGenXX.Store.KV.readInteger(conn, k))
+            DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.Store.KV.readInteger(conn, k))
         elseif k == 'f' then
-            NGenXX.Log.print(NGenXX.Log.Level.Debug, k .. ': ' .. NGenXX.Store.KV.readFloat(conn, k))
+            DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.Store.KV.readFloat(conn, k))
         end
     end
-    NGenXX.Store.KV.close(conn)
+    DynXX.Store.KV.close(conn)
 end
 
 function TestStoreSQLite()
@@ -103,17 +103,17 @@ function TestStoreSQLite()
     ]]
     local sqlQuery = 'SELECT * FROM TestTable;'
 
-    local conn = NGenXX.Store.SQLite.open('test.lua')
-    NGenXX.Store.SQLite.execute(conn, sqlPrepareData)
-    local query = NGenXX.Store.SQLite.Query.create(conn, sqlQuery)
-    while (NGenXX.Store.SQLite.Query.readRow(query)) do
-        local s = NGenXX.Store.SQLite.Query.readColumnText(query, 's')
-        local i = NGenXX.Store.SQLite.Query.readColumnInteger(query, 'i')
-        local f = NGenXX.Store.SQLite.Query.readColumnFloat(query, 'f')
-        NGenXX.Log.print(NGenXX.Log.Level.Debug, s .. ' | ' .. i .. ' | ' .. f)
+    local conn = DynXX.Store.SQLite.open('test.lua')
+    DynXX.Store.SQLite.execute(conn, sqlPrepareData)
+    local query = DynXX.Store.SQLite.Query.create(conn, sqlQuery)
+    while (DynXX.Store.SQLite.Query.readRow(query)) do
+        local s = DynXX.Store.SQLite.Query.readColumnText(query, 's')
+        local i = DynXX.Store.SQLite.Query.readColumnInteger(query, 'i')
+        local f = DynXX.Store.SQLite.Query.readColumnFloat(query, 'f')
+        DynXX.Log.print(DynXX.Log.Level.Debug, s .. ' | ' .. i .. ' | ' .. f)
     end
-    NGenXX.Store.SQLite.Query.drop(query)
-    NGenXX.Store.SQLite.close(conn)
+    DynXX.Store.SQLite.Query.drop(query)
+    DynXX.Store.SQLite.close(conn)
 end
 
 function TestCoroutine(url)
@@ -122,7 +122,7 @@ function TestCoroutine(url)
             return TestNetHttpRequest(_url)
         end
     )
-    NGenXX.Log.print(NGenXX.Log.Level.Debug, 'sent http request on ' .. tostring(co) .. ' ...')
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'sent http request on ' .. tostring(co) .. ' ...')
     local _, res = coroutine.resume(co, url)
     return res
 end

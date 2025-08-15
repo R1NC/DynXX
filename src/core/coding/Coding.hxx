@@ -1,11 +1,11 @@
-#ifndef NGENXX_SRC_CORE_CODING_HXX_
-#define NGENXX_SRC_CORE_CODING_HXX_
+#ifndef DYNXX_SRC_CORE_CODING_HXX_
+#define DYNXX_SRC_CORE_CODING_HXX_
 
 #if defined(__cplusplus)
 
-#include <NGenXXTypes.hxx>
+#include <DynXX/CXX/Types.hxx>
 
-namespace NGenXX::Core::Coding {
+namespace DynXX::Core::Coding {
     namespace Case {
         std::string upper(std::string_view str);
 
@@ -29,4 +29,4 @@ namespace NGenXX::Core::Coding {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_CODING_HXX_
+#endif // DYNXX_SRC_CORE_CODING_HXX_

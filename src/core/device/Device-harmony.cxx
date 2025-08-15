@@ -3,39 +3,39 @@
 
 #include <deviceinfo.h>
 
-#include <NGenXXDevice.h>
+#include <DynXX/C/Device.h>
 
-int NGenXX::Core::Device::deviceType()
+int DynXX::Core::Device::deviceType()
 {
-    return NGenXXDeviceTypeHarmonyOS;
+    return DynXXDeviceTypeHarmonyOS;
 }
 
-std::string NGenXX::Core::Device::deviceName()
+std::string DynXX::Core::Device::deviceName()
 {
     return OH_GetHardwareModel();
 }
 
-std::string NGenXX::Core::Device::deviceManufacturer()
+std::string DynXX::Core::Device::deviceManufacturer()
 {
     return OH_GetManufacture();
 }
 
-std::string NGenXX::Core::Device::deviceModel()
+std::string DynXX::Core::Device::deviceModel()
 {
     return OH_GetHardwareModel();
 }
 
-std::string NGenXX::Core::Device::osVersion()
+std::string DynXX::Core::Device::osVersion()
 {
     return OH_GetDistributionOSVersion();
 }
 
-int NGenXX::Core::Device::cpuArch()
+int DynXX::Core::Device::cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
-    return NGenXXDeviceCpuArchARM_64;
+    return DynXXDeviceCpuArchARM_64;
 #endif
-    return NGenXXDeviceCpuArchARM;
+    return DynXXDeviceCpuArchARM;
 }
 
 #endif

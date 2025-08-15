@@ -15,8 +15,8 @@
 
 #include <sstream>
 
-#include <NGenXXDevice.h>
-#include <NGenXXTypes.hxx>
+#include <DynXX/C/Device.h>
+#include <DynXX/CXX/Types.hxx>
 
 namespace
 {
@@ -35,30 +35,30 @@ namespace
 #endif
 }
 
-int NGenXX::Core::Device::deviceType()
+int DynXX::Core::Device::deviceType()
 {
-    return NGenXXDeviceTypeAppleMac;
+    return DynXXDeviceTypeAppleMac;
 }
 
-std::string NGenXX::Core::Device::deviceName()
+std::string DynXX::Core::Device::deviceName()
 {
     struct utsname systemInfo{};
     uname(&systemInfo);
     return makeStr(systemInfo.machine);
 }
 
-std::string NGenXX::Core::Device::deviceManufacturer()
+std::string DynXX::Core::Device::deviceManufacturer()
 {
     return "Apple";
 }
 
-std::string NGenXX::Core::Device::deviceModel()
+std::string DynXX::Core::Device::deviceModel()
 {
     //TODO
     return {};
 }
 
-std::string NGenXX::Core::Device::osVersion()
+std::string DynXX::Core::Device::osVersion()
 {
     NSOperatingSystemVersion version = NSProcessInfo.processInfo.operatingSystemVersion;
     int major = static_cast<int32_t>(version.majorVersion);
@@ -69,15 +69,15 @@ std::string NGenXX::Core::Device::osVersion()
     return ss.str();
 }
 
-int NGenXX::Core::Device::cpuArch()
+int DynXX::Core::Device::cpuArch()
 {
 #if defined(ARCH_CPU_X86_64)
     if (!ProcessIsTranslated())
     {
-        return NGenXXDeviceCpuArchX86_64;
+        return DynXXDeviceCpuArchX86_64;
     }
 #else
-    return NGenXXDeviceCpuArchARM_64;
+    return DynXXDeviceCpuArchARM_64;
 #endif
 }
 

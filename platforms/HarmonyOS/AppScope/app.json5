@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "xyz.rinc.ngenxx.demo",
+    "bundleName": "xyz.rinc.dynxx.demo",
     "vendor": "Rinc",
     "versionCode": 1000000,
     "versionName": "1.0.0",

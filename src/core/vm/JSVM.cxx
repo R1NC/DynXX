@@ -5,7 +5,7 @@
 #include <sstream>
 #include <utility>
 
-#include <NGenXXLog.hxx>
+#include <DynXX/CXX/Log.hxx>
 
 namespace
 {
@@ -20,7 +20,7 @@ namespace
     {
         if (const auto str = JS_ToCString(ctx, val))
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, str);
+            dynxxLogPrint(DynXXLogLevelX::Error, str);
             JS_FreeCString(ctx, str);
         }
     }
@@ -51,7 +51,7 @@ namespace
         const auto jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
         if (JS_IsException(jEvalRet)) [[unlikely]]
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_Eval failed ->");
+            dynxxLogPrint(DynXXLogLevelX::Error, "JS_Eval failed ->");
             dumpJsErr(ctx);
             return false;
         }
@@ -60,7 +60,7 @@ namespace
         {
             if (JS_VALUE_GET_TAG(jEvalRet) != JS_TAG_MODULE) [[unlikely]]
             { // Check whether it's a JS Module or not，or QJS may crash
-                ngenxxLogPrint(NGenXXLogLevelX::Error, "JS try to load invalid module");
+                dynxxLogPrint(DynXXLogLevelX::Error, "JS try to load invalid module");
                 JS_FreeValue(ctx, jEvalRet);
                 return false;
             }
@@ -108,13 +108,13 @@ namespace
     {
         const auto jPromise = new(std::nothrow) Promise();
         if (jPromise == nullptr) {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "new Promise failed");
+            dynxxLogPrint(DynXXLogLevelX::Error, "new Promise failed");
             return nullptr;
         }
         jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
         if (JS_IsException(jPromise->p)) [[unlikely]]
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewPromise failed ->");
+            dynxxLogPrint(DynXXLogLevelX::Error, "JS_NewPromise failed ->");
             dumpJsErr(ctx);
             JS_FreeValue(ctx, jPromise->p);
             return nullptr;
@@ -127,7 +127,7 @@ namespace
         const auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
         if (JS_IsException(jCallRet)) [[unlikely]]
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_CallPromise failed ->");
+            dynxxLogPrint(DynXXLogLevelX::Error, "JS_CallPromise failed ->");
             dumpJsErr(ctx);
         }
 
@@ -142,7 +142,7 @@ namespace
 
 #pragma mark JSVM Internal
 
-JSValue NGenXX::Core::VM::JSVM::jAwait(const JSValue obj)
+JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
 {
     auto ret = JS_UNDEFINED;
     for (;;)
@@ -185,12 +185,12 @@ JSValue NGenXX::Core::VM::JSVM::jAwait(const JSValue obj)
 
 #pragma mark JSValueHash & JSValueEqual
 
-std::size_t NGenXX::Core::VM::JSVM::JSValueHash::operator()(const JSValue &jv) const 
+std::size_t DynXX::Core::VM::JSVM::JSValueHash::operator()(const JSValue &jv) const 
 {
     return std::hash<void *>()(JS_VALUE_GET_PTR(jv));
 }
 
-bool NGenXX::Core::VM::JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) const 
+bool DynXX::Core::VM::JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) const 
 {
     if (JS_VALUE_GET_TAG(left) != JS_VALUE_GET_TAG(right)) 
     {
@@ -214,7 +214,7 @@ bool NGenXX::Core::VM::JSVM::JSValueEqual::operator()(const JSValue &left, const
 
 #pragma mark JSVM API
 
-NGenXX::Core::VM::JSVM::JSVM()
+DynXX::Core::VM::JSVM::JSVM()
 {
     this->runtime = JS_NewRuntime();
     js_std_init_handlers(this->runtime);
@@ -240,13 +240,13 @@ NGenXX::Core::VM::JSVM::JSVM()
     };
 }
 
-bool NGenXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
+bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
 {
     auto res = true;
     const auto jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
     if (JS_IsException(jFunc)) [[unlikely]]
     {
-        ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_NewCFunction failed ->");
+        dynxxLogPrint(DynXXLogLevelX::Error, "JS_NewCFunction failed ->");
         dumpJsErr(this->context);
         res = false;
     }
@@ -254,7 +254,7 @@ bool NGenXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *fun
     {
         if (!JS_DefinePropertyValueStr(this->context, this->jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE)) [[unlikely]]
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_DefinePropertyValueStr failed ->");
+            dynxxLogPrint(DynXXLogLevelX::Error, "JS_DefinePropertyValueStr failed ->");
             dumpJsErr(this->context);
             res = false;
         }
@@ -265,7 +265,7 @@ bool NGenXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *fun
     return res;
 }
 
-bool NGenXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
+bool DynXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
 {
     std::ifstream ifs(file.c_str());
     std::ostringstream ss;
@@ -273,18 +273,18 @@ bool NGenXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
     return this->loadScript(ss.str(), file, isModule);
 }
 
-bool NGenXX::Core::VM::JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
+bool DynXX::Core::VM::JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
     auto lock = std::lock_guard(this->vmMutex);
     return _loadScript(this->context, script, name, isModule);
 }
 
-bool NGenXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
+bool DynXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
     auto lock = std::lock_guard(this->vmMutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
-std::optional<std::string> NGenXX::Core::VM::JSVM::callFunc(std::string_view func, std::string_view params, bool await) {
+std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func, std::string_view params, bool await) {
     auto lock = std::unique_lock(this->vmMutex);
     std::string s;
     auto success = false;
@@ -301,7 +301,7 @@ std::optional<std::string> NGenXX::Core::VM::JSVM::callFunc(std::string_view fun
 
         if (JS_IsException(jRes)) [[unlikely]]
         {
-            ngenxxLogPrint(NGenXXLogLevelX::Error, "JS_Call failed ->");
+            dynxxLogPrint(DynXXLogLevelX::Error, "JS_Call failed ->");
             dumpJsErr(this->context);
         }
         else [[likely]]
@@ -321,13 +321,13 @@ std::optional<std::string> NGenXX::Core::VM::JSVM::callFunc(std::string_view fun
     else [[unlikely]]
     {
         lock.unlock();
-        ngenxxLogPrintF(NGenXXLogLevelX::Error, "Can not find JS func:{}", func);
+        dynxxLogPrintF(DynXXLogLevelX::Error, "Can not find JS func:{}", func);
     }
 
     return success? std::make_optional(s): std::nullopt;
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
+JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
 {
     auto jPromise = _newPromise(this->context);
     if (jPromise == nullptr) [[unlikely]]
@@ -346,7 +346,7 @@ JSValue NGenXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
     return jPromise->p;
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&vf)
+JSValue DynXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&vf)
 {
     return this->newPromise([cbk = std::move(vf)]() {
         cbk();
@@ -354,7 +354,7 @@ JSValue NGenXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&vf)
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseBool(std::function<bool()> &&bf)
+JSValue DynXX::Core::VM::JSVM::newPromiseBool(std::function<bool()> &&bf)
 {
     return this->newPromise([ctx = this->context, cbk = std::move(bf)]{
         const auto ret = cbk();
@@ -362,7 +362,7 @@ JSValue NGenXX::Core::VM::JSVM::newPromiseBool(std::function<bool()> &&bf)
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
+JSValue DynXX::Core::VM::JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
 {
     return this->newPromise([ctx = this->context, cbk = std::move(i32f)]{
         const auto ret = cbk();
@@ -370,7 +370,7 @@ JSValue NGenXX::Core::VM::JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
+JSValue DynXX::Core::VM::JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
 {
     return this->newPromise([ctx = this->context, cbk = std::move(i64f)]{
         const auto ret = cbk();
@@ -378,7 +378,7 @@ JSValue NGenXX::Core::VM::JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseFloat(std::function<double()> &&ff)
+JSValue DynXX::Core::VM::JSVM::newPromiseFloat(std::function<double()> &&ff)
 {
     return this->newPromise([ctx = this->context, cbk = std::move(ff)]{
         const auto ret = cbk();
@@ -386,7 +386,7 @@ JSValue NGenXX::Core::VM::JSVM::newPromiseFloat(std::function<double()> &&ff)
     });
 }
 
-JSValue NGenXX::Core::VM::JSVM::newPromiseString(std::function<const std::string()> &&sf)
+JSValue DynXX::Core::VM::JSVM::newPromiseString(std::function<const std::string()> &&sf)
 {
     return this->newPromise([ctx = this->context, cbk = std::move(sf)]{
         const auto ret = cbk();
@@ -394,7 +394,7 @@ JSValue NGenXX::Core::VM::JSVM::newPromiseString(std::function<const std::string
     });
 }
 
-NGenXX::Core::VM::JSVM::~JSVM()
+DynXX::Core::VM::JSVM::~JSVM()
 {
     this->active = false;
     js_std_loop_cancel(this->runtime);

@@ -1,9 +1,9 @@
 {
   "module": {
-    "name": "ngenxx",
+    "name": "dynxx",
     "type": "entry",
     "description": "$string:module_desc",
-    "mainElement": "NGenXXdAbility",
+    "mainElement": "DynXXdAbility",
     "deviceTypes": [
       "phone"
     ],

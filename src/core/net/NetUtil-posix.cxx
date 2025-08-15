@@ -28,7 +28,7 @@ namespace
     }
 }
 
-std::string NGenXX::Core::Net::Util::macAddress()
+std::string DynXX::Core::Net::Util::macAddress()
 {
     ifaddrs *ifaddr = nullptr;
     std::string macAddress;
@@ -70,7 +70,7 @@ std::string NGenXX::Core::Net::Util::macAddress()
     return macAddress;
 }
 
-NGenXX::Core::Net::Util::NetType NGenXX::Core::Net::Util::netType() 
+DynXX::Core::Net::Util::NetType DynXX::Core::Net::Util::netType() 
 {
     ifaddrs *ifaddr = nullptr;
     auto result = NetType::Offline;
@@ -133,7 +133,7 @@ NGenXX::Core::Net::Util::NetType NGenXX::Core::Net::Util::netType()
     return result;
 }
 
-std::string NGenXX::Core::Net::Util::publicIpV4()
+std::string DynXX::Core::Net::Util::publicIpV4()
 {
     const int sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock < 0) 
@@ -168,7 +168,7 @@ std::string NGenXX::Core::Net::Util::publicIpV4()
     return {ipStr};
 }
 
-std::string NGenXX::Core::Net::Util::publicIpV6()
+std::string DynXX::Core::Net::Util::publicIpV6()
 {
     const int sock = socket(AF_INET6, SOCK_DGRAM, 0);
     if (sock < 0) 

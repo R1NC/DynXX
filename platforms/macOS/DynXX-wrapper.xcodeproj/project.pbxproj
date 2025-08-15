@@ -1,0 +1,485 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */; };
+		400DFE902CCFB26700D3FCD9 /* qjs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 400DFE8F2CCFB26700D3FCD9 /* qjs.a */; };
+		4011029D2CED7FDA0004CCA3 /* uv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4011029C2CED7FDA0004CCA3 /* uv.a */; };
+		401522A62C9581760010B594 /* DynXXApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 401522A52C9581760010B594 /* DynXXApple.mm */; };
+		40348F5C2C783CA70039639C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40348F5B2C783CA70039639C /* AppDelegate.m */; };
+		40348F642C783CA80039639C /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 40348F632C783CA80039639C /* Base */; };
+		40348F662C783CA80039639C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 40348F652C783CA80039639C /* main.m */; };
+		40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 40348F7C2C783F540039639C /* libz.1.tbd */; };
+		403B33002DE8476C00A9C6DD /* spdlog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 403B32FF2DE8476C00A9C6DD /* spdlog.a */; };
+		403B33042DE847EC00A9C6DD /* DynXX.lua in Resources */ = {isa = PBXBuildFile; fileRef = 403B33032DE847EC00A9C6DD /* DynXX.lua */; };
+		403F9F762CBCB58800F4ECE6 /* DynXX.js in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F742CBCB58800F4ECE6 /* DynXX.js */; };
+		403F9F792CBCB59500F4ECE6 /* biz.lua in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F782CBCB59500F4ECE6 /* biz.lua */; };
+		403F9F8A2CBF47F000F4ECE6 /* prepare_data.sql in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F882CBF47F000F4ECE6 /* prepare_data.sql */; };
+		403F9F8B2CBF47F000F4ECE6 /* query.sql in Resources */ = {isa = PBXBuildFile; fileRef = 403F9F892CBF47F000F4ECE6 /* query.sql */; };
+		403F9FA12CC799BC00F4ECE6 /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 403F9FA02CC799BC00F4ECE6 /* biz.js */; };
+		407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B502C8AC12C008A138C /* libsqlite3.tbd */; };
+		407D2BBA2C929CC0008A138C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 407D2BB92C929CC0008A138C /* ViewController.m */; };
+		40DC9C272CCA6DE500F264DB /* ssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C1E2CCA6DE400F264DB /* ssl.a */; };
+		40DC9C282CCA6DE500F264DB /* DynXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C1F2CCA6DE400F264DB /* DynXX.a */; };
+		40DC9C292CCA6DE500F264DB /* lua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C202CCA6DE400F264DB /* lua.a */; };
+		40DC9C2A2CCA6DE500F264DB /* curl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C212CCA6DE400F264DB /* curl.a */; };
+		40DC9C2B2CCA6DE500F264DB /* mmkv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C222CCA6DE400F264DB /* mmkv.a */; };
+		40DC9C2D2CCA6DE500F264DB /* mmkvcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C242CCA6DE400F264DB /* mmkvcore.a */; };
+		40DC9C2E2CCA6DE500F264DB /* cjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C252CCA6DE500F264DB /* cjson.a */; };
+		40DC9C2F2CCA6DE500F264DB /* crypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C262CCA6DE500F264DB /* crypto.a */; };
+		40EB92572D22BDBB006DEE1C /* ada.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40EB92562D22BDBB006DEE1C /* ada.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libapple_nghttp2.tbd; path = usr/lib/libapple_nghttp2.tbd; sourceTree = SDKROOT; };
+		25A1BBB92CAEC7C400B60E5B /* ssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ssl.a; path = ../../build.macOS/output/Release/ssl.a; sourceTree = "<group>"; };
+		25A1BBBA2CAEC7C400B60E5B /* crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = crypto.a; path = ../../build.macOS/output/Release/crypto.a; sourceTree = "<group>"; };
+		400DFE8F2CCFB26700D3FCD9 /* qjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = qjs.a; path = ../../build.macOS/output/libs/qjs.a; sourceTree = "<group>"; };
+		4011029C2CED7FDA0004CCA3 /* uv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = uv.a; path = ../../build.macOS/output/libs/uv.a; sourceTree = "<group>"; };
+		4015229A2C9581540010B594 /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.macOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
+		4015229B2C9581540010B594 /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../build.macOS/output/Release/mmkv.a; sourceTree = "<group>"; };
+		401522A42C9581760010B594 /* DynXXApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DynXXApple.h; path = ../../Apple/DynXXApple.h; sourceTree = "<group>"; };
+		401522A52C9581760010B594 /* DynXXApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = DynXXApple.mm; path = ../../Apple/DynXXApple.mm; sourceTree = "<group>"; };
+		40348F572C783CA70039639C /* DynXX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DynXX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		40348F5A2C783CA70039639C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		40348F5B2C783CA70039639C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		40348F5D2C783CA70039639C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		40348F632C783CA80039639C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		40348F652C783CA80039639C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		40348F672C783CA80039639C /* DynXX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DynXX.entitlements; sourceTree = "<group>"; };
+		40348F722C783F070039639C /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../build.macOS/output/Release/curl.a; sourceTree = "<group>"; };
+		40348F732C783F070039639C /* cjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = cjson.a; path = ../../build.macOS/output/Release/cjson.a; sourceTree = "<group>"; };
+		40348F742C783F070039639C /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../build.macOS/output/Release/lua.a; sourceTree = "<group>"; };
+		40348F752C783F070039639C /* wolfssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = wolfssl.a; path = ../../build.macOS/output/Release/wolfssl.a; sourceTree = "<group>"; };
+		40348F762C783F070039639C /* DynXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DynXX.a; path = ../../build.macOS/output/Release/DynXX.a; sourceTree = "<group>"; };
+		40348F7C2C783F540039639C /* libz.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.tbd; path = usr/lib/libz.1.tbd; sourceTree = SDKROOT; };
+		403B32FF2DE8476C00A9C6DD /* spdlog.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = spdlog.a; path = ../../build.macOS/output/libs/spdlog.a; sourceTree = "<group>"; };
+		403B33032DE847EC00A9C6DD /* DynXX.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = DynXX.lua; path = ../../scripts/Lua/DynXX.lua; sourceTree = "<group>"; };
+		403F9F472CB8D94000F4ECE6 /* quickjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = quickjs.a; path = ../../build.macOS/output/Release/quickjs.a; sourceTree = "<group>"; };
+		403F9F742CBCB58800F4ECE6 /* DynXX.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = DynXX.js; path = ../../scripts/JS/DynXX.js; sourceTree = "<group>"; };
+		403F9F782CBCB59500F4ECE6 /* biz.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = biz.lua; path = ../../scripts/Lua/biz.lua; sourceTree = "<group>"; };
+		403F9F882CBF47F000F4ECE6 /* prepare_data.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = prepare_data.sql; path = ../Android/app/src/main/assets/prepare_data.sql; sourceTree = "<group>"; };
+		403F9F892CBF47F000F4ECE6 /* query.sql */ = {isa = PBXFileReference; lastKnownFileType = text; name = query.sql; path = ../Android/app/src/main/assets/query.sql; sourceTree = "<group>"; };
+		403F9FA02CC799BC00F4ECE6 /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../../scripts/JS/dist/biz.js; sourceTree = "<group>"; };
+		407D2B502C8AC12C008A138C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		407D2BB92C929CC0008A138C /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		407D2BBE2C929D00008A138C /* cjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = cjson.a; path = ../../../build.macOS/output/Release/cjson.a; sourceTree = "<group>"; };
+		407D2BBF2C929D00008A138C /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../../build.macOS/output/Release/mmkvcore.a; sourceTree = "<group>"; };
+		407D2BC02C929D00008A138C /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../../build.macOS/output/Release/curl.a; sourceTree = "<group>"; };
+		407D2BC12C929D00008A138C /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../../build.macOS/output/Release/mmkv.a; sourceTree = "<group>"; };
+		407D2BC22C929D00008A138C /* wolfssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = wolfssl.a; path = ../../../build.macOS/output/Release/wolfssl.a; sourceTree = "<group>"; };
+		407D2BC32C929D00008A138C /* DynXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DynXX.a; path = ../../../build.macOS/output/Release/DynXX.a; sourceTree = "<group>"; };
+		407D2BC42C929D00008A138C /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../../build.macOS/output/Release/lua.a; sourceTree = "<group>"; };
+		40DC9C1E2CCA6DE400F264DB /* ssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ssl.a; path = ../../build.macOS/output/libs/ssl.a; sourceTree = "<group>"; };
+		40DC9C1F2CCA6DE400F264DB /* DynXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DynXX.a; path = ../../build.macOS/output/libs/DynXX.a; sourceTree = "<group>"; };
+		40DC9C202CCA6DE400F264DB /* lua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = lua.a; path = ../../build.macOS/output/libs/lua.a; sourceTree = "<group>"; };
+		40DC9C212CCA6DE400F264DB /* curl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl.a; path = ../../build.macOS/output/libs/curl.a; sourceTree = "<group>"; };
+		40DC9C222CCA6DE400F264DB /* mmkv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkv.a; path = ../../build.macOS/output/libs/mmkv.a; sourceTree = "<group>"; };
+		40DC9C232CCA6DE400F264DB /* quickjs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = quickjs.a; path = ../../build.macOS/output/libs/quickjs.a; sourceTree = "<group>"; };
+		40DC9C242CCA6DE400F264DB /* mmkvcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mmkvcore.a; path = ../../build.macOS/output/libs/mmkvcore.a; sourceTree = "<group>"; };
+		40DC9C252CCA6DE500F264DB /* cjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = cjson.a; path = ../../build.macOS/output/libs/cjson.a; sourceTree = "<group>"; };
+		40DC9C262CCA6DE500F264DB /* crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = crypto.a; path = ../../build.macOS/output/libs/crypto.a; sourceTree = "<group>"; };
+		40EB92562D22BDBB006DEE1C /* ada.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ada.a; path = ../../build.macOS/output/libs/ada.a; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		40348F542C783CA70039639C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40EB92572D22BDBB006DEE1C /* ada.a in Frameworks */,
+				4011029D2CED7FDA0004CCA3 /* uv.a in Frameworks */,
+				403B33002DE8476C00A9C6DD /* spdlog.a in Frameworks */,
+				400DFE902CCFB26700D3FCD9 /* qjs.a in Frameworks */,
+				40DC9C272CCA6DE500F264DB /* ssl.a in Frameworks */,
+				40DC9C282CCA6DE500F264DB /* DynXX.a in Frameworks */,
+				40DC9C292CCA6DE500F264DB /* lua.a in Frameworks */,
+				40DC9C2A2CCA6DE500F264DB /* curl.a in Frameworks */,
+				40DC9C2B2CCA6DE500F264DB /* mmkv.a in Frameworks */,
+				40DC9C2D2CCA6DE500F264DB /* mmkvcore.a in Frameworks */,
+				40DC9C2E2CCA6DE500F264DB /* cjson.a in Frameworks */,
+				40DC9C2F2CCA6DE500F264DB /* crypto.a in Frameworks */,
+				407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */,
+				256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */,
+				40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		40348F4E2C783CA70039639C = {
+			isa = PBXGroup;
+			children = (
+				403B33032DE847EC00A9C6DD /* DynXX.lua */,
+				403F9FA02CC799BC00F4ECE6 /* biz.js */,
+				403F9F882CBF47F000F4ECE6 /* prepare_data.sql */,
+				403F9F892CBF47F000F4ECE6 /* query.sql */,
+				403F9F782CBCB59500F4ECE6 /* biz.lua */,
+				403F9F742CBCB58800F4ECE6 /* DynXX.js */,
+				40348F592C783CA70039639C /* DynXX */,
+				40348F582C783CA70039639C /* Products */,
+				40348F712C783F070039639C /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		40348F582C783CA70039639C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				40348F572C783CA70039639C /* DynXX.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		40348F592C783CA70039639C /* DynXX */ = {
+			isa = PBXGroup;
+			children = (
+				401522A42C9581760010B594 /* DynXXApple.h */,
+				401522A52C9581760010B594 /* DynXXApple.mm */,
+				40348F5A2C783CA70039639C /* AppDelegate.h */,
+				40348F5B2C783CA70039639C /* AppDelegate.m */,
+				40348F5D2C783CA70039639C /* ViewController.h */,
+				407D2BB92C929CC0008A138C /* ViewController.m */,
+				40348F622C783CA80039639C /* Main.storyboard */,
+				40348F652C783CA80039639C /* main.m */,
+				40348F672C783CA80039639C /* DynXX.entitlements */,
+			);
+			path = DynXX;
+			sourceTree = "<group>";
+		};
+		40348F712C783F070039639C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				403B32FF2DE8476C00A9C6DD /* spdlog.a */,
+				40EB92562D22BDBB006DEE1C /* ada.a */,
+				4011029C2CED7FDA0004CCA3 /* uv.a */,
+				400DFE8F2CCFB26700D3FCD9 /* qjs.a */,
+				403F9F472CB8D94000F4ECE6 /* quickjs.a */,
+				25A1BBBA2CAEC7C400B60E5B /* crypto.a */,
+				40DC9C252CCA6DE500F264DB /* cjson.a */,
+				40DC9C262CCA6DE500F264DB /* crypto.a */,
+				40DC9C212CCA6DE400F264DB /* curl.a */,
+				40DC9C202CCA6DE400F264DB /* lua.a */,
+				40DC9C222CCA6DE400F264DB /* mmkv.a */,
+				40DC9C242CCA6DE400F264DB /* mmkvcore.a */,
+				40DC9C1F2CCA6DE400F264DB /* DynXX.a */,
+				40DC9C232CCA6DE400F264DB /* quickjs.a */,
+				25A1BBB92CAEC7C400B60E5B /* ssl.a */,
+				4015229B2C9581540010B594 /* mmkv.a */,
+				4015229A2C9581540010B594 /* mmkvcore.a */,
+				407D2BBE2C929D00008A138C /* cjson.a */,
+				407D2BC02C929D00008A138C /* curl.a */,
+				407D2BC42C929D00008A138C /* lua.a */,
+				407D2BC12C929D00008A138C /* mmkv.a */,
+				407D2BBF2C929D00008A138C /* mmkvcore.a */,
+				407D2BC32C929D00008A138C /* DynXX.a */,
+				40DC9C1E2CCA6DE400F264DB /* ssl.a */,
+				407D2BC22C929D00008A138C /* wolfssl.a */,
+				407D2B502C8AC12C008A138C /* libsqlite3.tbd */,
+				256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */,
+				40348F7C2C783F540039639C /* libz.1.tbd */,
+				40348F732C783F070039639C /* cjson.a */,
+				40348F722C783F070039639C /* curl.a */,
+				40348F762C783F070039639C /* DynXX.a */,
+				40348F742C783F070039639C /* lua.a */,
+				40348F752C783F070039639C /* wolfssl.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		40348F562C783CA70039639C /* DynXX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 40348F6A2C783CA80039639C /* Build configuration list for PBXNativeTarget "DynXX" */;
+			buildPhases = (
+				40348F532C783CA70039639C /* Sources */,
+				40348F542C783CA70039639C /* Frameworks */,
+				40348F552C783CA70039639C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DynXX;
+			productName = DynXX;
+			productReference = 40348F572C783CA70039639C /* DynXX.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		40348F4F2C783CA70039639C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					40348F562C783CA70039639C = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = 40348F522C783CA70039639C /* Build configuration list for PBXProject "DynXX" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 40348F4E2C783CA70039639C;
+			productRefGroup = 40348F582C783CA70039639C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				40348F562C783CA70039639C /* DynXX */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		40348F552C783CA70039639C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				403B33042DE847EC00A9C6DD /* DynXX.lua in Resources */,
+				403F9FA12CC799BC00F4ECE6 /* biz.js in Resources */,
+				403F9F8A2CBF47F000F4ECE6 /* prepare_data.sql in Resources */,
+				403F9F8B2CBF47F000F4ECE6 /* query.sql in Resources */,
+				403F9F792CBCB59500F4ECE6 /* biz.lua in Resources */,
+				403F9F762CBCB58800F4ECE6 /* DynXX.js in Resources */,
+				40348F642C783CA80039639C /* Base in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		40348F532C783CA70039639C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				401522A62C9581760010B594 /* DynXXApple.mm in Sources */,
+				407D2BBA2C929CC0008A138C /* ViewController.m in Sources */,
+				40348F662C783CA80039639C /* main.m in Sources */,
+				40348F5C2C783CA70039639C /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		40348F622C783CA80039639C /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				40348F632C783CA80039639C /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		40348F682C783CA80039639C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		40348F692C783CA80039639C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		40348F6B2C783CA80039639C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
+				CODE_SIGN_ENTITLEMENTS = DynXX/DynXX.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5TNCWX532Z;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = ../../build.macOS/output/include;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.rinc.dynxx.demo.DynXX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		40348F6C2C783CA80039639C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
+				CODE_SIGN_ENTITLEMENTS = DynXX/DynXX.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5TNCWX532Z;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = ../../build.macOS/output/include;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.rinc.dynxx.demo.DynXX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		40348F522C783CA70039639C /* Build configuration list for PBXProject "DynXX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40348F682C783CA80039639C /* Debug */,
+				40348F692C783CA80039639C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		40348F6A2C783CA80039639C /* Build configuration list for PBXNativeTarget "DynXX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40348F6B2C783CA80039639C /* Debug */,
+				40348F6C2C783CA80039639C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 40348F4F2C783CA70039639C /* Project object */;
+}

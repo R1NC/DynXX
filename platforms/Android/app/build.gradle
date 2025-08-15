@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'xyz.rinc.ngenxx.demo'
-    compileSdk 36
+    namespace 'xyz.rinc.dynxx.demo'
+    compileSdkVersion 36
 
     defaultConfig {
-        applicationId "xyz.rinc.ngenxx.demo"
+        applicationId "xyz.rinc.dynxx.demo"
         minSdk 24
         targetSdk 36
         versionCode 1
@@ -27,11 +27,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlin {
-        jvmToolchain(8)
+        jvmToolchain(17)
     }
     buildFeatures {
         compose true
@@ -39,10 +39,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.1'
     }
+    ndkVersion '29.0.13846066 rc3'
 }
 
 dependencies {
-    implementation project(':NGenXX-lib')
+    implementation project(':DynXX-lib')
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.lifecycle.runtime.ktx

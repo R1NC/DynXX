@@ -20,7 +20,7 @@
   },
   "modules": [
     {
-      "name": "ngenxx",
+      "name": "dynxx",
       "srcPath": "./entry",
       "targets": [
         {

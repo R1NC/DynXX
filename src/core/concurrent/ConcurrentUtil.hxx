@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_CONCURRENT_CONCURRENTUTIL_HXX_
-#define NGENXX_SRC_CORE_CONCURRENT_CONCURRENTUTIL_HXX_
+#ifndef DYNXX_SRC_CORE_CONCURRENT_CONCURRENTUTIL_HXX_
+#define DYNXX_SRC_CORE_CONCURRENT_CONCURRENTUTIL_HXX_
 
 #if defined(__cplusplus)
 
@@ -10,7 +10,7 @@
 #include <chrono>
 #include <functional>
 
-namespace NGenXX::Core::Concurrent {
+namespace DynXX::Core::Concurrent {
     using namespace std::chrono;
 
     static constexpr size_t CacheLineSize =
@@ -66,4 +66,4 @@ namespace NGenXX::Core::Concurrent {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_CONCURRENT_CONCURRENTUTIL_HXX_
+#endif // DYNXX_SRC_CORE_CONCURRENT_CONCURRENTUTIL_HXX_

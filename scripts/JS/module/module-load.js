@@ -1,2 +1,2 @@
-import * as NGenXXModule from "./module-def-public.js";
-globalThis.NGenXXModule = NGenXXModule;
+import * as DynXXModule from "./module-def-public.js";
+globalThis.DynXXModule = DynXXModule;

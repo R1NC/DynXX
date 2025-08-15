@@ -6,7 +6,7 @@
 #import <sys/utsname.h>
 #import <sys/sysctl.h>
 
-#include <NGenXXDevice.h>
+#include <DynXX/C/Device.h>
 
 #define NSString2CharP(nsstr) [nsstr cStringUsingEncoding:NSUTF8StringEncoding]
 #define CharP2NSString(cstr) [NSString stringWithCString:cstr encoding:NSUTF8StringEncoding]
@@ -23,24 +23,24 @@ namespace
     }
 }
 
-int NGenXX::Core::Device::deviceType()
+int DynXX::Core::Device::deviceType()
 {
-    return NGenXXDeviceTypeApplePhone;
+    return DynXXDeviceTypeApplePhone;
 }
 
-std::string NGenXX::Core::Device::deviceName()
+std::string DynXX::Core::Device::deviceName()
 {
     struct utsname systemInfo;
     uname(&systemInfo);
     return systemInfo.machine;
 }
 
-std::string NGenXX::Core::Device::deviceManufacturer()
+std::string DynXX::Core::Device::deviceManufacturer()
 {
     return "Apple";
 }
 
-std::string NGenXX::Core::Device::deviceModel()
+std::string DynXX::Core::Device::deviceModel()
 {
     static dispatch_once_t get_system_model_once;
     static std::string *model;
@@ -52,7 +52,7 @@ std::string NGenXX::Core::Device::deviceModel()
     return *model;
 }
 
-std::string NGenXX::Core::Device::osVersion()
+std::string DynXX::Core::Device::osVersion()
 {
     static dispatch_once_t get_system_version_once;
     static std::string *osv;
@@ -64,14 +64,14 @@ std::string NGenXX::Core::Device::osVersion()
     return *osv;
 }
 
-int NGenXX::Core::Device::cpuArch()
+int DynXX::Core::Device::cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
-    return NGenXXDeviceCpuArchARM_64;
+    return DynXXDeviceCpuArchARM_64;
 #elif defined(__arm__)
-    return NGenXXDeviceCpuArchARM;
+    return DynXXDeviceCpuArchARM;
 #endif
-    return NGenXXDeviceCpuArchUnknown;
+    return DynXXDeviceCpuArchUnknown;
 }
 
 #endif

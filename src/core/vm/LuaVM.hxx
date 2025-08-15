@@ -1,7 +1,7 @@
-#ifndef NGENXX_SRC_CORE_VM_LUAVM_HXX_
-#define NGENXX_SRC_CORE_VM_LUAVM_HXX_
+#ifndef DYNXX_SRC_CORE_VM_LUAVM_HXX_
+#define DYNXX_SRC_CORE_VM_LUAVM_HXX_
 
-#include <NGenXXMacro.h>
+#include <DynXX/C/Macro.h>
 
 EXTERN_C_BEGIN
 #include <lua.h>
@@ -11,7 +11,7 @@ EXTERN_C_END
 
 #if defined(__cplusplus)
 
-#include <NGenXXTypes.hxx>
+#include <DynXX/CXX/Types.hxx>
 
 #include "BaseVM.hxx"
 
@@ -59,7 +59,7 @@ EXTERN_C_END
         return 1;                           \
     }
 
-namespace NGenXX::Core::VM {
+namespace DynXX::Core::VM {
     class LuaVM final : public BaseVM {
     public:
         /**
@@ -118,4 +118,4 @@ namespace NGenXX::Core::VM {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_VM_LUAVM_HXX_
+#endif // DYNXX_SRC_CORE_VM_LUAVM_HXX_

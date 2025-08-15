@@ -1,5 +1,5 @@
 import util from '@ohos.util';
-import NGenXX, { HttpMethod, LogLevel } from 'libngenxx.so';
+import DynXX, { HttpMethod, LogLevel } from 'libdynxx.so';
 
 @Entry
 @Component
@@ -13,16 +13,16 @@ struct Index {
           .fontSize(23)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            NGenXX.logSetLevel(LogLevel.Debug)
+            DynXX.logSetLevel(LogLevel.Debug)
             
             let root = getContext().filesDir;
-            NGenXX.init(root);
+            DynXX.init(root);
 
-            NGenXX.logPrint(LogLevel.Debug, `DeviceType: ${NGenXX.deviceType()}`);
-            NGenXX.logPrint(LogLevel.Debug, `DeviceName: ${NGenXX.deviceName()}`);
-            NGenXX.logPrint(LogLevel.Debug, `DeviceManufacturer: ${NGenXX.deviceManufacturer()}`);
-            NGenXX.logPrint(LogLevel.Debug, `DeviceOsVersion: ${NGenXX.deviceOsVersion()}`);
-            NGenXX.logPrint(LogLevel.Debug, `DeviceCpuArch: ${NGenXX.deviceCpuArch()}`);
+            DynXX.logPrint(LogLevel.Debug, `DeviceType: ${DynXX.deviceType()}`);
+            DynXX.logPrint(LogLevel.Debug, `DeviceName: ${DynXX.deviceName()}`);
+            DynXX.logPrint(LogLevel.Debug, `DeviceManufacturer: ${DynXX.deviceManufacturer()}`);
+            DynXX.logPrint(LogLevel.Debug, `DeviceOsVersion: ${DynXX.deviceOsVersion()}`);
+            DynXX.logPrint(LogLevel.Debug, `DeviceCpuArch: ${DynXX.deviceCpuArch()}`);
 
             let textEncoder = new util.TextEncoder()
             let textDecoder = new util.TextDecoder()
@@ -30,28 +30,28 @@ struct Index {
             let inputBytes = Array.from(textEncoder.encodeInto(inputStr))
             let keyStr = "MNBVCXZLKJHGFDSA"
             let keyBytes = Array.from(textEncoder.encodeInto(keyStr))
-            let aesEncodedBytes = NGenXX.cryptoAesEncrypt(inputBytes, keyBytes)
-            let aesDecodedBytes = NGenXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
+            let aesEncodedBytes = DynXX.cryptoAesEncrypt(inputBytes, keyBytes)
+            let aesDecodedBytes = DynXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
             let aesDecodedStr = textDecoder.decodeToString(Uint8Array.from(aesDecodedBytes))
-            NGenXX.logPrint(LogLevel.Debug, `AES->${aesDecodedStr}`)
-            let aesgcmIvBytes = NGenXX.cryptoRand(12)
+            DynXX.logPrint(LogLevel.Debug, `AES->${aesDecodedStr}`)
+            let aesgcmIvBytes = DynXX.cryptoRand(12)
             let aesgcmTagBits = 15 * 8
-            let aesgcmEncodedBytes = NGenXX.cryptoAesGcmEncrypt(inputBytes, keyBytes, aesgcmIvBytes, aesgcmTagBits)
-            let aesgcmDecodedBytes = NGenXX.cryptoAesGcmDecrypt(aesgcmEncodedBytes, keyBytes, aesgcmIvBytes, aesgcmTagBits)
+            let aesgcmEncodedBytes = DynXX.cryptoAesGcmEncrypt(inputBytes, keyBytes, aesgcmIvBytes, aesgcmTagBits)
+            let aesgcmDecodedBytes = DynXX.cryptoAesGcmDecrypt(aesgcmEncodedBytes, keyBytes, aesgcmIvBytes, aesgcmTagBits)
             let aesgcmDecodedStr = textDecoder.decodeToString(Uint8Array.from(aesgcmDecodedBytes))
-            NGenXX.logPrint(LogLevel.Debug, `AES-GCM->${aesgcmDecodedStr}`)
-            let md5Bytes = NGenXX.cryptoHashMd5(inputBytes)
-            let md5Str = NGenXX.codingHexBytes2str(md5Bytes)
-            NGenXX.logPrint(LogLevel.Debug, `md5->${md5Str}`)
-            let sha256Bytes = NGenXX.cryptoHashSha256(inputBytes)
-            let sha256Str = NGenXX.codingHexBytes2str(sha256Bytes)
-            NGenXX.logPrint(LogLevel.Debug, `sha256->${sha256Str}`)
-            let base64Encoded = NGenXX.cryptoBase64Encode(inputBytes)
-            let base64Decoded = NGenXX.cryptoBase64Decode(base64Encoded)
+            DynXX.logPrint(LogLevel.Debug, `AES-GCM->${aesgcmDecodedStr}`)
+            let md5Bytes = DynXX.cryptoHashMd5(inputBytes)
+            let md5Str = DynXX.codingHexBytes2str(md5Bytes)
+            DynXX.logPrint(LogLevel.Debug, `md5->${md5Str}`)
+            let sha256Bytes = DynXX.cryptoHashSha256(inputBytes)
+            let sha256Str = DynXX.codingHexBytes2str(sha256Bytes)
+            DynXX.logPrint(LogLevel.Debug, `sha256->${sha256Str}`)
+            let base64Encoded = DynXX.cryptoBase64Encode(inputBytes, true)
+            let base64Decoded = DynXX.cryptoBase64Decode(base64Encoded, true)
             let base64DecodedStr = textDecoder.decodeToString(Uint8Array.from(base64Decoded))
-            NGenXX.logPrint(LogLevel.Debug, `base64->${base64DecodedStr}`)
+            DynXX.logPrint(LogLevel.Debug, `base64->${base64DecodedStr}`)
 
-            let dbConn = NGenXX.storeSQLiteOpen("test");
+            let dbConn = DynXX.storeSQLiteOpen("test");
             if (dbConn != 0) {
               let insertSql = "CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, vendor TEXT);\n" +
                 "INSERT OR IGNORE INTO TestTable (platform, vendor)\n" +
@@ -59,32 +59,32 @@ struct Index {
                 "('iOS','Apple'),\n" +
                 "('Android','Google'),\n" +
                 "('HarmonyOS','Huawei');";
-              if (NGenXX.storeSQLiteExecute(dbConn, insertSql)) {
+              if (DynXX.storeSQLiteExecute(dbConn, insertSql)) {
                 let querySql = "SELECT * FROM TestTable;";
-                let queryResult = NGenXX.storeSQLiteQueryDo(dbConn, querySql);
+                let queryResult = DynXX.storeSQLiteQueryDo(dbConn, querySql);
                 if (queryResult != 0) {
-                  while(NGenXX.storeSQLiteQueryReadRow(queryResult)) {
-                    let platform = NGenXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
-                    NGenXX.logPrint(LogLevel.Debug, `platform->${platform}`);
+                  while(DynXX.storeSQLiteQueryReadRow(queryResult)) {
+                    let platform = DynXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
+                    DynXX.logPrint(LogLevel.Debug, `platform->${platform}`);
                   }
-                  NGenXX.storeSQLiteQueryDrop(queryResult);
+                  DynXX.storeSQLiteQueryDrop(queryResult);
                 }
-                NGenXX.storeSQLiteClose(dbConn);
+                DynXX.storeSQLiteClose(dbConn);
               }
             }
 
-            let kvConn = NGenXX.storeKVOpen("test");
+            let kvConn = DynXX.storeKVOpen("test");
             if (kvConn != 0) {
-              NGenXX.storeKVWriteString(kvConn, "s", "NGexXX");
-              let s = NGenXX.storeKVReadString(kvConn, "s");
-              NGenXX.logPrint(LogLevel.Debug, `s->${s}`);
-              NGenXX.storeKVWriteInteger(kvConn, "i", 1234567890);
-              let i = NGenXX.storeKVReadInteger(kvConn, "i");
-              NGenXX.logPrint(LogLevel.Debug, `i->${i}`);
-              NGenXX.storeKVWriteFloat(kvConn, "f", 0.123456789);
-              let f = NGenXX.storeKVReadFloat(kvConn, "f");
-              NGenXX.logPrint(LogLevel.Debug, `f->${f}`);
-              NGenXX.storeKVClose(kvConn);
+              DynXX.storeKVWriteString(kvConn, "s", "DynXX");
+              let s = DynXX.storeKVReadString(kvConn, "s");
+              DynXX.logPrint(LogLevel.Debug, `s->${s}`);
+              DynXX.storeKVWriteInteger(kvConn, "i", 1234567890);
+              let i = DynXX.storeKVReadInteger(kvConn, "i");
+              DynXX.logPrint(LogLevel.Debug, `i->${i}`);
+              DynXX.storeKVWriteFloat(kvConn, "f", 0.123456789);
+              let f = DynXX.storeKVReadFloat(kvConn, "f");
+              DynXX.logPrint(LogLevel.Debug, `f->${f}`);
+              DynXX.storeKVClose(kvConn);
             }
 
             let jsonParams = `{
@@ -96,56 +96,56 @@ struct Index {
               ],
               "timeout":6666
             }`;
-            /*NGenXX.lLoadS(
+            /*DynXX.lLoadS(
               "function lNetHttpRequest(pReq)\n" +
                 "pLog = '{\"level\":1,\"content\":\"Send Net Req from Lua..\"}';\n" +
-                "ngenxx_log_printL(pLog);\n" +
-                "rsp = ngenxx_net_http_requestL(pReq);\n" +
+                "dynxx_log_printL(pLog);\n" +
+                "rsp = dynxx_net_http_requestL(pReq);\n" +
                 "return rsp;\n" +
                 "end"
             );
-            let rsp = NGenXX.lCall("lNetHttpRequest", jsonParams);*/
-            NGenXX.jLoadS(
+            let rsp = DynXX.lCall("lNetHttpRequest", jsonParams);*/
+            DynXX.jLoadS(
               "function jNetHttpRequest(params) {\n"
               + "var url = JSON.parse(params).url;\n"
               + "var pLog = `{\"level\":1,\"content\":\"Send Net Req from JS, url: ${url}\"}`;\n"
-              + "ngenxx_log_print(pLog);\n"
-              + "return ngenxx_net_http_request(params);\n"
+              + "dynxx_log_print(pLog);\n"
+              + "return dynxx_net_http_request(params);\n"
               + "}\n"
             , "biz.js", false);
-            let rsp = NGenXX.jCall("jNetHttpRequest", jsonParams, false);
-            /*let rsp = NGenXX.netHttpRequest("https://rinc.xyz",
+            let rsp = DynXX.jCall("jNetHttpRequest", jsonParams, false);
+            /*let rsp = DynXX.netHttpRequest("https://rinc.xyz",
               HttpMethod.Get,
               "p0=1&p1=2&p2=3",
               ["Cache-Control: no-cache"]
             )*/
-            NGenXX.logPrint(LogLevel.Debug, `${rsp}`);
+            DynXX.logPrint(LogLevel.Debug, `${rsp}`);
 
-            let jsonDecoder = NGenXX.jsonDecoderInit(jsonParams)
+            let jsonDecoder = DynXX.jsonDecoderInit(jsonParams)
             if (jsonDecoder != 0) {
-              let urlNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "url")
+              let urlNode = DynXX.jsonDecoderReadNode(jsonDecoder, "url")
               if (urlNode != 0) {
-                let url = NGenXX.jsonDecoderReadString(jsonDecoder, urlNode)
-                NGenXX.logPrint(LogLevel.Debug, `url:${url}`)
+                let url = DynXX.jsonDecoderReadString(jsonDecoder, urlNode)
+                DynXX.logPrint(LogLevel.Debug, `url:${url}`)
               }
-              let methodNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "method")
+              let methodNode = DynXX.jsonDecoderReadNode(jsonDecoder, "method")
               if (methodNode != 0) {
-                let method = NGenXX.jsonDecoderReadNumber(jsonDecoder, methodNode)
-                NGenXX.logPrint(LogLevel.Debug, `method:${method}`)
+                let method = DynXX.jsonDecoderReadNumber(jsonDecoder, methodNode)
+                DynXX.logPrint(LogLevel.Debug, `method:${method}`)
               }
-              let headerVNode = NGenXX.jsonDecoderReadNode(jsonDecoder, "header_v")
+              let headerVNode = DynXX.jsonDecoderReadNode(jsonDecoder, "header_v")
               if (headerVNode != 0) {
-                let headerNode = NGenXX.jsonDecoderReadChild(jsonDecoder, headerVNode)
+                let headerNode = DynXX.jsonDecoderReadChild(jsonDecoder, headerVNode)
                 while (headerNode != 0) {
-                  let header = NGenXX.jsonDecoderReadString(jsonDecoder, headerNode)
-                  NGenXX.logPrint(LogLevel.Debug, `header:${header}`)
-                  headerNode = NGenXX.jsonDecoderReadNext(jsonDecoder, headerNode)
+                  let header = DynXX.jsonDecoderReadString(jsonDecoder, headerNode)
+                  DynXX.logPrint(LogLevel.Debug, `header:${header}`)
+                  headerNode = DynXX.jsonDecoderReadNext(jsonDecoder, headerNode)
                 }
               }
-              NGenXX.jsonDecoderRelease(jsonDecoder)
+              DynXX.jsonDecoderRelease(jsonDecoder)
             }
 
-            //NGenXX.release();
+            //DynXX.release();
           })
       }
       .width('100%')

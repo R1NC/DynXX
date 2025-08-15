@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_ZIP_HXX_
-#define NGENXX_SRC_CORE_ZIP_HXX_
+#ifndef DYNXX_SRC_CORE_ZIP_HXX_
+#define DYNXX_SRC_CORE_ZIP_HXX_
 
 #include <zlib.h>
 
@@ -8,9 +8,9 @@
 #include <istream>
 #include <ostream>
 
-#include <NGenXXTypes.hxx>
+#include <DynXX/CXX/Types.hxx>
 
-namespace NGenXX::Core::Z {
+namespace DynXX::Core::Z {
     template<typename T>
     class ZBase {
     public:
@@ -111,4 +111,4 @@ namespace NGenXX::Core::Z {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_ZIP_HXX_
+#endif // DYNXX_SRC_CORE_ZIP_HXX_

@@ -1,20 +1,20 @@
-#include "../POSIX/NGenXXPOSIX.h"
+#include "../POSIX/DynXXPOSIX.h"
 
 int main()
 {
-   ngenxx_posix_init("/var/www/");
+   dynxx_posix_init("/var/www/");
 
-   ngenxx_posix_testHttpJ();
+   dynxx_posix_testHttpJ();
 
-   ngenxx_posix_testDB();
+   dynxx_posix_testDB();
 
-   ngenxx_posix_testKV();
+   dynxx_posix_testKV();
 
-   ngenxx_posix_testJsonDecoder();
+   dynxx_posix_testJsonDecoder();
 
-   ngenxx_posix_testCrypto();
+   dynxx_posix_testCrypto();
 
-   ngenxx_posix_testZip();
+   dynxx_posix_testZip();
 
-   ngenxx_posix_release();
+   dynxx_posix_release();
 }

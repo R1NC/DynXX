@@ -22,15 +22,15 @@ build4wasm() {
 
     OUTPUT_DIR=output/${ABI}
     mkdir -p ${OUTPUT_DIR}
-    cp NGenXX.wasm ${OUTPUT_DIR}
-    cp NGenXX.js ${OUTPUT_DIR}
-    cp NGenXX.html ${OUTPUT_DIR}
+    cp DynXX.wasm ${OUTPUT_DIR}
+    cp DynXX.js ${OUTPUT_DIR}
+    cp DynXX.html ${OUTPUT_DIR}
 
     #Checking Artifacts
     ARTIFACTS=(
-        "${OUTPUT_DIR}/NGenXX.wasm"
-        "${OUTPUT_DIR}/NGenXX.js"
-        "${OUTPUT_DIR}/NGenXX.html"
+        "${OUTPUT_DIR}/DynXX.wasm"
+        "${OUTPUT_DIR}/DynXX.js"
+        "${OUTPUT_DIR}/DynXX.html"
     )
     for a in "${ARTIFACTS[@]}"; do
         if [ ! -f "$a" ]; then
@@ -40,8 +40,7 @@ build4wasm() {
     done
 }
 
-# Debug|RelWithDebInfo|Release|MinSizeRel
-LIB_TYPE="MinSizeRel"
+LIB_TYPE="Release"
 if [ $DEBUG == 1 ]; then
     LIB_TYPE="Debug"
 fi

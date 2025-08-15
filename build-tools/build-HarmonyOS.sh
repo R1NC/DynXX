@@ -46,7 +46,7 @@ cp -R ../include/ ${HEADER_OUTPUT_DIR}/
 #Checking Artifacts
 LIB_OUTPUT_DIR=output/libs/${ARCH}
 ARTIFACTS=(
-    "${LIB_OUTPUT_DIR}/libNGenXX.a"
+    "${LIB_OUTPUT_DIR}/libDynXX.a"
     "${LIB_OUTPUT_DIR}/libcurl.a"
     "${LIB_OUTPUT_DIR}/libssl.a"
     "${LIB_OUTPUT_DIR}/libcrypto.a"

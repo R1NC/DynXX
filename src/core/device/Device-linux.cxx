@@ -1,41 +1,41 @@
 #if (!defined(__ANDROID__) && !defined(__APPLE__) && !defined(__OHOS__) && !defined(_WIN32) && !defined(__EMSCRIPTEN__))
 #include "Device.hxx"
 
-#include <NGenXXDevice.h>
+#include <DynXX/C/Device.h>
 
-int NGenXX::Core::Device::deviceType()
+int DynXX::Core::Device::deviceType()
 {
-    return NGenXXDeviceTypeLinux;
+    return DynXXDeviceTypeLinux;
 }
 
-std::string NGenXX::Core::Device::deviceName()
+std::string DynXX::Core::Device::deviceName()
 {
     //TODO
     return {};
 }
 
-std::string NGenXX::Core::Device::deviceManufacturer()
+std::string DynXX::Core::Device::deviceManufacturer()
 {
     //TODO
     return {};
 }
 
-std::string NGenXX::Core::Device::deviceModel()
+std::string DynXX::Core::Device::deviceModel()
 {
     //TODO
     return {};
 }
 
-std::string NGenXX::Core::Device::osVersion()
+std::string DynXX::Core::Device::osVersion()
 {
     //TODO
     return {};
 }
 
-int NGenXX::Core::Device::cpuArch()
+int DynXX::Core::Device::cpuArch()
 {
     //TODO
-    return NGenXXDeviceCpuArchUnknown;
+    return DynXXDeviceCpuArchUnknown;
 }
 
 #endif

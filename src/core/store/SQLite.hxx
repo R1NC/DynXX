@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_STORE_SQLITE_HXX_
-#define NGENXX_SRC_CORE_STORE_SQLITE_HXX_
+#ifndef DYNXX_SRC_CORE_STORE_SQLITE_HXX_
+#define DYNXX_SRC_CORE_STORE_SQLITE_HXX_
 
 #if defined(__cplusplus)
 
@@ -9,9 +9,9 @@
 
 #include <sqlite3.h>
 
-#include <NGenXXTypes.hxx>
+#include <DynXX/CXX/Types.hxx>
 
-namespace NGenXX::Core::Store {
+namespace DynXX::Core::Store {
     class SQLite {
     public:
         /**
@@ -134,4 +134,4 @@ namespace NGenXX::Core::Store {
 
 #endif
 
-#endif // NGENXX_SRC_CORE_STORE_SQLITE_HXX_
+#endif // DYNXX_SRC_CORE_STORE_SQLITE_HXX_

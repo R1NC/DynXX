@@ -1,5 +1,5 @@
-#ifndef NGENXX_SRC_CORE_STORE_KV_HXX_
-#define NGENXX_SRC_CORE_STORE_KV_HXX_
+#ifndef DYNXX_SRC_CORE_STORE_KV_HXX_
+#define DYNXX_SRC_CORE_STORE_KV_HXX_
 
 #if defined(__cplusplus)
 
@@ -10,9 +10,9 @@
 
 #include <MMKV.h>
 
-#include <NGenXXTypes.hxx>
+#include <DynXX/CXX/Types.hxx>
 
-namespace NGenXX::Core::Store {
+namespace DynXX::Core::Store {
     class KV {
     public:
         KV() = delete;
@@ -80,4 +80,4 @@ namespace NGenXX::Core::Store {
 
 #endif
 
-#endif // NGENXX_SRC_STORE_KV_HXX_
+#endif // DYNXX_SRC_STORE_KV_HXX_
