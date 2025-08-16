@@ -12,7 +12,13 @@
 #include "ConcurrentUtil.hxx"
 
 namespace DynXX::Core::Concurrent {
-    using TaskT = std::function<void()>;
+    using TaskT = std::
+#if defined(__cpp_lib_move_only_function)
+    move_only_function
+#else
+    function
+#endif
+    <void()>;
 
     class
 #if !defined(__cpp_lib_jthread)
