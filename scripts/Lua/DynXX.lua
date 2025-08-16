@@ -284,6 +284,14 @@ function DynXX.Crypto.Hash.md5(inBytes)
     return JSON.parse(outJson)
 end
 
+function DynXX.Crypto.Hash.sha1(inBytes)
+    local inJson = JSON.stringify({
+        ["inBytes"] = inBytes
+    })
+    local outJson = dynxx_crypto_hash_sha1(inJson)
+    return JSON.parse(outJson)
+end
+
 function DynXX.Crypto.Hash.sha256(inBytes)
     local inJson = JSON.stringify({
         ["inBytes"] = inBytes

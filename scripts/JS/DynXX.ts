@@ -183,6 +183,8 @@ declare function DynXXCryptoRsaDecrypt(inBytes: number[], keyBytes: number[]): n
 
 declare function DynXXCryptoHashMD5(inBytes: number[]): number[]
 
+declare function DynXXCryptoHashSHA1(inBytes: number[]): number[]
+
 declare function DynXXCryptoHashSHA256(inBytes: number[]): number[]
 
 declare function DynXXCryptoBase64Encode(inBytes: number[], noNewLines?: boolean): number[]

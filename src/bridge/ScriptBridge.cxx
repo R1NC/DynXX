@@ -678,6 +678,38 @@ void dynxx_store_kv_closeS(const char *json)
 
 #pragma mark Coding
 
+std::string dynxx_coding_case_upperS(const char *json)
+{
+    if (json == nullptr)
+    {
+        return {};
+    }
+    const JsonParser parser(json);
+
+    const auto str = parser.str("str");
+    if (str == std::nullopt)
+    {
+        return {};
+    }
+    return dynxxCodingCaseUpper(str.value());
+}
+
+std::string dynxx_coding_case_lowerS(const char *json)
+{
+    if (json == nullptr)
+    {
+        return {};
+    }
+    const JsonParser parser(json);
+
+    const auto str = parser.str("str");
+    if (str == std::nullopt)
+    {
+        return {};
+    }
+    return dynxxCodingCaseLower(str.value());
+}
+
 std::string dynxx_coding_hex_bytes2strS(const char *json)
 {
     if (json == nullptr)
@@ -746,38 +778,6 @@ std::string dynxx_coding_str2bytesS(const char *json)
 
     const auto bytes = dynxxCodingStr2bytes(str.value());
     return bytes2json(bytes);
-}
-
-std::string dynxx_coding_case_upperS(const char *json)
-{
-    if (json == nullptr)
-    {
-        return {};
-    }
-    const JsonParser parser(json);
-
-    const auto str = parser.str("str");
-    if (str == std::nullopt)
-    {
-        return {};
-    }
-    return dynxxCodingCaseUpper(str.value());
-}
-
-std::string dynxx_coding_case_lowerS(const char *json)
-{
-    if (json == nullptr)
-    {
-        return {};
-    }
-    const JsonParser parser(json);
-
-    const auto str = parser.str("str");
-    if (str == std::nullopt)
-    {
-        return {};
-    }
-    return dynxxCodingCaseLower(str.value());
 }
 
 #pragma mark Crypto
@@ -1013,6 +1013,24 @@ std::string dynxx_crypto_hash_md5S(const char *json)
     }
 
     const auto outBytes = dynxxCryptoHashMd5(in);
+    return bytes2json(outBytes);
+}
+
+std::string dynxx_crypto_hash_sha1S(const char *json)
+{
+    if (json == nullptr)
+    {
+        return {};
+    }
+    const JsonParser parser(json);
+
+    const auto in = parser.byteArray("inBytes");
+    if (in.empty())
+    {
+        return {};
+    }
+
+    const auto outBytes = dynxxCryptoHashSha1(in);
     return bytes2json(outBytes);
 }
 

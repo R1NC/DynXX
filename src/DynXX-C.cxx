@@ -99,6 +99,24 @@ void dynxx_log_print(int level, const char *content) {
 #pragma mark Coding
 
 EXPORT_AUTO
+const char *dynxx_coding_case_upper(const char *str) {
+    if (str == nullptr) {
+        return "";
+    }
+    const auto s = dynxxCodingCaseUpper(str);
+    return DynXX::Core::Util::Type::copyStr(s);
+}
+
+EXPORT_AUTO
+const char *dynxx_coding_case_lower(const char *str) {
+    if (str == nullptr) {
+        return "";
+    }
+    const auto s = dynxxCodingCaseLower(str);
+    return DynXX::Core::Util::Type::copyStr(s);
+}
+
+EXPORT_AUTO
 const byte *dynxx_coding_hex_str2bytes(const char *str, size_t *outLen) {
     const auto bytes = dynxxCodingHexStr2bytes(makeStr(str));
     return handleBytes(bytes, outLen);
@@ -126,20 +144,11 @@ const byte *dynxx_coding_str2bytes(const char *str, size_t *outLen) {
 }
 
 EXPORT_AUTO
-const char *dynxx_coding_case_upper(const char *str) {
+const char *dynxx_coding_str_trim(const char *str) {
     if (str == nullptr) {
         return "";
     }
-    const auto s = dynxxCodingCaseUpper(str);
-    return DynXX::Core::Util::Type::copyStr(s);
-}
-
-EXPORT_AUTO
-const char *dynxx_coding_case_lower(const char *str) {
-    if (str == nullptr) {
-        return "";
-    }
-    const auto s = dynxxCodingCaseLower(str);
+    const auto s = dynxxCodingStrTrim(str);
     return DynXX::Core::Util::Type::copyStr(s);
 }
 

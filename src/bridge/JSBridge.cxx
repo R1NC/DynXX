@@ -179,6 +179,7 @@ DEF_API(dynxx_crypto_rsa_gen_key, STRING)
 DEF_API(dynxx_crypto_rsa_encrypt, STRING)
 DEF_API(dynxx_crypto_rsa_decrypt, STRING)
 DEF_API(dynxx_crypto_hash_md5, STRING)
+DEF_API(dynxx_crypto_hash_sha1, STRING)
 DEF_API(dynxx_crypto_hash_sha256, STRING)
 DEF_API(dynxx_crypto_base64_encode, STRING)
 DEF_API(dynxx_crypto_base64_decode, STRING)
@@ -254,6 +255,7 @@ static void registerFuncs() {
     BIND_API(dynxx_crypto_rsa_encrypt);
     BIND_API(dynxx_crypto_rsa_decrypt);
     BIND_API(dynxx_crypto_hash_md5);
+    BIND_API(dynxx_crypto_hash_sha1);
     BIND_API(dynxx_crypto_hash_sha256);
     BIND_API(dynxx_crypto_base64_encode);
     BIND_API(dynxx_crypto_base64_decode);

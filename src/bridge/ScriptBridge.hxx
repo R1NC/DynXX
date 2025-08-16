@@ -67,6 +67,10 @@ void dynxx_store_kv_clearS(const char *json);
 
 void dynxx_store_kv_closeS(const char *json);
 
+std::string dynxx_coding_case_upperS(const char *json);
+
+std::string dynxx_coding_case_lowerS(const char *json);
+
 std::string dynxx_coding_hex_bytes2strS(const char *json);
 
 std::string dynxx_coding_hex_str2bytesS(const char *json);
@@ -74,10 +78,6 @@ std::string dynxx_coding_hex_str2bytesS(const char *json);
 std::string dynxx_coding_bytes2strS(const char *json);
 
 std::string dynxx_coding_str2bytesS(const char *json);
-
-std::string dynxx_coding_case_upperS(const char *json);
-
-std::string dynxx_coding_case_lowerS(const char *json);
 
 std::string dynxx_crypto_randS(const char *json);
 
@@ -96,6 +96,8 @@ std::string dynxx_crypto_rsa_encryptS(const char *json);
 std::string dynxx_crypto_rsa_decryptS(const char *json);
 
 std::string dynxx_crypto_hash_md5S(const char *json);
+
+std::string dynxx_crypto_hash_sha1S(const char *json);
 
 std::string dynxx_crypto_hash_sha256S(const char *json);
 

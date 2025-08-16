@@ -447,6 +447,15 @@ function DynXXCryptoHashMD5(inBytes) {
     return _json2Array(outJson);
 }
 
+function DynXXCryptoHashSHA1(inBytes) {
+    inBytes = inBytes || [];
+    let inJson = JSON.stringify({
+        "inBytes": inBytes
+    });
+    let outJson = dynxx_crypto_hash_sha1(inJson);
+    return _json2Array(outJson);
+}
+
 function DynXXCryptoHashSHA256(inBytes) {
     inBytes = inBytes || [];
     let inJson = JSON.stringify({
