@@ -1,7 +1,4 @@
-#include <jni.h>
-
 #include <cstring>
-#include <string>
 
 #include "JNIUtil.hxx"
 #include "../../../../../../build.Android/output/include/DynXX/C/DynXX.h"
@@ -27,6 +24,9 @@ namespace {
             return;
         }
         auto env = currentEnv(sVM);
+        if (env == nullptr) {
+            return;
+        }
         auto jContent = boxJString(env, content);
         //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
         auto jLevel = boxJInt(env, static_cast<jint>(level));
@@ -44,6 +44,9 @@ namespace {
             return nullptr;
         }
         auto env = currentEnv(sVM);
+        if (env == nullptr) {
+            return nullptr;
+        }
         auto jMsg = boxJString(env, msg);
         auto jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
         const auto cRes = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
@@ -965,9 +968,11 @@ void JNI_OnUnload(JavaVM *vm, void *reserved) {
     dynxx_js_set_msg_callback(nullptr);
 
     auto env = currentEnv(vm);
-    env->UnregisterNatives(sJClass);
-    env->DeleteGlobalRef(sLogCallback);
-    env->DeleteGlobalRef(sJsMsgCallback);
+    if (env) {
+        env->UnregisterNatives(sJClass);
+        env->DeleteGlobalRef(sLogCallback);
+        env->DeleteGlobalRef(sJsMsgCallback);
+    }
 
     sVM = nullptr;
     sLogCallback = nullptr;
