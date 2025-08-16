@@ -40,7 +40,8 @@ build4wasm() {
     done
 }
 
-LIB_TYPE="Release"
+# Debug|RelWithDebInfo|Release|MinSizeRel
+LIB_TYPE="MinSizeRel"
 if [ $DEBUG == 1 ]; then
     LIB_TYPE="Debug"
 fi
