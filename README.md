@@ -64,10 +64,10 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | [std::from_chars][19] for float     | C++17    | All;                               |
 | [std::format][12]                   | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
 | [std::ranges][13]                   | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
-| [std::jthread][39]                  | C++20    | Apple Clang;                       |
-| [std::ranges::views::enumerate][20] | C++23    | Unknown;                           |
-| [std::ranges::views::chunk][14]     | C++23    | Unknown;                           |
-| [std::move_only_function][44]       | C++23    | Unknown;                           |
+| [std::jthread][39]                  | C++20    | Apple;                       |
+| [std::ranges::views::enumerate][20] | C++23    | Clang, Apple & HarmonyOS;          |
+| [std::ranges::views::chunk][14]     | C++23    | Clang, Apple & HarmonyOS;          |
+| [std::move_only_function][44]       | C++23    | Clang, Apple & HarmonyOS;          |
 
 <details>
 
