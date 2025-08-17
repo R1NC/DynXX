@@ -69,7 +69,7 @@ namespace {
     }
 }
 
-#pragma mark C++ API
+// C++ API
 
 bool dynxxJsLoadF(const std::string &file, bool isModule) {
     return loadF(file, isModule);
@@ -91,7 +91,7 @@ void dynxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &c
     setMsgCallback(callback);
 }
 
-#pragma mark C API
+// C API
 
 EXPORT_AUTO
 bool dynxx_js_loadF(const char *file, bool is_module) {
@@ -122,7 +122,7 @@ void dynxx_js_set_msg_callback(const char *(*const callback)(const char *msg)) {
     dynxxJsSetMsgCallback(callback);
 }
 
-#pragma mark JS API - Declaration
+// JS API - Declaration
 
 DEF_API(dynxx_call_platform, STRING)
 
@@ -197,7 +197,7 @@ DEF_API(dynxx_z_unzip_release, VOID)
 DEF_API_ASYNC(dynxx_z_bytes_zip, STRING)
 DEF_API_ASYNC(dynxx_z_bytes_unzip, STRING)
 
-#pragma mark JS API - Binding
+// JS API - Binding
 
 static void registerFuncs() {
     BIND_API(dynxx_call_platform);
@@ -274,7 +274,7 @@ static void registerFuncs() {
     BIND_API(dynxx_z_bytes_unzip)
 }
 
-#pragma mark Inner API
+// Inner API
 
 void dynxx_js_init() {
     if (vm) [[unlikely]] {

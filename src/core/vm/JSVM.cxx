@@ -14,7 +14,7 @@ namespace
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
-#pragma mark JSVM dump error
+// JSVM dump error
 
     void printJsErr(JSContext *ctx, const JSValueConst val)
     {
@@ -43,7 +43,7 @@ namespace
         JS_FreeValue(ctx, exception_val);
     }
 
-#pragma mark JSVM Internal
+// JSVM Internal
 
     bool _loadScript(JSContext *ctx, const std::string &script, const std::string &name, const bool isModule)
     {
@@ -96,7 +96,7 @@ namespace
         return ctx;
     }
 
-#pragma mark JS Promise wrapper
+// JS Promise wrapper
 
     struct Promise
     {
@@ -140,7 +140,7 @@ namespace
     }
 }
 
-#pragma mark JSVM Internal
+// JSVM Internal
 
 JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
 {
@@ -183,7 +183,7 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
     return ret;
 }
 
-#pragma mark JSValueHash & JSValueEqual
+// JSValueHash & JSValueEqual
 
 std::size_t DynXX::Core::VM::JSVM::JSValueHash::operator()(const JSValue &jv) const 
 {
@@ -212,7 +212,7 @@ bool DynXX::Core::VM::JSVM::JSValueEqual::operator()(const JSValue &left, const 
     return JS_VALUE_GET_PTR(left) == JS_VALUE_GET_PTR(right);
 }
 
-#pragma mark JSVM API
+// JSVM API
 
 DynXX::Core::VM::JSVM::JSVM()
 {

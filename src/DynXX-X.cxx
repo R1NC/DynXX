@@ -212,7 +212,7 @@ void dynxxRelease() {
 #endif
 }
 
-#pragma mark Device.Device
+// Device.Device
 
 DynXXDeviceTypeX dynxxDeviceType() {
     return static_cast<DynXXDeviceTypeX>(DynXX::Core::Device::deviceType());
@@ -238,7 +238,7 @@ DynXXDeviceCpuArchX dynxxDeviceCpuArch() {
     return static_cast<DynXXDeviceCpuArchX>(DynXX::Core::Device::cpuArch());
 }
 
-#pragma mark Log
+// Log
 
 void dynxxLogSetLevel(DynXXLogLevelX level) {
     DynXX::Core::Log::setLevel(static_cast<int>(level));
@@ -252,7 +252,7 @@ void dynxxLogPrint(DynXXLogLevelX level, std::string_view content) {
     DynXX::Core::Log::print(static_cast<int>(level), content);
 }
 
-#pragma mark Coding
+// Coding
 
 std::string dynxxCodingCaseUpper(std::string_view str) {
     return DynXX::Core::Coding::Case::upper(str);
@@ -282,7 +282,7 @@ std::string dynxxCodingStrTrim(std::string_view str) {
     return DynXX::Core::Coding::strTrim(str);
 }
 
-#pragma mark Crypto
+// Crypto
 
 bool dynxxCryptoRand(size_t len, byte *bytes) {
     return DynXX::Core::Crypto::rand(len, bytes);
@@ -340,7 +340,7 @@ Bytes dynxxCryptoBase64Decode(BytesView in, bool noNewLines) {
     return DynXX::Core::Crypto::Base64::decode(in, noNewLines);
 }
 
-#pragma mark Net.Http
+// Net.Http
 
 DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         DynXXHttpMethodX method,
@@ -470,7 +470,7 @@ bool dynxxNetHttpDownload(std::string_view url, const std::string &filePath, siz
 }
 #endif
 
-#pragma mark Store.SQLite
+// Store.SQLite
 
 #if defined(USE_DB)
 
@@ -563,7 +563,7 @@ void dynxxStoreSqliteClose(void *const conn) {
 
 #endif
 
-#pragma mark Store.KV
+// Store.KV
 
 #if defined(USE_KV)
 
@@ -666,7 +666,7 @@ void dynxxStoreKvClose(void *const conn) {
 
 #endif
 
-#pragma mark Json
+// Json
 
 DynXXJsonNodeTypeX dynxxJsonReadType(void *const cjson) {
     return DynXX::Core::Json::cJSONReadType(cjson);
@@ -757,7 +757,7 @@ void dynxxJsonDecoderRelease(void *const decoder) {
     delete xdecoder;
 }
 
-#pragma mark Zip
+// Zip
 
 void *dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize, const DynXXZFormatX format) {
     void *zip = nullptr;

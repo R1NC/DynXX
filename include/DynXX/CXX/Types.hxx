@@ -17,7 +17,7 @@
 #include <limits>
 #include <type_traits>
 
-#pragma mark Concepts
+// Concepts
 
 template<typename T>
 concept ConstT = std::is_const_v<T>;
@@ -83,7 +83,7 @@ concept Iterable = requires(T a)
     { std::end(a) } -> std::sentinel_for<decltype(std::begin(a))>;
 };
 
-#pragma mark Utils using concept
+// Utils using concept
 
 template<PolymorphicT T>
 T *dynamicCastX(void *ptr) {
@@ -102,7 +102,7 @@ void iterate(const T &container, std::function<void(const typename T::value_type
     }
 }
 
-#pragma mark Limits constants
+// Limits constants
 
 template<NumberT T>
 constexpr T MinV() {
@@ -123,7 +123,7 @@ constexpr auto MaxFloat32 = MaxV<float>();
 constexpr auto MinFloat64 = MinV<double>();
 constexpr auto MaxFloat64 = MaxV<double>();
 
-#pragma mark String to Number
+// String to Number
 
 int32_t str2int32(const std::string &str, const int32_t defaultI = MinInt32);
 
@@ -133,7 +133,7 @@ float str2float32(const std::string &str, const float defaultF = MinFloat32);
 
 double str2float64(const std::string &str, const double defaultF = MinFloat64);
 
-#pragma mark Pointer cast
+// Pointer cast
 
 template<typename T = void>
 T *addr2ptr(const address addr) {
@@ -145,7 +145,7 @@ address ptr2addr(const T *ptr) {
     return reinterpret_cast<address>(ptr);
 }
 
-#pragma mark Any Type
+// Any Type
 
 using Any = std::variant<int64_t, double, std::string>;
 
@@ -176,7 +176,7 @@ inline auto Any2Float(const Any &a, const double defaultF = MinFloat64) {
     return str2float64(std::get<std::string>(a), defaultF);
 }
 
-#pragma mark Dict Type
+// Dict Type
 
 using Dict = std::unordered_map<std::string, std::string>;
 using DictAny = std::unordered_map<std::string, Any>;
@@ -214,7 +214,7 @@ inline auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const 
     return dictAnyReadFloat(dict, key).value_or(defaultF);
 }
 
-#pragma mark Bytes Type
+// Bytes Type
 
 using BytesView = std::span<const byte>;
 using Bytes = std::vector<byte>;
@@ -241,7 +241,7 @@ std::string makeStr(const T *ptr) {
     return {reinterpret_cast<const char *>(ptr)};
 }
 
-#pragma mark Memory Utils
+// Memory Utils
 
 template<MemcpyableT T>
 void memcpyX(const T *src, T *dst, const std::size_t count) {

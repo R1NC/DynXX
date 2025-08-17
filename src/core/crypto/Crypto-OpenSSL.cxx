@@ -114,7 +114,7 @@ namespace
     };
 }
 
-#pragma mark Rand
+// Rand
 
 bool DynXX::Core::Crypto::rand(size_t len, byte *bytes)
 {
@@ -126,7 +126,7 @@ bool DynXX::Core::Crypto::rand(size_t len, byte *bytes)
     return ret != -1;
 }
 
-#pragma mark AES
+// AES
 
 Bytes DynXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
 {
@@ -209,7 +209,7 @@ Bytes DynXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
     return out;
 }
 
-#pragma mark AES-GCM
+// AES-GCM
 
 Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
 {
@@ -371,7 +371,7 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
     return out;
 }
 
-#pragma mark MD5
+// MD5
 
 Bytes DynXX::Core::Crypto::Hash::md5(BytesView inBytes)
 {
@@ -410,7 +410,7 @@ Bytes DynXX::Core::Crypto::Hash::md5(BytesView inBytes)
     return out;
 }
 
-#pragma mark SHA1
+// SHA1
 
 Bytes DynXX::Core::Crypto::Hash::sha1(BytesView inBytes)
 {
@@ -453,7 +453,7 @@ Bytes DynXX::Core::Crypto::Hash::sha1(BytesView inBytes)
     return out;
 }
 
-#pragma mark SHA256
+// SHA256
 
 Bytes DynXX::Core::Crypto::Hash::sha256(BytesView inBytes)
 {
@@ -493,7 +493,7 @@ Bytes DynXX::Core::Crypto::Hash::sha256(BytesView inBytes)
     return out;
 }
 
-#pragma mark RSA
+// RSA
 
 std::string DynXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPublic) 
 {
@@ -660,7 +660,7 @@ std::optional<Bytes> DynXX::Core::Crypto::RSA::Decrypt::process(BytesView in) co
     return std::make_optional(outBytes);
 }
 
-#pragma mark Base64
+// Base64
 
 bool DynXX::Core::Crypto::Base64::validate(std::string_view in)
 {

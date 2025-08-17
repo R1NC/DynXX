@@ -260,7 +260,7 @@ DynXX::Core::Z::UnZip::~UnZip()
 
 #if !defined(__EMSCRIPTEN__)
 
-#pragma mark Cxx stream
+// Cxx stream
 
 bool DynXX::Core::Z::zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
 {
@@ -274,7 +274,7 @@ bool DynXX::Core::Z::unzip(size_t bufferSize, int format, std::istream *inStream
     return processCxxStream(bufferSize, inStream, outStream, unzip);
 }
 
-#pragma mark C FILE
+// C FILE
 
 bool DynXX::Core::Z::zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 {
@@ -290,7 +290,7 @@ bool DynXX::Core::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, std
 
 #endif
 
-#pragma mark Bytes
+// Bytes
 
 Bytes DynXX::Core::Z::zip(int mode, size_t bufferSize, int format, const Bytes &bytes)
 {

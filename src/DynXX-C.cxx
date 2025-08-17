@@ -40,7 +40,7 @@ void dynxx_release() {
     dynxxRelease();
 }
 
-#pragma mark Device.DeviceInfo
+// Device.DeviceInfo
 
 EXPORT_AUTO
 int dynxx_device_type() {
@@ -76,7 +76,7 @@ int dynxx_device_cpu_arch() {
     return static_cast<int>(dynxxDeviceCpuArch());
 }
 
-#pragma mark Log
+// Log
 
 EXPORT_AUTO
 void dynxx_log_set_level(int level) {
@@ -96,7 +96,7 @@ void dynxx_log_print(int level, const char *content) {
     dynxxLogPrint(static_cast<DynXXLogLevelX>(level), content);
 }
 
-#pragma mark Coding
+// Coding
 
 EXPORT_AUTO
 const char *dynxx_coding_case_upper(const char *str) {
@@ -152,7 +152,7 @@ const char *dynxx_coding_str_trim(const char *str) {
     return DynXX::Core::Util::Type::copyStr(s);
 }
 
-#pragma mark Crypto
+// Crypto
 
 EXPORT_AUTO
 bool dynxx_crypto_rand(size_t len, byte *bytes) {
@@ -252,7 +252,7 @@ const byte *dynxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool n
     return handleBytes(bytes, outLen);
 }
 
-#pragma mark Net.Http
+// Net.Http
 
 EXPORT_AUTO
 const char *dynxx_net_http_request(const char *url, const char *params, int method,
@@ -309,7 +309,7 @@ bool dynxx_net_http_download(const char *url, const char *file_path, size_t time
 
 #endif
 
-#pragma mark Store.SQLite
+// Store.SQLite
 
 #if defined(USE_DB)
 
@@ -378,7 +378,7 @@ void dynxx_store_sqlite_close(void *const conn) {
 
 #endif
 
-#pragma mark Store.KV
+// Store.KV
 
 #if defined(USE_KV)
 
@@ -475,7 +475,7 @@ void dynxx_store_kv_close(void *const conn) {
 
 #endif
 
-#pragma mark Json.Decoder
+// Json.Decoder
 
 EXPORT_AUTO
 int dynxx_json_read_type(void *const cjson) {
@@ -527,7 +527,7 @@ void dynxx_json_decoder_release(void *const decoder) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-#pragma mark Zip
+// Zip
 
 EXPORT_AUTO
 void *dynxx_z_zip_init(int mode, size_t bufferSize, int format) {

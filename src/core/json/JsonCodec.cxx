@@ -196,7 +196,7 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
     return std::make_optional(dict);
 }
 
-#pragma mark Decoder
+// Decoder
 
 void DynXX::Core::Json::Decoder::moveImp(Decoder&& other) noexcept
 {

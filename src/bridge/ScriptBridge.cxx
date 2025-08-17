@@ -186,7 +186,7 @@ std::string dynxx_root_pathS(const char *json)
     return dynxxRootPath();
 }
 
-#pragma mark Device.DeviceInfo
+// Device.DeviceInfo
 
 int dynxx_device_typeS(const char *json)
 {
@@ -213,7 +213,7 @@ int dynxx_device_cpu_archS(const char *json)
     return static_cast<int>(dynxxDeviceCpuArch());
 }
 
-#pragma mark Log
+// Log
 
 void dynxx_log_printS(const char *json)
 {
@@ -232,7 +232,7 @@ void dynxx_log_printS(const char *json)
     dynxxLogPrint(level.value(), content.value());
 }
 
-#pragma mark Net.Http
+// Net.Http
 
 std::string dynxx_net_http_requestS(const char *json)
 {
@@ -299,7 +299,7 @@ bool dynxx_net_http_downloadS(const char *json)
     return dynxxNetHttpDownload(url.value(), file.value(), timeout.value_or(0));
 }
 
-#pragma mark Store.SQLite
+// Store.SQLite
 
 std::string dynxx_store_sqlite_openS(const char *json)
 {
@@ -463,7 +463,7 @@ void dynxx_store_sqlite_closeS(const char *json)
     dynxxStoreSqliteClose(conn);
 }
 
-#pragma mark Store.KV
+// Store.KV
 
 std::string dynxx_store_kv_openS(const char *json)
 {
@@ -676,7 +676,7 @@ void dynxx_store_kv_closeS(const char *json)
     dynxxStoreKvClose(conn);
 }
 
-#pragma mark Coding
+// Coding
 
 std::string dynxx_coding_case_upperS(const char *json)
 {
@@ -780,7 +780,7 @@ std::string dynxx_coding_str2bytesS(const char *json)
     return bytes2json(bytes);
 }
 
-#pragma mark Crypto
+// Crypto
 
 std::string dynxx_crypto_randS(const char *json)
 {
@@ -1090,7 +1090,7 @@ std::string dynxx_crypto_base64_decodeS(const char *json)
     return bytes2json(outBytes);
 }
 
-#pragma mark Zip
+// Zip
 
 std::string dynxx_z_zip_initS(const char *json)
 {

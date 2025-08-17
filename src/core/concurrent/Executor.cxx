@@ -2,7 +2,7 @@
 
 #include <DynXX/CXX/Log.hxx>
 
-#pragma mark - Worker
+// - Worker
 
 DynXX::Core::Concurrent::Worker::Worker() : Worker(1000uz)
 {
@@ -99,7 +99,7 @@ DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(Tas
     return *this;
 }
 
-#pragma mark - Executor
+// - Executor
 
 DynXX::Core::Concurrent::Executor::Executor() : Executor(0uz, 1000uz)
 {

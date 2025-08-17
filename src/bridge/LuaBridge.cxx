@@ -41,7 +41,7 @@ namespace {
     }
 }
 
-#pragma mark C++ API
+// C++ API
 
 bool dynxxLuaLoadF(const std::string &f) {
     return loadF(f);
@@ -55,7 +55,7 @@ std::optional<std::string> dynxxLuaCall(std::string_view f, std::string_view ps)
     return call(f, ps);
 }
 
-#pragma mark C API
+// C API
 
 #if !defined(__EMSCRIPTEN__)
 EXPORT
@@ -79,7 +79,7 @@ const char *dynxx_lua_call(const char *f, const char *ps) {
     return DynXX::Core::Util::Type::copyStr(s);
 }
 
-#pragma mark Lua API - Declaration
+// Lua API - Declaration
 
 DEF_API(dynxx_get_version, STRING)
 DEF_API(dynxx_root_path, STRING)
@@ -152,7 +152,7 @@ DEF_API(dynxx_z_unzip_release, VOID)
 DEF_API(dynxx_z_bytes_zip, STRING)
 DEF_API(dynxx_z_bytes_unzip, STRING)
 
-#pragma mark Lua API - Binding
+// Lua API - Binding
 
 static void registerFuncs() {
     BIND_API(dynxx_get_version);
@@ -227,7 +227,7 @@ static void registerFuncs() {
     BIND_API(dynxx_z_bytes_unzip)
 }
 
-#pragma mark Inner API
+// Inner API
 
 void dynxx_lua_init() {
     if (vm) [[unlikely]] {
