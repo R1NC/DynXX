@@ -2,6 +2,7 @@
 
 NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/29.0.13846066/"}
 ARCH=arm64-v8a
+VER=24
 
 BUILD_DIR=../build.Android
 rm -rf ${BUILD_DIR}
@@ -42,7 +43,7 @@ build4android() {
   cd ${ROOT_DIR}
 }
 
-build4android ${ARCH} android-21 Release
+build4android ${ARCH} android-${VER} Release
 
 ASSETS_APP_DIR=../platforms/Android/app/src/main/assets/
 mkdir -p ${ASSETS_APP_DIR}
