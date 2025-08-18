@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <DynXX/CXX/Macro.hxx>
+#include <DynXX/CXX/Types.hxx>
 
 #include "../core/vm/LuaVM.hxx"
 #include "ScriptBridge.hxx"

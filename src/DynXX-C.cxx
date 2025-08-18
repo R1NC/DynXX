@@ -1,9 +1,7 @@
 #if defined(__cplusplus)
 
-#include <DynXX/CXX/DynXX.hxx>
 #include <DynXX/C/KV.h>
-#include <DynXX/CXX/Types.hxx>
-#include <DynXX/CXX/Macro.hxx>
+#include <DynXX/CXX/DynXX.hxx>
 #include "core/util/TypeUtil.hxx"
 #endif
 
