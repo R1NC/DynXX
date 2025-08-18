@@ -4,11 +4,15 @@
 
 #include <DynXX/CXX/Log.hxx>
 
+#include "../util/TypeUtil.hxx"
+
 namespace
 {
     #define PRINT_ERR(rc, db) dynxxLogPrint(DynXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
 
     constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
+
+    using namespace DynXX::Core::Util::Type;
 }
 
 DynXX::Core::Store::SQLite::SQLite()
@@ -78,26 +82,20 @@ bool DynXX::Core::Store::SQLite::Connection::execute(std::string_view sql) const
         return false;
     }
     
-    const char* sql_cstr;
-    std::string temp_sql;
-    
-    //Make sure sql is null terminated!
-    if (sql.size() != strlen(sql.data())) [[unlikely]]
+    const auto sqlOp = nullTerminatedCStr(sql);
+    if (!sqlOp.has_value()) [[unlikely]]
     {
-        temp_sql = std::string(sql);
-        sql_cstr = temp_sql.c_str();
-    }
-    else
-    {
-        sql_cstr = sql.data();
+        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.execute SQL not null terminated");
+        return false;
     }
     
-    const auto rc = sqlite3_exec(this->db, sql_cstr, nullptr, nullptr, nullptr);
+    const auto rc = sqlite3_exec(this->db, sqlOp.value(), nullptr, nullptr, nullptr);
     // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
     }
+    
     return rc == SQLITE_OK;
 }
 
@@ -110,13 +108,22 @@ std::unique_ptr<DynXX::Core::Store::SQLite::Connection::QueryResult> DynXX::Core
         return nullptr;
     }
     sqlite3_stmt *stmt;
-    const auto rc = sqlite3_prepare_v2(this->db, sql.data(), static_cast<int>(sql.size()), &stmt, nullptr);
+
+    const auto sqlOp = nullTerminatedCStr(sql);
+    if (!sqlOp.has_value()) [[unlikely]]
+    {
+        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.query SQL not null terminated");
+        return nullptr;
+    }
+
+    const auto rc = sqlite3_prepare_v2(this->db, sqlOp.value(), static_cast<int>(sql.size()), &stmt, nullptr);
     // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.query ret:{}", rc);
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
         return nullptr;
     }
+
     return std::make_unique<DynXX::Core::Store::SQLite::Connection::QueryResult>(stmt);
 }
 
@@ -160,7 +167,13 @@ std::optional<Any> DynXX::Core::Store::SQLite::Connection::QueryResult::readColu
     auto colCount = sqlite3_column_count(this->stmt);
     for (decltype(colCount) i(0); i < colCount; i++)
     {
-        if (strcmp(sqlite3_column_name(this->stmt, i), column.data()) != 0)
+        const auto columnOp = nullTerminatedCStr(column);
+        if (!columnOp.has_value()) [[unlikely]]
+        {
+            dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.readColumn column not null terminated");
+            return std::nullopt;
+        }
+        if (strcmp(sqlite3_column_name(this->stmt, i), columnOp.value()) != 0)
         {
             continue;
         }

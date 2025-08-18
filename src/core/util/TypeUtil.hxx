@@ -5,8 +5,20 @@
 #include <algorithm>
 
 namespace DynXX::Core::Util::Type {
+
+    inline std::optional<const char*> nullTerminatedCStr(std::string_view sv) {
+        if (sv.size() != strlen(sv.data())) [[unlikely]] {
+            return std::nullopt;
+        }
+        return sv.data();
+    }
+
     inline const char *copyStr(const std::string_view s) {
-        return strdup(s.data());
+        if (auto cstr = nullTerminatedCStr(s); cstr.has_value()) [[likely]] {
+            return strdup(cstr.value());
+        }
+        std::string tmpStr{s};
+        return strdup(tmpStr.c_str());
     }
 
     inline char *const *copyStrVector(const std::vector<std::string> &sv, const size_t strMaxLen) {
