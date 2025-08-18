@@ -38,6 +38,7 @@ build4ios() {
     ${GEN_XCODE_PROJ}
 
     cmake --build . --config ${BUILD_TYPE}
+    cmake --install . --prefix ./output --component headers
 }
 
 LIB_TYPE="Release"
@@ -46,11 +47,6 @@ if [ $DEBUG == 1 ]; then
 fi
 
 build4ios phone arm64 ${TARGET_VERSION} ${LIB_TYPE}
-
-#Copy headers
-HEADER_OUTPUT_DIR=output/include
-mkdir -p ${HEADER_OUTPUT_DIR}
-cp -R ../include/ ${HEADER_OUTPUT_DIR}/
 
 #Copy libs
 LIB_DIR=""

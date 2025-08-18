@@ -277,6 +277,16 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
 
+## install headers
+
+include(GNUInstallDirs)
+install(DIRECTORY include/DynXX 
+    DESTINATION include 
+    COMPONENT headers
+    FILES_MATCHING 
+    PATTERN "*.h"
+    PATTERN "*.hxx"
+)
 
 ## Custom commands
 

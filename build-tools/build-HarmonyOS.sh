@@ -28,20 +28,16 @@ build4harmony() {
     -B${ABI_BUILD_DIR} \
     -DCMAKE_TOOLCHAIN_FILE=$OHOS_ROOT/build/cmake/ohos.toolchain.cmake
 
-  cmake --build . --config ${BUILD_TYPE}
-
   pushd ${ABI_BUILD_DIR}
     make -j5
   popd
+
+  cmake --install ${ABI_BUILD_DIR} --prefix ${BUILD_DIR}/output --component headers
 
   rm -rf ${ABI_BUILD_DIR}
 }
 
 build4harmony ${ARCH} Release
-
-HEADER_OUTPUT_DIR=output/include
-mkdir -p ${HEADER_OUTPUT_DIR}
-cp -R ../include/ ${HEADER_OUTPUT_DIR}/
 
 #Checking Artifacts
 LIB_OUTPUT_DIR=output/libs/${ARCH}

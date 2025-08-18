@@ -35,15 +35,14 @@ build4android() {
     -DANDROID_PLATFORM=${SYSTEM_VERSION}
 
   cd ${ABI_BUILD_DIR}
+
   make -j5
+  cmake --install . --prefix ${ROOT_DIR}/output --component headers
+
   cd ${ROOT_DIR}
 }
 
 build4android ${ARCH} android-21 Release
-
-HEADER_OUTPUT_DIR=output/include
-mkdir -p ${HEADER_OUTPUT_DIR}
-cp -R ../include/ ${HEADER_OUTPUT_DIR}/
 
 ASSETS_APP_DIR=../platforms/Android/app/src/main/assets/
 mkdir -p ${ASSETS_APP_DIR}

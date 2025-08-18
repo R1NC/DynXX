@@ -29,6 +29,7 @@ build4mac() {
     ${GEN_XCODE_PROJ}
 
     cmake --build . --config ${BUILD_TYPE}
+    cmake --install . --prefix ${BUILD_DIR}/output --component headers
 }
 
 LIB_TYPE="Release"
@@ -38,11 +39,6 @@ fi
 
 build4mac arm64 ${TARGET_VERSION} ${LIB_TYPE}
 #build4mac x86_64 ${TARGET_VERSION} ${LIB_TYPE}
-
-#Copy headers
-HEADER_OUTPUT_DIR=output/include
-mkdir -p ${HEADER_OUTPUT_DIR}
-cp -R ../include/ ${HEADER_OUTPUT_DIR}/
 
 #Copy libs
 LIB_OUTPUT_DIR=output/libs

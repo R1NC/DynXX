@@ -3,7 +3,6 @@ set BUILD_TYPE=Release
 
 set BUILD_DIR=%CD%\..\build.Windows
 set OUTPUT_DIR=%BUILD_DIR%\output\
-set HEADER_OUTPUT_DIR=%OUTPUT_DIR%\include\
 
 rmdir /s /q %BUILD_DIR% 2>nul
 mkdir %BUILD_DIR%
@@ -19,9 +18,7 @@ cmake .. ^
     -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=%OUTPUT_DIR%
 
 cmake --build . --config %BUILD_TYPE%
-
-mkdir %HEADER_OUTPUT_DIR% 2>nul
-xcopy /E /I /Y ..\include %HEADER_OUTPUT_DIR%
+cmake --install . --prefix %OUTPUT_DIR% --component headers
 
 set LIB_OUTPUT_DIR=%OUTPUT_DIR%%BUILD_TYPE%
 set ARTIFACTS=^

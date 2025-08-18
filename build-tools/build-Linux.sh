@@ -18,11 +18,7 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=${LIB_TYPE}
 
 cmake --build . --config ${LIB_TYPE}
-
-#Copy headers
-HEADER_OUTPUT_DIR=output/include
-mkdir -p ${HEADER_OUTPUT_DIR}
-cp -R ../include/ ${HEADER_OUTPUT_DIR}/
+cmake --install . --prefix ${BUILD_DIR}/output --component headers
 
 #Copy libs
 LIB_OUTPUT_DIR=output/libs
