@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.18)
 
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+    set(CMAKE_C_COMPILER_LAUNCHER ccache)
+    set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
+    message(STATUS "^_^ Using ccache: ${CCACHE_FOUND}")
+else()
+    message(STATUS "-_- ccache not found")
+endif()
+
 string(
     COMPARE EQUAL
     "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -21,6 +30,9 @@ include(ProcessorCount)
 ProcessorCount(N)
 if(NOT N EQUAL 0)
     set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
+    message(STATUS "^_^ Using parallel build: ${N}")
+else()
+    message(STATUS "-_- Parallel build not supported")
 endif()
 
 ## Check Apple Version for C++ new features
