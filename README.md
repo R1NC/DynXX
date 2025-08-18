@@ -7,6 +7,8 @@
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/WASM-Mac.yml?branch=main&label=Build%20for%20WASM%20on%20macOS&logo=WebAssembly&logoColor=654FF0"/>][38] [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/WASM-Ubuntu.yml?branch=main&label=Build%20for%20WASM%20on%20Ubuntu&logo=WebAssembly&logoColor=654FF0"/>][42]  
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/Linux-Ubuntu.yml?branch=main&label=Build%20for%20Linux%20on%20Ubuntu&logo=Linux&logoColor=FBB726"/>][37]  
 
+[<img src="https://img.shields.io/sonar/alert_status/R1NC_DynXX?server=https%3A%2F%2Fsonarcloud.io&style=flat-square&logo=sonar&label=SonarQube%20Static%20Code%20Analysis"/>][45]
+
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 > :point_right: The Rust version([DynRS][31]) is in works.
@@ -139,3 +141,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [42]: ../../actions/workflows/WASM-Ubuntu.yml
 [43]: ../../actions/workflows/HarmonyOS-Mac.yml
 [44]: https://en.cppreference.com/w/cpp/utility/functional/move_only_function.html
+[45]: https://sonarcloud.io/summary/new_code?id=R1NC_DynXX
