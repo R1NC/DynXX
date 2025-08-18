@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
 
+# Use ccache to turbo compile speed
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
     set(CMAKE_C_COMPILER_LAUNCHER ccache)
     set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
-    message(STATUS "^_^ Using ccache: ${CCACHE_FOUND}")
+    message(STATUS "^_^ Using ccache")
 else()
     message(STATUS "-_- ccache not found")
 endif()
