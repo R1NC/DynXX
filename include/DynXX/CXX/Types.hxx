@@ -3,6 +3,8 @@
 
 #include "../C/Types.h"
 
+#include <string.h>
+
 #ifdef __cplusplus
 
 #include <cstring>
