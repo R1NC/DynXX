@@ -7,13 +7,16 @@
 namespace DynXX::Core::Util::Type {
 
     inline std::optional<const char*> nullTerminatedCStr(std::string_view sv) {
-        if (sv.size() != strlen(sv.data())) [[unlikely]] {
+        if (sv.empty() || sv.back() != '\0') [[unlikely]] {
             return std::nullopt;
         }
         return sv.data();
     }
 
     inline const char *copyStr(const std::string_view s) {
+        if (s.empty()) [[unlikely]] {
+            return nullptr;
+        }
         if (auto cstr = nullTerminatedCStr(s); cstr.has_value()) [[likely]] {
             return strdup(cstr.value());
         }
