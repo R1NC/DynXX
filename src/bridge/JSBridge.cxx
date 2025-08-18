@@ -9,7 +9,6 @@
 
 #include <DynXX/CXX/Macro.hxx>
 
-#include "../core/util/TypeUtil.hxx"
 #include "../core/vm/JSVM.hxx"
 #include "ScriptBridge.hxx"
 
@@ -114,7 +113,7 @@ const char *dynxx_js_call(const char *func, const char *params, bool await) {
         return "";
     }
     const auto s = dynxxJsCall(func, params ? params : "", await).value_or("");
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO

@@ -241,6 +241,26 @@ std::string makeStr(const T *ptr) {
     return {reinterpret_cast<const char *>(ptr)};
 }
 
+// C String Utils
+
+inline std::optional<const char*> nullTerminatedCStr(std::string_view sv) {
+    if (sv.empty() || !sv.back()) [[unlikely]] {
+        return std::nullopt;
+    }
+    return sv.data();
+}
+
+inline const char *dupStr(const std::string_view sv) {
+    if (sv.empty()) [[unlikely]] {
+        return nullptr;
+    }
+    if (auto cstr = nullTerminatedCStr(sv); !cstr.has_value()) [[unlikely]] {
+        std::string tmpStr{sv};
+        return strndup(tmpStr.c_str(), tmpStr.size());
+    }
+    return strndup(sv.data(), sv.size());
+}
+
 // Memory Utils
 
 template<MemcpyableT T>

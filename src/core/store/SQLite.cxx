@@ -4,15 +4,11 @@
 
 #include <DynXX/CXX/Log.hxx>
 
-#include "../util/TypeUtil.hxx"
-
 namespace
 {
     #define PRINT_ERR(rc, db) dynxxLogPrint(DynXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
 
     constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
-
-    using namespace DynXX::Core::Util::Type;
 }
 
 DynXX::Core::Store::SQLite::SQLite()

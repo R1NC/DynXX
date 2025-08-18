@@ -13,7 +13,6 @@
 #include <wolfssl/wolfcrypt/coding.h>
 
 #include <DynXX/CXX/Log.hxx>
-#include "../util/TypeUtil.hxx"
 
 namespace 
 {

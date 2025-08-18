@@ -6,7 +6,6 @@
 #include <DynXX/CXX/Macro.hxx>
 
 #include "../core/vm/LuaVM.hxx"
-#include "../core/util/TypeUtil.hxx"
 #include "ScriptBridge.hxx"
 
 namespace {
@@ -76,7 +75,7 @@ const char *dynxx_lua_call(const char *f, const char *ps) {
         return nullptr;
     }
     const auto s = dynxxLuaCall(f, ps ? ps : "").value_or("");
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 // Lua API - Declaration

@@ -2,6 +2,7 @@
 
 #include "JNIUtil.hxx"
 #include "../../../../../../build.Android/output/include/DynXX/C/DynXX.h"
+#include "../../../../../../build.Android/output/include/DynXX/CXX/Types.hxx"
 
 namespace {
 
@@ -52,7 +53,7 @@ namespace {
         const auto cRes = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
         char *res = nullptr;
         if (cRes) {
-           res = strdup(cRes);
+           res = dupStr(cRes);
            env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jRes), cRes);
         }
         env->DeleteLocalRef(jMsg);

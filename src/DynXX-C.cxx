@@ -19,14 +19,14 @@ namespace {
 EXPORT_AUTO
 const char *dynxx_get_version() {
     const auto s = dynxxGetVersion();
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 #if defined(USE_DB) || defined(USE_KV)
 EXPORT_AUTO
 const char *dynxx_root_path() {
     const auto s = dynxxRootPath();
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 #endif
 
@@ -50,25 +50,25 @@ int dynxx_device_type() {
 EXPORT_AUTO
 const char *dynxx_device_name() {
     const auto s = dynxxDeviceName();
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO
 const char *dynxx_device_manufacturer() {
     const auto s = dynxxDeviceManufacturer();
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO
 const char *dynxx_device_model() {
     const auto s = dynxxDeviceModel();
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO
 const char *dynxx_device_os_version() {
     const auto s = dynxxDeviceOsVersion();
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO
@@ -104,7 +104,7 @@ const char *dynxx_coding_case_upper(const char *str) {
         return "";
     }
     const auto s = dynxxCodingCaseUpper(str);
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO
@@ -113,7 +113,7 @@ const char *dynxx_coding_case_lower(const char *str) {
         return "";
     }
     const auto s = dynxxCodingCaseLower(str);
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO
@@ -125,13 +125,13 @@ const byte *dynxx_coding_hex_str2bytes(const char *str, size_t *outLen) {
 EXPORT_AUTO
 const char *dynxx_coding_hex_bytes2str(const byte *inBytes, size_t inLen) {
     const auto s = dynxxCodingHexBytes2str(makeBytesView(inBytes, inLen));
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO
 const char *dynxx_coding_bytes2str(const byte *inBytes, size_t inLen) {
     const auto s = dynxxCodingBytes2str(makeBytesView(inBytes, inLen));
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO
@@ -149,7 +149,7 @@ const char *dynxx_coding_str_trim(const char *str) {
         return "";
     }
     const auto s = dynxxCodingStrTrim(str);
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 // Crypto
@@ -203,7 +203,7 @@ const char *dynxx_crypto_rsa_gen_key(const char *base64, bool isPublic) {
         return "";
     }
     const auto s = dynxxCryptoRsaGenKey(base64, isPublic);
-    return DynXX::Core::Util::Type::copyStr(s);
+    return dupStr(s);
 }
 
 EXPORT_AUTO
@@ -294,7 +294,7 @@ const char *dynxx_net_http_request(const char *url, const char *params, int meth
                                          vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
                                          static_cast<std::FILE *>(cFILE), file_size, timeout);
     const auto s = t.toJson();
-    return DynXX::Core::Util::Type::copyStr(s.value_or(""));
+    return dupStr(s.value_or(""));
 }
 
 #if defined(USE_CURL)
@@ -345,7 +345,7 @@ const char *dynxx_store_sqlite_query_read_column_text(void *const query_result, 
         return "";
     }
     const auto s = dynxxStoreSqliteQueryReadColumnText(query_result, column);
-    return DynXX::Core::Util::Type::copyStr(s.value_or(""));
+    return dupStr(s.value_or(""));
 }
 
 EXPORT_AUTO
@@ -393,7 +393,7 @@ const char *dynxx_store_kv_read_string(void *const conn, const char *k) {
         return nullptr;
     }
     const auto s = dynxxStoreKvReadString(conn, k);
-    return DynXX::Core::Util::Type::copyStr(s.value_or(""));
+    return dupStr(s.value_or(""));
 }
 
 EXPORT_AUTO
@@ -485,7 +485,7 @@ int dynxx_json_read_type(void *const cjson) {
 EXPORT_AUTO
 const char *dynxx_json_to_str(void *const cjson) {
     const auto s = dynxxJsonToStr(cjson);
-    return DynXX::Core::Util::Type::copyStr(s.value_or(""));
+    return dupStr(s.value_or(""));
 }
 
 EXPORT_AUTO
@@ -504,7 +504,7 @@ void *dynxx_json_decoder_read_node(void *const decoder, void *const node, const 
 EXPORT_AUTO
 const char *dynxx_json_decoder_read_string(void *const decoder, void *const node) {
     const auto s = dynxxJsonDecoderReadString(decoder, node);
-    return DynXX::Core::Util::Type::copyStr(s.value_or(""));
+    return dupStr(s.value_or(""));
 }
 
 EXPORT_AUTO

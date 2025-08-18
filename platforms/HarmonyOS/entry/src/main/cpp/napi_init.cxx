@@ -5,6 +5,7 @@
 #include <napi_util.hxx>
 
 #include "../../../../../../build.HarmonyOS/output/include/DynXX/C/DynXX.h"
+#include "../../../../../../build.HarmonyOS/output/include/DynXX/CXX/Types.hxx"
 
 namespace {
 
@@ -100,9 +101,7 @@ void engineLogCallback(int level, const char *content) {
     tSLogWorkData->tsWork = nullptr;
     tSLogWorkData->tsWorkFunc = nullptr;
     tSLogWorkData->logLevel = level;
-    auto len = std::strlen(content);
-    tSLogWorkData->logContent = mallocX<char>(len);
-    std::strncpy(const_cast<char *>(tSLogWorkData->logContent), content, len);
+    tSLogWorkData->logContent = dupStr(content);
     freeX(content);
 
     auto vWorkName = chars2NapiValue(sNapiEnv, "NAPI_LOG_CALLBACK_WORK");
