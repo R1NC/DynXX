@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "$0")/build-utils.sh"
+
 #TODO
 DEBUG=0
 TARGET_VERSION=15.0
@@ -37,8 +39,7 @@ build4ios() {
     -DPLATFORM=${PLATFORM} \
     ${GEN_XCODE_PROJ}
 
-    cmake --build . --config ${BUILD_TYPE}
-    cmake --install . --prefix ./output --component headers
+    build_with_cmake . . ${BUILD_TYPE}
 }
 
 LIB_TYPE="Release"
@@ -91,9 +92,4 @@ if [ -f "$ADA_OUT_FILE" ]; then
 fi
 
 #Checking Artifacts
-for a in "${ARTIFACTS[@]}"; do
-    if [ ! -f "$a" ]; then
-        echo "ARTIFACT NOT FOUND: $a"
-        exit 1
-    fi
-done
+check_artifacts "${ARTIFACTS[@]}"

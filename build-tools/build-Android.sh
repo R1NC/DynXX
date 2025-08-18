@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "$0")/build-utils.sh"
+
 NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/29.0.13846066/"}
 ARCH=arm64-v8a
 VER=24
@@ -35,12 +37,8 @@ build4android() {
     -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${OUTPUT_DIR} \
     -DANDROID_PLATFORM=${SYSTEM_VERSION}
 
-  cd ${ABI_BUILD_DIR}
-
-  cmake --build . --config ${BUILD_TYPE}
-  cmake --install . --prefix ${ROOT_DIR}/output --component headers
+  build_with_cmake ${ABI_BUILD_DIR} ${ROOT_DIR} ${BUILD_TYPE}
   
-  cd ${ROOT_DIR}
   rm -rf ${ABI_BUILD_DIR}
 }
 
@@ -72,9 +70,4 @@ ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/libmmkvcore.a"
     "${LIB_OUTPUT_DIR}/libmmkv.a"
 )
-for a in "${ARTIFACTS[@]}"; do
-    if [ ! -f "$a" ]; then
-        echo "ARTIFACT NOT FOUND: $a"
-        exit 1
-    fi
-done
+check_artifacts "${ARTIFACTS[@]}"

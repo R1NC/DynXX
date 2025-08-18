@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "$0")/build-utils.sh"
+
 # TODO
 OHOS_ROOT=${OHOS_ROOT:-"~/Library/OpenHarmony/Sdk/18/native"}
 ARCH=arm64-v8a
@@ -28,12 +30,8 @@ build4harmony() {
     -B${ABI_BUILD_DIR} \
     -DCMAKE_TOOLCHAIN_FILE=$OHOS_ROOT/build/cmake/ohos.toolchain.cmake
 
-  cd ${ABI_BUILD_DIR}
+  build_with_cmake ${ABI_BUILD_DIR} ${ROOT_DIR} ${BUILD_TYPE}
 
-  cmake --build . --config ${BUILD_TYPE}
-  cmake --install . --prefix ${ROOT_DIR}/output --component headers
-
-  cd ${ROOT_DIR}
   rm -rf ${ABI_BUILD_DIR}
 }
 
@@ -53,9 +51,4 @@ ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/libmmkvcore.a"
     "${LIB_OUTPUT_DIR}/libmmkv.a"
 )
-for a in "${ARTIFACTS[@]}"; do
-    if [ ! -f "$a" ]; then
-        echo "ARTIFACT NOT FOUND: $a"
-        exit 1
-    fi
-done
+check_artifacts "${ARTIFACTS[@]}"

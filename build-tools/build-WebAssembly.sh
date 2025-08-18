@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "$0")/build-utils.sh"
+
 EMSCRIPTEN_ROOT=${EMSCRIPTEN_ROOT:-"~/dev/emsdk/upstream/emscripten"}
 DEBUG=0
 
@@ -32,12 +34,7 @@ build4wasm() {
         "${OUTPUT_DIR}/DynXX.js"
         "${OUTPUT_DIR}/DynXX.html"
     )
-    for a in "${ARTIFACTS[@]}"; do
-        if [ ! -f "$a" ]; then
-            echo "ARTIFACT NOT FOUND: $a"
-            exit 1
-        fi
-    done
+    check_artifacts "${ARTIFACTS[@]}"
 }
 
 # Debug|RelWithDebInfo|Release|MinSizeRel

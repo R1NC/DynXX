@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "$0")/build-utils.sh"
+
 #TODO
 DEBUG=0
 TARGET_VERSION=14.0
@@ -28,8 +30,7 @@ build4mac() {
     -DDEPLOYMENT_TARGET=${SYSTEM_VERSION} \
     ${GEN_XCODE_PROJ}
 
-    cmake --build . --config ${BUILD_TYPE}
-    cmake --install . --prefix ${BUILD_DIR}/output --component headers
+    build_with_cmake . . ${BUILD_TYPE}
 }
 
 LIB_TYPE="Release"
@@ -82,9 +83,4 @@ mv quickjs-build/qjsc.app/Contents/MacOS/qjsc ${qjsc}
 ARTIFACTS+=(${qjsc})
 
 #Checking Artifacts
-for a in "${ARTIFACTS[@]}"; do
-    if [ ! -f "$a" ]; then
-        echo "ARTIFACT NOT FOUND: $a"
-        exit 1
-    fi
-done
+check_artifacts "${ARTIFACTS[@]}"

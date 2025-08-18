@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "$0")/build-utils.sh"
+
 #TODO
 DEBUG=0
 
@@ -17,8 +19,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=. \
     -DCMAKE_BUILD_TYPE=${LIB_TYPE}
 
-cmake --build . --config ${LIB_TYPE}
-cmake --install . --prefix ${BUILD_DIR}/output --component headers
+build_with_cmake . ${BUILD_DIR} ${LIB_TYPE}
 
 #Copy libs
 LIB_OUTPUT_DIR=output/libs
@@ -57,9 +58,4 @@ if [ -f "$ADA_OUT_FILE" ]; then
 fi
 
 #Checking Artifacts
-for a in "${ARTIFACTS[@]}"; do
-    if [ ! -f "$a" ]; then
-        echo "ARTIFACT NOT FOUND: $a"
-        exit 1
-    fi
-done
+check_artifacts "${ARTIFACTS[@]}"
