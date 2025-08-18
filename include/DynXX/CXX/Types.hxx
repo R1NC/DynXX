@@ -3,6 +3,9 @@
 
 #include "../C/Types.h"
 
+#if defined(_WIN32)
+#include <malloc.h>
+#endif
 #include <string.h>
 
 #ifdef __cplusplus
@@ -252,15 +255,26 @@ inline std::optional<const char*> nullTerminatedCStr(std::string_view sv) {
     return sv.data();
 }
 
+inline const char *dupCStr(const char *cstr, size_t len) {
+    if (cstr == nullptr) [[unlikely]] {
+        return nullptr;
+    }
+#if defined(_WIN32)
+    return _strdup(cstr);
+#else
+    return strndup(cstr, len);
+#endif
+}
+
 inline const char *dupStr(const std::string_view sv) {
     if (sv.empty()) [[unlikely]] {
         return nullptr;
     }
     if (auto cstr = nullTerminatedCStr(sv); !cstr.has_value()) [[unlikely]] {
         std::string tmpStr{sv};
-        return strndup(tmpStr.c_str(), tmpStr.size());
+        return dupCStr(tmpStr.c_str(), tmpStr.size());
     }
-    return strndup(sv.data(), sv.size());
+    return dupCStr(sv.data(), sv.size());
 }
 
 // Memory Utils

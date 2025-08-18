@@ -8,7 +8,6 @@
 #include <functional>
 
 #include <DynXX/CXX/Macro.hxx>
-#include <DynXX/CXX/Types.hxx>
 
 #include "../core/vm/JSVM.hxx"
 #include "ScriptBridge.hxx"
