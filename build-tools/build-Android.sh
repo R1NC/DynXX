@@ -37,10 +37,11 @@ build4android() {
 
   cd ${ABI_BUILD_DIR}
 
-  make -j5
+  cmake --build . --config ${BUILD_TYPE}
   cmake --install . --prefix ${ROOT_DIR}/output --component headers
-
+  
   cd ${ROOT_DIR}
+  rm -rf ${ABI_BUILD_DIR}
 }
 
 build4android ${ARCH} android-${VER} Release

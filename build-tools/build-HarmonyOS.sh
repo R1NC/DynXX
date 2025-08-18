@@ -28,12 +28,12 @@ build4harmony() {
     -B${ABI_BUILD_DIR} \
     -DCMAKE_TOOLCHAIN_FILE=$OHOS_ROOT/build/cmake/ohos.toolchain.cmake
 
-  pushd ${ABI_BUILD_DIR}
-    make -j5
-  popd
+  cd ${ABI_BUILD_DIR}
 
-  cmake --install ${ABI_BUILD_DIR} --prefix ${BUILD_DIR}/output --component headers
+  cmake --build . --config ${BUILD_TYPE}
+  cmake --install . --prefix ${ROOT_DIR}/output --component headers
 
+  cd ${ROOT_DIR}
   rm -rf ${ABI_BUILD_DIR}
 }
 
