@@ -26,7 +26,7 @@ namespace DynXX::Core::Store {
         ConnPool &operator=(ConnPool &&) = delete;
 
         void close(const std::string &_id) {
-            auto lock = std::lock_guard(this->mutex);
+            auto lock = std::scoped_lock(this->mutex);
             auto it = this->conns.find(_id);
             if (it != this->conns.end()) {
                 it->second.reset();
@@ -35,7 +35,7 @@ namespace DynXX::Core::Store {
         }
 
         void closeAll() {
-            auto lock = std::lock_guard(this->mutex);
+            auto lock = std::scoped_lock(this->mutex);
             for (auto &[_, v] : this->conns) 
             {
                 v.reset();
@@ -49,7 +49,7 @@ namespace DynXX::Core::Store {
 
     protected:
         std::weak_ptr<ConnT> open(const std::string &_id, std::function<std::shared_ptr<ConnT>()> &&creatorF) {
-            auto lock = std::lock_guard(this->mutex);
+            auto lock = std::scoped_lock(this->mutex);
             
             auto it = this->conns.find(_id);
             if (it != this->conns.end()) {

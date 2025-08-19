@@ -184,19 +184,19 @@ void DynXX::Core::Log::setLevel(int level)
     spdLogPrepare();
 #endif
 
-    auto lock = std::lock_guard(_mutex);
+    auto lock = std::scoped_lock(_mutex);
     _level = level;
 }
 
 void DynXX::Core::Log::setCallback(const std::function<void(int level, const char *content)> &callback)
 {
-    auto lock = std::lock_guard(_mutex);
+    auto lock = std::scoped_lock(_mutex);
     _callback = callback;
 }
 
 void DynXX::Core::Log::print(int level, std::string_view content)
 {
-    auto lock = std::lock_guard(_mutex);
+    auto lock = std::scoped_lock(_mutex);
 
     if (level < _level || level < DynXXLogLevelDebug || level >= DynXXLogLevelNone) [[unlikely]]
     {

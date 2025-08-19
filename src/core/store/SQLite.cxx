@@ -47,7 +47,7 @@ DynXX::Core::Store::SQLite::Connection::Connection(sqlite3 *db) : db{db}
 
 bool DynXX::Core::Store::SQLite::Connection::execute(std::string_view sql) const
 {
-    auto lock = std::lock_guard(this->mutex);
+    auto lock = std::scoped_lock(this->mutex);
     if (this->db == nullptr) [[unlikely]]
     {
         dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.execute DB nullptr");
@@ -73,7 +73,7 @@ bool DynXX::Core::Store::SQLite::Connection::execute(std::string_view sql) const
 
 std::unique_ptr<DynXX::Core::Store::SQLite::Connection::QueryResult> DynXX::Core::Store::SQLite::Connection::query(std::string_view sql) const
 {
-    auto lock = std::lock_guard(this->mutex);
+    auto lock = std::scoped_lock(this->mutex);
     if (this->db == nullptr) [[unlikely]]
     {
         dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.query DB nullptr");

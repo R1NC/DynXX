@@ -274,12 +274,12 @@ bool DynXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
 }
 
 bool DynXX::Core::VM::JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
-    auto lock = std::lock_guard(this->vmMutex);
+    auto lock = std::scoped_lock(this->vmMutex);
     return _loadScript(this->context, script, name, isModule);
 }
 
 bool DynXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
-    auto lock = std::lock_guard(this->vmMutex);
+    auto lock = std::scoped_lock(this->vmMutex);
     return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
 }
 
@@ -336,7 +336,7 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
     }
     
     this->executor >> [&mtx = this->vmMutex, ctx = this->context, jPromise, cbk = std::move(jf)] {
-        auto lock = std::lock_guard(mtx);
+        auto lock = std::scoped_lock(mtx);
 
         const auto jRet = cbk();
 

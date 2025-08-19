@@ -69,7 +69,7 @@ DynXX::Core::Concurrent::Worker::~Worker()
     // jthread automatically handles stop request and join
 #else
     {
-        std::lock_guard<std::mutex> lock(this->mutex);
+        auto lock = std::scoped_lock(this->mutex);
         this->shouldStop = true;
     }
     this->cv.notify_one();
@@ -89,7 +89,7 @@ void DynXX::Core::Concurrent::Worker::sleep()
 DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
 {
     {
-        std::lock_guard<std::mutex> lock(this->mutex);
+        auto lock = std::scoped_lock(this->mutex);
         this->taskQueue.emplace(std::move(task));
         dynxxLogPrintF(DynXXLogLevelX::Debug, "Worker@{} taskCount:{}", reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
     }
@@ -121,7 +121,7 @@ DynXX::Core::Concurrent::Executor::~Executor()
 
 DynXX::Core::Concurrent::Executor& DynXX::Core::Concurrent::Executor::operator>>(TaskT&& task)
 {
-    std::lock_guard<std::mutex> lock(this->mutex);
+    auto lock = std::scoped_lock(this->mutex);
 
     if (this->workerPool.size() < this->workerPoolCapacity)
     {

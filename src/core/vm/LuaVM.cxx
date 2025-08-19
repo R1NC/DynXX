@@ -154,7 +154,7 @@ void DynXX::Core::VM::LuaVM::bindFunc(const std::string &funcName, int (*funcPoi
 #if !defined(__EMSCRIPTEN__)
 bool DynXX::Core::VM::LuaVM::loadFile(const std::string &file)
 {
-    auto lock = std::lock_guard(this->vmMutex);
+    auto lock = std::scoped_lock(this->vmMutex);
     if (const auto ret = luaL_dofile(this->lstate, file.c_str()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dofile` error:");
@@ -166,7 +166,7 @@ bool DynXX::Core::VM::LuaVM::loadFile(const std::string &file)
 
 bool DynXX::Core::VM::LuaVM::loadScript(const std::string &script)
 {
-    auto lock = std::lock_guard(this->vmMutex);
+    auto lock = std::scoped_lock(this->vmMutex);
     if (const auto ret = luaL_dostring(this->lstate, script.c_str()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(this->lstate, "`luaL_dostring` error:");
@@ -178,7 +178,7 @@ bool DynXX::Core::VM::LuaVM::loadScript(const std::string &script)
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
 std::optional<std::string> DynXX::Core::VM::LuaVM::callFunc(std::string_view func, std::string_view params)
 {
-    auto lock = std::lock_guard(this->vmMutex);
+    auto lock = std::scoped_lock(this->vmMutex);
     lua_getglobal(this->lstate, func.data());
     lua_pushstring(this->lstate, params.data());
     if (const auto ret = lua_pcall(this->lstate, 1, 1, 0); ret != LUA_OK) [[unlikely]]
