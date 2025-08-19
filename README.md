@@ -60,16 +60,17 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 ## C++ New Features Compatibility
 
-| Feature                             | Standard | Unsupported Platforms              |
-| :---------------------------------- | :------: | :--------------------------------- |
-| [std::from_chars][19] for integer   | C++17    | iOS 16.5-, macOS 13.4-;            |
-| [std::from_chars][19] for float     | C++17    | All;                               |
-| [std::format][12]                   | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
-| [std::ranges][13]                   | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
-| [std::jthread][39]                  | C++20    | Apple;                       |
-| [std::ranges::views::enumerate][20] | C++23    | Clang, Apple & HarmonyOS;          |
-| [std::ranges::views::chunk][14]     | C++23    | Clang, Apple & HarmonyOS;          |
-| [std::move_only_function][44]       | C++23    | Clang, Apple & HarmonyOS;          |
+| Feature                                      | Standard | Unsupported Platforms              |
+| :------------------------------------------- | :------: | :--------------------------------- |
+| [std::from_chars][19] for integer            | C++17    | iOS 16.5-, macOS 13.4-;            |
+| [std::from_chars][19] for float              | C++17    | All;                               |
+| [std::format][12]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
+| [std::ranges][13]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
+| [std::jthread][39]                           | C++20    | Apple;                             |
+| [Heterogeneous lookup for hash map/set][46]  | C++20    | HarmonyOS;                         |
+| [std::ranges::views::enumerate][20]          | C++23    | Clang, Apple & HarmonyOS;          |
+| [std::ranges::views::chunk][14]              | C++23    | Clang, Apple & HarmonyOS;          |
+| [std::move_only_function][44]                | C++23    | Clang, Apple & HarmonyOS;          |
 
 <details>
 
@@ -142,3 +143,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [43]: ../../actions/workflows/HarmonyOS-Mac.yml
 [44]: https://en.cppreference.com/w/cpp/utility/functional/move_only_function.html
 [45]: https://sonarcloud.io/summary/new_code?id=R1NC_DynXX
+[46]: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0919r3.html
