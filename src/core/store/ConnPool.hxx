@@ -56,20 +56,16 @@ namespace DynXX::Core::Store {
                 return it->second;
             }
             
-            try {
-                auto conn = creatorF();
-                if (!conn) [[unlikely]] {
-                    return {};
-                }
-                this->conns.emplace(_id, conn);
-                return conn;
-            } catch (...) {
+            auto conn = creatorF();
+            if (!conn) [[unlikely]] {
                 return {};
             }
+            this->conns.emplace(_id, conn);
+            return conn;
         }
     
     private:
-        std::unordered_map<std::string, std::shared_ptr<ConnT> > conns;
+        std::unordered_map<std::string, std::shared_ptr<ConnT>> conns;
         std::mutex mutex;
     };
 }
