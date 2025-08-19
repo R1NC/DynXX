@@ -48,11 +48,11 @@ namespace {
 #endif
 
 #if defined(USE_DB)
-    std::unique_ptr<DynXX::Core::Store::SQLite> _sqlite = nullptr;
+    std::unique_ptr<DynXX::Core::Store::SQLite::SQLiteStore> _sqlite = nullptr;
 #endif
 
 #if defined(USE_KV)
-    std::unique_ptr<DynXX::Core::Store::KV> _kv = nullptr;
+    std::unique_ptr<DynXX::Core::Store::KV::KVStore> _kv = nullptr;
 #endif
 
 #if defined(USE_KV) || defined(USE_DB)
@@ -157,11 +157,11 @@ bool dynxxInit(const std::string &root) {
 #endif
     
 #if defined(USE_DB)
-    _sqlite = std::make_unique<DynXX::Core::Store::SQLite>();
+    _sqlite = std::make_unique<DynXX::Core::Store::SQLite::SQLiteStore>();
 #endif
 
 #if defined(USE_KV)
-    _kv = std::make_unique<DynXX::Core::Store::KV>(*_root);
+    _kv = std::make_unique<DynXX::Core::Store::KV::KVStore>(*_root);
 #endif
 
 #if defined(USE_CURL)
@@ -479,7 +479,7 @@ void *dynxxStoreSqliteOpen(const std::string &_id) {
         return nullptr;
     }
     std::string dbPath = *_root + "/" + _id + ".db";
-    if (const auto ptr = _sqlite->connect(dbPath).lock()) [[likely]] {
+    if (const auto ptr = _sqlite->open(dbPath).lock()) [[likely]] {
         return ptr.get();
     }
     return nullptr;

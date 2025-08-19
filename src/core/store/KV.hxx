@@ -1,33 +1,17 @@
-#ifndef DYNXX_SRC_CORE_STORE_KV_HXX_
-#define DYNXX_SRC_CORE_STORE_KV_HXX_
+#ifndef DYNXX_SRC_CORE_STORE_KV_STORE_HXX_
+#define DYNXX_SRC_CORE_STORE_KV_STORE_HXX_
 
 #if defined(__cplusplus)
-
-#include <unordered_map>
-#include <memory>
-#include <mutex>
-#include <shared_mutex>
 
 #include <MMKV.h>
 
 #include <DynXX/CXX/Types.hxx>
 
-namespace DynXX::Core::Store {
-    class KV {
-    public:
-        KV() = delete;
+#include "ConnPool.hxx"
 
-        explicit KV(const std::string &root);
+namespace DynXX::Core::Store::KV {
 
-        KV(const KV &) = delete;
-
-        KV &operator=(const KV &) = delete;
-
-        KV(KV &&) = delete;
-
-        KV &operator=(KV &&) = delete;
-
-        class Connection {
+    class Connection {
         public:
             Connection() = delete;
 
@@ -62,22 +46,28 @@ namespace DynXX::Core::Store {
         private:
             MMKV *kv{nullptr};
             mutable std::shared_mutex mutex;
-        };
+    };
 
-        std::weak_ptr<Connection> open(const std::string &_id);
+    class KVStore : public ConnPool<KV::Connection> {
+    public:
+        KVStore() = delete;
 
-        void close(const std::string &_id);
+        explicit KVStore(const std::string &root);
 
-        void closeAll();
+        KVStore(const KVStore &) = delete;
 
-        ~KV();
+        KVStore &operator=(const KVStore &) = delete;
 
-    private:
-        std::unordered_map<std::string, std::shared_ptr<Connection> > conns;
-        std::mutex mutex;
+        KVStore(KVStore &&) = delete;
+
+        KVStore &operator=(KVStore &&) = delete;
+
+        std::weak_ptr<KV::Connection> open(const std::string &_id);
+
+        ~KVStore();
     };
 }
 
 #endif
 
-#endif // DYNXX_SRC_STORE_KV_HXX_
+#endif // DYNXX_SRC_CORE_STORE_KV_STORE_HXX_

@@ -4,7 +4,7 @@
 
 #include <DynXX/CXX/Log.hxx>
 
-DynXX::Core::Store::KV::KV(const std::string &root)
+DynXX::Core::Store::KV::KVStore::KVStore(const std::string &root)
 {
     decltype(root) sRoot(root);
     auto logLevel = MMKVLogNone;
@@ -15,38 +15,14 @@ DynXX::Core::Store::KV::KV(const std::string &root)
 #endif
 }
 
-std::weak_ptr<DynXX::Core::Store::KV::Connection> DynXX::Core::Store::KV::open(const std::string &_id)
+std::weak_ptr<DynXX::Core::Store::KV::Connection> DynXX::Core::Store::KV::KVStore::open(const std::string &_id)
 {
-    auto lock = std::lock_guard(this->mutex);
-    if (this->conns.contains(_id))
-    {
-        return this->conns.at(_id);
-    }
-    this->conns.emplace(_id, std::make_shared<Connection>(_id));
-    return this->conns.at(_id);
+    return ConnPool<KV::Connection>::open(_id, [&_id]() { 
+        return std::make_shared<KV::Connection>(_id); 
+    });
 }
 
-void DynXX::Core::Store::KV::close(const std::string &_id)
-{
-    auto lock = std::lock_guard(this->mutex);
-    if (this->conns.contains(_id))
-    {
-        this->conns.at(_id).reset();
-        this->conns.erase(_id);
-    }
-}
-
-void DynXX::Core::Store::KV::closeAll()
-{
-    auto lock = std::lock_guard(this->mutex);
-    for (auto &[_, v] : this->conns) 
-    {
-        v.reset();
-    }
-    this->conns.clear();
-}
-
-DynXX::Core::Store::KV::~KV()
+DynXX::Core::Store::KV::KVStore::~KVStore()
 {
     MMKV::onExit();
 }
@@ -66,7 +42,7 @@ std::optional<std::string> DynXX::Core::Store::KV::Connection::readString(std::s
     }
     std::string s;
     this->kv->getString(k, s);
-    return std::make_optional(s);
+    return s;
 }
 
 std::optional<int64_t> DynXX::Core::Store::KV::Connection::readInteger(std::string_view k) const
@@ -76,7 +52,7 @@ std::optional<int64_t> DynXX::Core::Store::KV::Connection::readInteger(std::stri
     {
         return std::nullopt;
     }
-    return std::make_optional(this->kv->getInt64(k));
+    return {this->kv->getInt64(k)};
 }
 
 std::optional<double> DynXX::Core::Store::KV::Connection::readFloat(std::string_view k) const
@@ -86,7 +62,7 @@ std::optional<double> DynXX::Core::Store::KV::Connection::readFloat(std::string_
     {
         return std::nullopt;
     }
-    return std::make_optional(this->kv->getDouble(k));
+    return {this->kv->getDouble(k)};
 }
 
 bool DynXX::Core::Store::KV::Connection::write(std::string_view k, const Any &v) const

@@ -11,52 +11,28 @@ namespace
     constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
 }
 
-DynXX::Core::Store::SQLite::SQLite()
+DynXX::Core::Store::SQLite::SQLiteStore::SQLiteStore()
 {
     sqlite3_config(SQLITE_CONFIG_SERIALIZED);
     sqlite3_initialize();
 }
 
-std::weak_ptr<DynXX::Core::Store::SQLite::Connection> DynXX::Core::Store::SQLite::connect(const std::string &file)
+std::weak_ptr<DynXX::Core::Store::SQLite::Connection> DynXX::Core::Store::SQLite::SQLiteStore::open(const std::string &file)
 {
-    auto lock = std::lock_guard(this->mutex);
-    if (this->conns.contains(file))
-    {
-        return this->conns.at(file);
-    }
-    sqlite3 *db;
-    const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-    // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
-    if (rc != SQLITE_OK) [[unlikely]]
-    {
-        PRINT_ERR(rc, db);
-        return {};
-    }
-    this->conns.emplace(file, std::make_shared<Connection>(db));
-    return this->conns.at(file);
+    return ConnPool<SQLite::Connection>::open(file, [&file]() {
+        sqlite3 *db;
+        const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+        // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
+        if (rc != SQLITE_OK) [[unlikely]] {
+            PRINT_ERR(rc, db);
+            if (db) sqlite3_close(db);
+            return std::shared_ptr<SQLite::Connection>(nullptr);
+        }
+        return std::make_shared<SQLite::Connection>(db);
+    });
 }
 
-void DynXX::Core::Store::SQLite::close(const std::string &file)
-{
-    auto lock = std::lock_guard(this->mutex);
-    if (this->conns.contains(file))
-    {
-        this->conns.at(file).reset();
-        this->conns.erase(file);
-    }
-}
-
-void DynXX::Core::Store::SQLite::closeAll()
-{
-    auto lock = std::lock_guard(this->mutex);
-    for (auto &[_, v] : this->conns)
-    {
-        v.reset();
-    }
-    this->conns.clear();
-}
-
-DynXX::Core::Store::SQLite::~SQLite()
+DynXX::Core::Store::SQLite::SQLiteStore::~SQLiteStore()
 {
     sqlite3_shutdown();
 }
@@ -176,11 +152,11 @@ std::optional<Any> DynXX::Core::Store::SQLite::Connection::QueryResult::readColu
         switch(sqlite3_column_type(this->stmt, i))
         {
             case SQLITE_TEXT:
-                return std::make_optional(makeStr(sqlite3_column_text(this->stmt, i)));
+                return {makeStr(sqlite3_column_text(this->stmt, i))};
             case SQLITE_INTEGER:
-                return sqlite3_column_int64(this->stmt, i);
+                return {sqlite3_column_int64(this->stmt, i)};
             case SQLITE_FLOAT:
-                return sqlite3_column_double(this->stmt, i);
+                return {sqlite3_column_double(this->stmt, i)};
             default:
                 return std::nullopt;
         }

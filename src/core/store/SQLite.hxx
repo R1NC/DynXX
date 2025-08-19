@@ -1,33 +1,17 @@
-#ifndef DYNXX_SRC_CORE_STORE_SQLITE_HXX_
-#define DYNXX_SRC_CORE_STORE_SQLITE_HXX_
+#ifndef DYNXX_SRC_CORE_STORE_SQLITE_STORE_HXX_
+#define DYNXX_SRC_CORE_STORE_SQLITE_STORE_HXX_
 
 #if defined(__cplusplus)
-
-#include <memory>
-#include <mutex>
-#include <shared_mutex>
 
 #include <sqlite3.h>
 
 #include <DynXX/CXX/Types.hxx>
 
-namespace DynXX::Core::Store {
-    class SQLite {
-    public:
-        /**
-         * @brief Initialize SQLite process
-         */
-        SQLite();
+#include "ConnPool.hxx"
 
-        SQLite(const SQLite &) = delete;
+namespace DynXX::Core::Store::SQLite {
 
-        SQLite &operator=(const SQLite &) = delete;
-
-        SQLite(SQLite &&) = delete;
-
-        SQLite &operator=(SQLite &&) = delete;
-
-        class Connection {
+    class Connection {
         public:
             /**
              * @warning `Connection` can only be constructed with `SQLite::connect()`
@@ -110,28 +94,30 @@ namespace DynXX::Core::Store {
             mutable std::mutex mutex;
         };
 
+    class SQLiteStore : public ConnPool<SQLite::Connection> {
+    public:
         /**
-         * @brief connect DB
-         * @param file DB file
-         * @return A Connection handle
+         * @brief Initialize SQLite process
          */
-        std::weak_ptr<Connection> connect(const std::string &file);
+        SQLiteStore();
 
-        void close(const std::string &file);
+        SQLiteStore(const SQLiteStore &) = delete;
 
-        void closeAll();
+        SQLiteStore &operator=(const SQLiteStore &) = delete;
+
+        SQLiteStore(SQLiteStore &&) = delete;
+
+        SQLiteStore &operator=(SQLiteStore &&) = delete;
+
+        std::weak_ptr<SQLite::Connection> open(const std::string &file);
 
         /**
          * @brief Release SQLite process
          */
-        ~SQLite();
-
-    private:
-        std::unordered_map<std::string, std::shared_ptr<Connection> > conns;
-        std::mutex mutex;
+        ~SQLiteStore();
     };
 }
 
 #endif
 
-#endif // DYNXX_SRC_CORE_STORE_SQLITE_HXX_
+#endif // DYNXX_SRC_CORE_STORE_SQLITE_STORE_HXX_
