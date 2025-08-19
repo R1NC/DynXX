@@ -89,7 +89,7 @@ std::optional<std::string> DynXX::Core::Json::cJSONToStr(void *const cjson)
     std::string json(jsonChars);
     std::free(jsonChars);
     json = dynxxCodingStrTrim(json);
-    return std::make_optional(json);
+    return {json};
 }
 
 std::optional<std::string> DynXX::Core::Json::jsonFromDictAny(const DictAny &dict)
@@ -193,7 +193,7 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
     }
 
     cJSON_Delete(cjson);
-    return std::make_optional(dict);
+    return {dict};
 }
 
 // Decoder
@@ -273,23 +273,23 @@ std::optional<std::string> DynXX::Core::Json::Decoder::readString(void *const no
         }
         case DynXXJsonNodeTypeX::String:
         {
-            return std::make_optional(makeStr(cj->valuestring));
+            return {makeStr(cj->valuestring)};
         }
         case DynXXJsonNodeTypeX::Int32:
         {
-            return std::make_optional(std::to_string(readInt32(cj)));
+            return {std::to_string(readInt32(cj))};
         }
         case DynXXJsonNodeTypeX::Int64:
         {
-            return std::make_optional(std::to_string(readInt64(cj)));
+            return {std::to_string(readInt64(cj))};
         }
         case DynXXJsonNodeTypeX::Float:
         {
-            return std::make_optional(std::to_string(readFloat(cj)));
+            return {std::to_string(readFloat(cj))};
         }
         case DynXXJsonNodeTypeX::Boolean:
         {
-            return std::make_optional(cj->valueint? "true" : "false");
+            return {cj->valueint? "true" : "false"};
         }
         default:
         {
@@ -304,19 +304,19 @@ std::optional<double> DynXX::Core::Json::Decoder::readNumber(void *const node) c
     const auto cj = this->reinterpretNode(node);
     if (type == DynXXJsonNodeTypeX::Int32)
     {
-        return std::make_optional(readInt32(cj));
+        return {readInt32(cj)};
     } 
     if (type == DynXXJsonNodeTypeX::Int64)
     {
-        return std::make_optional(readInt64(cj));
+        return {readInt64(cj)};
     } 
     if (type == DynXXJsonNodeTypeX::Float)
     {
-        return std::make_optional(readFloat(cj));
+        return {readFloat(cj)};
     } 
     if (type == DynXXJsonNodeTypeX::String)
     {
-        return std::make_optional(str2float64(makeStr(cj->valuestring)));
+        return {str2float64(makeStr(cj->valuestring))};
     }
     dynxxLogPrintF(DynXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
                 cj->string, cj->type);

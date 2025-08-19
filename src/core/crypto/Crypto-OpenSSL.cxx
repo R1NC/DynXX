@@ -42,7 +42,7 @@ namespace
             return std::nullopt;
         }
 
-        return std::make_optional(std::string(errMsg, actualLen));
+        return {std::string(errMsg, actualLen)};
     }
 
     class Evp
@@ -629,7 +629,7 @@ std::optional<Bytes> DynXX::Core::Crypto::RSA::Encrypt::process(BytesView in) co
         dynxxLogPrintF(DynXXLogLevelX::Error, "RSA encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return std::nullopt;
     }
-    return std::make_optional(outBytes);
+    return {outBytes};
 }
 
 DynXX::Core::Crypto::RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(key, padding)
@@ -657,7 +657,7 @@ std::optional<Bytes> DynXX::Core::Crypto::RSA::Decrypt::process(BytesView in) co
         dynxxLogPrintF(DynXXLogLevelX::Error, "RSA decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return std::nullopt;
     }
-    return std::make_optional(outBytes);
+    return {outBytes};
 }
 
 // Base64

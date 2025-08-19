@@ -28,7 +28,7 @@ namespace DynXX::Core::Crypto {
         });
 
         std::uniform_int_distribution<T> distribution(min, max);
-        return std::make_optional(distribution(generator));
+        return {distribution(generator)};
     }
 
     namespace AES {

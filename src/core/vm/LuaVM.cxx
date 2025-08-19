@@ -189,6 +189,6 @@ std::optional<std::string> DynXX::Core::VM::LuaVM::callFunc(std::string_view fun
     const auto s = makeStr(lua_tostring(this->lstate, -1));
 
     lua_pop(this->lstate, 1);
-    return std::make_optional(s);
+    return {s};
 }
 #endif

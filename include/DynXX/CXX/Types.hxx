@@ -190,7 +190,7 @@ inline std::optional<std::string> dictAnyReadString(const DictAny &dict, const s
     if (!dict.contains(key)) [[unlikely]] {
         return std::nullopt;
     }
-    return std::make_optional(Any2String(dict.at(key)));
+    return {Any2String(dict.at(key))};
 }
 
 inline auto dictAnyReadString(const DictAny &dict, const std::string &key, const std::string &defaultS) {
@@ -201,7 +201,7 @@ inline std::optional<int64_t> dictAnyReadInteger(const DictAny &dict, const std:
     if (!dict.contains(key)) [[unlikely]] {
         return std::nullopt;
     }
-    return std::make_optional(Any2Integer(dict.at(key)));
+    return {Any2Integer(dict.at(key))};
 }
 
 inline auto dictAnyReadInteger(const DictAny &dict, const std::string &key, const int64_t defaultI) {
@@ -212,7 +212,7 @@ inline std::optional<double> dictAnyReadFloat(const DictAny &dict, const std::st
     if (!dict.contains(key)) [[unlikely]] {
         return std::nullopt;
     }
-    return std::make_optional(Any2Float(dict.at(key)));
+    return {Any2Float(dict.at(key))};
 }
 
 inline auto dictAnyReadFloat(const DictAny &dict, const std::string &key, const double defaultF) {
