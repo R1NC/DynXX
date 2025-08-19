@@ -372,11 +372,11 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
     }
     for (decltype(fieldNameCount) i(0); i < fieldNameCount && i < formFieldMimeV.size() && i < formFieldDataV.size(); i
          ++) {
-        vFormFields.emplace_back(Net::HttpFormField{
+        vFormFields.emplace_back(
             formFieldNameV[i],
             formFieldMimeV[i],
-            formFieldDataV[i],
-        });
+            formFieldDataV[i]
+        );
     }
 
     return _http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize,
