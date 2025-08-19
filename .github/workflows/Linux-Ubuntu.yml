@@ -3,8 +3,12 @@ name: Build for Linux on Ubuntu
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    paths:
+      - 'include/**'
+      - 'src/**'
+      - 'build-tools/**'
+      - 'third-party/**'
+      - 'CMakeLists.txt'
 
 permissions:
   contents: read
