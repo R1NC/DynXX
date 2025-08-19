@@ -51,17 +51,16 @@ namespace DynXX::Core::Store {
         std::weak_ptr<ConnT> open(const std::string &_id, std::function<std::shared_ptr<ConnT>()> &&creatorF) {
             auto lock = std::scoped_lock(this->mutex);
             
-            auto it = this->conns.find(_id);
-            if (it != this->conns.end()) {
+            if (auto it = this->conns.find(_id); it != this->conns.end() && it->second) {
                 return it->second;
             }
             
-            auto conn = creatorF();
-            if (!conn) [[unlikely]] {
-                return {};
+            if (auto conn = std::move(creatorF)(); conn) {
+                this->conns.emplace(_id, conn);
+                return conn;
             }
-            this->conns.emplace(_id, conn);
-            return conn;
+            
+            return {};
         }
     
     private:

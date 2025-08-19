@@ -21,9 +21,7 @@ std::weak_ptr<DynXX::Core::Store::SQLite::Connection> DynXX::Core::Store::SQLite
 {
     return ConnPool<SQLite::Connection>::open(file, [&file]() {
         sqlite3 *db;
-        const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-        // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.open ret:{}", rc);
-        if (rc != SQLITE_OK) [[unlikely]] {
+        if (const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK) [[unlikely]] {
             PRINT_ERR(rc, db);
             if (db) sqlite3_close(db);
             return std::shared_ptr<SQLite::Connection>(nullptr);
