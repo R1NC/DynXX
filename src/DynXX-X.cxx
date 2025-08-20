@@ -79,6 +79,31 @@ namespace {
         }
         return defaultV;
     }
+#else
+    template<typename T>
+    constexpr auto stox() {
+        if constexpr (std::is_same_v<T, int>) {
+            return [](const std::string& s, size_t* idx, int base) { return std::stoi(s, idx, base); };
+        } else if constexpr (std::is_same_v<T, long>) {
+            return [](const std::string& s, size_t* idx, int base) { return std::stol(s, idx, base); };
+        } else if constexpr (std::is_same_v<T, long long>) {
+            return [](const std::string& s, size_t* idx, int base) { return std::stoll(s, idx, base); };
+        } else if constexpr (std::is_same_v<T, unsigned long long>) {
+            return [](const std::string& s, size_t* idx, int base) { return std::stoull(s, idx, base); };
+        } else if constexpr (std::is_same_v<T, unsigned long>) {
+            return [](const std::string& s, size_t* idx, int base) { return std::stoul(s, idx, base); };
+        } else if constexpr (std::is_same_v<T, unsigned long long>) {
+            return [](const std::string& s, size_t* idx, int base) { return std::stoull(s, idx, base); };
+        } else if constexpr (std::is_same_v<T, float>) {
+            return [](const std::string& s, size_t* idx) { return std::stof(s, idx); };
+        } else if constexpr (std::is_same_v<T, double>) {
+            return [](const std::string& s, size_t* idx) { return std::stod(s, idx); };
+        } else if constexpr (std::is_same_v<T, long double>) {
+            return [](const std::string& s, size_t* idx) { return std::stold(s, idx); };
+        } else {
+            static_assert(std::is_arithmetic_v<T>, "Unsupported numeric type");
+        }
+    }
 #endif
 
     template<IntegerT T>
@@ -106,8 +131,7 @@ int32_t str2int32(const std::string &str, const int32_t defaultI) {
 #if defined(USE_STD_CHAR_CONV_INT)
     return fromChars<int32_t>(str, defaultI);
 #else
-    static constexpr auto stoiF = static_cast<int(*)(const std::string&, size_t*, int)>(std::stoi);
-    return s2n<int>(str, defaultI, stoiF);
+    return s2n<int>(str, defaultI, stox<int>());
 #endif
 }
 
@@ -115,8 +139,7 @@ int64_t str2int64(const std::string &str, const int64_t defaultI) {
 #if defined(USE_STD_CHAR_CONV_INT)
     return fromChars<int64_t>(str, defaultI);
 #else
-    static constexpr auto stollF = static_cast<long long(*)(const std::string&, size_t*, int)>(std::stoll);
-    return s2n<long long>(str, defaultI, stollF);
+    return s2n<long long>(str, defaultI, stox<long long>());
 #endif
 }
 
@@ -124,8 +147,7 @@ float str2float32(const std::string &str, const float defaultF) {
 #if defined(USE_STD_CHAR_CONV_FLOAT)
     return fromChars<float>(str, defaultF);
 #else
-    static constexpr auto stofF = static_cast<float(*)(const std::string&, size_t*)>(std::stof);
-    return s2n<float>(str, defaultF, stofF);
+    return s2n<float>(str, defaultF, stox<float>());
 #endif
 }
 
@@ -133,8 +155,7 @@ double str2float64(const std::string &str, const double defaultF) {
 #if defined(USE_STD_CHAR_CONV_FLOAT)
     return fromChars<double>(str, defaultF);
 #else
-    static constexpr auto stodF = static_cast<double(*)(const std::string&, size_t*)>(std::stod);
-    return s2n<double>(str, defaultF, stodF);
+    return s2n<double>(str, defaultF, stox<double>());
 #endif
 }
 
