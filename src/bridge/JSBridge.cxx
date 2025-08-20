@@ -19,10 +19,7 @@ namespace {
 #define DEF_API(f, T) DEF_JS_FUNC_##T(f##J, f##S)
 #define DEF_API_ASYNC(f, T) DEF_JS_FUNC_##T##_ASYNC(vm, f##J, f##S)
 
-#define BIND_API(f)                                                    \
-        if (vm) [[likely]] {                                           \
-            vm->bindFunc(#f, f##J);                                    \
-        }
+#define BIND_API(f) vm->bindFunc(#f, f##J)
 
     bool loadF(const std::string &file, const bool isModule) {
         if (!vm || file.empty()) [[unlikely]] {
@@ -199,6 +196,7 @@ DEF_API_ASYNC(dynxx_z_bytes_unzip, STRING)
 // JS API - Binding
 
 static void registerFuncs() {
+    if (!vm) [[unlikely]] return;
     BIND_API(dynxx_call_platform);
 
     BIND_API(dynxx_get_version);
