@@ -79,7 +79,8 @@ namespace {
         }
         return defaultV;
     }
-#else
+#endif
+
     template<NumberT T>
     constexpr auto stox() {
         if constexpr (std::is_same_v<T, int>) {
@@ -124,7 +125,6 @@ namespace {
             return defaultValue;
         }
     }
-#endif
 }
 
 int32_t str2int32(const std::string &str, const int32_t defaultI) {
