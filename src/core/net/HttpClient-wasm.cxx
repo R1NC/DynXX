@@ -36,7 +36,7 @@ namespace {
         }
     }
 
-    void parseRspHeaders(std::string_view headersStr, std::unordered_map<std::string, std::string>& headers) {
+    void parseRspHeaders(std::string_view headersStr, Dict& headers) {
         auto remaining = headersStr;
         
         while (!remaining.empty()) {

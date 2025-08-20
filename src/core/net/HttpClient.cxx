@@ -42,7 +42,7 @@ namespace
 
     size_t on_handle_rsp_headers(const char *buffer, const size_t size, size_t nitems, void *userdata)
     {
-        const auto pHeaders = static_cast<std::unordered_map<std::string, std::string> *>(userdata);
+        const auto pHeaders = static_cast<Dict *>(userdata);
         std::string header(buffer, size * nitems);
         if (const auto colonPos = header.find(':'); colonPos != std::string::npos) [[likely]]
         {

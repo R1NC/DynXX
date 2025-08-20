@@ -14,7 +14,7 @@ enum class DynXXHttpMethodX : int {
 struct DynXXHttpResponse {
     int code{0};
     std::string contentType;
-    std::unordered_map<std::string, std::string> headers;
+    Dict headers;
     std::string data;
 
     [[nodiscard]] std::optional<std::string> toJson() const;
@@ -35,9 +35,9 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
 
 DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         DynXXHttpMethodX method,
-                                        const std::unordered_map<std::string, Any> &params,
+                                        const DictAny &params,
                                         const BytesView rawBody = {},
-                                        const std::unordered_map<std::string, std::string> &headers = {},
+                                        const Dict &headers = {},
                                         const std::vector<std::string> &formFieldNameV = {},
                                         const std::vector<std::string> &formFieldMimeV = {},
                                         const std::vector<std::string> &formFieldDataV = {},
