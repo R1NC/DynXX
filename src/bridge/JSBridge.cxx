@@ -1,4 +1,4 @@
-##if defined(USE_QJS)
+#if defined(USE_QJS)
 #include "JSBridge.hxx"
 
 #include <cstring>
