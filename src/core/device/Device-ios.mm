@@ -16,9 +16,9 @@ namespace
     char *sysCtlByName(const char *key) 
     {
         size_t size;
-        sysctlbyname(key, NULL, &size, NULL, 0);
+        sysctlbyname(key, nullptr, &size, nullptr, 0);
         auto value = reinterpret_cast<char*>(malloc(size * sizeof(char)));
-        sysctlbyname(key, value, &size, NULL, 0);
+        sysctlbyname(key, value, &size, nullptr, 0);
         return value;
     }
 }

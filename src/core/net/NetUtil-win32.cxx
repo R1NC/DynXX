@@ -15,14 +15,14 @@
 
 std::string DynXX::Core::Net::Util::macAddress()
 {
-    PIP_ADAPTER_ADDRESSES pAddresses = NULL;
+    PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
     ULONG outBufLen = 0;
     std::string macAddress;
 
-    GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &outBufLen);
+    GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, nullptr, &outBufLen);
     pAddresses = (PIP_ADAPTER_ADDRESSES)std::malloc(outBufLen);
     
-    if (GetAdaptersAddresses(AF_UNSPEC, 0, NULL, pAddresses, &outBufLen) == NO_ERROR)
+    if (GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, pAddresses, &outBufLen) == NO_ERROR)
     {
         PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses;
         while (pCurrAddresses)
@@ -43,15 +43,15 @@ std::string DynXX::Core::Net::Util::macAddress()
 
 DynXX::Core::Net::Util::NetType DynXX::Core::Net::Util::netType() 
 {
-    PIP_ADAPTER_ADDRESSES pAddresses = NULL;
+    PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
     ULONG outBufLen = 0;
     DWORD dwRetVal = 0;
     NetType result = NetType::Offline;
     
-    GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &outBufLen);
+    GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, nullptr, &outBufLen);
     pAddresses = (PIP_ADAPTER_ADDRESSES)std::malloc(outBufLen);
         
-    if ((dwRetVal = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, pAddresses, &outBufLen)) == NO_ERROR) 
+    if ((dwRetVal = GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, pAddresses, &outBufLen)) == NO_ERROR) 
     {
         PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses;
         while (pCurrAddresses) 
