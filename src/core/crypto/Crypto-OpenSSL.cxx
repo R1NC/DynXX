@@ -116,14 +116,18 @@ namespace
 
 // Rand
 
-bool DynXX::Core::Crypto::rand(size_t len, byte *bytes)
+Bytes DynXX::Core::Crypto::rand(size_t len)
 {
-    if (len == 0 || bytes == nullptr) [[unlikely]]
+    Bytes out(len, 0);
+    if (len == 0) [[unlikely]]
     {
-        return false;
+        return out;
     }
-    const auto ret = RAND_bytes(bytes, static_cast<int>(len));
-    return ret != -1;
+    if (const auto ret = RAND_bytes(out.data(), static_cast<int>(len)); ret != -1) [[unlikely]]
+    {
+        dynxxLogPrintF(DynXXLogLevelX::Error, "RAND_bytes failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+    }
+    return out;
 }
 
 // AES

@@ -524,10 +524,8 @@ namespace {
 
     jbyteArray cryptoRandom(JNIEnv *env, jobject thiz,
                             jint len) {
-        byte out[len];
-        std::memset(out, 0, len);
-        dynxx_crypto_rand(len, out);
-        return moveToJByteArray(env, out, len, false);
+        const auto cRes = dynxx_crypto_rand(len);
+        return moveToJByteArray(env, cRes, len, false);
     }
 
     jbyteArray cryptoAesEncrypt(JNIEnv *env, jobject thiz,

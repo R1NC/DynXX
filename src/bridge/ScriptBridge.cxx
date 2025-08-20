@@ -794,8 +794,7 @@ std::string dynxx_crypto_randS(const char *json)
     {
         return {};
     }
-    Bytes outBytes(outLen.value());
-    dynxxCryptoRand(outBytes.size(), outBytes.data());
+    const auto outBytes = dynxxCryptoRand(outLen.value());
     return bytes2json(outBytes);
 }
 

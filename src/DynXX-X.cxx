@@ -290,8 +290,8 @@ std::string dynxxCodingStrTrim(std::string_view str) {
 
 // Crypto
 
-bool dynxxCryptoRand(size_t len, byte *bytes) {
-    return Crypto::rand(len, bytes);
+Bytes dynxxCryptoRand(size_t len) {
+    return Crypto::rand(len);
 }
 
 Bytes dynxxCryptoAesEncrypt(BytesView in, BytesView key) {

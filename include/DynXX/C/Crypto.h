@@ -8,10 +8,9 @@ EXTERN_C_BEGIN
 /**
  * @brief Generate random bytes
  * @param len bytes length
- * @param bytes A pointer to store the output bytes
- * @return success or not
+ * @return output bytes
  */
-bool dynxx_crypto_rand(size_t len, byte *bytes);
+const byte *dynxx_crypto_rand(size_t len);
 
 /**
  * @brief AES Encrypt

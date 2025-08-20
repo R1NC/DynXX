@@ -13,7 +13,7 @@
 #include "../concurrent/ConcurrentUtil.hxx"
 
 namespace DynXX::Core::Crypto {
-    bool rand(size_t len, byte *bytes);
+    Bytes rand(size_t len);
 
     template<NumberT T>
     std::optional<T> rand(T min, T max) {

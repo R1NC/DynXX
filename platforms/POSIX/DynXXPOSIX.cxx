@@ -98,8 +98,7 @@ void dynxx_posix_testCrypto()
     }
     
     size_t ivLen = 12;
-    byte ivBytes[ivLen];
-    dynxx_crypto_rand(ivLen, ivBytes);
+    const auto ivBytes = dynxx_crypto_rand(ivLen);
     size_t aesgcmTagBits = 15 * 8;
     
     size_t aesgcmEncodedLen;

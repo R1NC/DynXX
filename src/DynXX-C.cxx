@@ -6,7 +6,7 @@
 #endif
 
 namespace {
-    byte *handleBytes(const BytesView bytes, size_t *outLen) {
+    byte *handleBytes(const BytesView bytes, size_t *outLen = nullptr) {
         if (outLen) [[likely]] {
             *outLen = bytes.size();
         }
@@ -153,8 +153,9 @@ const char *dynxx_coding_str_trim(const char *str) {
 // Crypto
 
 EXPORT_AUTO
-bool dynxx_crypto_rand(size_t len, byte *bytes) {
-    return dynxxCryptoRand(len, bytes);
+const byte *dynxx_crypto_rand(size_t len) {
+    const auto bytes = dynxxCryptoRand(len);
+    return handleBytes(bytes);
 }
 
 EXPORT_AUTO

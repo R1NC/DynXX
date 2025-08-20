@@ -627,11 +627,10 @@ napi_value cryptoRand(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto len = napiValue2int(env, args.v[0]);
-    byte out[len];
-    std::memset(out, 0, len);
 
-    dynxx_crypto_rand(len, out);
-    auto v = byteArray2NapiValue(env, out, len);
+    const auto outBytes = dynxx_crypto_rand(len);
+    auto v = byteArray2NapiValue(env, outBytes, len);
+    freeX(outBytes);
 
     return v;
 }

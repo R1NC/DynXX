@@ -3,7 +3,7 @@
 
 #include "Types.hxx"
 
-bool dynxxCryptoRand(size_t len, byte *bytes);
+Bytes dynxxCryptoRand(size_t len);
 
 Bytes dynxxCryptoAesEncrypt(BytesView in, BytesView key);
 
