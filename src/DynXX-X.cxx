@@ -80,7 +80,7 @@ namespace {
         return defaultV;
     }
 #else
-    template<typename T>
+    template<NumberT T>
     constexpr auto stox() {
         if constexpr (std::is_same_v<T, int>) {
             return [](const std::string& s, size_t* idx, int base) { return std::stoi(s, idx, base); };
