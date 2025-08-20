@@ -220,8 +220,8 @@ static void registerFuncs() {
     BIND_API(dynxx_z_unzip_process_do);
     BIND_API(dynxx_z_unzip_process_finished);
     BIND_API(dynxx_z_unzip_release);
-    BIND_API(dynxx_z_bytes_zip)
-    BIND_API(dynxx_z_bytes_unzip)
+    BIND_API(dynxx_z_bytes_zip);
+    BIND_API(dynxx_z_bytes_unzip);
 }
 
 // Inner API
