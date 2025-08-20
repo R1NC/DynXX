@@ -13,10 +13,7 @@ namespace {
 
 #define DEF_API(f, T) DEF_LUA_FUNC_##T(f##L, f##S)
 
-#define BIND_API(f)                                                  \
-        if (vm) [[likely]] {                                         \
-            vm->bindFunc(#f, f##L);                                  \
-        }
+#define BIND_API(f) vm->bindFunc(#f, f##L)
 
     bool loadF(const std::string &f) {
         if (!vm || f.empty()) [[unlikely]] {
@@ -154,6 +151,7 @@ DEF_API(dynxx_z_bytes_unzip, STRING)
 // Lua API - Binding
 
 static void registerFuncs() {
+    if (!vm) [[unlikely]] return;
     BIND_API(dynxx_get_version);
     BIND_API(dynxx_root_path);
 
