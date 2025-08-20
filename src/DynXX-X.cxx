@@ -104,7 +104,6 @@ namespace {
             static_assert(std::is_arithmetic_v<T>, "Unsupported numeric type");
         }
     }
-#endif
 
     template<IntegerT T>
     T s2n(const std::string &str, T defaultValue, T (*f)(const std::string &, size_t *, int)) {
@@ -125,6 +124,7 @@ namespace {
             return defaultValue;
         }
     }
+#endif
 }
 
 int32_t str2int32(const std::string &str, const int32_t defaultI) {
