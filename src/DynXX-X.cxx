@@ -106,7 +106,8 @@ int32_t str2int32(const std::string &str, const int32_t defaultI) {
 #if defined(USE_STD_CHAR_CONV_INT)
     return fromChars<int32_t>(str, defaultI);
 #else
-    return s2n<int>(str, defaultI, std::stoi);
+    static constexpr auto stoiF = static_cast<int(*)(const std::string&, size_t*, int)>(std::stoi);
+    return s2n<int>(str, defaultI, stoiF);
 #endif
 }
 
@@ -114,7 +115,8 @@ int64_t str2int64(const std::string &str, const int64_t defaultI) {
 #if defined(USE_STD_CHAR_CONV_INT)
     return fromChars<int64_t>(str, defaultI);
 #else
-    return s2n<long long>(str, defaultI, std::stoll);
+    static constexpr auto stollF = static_cast<long long(*)(const std::string&, size_t*, int)>(std::stoll);
+    return s2n<long long>(str, defaultI, stollF);
 #endif
 }
 
@@ -122,7 +124,8 @@ float str2float32(const std::string &str, const float defaultF) {
 #if defined(USE_STD_CHAR_CONV_FLOAT)
     return fromChars<float>(str, defaultF);
 #else
-    return s2n<float>(str, defaultF, std::stof);
+    static constexpr auto stofF = static_cast<float(*)(const std::string&, size_t*)>(std::stof);
+    return s2n<float>(str, defaultF, stofF);
 #endif
 }
 
@@ -130,7 +133,8 @@ double str2float64(const std::string &str, const double defaultF) {
 #if defined(USE_STD_CHAR_CONV_FLOAT)
     return fromChars<double>(str, defaultF);
 #else
-    return s2n<double>(str, defaultF, std::stod);
+    static constexpr auto stodF = static_cast<double(*)(const std::string&, size_t*)>(std::stod);
+    return s2n<double>(str, defaultF, stodF);
 #endif
 }
 
