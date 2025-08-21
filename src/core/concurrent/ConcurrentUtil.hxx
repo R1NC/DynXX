@@ -11,7 +11,6 @@
 #include <functional>
 
 namespace DynXX::Core::Concurrent {
-    using namespace std::chrono;
 
     static constexpr size_t CacheLineSize =
 #if defined(__cpp_lib_hardware_interference_size)
@@ -36,18 +35,18 @@ namespace DynXX::Core::Concurrent {
     }
 
     inline void sleep(const size_t microSecs) {
-        std::this_thread::sleep_for(microseconds(microSecs));
+        std::this_thread::sleep_for(std::chrono::microseconds(microSecs));
     }
 
     template<typename T>
     concept TimedLockableT = requires(T mtx)
     {
-        { mtx.try_lock_until(std::declval<time_point<steady_clock> >()) } -> std::convertible_to<bool>;
+        { mtx.try_lock_until(std::declval<std::chrono::time_point<std::chrono::steady_clock> >()) } -> std::convertible_to<bool>;
     };
 
     template<TimedLockableT T>
     [[nodiscard]] bool tryLock(T &mtx, const size_t microSecs) {
-        const auto timeout = steady_clock::now() + microseconds(microSecs);
+        const auto timeout = std::chrono::steady_clock::now() + std::chrono::microseconds(microSecs);
         return mtx.try_lock_until(timeout);
     }
 

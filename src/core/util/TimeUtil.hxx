@@ -8,27 +8,25 @@
 namespace DynXX::Core::Util::Time
 {
 
-using namespace std::chrono;
-
 template <typename clockT, typename durationT>
 uint64_t castNow()
 {
-    return duration_cast<durationT>(clockT::now().time_since_epoch()).count();
+    return std::chrono::duration_cast<std::chrono::durationT>(clockT::now().time_since_epoch()).count();
 }
 
 inline uint64_t nowInMilliSecs()
 {
-    return castNow<system_clock, milliseconds>();
+    return castNow<std::chrono::system_clock, std::chrono::milliseconds>();
 }
 
 inline uint64_t nowInMicroSecs()
 {
-    return castNow<system_clock, microseconds>();
+    return castNow<std::chrono::system_clock, std::chrono::microseconds>();
 }
 
 inline uint64_t nowInNanoSecs()
 {
-    return castNow<high_resolution_clock, nanoseconds>();
+    return castNow<std::chrono::high_resolution_clock, std::chrono::nanoseconds>();
 }
 
 }
