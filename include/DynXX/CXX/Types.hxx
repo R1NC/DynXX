@@ -274,7 +274,7 @@ inline std::optional<const char*> nullTerminatedCStr(std::string_view sv) {
     return sv.data();
 }
 
-inline const char *dupCStr(const char *cstr, size_t len) {
+inline const char *dupCStr(const char *cstr, [[maybe_unused]] size_t len) {
     if (cstr == nullptr) [[unlikely]] {
         return nullptr;
     }
