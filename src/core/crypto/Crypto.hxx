@@ -94,7 +94,7 @@ namespace DynXX::Core::Crypto {
             
             BIO *bmem{nullptr};
             rsa_st *rsa{nullptr};
-            const int padding;
+            int padding;
         };
     
         class Encrypt final : public Codec

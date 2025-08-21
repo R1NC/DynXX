@@ -559,7 +559,7 @@ DynXX::Core::Crypto::RSA::Codec::Codec(BytesView key, int padding) : padding(pad
 
 void DynXX::Core::Crypto::RSA::Codec::moveImp(Codec &&other) noexcept
 {
-    const_cast<int&>(this->padding) = other.padding;
+    this->padding = other.padding;
     this->bmem = std::exchange(other.bmem, nullptr);
     this->rsa = std::exchange(other.rsa, nullptr);
 }
