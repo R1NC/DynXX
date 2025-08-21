@@ -99,6 +99,27 @@ std::optional<std::string> DynXX::Core::Json::jsonFromDictAny(const DictAny &dic
         return std::nullopt;
     }
     const auto cjson = cJSON_CreateObject();
+
+    const auto parseStringF = [](const std::string &s) -> cJSON* {
+        if ((s.starts_with("[") && s.ends_with("]"))
+            || (s.starts_with("{") && s.ends_with("}")))
+        {
+            if (const auto cjsonNodes = cJSON_Parse(s.c_str()))
+            {
+                return cjsonNodes;
+            }
+            else [[unlikely]]
+            {
+                dynxxLogPrintF(DynXXLogLevelX::Error, "FAILED TO PARSE JSON VALUE: {}", s);
+                return nullptr;
+            }
+        }
+        else
+        {
+            return cJSON_CreateString(s.c_str());
+        }
+    };
+
     for (const auto &[k, v] : dict) 
     {
         cJSON *node = nullptr;
@@ -112,23 +133,7 @@ std::optional<std::string> DynXX::Core::Json::jsonFromDictAny(const DictAny &dic
         } 
         else if (std::holds_alternative<std::string>(v)) 
         {
-            auto s = std::get<std::string>(v);
-            if ((s.starts_with("[") && s.ends_with("]"))
-                || (s.starts_with("{") && s.ends_with("}")))
-            {
-                if (const auto cjsonNodes = cJSON_Parse(s.c_str()))
-                {
-                    node = cjsonNodes;
-                }
-                else [[unlikely]]
-                {
-                    dynxxLogPrintF(DynXXLogLevelX::Error, "FAILED TO PARSE JSON VALUE: {}", s);
-                }
-            }
-            else
-            {
-                node = cJSON_CreateString(s.c_str());
-            }
+            node = parseStringF(std::get<std::string>(v));
         }
         if (node) [[likely]]
         {
