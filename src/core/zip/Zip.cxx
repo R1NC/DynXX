@@ -32,12 +32,9 @@ namespace {
         { f() } -> std::convertible_to<void>;
     };
 
-    template <typename T, ReadBytesFuncT RFT, WriteBytesFuncT WFT, FlushFuncT FFT>
-    bool process(const size_t bufferSize,
-              RFT &&readF,
-              WFT &&writeF,
-              FFT &&flushF,
-              DynXX::Core::Z::ZBase<T> &zb)
+    template <typename T, ReadBytesFuncT RFT, WriteBytesFuncT WFT, FlushFuncT FFT = std::function<void()>>
+    bool process(DynXX::Core::Z::ZBase<T> &zb, const size_t bufferSize, 
+              RFT &&readF, WFT &&writeF, FFT &&flushF = [](){})
     {
         auto inputFinished = false;
         do
@@ -73,7 +70,7 @@ namespace {
     template <typename T>
     bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, DynXX::Core::Z::ZBase<T> &zb)
     {
-        return process(bufferSize,
+        return process(zb, bufferSize,
             [bufferSize, inStream]
             {
                 Bytes in;
@@ -87,15 +84,14 @@ namespace {
             [outStream]
             {
                 outStream->flush();
-            },
-            zb
+            }
         );
     }
 
     template <typename T>
     bool processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, DynXX::Core::Z::ZBase<T> &zb)
     {
-        return process(bufferSize,
+        return process(zb, bufferSize,
             [bufferSize, inFile]
             {
                 Bytes in;
@@ -109,8 +105,7 @@ namespace {
             [outFile]
             {
                 std::fflush(outFile);
-            },
-            zb
+            }
         );
     }
 
@@ -121,7 +116,7 @@ namespace {
     {
         long pos(0);
         Bytes outBytes;
-        auto b = process(bufferSize,
+        auto b = process(zb, bufferSize,
             [bufferSize, &in, &pos]
             {
                 const auto len = static_cast<long>(std::min<size_t>(bufferSize, in.size() - pos));
@@ -132,9 +127,7 @@ namespace {
             [&outBytes](const Bytes &bytes)
             {
                 outBytes.insert(outBytes.end(), bytes.begin(), bytes.end());
-            },
-            [] {},
-            zb
+            }
         );
         if (!b)
         {
