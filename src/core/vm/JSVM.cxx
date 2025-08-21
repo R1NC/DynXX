@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <utility>
+#include <memory>
 
 #include <DynXX/CXX/Log.hxx>
 
@@ -104,10 +105,10 @@ namespace
         JSValue f[2]{JS_UNDEFINED, JS_UNDEFINED};
     };
 
-    Promise *_newPromise(JSContext *ctx)
+    std::unique_ptr<Promise> _newPromise(JSContext *ctx)
     {
-        const auto jPromise = new(std::nothrow) Promise();
-        if (jPromise == nullptr) {
+        auto jPromise = std::make_unique<Promise>();
+        if (!jPromise) {
             dynxxLogPrint(DynXXLogLevelX::Error, "new Promise failed");
             return nullptr;
         }
@@ -122,7 +123,7 @@ namespace
         return jPromise;
     }
 
-    void _callbackPromise(JSContext *ctx, const Promise *jPromise, JSValue jRet)
+    void _callbackPromise(JSContext *ctx, std::unique_ptr<Promise> &jPromise, JSValue jRet)
     {
         const auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
         if (JS_IsException(jCallRet)) [[unlikely]]
@@ -136,7 +137,7 @@ namespace
         JS_FreeValue(ctx, jPromise->f[0]);
         JS_FreeValue(ctx, jPromise->f[1]);
         // JS_FreeValue(ctx, jPromise->p);
-        delete jPromise;
+        jPromise.reset();
     }
 }
 
@@ -330,12 +331,12 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
 JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
 {
     auto jPromise = _newPromise(this->context);
-    if (jPromise == nullptr) [[unlikely]]
+    if (!jPromise) [[unlikely]]
     {
         return JS_EXCEPTION;
     }
     
-    this->executor >> [&mtx = this->vmMutex, ctx = this->context, jPromise, cbk = std::move(jf)] {
+    this->executor >> [&mtx = this->vmMutex, ctx = this->context, &jPromise, cbk = std::move(jf)] {
         auto lock = std::scoped_lock(mtx);
 
         const auto jRet = cbk();
