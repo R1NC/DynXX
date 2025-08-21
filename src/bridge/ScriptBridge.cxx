@@ -176,39 +176,39 @@ namespace
     };
 }
 
-std::string dynxx_get_versionS(const char *json)
+std::string dynxx_get_versionS([[maybe_unused]] const char *json)
 {
     return dynxxGetVersion();
 }
 
-std::string dynxx_root_pathS(const char *json)
+std::string dynxx_root_pathS([[maybe_unused]] const char *json)
 {
     return dynxxRootPath();
 }
 
 // Device.DeviceInfo
 
-int dynxx_device_typeS(const char *json)
+int dynxx_device_typeS([[maybe_unused]] const char *json)
 {
     return static_cast<int>(dynxxDeviceType());
 }
 
-std::string dynxx_device_nameS(const char *json)
+std::string dynxx_device_nameS([[maybe_unused]] const char *json)
 {
     return dynxxDeviceName();
 }
 
-std::string dynxx_device_manufacturerS(const char *json)
+std::string dynxx_device_manufacturerS([[maybe_unused]] const char *json)
 {
     return dynxxDeviceManufacturer();
 }
 
-std::string dynxx_device_os_versionS(const char *json)
+std::string dynxx_device_os_versionS([[maybe_unused]] const char *json)
 {
     return dynxxDeviceOsVersion();
 }
 
-int dynxx_device_cpu_archS(const char *json)
+int dynxx_device_cpu_archS([[maybe_unused]] const char *json)
 {
     return static_cast<int>(dynxxDeviceCpuArch());
 }

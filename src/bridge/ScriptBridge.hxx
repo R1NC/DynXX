@@ -5,19 +5,19 @@
 
 #include <string>
 
-std::string dynxx_get_versionS(const char *json);
+std::string dynxx_get_versionS([[maybe_unused]] const char *json);
 
-std::string dynxx_root_pathS(const char *json);
+std::string dynxx_root_pathS([[maybe_unused]] const char *json);
 
-int dynxx_device_typeS(const char *json);
+int dynxx_device_typeS([[maybe_unused]] const char *json);
 
-std::string dynxx_device_nameS(const char *json);
+std::string dynxx_device_nameS([[maybe_unused]] const char *json);
 
-std::string dynxx_device_manufacturerS(const char *json);
+std::string dynxx_device_manufacturerS([[maybe_unused]] const char *json);
 
-std::string dynxx_device_os_versionS(const char *json);
+std::string dynxx_device_os_versionS([[maybe_unused]] const char *json);
 
-int dynxx_device_cpu_archS(const char *json);
+int dynxx_device_cpu_archS([[maybe_unused]] const char *json);
 
 void dynxx_log_printS(const char *json);
 
