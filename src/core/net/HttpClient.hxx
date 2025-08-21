@@ -37,9 +37,9 @@ namespace DynXX::Core::Net {
                                                  const BytesView rawBody,
                                                  const std::vector<HttpFormField> &formFields,
                                                  const std::FILE *cFILE, size_t fileSize,
-                                                 size_t timeout);
+                                                 size_t timeout) const;
 
-        [[nodiscard]] bool download(std::string_view url, const std::string_view filePath, size_t timeout);
+        [[nodiscard]] bool download(std::string_view url, const std::string_view filePath, size_t timeout) const;
 
         ~HttpClient();
 

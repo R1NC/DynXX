@@ -76,7 +76,7 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
                                                                  const BytesView rawBody,
                                                                  const std::vector<HttpFormField> &formFields,
                                                                  const std::FILE *cFILE, size_t fileSize,
-                                                                 size_t timeout) {
+                                                                 size_t timeout) const {
     return this->req(url, headers, params, method, timeout, [method, &params, &rawBody, &formFields, cFILE, fileSize](CURL *const curl, const DynXXHttpResponse &rsp) {
         if (cFILE != nullptr)
         {
@@ -124,7 +124,7 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
     });
 }
 
-bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::string_view filePath, size_t timeout) {
+bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::string_view filePath, size_t timeout) const {
     auto file = std::fopen(filePath.data(), "wb");
     if (!file) [[unlikely]]
     {
