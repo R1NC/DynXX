@@ -105,7 +105,7 @@ namespace DynXX::Core::Crypto {
             Encrypt &operator=(const Encrypt &) = delete;
             Encrypt(Encrypt &&other) noexcept = default;
             Encrypt &operator=(Encrypt &&other) noexcept = default;
-            ~Encrypt() final = default;
+            ~Encrypt() override = default;
         
             explicit Encrypt(BytesView key, int padding);
         
@@ -120,7 +120,7 @@ namespace DynXX::Core::Crypto {
             Decrypt &operator=(const Decrypt &) = delete;
             Decrypt(Decrypt &&other) noexcept = default;
             Decrypt &operator=(Decrypt &&other) noexcept = default;
-            ~Decrypt() final = default;
+            ~Decrypt() override = default;
         
             explicit Decrypt(BytesView key, int padding);
         
