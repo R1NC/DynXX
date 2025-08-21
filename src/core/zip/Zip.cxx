@@ -17,17 +17,32 @@
 
 
 namespace {
-    template <typename T>
+    template<typename T>
+    concept ReadBytesFuncT = requires(T f) {
+        { f() } -> std::convertible_to<Bytes>;
+    };
+
+    template<typename T>
+    concept WriteBytesFuncT = requires(T f) {
+        { f(Bytes{}) } -> std::convertible_to<void>;
+    };
+
+    template<typename T>
+    concept FlushFuncT = requires(T f) {
+        { f() } -> std::convertible_to<void>;
+    };
+
+    template <typename T, ReadBytesFuncT RFT, WriteBytesFuncT WFT, FlushFuncT FFT>
     bool process(const size_t bufferSize,
-              std::function<const Bytes()> &&sReadF,
-              std::function<void(const Bytes &)> &&sWriteF,
-              std::function<void()> &&sFlushF,
+              RFT &&readF,
+              WFT &&writeF,
+              FFT &&flushF,
               DynXX::Core::Z::ZBase<T> &zb)
     {
         auto inputFinished = false;
         do
         {
-            auto in = std::move(sReadF)();
+            auto in = std::forward<RFT>(readF)();
             inputFinished = in.size() < bufferSize;
             auto ret = zb.input(in, inputFinished);
             if (ret == 0L) [[unlikely]]
@@ -45,10 +60,10 @@ namespace {
                 }
                 processFinished = zb.processFinished();
 
-                std::move(sWriteF)(outData);
+                std::forward<WFT>(writeF)(outData);
             } while (!processFinished);
         } while (!inputFinished);
-        std::move(sFlushF)();
+        std::forward<FFT>(flushF)();
 
         return true;
     }
