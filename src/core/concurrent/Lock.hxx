@@ -13,12 +13,12 @@ namespace DynXX::Core::Concurrent
 class alignas(CacheLineSize) SpinLock final
 {
 public:
-    SpinLock();
+    SpinLock() = default;
     SpinLock(const SpinLock &) = delete;
     SpinLock &operator=(const SpinLock &) = delete;
     SpinLock(SpinLock &&) = delete;
     SpinLock &operator=(SpinLock &&) = delete;
-    ~SpinLock();
+    ~SpinLock() = default;
 
     void lock();
     void unlock();
