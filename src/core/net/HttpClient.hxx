@@ -52,7 +52,7 @@ namespace DynXX::Core::Net {
 
         DynXXHttpResponse req(std::string_view url, const std::vector<std::string> &headers,
                             std::string_view params, int method, size_t timeout,
-                               std::function<void(CURL *const, const DynXXHttpResponse &rsp)> &&func);
+                               std::function<void(CURL *const, const DynXXHttpResponse &rsp)> &&func) const;
     };
 }
 

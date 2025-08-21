@@ -143,7 +143,7 @@ bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::str
     return rsp.code == 200;
 }
 
-DynXXHttpResponse DynXX::Core::Net::HttpClient::req(std::string_view url, const std::vector<std::string> &headers, std::string_view params, int method, size_t timeout, std::function<void(CURL *const, const DynXXHttpResponse &rsp)> &&func) {
+DynXXHttpResponse DynXX::Core::Net::HttpClient::req(std::string_view url, const std::vector<std::string> &headers, std::string_view params, int method, size_t timeout, std::function<void(CURL *const, const DynXXHttpResponse &rsp)> &&func) const {
     if (!checkUrlValid(url)) [[unlikely]]
     {
         return {};
