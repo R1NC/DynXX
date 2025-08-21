@@ -9,6 +9,8 @@
 
 namespace
 {
+    using enum DynXXJsonNodeTypeX;
+
     bool isNum(const cJSON *const cj)
     {
         return cj != nullptr && cj->type == cJSON_Number;
@@ -49,29 +51,29 @@ DynXXJsonNodeTypeX DynXX::Core::Json::cJSONReadType(void *const cjson)
     const auto cj = static_cast<cJSON *>(cjson);
     if (cj == nullptr) [[unlikely]]
     {
-        return DynXXJsonNodeTypeX::Unknown;
+        return Unknown;
     }
     switch (cj->type)
     {
         case cJSON_Number:
             if (isBigInt(cj))
             {
-                return DynXXJsonNodeTypeX::Int64;
+                return Int64;
             }
-            return isFloat(cj) ? DynXXJsonNodeTypeX::Float : DynXXJsonNodeTypeX::Int32;
+            return isFloat(cj) ? Float : Int32;
         case cJSON_String:
-            return DynXXJsonNodeTypeX::String;
+            return String;
         case cJSON_True:
         case cJSON_False:
-            return DynXXJsonNodeTypeX::Boolean;
+            return Boolean;
         case cJSON_Array:
-            return DynXXJsonNodeTypeX::Array;
+            return Array;
         case cJSON_Object:
-            return DynXXJsonNodeTypeX::Object;
+            return Object;
         case cJSON_NULL:
-            return DynXXJsonNodeTypeX::Null;
+            return Null;
         default:
-            return DynXXJsonNodeTypeX::Unknown;
+            return Unknown;
     }
 }
 
@@ -161,7 +163,7 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
         return std::nullopt;
     }
 
-    if (cJSONReadType(cjson) != DynXXJsonNodeTypeX::Object) [[unlikely]]
+    if (cJSONReadType(cjson) != Object) [[unlikely]]
     {
         cJSON_Delete(cjson);
         return std::nullopt;
@@ -175,19 +177,19 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
             continue;
         }
         std::string k(node->string);
-        if (const auto type = cJSONReadType(node); type == DynXXJsonNodeTypeX::Float)
+        if (const auto type = cJSONReadType(node); type == Float)
         {
             dict.emplace(k, readFloat(node));
         }
-        else if (type == DynXXJsonNodeTypeX::Int32)
+        else if (type == Int32)
         {
             dict.emplace(k, readInt32(node));
         }
-        else if (type == DynXXJsonNodeTypeX::Int64)
+        else if (type == Int64)
         {
             dict.emplace(k, readInt64(node));
         }
-        else if (type == DynXXJsonNodeTypeX::String)
+        else if (type == String)
         {
             dict.emplace(k, makeStr(node->valuestring));
         }
@@ -271,28 +273,28 @@ std::optional<std::string> DynXX::Core::Json::Decoder::readString(void *const no
     const auto cj = this->reinterpretNode(node);
     switch(cJSONReadType(node))
     {
-        case DynXXJsonNodeTypeX::Object:
-        case DynXXJsonNodeTypeX::Array:
+        case Object:
+        case Array:
         {
             return cJSONToStr(node);
         }
-        case DynXXJsonNodeTypeX::String:
+        case String:
         {
             return {makeStr(cj->valuestring)};
         }
-        case DynXXJsonNodeTypeX::Int32:
+        case Int32:
         {
             return {std::to_string(readInt32(cj))};
         }
-        case DynXXJsonNodeTypeX::Int64:
+        case Int64:
         {
             return {std::to_string(readInt64(cj))};
         }
-        case DynXXJsonNodeTypeX::Float:
+        case Float:
         {
             return {std::to_string(readFloat(cj))};
         }
-        case DynXXJsonNodeTypeX::Boolean:
+        case Boolean:
         {
             return {cj->valueint? "true" : "false"};
         }
@@ -307,19 +309,19 @@ std::optional<double> DynXX::Core::Json::Decoder::readNumber(void *const node) c
 {
     const auto type = cJSONReadType(node);
     const auto cj = this->reinterpretNode(node);
-    if (type == DynXXJsonNodeTypeX::Int32)
+    if (type == Int32)
     {
         return {readInt32(cj)};
     } 
-    if (type == DynXXJsonNodeTypeX::Int64)
+    if (type == Int64)
     {
         return {readInt64(cj)};
     } 
-    if (type == DynXXJsonNodeTypeX::Float)
+    if (type == Float)
     {
         return {readFloat(cj)};
     } 
-    if (type == DynXXJsonNodeTypeX::String)
+    if (type == String)
     {
         return {str2float64(makeStr(cj->valuestring))};
     }
@@ -330,7 +332,7 @@ std::optional<double> DynXX::Core::Json::Decoder::readNumber(void *const node) c
 
 void *DynXX::Core::Json::Decoder::readChild(void *const node) const
 {
-    if (const auto type = cJSONReadType(node); type == DynXXJsonNodeTypeX::Object || type == DynXXJsonNodeTypeX::Array) [[likely]]
+    if (const auto type = cJSONReadType(node); type == Object || type == Array) [[likely]]
     {
         return this->reinterpretNode(node)->child;
     }
@@ -339,7 +341,7 @@ void *DynXX::Core::Json::Decoder::readChild(void *const node) const
 
 size_t DynXX::Core::Json::Decoder::readChildrenCount(void *const node) const
 {
-    if (const auto type = cJSONReadType(node); type != DynXXJsonNodeTypeX::Object && type != DynXXJsonNodeTypeX::Array) [[unlikely]]
+    if (const auto type = cJSONReadType(node); type != Object && type != Array) [[unlikely]]
     {
         return 0;
     }
@@ -349,7 +351,7 @@ size_t DynXX::Core::Json::Decoder::readChildrenCount(void *const node) const
 
 void DynXX::Core::Json::Decoder::readChildren(void *const node, std::function<void(size_t idx, void *const child)> &&callback) const
 {
-    if (const auto type = cJSONReadType(node); type != DynXXJsonNodeTypeX::Object && type != DynXXJsonNodeTypeX::Array) [[unlikely]]
+    if (const auto type = cJSONReadType(node); type != Object && type != Array) [[unlikely]]
     {
         return;
     }
