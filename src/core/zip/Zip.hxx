@@ -28,7 +28,7 @@ namespace DynXX::Core::Z {
 
         virtual ~ZBase();
 
-        size_t input(const Bytes &bytes, bool inFinish);
+        size_t input(const Bytes &bytes, bool finish);
 
         Bytes processDo();
 

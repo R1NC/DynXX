@@ -166,7 +166,7 @@ DynXX::Core::Z::ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{buff
 }
 
 template <typename T>
-size_t DynXX::Core::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
+size_t DynXX::Core::Z::ZBase<T>::input(const Bytes &bytes, bool finish)
 {
     if (bytes.empty()) [[unlikely]]
     {
@@ -179,7 +179,7 @@ size_t DynXX::Core::Z::ZBase<T>::input(const Bytes &bytes, bool inFinish)
 
     this->zs.avail_in = static_cast<unsigned int>(dataLen);
     this->zs.next_in = this->inBuffer;
-    this->inFinish = inFinish;
+    this->inFinish = finish;
     return dataLen;
 }
 

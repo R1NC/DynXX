@@ -87,8 +87,8 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
         }
         else if (!formFields.empty())
         {
-            const auto mime = curl_mime_init(curl);
-            const auto part = curl_mime_addpart(mime);
+            const auto cmime = curl_mime_init(curl);
+            const auto part = curl_mime_addpart(cmime);
 
             for (const auto &[name, mime, data] : formFields)
             {
@@ -97,7 +97,7 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
                 curl_mime_data(part, data.c_str(), CURL_ZERO_TERMINATED);
             }
 
-            curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
+            curl_easy_setopt(curl, CURLOPT_MIMEPOST, cmime);
         }
         else if (method == DynXXNetHttpMethodPost)
         {
