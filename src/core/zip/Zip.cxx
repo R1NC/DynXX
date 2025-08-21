@@ -41,8 +41,7 @@ namespace {
         {
             auto in = std::forward<RFT>(readF)();
             inputFinished = in.size() < bufferSize;
-            auto ret = zb.input(in, inputFinished);
-            if (ret == 0L) [[unlikely]]
+            if (auto ret = zb.input(in, inputFinished); ret == 0L) [[unlikely]]
             {
                 return false;
             }

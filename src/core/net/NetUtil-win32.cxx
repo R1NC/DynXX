@@ -75,8 +75,7 @@ DynXX::Core::Net::Util::NetType DynXX::Core::Net::Util::netType()
 
 std::string DynXX::Core::Net::Util::publicIpV4()
 {
-    WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
+    if (WSADATA wsaData; WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
     {
         return {};
     }
@@ -101,8 +100,7 @@ std::string DynXX::Core::Net::Util::publicIpV4()
     }
 
     struct sockaddr_in name;
-    socklen_t namelen = sizeof(name);
-    if (getsockname(sock, (struct sockaddr*)&name, &namelen) < 0) 
+    if (socklen_t namelen = sizeof(name); getsockname(sock, (struct sockaddr*)&name, &namelen) < 0) 
     {
         closesocket(sock);
         WSACleanup();
@@ -119,8 +117,7 @@ std::string DynXX::Core::Net::Util::publicIpV4()
 
 std::string DynXX::Core::Net::Util::publicIpV6()
 {
-    WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
+    if (WSADATA wsaData; WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
     {
         return {};
     }
@@ -146,8 +143,7 @@ std::string DynXX::Core::Net::Util::publicIpV6()
     }
 
     struct sockaddr_in6 name;
-    socklen_t namelen = sizeof(name);
-    if (getsockname(sock, (struct sockaddr*)&name, &namelen) < 0) 
+    if (socklen_t namelen = sizeof(name); getsockname(sock, (struct sockaddr*)&name, &namelen) < 0) 
     {
         closesocket(sock);
         WSACleanup();

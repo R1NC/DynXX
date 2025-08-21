@@ -125,7 +125,7 @@ namespace
         {                                                                       \
             dynxxLogPrintF(DynXXLogLevelX::Error, "{}{}", prefix, luaErrMsg); \
         }                                                                       \
-    } while (0);
+    } while (0)
 }
 
 DynXX::Core::VM::LuaVM::LuaVM()

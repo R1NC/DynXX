@@ -77,7 +77,7 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
                                                                  const std::vector<HttpFormField> &formFields,
                                                                  const std::FILE *cFILE, size_t fileSize,
                                                                  size_t timeout) {
-    return this->req(url, headers, params, method, timeout, [&url, method, &params, &rawBody, &formFields, cFILE, fileSize](CURL *const curl, const DynXXHttpResponse &rsp) {
+    return this->req(url, headers, params, method, timeout, [method, &params, &rawBody, &formFields, cFILE, fileSize](CURL *const curl, const DynXXHttpResponse &rsp) {
         if (cFILE != nullptr)
         {
             curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
