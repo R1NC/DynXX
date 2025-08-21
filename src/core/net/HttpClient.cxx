@@ -33,6 +33,12 @@ namespace
         return ret;
     }
 
+    size_t on_download_write(const char *contents, const size_t size, const size_t nmemb, void *userp) {
+        const auto ret = std::fwrite(contents, size, nmemb, static_cast<std::FILE *>(userp));
+        dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient write {} bytes to file", ret);
+        return ret;
+    }
+
     size_t on_write(const char *contents, const size_t size, size_t nmemb, void *userp)
     {
         const auto pS = static_cast<std::string *>(userp);
@@ -128,7 +134,7 @@ bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::str
 
     const auto rsp = this->req(url, {}, {}, DynXXNetHttpMethodGet, timeout, [file](CURL *const curl, const DynXXHttpResponse &) {
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, std::fwrite);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_download_write);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
     });
 
