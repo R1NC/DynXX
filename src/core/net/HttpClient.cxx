@@ -247,7 +247,7 @@ bool DynXX::Core::Net::HttpClient::checkUrlHasSearch(std::string_view url)
 #endif
 }
 
-bool DynXX::Core::Net::HttpClient::handleSSL(CURL * curl, std::string_view url)
+bool DynXX::Core::Net::HttpClient::handleSSL(CURL * curl, std::string_view url) const
 {
 #if defined(USE_ADA)
     auto aUrl = ada::parse(url);

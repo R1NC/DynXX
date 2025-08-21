@@ -18,7 +18,7 @@ DynXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs{
         while (!shouldStop.load())
 #endif
         {
-            std::unique_lock<std::mutex> lock(this->mutex);
+            auto lock = std::unique_lock(this->mutex);
             // Wait for tasks or stop signal
             this->cv.wait(lock, [this
 #if defined(__cpp_lib_jthread)
@@ -81,7 +81,7 @@ DynXX::Core::Concurrent::Worker::~Worker()
 #endif
 }
 
-void DynXX::Core::Concurrent::Worker::sleep()
+void DynXX::Core::Concurrent::Worker::sleep() const
 {
     DynXX::Core::Concurrent::sleep(this->sleepMicroSecs);
 }

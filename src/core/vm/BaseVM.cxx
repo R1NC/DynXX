@@ -20,14 +20,13 @@ void DynXX::Core::VM::BaseVM::unlock()
     this->vmMutex.unlock();
 }
 
-void DynXX::Core::VM::BaseVM::sleep()
+void DynXX::Core::VM::BaseVM::sleep() const
 {
     DynXX::Core::Concurrent::sleep(SleepMicroSecs);
 }
 
-DynXX::Core::VM::BaseVM::BaseVM()
+DynXX::Core::VM::BaseVM::BaseVM() : active(true)
 {
-    this->active = true;
 }
 
 DynXX::Core::VM::BaseVM::~BaseVM()

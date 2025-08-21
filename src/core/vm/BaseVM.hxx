@@ -31,7 +31,7 @@ namespace DynXX::Core::VM {
 
         void unlock();
 
-        void sleep();
+        void sleep() const;
     };
 }
 

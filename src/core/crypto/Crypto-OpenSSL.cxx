@@ -726,16 +726,14 @@ Bytes DynXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
         return {};
     }
 
-    const int writeResult = BIO_write(b64, in, static_cast<int>(inLen));
-    if (writeResult <= 0) [[unlikely]]
+    if (const auto writeResult = BIO_write(b64, in, static_cast<int>(inLen)); writeResult <= 0) [[unlikely]]
     {
         dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to write to Base64 BIO, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
 
-    const int flushResult = BIO_flush(b64);
-    if (flushResult <= 0) [[unlikely]]
+    if (const auto flushResult = BIO_flush(b64); flushResult <= 0) [[unlikely]]
     {
         dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to flush Base64 BIO, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);

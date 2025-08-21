@@ -54,7 +54,7 @@ namespace DynXX::Core::Concurrent {
         std::atomic<bool> shouldStop{false};
 #endif
 
-        void sleep();
+        void sleep() const;
     };
 
     class Executor final {

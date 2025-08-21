@@ -166,6 +166,7 @@ std::string DynXX::Core::Coding::strEscapeQuotes(const std::string_view& str)
 {
     std::string result;
     result.reserve(str.size() * 2);
+    static const std::string_view escapeChars = R"("\\")";
     
 #if defined(__cpp_lib_ranges)
     std::ranges::for_each(str, [&result](char c) 
@@ -175,7 +176,7 @@ std::string DynXX::Core::Coding::strEscapeQuotes(const std::string_view& str)
     {
         if (c == '"') 
         {
-            result.append("\\\"");
+            result.append(escapeChars);
         } 
         else 
         {
