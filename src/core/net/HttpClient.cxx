@@ -58,6 +58,129 @@ namespace
         }
         return size * nitems;
     }
+
+    bool checkUrlValid(std::string_view url)
+    {
+        if (url.empty()) [[unlikely]]
+        {
+            return false;
+        }
+#if defined(USE_ADA)
+        auto aUrl = ada::parse(url);
+        if (!aUrl) [[unlikely]]
+        {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient INVALID URL: {}", url);
+            return false;
+        }
+#endif
+        return true;
+    }
+
+    bool checkUrlHasSearch(std::string_view url)
+    {
+#if defined(USE_ADA)
+        auto aUrl = ada::parse(url);
+        return !aUrl->get_search().empty();
+#else
+        return url.find('?', 0) != std::string::npos;
+#endif
+    }
+
+    bool handleSSL(CURL * curl, std::string_view url)
+    {
+#if defined(USE_ADA)
+        const auto aUrl = ada::parse(url);
+        static const auto protocolHttps = "https:";
+        if (aUrl->get_protocol() == protocolHttps)
+#else
+        static const auto prefixHttps = "https://";
+        if (url.starts_with(prefixHttps))
+#endif
+        { // TODO: verify SSL cet
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+        }
+        return true;
+    }
+
+    CURL *createReq(std::string_view url, const std::vector<std::string> &headers,
+                            std::string_view params, int method, size_t timeout)
+    {
+        if (!checkUrlValid(url)) [[unlikely]]
+        {
+            return nullptr;
+        }
+
+        auto curl = curl_easy_init();
+        if (!curl) [[unlikely]]
+        {
+            return nullptr;
+        }
+
+        if (!handleSSL(curl, url)) [[unlikely]]
+        {
+            return nullptr;
+        }
+
+        auto _timeout = timeout;
+        if (_timeout == 0) [[unlikely]]
+        {
+            _timeout = DYNXX_HTTP_DEFAULT_TIMEOUT;
+        }
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
+        curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
+
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
+        //curl_easy_setopt(curl, CURLOPT_USERAGENT, "DynXX");
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
+        //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+        curl_slist *headerList = nullptr;
+        for (const auto &it : headers)
+        {
+            dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient.req header: {}", it);
+            headerList = curl_slist_append(headerList, it.c_str());
+        }
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
+
+        std::string fixedUrl;
+        fixedUrl.reserve(url.size() + (method == DynXXNetHttpMethodGet && !params.empty() ? params.size() + 1 : 0));
+        fixedUrl = url;
+        if (method == DynXXNetHttpMethodGet && !params.empty())
+        {
+            if (!checkUrlHasSearch(fixedUrl))
+            {
+                fixedUrl += "?";
+            }
+            fixedUrl += params;
+        }
+    
+        dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient.req url: {}", fixedUrl);
+        curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
+
+        return curl;
+    }
+
+    void sendReq(CURL *curl, DynXXHttpResponse &rsp)
+    {
+        auto curlCode = curl_easy_perform(curl);
+
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
+
+        char *contentType;
+        curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
+        if (contentType)
+        {
+            rsp.contentType = contentType;
+        }
+
+        if (curlCode != CURLE_OK) [[unlikely]]
+        {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient.req error:{}", curl_easy_strerror(curlCode));
+        }
+
+        curl_easy_cleanup(curl);
+    }
 }
 
 DynXX::Core::Net::HttpClient::HttpClient()
@@ -77,51 +200,62 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
                                                                  const std::vector<HttpFormField> &formFields,
                                                                  const std::FILE *cFILE, size_t fileSize,
                                                                  size_t timeout) const {
-    return this->req(url, headers, params, method, timeout, [method, &params, &rawBody, &formFields, cFILE, fileSize](CURL *const curl, const DynXXHttpResponse &rsp) {
-        if (cFILE != nullptr)
-        {
-            curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-            curl_easy_setopt(curl, CURLOPT_READFUNCTION, on_upload_read);
-            curl_easy_setopt(curl, CURLOPT_READDATA, cFILE);
-            curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, fileSize);
-        }
-        else if (!formFields.empty())
-        {
-            const auto cmime = curl_mime_init(curl);
-            const auto part = curl_mime_addpart(cmime);
 
-            for (const auto &[name, mime, data] : formFields)
-            {
-                curl_mime_name(part, name.c_str());
-                curl_mime_type(part, mime.c_str());
-                curl_mime_data(part, data.c_str(), CURL_ZERO_TERMINATED);
-            }
+    auto curl = createReq(url, headers, params, method, timeout);
+    if (!curl) [[unlikely]]
+    {
+        return {};
+    }
 
-            curl_easy_setopt(curl, CURLOPT_MIMEPOST, cmime);
-        }
-        else if (method == DynXXNetHttpMethodPost)
+    if (cFILE != nullptr)
+    {
+        curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+        curl_easy_setopt(curl, CURLOPT_READFUNCTION, on_upload_read);
+        curl_easy_setopt(curl, CURLOPT_READDATA, cFILE);
+        curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, fileSize);
+    }
+    else if (!formFields.empty())
+    {
+        const auto cmime = curl_mime_init(curl);
+        const auto part = curl_mime_addpart(cmime);
+
+        for (const auto &[name, mime, data] : formFields)
         {
-            curl_easy_setopt(curl, CURLOPT_POST, 1L);
-            if (rawBody.empty())
-            {
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.data());
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, params.size());
-            }
-            else
-            {
-                curl_easy_setopt(curl, CURLOPT_READFUNCTION, on_post_read);
-                curl_easy_setopt(curl, CURLOPT_READDATA, &rawBody);
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, nullptr);
-                curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawBody.size());
-            }
+            curl_mime_name(part, name.c_str());
+            curl_mime_type(part, mime.c_str());
+            curl_mime_data(part, data.c_str(), CURL_ZERO_TERMINATED);
         }
 
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_write);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &rsp.data);
+        curl_easy_setopt(curl, CURLOPT_MIMEPOST, cmime);
+    }
+    else if (method == DynXXNetHttpMethodPost)
+    {
+        curl_easy_setopt(curl, CURLOPT_POST, 1L);
+        if (rawBody.empty())
+        {
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.data());
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, params.size());
+        }
+        else
+        {
+            curl_easy_setopt(curl, CURLOPT_READFUNCTION, on_post_read);
+            curl_easy_setopt(curl, CURLOPT_READDATA, &rawBody);
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, nullptr);
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawBody.size());
+        }
+    }
 
-        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, on_handle_rsp_headers);
-        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &rsp.headers);
-    });
+    DynXXHttpResponse rsp;
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_write);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &rsp.data);
+
+    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, on_handle_rsp_headers);
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &rsp.headers);
+
+    sendReq(curl, rsp);
+    
+    return rsp;
 }
 
 bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::string_view filePath, size_t timeout) const {
@@ -132,136 +266,22 @@ bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::str
         return false;
     }
 
-    const auto rsp = this->req(url, {}, {}, DynXXNetHttpMethodGet, timeout, [file](CURL *const curl, const DynXXHttpResponse &) {
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_download_write);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
-    });
+    auto curl = createReq(url, {}, {}, DynXXNetHttpMethodGet, timeout);
+    if (!curl) [[unlikely]]
+    {
+        return false;
+    }
+
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_download_write);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+
+    DynXXHttpResponse rsp;
+    sendReq(curl, rsp);
 
     std::fclose(file);
 
     return rsp.code == 200;
-}
-
-DynXXHttpResponse DynXX::Core::Net::HttpClient::req(std::string_view url, const std::vector<std::string> &headers, std::string_view params, int method, size_t timeout, std::function<void(CURL *const, const DynXXHttpResponse &rsp)> &&func) const {
-    if (!checkUrlValid(url)) [[unlikely]]
-    {
-        return {};
-    }
-
-    auto curl = curl_easy_init();
-    if (!curl) [[unlikely]]
-    {
-        return {};
-    }
-
-    if (!this->handleSSL(curl, url)) [[unlikely]]
-    {
-        return {};
-    }
-
-    auto _timeout = timeout;
-    if (_timeout == 0) [[unlikely]]
-    {
-        _timeout = DYNXX_HTTP_DEFAULT_TIMEOUT;
-    }
-    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
-    curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
-
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
-    //curl_easy_setopt(curl, CURLOPT_USERAGENT, "DynXX");
-    curl_easy_setopt(curl, CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
-    //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-
-    curl_slist *headerList = nullptr;
-    for (const auto &it : headers)
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient.req header: {}", it);
-        headerList = curl_slist_append(headerList, it.c_str());
-    }
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
-
-    std::string fixedUrl;
-    fixedUrl.reserve(url.size() + (method == DynXXNetHttpMethodGet && !params.empty() ? params.size() + 1 : 0));
-    fixedUrl = url;
-    if (method == DynXXNetHttpMethodGet && !params.empty())
-    {
-        if (!checkUrlHasSearch(fixedUrl))
-        {
-            fixedUrl += "?";
-        }
-        fixedUrl += params;
-    }
-    
-    dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient.req url: {}", fixedUrl);
-    curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
-
-    DynXXHttpResponse rsp;
-    std::move(func)(curl, rsp);
-
-    auto curlCode = curl_easy_perform(curl);
-
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
-
-    char *contentType;
-    curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
-    if (contentType)
-    {
-        rsp.contentType = contentType;
-    }
-
-    if (curlCode != CURLE_OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient.req error:{}", curl_easy_strerror(curlCode));
-    }
-
-    curl_easy_cleanup(curl);
-
-    return rsp;
-}
-
-bool DynXX::Core::Net::HttpClient::checkUrlValid(std::string_view url)
-{
-    if (url.empty()) [[unlikely]]
-    {
-        return false;
-    }
-#if defined(USE_ADA)
-    auto aUrl = ada::parse(url);
-    if (!aUrl) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient INVALID URL: {}", url);
-        return false;
-    }
-#endif
-    return true;
-}
-
-bool DynXX::Core::Net::HttpClient::checkUrlHasSearch(std::string_view url)
-{
-#if defined(USE_ADA)
-    auto aUrl = ada::parse(url);
-    return !aUrl->get_search().empty();
-#else
-    return url.find('?', 0) != std::string::npos;
-#endif
-}
-
-bool DynXX::Core::Net::HttpClient::handleSSL(CURL * curl, std::string_view url) const
-{
-#if defined(USE_ADA)
-    auto aUrl = ada::parse(url);
-    static const auto protocolHttps = "https:";
-    if (aUrl->get_protocol() == protocolHttps)
-#else
-    static const auto prefixHttps = "https://";
-    if (url.starts_with(prefixHttps))
-#endif
-    { // TODO: verify SSL cet
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-    }
-    return true;
 }
 
 #endif
