@@ -110,8 +110,11 @@ namespace {
     T s2n(const std::string &str, T defaultValue, T (*f)(const std::string &, size_t *, int)) {
         try {
             return f(str, nullptr, 10);
-        } catch (const std::exception &e) {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<i> err: {}", e.what());
+        } catch (const std::invalid_argument &e) {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<i> invalid_argument err: {}", e.what());
+            return defaultValue;
+        } catch (const std::out_of_range &e) {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<i> out_of_range err: {}", e.what());
             return defaultValue;
         }
     }
@@ -120,8 +123,11 @@ namespace {
     T s2n(const std::string &str, T defaultValue, T (*f)(const std::string &, size_t *)) {
         try {
             return f(str, nullptr);
-        } catch (const std::exception &e) {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<f> err: {}", e.what());
+        } catch (const std::invalid_argument &e) {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<f> invalid_argument err: {}", e.what());
+            return defaultValue;
+        } catch (const std::out_of_range &e) {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<f> out_of_range err: {}", e.what());
             return defaultValue;
         }
     }
@@ -790,8 +796,10 @@ void *dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize, const D
     void *zip = nullptr;
     try {
         zip = new Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
-    } catch (const std::exception &e) {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZZipInit failed: {}", e.what());
+    } catch (const std::invalid_argument &e) {
+        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZZipInit invalid_argument: {}", e.what());
+    } catch (const std::runtime_error &e) {
+        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZZipInit runtime_error: {}", e.what());
     }
     return zip;
 }
@@ -832,8 +840,10 @@ void *dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) {
     void *unzip = nullptr;
     try {
         unzip = new Z::UnZip(bufferSize, static_cast<int>(format));
-    } catch (const std::exception &e) {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZUnzipInit failed: {}", e.what());
+    } catch (const std::invalid_argument &e) {
+        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZUnzipInit invalid_argument: {}", e.what());
+    } catch (const std::runtime_error &e) {
+        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZUnzipInit runtime_error: {}", e.what());
     }
     return unzip;
 }
