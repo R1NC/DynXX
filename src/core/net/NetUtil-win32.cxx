@@ -53,23 +53,19 @@ DynXX::Core::Net::Util::NetType DynXX::Core::Net::Util::netType()
         
     if ((dwRetVal = GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, pAddresses, &outBufLen)) == NO_ERROR) 
     {
-        PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses;
-        while (pCurrAddresses) 
+        for (PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses; pCurrAddresses; pCurrAddresses = pCurrAddresses->Next) 
         {
-            if (pCurrAddresses->OperStatus == IfOperStatusUp) 
+            if (pCurrAddresses->OperStatus != IfOperStatusUp) continue;
+            if (pCurrAddresses->IfType == IF_TYPE_ETHERNET_CSMACD) 
             {
-                if (pCurrAddresses->IfType == IF_TYPE_ETHERNET_CSMACD) 
-                {
-                    result = NetType::Ethernet;
-                    break;
-                } 
-                else if (pCurrAddresses->IfType == IF_TYPE_IEEE80211) 
-                {
-                    result = NetType::Wifi;
-                    break;
-                }
+                result = NetType::Ethernet;
+                break;
+            } 
+            else if (pCurrAddresses->IfType == IF_TYPE_IEEE80211) 
+            {
+                result = NetType::Wifi;
+                break;
             }
-            pCurrAddresses = pCurrAddresses->Next;
         }
     }
         
