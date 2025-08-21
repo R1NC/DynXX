@@ -259,16 +259,16 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
 }
 
 bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::string_view filePath, size_t timeout) const {
+    auto curl = createReq(url, {}, {}, DynXXNetHttpMethodGet, timeout);
+    if (!curl) [[unlikely]]
+    {
+        return false;
+    }
+
     auto file = std::fopen(filePath.data(), "wb");
     if (!file) [[unlikely]]
     {
         dynxxLogPrint(DynXXLogLevelX::Error, "HttpClient.download fopen error");
-        return false;
-    }
-
-    auto curl = createReq(url, {}, {}, DynXXNetHttpMethodGet, timeout);
-    if (!curl) [[unlikely]]
-    {
         return false;
     }
 
