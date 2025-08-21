@@ -357,9 +357,9 @@ void DynXX::Core::Json::Decoder::readChildren(void *const node, std::function<vo
     }
     auto idx = 0;
     const auto& cbk = std::move(callback);
-    for (auto childNode = this->readChild(node); childNode != nullptr; childNode = this->readNext(childNode))
+    for (auto childNode = this->readChild(node); childNode != nullptr; childNode = this->readNext(childNode), idx++)
     {
-        cbk(idx++, childNode);
+        cbk(idx, childNode);
     }
 }
 
