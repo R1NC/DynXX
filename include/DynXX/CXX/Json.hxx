@@ -25,7 +25,7 @@ std::optional<std::string> dynxxJsonFromDictAny(const DictAny &dict);
 
 std::optional<DictAny> dynxxJsonToDictAny(const std::string &json);
 
-void *dynxxJsonDecoderInit(const std::string &json);
+void *dynxxJsonDecoderInit(const std::string_view json);
 
 void *dynxxJsonDecoderReadNode(void *const decoder, std::string_view k, void *const node = nullptr);
 

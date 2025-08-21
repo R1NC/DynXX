@@ -303,7 +303,7 @@ bool dynxx_net_http_download(const char *url, const char *file_path, size_t time
     if (url == nullptr || file_path == nullptr) {
         return false;
     }
-    return dynxxNetHttpDownload(url, makeStr(file_path), timeout);
+    return dynxxNetHttpDownload(url, file_path, timeout);
 }
 
 #endif
@@ -489,7 +489,7 @@ const char *dynxx_json_to_str(void *const cjson) {
 
 EXPORT_AUTO
 void *dynxx_json_decoder_init(const char *json) {
-    return dynxxJsonDecoderInit(makeStr(json));
+    return dynxxJsonDecoderInit(json);
 }
 
 EXPORT_AUTO

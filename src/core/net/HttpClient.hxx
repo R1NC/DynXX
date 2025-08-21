@@ -39,7 +39,7 @@ namespace DynXX::Core::Net {
                                                  const std::FILE *cFILE, size_t fileSize,
                                                  size_t timeout);
 
-        [[nodiscard]] bool download(std::string_view url, const std::string &filePath, size_t timeout);
+        [[nodiscard]] bool download(std::string_view url, const std::string_view filePath, size_t timeout);
 
         ~HttpClient();
 

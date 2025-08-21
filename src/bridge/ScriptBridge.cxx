@@ -130,7 +130,7 @@ namespace
     {
     public:
         JsonParser() = delete;
-        explicit JsonParser(const std::string &json) : decoder(json) {}
+        explicit JsonParser(const std::string_view json) : decoder(json) {}
 
         std::optional<std::string> str(const std::string_view& k) const
         {
@@ -176,48 +176,48 @@ namespace
     };
 }
 
-std::string dynxx_get_versionS([[maybe_unused]] const char *json)
+std::string dynxx_get_versionS([[maybe_unused]] const std::string_view json)
 {
     return dynxxGetVersion();
 }
 
-std::string dynxx_root_pathS([[maybe_unused]] const char *json)
+std::string dynxx_root_pathS([[maybe_unused]] const std::string_view json)
 {
     return dynxxRootPath();
 }
 
 // Device.DeviceInfo
 
-int dynxx_device_typeS([[maybe_unused]] const char *json)
+int dynxx_device_typeS([[maybe_unused]] const std::string_view json)
 {
     return static_cast<int>(dynxxDeviceType());
 }
 
-std::string dynxx_device_nameS([[maybe_unused]] const char *json)
+std::string dynxx_device_nameS([[maybe_unused]] const std::string_view json)
 {
     return dynxxDeviceName();
 }
 
-std::string dynxx_device_manufacturerS([[maybe_unused]] const char *json)
+std::string dynxx_device_manufacturerS([[maybe_unused]] const std::string_view json)
 {
     return dynxxDeviceManufacturer();
 }
 
-std::string dynxx_device_os_versionS([[maybe_unused]] const char *json)
+std::string dynxx_device_os_versionS([[maybe_unused]] const std::string_view json)
 {
     return dynxxDeviceOsVersion();
 }
 
-int dynxx_device_cpu_archS([[maybe_unused]] const char *json)
+int dynxx_device_cpu_archS([[maybe_unused]] const std::string_view json)
 {
     return static_cast<int>(dynxxDeviceCpuArch());
 }
 
 // Log
 
-void dynxx_log_printS(const char *json)
+void dynxx_log_printS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return;
     }
@@ -234,9 +234,9 @@ void dynxx_log_printS(const char *json)
 
 // Net.Http
 
-std::string dynxx_net_http_requestS(const char *json)
+std::string dynxx_net_http_requestS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -281,9 +281,9 @@ std::string dynxx_net_http_requestS(const char *json)
     return t.toJson().value_or("");
 }
 
-bool dynxx_net_http_downloadS(const char *json)
+bool dynxx_net_http_downloadS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -301,9 +301,9 @@ bool dynxx_net_http_downloadS(const char *json)
 
 // Store.SQLite
 
-std::string dynxx_store_sqlite_openS(const char *json)
+std::string dynxx_store_sqlite_openS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -322,9 +322,9 @@ std::string dynxx_store_sqlite_openS(const char *json)
     return std::to_string(ptr2addr(db));
 }
 
-bool dynxx_store_sqlite_executeS(const char *json)
+bool dynxx_store_sqlite_executeS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -339,9 +339,9 @@ bool dynxx_store_sqlite_executeS(const char *json)
     return dynxxStoreSqliteExecute(conn, sql.value());
 }
 
-std::string dynxx_store_sqlite_query_doS(const char *json)
+std::string dynxx_store_sqlite_query_doS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -361,9 +361,9 @@ std::string dynxx_store_sqlite_query_doS(const char *json)
     return std::to_string(ptr2addr(res));
 }
 
-bool dynxx_store_sqlite_query_read_rowS(const char *json)
+bool dynxx_store_sqlite_query_read_rowS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -377,9 +377,9 @@ bool dynxx_store_sqlite_query_read_rowS(const char *json)
     return dynxxStoreSqliteQueryReadRow(query_result);
 }
 
-std::string dynxx_store_sqlite_query_read_column_textS(const char *json)
+std::string dynxx_store_sqlite_query_read_column_textS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -395,9 +395,9 @@ std::string dynxx_store_sqlite_query_read_column_textS(const char *json)
     return s.value_or(std::string{});
 }
 
-int64_t dynxx_store_sqlite_query_read_column_integerS(const char *json)
+int64_t dynxx_store_sqlite_query_read_column_integerS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return 0;
     }
@@ -413,9 +413,9 @@ int64_t dynxx_store_sqlite_query_read_column_integerS(const char *json)
     return i.value_or(0);
 }
 
-double dynxx_store_sqlite_query_read_column_floatS(const char *json)
+double dynxx_store_sqlite_query_read_column_floatS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return 0;
     }
@@ -431,9 +431,9 @@ double dynxx_store_sqlite_query_read_column_floatS(const char *json)
     return f.value_or(0.0);
 }
 
-void dynxx_store_sqlite_query_dropS(const char *json)
+void dynxx_store_sqlite_query_dropS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return;
     }
@@ -447,9 +447,9 @@ void dynxx_store_sqlite_query_dropS(const char *json)
     dynxxStoreSqliteQueryDrop(query_result);
 }
 
-void dynxx_store_sqlite_closeS(const char *json)
+void dynxx_store_sqlite_closeS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return;
     }
@@ -465,9 +465,9 @@ void dynxx_store_sqlite_closeS(const char *json)
 
 // Store.KV
 
-std::string dynxx_store_kv_openS(const char *json)
+std::string dynxx_store_kv_openS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -486,9 +486,9 @@ std::string dynxx_store_kv_openS(const char *json)
     return std::to_string(ptr2addr(res));
 }
 
-std::string dynxx_store_kv_read_stringS(const char *json)
+std::string dynxx_store_kv_read_stringS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -504,9 +504,9 @@ std::string dynxx_store_kv_read_stringS(const char *json)
     return s.value_or(std::string{});
 }
 
-bool dynxx_store_kv_write_stringS(const char *json)
+bool dynxx_store_kv_write_stringS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -521,9 +521,9 @@ bool dynxx_store_kv_write_stringS(const char *json)
     return dynxxStoreKvWriteString(conn, k.value(), v.value_or(""));
 }
 
-int64_t dynxx_store_kv_read_integerS(const char *json)
+int64_t dynxx_store_kv_read_integerS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return 0;
     }
@@ -539,9 +539,9 @@ int64_t dynxx_store_kv_read_integerS(const char *json)
     return i.value_or(0);
 }
 
-bool dynxx_store_kv_write_integerS(const char *json)
+bool dynxx_store_kv_write_integerS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -557,9 +557,9 @@ bool dynxx_store_kv_write_integerS(const char *json)
     return dynxxStoreKvWriteInteger(conn, k.value(), v.value_or(0));
 }
 
-double dynxx_store_kv_read_floatS(const char *json)
+double dynxx_store_kv_read_floatS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return 0;
     }
@@ -575,9 +575,9 @@ double dynxx_store_kv_read_floatS(const char *json)
     return f.value_or(0.0);
 }
 
-bool dynxx_store_kv_write_floatS(const char *json)
+bool dynxx_store_kv_write_floatS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -593,9 +593,9 @@ bool dynxx_store_kv_write_floatS(const char *json)
     return dynxxStoreKvWriteFloat(conn, k.value(), v.value_or(0.0));
 }
 
-std::string dynxx_store_kv_all_keysS(const char *json)
+std::string dynxx_store_kv_all_keysS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -610,9 +610,9 @@ std::string dynxx_store_kv_all_keysS(const char *json)
     return strArray2json(res);
 }
 
-bool dynxx_store_kv_containsS(const char *json)
+bool dynxx_store_kv_containsS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -627,9 +627,9 @@ bool dynxx_store_kv_containsS(const char *json)
     return dynxxStoreKvContains(conn, k.value());
 }
 
-bool dynxx_store_kv_removeS(const char *json)
+bool dynxx_store_kv_removeS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -644,9 +644,9 @@ bool dynxx_store_kv_removeS(const char *json)
     return dynxxStoreKvRemove(conn, k.value());
 }
 
-void dynxx_store_kv_clearS(const char *json)
+void dynxx_store_kv_clearS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return;
     }
@@ -660,9 +660,9 @@ void dynxx_store_kv_clearS(const char *json)
     dynxxStoreKvClear(conn);
 }
 
-void dynxx_store_kv_closeS(const char *json)
+void dynxx_store_kv_closeS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return;
     }
@@ -678,9 +678,9 @@ void dynxx_store_kv_closeS(const char *json)
 
 // Coding
 
-std::string dynxx_coding_case_upperS(const char *json)
+std::string dynxx_coding_case_upperS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -694,9 +694,9 @@ std::string dynxx_coding_case_upperS(const char *json)
     return dynxxCodingCaseUpper(str.value());
 }
 
-std::string dynxx_coding_case_lowerS(const char *json)
+std::string dynxx_coding_case_lowerS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -710,9 +710,9 @@ std::string dynxx_coding_case_lowerS(const char *json)
     return dynxxCodingCaseLower(str.value());
 }
 
-std::string dynxx_coding_hex_bytes2strS(const char *json)
+std::string dynxx_coding_hex_bytes2strS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -727,9 +727,9 @@ std::string dynxx_coding_hex_bytes2strS(const char *json)
     return dynxxCodingHexBytes2str(in);
 }
 
-std::string dynxx_coding_hex_str2bytesS(const char *json)
+std::string dynxx_coding_hex_str2bytesS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -745,9 +745,9 @@ std::string dynxx_coding_hex_str2bytesS(const char *json)
     return bytes2json(bytes);
 }
 
-std::string dynxx_coding_bytes2strS(const char *json)
+std::string dynxx_coding_bytes2strS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -762,9 +762,9 @@ std::string dynxx_coding_bytes2strS(const char *json)
     return dynxxCodingBytes2str(in);
 }
 
-std::string dynxx_coding_str2bytesS(const char *json)
+std::string dynxx_coding_str2bytesS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -782,9 +782,9 @@ std::string dynxx_coding_str2bytesS(const char *json)
 
 // Crypto
 
-std::string dynxx_crypto_randS(const char *json)
+std::string dynxx_crypto_randS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -798,9 +798,9 @@ std::string dynxx_crypto_randS(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_aes_encryptS(const char *json)
+std::string dynxx_crypto_aes_encryptS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -822,9 +822,9 @@ std::string dynxx_crypto_aes_encryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_aes_decryptS(const char *json)
+std::string dynxx_crypto_aes_decryptS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -846,9 +846,9 @@ std::string dynxx_crypto_aes_decryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_aes_gcm_encryptS(const char *json)
+std::string dynxx_crypto_aes_gcm_encryptS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -880,9 +880,9 @@ std::string dynxx_crypto_aes_gcm_encryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_aes_gcm_decryptS(const char *json)
+std::string dynxx_crypto_aes_gcm_decryptS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -914,9 +914,9 @@ std::string dynxx_crypto_aes_gcm_decryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_rsa_gen_keyS(const char *json)
+std::string dynxx_crypto_rsa_gen_keyS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -937,9 +937,9 @@ std::string dynxx_crypto_rsa_gen_keyS(const char *json)
     return dynxxCryptoRsaGenKey(base64.value(), isPublic.value());
 }
 
-std::string dynxx_crypto_rsa_encryptS(const char *json)
+std::string dynxx_crypto_rsa_encryptS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -967,9 +967,9 @@ std::string dynxx_crypto_rsa_encryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_rsa_decryptS(const char *json)
+std::string dynxx_crypto_rsa_decryptS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -997,9 +997,9 @@ std::string dynxx_crypto_rsa_decryptS(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_hash_md5S(const char *json)
+std::string dynxx_crypto_hash_md5S(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1015,9 +1015,9 @@ std::string dynxx_crypto_hash_md5S(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_hash_sha1S(const char *json)
+std::string dynxx_crypto_hash_sha1S(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1033,9 +1033,9 @@ std::string dynxx_crypto_hash_sha1S(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_hash_sha256S(const char *json)
+std::string dynxx_crypto_hash_sha256S(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1051,9 +1051,9 @@ std::string dynxx_crypto_hash_sha256S(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_base64_encodeS(const char *json)
+std::string dynxx_crypto_base64_encodeS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1070,9 +1070,9 @@ std::string dynxx_crypto_base64_encodeS(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_crypto_base64_decodeS(const char *json)
+std::string dynxx_crypto_base64_decodeS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1091,9 +1091,9 @@ std::string dynxx_crypto_base64_decodeS(const char *json)
 
 // Zip
 
-std::string dynxx_z_zip_initS(const char *json)
+std::string dynxx_z_zip_initS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1113,9 +1113,9 @@ std::string dynxx_z_zip_initS(const char *json)
     return std::to_string(ptr2addr(zip));
 }
 
-size_t dynxx_z_zip_inputS(const char *json)
+size_t dynxx_z_zip_inputS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return 0;
     }
@@ -1141,9 +1141,9 @@ size_t dynxx_z_zip_inputS(const char *json)
     return dynxxZZipInput(zip, in, inFinish.value());
 }
 
-std::string dynxx_z_zip_process_doS(const char *json)
+std::string dynxx_z_zip_process_doS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1158,9 +1158,9 @@ std::string dynxx_z_zip_process_doS(const char *json)
     return bytes2json(outBytes);
 }
 
-bool dynxx_z_zip_process_finishedS(const char *json)
+bool dynxx_z_zip_process_finishedS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -1174,9 +1174,9 @@ bool dynxx_z_zip_process_finishedS(const char *json)
     return dynxxZZipProcessFinished(zip);
 }
 
-void dynxx_z_zip_releaseS(const char *json)
+void dynxx_z_zip_releaseS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return;
     }
@@ -1190,9 +1190,9 @@ void dynxx_z_zip_releaseS(const char *json)
     dynxxZZipRelease(zip);
 }
 
-std::string dynxx_z_unzip_initS(const char *json)
+std::string dynxx_z_unzip_initS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1211,9 +1211,9 @@ std::string dynxx_z_unzip_initS(const char *json)
     return std::to_string(ptr2addr(unzip));
 }
 
-size_t dynxx_z_unzip_inputS(const char *json)
+size_t dynxx_z_unzip_inputS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return 0;
     }
@@ -1239,9 +1239,9 @@ size_t dynxx_z_unzip_inputS(const char *json)
     return dynxxZUnzipInput(unzip, in, inFinish.value());
 }
 
-std::string dynxx_z_unzip_process_doS(const char *json)
+std::string dynxx_z_unzip_process_doS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1256,9 +1256,9 @@ std::string dynxx_z_unzip_process_doS(const char *json)
     return bytes2json(outBytes);
 }
 
-bool dynxx_z_unzip_process_finishedS(const char *json)
+bool dynxx_z_unzip_process_finishedS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return false;
     }
@@ -1272,9 +1272,9 @@ bool dynxx_z_unzip_process_finishedS(const char *json)
     return dynxxZUnzipProcessFinished(unzip);
 }
 
-void dynxx_z_unzip_releaseS(const char *json)
+void dynxx_z_unzip_releaseS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return;
     }
@@ -1288,9 +1288,9 @@ void dynxx_z_unzip_releaseS(const char *json)
     dynxxZUnzipRelease(unzip);
 }
 
-std::string dynxx_z_bytes_zipS(const char *json)
+std::string dynxx_z_bytes_zipS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }
@@ -1306,9 +1306,9 @@ std::string dynxx_z_bytes_zipS(const char *json)
     return bytes2json(outBytes);
 }
 
-std::string dynxx_z_bytes_unzipS(const char *json)
+std::string dynxx_z_bytes_unzipS(const std::string_view json)
 {
-    if (json == nullptr)
+    if (json.empty())
     {
         return {};
     }

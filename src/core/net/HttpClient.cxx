@@ -124,8 +124,8 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
     });
 }
 
-bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::string &filePath, size_t timeout) {
-    auto file = std::fopen(filePath.c_str(), "wb");
+bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::string_view filePath, size_t timeout) {
+    auto file = std::fopen(filePath.data(), "wb");
     if (!file) [[unlikely]]
     {
         dynxxLogPrint(DynXXLogLevelX::Error, "HttpClient.download fopen error");

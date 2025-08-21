@@ -44,7 +44,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         const std::FILE *cFILE = nullptr, size_t fileSize = 0,
                                         size_t timeout = DynXXHttpDefaultTimeout);
 
-bool dynxxNetHttpDownload(std::string_view url, const std::string &filePath,
+bool dynxxNetHttpDownload(std::string_view url, const std::string_view filePath,
                            size_t timeout = DynXXHttpDefaultTimeout);
 
 #endif // DYNXX_INCLUDE_NET_HXX_

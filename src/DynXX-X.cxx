@@ -495,7 +495,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
 }
 
 #if defined(USE_CURL)
-bool dynxxNetHttpDownload(std::string_view url, const std::string &filePath, size_t timeout) {
+bool dynxxNetHttpDownload(std::string_view url, const std::string_view filePath, size_t timeout) {
     if (!_http_client || url.empty() || filePath.empty()) {
         return false;
     }
@@ -717,7 +717,7 @@ std::optional<DictAny> dynxxJsonToDictAny(const std::string &json) {
     return Json::jsonToDictAny(json);
 }
 
-void *dynxxJsonDecoderInit(const std::string &json) {
+void *dynxxJsonDecoderInit(const std::string_view json) {
     auto decoder = new(std::nothrow) Json::Decoder(json);
     if (decoder == nullptr) {
         dynxxLogPrint(DynXXLogLevelX::Error, "new JsonDecoder failed");

@@ -220,9 +220,9 @@ void DynXX::Core::Json::Decoder::cleanup() noexcept
     this->cjson = nullptr;
 }
 
-DynXX::Core::Json::Decoder::Decoder(const std::string &json)
+DynXX::Core::Json::Decoder::Decoder(const std::string_view json)
 {
-    this->cjson = cJSON_Parse(json.c_str());
+    this->cjson = cJSON_Parse(json.data());
 }
 
 DynXX::Core::Json::Decoder::~Decoder()
