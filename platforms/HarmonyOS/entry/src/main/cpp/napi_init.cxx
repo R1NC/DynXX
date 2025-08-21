@@ -628,7 +628,7 @@ napi_value cryptoRand(napi_env env, napi_callback_info info) {
 
     auto len = napiValue2int(env, args.v[0]);
 
-    const auto outBytes = dynxx_crypto_rand(len);
+    auto outBytes = dynxx_crypto_rand(len);
     auto v = byteArray2NapiValue(env, outBytes, len);
     freeX(outBytes);
 

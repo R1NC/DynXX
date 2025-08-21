@@ -18,6 +18,8 @@
 #include <DynXX/CXX/Log.hxx>
 #include <DynXX/CXX/Coding.hxx>
 
+#include "../concurrent/ConcurrentUtil.hxx"
+
 namespace
 {
     constexpr auto OK = 1;
@@ -118,14 +120,22 @@ namespace
 
 Bytes DynXX::Core::Crypto::rand(size_t len)
 {
-    Bytes out(len, 0);
     if (len == 0) [[unlikely]]
     {
-        return out;
+        return {};
     }
-    if (const auto ret = RAND_bytes(out.data(), static_cast<int>(len)); ret != -1) [[unlikely]]
+    Bytes out(len, 0);
+    Concurrent::callOnce([]() {
+        RAND_poll();
+    });
+    if (RAND_status() != OK) [[unlikely]]
+    {
+        dynxxLogPrintF(DynXXLogLevelX::Error, "RAND_poll failed, status: {}", RAND_status());
+    }
+    if (const auto ret = RAND_bytes(out.data(), static_cast<int>(len)); ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(DynXXLogLevelX::Error, "RAND_bytes failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        return {};
     }
     return out;
 }
