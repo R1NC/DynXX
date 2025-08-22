@@ -80,7 +80,7 @@ namespace
     {
 #if defined(USE_ADA)
         auto aUrl = ada::parse(url);
-        return !aUrl->get_search().empty();
+        return aUrl && !aUrl->get_search().empty();
 #else
         return url.find('?', 0) != std::string::npos;
 #endif
@@ -90,6 +90,10 @@ namespace
     {
 #if defined(USE_ADA)
         const auto aUrl = ada::parse(url);
+        if (!aUrl) [[unlikely]]
+        {
+            return false;
+        }
         static const auto protocolHttps = "https:";
         if (aUrl->get_protocol() == protocolHttps)
 #else
