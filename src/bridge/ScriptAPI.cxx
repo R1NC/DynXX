@@ -1,6 +1,6 @@
 #if defined(USE_QJS) || defined(USE_LUA)
 
-#include "ScriptBridge.hxx"
+#include "ScriptAPI.hxx"
 
 #include <functional>
 #if defined(__cpp_lib_ranges)

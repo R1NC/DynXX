@@ -6,7 +6,7 @@
 #include <DynXX/CXX/Macro.hxx>
 
 #include "../core/vm/LuaVM.hxx"
-#include "ScriptBridge.hxx"
+#include "ScriptAPI.hxx"
 
 namespace {
     std::unique_ptr<DynXX::Core::VM::LuaVM> vm = nullptr;

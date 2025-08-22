@@ -1,5 +1,5 @@
-#ifndef DYNXX_SRC_BRIDGE_SCRIPTBRIDGE_HXX_
-#define DYNXX_SRC_BRIDGE_SCRIPTBRIDGE_HXX_
+#ifndef DYNXX_SRC_BRIDGE_SCRIPTAPI_HXX_
+#define DYNXX_SRC_BRIDGE_SCRIPTAPI_HXX_
 
 #if defined(__cplusplus)
 
@@ -131,4 +131,4 @@ std::string dynxx_z_bytes_unzipS(const std::string_view json);
 
 #endif
 
-#endif // DYNXX_SRC_BRIDGE_SCRIPTBRIDGE_HXX_
+#endif // DYNXX_SRC_BRIDGE_SCRIPTAPI_HXX_

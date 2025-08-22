@@ -10,7 +10,7 @@
 #include <DynXX/CXX/Macro.hxx>
 
 #include "../core/vm/JSVM.hxx"
-#include "ScriptBridge.hxx"
+#include "ScriptAPI.hxx"
 
 namespace {
     std::unique_ptr<DynXX::Core::VM::JSVM> vm = nullptr;
