@@ -1,4 +1,4 @@
-name: Build for Android on macOS
+name: CI for Android on macOS
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
       - 'build-tools/**'
       - 'third-party/**'
       - 'CMakeLists.txt'
+  workflow_dispatch:
 
 permissions:
   contents: read

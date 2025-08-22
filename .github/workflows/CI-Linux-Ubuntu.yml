@@ -1,4 +1,4 @@
-name: Build for macOS
+name: CI for Linux on Ubuntu
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
       - 'build-tools/**'
       - 'third-party/**'
       - 'CMakeLists.txt'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,7 +17,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -25,18 +26,19 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        brew install cmake ninja
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake clang ninja-build
 
     - name: Build
       run: |
         cd build-tools
-        chmod +x build-macOS.sh
-        ./build-macOS.sh
+        chmod +x build-Linux.sh
+        ./build-Linux.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: macOS-build
+        name: Linux-build
         path: |
           build.*/output/libs/
           build.*/output/include/

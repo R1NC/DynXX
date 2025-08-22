@@ -1,4 +1,4 @@
-name: Build for iOS
+name: CI for macOS
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
       - 'build-tools/**'
       - 'third-party/**'
       - 'CMakeLists.txt'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,6 +18,7 @@ permissions:
 jobs:
   build:
     runs-on: macos-latest
+
     steps:
     - uses: actions/checkout@v4
       with:
@@ -29,14 +31,14 @@ jobs:
     - name: Build
       run: |
         cd build-tools
-        chmod +x build-iOS.sh
-        ./build-iOS.sh
+        chmod +x build-macOS.sh
+        ./build-macOS.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: iOS-build
+        name: macOS-build
         path: |
-          build.iOS/output/libs/
-          build.iOS/output/include/
+          build.*/output/libs/
+          build.*/output/include/
         if-no-files-found: error

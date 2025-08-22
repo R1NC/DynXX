@@ -1,4 +1,4 @@
-name: Build for HarmonyOS on macOS
+name: CI for HarmonyOS on macOS
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
       - 'build-tools/**'
       - 'third-party/**'
       - 'CMakeLists.txt'
+  workflow_dispatch:
 
 permissions:
   contents: read
