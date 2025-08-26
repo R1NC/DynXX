@@ -3,6 +3,7 @@
 #include "HttpClient.hxx"
 
 #include <algorithm>
+#include <fstream>
 
 #if defined(USE_ADA)
 #include <ada.h>
@@ -34,7 +35,9 @@ namespace
     }
 
     size_t on_download_write(const char *contents, const size_t size, const size_t nmemb, void *userp) {
-        const auto ret = std::fwrite(contents, size, nmemb, static_cast<std::FILE *>(userp));
+        auto& file = *static_cast<std::ofstream*>(userp);
+        file.write(contents, size * nmemb);
+        const auto ret = file.good() ? size * nmemb : 0;
         dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient write {} bytes to file", ret);
         return ret;
     }
@@ -269,21 +272,21 @@ bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::str
         return false;
     }
 
-    auto file = std::fopen(filePath.data(), "wb");
+    std::ofstream file(filePath.data(), std::ios::binary);
     if (!file) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "HttpClient.download fopen error");
+        dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient.download fopen error:{}", filePath);
         return false;
     }
 
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_download_write);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
 
     DynXXHttpResponse rsp;
     sendReq(curl, rsp);
 
-    std::fclose(file);
+    file.close();
 
     return rsp.code == 200;
 }
