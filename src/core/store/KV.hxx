@@ -13,7 +13,9 @@ namespace DynXX::Core::Store::KV {
 
     class Connection {
         public:
-            Connection() = delete;
+            std::string _id;
+
+            Connection() = default;
 
             explicit Connection(const std::string &_id);
 
@@ -63,6 +65,8 @@ namespace DynXX::Core::Store::KV {
         KVStore &operator=(KVStore &&) = delete;
 
         std::weak_ptr<KV::Connection> open(const std::string &_id);
+
+        void close(const std::string &_id);
 
         ~KVStore();
     };

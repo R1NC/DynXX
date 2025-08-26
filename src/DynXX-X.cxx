@@ -588,10 +588,10 @@ void dynxxStoreSqliteQueryDrop(void *const query_result) {
 }
 
 void dynxxStoreSqliteClose(void *const conn) {
-    if (conn == nullptr)
+    if (conn == nullptr || _sqlite == nullptr)
         return;
     const auto xconn = static_cast<Store::SQLite::Connection *>(conn);
-    delete xconn;
+    _sqlite->close(xconn->_id);
 }
 
 #endif
@@ -691,10 +691,10 @@ void dynxxStoreKvClear(void *const conn) {
 }
 
 void dynxxStoreKvClose(void *const conn) {
-    if (conn == nullptr)
+    if (conn == nullptr || _kv == nullptr)
         return;
     const auto xconn = static_cast<Store::KV::Connection *>(conn);
-    delete xconn;
+    _kv->close(xconn->_id);
 }
 
 #endif

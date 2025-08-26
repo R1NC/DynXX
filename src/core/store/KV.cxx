@@ -22,12 +22,17 @@ std::weak_ptr<DynXX::Core::Store::KV::Connection> DynXX::Core::Store::KV::KVStor
     });
 }
 
+void DynXX::Core::Store::KV::KVStore::close(const std::string &_id)
+{
+    ConnPool<KV::Connection>::close(_id);
+}
+
 DynXX::Core::Store::KV::KVStore::~KVStore()
 {
     MMKV::onExit();
 }
 
-DynXX::Core::Store::KV::Connection::Connection(const std::string &_id)
+DynXX::Core::Store::KV::Connection::Connection(const std::string &_id) : _id(_id)
 {
     this->kv = MMKV::mmkvWithID(_id, MMKV_MULTI_PROCESS);
     MMKV::setLogLevel(MMKVLogNone);
