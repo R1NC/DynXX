@@ -22,7 +22,7 @@ std::weak_ptr<DynXX::Core::Store::KV::Connection> DynXX::Core::Store::KV::KVStor
     });
 }
 
-void DynXX::Core::Store::KV::KVStore::close(const std::string &_id)
+void DynXX::Core::Store::KV::KVStore::close(const DictKeyType _id)
 {
     ConnPool<KV::Connection>::close(_id);
 }

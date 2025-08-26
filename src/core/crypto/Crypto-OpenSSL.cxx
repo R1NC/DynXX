@@ -25,9 +25,6 @@ namespace
     constexpr auto OK = 1;
     constexpr auto AES_Key_BITS = 128;
 
-    constexpr auto MD5_BYTES_LEN = 16uz;
-    constexpr auto SHA256_BYTES_LEN = 32uz;
-
     std::optional<std::string> readErrMsg()
     {
         const auto err = ERR_get_error();

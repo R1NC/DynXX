@@ -13,14 +13,12 @@ namespace DynXX::Core::Store::SQLite {
 
     class Connection {
         public:
-            std::string _id;
-
             /**
              * @warning `Connection` can only be constructed with `SQLite::connect()`
              */
             Connection() = delete;
 
-            explicit Connection(sqlite3 *db, const std::string &_id);
+            explicit Connection(const std::string &_id, sqlite3 *db);
 
             Connection(const Connection &) = delete;
 
@@ -29,6 +27,8 @@ namespace DynXX::Core::Store::SQLite {
             Connection(Connection &&) = delete;
 
             Connection &operator=(Connection &&) = delete;
+
+            DictKeyType id() const { return this->_id; }
 
             class QueryResult {
             public:
@@ -92,6 +92,7 @@ namespace DynXX::Core::Store::SQLite {
             ~Connection();
 
         private:
+            std::string _id;
             sqlite3 *db{nullptr};
             mutable std::mutex mutex;
         };
@@ -113,7 +114,7 @@ namespace DynXX::Core::Store::SQLite {
 
         std::weak_ptr<SQLite::Connection> open(const std::string &file);
 
-        void close(const std::string &_id);
+        void close(const DictKeyType _id);
 
         /**
          * @brief Release SQLite process

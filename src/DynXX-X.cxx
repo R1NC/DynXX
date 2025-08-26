@@ -591,7 +591,7 @@ void dynxxStoreSqliteClose(void *const conn) {
     if (conn == nullptr || _sqlite == nullptr)
         return;
     const auto xconn = static_cast<Store::SQLite::Connection *>(conn);
-    _sqlite->close(xconn->_id);
+    _sqlite->close(xconn->id());
 }
 
 #endif
@@ -694,7 +694,7 @@ void dynxxStoreKvClose(void *const conn) {
     if (conn == nullptr || _kv == nullptr)
         return;
     const auto xconn = static_cast<Store::KV::Connection *>(conn);
-    _kv->close(xconn->_id);
+    _kv->close(xconn->id());
 }
 
 #endif

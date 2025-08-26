@@ -26,11 +26,11 @@ std::weak_ptr<DynXX::Core::Store::SQLite::Connection> DynXX::Core::Store::SQLite
             if (db) sqlite3_close(db);
             return std::shared_ptr<SQLite::Connection>(nullptr);
         }
-        return std::make_shared<SQLite::Connection>(db, file);
+        return std::make_shared<SQLite::Connection>(file, db);
     });
 }
 
-void DynXX::Core::Store::SQLite::SQLiteStore::close(const std::string &_id)
+void DynXX::Core::Store::SQLite::SQLiteStore::close(const DictKeyType _id)
 {
     ConnPool<SQLite::Connection>::close(_id);
 }
@@ -40,7 +40,7 @@ DynXX::Core::Store::SQLite::SQLiteStore::~SQLiteStore()
     sqlite3_shutdown();
 }
 
-DynXX::Core::Store::SQLite::Connection::Connection(sqlite3 *db, const std::string &_id) : db{db}, _id(_id)
+DynXX::Core::Store::SQLite::Connection::Connection(const std::string &_id, sqlite3 *db) : _id(_id), db{db}
 {
     if (!this->execute(sEnableWAL)) [[unlikely]]
     {
