@@ -50,15 +50,14 @@ namespace {
         }
         auto jMsg = boxJString(env, msg);
         auto jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
-        const auto cRes = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
-        char *res = nullptr;
+        auto cRes = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
+        auto newRes = dupStr(cRes);
         if (cRes) {
-           res = dupStr(cRes);
            env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jRes), cRes);
         }
         env->DeleteLocalRef(jMsg);
         env->DeleteLocalRef(jRes);
-        return res;
+        return newRes;
     }
 
 #pragma mark Engine base API
@@ -648,6 +647,20 @@ namespace {
         return jba;
     }
 
+    jbyteArray cryptoHashSha1(JNIEnv *env, jobject thiz,
+                                jbyteArray input) {
+        auto cIn = env->GetByteArrayElements(input, nullptr);
+        auto inLen = env->GetArrayLength(input);
+
+        size_t outLen;
+        const auto cRes = dynxx_crypto_hash_sha1(reinterpret_cast<const byte *>(cIn), inLen,
+                                                   &outLen);
+        auto jba = moveToJByteArray(env, cRes, outLen, true);
+
+        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+        return jba;
+    }
+
     jbyteArray cryptoHashSha256(JNIEnv *env, jobject thiz,
                                 jbyteArray input) {
         auto cIn = env->GetByteArrayElements(input, nullptr);
@@ -913,6 +926,7 @@ namespace {
             DECLARE_JNI_FUNC(cryptoAesGcmEncrypt, "([B[B[B[BI)[B"),
             DECLARE_JNI_FUNC(cryptoAesGcmDecrypt, "([B[B[B[BI)[B"),
             DECLARE_JNI_FUNC(cryptoHashMd5, "([B)[B"),
+            DECLARE_JNI_FUNC(cryptoHashSha1, "([B)[B"),
             DECLARE_JNI_FUNC(cryptoHashSha256, "([B)[B"),
             DECLARE_JNI_FUNC(cryptoBase64Encode, "([BZ)[B"),
             DECLARE_JNI_FUNC(cryptoBase64Decode, "([BZ)[B"),

@@ -742,6 +742,21 @@ napi_value cryptoHashMd5(napi_env env, napi_callback_info info) {
     return v;
 }
 
+napi_value cryptoHashSha1(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+
+    size_t outLen;
+    auto outBytes = dynxx_crypto_hash_sha1(inBytes, inLen, &outLen);
+    auto v = byteArray2NapiValue(env, outBytes, outLen);
+
+    freeX(outBytes);
+    freeX(inBytes);
+    return v;
+}
+
 napi_value cryptoHashSha256(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
@@ -969,6 +984,7 @@ napi_value NAPI_DynXX_RegisterFuncs(napi_env env, napi_value exports) {
         NAPI(cryptoAesGcmEncrypt),
         NAPI(cryptoAesGcmDecrypt),
         NAPI(cryptoHashMd5),
+        NAPI(cryptoHashSha1),
         NAPI(cryptoHashSha256),
         NAPI(cryptoBase64Encode),
         NAPI(cryptoBase64Decode),

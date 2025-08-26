@@ -77,6 +77,7 @@ export const cryptoAesDecrypt: (inBytes: number[], keyBytes: number[]) => number
 export const cryptoAesGcmEncrypt: (inBytes: number[], keyBytes: number[], initVectorBytes: number[], tagBits: number, aadBytes?: number[]) => number[];
 export const cryptoAesGcmDecrypt: (inBytes: number[], keyBytes: number[], initVectorBytes: number[], tagBits: number, aadBytes?: number[]) => number[];
 export const cryptoHashMd5: (inBytes: number[]) => number[];
+export const cryptoHashSha1: (inBytes: number[]) => number[];
 export const cryptoHashSha256: (inBytes: number[]) => number[];
 export const cryptoBase64Encode: (inBytes: number[], noNewLines: boolean) => number[];
 export const cryptoBase64Decode: (inBytes: number[], noNewLines: boolean) => number[];

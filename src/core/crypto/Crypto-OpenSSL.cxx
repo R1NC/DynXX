@@ -94,6 +94,53 @@ namespace
         EVP_CIPHER_CTX *ctx;
     };
 
+    Bytes evpHash(BytesView inBytes, const EVP_MD* md) {
+        const auto in = inBytes.data();
+        const auto inLen = inBytes.size();
+        if (in == nullptr || inLen == 0)  [[unlikely]]
+        {
+            return {};
+        }
+        unsigned int outLen = EVP_MD_size(md);
+        Bytes out(static_cast<size_t>(outLen), 0);
+
+        const auto ctx = EVP_MD_CTX_create();
+        if (ctx == nullptr) [[unlikely]]
+        {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_MD_CTX_create failed, err: {}", readErrMsg().value_or(""));
+            return {};
+        }
+
+        auto ret = EVP_DigestInit_ex(ctx, md, nullptr);
+        if (ret != OK) [[unlikely]]
+        {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestInit_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            EVP_MD_CTX_destroy(ctx);
+            return {};
+        }
+
+        ret = EVP_DigestUpdate(ctx, in, inLen);
+        if (ret != OK) [[unlikely]]
+        {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestUpdate failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            EVP_MD_CTX_destroy(ctx);
+            return {};
+        }
+
+        ret = EVP_DigestFinal_ex(ctx, out.data(), &outLen);
+        if (ret != OK) [[unlikely]]
+        {
+            dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestFinal_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            EVP_MD_CTX_destroy(ctx);
+            return {};
+        }
+
+        EVP_MD_CTX_destroy(ctx);
+
+        out.resize(outLen);
+        return out;
+    }
+
     struct Base64CharValidator {
         static constexpr size_t charIdx(char c) noexcept {
             //The range of byte(unsigned char) is just [0, 255], same as the size of validTable!
@@ -389,122 +436,24 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
 
 Bytes DynXX::Core::Crypto::Hash::md5(BytesView inBytes)
 {
-    const auto in = inBytes.data();
-    const auto inLen = inBytes.size();
-    if (in == nullptr || inLen == 0) [[unlikely]]
-    {
-        return {};
-    }
-    constexpr auto outLen = MD5_BYTES_LEN;
-    Bytes out(outLen, 0);
-
-    MD5_CTX md5;
-
-    auto ret = MD5_Init(&md5);
-    if (ret != OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "MD5_Init failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
-        return {};
-    }
-
-    ret = MD5_Update(&md5, in, inLen);
-    if (ret != OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "MD5_Update failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
-        return {};
-    }
-
-    ret = MD5_Final(out.data(), &md5);
-    if (ret != OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "MD5_Final failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
-        return {};
-    }
-
-    return out;
+    const auto md = EVP_md5();
+    return evpHash(inBytes, md);
 }
 
 // SHA1
 
 Bytes DynXX::Core::Crypto::Hash::sha1(BytesView inBytes)
 {
-    const auto in = inBytes.data();
-    const auto inLen = inBytes.size();
-    if (in == nullptr || inLen == 0)  [[unlikely]]
-    {
-        return {};
-    }
-    unsigned int outLen = EVP_MAX_MD_SIZE;
-    Bytes out;
-    out.reserve(outLen);
-
-    const auto ctx = EVP_MD_CTX_create();
     const auto md = EVP_sha1();
-
-    auto ret = EVP_DigestInit_ex(ctx, md, nullptr);
-    if (ret != OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestInit_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
-        return {};
-    }
-
-    ret = EVP_DigestUpdate(ctx, in, inLen);
-    if (ret != OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestUpdate failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
-        return {};
-    }
-
-    ret = EVP_DigestFinal_ex(ctx, out.data(), &outLen);
-    if (ret != OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestFinal_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
-        return {};
-    }
-
-    EVP_MD_CTX_destroy(ctx);
-
-    return out;
+    return evpHash(inBytes, md);
 }
 
 // SHA256
 
 Bytes DynXX::Core::Crypto::Hash::sha256(BytesView inBytes)
 {
-    const auto in = inBytes.data();
-    const auto inLen = inBytes.size();
-    if (in == nullptr || inLen == 0) [[unlikely]]
-    {
-        return {};
-    }
-    constexpr auto outLen = SHA256_BYTES_LEN;
-    Bytes out;
-    out.reserve(outLen);
-
-    SHA256_CTX sha256;
-
-    auto ret = SHA256_Init(&sha256);
-    if (ret != OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "SHA256_Init failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
-        return {};
-    }
-
-    ret = SHA256_Update(&sha256, in, inLen);
-    if (ret != OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "SHA256_Update failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
-        return {};
-    }
-
-    ret = SHA256_Final(out.data(), &sha256);
-    if (ret != OK) [[unlikely]]
-    {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "SHA256_Final failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
-        return {};
-    }
-
-    return out;
+    const auto md = EVP_sha256();
+    return evpHash(inBytes, md);
 }
 
 // RSA
