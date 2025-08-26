@@ -4,6 +4,7 @@
 #if defined(__cplusplus)
 
 #include <string>
+#include <array>
 
 namespace DynXX::Core::Net::Util
         {
@@ -22,10 +23,10 @@ namespace DynXX::Core::Net::Util
 
             inline std::string formatMacAddress(const unsigned char* mac)
             {
-                char macStr[18];
-                snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
+                std::array<char, 18> buffer{};
+                snprintf(buffer.data(), buffer.size(), "%02x:%02x:%02x:%02x:%02x:%02x",
                     mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-                return {macStr};
+                return {buffer.data()};
             }
 
             std::string macAddress();
