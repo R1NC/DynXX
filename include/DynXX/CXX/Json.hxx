@@ -17,7 +17,9 @@ enum class DynXXJsonNodeTypeX : int {
     Null,
 };
 
-DynXXJsonNodeTypeX dynxxJsonReadType(void *const json);
+DynXXJsonNodeTypeX dynxxJsonReadType(void *const cjson);
+
+std::optional<std::string> dynxxJsonReadName(void *const cjson);
 
 std::optional<std::string> dynxxJsonToStr(void *const cjson);
 
@@ -37,7 +39,7 @@ void *dynxxJsonDecoderReadChild(void *const decoder, void *const node = nullptr)
 
 size_t dynxxJsonDecoderReadChildrenCount(void *const decoder, void *const node = nullptr);
 
-void dynxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void *child)> &&callback,
+void dynxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void *childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback,
                                    void *const node = nullptr);
 
 void *dynxxJsonDecoderReadNext(void *const decoder, void *const node = nullptr);

@@ -705,6 +705,10 @@ DynXXJsonNodeTypeX dynxxJsonReadType(void *const cjson) {
     return Json::cJSONReadType(cjson);
 }
 
+std::optional<std::string> dynxxJsonReadName(void *const cjson) {
+    return Json::cJSONReadName(cjson);
+}
+
 std::optional<std::string> dynxxJsonToStr(void *const cjson) {
     return Json::cJSONToStr(cjson);
 }
@@ -765,7 +769,7 @@ size_t dynxxJsonDecoderReadChildrenCount(void *const decoder, void *const node) 
     return xdecoder->readChildrenCount(node);
 }
 
-void dynxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void *child)> &&callback,
+void dynxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void *childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback,
                                    void *const node) {
     if (decoder == nullptr) {
         return;
