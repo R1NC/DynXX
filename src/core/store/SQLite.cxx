@@ -67,7 +67,6 @@ bool DynXX::Core::Store::SQLite::Connection::execute(std::string_view sql) const
     }
     
     const auto rc = sqlite3_exec(this->db, sqlOp.value(), nullptr, nullptr, nullptr);
-    // dynxxLogPrintF(Debug, "SQLite.exec ret:{}", rc);
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -93,9 +92,7 @@ std::unique_ptr<DynXX::Core::Store::SQLite::Connection::QueryResult> DynXX::Core
         return nullptr;
     }
 
-    const auto rc = sqlite3_prepare_v2(this->db, sqlOp.value(), static_cast<int>(sql.size()), &stmt, nullptr);
-    // dynxxLogPrintF(Debug, "SQLite.query ret:{}", rc);
-    if (rc != SQLITE_OK)
+    if (const auto rc = sqlite3_prepare_v2(this->db, sqlOp.value(), static_cast<int>(sql.size()), &stmt, nullptr); rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
         return nullptr;
@@ -125,7 +122,6 @@ bool DynXX::Core::Store::SQLite::Connection::QueryResult::readRow() const
         return false;
     }
     const auto rc = sqlite3_step(this->stmt);
-    // dynxxLogPrintF(Debug, "SQLite.step ret:{}", rc);
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
         PRINT_ERR(rc, nullptr);

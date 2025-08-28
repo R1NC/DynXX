@@ -117,7 +117,7 @@ namespace {
     {
         long pos(0);
         Bytes outBytes;
-        auto b = process(zb, bufferSize,
+        if (!process(zb, bufferSize,
             [bufferSize, &in, &pos]
             {
                 const auto len = static_cast<long>(std::min<size_t>(bufferSize, in.size() - pos));
@@ -129,8 +129,7 @@ namespace {
             {
                 outBytes.insert(outBytes.end(), bytes.begin(), bytes.end());
             }
-        );
-        if (!b)
+        ))
         {
             return {};
         }
@@ -192,9 +191,7 @@ Bytes DynXX::Core::Z::ZBase<T>::processDo()
     this->zs.avail_out = static_cast<unsigned int>(this->bufferSize);
     this->zs.next_out = this->outBuffer;
 
-    // dynxxLogPrintF(Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
     static_cast<T *>(this)->processImp();
-    // dynxxLogPrintF(Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
 
     if (this->ret != Z_OK && ret != Z_STREAM_END) [[unlikely]]
     {
