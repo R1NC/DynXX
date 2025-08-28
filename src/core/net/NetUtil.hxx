@@ -6,6 +6,10 @@
 #include <string>
 #include <array>
 
+#if defined(USE_STD_FORMAT)
+#include <format>
+#endif
+
 namespace DynXX::Core::Net::Util
         {
             enum class NetType : int 
@@ -23,10 +27,25 @@ namespace DynXX::Core::Net::Util
 
             inline std::string formatMacAddress(const unsigned char* mac)
             {
-                std::array<char, 18> buffer{};
-                snprintf(buffer.data(), buffer.size(), "%02x:%02x:%02x:%02x:%02x:%02x",
+                if (!mac) [[unlikely]]
+                {
+                    return {};
+                }
+#if defined(USE_STD_FORMAT)
+                static constexpr auto kMacAddressFormat = "{:02x}:{:02x}:{:02x}:{:02x}:{:02x}:{:02x}";
+                return std::format(kMacAddressFormat,
                     mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-                return {buffer.data()};
+#else
+                static constexpr auto hexTab = "0123456789abcdef";
+                std::string result;
+                result.reserve(17);
+                for (size_t i = 0; i < 6; ++i) {
+                    if (i > 0) result += ':';
+                    result += hexTab[mac[i] >> 4];
+                    result += hexTab[mac[i] & 0x0F];
+                }
+                return result;
+#endif
             }
 
             std::string macAddress();
