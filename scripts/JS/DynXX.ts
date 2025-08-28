@@ -87,7 +87,7 @@ declare function DynXXNetHttpDownload(
     timeout?: number
 ): Promise<boolean>
 
-/// Store.SQLite
+/// SQLite
 
 declare function DynXXSQLiteOpen(_id: string): string
 
@@ -107,7 +107,7 @@ declare function DynXXSQLiteQueryDrop(query_result: string): void
 
 declare function DynXXSQLiteClose(conn: string): void
 
-/// Store.KV
+/// KV
 
 declare function DynXXKVOpen(_id: string): string
 

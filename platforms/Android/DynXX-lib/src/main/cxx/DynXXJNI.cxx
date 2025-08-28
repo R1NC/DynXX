@@ -17,7 +17,7 @@ namespace {
 
 #define DECLARE_JNI_FUNC(func, signature) {#func, signature, reinterpret_cast<void *>(func)}
 
-#pragma mark Engine Callback
+// Engine Callback
 
     void log_callback(int level, const char *content) {
         if (sVM == nullptr || sLogCallback == nullptr || sLogCallbackMethodId == nullptr ||
@@ -60,7 +60,7 @@ namespace {
         return newRes;
     }
 
-#pragma mark Engine base API
+// Engine base API
 
     jstring getVersion(JNIEnv *env, jobject thiz) {
         auto cV = dynxx_get_version();
@@ -81,7 +81,7 @@ namespace {
         dynxx_release();
     }
 
-#pragma mark Log
+// Log
 
     void logSetLevel(JNIEnv *env, jobject thiz,
                      jint level) {
@@ -109,7 +109,7 @@ namespace {
         env->ReleaseStringUTFChars(content, cContent);
     }
 
-#pragma mark Net
+// Net
 
     jstring netHttpRequest(JNIEnv *env, jobject thiz,
                            jstring url, jstring params,
@@ -202,7 +202,7 @@ namespace {
         return jStr;
     }
 
-#pragma mark Lua
+// Lua
 
     jboolean lLoadF(JNIEnv *env, jobject thiz,
                     jstring file) {
@@ -234,7 +234,7 @@ namespace {
         return jStr;
     }
 
-#pragma mark JS
+// JS
 
     jboolean jLoadF(JNIEnv *env, jobject thiz,
                     jstring file, jboolean is_module) {
@@ -292,7 +292,7 @@ namespace {
         }
     }
 
-#pragma mark Store.SQLite
+// SQLite
 
     jlong sqliteOpen(JNIEnv *env, jobject thiz,
                           jstring id) {
@@ -364,7 +364,7 @@ namespace {
         dynxx_sqlite_close(addr2ptr(conn));
     }
 
-#pragma mark Srore.KV
+// Srore.KV
 
     jlong kvOpen(JNIEnv *env, jobject thiz,
                       jstring id) {
@@ -460,7 +460,7 @@ namespace {
         dynxx_kv_close(addr2ptr(conn));
     }
 
-#pragma mark Device
+// Device
 
     jint deviceType(JNIEnv *env, jobject thiz) {
         return dynxx_device_type();
@@ -491,7 +491,7 @@ namespace {
         return dynxx_device_cpu_arch();
     }
 
-#pragma mark Coding
+// Coding
 
     jstring codingHexBytes2Str(JNIEnv *env, jobject thiz,
                                jbyteArray bytes) {
@@ -519,7 +519,7 @@ namespace {
         return jba;
     }
 
-#pragma mark Crypto
+// Crypto
 
     jbyteArray cryptoRandom(JNIEnv *env, jobject thiz,
                             jint len) {
@@ -705,7 +705,7 @@ namespace {
         return jba;
     }
 
-#pragma mark JsonDecoder
+// JsonDecoder
 
     jint jsonReadType(JNIEnv *env, jobject thiz,
                       jlong node) {
@@ -762,7 +762,7 @@ namespace {
         dynxx_json_decoder_release(addr2ptr(decoder));
     }
 
-#pragma mark Zip
+// Zip
 
     jlong zZipInit(JNIEnv *env, jobject thiz,
                    jint mode, jlong bufferSize, jint format) {

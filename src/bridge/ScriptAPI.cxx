@@ -299,7 +299,7 @@ bool dynxx_net_http_downloadS(const std::string_view json)
     return dynxxNetHttpDownload(url.value(), file.value(), timeout.value_or(0));
 }
 
-// Store.SQLite
+// SQLite
 
 std::string dynxx_sqlite_openS(const std::string_view json)
 {
@@ -463,7 +463,7 @@ void dynxx_sqlite_closeS(const std::string_view json)
     dynxxSQLiteClose(conn);
 }
 
-// Store.KV
+// KV
 
 std::string dynxx_kv_openS(const std::string_view json)
 {

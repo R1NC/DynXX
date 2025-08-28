@@ -504,7 +504,7 @@ bool dynxxNetHttpDownload(std::string_view url, const std::string_view filePath,
 }
 #endif
 
-// Store.SQLite
+// SQLite
 
 #if defined(USE_DB)
 
@@ -597,7 +597,7 @@ void dynxxSQLiteClose(const DynXXSQLiteConnHandle conn) {
 
 #endif
 
-// Store.KV
+// KV
 
 #if defined(USE_KV)
 

@@ -37,7 +37,7 @@ napi_value release(napi_env env, napi_callback_info info) {
     return int2NapiValue(env, napi_ok);
 }
 
-#pragma mark Log Callback
+// Log Callback
 
 typedef struct {
     napi_async_work tsWork;
@@ -122,7 +122,7 @@ void engineLogCallback(int level, const char *content) {
     CHECK_NAPI_STATUS_RETURN_VOID(sNapiEnv, status, "napi_queue_async_work() failed");
 }
 
-#pragma mark Log API
+// Log API
 
 napi_value logSetLevel(napi_env env, napi_callback_info info) {
     Args args(env, info);
@@ -170,7 +170,7 @@ napi_value logPrint(napi_env env, napi_callback_info info) {
     return int2NapiValue(env, napi_ok);
 }
 
-#pragma mark Net
+// Net
 
 napi_value netHttpRequest(napi_env env, napi_callback_info info) {
     Args args(env, info);
@@ -219,7 +219,7 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-#pragma mark Store.SQLite
+// SQLite
 
 napi_value sqliteOpen(napi_env env, napi_callback_info info) {
     Args args(env, info);
@@ -325,7 +325,7 @@ napi_value sqliteClose(napi_env env, napi_callback_info info) {
     return int2NapiValue(env, napi_ok);
 }
 
-#pragma mark Store.KV
+// KV
 
 napi_value kvOpen(napi_env env, napi_callback_info info) {
     Args args(env, info);
@@ -465,7 +465,7 @@ napi_value kvClose(napi_env env, napi_callback_info info) {
     return int2NapiValue(env, napi_ok);
 }
 
-#pragma mark DeviceInfo
+// DeviceInfo
 
 napi_value deviceType(napi_env env, napi_callback_info info) {
     auto dt = dynxx_device_type();
@@ -501,7 +501,7 @@ napi_value deviceCpuArch(napi_env env, napi_callback_info info) {
     return v;
 }
 
-#pragma mark JsonDecoder
+// JsonDecoder
 
 napi_value jsonReadType(napi_env env, napi_callback_info info) {
     Args args(env, info);
@@ -591,7 +591,7 @@ napi_value jsonDecoderRelease(napi_env env, napi_callback_info info) {
     return int2NapiValue(env, napi_ok);
 }
 
-#pragma mark Coding
+// Coding
 
 napi_value codingHexBytes2str(napi_env env, napi_callback_info info) {
     Args args(env, info);
@@ -621,7 +621,7 @@ napi_value codingHexStr2Bytes(napi_env env, napi_callback_info info) {
     return v;
 }
 
-#pragma mark Crypto
+// Crypto
 
 napi_value cryptoRand(napi_env env, napi_callback_info info) {
     Args args(env, info);
@@ -804,7 +804,7 @@ napi_value cryptoBase64Decode(napi_env env, napi_callback_info info) {
     return v;
 }
 
-#pragma mark Lua
+// Lua
 
 napi_value lLoadF(napi_env env, napi_callback_info info) {
     Args args(env, info);
@@ -847,7 +847,7 @@ napi_value lCall(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-#pragma mark JS
+// JS
 
 napi_value jLoadF(napi_env env, napi_callback_info info) {
     Args args(env, info);
@@ -914,7 +914,7 @@ napi_value jCall(napi_env env, napi_callback_info info) {
 
 } // namespace
 
-#pragma mark Register Module
+// Register Module
 
 EXTERN_C_START
 napi_value NAPI_DynXX_RegisterFuncs(napi_env env, napi_value exports) {

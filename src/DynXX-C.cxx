@@ -310,7 +310,7 @@ bool dynxx_net_http_download(const char *url, const char *file_path, size_t time
 
 #endif
 
-// Store.SQLite
+// SQLite
 
 #if defined(USE_DB)
 
@@ -379,7 +379,7 @@ void dynxx_sqlite_close(const DynXXSQLiteConnHandle conn) {
 
 #endif
 
-// Store.KV
+// KV
 
 #if defined(USE_KV)
 
