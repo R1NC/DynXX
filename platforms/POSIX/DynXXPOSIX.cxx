@@ -33,7 +33,7 @@ void dynxx_posix_testHttpJ()
 
 void dynxx_posix_testDB()
 {
-    if (const auto dbConn = dynxx_store_sqlite_open("test"))
+    if (const auto dbConn = dynxx_sqlite_open("test"))
     {
         const auto insertSQL = "CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, vendor TEXT); \
             INSERT OR IGNORE INTO TestTable (platform, vendor) \
@@ -41,38 +41,38 @@ void dynxx_posix_testDB()
             ('iOS','Apple'), \
             ('Android','Google'), \
             ('HarmonyOS','Huawei');";
-        if (dynxx_store_sqlite_execute(dbConn, insertSQL))
+        if (dynxx_sqlite_execute(dbConn, insertSQL))
         {
             const auto querySQL = "SELECT * FROM TestTable;";
-            if (const auto queryResult = dynxx_store_sqlite_query_do(dbConn, querySQL))
+            if (const auto queryResult = dynxx_sqlite_query_do(dbConn, querySQL))
             {
-                while (dynxx_store_sqlite_query_read_row(queryResult))
+                while (dynxx_sqlite_query_read_row(queryResult))
                 {
-                    const auto platform = dynxx_store_sqlite_query_read_column_text(queryResult, "platform");
-                    const auto vendor = dynxx_store_sqlite_query_read_column_text(queryResult, "vendor");
+                    const auto platform = dynxx_sqlite_query_read_column_text(queryResult, "platform");
+                    const auto vendor = dynxx_sqlite_query_read_column_text(queryResult, "vendor");
                     std::cout << vendor << "->" << platform << std::endl;
                 }
-               dynxx_store_sqlite_query_drop(queryResult);
+               dynxx_sqlite_query_drop(queryResult);
             }
         }
-       dynxx_store_sqlite_close(dbConn);
+       dynxx_sqlite_close(dbConn);
     }
 }
 
 void dynxx_posix_testKV()
 {
-    if (const auto kvConn = dynxx_store_kv_open("test"))
+    if (const auto kvConn = dynxx_kv_open("test"))
     {
-       dynxx_store_kv_write_string(kvConn, "s", "DynXX");
-        const auto s = dynxx_store_kv_read_string(kvConn, "s");
+       dynxx_kv_write_string(kvConn, "s", "DynXX");
+        const auto s = dynxx_kv_read_string(kvConn, "s");
         std::cout << "s->" << s << std::endl;
-       dynxx_store_kv_write_integer(kvConn, "i", 1234567890);
-        const auto i = dynxx_store_kv_read_integer(kvConn, "i");
+       dynxx_kv_write_integer(kvConn, "i", 1234567890);
+        const auto i = dynxx_kv_read_integer(kvConn, "i");
         std::cout << "i->" << i << std::endl;
-       dynxx_store_kv_write_float(kvConn, "f", 0.123456789f);
-        const auto f = dynxx_store_kv_read_float(kvConn, "f");
+       dynxx_kv_write_float(kvConn, "f", 0.123456789f);
+        const auto f = dynxx_kv_read_float(kvConn, "f");
         std::cout << "f->" << f << std::endl;
-       dynxx_store_kv_close(kvConn);
+       dynxx_kv_close(kvConn);
     }
 }
 

@@ -32,8 +32,8 @@ static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=
 }
 
 - (void)dealloc {
-   dynxx_store_sqlite_close(_db_conn);
-   dynxx_store_kv_close(_kv_conn);
+   dynxx_sqlite_close(_db_conn);
+   dynxx_kv_close(_kv_conn);
    dynxx_release();
 }
 
@@ -74,38 +74,38 @@ static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=
 }
 
 - (void)testDB {
-    _db_conn = dynxx_store_sqlite_open("test.db");
+    _db_conn = dynxx_sqlite_open("test.db");
     if (!_db_conn) return;
     
     NSString *sqlPathPrepareData = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
     NSString *sqlPrepareData = [NSString stringWithContentsOfFile:sqlPathPrepareData encoding:NSUTF8StringEncoding error:nil];
-    auto bPrepareData = dynxx_store_sqlite_execute(_db_conn, NSString2CharP(sqlPrepareData));
+    auto bPrepareData = dynxx_sqlite_execute(_db_conn, NSString2CharP(sqlPrepareData));
     if (!bPrepareData) return;
     
     NSString *sqlPathQuery = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"query.sql"];
     NSString *sqlQuery = [NSString stringWithContentsOfFile:sqlPathQuery encoding:NSUTF8StringEncoding error:nil];
-    auto qrQuery = dynxx_store_sqlite_query_do(_db_conn, NSString2CharP(sqlQuery));
+    auto qrQuery = dynxx_sqlite_query_do(_db_conn, NSString2CharP(sqlQuery));
     if (!qrQuery) return;
     
-    while (dynxx_store_sqlite_query_read_row(qrQuery)) {
-        auto platform = dynxx_store_sqlite_query_read_column_text(qrQuery, "platform");
-        auto i = dynxx_store_sqlite_query_read_column_integer(qrQuery, "i");
-        auto f = dynxx_store_sqlite_query_read_column_float(qrQuery, "f");
+    while (dynxx_sqlite_query_read_row(qrQuery)) {
+        auto platform = dynxx_sqlite_query_read_column_text(qrQuery, "platform");
+        auto i = dynxx_sqlite_query_read_column_integer(qrQuery, "i");
+        auto f = dynxx_sqlite_query_read_column_float(qrQuery, "f");
         NSLog(@"platform:%@ i:%lld f:%f", CharP2NSString(platform), i, f);
     }
-    dynxx_store_sqlite_query_drop(qrQuery);
+    dynxx_sqlite_query_drop(qrQuery);
 }
 
 - (void)testKV {
-    _kv_conn = dynxx_store_kv_open("test");
+    _kv_conn = dynxx_kv_open("test");
     if (!_kv_conn) return;
     
-    dynxx_store_kv_write_string(_kv_conn, "s", "DynXX");
-    NSLog(@"%s", dynxx_store_kv_read_string(_kv_conn, "s"));
-    dynxx_store_kv_write_integer(_kv_conn, "i", 1234567890);
-    NSLog(@"%lld", dynxx_store_kv_read_integer(_kv_conn, "i"));
-    dynxx_store_kv_write_float(_kv_conn, "f", 3.1415926535);
-    NSLog(@"%f", dynxx_store_kv_read_float(_kv_conn, "f"));
+    dynxx_kv_write_string(_kv_conn, "s", "DynXX");
+    NSLog(@"%s", dynxx_kv_read_string(_kv_conn, "s"));
+    dynxx_kv_write_integer(_kv_conn, "i", 1234567890);
+    NSLog(@"%lld", dynxx_kv_read_integer(_kv_conn, "i"));
+    dynxx_kv_write_float(_kv_conn, "f", 3.1415926535);
+    NSLog(@"%f", dynxx_kv_read_float(_kv_conn, "f"));
 }
 
 - (void)testDeviceInfo {

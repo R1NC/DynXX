@@ -11,7 +11,7 @@
 #include "Device.h"
 #include "Net.h"
 #include "KV.h"
-#include "DB.h"
+#include "SQLite.h"
 #include "Json.h"
 #include "Zip.h"
 #include "Lua.h"

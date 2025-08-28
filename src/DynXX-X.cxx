@@ -508,7 +508,7 @@ bool dynxxNetHttpDownload(std::string_view url, const std::string_view filePath,
 
 #if defined(USE_DB)
 
-DynXXDBConnHandle dynxxStoreSqliteOpen(const std::string &_id) {
+DynXXSQLiteConnHandle dynxxSQLiteOpen(const std::string &_id) {
     if (!_sqlite || !_root || _id.empty()) {
         return nullptr;
     }
@@ -519,7 +519,7 @@ DynXXDBConnHandle dynxxStoreSqliteOpen(const std::string &_id) {
     return nullptr;
 }
 
-bool dynxxStoreSqliteExecute(const DynXXDBConnHandle conn, std::string_view sql) {
+bool dynxxSQLiteExecute(const DynXXSQLiteConnHandle conn, std::string_view sql) {
     if (conn == nullptr || sql.empty()) {
         return false;
     }
@@ -527,7 +527,7 @@ bool dynxxStoreSqliteExecute(const DynXXDBConnHandle conn, std::string_view sql)
     return xconn->execute(sql);
 }
 
-DynXXDBQueryResultHandle dynxxStoreSqliteQueryDo(const DynXXDBConnHandle conn, std::string_view sql) {
+DynXXSQLiteQueryResultHandle dynxxSQLiteQueryDo(const DynXXSQLiteConnHandle conn, std::string_view sql) {
     if (conn == nullptr || sql.empty()) {
         return nullptr;
     }
@@ -536,7 +536,7 @@ DynXXDBQueryResultHandle dynxxStoreSqliteQueryDo(const DynXXDBConnHandle conn, s
     return ptrQr ? ptrQr.release() : nullptr; //trans ownership to C API, not release the memory.
 }
 
-bool dynxxStoreSqliteQueryReadRow(const DynXXDBQueryResultHandle query_result) {
+bool dynxxSQLiteQueryReadRow(const DynXXSQLiteQueryResultHandle query_result) {
     if (query_result == nullptr) {
         return false;
     }
@@ -544,7 +544,7 @@ bool dynxxStoreSqliteQueryReadRow(const DynXXDBQueryResultHandle query_result) {
     return xqr->readRow();
 }
 
-std::optional<std::string> dynxxStoreSqliteQueryReadColumnText(const DynXXDBQueryResultHandle query_result, std::string_view column) {
+std::optional<std::string> dynxxSQLiteQueryReadColumnText(const DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
     if (query_result == nullptr || column.empty()) {
         return std::nullopt;
     }
@@ -556,7 +556,7 @@ std::optional<std::string> dynxxStoreSqliteQueryReadColumnText(const DynXXDBQuer
     return {*std::get_if<std::string>(&v.value())};
 }
 
-std::optional<int64_t> dynxxStoreSqliteQueryReadColumnInteger(const DynXXDBQueryResultHandle query_result, std::string_view column) {
+std::optional<int64_t> dynxxSQLiteQueryReadColumnInteger(const DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
     if (query_result == nullptr || column.empty()) {
         return std::nullopt;
     }
@@ -568,7 +568,7 @@ std::optional<int64_t> dynxxStoreSqliteQueryReadColumnInteger(const DynXXDBQuery
     return {*std::get_if<int64_t>(&v.value())};
 }
 
-std::optional<double> dynxxStoreSqliteQueryReadColumnFloat(const DynXXDBQueryResultHandle query_result, std::string_view column) {
+std::optional<double> dynxxSQLiteQueryReadColumnFloat(const DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
     if (query_result == nullptr || column.empty()) {
         return std::nullopt;
     }
@@ -580,7 +580,7 @@ std::optional<double> dynxxStoreSqliteQueryReadColumnFloat(const DynXXDBQueryRes
     return {*std::get_if<double>(&v.value())};
 }
 
-void dynxxStoreSqliteQueryDrop(const DynXXDBQueryResultHandle query_result) {
+void dynxxSQLiteQueryDrop(const DynXXSQLiteQueryResultHandle query_result) {
     if (query_result == nullptr) {
         return;
     }
@@ -588,7 +588,7 @@ void dynxxStoreSqliteQueryDrop(const DynXXDBQueryResultHandle query_result) {
     delete xqr;
 }
 
-void dynxxStoreSqliteClose(const DynXXDBConnHandle conn) {
+void dynxxSQLiteClose(const DynXXSQLiteConnHandle conn) {
     if (conn == nullptr || _sqlite == nullptr)
         return;
     const auto xconn = static_cast<Store::SQLite::Connection *>(conn);
@@ -601,7 +601,7 @@ void dynxxStoreSqliteClose(const DynXXDBConnHandle conn) {
 
 #if defined(USE_KV)
 
-DynXXKVConnHandle dynxxStoreKvOpen(const std::string &_id) {
+DynXXKVConnHandle dynxxKVOpen(const std::string &_id) {
     if (!_kv || _id.empty()) {
         return nullptr;
     }
@@ -611,7 +611,7 @@ DynXXKVConnHandle dynxxStoreKvOpen(const std::string &_id) {
     return nullptr;
 }
 
-std::optional<std::string> dynxxStoreKvReadString(const DynXXKVConnHandle conn, std::string_view k) {
+std::optional<std::string> dynxxKVReadString(const DynXXKVConnHandle conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return std::nullopt;
     }
@@ -619,7 +619,7 @@ std::optional<std::string> dynxxStoreKvReadString(const DynXXKVConnHandle conn, 
     return xconn->readString(k);
 }
 
-bool dynxxStoreKvWriteString(const DynXXKVConnHandle conn, std::string_view k, const std::string &v) {
+bool dynxxKVWriteString(const DynXXKVConnHandle conn, std::string_view k, const std::string &v) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -627,7 +627,7 @@ bool dynxxStoreKvWriteString(const DynXXKVConnHandle conn, std::string_view k, c
     return xconn->write(k, v);
 }
 
-std::optional<int64_t> dynxxStoreKvReadInteger(const DynXXKVConnHandle conn, std::string_view k) {
+std::optional<int64_t> dynxxKVReadInteger(const DynXXKVConnHandle conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return std::nullopt;
     }
@@ -635,7 +635,7 @@ std::optional<int64_t> dynxxStoreKvReadInteger(const DynXXKVConnHandle conn, std
     return xconn->readInteger(k);
 }
 
-bool dynxxStoreKvWriteInteger(const DynXXKVConnHandle conn, std::string_view k, int64_t v) {
+bool dynxxKVWriteInteger(const DynXXKVConnHandle conn, std::string_view k, int64_t v) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -643,7 +643,7 @@ bool dynxxStoreKvWriteInteger(const DynXXKVConnHandle conn, std::string_view k, 
     return xconn->write(k, v);
 }
 
-std::optional<double> dynxxStoreKvReadFloat(const DynXXKVConnHandle conn, std::string_view k) {
+std::optional<double> dynxxKVReadFloat(const DynXXKVConnHandle conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return std::nullopt;
     }
@@ -651,7 +651,7 @@ std::optional<double> dynxxStoreKvReadFloat(const DynXXKVConnHandle conn, std::s
     return xconn->readFloat(k);
 }
 
-bool dynxxStoreKvWriteFloat(const DynXXKVConnHandle conn, std::string_view k, double v) {
+bool dynxxKVWriteFloat(const DynXXKVConnHandle conn, std::string_view k, double v) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -659,7 +659,7 @@ bool dynxxStoreKvWriteFloat(const DynXXKVConnHandle conn, std::string_view k, do
     return xconn->write(k, v);
 }
 
-std::vector<std::string> dynxxStoreKvAllKeys(const DynXXKVConnHandle conn) {
+std::vector<std::string> dynxxKVAllKeys(const DynXXKVConnHandle conn) {
     if (conn == nullptr) {
         return {};
     }
@@ -667,7 +667,7 @@ std::vector<std::string> dynxxStoreKvAllKeys(const DynXXKVConnHandle conn) {
     return xconn->allKeys();
 }
 
-bool dynxxStoreKvContains(const DynXXKVConnHandle conn, std::string_view k) {
+bool dynxxKVContains(const DynXXKVConnHandle conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -675,7 +675,7 @@ bool dynxxStoreKvContains(const DynXXKVConnHandle conn, std::string_view k) {
     return xconn->contains(k);
 }
 
-bool dynxxStoreKvRemove(const DynXXKVConnHandle conn, std::string_view k) {
+bool dynxxKVRemove(const DynXXKVConnHandle conn, std::string_view k) {
     if (conn == nullptr || k.empty()) {
         return false;
     }
@@ -683,7 +683,7 @@ bool dynxxStoreKvRemove(const DynXXKVConnHandle conn, std::string_view k) {
     return xconn->remove(k);
 }
 
-void dynxxStoreKvClear(const DynXXKVConnHandle conn) {
+void dynxxKVClear(const DynXXKVConnHandle conn) {
     if (conn == nullptr) {
         return;
     }
@@ -691,7 +691,7 @@ void dynxxStoreKvClear(const DynXXKVConnHandle conn) {
     xconn->clear();
 }
 
-void dynxxStoreKvClose(const DynXXKVConnHandle conn) {
+void dynxxKVClose(const DynXXKVConnHandle conn) {
     if (conn == nullptr || _kv == nullptr)
         return;
     const auto xconn = static_cast<Store::KV::Connection *>(conn);

@@ -136,28 +136,28 @@ DEF_API(dynxx_log_print, VOID)
 DEF_API_ASYNC(dynxx_net_http_request, STRING)
 DEF_API_ASYNC(dynxx_net_http_download, BOOL)
 
-DEF_API(dynxx_store_sqlite_open, STRING)
-DEF_API_ASYNC(dynxx_store_sqlite_execute, BOOL)
-DEF_API_ASYNC(dynxx_store_sqlite_query_do, STRING)
-DEF_API(dynxx_store_sqlite_query_read_row, BOOL)
-DEF_API(dynxx_store_sqlite_query_read_column_text, STRING)
-DEF_API(dynxx_store_sqlite_query_read_column_integer, INT64)
-DEF_API(dynxx_store_sqlite_query_read_column_float, FLOAT)
-DEF_API(dynxx_store_sqlite_query_drop, VOID)
-DEF_API(dynxx_store_sqlite_close, VOID)
+DEF_API(dynxx_sqlite_open, STRING)
+DEF_API_ASYNC(dynxx_sqlite_execute, BOOL)
+DEF_API_ASYNC(dynxx_sqlite_query_do, STRING)
+DEF_API(dynxx_sqlite_query_read_row, BOOL)
+DEF_API(dynxx_sqlite_query_read_column_text, STRING)
+DEF_API(dynxx_sqlite_query_read_column_integer, INT64)
+DEF_API(dynxx_sqlite_query_read_column_float, FLOAT)
+DEF_API(dynxx_sqlite_query_drop, VOID)
+DEF_API(dynxx_sqlite_close, VOID)
 
-DEF_API(dynxx_store_kv_open, STRING)
-DEF_API(dynxx_store_kv_read_string, STRING)
-DEF_API(dynxx_store_kv_write_string, BOOL)
-DEF_API(dynxx_store_kv_read_integer, INT64)
-DEF_API(dynxx_store_kv_write_integer, BOOL)
-DEF_API(dynxx_store_kv_read_float, FLOAT)
-DEF_API(dynxx_store_kv_write_float, BOOL)
-DEF_API(dynxx_store_kv_all_keys, STRING)
-DEF_API(dynxx_store_kv_contains, BOOL)
-DEF_API(dynxx_store_kv_remove, BOOL)
-DEF_API(dynxx_store_kv_clear, VOID)
-DEF_API(dynxx_store_kv_close, VOID)
+DEF_API(dynxx_kv_open, STRING)
+DEF_API(dynxx_kv_read_string, STRING)
+DEF_API(dynxx_kv_write_string, BOOL)
+DEF_API(dynxx_kv_read_integer, INT64)
+DEF_API(dynxx_kv_write_integer, BOOL)
+DEF_API(dynxx_kv_read_float, FLOAT)
+DEF_API(dynxx_kv_write_float, BOOL)
+DEF_API(dynxx_kv_all_keys, STRING)
+DEF_API(dynxx_kv_contains, BOOL)
+DEF_API(dynxx_kv_remove, BOOL)
+DEF_API(dynxx_kv_clear, VOID)
+DEF_API(dynxx_kv_close, VOID)
 
 DEF_API(dynxx_coding_hex_bytes2str, STRING)
 DEF_API(dynxx_coding_hex_str2bytes, STRING)
@@ -213,28 +213,28 @@ static void registerFuncs() {
     BIND_API(dynxx_net_http_request);
     BIND_API(dynxx_net_http_download);
 
-    BIND_API(dynxx_store_sqlite_open);
-    BIND_API(dynxx_store_sqlite_execute);
-    BIND_API(dynxx_store_sqlite_query_do);
-    BIND_API(dynxx_store_sqlite_query_read_row);
-    BIND_API(dynxx_store_sqlite_query_read_column_text);
-    BIND_API(dynxx_store_sqlite_query_read_column_integer);
-    BIND_API(dynxx_store_sqlite_query_read_column_float);
-    BIND_API(dynxx_store_sqlite_query_drop);
-    BIND_API(dynxx_store_sqlite_close);
+    BIND_API(dynxx_sqlite_open);
+    BIND_API(dynxx_sqlite_execute);
+    BIND_API(dynxx_sqlite_query_do);
+    BIND_API(dynxx_sqlite_query_read_row);
+    BIND_API(dynxx_sqlite_query_read_column_text);
+    BIND_API(dynxx_sqlite_query_read_column_integer);
+    BIND_API(dynxx_sqlite_query_read_column_float);
+    BIND_API(dynxx_sqlite_query_drop);
+    BIND_API(dynxx_sqlite_close);
 
-    BIND_API(dynxx_store_kv_open);
-    BIND_API(dynxx_store_kv_read_string);
-    BIND_API(dynxx_store_kv_write_string);
-    BIND_API(dynxx_store_kv_read_integer);
-    BIND_API(dynxx_store_kv_write_integer);
-    BIND_API(dynxx_store_kv_read_float);
-    BIND_API(dynxx_store_kv_write_float);
-    BIND_API(dynxx_store_kv_all_keys);
-    BIND_API(dynxx_store_kv_contains);
-    BIND_API(dynxx_store_kv_remove);
-    BIND_API(dynxx_store_kv_clear);
-    BIND_API(dynxx_store_kv_close);
+    BIND_API(dynxx_kv_open);
+    BIND_API(dynxx_kv_read_string);
+    BIND_API(dynxx_kv_write_string);
+    BIND_API(dynxx_kv_read_integer);
+    BIND_API(dynxx_kv_write_integer);
+    BIND_API(dynxx_kv_read_float);
+    BIND_API(dynxx_kv_write_float);
+    BIND_API(dynxx_kv_all_keys);
+    BIND_API(dynxx_kv_contains);
+    BIND_API(dynxx_kv_remove);
+    BIND_API(dynxx_kv_clear);
+    BIND_API(dynxx_kv_close);
 
     BIND_API(dynxx_coding_hex_bytes2str);
     BIND_API(dynxx_coding_hex_str2bytes);

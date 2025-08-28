@@ -147,40 +147,40 @@ class DynXXTest {
                 DynXX.jsonDecoderRelease(jsonDecoder)
             }
 
-            val kvConn = DynXX.storeKVOpen("test")
+            val kvConn = DynXX.kvOpen("test")
             if (kvConn != 0L) {
-                DynXX.storeKVWriteString(kvConn,"s", "DynXX")
-                val s = DynXX.storeKVReadString(kvConn,"s")
+                DynXX.kvWriteString(kvConn,"s", "DynXX")
+                val s = DynXX.kvReadString(kvConn,"s")
                 DynXXHelper.logPrint(LogLevel.Debug, "s->$s")
-                DynXX.storeKVWriteInteger(kvConn,"i", 1234567890)
-                val i = DynXX.storeKVReadInteger(kvConn,"i")
+                DynXX.kvWriteInteger(kvConn,"i", 1234567890)
+                val i = DynXX.kvReadInteger(kvConn,"i")
                 DynXXHelper.logPrint(LogLevel.Debug, "i->$i")
-                DynXX.storeKVWriteFloat(kvConn,"f", 0.123456789)
-                val f = DynXX.storeKVReadFloat(kvConn,"f")
+                DynXX.kvWriteFloat(kvConn,"f", 0.123456789)
+                val f = DynXX.kvReadFloat(kvConn,"f")
                 DynXXHelper.logPrint(LogLevel.Debug, "f->$f")
-                DynXX.storeKVClose(kvConn)
+                DynXX.kvClose(kvConn)
             }
 
-            val dbConn = DynXX.storeSQLiteOpen("test")
+            val dbConn = DynXX.sqliteOpen("test")
             if (dbConn != 0L) {
                 val prepareSQL = sApplication?.assets?.open("prepare_data.sql")?.bufferedReader().use {
                     it?.readText()
                 }
-                DynXX.storeSQLiteExecute(dbConn, prepareSQL!!)
+                DynXX.sqliteExecute(dbConn, prepareSQL!!)
                 val querySQL = sApplication?.assets?.open("query.sql")?.bufferedReader().use {
                     it?.readText()
                 }
-                val queryResult = DynXX.storeSQLiteQueryDo(dbConn, querySQL!!)
+                val queryResult = DynXX.sqliteQueryDo(dbConn, querySQL!!)
                 if (queryResult != 0L) {
-                    while (DynXX.storeSQLiteQueryReadRow(queryResult)) {
-                        val s = DynXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
-                        val i = DynXX.storeSQLiteQueryReadColumnInteger(queryResult, "i")
-                        val f = DynXX.storeSQLiteQueryReadColumnFloat(queryResult, "f")
+                    while (DynXX.sqliteQueryReadRow(queryResult)) {
+                        val s = DynXX.sqliteQueryReadColumnText(queryResult, "platform");
+                        val i = DynXX.sqliteQueryReadColumnInteger(queryResult, "i")
+                        val f = DynXX.sqliteQueryReadColumnFloat(queryResult, "f")
                         DynXXHelper.logPrint(LogLevel.Debug,"$s->$i->$f")
                     }
-                    DynXX.storeSQLiteQueryDrop(queryResult)
+                    DynXX.sqliteQueryDrop(queryResult)
                 }
-                DynXX.storeSQLiteClose(dbConn)
+                DynXX.sqliteClose(dbConn)
             }
 
             sApplication?.assets?.open("prepare_data.sql").use { zipInStream ->

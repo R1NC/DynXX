@@ -73,26 +73,26 @@ function TestCrypto(s)
     DynXX.Log.print(DynXX.Log.Level.Debug, 'Aes.Gcm.decrypt: ' .. aesGcmDecodedStr)
 end
 
-function TestStoreKV()
-    local conn = DynXX.Store.KV.open('test4lua')
-    DynXX.Store.KV.writeString(conn, 's', 'DynXX')
-    DynXX.Store.KV.writeInteger(conn, 'i', 1234567890)
-    DynXX.Store.KV.writeFloat(conn, 'f', 0.987654321)
-    local keys = DynXX.Store.KV.allKeys(conn)
+function TestKV()
+    local conn = DynXX.KV.open('test4lua')
+    DynXX.KV.writeString(conn, 's', 'DynXX')
+    DynXX.KV.writeInteger(conn, 'i', 1234567890)
+    DynXX.KV.writeFloat(conn, 'f', 0.987654321)
+    local keys = DynXX.KV.allKeys(conn)
     for _, k in ipairs(keys) do
-        local v = DynXX.Store.KV.readString(conn, k)
+        local v = DynXX.KV.readString(conn, k)
         if k == 's' then
-            DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.Store.KV.readString(conn, k))
+            DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.KV.readString(conn, k))
         elseif k == 'i' then
-            DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.Store.KV.readInteger(conn, k))
+            DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.KV.readInteger(conn, k))
         elseif k == 'f' then
-            DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.Store.KV.readFloat(conn, k))
+            DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.KV.readFloat(conn, k))
         end
     end
-    DynXX.Store.KV.close(conn)
+    DynXX.KV.close(conn)
 end
 
-function TestStoreSQLite()
+function TestSQLite()
     local sqlPrepareData = [[
         DROP TABLE IF EXISTS TestTable;
         CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, s TEXT, i INTEGER, f FLOAT);
@@ -103,17 +103,17 @@ function TestStoreSQLite()
     ]]
     local sqlQuery = 'SELECT * FROM TestTable;'
 
-    local conn = DynXX.Store.SQLite.open('test.lua')
-    DynXX.Store.SQLite.execute(conn, sqlPrepareData)
-    local query = DynXX.Store.SQLite.Query.create(conn, sqlQuery)
-    while (DynXX.Store.SQLite.Query.readRow(query)) do
-        local s = DynXX.Store.SQLite.Query.readColumnText(query, 's')
-        local i = DynXX.Store.SQLite.Query.readColumnInteger(query, 'i')
-        local f = DynXX.Store.SQLite.Query.readColumnFloat(query, 'f')
+    local conn = DynXX.SQLite.open('test.lua')
+    DynXX.SQLite.execute(conn, sqlPrepareData)
+    local query = DynXX.SQLite.Query.create(conn, sqlQuery)
+    while (DynXX.SQLite.Query.readRow(query)) do
+        local s = DynXX.SQLite.Query.readColumnText(query, 's')
+        local i = DynXX.SQLite.Query.readColumnInteger(query, 'i')
+        local f = DynXX.SQLite.Query.readColumnFloat(query, 'f')
         DynXX.Log.print(DynXX.Log.Level.Debug, s .. ' | ' .. i .. ' | ' .. f)
     end
-    DynXX.Store.SQLite.Query.drop(query)
-    DynXX.Store.SQLite.close(conn)
+    DynXX.SQLite.Query.drop(query)
+    DynXX.SQLite.close(conn)
 end
 
 function TestCoroutine(url)
@@ -132,7 +132,7 @@ function TestTimer()
     local timer
     local timerF = function()
         count = count + 1
-        TestStoreSQLite()
+        TestSQLite()
         if count == 3 then
             Timer.remove(timer)
         end

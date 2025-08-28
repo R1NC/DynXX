@@ -3,7 +3,7 @@
 
 #include "Net.hxx"
 #include "KV.hxx"
-#include "DB.hxx"
+#include "SQLite.hxx"
 #include "Lua.hxx"
 #include "JS.hxx"
 #include "Log.hxx"

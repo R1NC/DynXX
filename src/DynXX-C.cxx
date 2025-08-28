@@ -315,66 +315,66 @@ bool dynxx_net_http_download(const char *url, const char *file_path, size_t time
 #if defined(USE_DB)
 
 EXPORT_AUTO
-DynXXDBConnHandle dynxx_store_sqlite_open(const char *_id) {
-    return dynxxStoreSqliteOpen(makeStr(_id));
+DynXXSQLiteConnHandle dynxx_sqlite_open(const char *_id) {
+    return dynxxSQLiteOpen(makeStr(_id));
 }
 
 EXPORT_AUTO
-bool dynxx_store_sqlite_execute(const DynXXDBConnHandle conn, const char *sql) {
+bool dynxx_sqlite_execute(const DynXXSQLiteConnHandle conn, const char *sql) {
     if (conn == nullptr || sql == nullptr) {
         return false;
     }
-    return dynxxStoreSqliteExecute(conn, sql);
+    return dynxxSQLiteExecute(conn, sql);
 }
 
 EXPORT_AUTO
-DynXXDBQueryResultHandle dynxx_store_sqlite_query_do(const DynXXDBConnHandle conn, const char *sql) {
+DynXXSQLiteQueryResultHandle dynxx_sqlite_query_do(const DynXXSQLiteConnHandle conn, const char *sql) {
     if (conn == nullptr || sql == nullptr) {
         return nullptr;
     }
-    return dynxxStoreSqliteQueryDo(conn, sql);
+    return dynxxSQLiteQueryDo(conn, sql);
 }
 
 EXPORT_AUTO
-bool dynxx_store_sqlite_query_read_row(const DynXXDBQueryResultHandle query_result) {
-    return dynxxStoreSqliteQueryReadRow(query_result);
+bool dynxx_sqlite_query_read_row(const DynXXSQLiteQueryResultHandle query_result) {
+    return dynxxSQLiteQueryReadRow(query_result);
 }
 
 EXPORT_AUTO
-const char *dynxx_store_sqlite_query_read_column_text(const DynXXDBQueryResultHandle query_result, const char *column) {
+const char *dynxx_sqlite_query_read_column_text(const DynXXSQLiteQueryResultHandle query_result, const char *column) {
     if (query_result == nullptr || column == nullptr) {
         return "";
     }
-    const auto s = dynxxStoreSqliteQueryReadColumnText(query_result, column);
+    const auto s = dynxxSQLiteQueryReadColumnText(query_result, column);
     return dupStr(s.value_or(""));
 }
 
 EXPORT_AUTO
-int64_t dynxx_store_sqlite_query_read_column_integer(const DynXXDBQueryResultHandle query_result, const char *column) {
+int64_t dynxx_sqlite_query_read_column_integer(const DynXXSQLiteQueryResultHandle query_result, const char *column) {
     if (query_result == nullptr || column == nullptr) {
         return 0;
     }
-    const auto i = dynxxStoreSqliteQueryReadColumnInteger(query_result, column);
+    const auto i = dynxxSQLiteQueryReadColumnInteger(query_result, column);
     return i.value_or(0);
 }
 
 EXPORT_AUTO
-double dynxx_store_sqlite_query_read_column_float(const DynXXDBQueryResultHandle query_result, const char *column) {
+double dynxx_sqlite_query_read_column_float(const DynXXSQLiteQueryResultHandle query_result, const char *column) {
     if (query_result == nullptr || column == nullptr) {
         return 0.0;
     }
-    const auto f = dynxxStoreSqliteQueryReadColumnFloat(query_result, column);
+    const auto f = dynxxSQLiteQueryReadColumnFloat(query_result, column);
     return f.value_or(0.0);
 }
 
 EXPORT_AUTO
-void dynxx_store_sqlite_query_drop(const DynXXDBQueryResultHandle query_result) {
-    dynxxStoreSqliteQueryDrop(query_result);
+void dynxx_sqlite_query_drop(const DynXXSQLiteQueryResultHandle query_result) {
+    dynxxSQLiteQueryDrop(query_result);
 }
 
 EXPORT_AUTO
-void dynxx_store_sqlite_close(const DynXXDBConnHandle conn) {
-    dynxxStoreSqliteClose(conn);
+void dynxx_sqlite_close(const DynXXSQLiteConnHandle conn) {
+    dynxxSQLiteClose(conn);
 }
 
 #endif
@@ -384,64 +384,64 @@ void dynxx_store_sqlite_close(const DynXXDBConnHandle conn) {
 #if defined(USE_KV)
 
 EXPORT_AUTO
-DynXXKVConnHandle dynxx_store_kv_open(const char *_id) {
-    return dynxxStoreKvOpen(makeStr(_id));
+DynXXKVConnHandle dynxx_kv_open(const char *_id) {
+    return dynxxKVOpen(makeStr(_id));
 }
 
 EXPORT_AUTO
-const char *dynxx_store_kv_read_string(const DynXXKVConnHandle conn, const char *k) {
+const char *dynxx_kv_read_string(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return nullptr;
     }
-    const auto s = dynxxStoreKvReadString(conn, k);
+    const auto s = dynxxKVReadString(conn, k);
     return dupStr(s.value_or(""));
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_write_string(const DynXXKVConnHandle conn, const char *k, const char *v) {
+bool dynxx_kv_write_string(const DynXXKVConnHandle conn, const char *k, const char *v) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
-    return dynxxStoreKvWriteString(conn, k, v == nullptr ? "" : v);
+    return dynxxKVWriteString(conn, k, v == nullptr ? "" : v);
 }
 
 EXPORT_AUTO
-int64_t dynxx_store_kv_read_integer(const DynXXKVConnHandle conn, const char *k) {
+int64_t dynxx_kv_read_integer(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return 0;
     }
-    const auto i = dynxxStoreKvReadInteger(conn, k);
+    const auto i = dynxxKVReadInteger(conn, k);
     return i.value_or(0);
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_write_integer(const DynXXKVConnHandle conn, const char *k, int64_t v) {
+bool dynxx_kv_write_integer(const DynXXKVConnHandle conn, const char *k, int64_t v) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
-    return dynxxStoreKvWriteInteger(conn, k, v);
+    return dynxxKVWriteInteger(conn, k, v);
 }
 
 EXPORT_AUTO
-double dynxx_store_kv_read_float(const DynXXKVConnHandle conn, const char *k) {
+double dynxx_kv_read_float(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return 0.0;
     }
-    const auto f = dynxxStoreKvReadFloat(conn, k);
+    const auto f = dynxxKVReadFloat(conn, k);
     return f.value_or(0.0);
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_write_float(const DynXXKVConnHandle conn, const char *k, double v) {
+bool dynxx_kv_write_float(const DynXXKVConnHandle conn, const char *k, double v) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
-    return dynxxStoreKvWriteFloat(conn, k, v);
+    return dynxxKVWriteFloat(conn, k, v);
 }
 
 EXPORT_AUTO
-char *const *dynxx_store_kv_all_keys(const DynXXKVConnHandle conn, size_t *len) {
-    const auto t = dynxxStoreKvAllKeys(conn);
+char *const *dynxx_kv_all_keys(const DynXXKVConnHandle conn, size_t *len) {
+    const auto t = dynxxKVAllKeys(conn);
     if (len) {
         *len = t.size();
     }
@@ -449,29 +449,29 @@ char *const *dynxx_store_kv_all_keys(const DynXXKVConnHandle conn, size_t *len) 
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_contains(const DynXXKVConnHandle conn, const char *k) {
+bool dynxx_kv_contains(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
-    return dynxxStoreKvContains(conn, k);
+    return dynxxKVContains(conn, k);
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_remove(const DynXXKVConnHandle conn, const char *k) {
+bool dynxx_kv_remove(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
-    return dynxxStoreKvRemove(conn, k);
+    return dynxxKVRemove(conn, k);
 }
 
 EXPORT_AUTO
-void dynxx_store_kv_clear(const DynXXKVConnHandle conn) {
-    dynxxStoreKvClear(conn);
+void dynxx_kv_clear(const DynXXKVConnHandle conn) {
+    dynxxKVClear(conn);
 }
 
 EXPORT_AUTO
-void dynxx_store_kv_close(const DynXXKVConnHandle conn) {
-    dynxxStoreKvClose(conn);
+void dynxx_kv_close(const DynXXKVConnHandle conn) {
+    dynxxKVClose(conn);
 }
 
 #endif

@@ -221,59 +221,59 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
 
 #pragma mark Store.SQLite
 
-napi_value storeSQLiteOpen(napi_env env, napi_callback_info info) {
+napi_value sqliteOpen(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto _id = napiValue2chars(env, args.v[0]);
-    auto res = ptr2addr(dynxx_store_sqlite_open(_id));
+    auto res = ptr2addr(dynxx_sqlite_open(_id));
     auto nv = long2NapiValue(env, res);
 
     freeX(_id);
     return nv;
 }
 
-napi_value storeSQLiteExecute(napi_env env, napi_callback_info info) {
+napi_value sqliteExecute(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto sql = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_store_sqlite_execute(addr2ptr(conn), sql);
+    auto res = dynxx_sqlite_execute(addr2ptr(conn), sql);
     auto nv = bool2NapiValue(env, res);
 
     freeX(sql);
     return nv;
 }
 
-napi_value storeSQLiteQueryDo(napi_env env, napi_callback_info info) {
+napi_value sqliteQueryDo(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto sql = napiValue2chars(env, args.v[1]);
 
-    auto res = ptr2addr(dynxx_store_sqlite_query_do(addr2ptr(conn), sql));
+    auto res = ptr2addr(dynxx_sqlite_query_do(addr2ptr(conn), sql));
     auto nv = long2NapiValue(env, res);
 
     freeX(sql);
     return nv;
 }
 
-napi_value storeSQLiteQueryReadRow(napi_env env, napi_callback_info info) {
+napi_value sqliteQueryReadRow(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto query_result = napiValue2long(env, args.v[0]);
 
-    auto res = dynxx_store_sqlite_query_read_row(addr2ptr(query_result));
+    auto res = dynxx_sqlite_query_read_row(addr2ptr(query_result));
     return bool2NapiValue(env, res);
 }
 
-napi_value storeSQLiteQueryReadColumnText(napi_env env, napi_callback_info info) {
+napi_value sqliteQueryReadColumnText(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto query_result = napiValue2long(env, args.v[0]);
     auto column = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_store_sqlite_query_read_column_text(addr2ptr(query_result), column);
+    auto res = dynxx_sqlite_query_read_column_text(addr2ptr(query_result), column);
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
@@ -281,70 +281,70 @@ napi_value storeSQLiteQueryReadColumnText(napi_env env, napi_callback_info info)
     return nv;
 }
 
-napi_value storeSQLiteQueryReadColumnInteger(napi_env env, napi_callback_info info) {
+napi_value sqliteQueryReadColumnInteger(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto query_result = napiValue2long(env, args.v[0]);
     auto column = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_store_sqlite_query_read_column_integer(addr2ptr(query_result), column);
+    auto res = dynxx_sqlite_query_read_column_integer(addr2ptr(query_result), column);
     auto nv = long2NapiValue(env, res);
 
     freeX(column);
     return nv;
 }
 
-napi_value storeSQLiteQueryReadColumnFloat(napi_env env, napi_callback_info info) {
+napi_value sqliteQueryReadColumnFloat(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto query_result = napiValue2long(env, args.v[0]);
     auto column = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_store_sqlite_query_read_column_float(addr2ptr(query_result), column);
+    auto res = dynxx_sqlite_query_read_column_float(addr2ptr(query_result), column);
     auto nv = double2NapiValue(env, res);
 
     freeX(column);
     return nv;
 }
 
-napi_value storeSQLiteQueryDrop(napi_env env, napi_callback_info info) {
+napi_value sqliteQueryDrop(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto query_result = napiValue2long(env, args.v[0]);
-    dynxx_store_sqlite_query_drop(addr2ptr(query_result));
+    dynxx_sqlite_query_drop(addr2ptr(query_result));
 
     return int2NapiValue(env, napi_ok);
 }
 
-napi_value storeSQLiteClose(napi_env env, napi_callback_info info) {
+napi_value sqliteClose(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
-    dynxx_store_sqlite_close(addr2ptr(conn));
+    dynxx_sqlite_close(addr2ptr(conn));
 
     return int2NapiValue(env, napi_ok);
 }
 
 #pragma mark Store.KV
 
-napi_value storeKVOpen(napi_env env, napi_callback_info info) {
+napi_value kvOpen(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto _id = napiValue2chars(env, args.v[0]);
-    auto res = ptr2addr(dynxx_store_kv_open(_id));
+    auto res = ptr2addr(dynxx_kv_open(_id));
     auto nv = long2NapiValue(env, res);
 
     freeX(_id);
     return nv;
 }
 
-napi_value storeKVReadString(napi_env env, napi_callback_info info) {
+napi_value kvReadString(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_store_kv_read_string(addr2ptr(conn), k);
+    auto res = dynxx_kv_read_string(addr2ptr(conn), k);
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
@@ -352,14 +352,14 @@ napi_value storeKVReadString(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-napi_value storeKVWriteString(napi_env env, napi_callback_info info) {
+napi_value kvWriteString(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
     auto v = napiValue2chars(env, args.v[2]);
 
-    auto res = dynxx_store_kv_write_string(addr2ptr(conn), k, v);
+    auto res = dynxx_kv_write_string(addr2ptr(conn), k, v);
     auto nv = bool2NapiValue(env, res);
 
     freeX(v);
@@ -367,100 +367,100 @@ napi_value storeKVWriteString(napi_env env, napi_callback_info info) {
     return nv;
 }
 
-napi_value storeKVReadInteger(napi_env env, napi_callback_info info) {
+napi_value kvReadInteger(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_store_kv_read_integer(addr2ptr(conn), k);
+    auto res = dynxx_kv_read_integer(addr2ptr(conn), k);
     auto nv = long2NapiValue(env, res);
 
     freeX(k);
     return nv;
 }
 
-napi_value storeKVWriteInteger(napi_env env, napi_callback_info info) {
+napi_value kvWriteInteger(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
     auto v = napiValue2long(env, args.v[2]);
 
-    auto res = dynxx_store_kv_write_integer(addr2ptr(conn), k, v);
+    auto res = dynxx_kv_write_integer(addr2ptr(conn), k, v);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
     return nv;
 }
 
-napi_value storeKVReadFloat(napi_env env, napi_callback_info info) {
+napi_value kvReadFloat(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_store_kv_read_integer(addr2ptr(conn), k);
+    auto res = dynxx_kv_read_integer(addr2ptr(conn), k);
     auto nv = double2NapiValue(env, res);
 
     freeX(k);
     return nv;
 }
 
-napi_value storeKVWriteFloat(napi_env env, napi_callback_info info) {
+napi_value kvWriteFloat(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
     auto v = napiValue2double(env, args.v[2]);
 
-    auto res = dynxx_store_kv_write_integer(addr2ptr(conn), k, v);
+    auto res = dynxx_kv_write_integer(addr2ptr(conn), k, v);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
     return nv;
 }
 
-napi_value storeKVContains(napi_env env, napi_callback_info info) {
+napi_value kvContains(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_store_kv_contains(addr2ptr(conn), k);
+    auto res = dynxx_kv_contains(addr2ptr(conn), k);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
     return nv;
 }
 
-napi_value storeKVRemove(napi_env env, napi_callback_info info) {
+napi_value kvRemove(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_store_kv_remove(addr2ptr(conn), k);
+    auto res = dynxx_kv_remove(addr2ptr(conn), k);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
     return nv;
 }
 
-napi_value storeKVClear(napi_env env, napi_callback_info info) {
+napi_value kvClear(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
-    dynxx_store_kv_clear(addr2ptr(conn));
+    dynxx_kv_clear(addr2ptr(conn));
 
     return int2NapiValue(env, napi_ok);
 }
 
-napi_value storeKVClose(napi_env env, napi_callback_info info) {
+napi_value kvClose(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
-    dynxx_store_kv_close(addr2ptr(conn));
+    dynxx_kv_close(addr2ptr(conn));
 
     return int2NapiValue(env, napi_ok);
 }
@@ -938,27 +938,27 @@ napi_value NAPI_DynXX_RegisterFuncs(napi_env env, napi_value exports) {
         NAPI(jLoadB),
         NAPI(jCall),
 
-        NAPI(storeSQLiteOpen),
-        NAPI(storeSQLiteExecute),
-        NAPI(storeSQLiteQueryDo),
-        NAPI(storeSQLiteQueryReadRow),
-        NAPI(storeSQLiteQueryReadColumnText),
-        NAPI(storeSQLiteQueryReadColumnInteger),
-        NAPI(storeSQLiteQueryReadColumnFloat),
-        NAPI(storeSQLiteQueryDrop),
-        NAPI(storeSQLiteClose),
+        NAPI(sqliteOpen),
+        NAPI(sqliteExecute),
+        NAPI(sqliteQueryDo),
+        NAPI(sqliteQueryReadRow),
+        NAPI(sqliteQueryReadColumnText),
+        NAPI(sqliteQueryReadColumnInteger),
+        NAPI(sqliteQueryReadColumnFloat),
+        NAPI(sqliteQueryDrop),
+        NAPI(sqliteClose),
 
-        NAPI(storeKVOpen),
-        NAPI(storeKVReadString),
-        NAPI(storeKVWriteString),
-        NAPI(storeKVReadInteger),
-        NAPI(storeKVWriteInteger),
-        NAPI(storeKVReadFloat),
-        NAPI(storeKVWriteFloat),
-        NAPI(storeKVContains),
-        NAPI(storeKVRemove),
-        NAPI(storeKVClear),
-        NAPI(storeKVClose),
+        NAPI(kvOpen),
+        NAPI(kvReadString),
+        NAPI(kvWriteString),
+        NAPI(kvReadInteger),
+        NAPI(kvWriteInteger),
+        NAPI(kvReadFloat),
+        NAPI(kvWriteFloat),
+        NAPI(kvContains),
+        NAPI(kvRemove),
+        NAPI(kvClear),
+        NAPI(kvClose),
 
         NAPI(deviceType),
         NAPI(deviceName),

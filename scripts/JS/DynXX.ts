@@ -89,49 +89,49 @@ declare function DynXXNetHttpDownload(
 
 /// Store.SQLite
 
-declare function DynXXStoreSQLiteOpen(_id: string): string
+declare function DynXXSQLiteOpen(_id: string): string
 
-declare function DynXXStoreSQLiteExecute(conn: string, sql: string): Promise<boolean>
+declare function DynXXSQLiteExecute(conn: string, sql: string): Promise<boolean>
 
-declare function DynXXStoreSQLiteQueryDo(conn: string, sql: string): Promise<string>
+declare function DynXXSQLiteQueryDo(conn: string, sql: string): Promise<string>
 
-declare function DynXXStoreSQLiteQueryReadRow(query_result: string): boolean
+declare function DynXXSQLiteQueryReadRow(query_result: string): boolean
 
-declare function DynXXStoreSQLiteQueryReadColumnText(query_result: string, column: string): string
+declare function DynXXSQLiteQueryReadColumnText(query_result: string, column: string): string
 
-declare function DynXXStoreSQLiteQueryReadColumnInteger(query_result: string, column: string): number
+declare function DynXXSQLiteQueryReadColumnInteger(query_result: string, column: string): number
 
-declare function DynXXStoreSQLiteQueryReadColumnFloat(query_result: string, column: string): number
+declare function DynXXSQLiteQueryReadColumnFloat(query_result: string, column: string): number
 
-declare function DynXXStoreSQLiteQueryDrop(query_result: string): void
+declare function DynXXSQLiteQueryDrop(query_result: string): void
 
-declare function DynXXStoreSQLiteClose(conn: string): void
+declare function DynXXSQLiteClose(conn: string): void
 
 /// Store.KV
 
-declare function DynXXStoreKVOpen(_id: string): string
+declare function DynXXKVOpen(_id: string): string
 
-declare function DynXXStoreKVReadString(conn: string, k: string): string
+declare function DynXXKVReadString(conn: string, k: string): string
 
-declare function DynXXStoreKVWriteString(conn: string, k: string, s: string): boolean
+declare function DynXXKVWriteString(conn: string, k: string, s: string): boolean
 
-declare function DynXXStoreKVReadInteger(conn: string, k: string): number
+declare function DynXXKVReadInteger(conn: string, k: string): number
 
-declare function DynXXStoreKVWriteInteger(conn: string, k: string, i: number): boolean
+declare function DynXXKVWriteInteger(conn: string, k: string, i: number): boolean
 
-declare function DynXXStoreKVReadFloat(conn: string, k: string): number
+declare function DynXXKVReadFloat(conn: string, k: string): number
 
-declare function DynXXStoreKVWriteFloat(conn: string, k: string, f: number): boolean
+declare function DynXXKVWriteFloat(conn: string, k: string, f: number): boolean
 
-declare function DynXXStoreKVAllKeys(conn: string): string[]
+declare function DynXXKVAllKeys(conn: string): string[]
 
-declare function DynXXStoreKVContains(conn: string, k: string): boolean
+declare function DynXXKVContains(conn: string, k: string): boolean
 
-declare function DynXXStoreKVRemove(conn: string, k: string): void
+declare function DynXXKVRemove(conn: string, k: string): void
 
-declare function DynXXStoreKVClear(conn: string): void
+declare function DynXXKVClear(conn: string): void
 
-declare function DynXXStoreKVClose(conn: string): void
+declare function DynXXKVClose(conn: string): void
 
 /// Coding
 

@@ -320,176 +320,174 @@ function DynXX.Crypto.Base64.decode(inBytes, noNewLines)
     return JSON.parse(outJson)
 end
 
-DynXX.Store = {}
+DynXX.SQLite = {}
 
-DynXX.Store.SQLite = {}
-
-function DynXX.Store.SQLite.open(id)
+function DynXX.SQLite.open(id)
     local inJson = JSON.stringify({
         ["_id"] = id
     })
-    return dynxx_store_sqlite_open(inJson)
+    return dynxx_sqlite_open(inJson)
 end
 
-function DynXX.Store.SQLite.execute(conn, sql)
+function DynXX.SQLite.execute(conn, sql)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["sql"] = sql
     })
-    return dynxx_store_sqlite_execute(inJson)
+    return dynxx_sqlite_execute(inJson)
 end
 
-DynXX.Store.SQLite.Query = {}
+DynXX.SQLite.Query = {}
 
-function DynXX.Store.SQLite.Query.create(conn, sql)
+function DynXX.SQLite.Query.create(conn, sql)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["sql"] = sql
     })
-    return dynxx_store_sqlite_query_do(inJson)
+    return dynxx_sqlite_query_do(inJson)
 end
 
-function DynXX.Store.SQLite.Query.readRow(query_result)
+function DynXX.SQLite.Query.readRow(query_result)
     local inJson = JSON.stringify({
         ["query_result"] = query_result
     })
-    return dynxx_store_sqlite_query_read_row(inJson)
+    return dynxx_sqlite_query_read_row(inJson)
 end
 
-function DynXX.Store.SQLite.Query.readColumnText(query_result, column)
+function DynXX.SQLite.Query.readColumnText(query_result, column)
     local inJson = JSON.stringify({
         ["query_result"] = query_result,
         ["column"] = column
     })
-    return dynxx_store_sqlite_query_read_column_text(inJson)
+    return dynxx_sqlite_query_read_column_text(inJson)
 end
 
-function DynXX.Store.SQLite.Query.readColumnInteger(query_result, column)
+function DynXX.SQLite.Query.readColumnInteger(query_result, column)
     local inJson = JSON.stringify({
         ["query_result"] = query_result,
         ["column"] = column
     })
-    return dynxx_store_sqlite_query_read_column_integer(inJson)
+    return dynxx_sqlite_query_read_column_integer(inJson)
 end
 
-function DynXX.Store.SQLite.Query.readColumnFloat(query_result, column)
+function DynXX.SQLite.Query.readColumnFloat(query_result, column)
     local inJson = JSON.stringify({
         ["query_result"] = query_result,
         ["column"] = column
     })
-    return dynxx_store_sqlite_query_read_column_float(inJson)
+    return dynxx_sqlite_query_read_column_float(inJson)
 end
 
-function DynXX.Store.SQLite.Query.drop(query_result)
+function DynXX.SQLite.Query.drop(query_result)
     local inJson = JSON.stringify({
         ["query_result"] = query_result
     })
-    dynxx_store_sqlite_query_drop(inJson)
+    dynxx_sqlite_query_drop(inJson)
 end
 
-function DynXX.Store.SQLite.close(conn)
+function DynXX.SQLite.close(conn)
     local inJson = JSON.stringify({
         ["conn"] = conn
     })
-    dynxx_store_sqlite_close(inJson)
+    dynxx_sqlite_close(inJson)
 end
 
-DynXX.Store.KV = {}
+DynXX.KV = {}
 
-function DynXX.Store.KV.open(id)
+function DynXX.KV.open(id)
     local inJson = JSON.stringify({
         ["_id"] = id
     })
-    return dynxx_store_kv_open(inJson)
+    return dynxx_kv_open(inJson)
 end
 
-function DynXX.Store.KV.readString(conn, k)
+function DynXX.KV.readString(conn, k)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["k"] = k
     })
-    return dynxx_store_kv_read_string(inJson)
+    return dynxx_kv_read_string(inJson)
 end
 
-function DynXX.Store.KV.writeString(conn, k, s)
+function DynXX.KV.writeString(conn, k, s)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["k"] = k,
         ["v"] = s
     })
-    return dynxx_store_kv_write_string(inJson)
+    return dynxx_kv_write_string(inJson)
 end
 
-function DynXX.Store.KV.readInteger(conn, k)
+function DynXX.KV.readInteger(conn, k)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["k"] = k
     })
-    return dynxx_store_kv_read_integer(inJson)
+    return dynxx_kv_read_integer(inJson)
 end
 
-function DynXX.Store.KV.writeInteger(conn, k, i)
+function DynXX.KV.writeInteger(conn, k, i)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["k"] = k,
         ["v"] = i
     })
-    return dynxx_store_kv_write_integer(inJson)
+    return dynxx_kv_write_integer(inJson)
 end
 
-function DynXX.Store.KV.readFloat(conn, k)
+function DynXX.KV.readFloat(conn, k)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["k"] = k
     })
-    return dynxx_store_kv_read_float(inJson)
+    return dynxx_kv_read_float(inJson)
 end
 
-function DynXX.Store.KV.writeFloat(conn, k, f)
+function DynXX.KV.writeFloat(conn, k, f)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["k"] = k,
         ["v"] = f
     })
-    return dynxx_store_kv_write_float(inJson)
+    return dynxx_kv_write_float(inJson)
 end
 
-function DynXX.Store.KV.allKeys(conn)
+function DynXX.KV.allKeys(conn)
     local inJson = JSON.stringify({
         ["conn"] = conn
     })
-    local outJson = dynxx_store_kv_all_keys(inJson)
+    local outJson = dynxx_kv_all_keys(inJson)
     return JSON.parse(outJson)
 end
 
-function DynXX.Store.KV.contains(conn, k)
+function DynXX.KV.contains(conn, k)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["k"] = k
     })
-    return dynxx_store_kv_contains(inJson)
+    return dynxx_kv_contains(inJson)
 end
 
-function DynXX.Store.KV.remove(conn, k)
+function DynXX.KV.remove(conn, k)
     local inJson = JSON.stringify({
         ["conn"] = conn,
         ["k"] = k
     })
-    dynxx_store_kv_remove(inJson)
+    dynxx_kv_remove(inJson)
 end
 
-function DynXX.Store.KV.clear(conn)
+function DynXX.KV.clear(conn)
     local inJson = JSON.stringify({
         ["conn"] = conn
     })
-    dynxx_store_kv_clear(inJson)
+    dynxx_kv_clear(inJson)
 end
 
-function DynXX.Store.KV.close(conn)
+function DynXX.KV.close(conn)
     local inJson = JSON.stringify({
         ["conn"] = conn
     })
-    dynxx_store_kv_close(inJson)
+    dynxx_kv_close(inJson)
 end
 
 DynXX.Z = {}

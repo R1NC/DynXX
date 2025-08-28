@@ -301,7 +301,7 @@ bool dynxx_net_http_downloadS(const std::string_view json)
 
 // Store.SQLite
 
-std::string dynxx_store_sqlite_openS(const std::string_view json)
+std::string dynxx_sqlite_openS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -314,7 +314,7 @@ std::string dynxx_store_sqlite_openS(const std::string_view json)
         return {};
     }
 
-    const auto db = dynxxStoreSqliteOpen(_id.value());
+    const auto db = dynxxSQLiteOpen(_id.value());
     if (db == nullptr)
     {
         return {};
@@ -322,7 +322,7 @@ std::string dynxx_store_sqlite_openS(const std::string_view json)
     return std::to_string(ptr2addr(db));
 }
 
-bool dynxx_store_sqlite_executeS(const std::string_view json)
+bool dynxx_sqlite_executeS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -336,10 +336,10 @@ bool dynxx_store_sqlite_executeS(const std::string_view json)
         return false;
     }
 
-    return dynxxStoreSqliteExecute(conn, sql.value());
+    return dynxxSQLiteExecute(conn, sql.value());
 }
 
-std::string dynxx_store_sqlite_query_doS(const std::string_view json)
+std::string dynxx_sqlite_query_doS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -353,7 +353,7 @@ std::string dynxx_store_sqlite_query_doS(const std::string_view json)
         return {};
     }
 
-    const auto res = dynxxStoreSqliteQueryDo(conn, sql.value());
+    const auto res = dynxxSQLiteQueryDo(conn, sql.value());
     if (res == nullptr)
     {
         return {};
@@ -361,7 +361,7 @@ std::string dynxx_store_sqlite_query_doS(const std::string_view json)
     return std::to_string(ptr2addr(res));
 }
 
-bool dynxx_store_sqlite_query_read_rowS(const std::string_view json)
+bool dynxx_sqlite_query_read_rowS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -374,10 +374,10 @@ bool dynxx_store_sqlite_query_read_rowS(const std::string_view json)
         return false;
     }
 
-    return dynxxStoreSqliteQueryReadRow(query_result);
+    return dynxxSQLiteQueryReadRow(query_result);
 }
 
-std::string dynxx_store_sqlite_query_read_column_textS(const std::string_view json)
+std::string dynxx_sqlite_query_read_column_textS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -391,11 +391,11 @@ std::string dynxx_store_sqlite_query_read_column_textS(const std::string_view js
         return {};
     }
 
-    const auto s = dynxxStoreSqliteQueryReadColumnText(query_result, column.value());
+    const auto s = dynxxSQLiteQueryReadColumnText(query_result, column.value());
     return s.value_or(std::string{});
 }
 
-int64_t dynxx_store_sqlite_query_read_column_integerS(const std::string_view json)
+int64_t dynxx_sqlite_query_read_column_integerS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -409,11 +409,11 @@ int64_t dynxx_store_sqlite_query_read_column_integerS(const std::string_view jso
         return 0;
     }
 
-    const auto i = dynxxStoreSqliteQueryReadColumnInteger(query_result, column.value());
+    const auto i = dynxxSQLiteQueryReadColumnInteger(query_result, column.value());
     return i.value_or(0);
 }
 
-double dynxx_store_sqlite_query_read_column_floatS(const std::string_view json)
+double dynxx_sqlite_query_read_column_floatS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -427,11 +427,11 @@ double dynxx_store_sqlite_query_read_column_floatS(const std::string_view json)
         return 0;
     }
 
-    const auto f = dynxxStoreSqliteQueryReadColumnFloat(query_result, column.value());
+    const auto f = dynxxSQLiteQueryReadColumnFloat(query_result, column.value());
     return f.value_or(0.0);
 }
 
-void dynxx_store_sqlite_query_dropS(const std::string_view json)
+void dynxx_sqlite_query_dropS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -444,10 +444,10 @@ void dynxx_store_sqlite_query_dropS(const std::string_view json)
         return;
     }
 
-    dynxxStoreSqliteQueryDrop(query_result);
+    dynxxSQLiteQueryDrop(query_result);
 }
 
-void dynxx_store_sqlite_closeS(const std::string_view json)
+void dynxx_sqlite_closeS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -460,12 +460,12 @@ void dynxx_store_sqlite_closeS(const std::string_view json)
         return;
     }
 
-    dynxxStoreSqliteClose(conn);
+    dynxxSQLiteClose(conn);
 }
 
 // Store.KV
 
-std::string dynxx_store_kv_openS(const std::string_view json)
+std::string dynxx_kv_openS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -478,7 +478,7 @@ std::string dynxx_store_kv_openS(const std::string_view json)
         return {};
     }
 
-    const auto res = dynxxStoreKvOpen(_id.value());
+    const auto res = dynxxKVOpen(_id.value());
     if (res == nullptr)
     {
         return {};
@@ -486,7 +486,7 @@ std::string dynxx_store_kv_openS(const std::string_view json)
     return std::to_string(ptr2addr(res));
 }
 
-std::string dynxx_store_kv_read_stringS(const std::string_view json)
+std::string dynxx_kv_read_stringS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -500,11 +500,11 @@ std::string dynxx_store_kv_read_stringS(const std::string_view json)
         return {};
     }
 
-    const auto s = dynxxStoreKvReadString(conn, k.value());
+    const auto s = dynxxKVReadString(conn, k.value());
     return s.value_or(std::string{});
 }
 
-bool dynxx_store_kv_write_stringS(const std::string_view json)
+bool dynxx_kv_write_stringS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -518,10 +518,10 @@ bool dynxx_store_kv_write_stringS(const std::string_view json)
         return false;
     }
 
-    return dynxxStoreKvWriteString(conn, k.value(), v.value_or(""));
+    return dynxxKVWriteString(conn, k.value(), v.value_or(""));
 }
 
-int64_t dynxx_store_kv_read_integerS(const std::string_view json)
+int64_t dynxx_kv_read_integerS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -535,11 +535,11 @@ int64_t dynxx_store_kv_read_integerS(const std::string_view json)
         return 0;
     }
 
-    const auto i = dynxxStoreKvReadInteger(conn, k.value());
+    const auto i = dynxxKVReadInteger(conn, k.value());
     return i.value_or(0);
 }
 
-bool dynxx_store_kv_write_integerS(const std::string_view json)
+bool dynxx_kv_write_integerS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -554,10 +554,10 @@ bool dynxx_store_kv_write_integerS(const std::string_view json)
         return false;
     }
 
-    return dynxxStoreKvWriteInteger(conn, k.value(), v.value_or(0));
+    return dynxxKVWriteInteger(conn, k.value(), v.value_or(0));
 }
 
-double dynxx_store_kv_read_floatS(const std::string_view json)
+double dynxx_kv_read_floatS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -571,11 +571,11 @@ double dynxx_store_kv_read_floatS(const std::string_view json)
         return false;
     }
 
-    const auto f = dynxxStoreKvReadFloat(conn, k.value());
+    const auto f = dynxxKVReadFloat(conn, k.value());
     return f.value_or(0.0);
 }
 
-bool dynxx_store_kv_write_floatS(const std::string_view json)
+bool dynxx_kv_write_floatS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -590,10 +590,10 @@ bool dynxx_store_kv_write_floatS(const std::string_view json)
         return false;
     }
 
-    return dynxxStoreKvWriteFloat(conn, k.value(), v.value_or(0.0));
+    return dynxxKVWriteFloat(conn, k.value(), v.value_or(0.0));
 }
 
-std::string dynxx_store_kv_all_keysS(const std::string_view json)
+std::string dynxx_kv_all_keysS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -606,11 +606,11 @@ std::string dynxx_store_kv_all_keysS(const std::string_view json)
         return {};
     }
 
-    const auto res = dynxxStoreKvAllKeys(conn);
+    const auto res = dynxxKVAllKeys(conn);
     return strArray2json(res);
 }
 
-bool dynxx_store_kv_containsS(const std::string_view json)
+bool dynxx_kv_containsS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -624,10 +624,10 @@ bool dynxx_store_kv_containsS(const std::string_view json)
         return false;
     }
 
-    return dynxxStoreKvContains(conn, k.value());
+    return dynxxKVContains(conn, k.value());
 }
 
-bool dynxx_store_kv_removeS(const std::string_view json)
+bool dynxx_kv_removeS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -641,10 +641,10 @@ bool dynxx_store_kv_removeS(const std::string_view json)
         return false;
     }
 
-    return dynxxStoreKvRemove(conn, k.value());
+    return dynxxKVRemove(conn, k.value());
 }
 
-void dynxx_store_kv_clearS(const std::string_view json)
+void dynxx_kv_clearS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -657,10 +657,10 @@ void dynxx_store_kv_clearS(const std::string_view json)
         return;
     }
 
-    dynxxStoreKvClear(conn);
+    dynxxKVClear(conn);
 }
 
-void dynxx_store_kv_closeS(const std::string_view json)
+void dynxx_kv_closeS(const std::string_view json)
 {
     if (json.empty())
     {
@@ -673,7 +673,7 @@ void dynxx_store_kv_closeS(const std::string_view json)
         return;
     }
 
-    dynxxStoreKvClose(conn);
+    dynxxKVClose(conn);
 }
 
 // Coding

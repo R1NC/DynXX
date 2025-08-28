@@ -25,47 +25,47 @@ std::string dynxx_net_http_requestS(const std::string_view json);
 
 bool dynxx_net_http_downloadS(const std::string_view json);
 
-std::string dynxx_store_sqlite_openS(const std::string_view json);
+std::string dynxx_sqlite_openS(const std::string_view json);
 
-bool dynxx_store_sqlite_executeS(const std::string_view json);
+bool dynxx_sqlite_executeS(const std::string_view json);
 
-std::string dynxx_store_sqlite_query_doS(const std::string_view json);
+std::string dynxx_sqlite_query_doS(const std::string_view json);
 
-bool dynxx_store_sqlite_query_read_rowS(const std::string_view json);
+bool dynxx_sqlite_query_read_rowS(const std::string_view json);
 
-std::string dynxx_store_sqlite_query_read_column_textS(const std::string_view json);
+std::string dynxx_sqlite_query_read_column_textS(const std::string_view json);
 
-int64_t dynxx_store_sqlite_query_read_column_integerS(const std::string_view json);
+int64_t dynxx_sqlite_query_read_column_integerS(const std::string_view json);
 
-double dynxx_store_sqlite_query_read_column_floatS(const std::string_view json);
+double dynxx_sqlite_query_read_column_floatS(const std::string_view json);
 
-void dynxx_store_sqlite_query_dropS(const std::string_view json);
+void dynxx_sqlite_query_dropS(const std::string_view json);
 
-void dynxx_store_sqlite_closeS(const std::string_view json);
+void dynxx_sqlite_closeS(const std::string_view json);
 
-std::string dynxx_store_kv_openS(const std::string_view json);
+std::string dynxx_kv_openS(const std::string_view json);
 
-std::string dynxx_store_kv_read_stringS(const std::string_view json);
+std::string dynxx_kv_read_stringS(const std::string_view json);
 
-bool dynxx_store_kv_write_stringS(const std::string_view json);
+bool dynxx_kv_write_stringS(const std::string_view json);
 
-int64_t dynxx_store_kv_read_integerS(const std::string_view json);
+int64_t dynxx_kv_read_integerS(const std::string_view json);
 
-bool dynxx_store_kv_write_integerS(const std::string_view json);
+bool dynxx_kv_write_integerS(const std::string_view json);
 
-double dynxx_store_kv_read_floatS(const std::string_view json);
+double dynxx_kv_read_floatS(const std::string_view json);
 
-bool dynxx_store_kv_write_floatS(const std::string_view json);
+bool dynxx_kv_write_floatS(const std::string_view json);
 
-std::string dynxx_store_kv_all_keysS(const std::string_view json);
+std::string dynxx_kv_all_keysS(const std::string_view json);
 
-bool dynxx_store_kv_containsS(const std::string_view json);
+bool dynxx_kv_containsS(const std::string_view json);
 
-bool dynxx_store_kv_removeS(const std::string_view json);
+bool dynxx_kv_removeS(const std::string_view json);
 
-void dynxx_store_kv_clearS(const std::string_view json);
+void dynxx_kv_clearS(const std::string_view json);
 
-void dynxx_store_kv_closeS(const std::string_view json);
+void dynxx_kv_closeS(const std::string_view json);
 
 std::string dynxx_coding_case_upperS(const std::string_view json);
 

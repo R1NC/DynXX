@@ -78,40 +78,40 @@ async function testAwait(): Promise<void> {
     }
 }
 
-function jTestStoreKV(): void {
+function jTestKV(): void {
     let kvId: string = 'test_kv'
-    let conn: string = DynXXStoreKVOpen(kvId)
+    let conn: string = DynXXKVOpen(kvId)
     if (conn) {
         let kS: string = "kS"
-        if (DynXXStoreKVContains(conn, kS)) {
-            DynXXStoreKVRemove(conn, kS)
+        if (DynXXKVContains(conn, kS)) {
+            DynXXKVRemove(conn, kS)
         }
-        DynXXStoreKVWriteString(conn, kS, "DynXX")
-        let vS: string = DynXXStoreKVReadString(conn, kS)
+        DynXXKVWriteString(conn, kS, "DynXX")
+        let vS: string = DynXXKVReadString(conn, kS)
         DynXXLogPrint(DynXXLogLevel.Debug, `KV read ${kS}: ${vS}`)
 
         let kI: string = "kI"
-        if (DynXXStoreKVContains(conn, kI)) {
-            DynXXStoreKVRemove(conn, kI)
+        if (DynXXKVContains(conn, kI)) {
+            DynXXKVRemove(conn, kI)
         }
-        DynXXStoreKVWriteInteger(conn, kI, 12345678909666666)
-        let vI: number = DynXXStoreKVReadInteger(conn, kI)
+        DynXXKVWriteInteger(conn, kI, 12345678909666666)
+        let vI: number = DynXXKVReadInteger(conn, kI)
         DynXXLogPrint(DynXXLogLevel.Debug, `KV read ${kI}: ${vI}`)
 
         let kF: string = "kF"
-        if (DynXXStoreKVContains(conn, kF)) {
-            DynXXStoreKVRemove(conn, kF)
+        if (DynXXKVContains(conn, kF)) {
+            DynXXKVRemove(conn, kF)
         }
-        DynXXStoreKVWriteFloat(conn, kF, -0.12345678987654321)
-        let vF: number = DynXXStoreKVReadFloat(conn, kF)
+        DynXXKVWriteFloat(conn, kF, -0.12345678987654321)
+        let vF: number = DynXXKVReadFloat(conn, kF)
         DynXXLogPrint(DynXXLogLevel.Debug, `KV read ${kF}: ${vF}`)
 
-        let keys: string[] = DynXXStoreKVAllKeys(conn)
+        let keys: string[] = DynXXKVAllKeys(conn)
         keys.forEach((item, index, arr) => {
             DynXXLogPrint(DynXXLogLevel.Debug, `KV key${index}: ${item}`)
         })
 
-        DynXXStoreKVClose(conn)
+        DynXXKVClose(conn)
     } else {
         DynXXLogPrint(DynXXLogLevel.Debug, `KV open failed!!!`)
     }
@@ -127,21 +127,21 @@ INSERT OR IGNORE INTO TestTable (s, i, f) VALUES
 
 let sqlQuery: string = `SELECT * FROM TestTable;`
 
-function jTestStoreSQLite(): void {
+function jTestSQLite(): void {
     let dbId: string = 'test_db'
-    let conn: string = DynXXStoreSQLiteOpen(dbId)
+    let conn: string = DynXXSQLiteOpen(dbId)
     if (conn) {
-        DynXXStoreSQLiteExecute(conn, sqlPrepareData).then((exeSuccess)=>{
+        DynXXSQLiteExecute(conn, sqlPrepareData).then((exeSuccess)=>{
             if (exeSuccess) {
-                DynXXStoreSQLiteQueryDo(conn, sqlQuery).then((queryResult)=>{
+                DynXXSQLiteQueryDo(conn, sqlQuery).then((queryResult)=>{
                     if (queryResult) {
-                        while (DynXXStoreSQLiteQueryReadRow(queryResult)) {
-                            let s: string = DynXXStoreSQLiteQueryReadColumnText(queryResult, 's')
-                            let i: number = DynXXStoreSQLiteQueryReadColumnInteger(queryResult, 'i')
-                            let f: number = DynXXStoreSQLiteQueryReadColumnFloat(queryResult, 'f')
+                        while (DynXXSQLiteQueryReadRow(queryResult)) {
+                            let s: string = DynXXSQLiteQueryReadColumnText(queryResult, 's')
+                            let i: number = DynXXSQLiteQueryReadColumnInteger(queryResult, 'i')
+                            let f: number = DynXXSQLiteQueryReadColumnFloat(queryResult, 'f')
                             DynXXLogPrint(DynXXLogLevel.Debug, `s:${s} i:${i} f:${f}`)
                         }
-                        DynXXStoreSQLiteQueryDrop(queryResult)
+                        DynXXSQLiteQueryDrop(queryResult)
                     } else {
                         DynXXLogPrint(DynXXLogLevel.Debug, `SQLite query failed!!!`)
                     }
@@ -149,7 +149,7 @@ function jTestStoreSQLite(): void {
             } else {
                 DynXXLogPrint(DynXXLogLevel.Debug, `SQLite execute failed!!!`)
             }
-            DynXXStoreSQLiteClose(conn)
+            DynXXSQLiteClose(conn)
         })
     } else {
         DynXXLogPrint(DynXXLogLevel.Debug, `SQLite open failed!!!`)

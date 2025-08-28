@@ -125,168 +125,168 @@ function DynXXNetHttpDownload(url, file, timeout) {
     return dynxx_net_http_download(inJson);
 }
 
-function DynXXStoreSQLiteOpen(_id) {
+function DynXXSQLiteOpen(_id) {
     let inJson = JSON.stringify({
         "_id": _id
     });
-    return dynxx_store_sqlite_open(inJson);
+    return dynxx_sqlite_open(inJson);
 }
 
-function DynXXStoreSQLiteExecute(conn, sql) {
+function DynXXSQLiteExecute(conn, sql) {
     let inJson = JSON.stringify({
         "conn": conn,
         "sql": sql
     });
-    return dynxx_store_sqlite_execute(inJson);
+    return dynxx_sqlite_execute(inJson);
 }
 
-function DynXXStoreSQLiteQueryDo(conn, sql) {
+function DynXXSQLiteQueryDo(conn, sql) {
     let inJson = JSON.stringify({
         "conn": conn,
         "sql": sql
     });
-    return dynxx_store_sqlite_query_do(inJson);
+    return dynxx_sqlite_query_do(inJson);
 }
 
-function DynXXStoreSQLiteQueryReadRow(query_result) {
+function DynXXSQLiteQueryReadRow(query_result) {
     let inJson = JSON.stringify({
         "query_result": query_result
     });
-    return dynxx_store_sqlite_query_read_row(inJson);
+    return dynxx_sqlite_query_read_row(inJson);
 }
 
-function DynXXStoreSQLiteQueryReadColumnText(query_result, column) {
+function DynXXSQLiteQueryReadColumnText(query_result, column) {
     let inJson = JSON.stringify({
         "query_result": query_result,
         "column": column
     });
-    return dynxx_store_sqlite_query_read_column_text(inJson);
+    return dynxx_sqlite_query_read_column_text(inJson);
 }
 
-function DynXXStoreSQLiteQueryReadColumnInteger(query_result, column) {
+function DynXXSQLiteQueryReadColumnInteger(query_result, column) {
     let inJson = JSON.stringify({
         "query_result": query_result,
         "column": column
     });
-    return dynxx_store_sqlite_query_read_column_integer(inJson);
+    return dynxx_sqlite_query_read_column_integer(inJson);
 }
 
-function DynXXStoreSQLiteQueryReadColumnFloat(query_result, column) {
+function DynXXSQLiteQueryReadColumnFloat(query_result, column) {
     let inJson = JSON.stringify({
         "query_result": query_result,
         "column": column
     });
-    return dynxx_store_sqlite_query_read_column_float(inJson);
+    return dynxx_sqlite_query_read_column_float(inJson);
 }
 
-function DynXXStoreSQLiteQueryDrop(query_result) {
+function DynXXSQLiteQueryDrop(query_result) {
     let inJson = JSON.stringify({
         "query_result": query_result
     });
-    dynxx_store_sqlite_query_drop(inJson);
+    dynxx_sqlite_query_drop(inJson);
 }
 
-function DynXXStoreSQLiteClose(conn) {
+function DynXXSQLiteClose(conn) {
     let inJson = JSON.stringify({
         "conn": conn
     });
-    dynxx_store_sqlite_close(inJson);
+    dynxx_sqlite_close(inJson);
 }
 
-function DynXXStoreKVOpen(_id) {
+function DynXXKVOpen(_id) {
     let inJson = JSON.stringify({
         "_id": _id
     });
-    return dynxx_store_kv_open(inJson);
+    return dynxx_kv_open(inJson);
 }
 
-function DynXXStoreKVReadString(conn, k) {
+function DynXXKVReadString(conn, k) {
     let inJson = JSON.stringify({
         "conn": conn,
         "k": k
     });
-    return dynxx_store_kv_read_string(inJson);
+    return dynxx_kv_read_string(inJson);
 }
 
-function DynXXStoreKVWriteString(conn, k, s) {
+function DynXXKVWriteString(conn, k, s) {
     let inJson = JSON.stringify({
         "conn": conn,
         "k": k,
         "v": s
     });
-    return dynxx_store_kv_write_string(inJson);
+    return dynxx_kv_write_string(inJson);
 }
 
-function DynXXStoreKVReadInteger(conn, k) {
+function DynXXKVReadInteger(conn, k) {
     let inJson = JSON.stringify({
         "conn": conn,
         "k": k
     });
-    return dynxx_store_kv_read_integer(inJson);
+    return dynxx_kv_read_integer(inJson);
 }
 
-function DynXXStoreKVWriteInteger(conn, k, i) {
+function DynXXKVWriteInteger(conn, k, i) {
     let inJson = JSON.stringify({
         "conn": conn,
         "k": k,
         "v": i
     });
-    return dynxx_store_kv_write_integer(inJson);
+    return dynxx_kv_write_integer(inJson);
 }
 
-function DynXXStoreKVReadFloat(conn, k) {
+function DynXXKVReadFloat(conn, k) {
     let inJson = JSON.stringify({
         "conn": conn,
         "k": k
     });
-    return dynxx_store_kv_read_float(inJson);
+    return dynxx_kv_read_float(inJson);
 }
 
-function DynXXStoreKVWriteFloat(conn, k, f) {
+function DynXXKVWriteFloat(conn, k, f) {
     let inJson = JSON.stringify({
         "conn": conn,
         "k": k,
         "v": f
     });
-    return dynxx_store_kv_write_float(inJson);
+    return dynxx_kv_write_float(inJson);
 }
 
-function DynXXStoreKVAllKeys(conn) {
+function DynXXKVAllKeys(conn) {
     let inJson = JSON.stringify({
         "conn": conn
     });
-    let outJson = dynxx_store_kv_all_keys(inJson);
+    let outJson = dynxx_kv_all_keys(inJson);
     return _json2Array(outJson);
 }
 
-function DynXXStoreKVContains(conn, k) {
+function DynXXKVContains(conn, k) {
     let inJson = JSON.stringify({
         "conn": conn,
         "k": k
     });
-    return dynxx_store_kv_contains(inJson);
+    return dynxx_kv_contains(inJson);
 }
 
-function DynXXStoreKVRemove(conn, k) {
+function DynXXKVRemove(conn, k) {
     let inJson = JSON.stringify({
         "conn": conn,
         "k": k
     });
-    dynxx_store_kv_remove(inJson);
+    dynxx_kv_remove(inJson);
 }
 
-function DynXXStoreKVClear(conn) {
+function DynXXKVClear(conn) {
     let inJson = JSON.stringify({
         "conn": conn
     });
-    dynxx_store_kv_clear(inJson);
+    dynxx_kv_clear(inJson);
 }
 
-function DynXXStoreKVClose(conn) {
+function DynXXKVClose(conn) {
     let inJson = JSON.stringify({
         "conn": conn
     });
-    dynxx_store_kv_close(inJson);
+    dynxx_kv_close(inJson);
 }
 
 function DynXXStr2Bytes(str) {

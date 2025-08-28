@@ -51,7 +51,7 @@ struct Index {
             let base64DecodedStr = textDecoder.decodeToString(Uint8Array.from(base64Decoded))
             DynXX.logPrint(LogLevel.Debug, `base64->${base64DecodedStr}`)
 
-            let dbConn = DynXX.storeSQLiteOpen("test");
+            let dbConn = DynXX.sqliteOpen("test");
             if (dbConn != 0) {
               let insertSql = "CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, vendor TEXT);\n" +
                 "INSERT OR IGNORE INTO TestTable (platform, vendor)\n" +
@@ -59,32 +59,32 @@ struct Index {
                 "('iOS','Apple'),\n" +
                 "('Android','Google'),\n" +
                 "('HarmonyOS','Huawei');";
-              if (DynXX.storeSQLiteExecute(dbConn, insertSql)) {
+              if (DynXX.sqliteExecute(dbConn, insertSql)) {
                 let querySql = "SELECT * FROM TestTable;";
-                let queryResult = DynXX.storeSQLiteQueryDo(dbConn, querySql);
+                let queryResult = DynXX.sqliteQueryDo(dbConn, querySql);
                 if (queryResult != 0) {
-                  while(DynXX.storeSQLiteQueryReadRow(queryResult)) {
-                    let platform = DynXX.storeSQLiteQueryReadColumnText(queryResult, "platform");
+                  while(DynXX.sqliteQueryReadRow(queryResult)) {
+                    let platform = DynXX.sqliteQueryReadColumnText(queryResult, "platform");
                     DynXX.logPrint(LogLevel.Debug, `platform->${platform}`);
                   }
-                  DynXX.storeSQLiteQueryDrop(queryResult);
+                  DynXX.sqliteQueryDrop(queryResult);
                 }
-                DynXX.storeSQLiteClose(dbConn);
+                DynXX.sqliteClose(dbConn);
               }
             }
 
-            let kvConn = DynXX.storeKVOpen("test");
+            let kvConn = DynXX.kvOpen("test");
             if (kvConn != 0) {
-              DynXX.storeKVWriteString(kvConn, "s", "DynXX");
-              let s = DynXX.storeKVReadString(kvConn, "s");
+              DynXX.kvWriteString(kvConn, "s", "DynXX");
+              let s = DynXX.kvReadString(kvConn, "s");
               DynXX.logPrint(LogLevel.Debug, `s->${s}`);
-              DynXX.storeKVWriteInteger(kvConn, "i", 1234567890);
-              let i = DynXX.storeKVReadInteger(kvConn, "i");
+              DynXX.kvWriteInteger(kvConn, "i", 1234567890);
+              let i = DynXX.kvReadInteger(kvConn, "i");
               DynXX.logPrint(LogLevel.Debug, `i->${i}`);
-              DynXX.storeKVWriteFloat(kvConn, "f", 0.123456789);
-              let f = DynXX.storeKVReadFloat(kvConn, "f");
+              DynXX.kvWriteFloat(kvConn, "f", 0.123456789);
+              let f = DynXX.kvReadFloat(kvConn, "f");
               DynXX.logPrint(LogLevel.Debug, `f->${f}`);
-              DynXX.storeKVClose(kvConn);
+              DynXX.kvClose(kvConn);
             }
 
             let jsonParams = `{

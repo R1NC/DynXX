@@ -294,170 +294,170 @@ namespace {
 
 #pragma mark Store.SQLite
 
-    jlong storeSQLiteOpen(JNIEnv *env, jobject thiz,
+    jlong sqliteOpen(JNIEnv *env, jobject thiz,
                           jstring id) {
         auto cId = env->GetStringUTFChars(id, nullptr);
-        const auto res = dynxx_store_sqlite_open(cId);
+        const auto res = dynxx_sqlite_open(cId);
         env->ReleaseStringUTFChars(id, cId);
         return ptr2addr(res);
     }
 
-    jboolean storeSQLiteExecute(JNIEnv *env, jobject thiz,
+    jboolean sqliteExecute(JNIEnv *env, jobject thiz,
                                 jlong conn,
                                 jstring sql) {
         auto cSql = env->GetStringUTFChars(sql, nullptr);
-        auto res = dynxx_store_sqlite_execute(addr2ptr(conn), cSql);
+        auto res = dynxx_sqlite_execute(addr2ptr(conn), cSql);
         env->ReleaseStringUTFChars(sql, cSql);
         return res;
     }
 
-    jlong storeSQLiteQueryDo(JNIEnv *env, jobject thiz,
+    jlong sqliteQueryDo(JNIEnv *env, jobject thiz,
                              jlong conn,
                              jstring sql) {
         auto cSql = env->GetStringUTFChars(sql, nullptr);
-        const auto res = dynxx_store_sqlite_query_do(addr2ptr(conn), cSql);
+        const auto res = dynxx_sqlite_query_do(addr2ptr(conn), cSql);
         env->ReleaseStringUTFChars(sql, cSql);
         return ptr2addr(res);
     }
 
-    jboolean storeSQLiteQueryReadRow(JNIEnv *env, jobject thiz,
+    jboolean sqliteQueryReadRow(JNIEnv *env, jobject thiz,
                                      jlong query_result) {
-        return dynxx_store_sqlite_query_read_row(addr2ptr(query_result));
+        return dynxx_sqlite_query_read_row(addr2ptr(query_result));
     }
 
-    jstring storeSQLiteQueryReadColumnText(JNIEnv *env, jobject thiz,
+    jstring sqliteQueryReadColumnText(JNIEnv *env, jobject thiz,
                                            jlong query_result,
                                            jstring column) {
         auto cColumn = env->GetStringUTFChars(column, nullptr);
-        auto cRes = dynxx_store_sqlite_query_read_column_text(addr2ptr(query_result), cColumn);
+        auto cRes = dynxx_sqlite_query_read_column_text(addr2ptr(query_result), cColumn);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
         env->ReleaseStringUTFChars(column, cColumn);
         return jStr;
     }
 
-    jlong storeSQLiteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
+    jlong sqliteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
                                             jlong query_result,
                                             jstring column) {
         auto cColumn = env->GetStringUTFChars(column, nullptr);
-        auto res = dynxx_store_sqlite_query_read_column_integer(addr2ptr(query_result), cColumn);
+        auto res = dynxx_sqlite_query_read_column_integer(addr2ptr(query_result), cColumn);
         env->ReleaseStringUTFChars(column, cColumn);
         return res;
     }
 
-    jdouble storeSQLiteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
+    jdouble sqliteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
                                             jlong query_result,
                                             jstring column) {
         auto cColumn = env->GetStringUTFChars(column, nullptr);
-        auto res = dynxx_store_sqlite_query_read_column_float(addr2ptr(query_result), cColumn);
+        auto res = dynxx_sqlite_query_read_column_float(addr2ptr(query_result), cColumn);
         env->ReleaseStringUTFChars(column, cColumn);
         return res;
     }
 
-    void storeSQLiteQueryDrop(JNIEnv *env, jobject thiz,
+    void sqliteQueryDrop(JNIEnv *env, jobject thiz,
                               jlong query_result) {
-        dynxx_store_sqlite_query_drop(addr2ptr(query_result));
+        dynxx_sqlite_query_drop(addr2ptr(query_result));
     }
 
-    void storeSQLiteClose(JNIEnv *env, jobject thiz,
+    void sqliteClose(JNIEnv *env, jobject thiz,
                           jlong conn) {
-        dynxx_store_sqlite_close(addr2ptr(conn));
+        dynxx_sqlite_close(addr2ptr(conn));
     }
 
 #pragma mark Srore.KV
 
-    jlong storeKVOpen(JNIEnv *env, jobject thiz,
+    jlong kvOpen(JNIEnv *env, jobject thiz,
                       jstring id) {
         auto cId = env->GetStringUTFChars(id, nullptr);
-        const auto res = dynxx_store_kv_open(cId);
+        const auto res = dynxx_kv_open(cId);
         env->ReleaseStringUTFChars(id, cId);
         return ptr2addr(res);
     }
 
-    jstring storeKVReadString(JNIEnv *env, jobject thiz,
+    jstring kvReadString(JNIEnv *env, jobject thiz,
                               jlong conn,
                               jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto cRes = dynxx_store_kv_read_string(addr2ptr(conn), cK);
+        auto cRes = dynxx_kv_read_string(addr2ptr(conn), cK);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
         env->ReleaseStringUTFChars(k, cK);
         return jStr;
     }
 
-    jboolean storeKVWriteString(JNIEnv *env, jobject thiz,
+    jboolean kvWriteString(JNIEnv *env, jobject thiz,
                                 jlong conn,
                                 jstring k, jstring v) {
         auto cK = env->GetStringUTFChars(k, nullptr);
         auto cV = env->GetStringUTFChars(v, nullptr);
-        auto res = dynxx_store_kv_write_string(addr2ptr(conn), cK, cV);
+        auto res = dynxx_kv_write_string(addr2ptr(conn), cK, cV);
         env->ReleaseStringUTFChars(v, cV);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
 
-    jlong storeKVReadInteger(JNIEnv *env, jobject thiz,
+    jlong kvReadInteger(JNIEnv *env, jobject thiz,
                              jlong conn,
                              jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_store_kv_read_integer(addr2ptr(conn), cK);
+        auto res = dynxx_kv_read_integer(addr2ptr(conn), cK);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
 
-    jboolean storeKVWriteInteger(JNIEnv *env, jobject thiz,
+    jboolean kvWriteInteger(JNIEnv *env, jobject thiz,
                                  jlong conn,
                                  jstring k, jlong v) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_store_kv_write_integer(addr2ptr(conn), cK, v);
+        auto res = dynxx_kv_write_integer(addr2ptr(conn), cK, v);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
 
-    jdouble storeKVReadFloat(JNIEnv *env, jobject thiz,
+    jdouble kvReadFloat(JNIEnv *env, jobject thiz,
                              jlong conn,
                              jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_store_kv_read_float(addr2ptr(conn), cK);
+        auto res = dynxx_kv_read_float(addr2ptr(conn), cK);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
 
-    jboolean storeKVWriteFloat(JNIEnv *env, jobject thiz,
+    jboolean kvWriteFloat(JNIEnv *env, jobject thiz,
                                jlong conn,
                                jstring k, jdouble v) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_store_kv_write_float(addr2ptr(conn), cK, v);
+        auto res = dynxx_kv_write_float(addr2ptr(conn), cK, v);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
 
-    jboolean storeKVContains(JNIEnv *env, jobject thiz,
+    jboolean kvContains(JNIEnv *env, jobject thiz,
                              jlong conn,
                              jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_store_kv_contains(addr2ptr(conn), cK);
+        auto res = dynxx_kv_contains(addr2ptr(conn), cK);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
 
-    jboolean storeKVRemove(JNIEnv *env, jobject thiz,
+    jboolean kvRemove(JNIEnv *env, jobject thiz,
                            jlong conn,
                            jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_store_kv_remove(addr2ptr(conn), cK);
+        auto res = dynxx_kv_remove(addr2ptr(conn), cK);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
 
-    void storeKVClear(JNIEnv *env, jobject thiz,
+    void kvClear(JNIEnv *env, jobject thiz,
                       jlong conn) {
-        dynxx_store_kv_clear(addr2ptr(conn));
+        dynxx_kv_clear(addr2ptr(conn));
     }
 
-    void storeKVClose(JNIEnv *env, jobject thiz,
+    void kvClose(JNIEnv *env, jobject thiz,
                       jlong conn) {
-        dynxx_store_kv_close(addr2ptr(conn));
+        dynxx_kv_close(addr2ptr(conn));
     }
 
 #pragma mark Device
@@ -889,27 +889,27 @@ namespace {
             DECLARE_JNI_FUNC(jCall, "(" LJLS_ LJLS_ "Z)" LJLS_),
             DECLARE_JNI_FUNC(jSetMsgCallback, "(" LKF1_ ")V"),
 
-            DECLARE_JNI_FUNC(storeSQLiteOpen, "(" LJLS_ ")J"),
-            DECLARE_JNI_FUNC(storeSQLiteExecute, "(J" LJLS_ ")Z"),
-            DECLARE_JNI_FUNC(storeSQLiteQueryDo, "(J" LJLS_ ")J"),
-            DECLARE_JNI_FUNC(storeSQLiteQueryReadRow, "(J)Z"),
-            DECLARE_JNI_FUNC(storeSQLiteQueryReadColumnText, "(J" LJLS_ ")" LJLS_),
-            DECLARE_JNI_FUNC(storeSQLiteQueryReadColumnInteger, "(J" LJLS_ ")J"),
-            DECLARE_JNI_FUNC(storeSQLiteQueryReadColumnFloat, "(J" LJLS_ ")D"),
-            DECLARE_JNI_FUNC(storeSQLiteQueryDrop, "(J)V"),
-            DECLARE_JNI_FUNC(storeSQLiteClose, "(J)V"),
+            DECLARE_JNI_FUNC(sqliteOpen, "(" LJLS_ ")J"),
+            DECLARE_JNI_FUNC(sqliteExecute, "(J" LJLS_ ")Z"),
+            DECLARE_JNI_FUNC(sqliteQueryDo, "(J" LJLS_ ")J"),
+            DECLARE_JNI_FUNC(sqliteQueryReadRow, "(J)Z"),
+            DECLARE_JNI_FUNC(sqliteQueryReadColumnText, "(J" LJLS_ ")" LJLS_),
+            DECLARE_JNI_FUNC(sqliteQueryReadColumnInteger, "(J" LJLS_ ")J"),
+            DECLARE_JNI_FUNC(sqliteQueryReadColumnFloat, "(J" LJLS_ ")D"),
+            DECLARE_JNI_FUNC(sqliteQueryDrop, "(J)V"),
+            DECLARE_JNI_FUNC(sqliteClose, "(J)V"),
 
-            DECLARE_JNI_FUNC(storeKVOpen, "(" LJLS_ ")J"),
-            DECLARE_JNI_FUNC(storeKVReadString, "(J" LJLS_ ")" LJLS_),
-            DECLARE_JNI_FUNC(storeKVWriteString, "(J" LJLS_ LJLS_ ")Z"),
-            DECLARE_JNI_FUNC(storeKVReadInteger, "(J" LJLS_ ")J"),
-            DECLARE_JNI_FUNC(storeKVWriteInteger, "(J" LJLS_ "J)Z"),
-            DECLARE_JNI_FUNC(storeKVReadFloat, "(J" LJLS_ ")D"),
-            DECLARE_JNI_FUNC(storeKVWriteFloat, "(J" LJLS_ "D)Z"),
-            DECLARE_JNI_FUNC(storeKVContains, "(J" LJLS_ ")Z"),
-            DECLARE_JNI_FUNC(storeKVRemove, "(J" LJLS_ ")Z"),
-            DECLARE_JNI_FUNC(storeKVClear, "(J)V"),
-            DECLARE_JNI_FUNC(storeKVClose, "(J)V"),
+            DECLARE_JNI_FUNC(kvOpen, "(" LJLS_ ")J"),
+            DECLARE_JNI_FUNC(kvReadString, "(J" LJLS_ ")" LJLS_),
+            DECLARE_JNI_FUNC(kvWriteString, "(J" LJLS_ LJLS_ ")Z"),
+            DECLARE_JNI_FUNC(kvReadInteger, "(J" LJLS_ ")J"),
+            DECLARE_JNI_FUNC(kvWriteInteger, "(J" LJLS_ "J)Z"),
+            DECLARE_JNI_FUNC(kvReadFloat, "(J" LJLS_ ")D"),
+            DECLARE_JNI_FUNC(kvWriteFloat, "(J" LJLS_ "D)Z"),
+            DECLARE_JNI_FUNC(kvContains, "(J" LJLS_ ")Z"),
+            DECLARE_JNI_FUNC(kvRemove, "(J" LJLS_ ")Z"),
+            DECLARE_JNI_FUNC(kvClear, "(J)V"),
+            DECLARE_JNI_FUNC(kvClose, "(J)V"),
 
             DECLARE_JNI_FUNC(deviceType, "()I"),
             DECLARE_JNI_FUNC(deviceName, "()" LJLS_),

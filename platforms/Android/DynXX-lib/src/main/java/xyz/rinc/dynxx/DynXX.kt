@@ -34,27 +34,27 @@ class DynXX {
         external fun jCall(func: String, params: String?, await: Boolean): String?
         external fun jSetMsgCallback(callback: ((msg: String) -> String?))
 
-        external fun storeSQLiteOpen(id: String): Long
-        external fun storeSQLiteExecute(conn: Long, sql: String): Boolean
-        external fun storeSQLiteQueryDo(conn: Long, sql: String): Long
-        external fun storeSQLiteQueryReadRow(queryResult: Long): Boolean
-        external fun storeSQLiteQueryReadColumnText(queryResult: Long, column: String): String?
-        external fun storeSQLiteQueryReadColumnInteger(queryResult: Long, column: String): Long
-        external fun storeSQLiteQueryReadColumnFloat(queryResult: Long, column: String): Double
-        external fun storeSQLiteQueryDrop(queryResult: Long)
-        external fun storeSQLiteClose(conn: Long)
+        external fun sqliteOpen(id: String): Long
+        external fun sqliteExecute(conn: Long, sql: String): Boolean
+        external fun sqliteQueryDo(conn: Long, sql: String): Long
+        external fun sqliteQueryReadRow(queryResult: Long): Boolean
+        external fun sqliteQueryReadColumnText(queryResult: Long, column: String): String?
+        external fun sqliteQueryReadColumnInteger(queryResult: Long, column: String): Long
+        external fun sqliteQueryReadColumnFloat(queryResult: Long, column: String): Double
+        external fun sqliteQueryDrop(queryResult: Long)
+        external fun sqliteClose(conn: Long)
         
-        external fun storeKVOpen(id: String): Long
-        external fun storeKVReadString(conn: Long, k: String): String?
-        external fun storeKVWriteString(conn: Long, k: String, v: String?): Boolean
-        external fun storeKVReadInteger(conn: Long, k: String): Long
-        external fun storeKVWriteInteger(conn: Long, k: String, v: Long): Boolean
-        external fun storeKVReadFloat(conn: Long, k: String): Double
-        external fun storeKVWriteFloat(conn: Long, k: String, v: Double): Boolean
-        external fun storeKVContains(conn: Long, k: String): Boolean
-        external fun storeKVRemove(conn: Long, k: String): Boolean
-        external fun storeKVClear(conn: Long)
-        external fun storeKVClose(conn: Long)
+        external fun kvOpen(id: String): Long
+        external fun kvReadString(conn: Long, k: String): String?
+        external fun kvWriteString(conn: Long, k: String, v: String?): Boolean
+        external fun kvReadInteger(conn: Long, k: String): Long
+        external fun kvWriteInteger(conn: Long, k: String, v: Long): Boolean
+        external fun kvReadFloat(conn: Long, k: String): Double
+        external fun kvWriteFloat(conn: Long, k: String, v: Double): Boolean
+        external fun kvContains(conn: Long, k: String): Boolean
+        external fun kvRemove(conn: Long, k: String): Boolean
+        external fun kvClear(conn: Long)
+        external fun kvClose(conn: Long)
 
         external fun deviceType(): Int
         external fun deviceName(): String?
