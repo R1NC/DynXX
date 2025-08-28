@@ -15,7 +15,6 @@
 #include <openssl/sha.h>
 #include <openssl/md5.h>
 
-#include <DynXX/CXX/Log.hxx>
 #include <DynXX/CXX/Coding.hxx>
 
 #include "../concurrent/ConcurrentUtil.hxx"
@@ -190,12 +189,12 @@ Bytes DynXX::Core::Crypto::rand(size_t len)
 
 Bytes DynXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
 {
-    const auto in = inBytes.data(), key = keyBytes.data();
-    const auto inLen = inBytes.size(), keyLen = keyBytes.size();
-    if (in == nullptr || inLen == 0 || key == nullptr || keyLen != AES_BLOCK_SIZE) [[unlikely]]
+    if (inBytes.empty() || keyBytes.size() != AES_BLOCK_SIZE) [[unlikely]]
     {
         return {};
     }
+
+    const auto inLen = inBytes.size();
     
     //ECB-PKCS5 Padding:
     auto outLen = inLen;
@@ -204,12 +203,12 @@ Bytes DynXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
     outLen += paddingSize;
 
     Bytes fixedIn(outLen, paddingData);
-    std::memcpy(fixedIn.data(), in, inLen);
+    std::memcpy(fixedIn.data(), inBytes.data(), inLen);
     Bytes out(outLen, 0);
 
     AES_KEY aes_key;
 
-    if (const auto ret = AES_set_encrypt_key(key, AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
+    if (const auto ret = AES_set_encrypt_key(keyBytes.data(), AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
     {
         dynxxLogPrintF(Error, "AES_set_encrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
@@ -225,20 +224,19 @@ Bytes DynXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
 
 Bytes DynXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
 {
-    const auto in = inBytes.data(), key = keyBytes.data();
-    const auto inLen = inBytes.size(), keyLen = keyBytes.size();
-    if (in == nullptr || inLen == 0 || key == nullptr 
-        || keyLen != AES_BLOCK_SIZE || inLen % AES_BLOCK_SIZE != 0) [[unlikely]]
+    if (inBytes.empty() || keyBytes.size() != AES_BLOCK_SIZE || inBytes.size() % AES_BLOCK_SIZE != 0) [[unlikely]]
     {
         return {};
     }
 
+    const auto inLen = inBytes.size();
+
     Bytes fixedIn(inLen, 0);
-    std::memcpy(fixedIn.data(), in, inLen);
+    std::memcpy(fixedIn.data(), inBytes.data(), inLen);
     Bytes out(inLen, 0);
 
     AES_KEY aes_key;
-    if (const auto ret = AES_set_decrypt_key(key, AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
+    if (const auto ret = AES_set_decrypt_key(keyBytes.data(), AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
     {
         dynxxLogPrintF(Error, "AES_set_decrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
@@ -277,15 +275,14 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
     {
         return {};
     }
-    const auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
-    const auto inLen = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
+    const auto inLen = inBytes.size();
     const auto tagLen = tagBits / 8;
 
     Bytes tag(tagLen, 0);
     const auto outLen = inLen;
     Bytes out(outLen, 0);
 
-    const auto evp = Evp(keyLen);
+    const auto evp = Evp(keyBytes.size());
     if (evp.context() == nullptr) [[unlikely]]
     {
         dynxxLogPrint(Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
@@ -299,14 +296,14 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
         return {};
     }
 
-    ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
+    ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorBytes.size()), nullptr);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_EncryptInit_ex(evp.context(), nullptr, nullptr, key, initVector);
+    ret = EVP_EncryptInit_ex(evp.context(), nullptr, nullptr, keyBytes.data(), initVectorBytes.data());
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -315,9 +312,9 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
 
     int len;
 
-    if (aad != nullptr && aadLen > 0) [[likely]]
+    if (const auto aadLen = aadBytes.size(); aadLen > 0) [[likely]]
     {
-        ret = EVP_EncryptUpdate(evp.context(), nullptr, &len, aad, static_cast<int>(aadLen));
+        ret = EVP_EncryptUpdate(evp.context(), nullptr, &len, aadBytes.data(), static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
             dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -325,7 +322,7 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
         }
     }
 
-    ret = EVP_EncryptUpdate(evp.context(), out.data(), &len, in, static_cast<int>(inLen));
+    ret = EVP_EncryptUpdate(evp.context(), out.data(), &len, inBytes.data(), static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptUpdate encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -356,17 +353,16 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
     {
         return {};
     }
-    const auto in = inBytes.data(), key = keyBytes.data(), initVector = initVectorBytes.data(), aad = aadBytes.data();
-    const auto inLen_ = inBytes.size(), keyLen = keyBytes.size(), initVectorLen = initVectorBytes.size(), aadLen = aadBytes.size();
+    const auto inLen_ = inBytes.size();
     const auto tagLen = tagBits / 8;
 
     const auto inLen = inLen_ - tagLen;
     Bytes tag(tagLen, 0);
-    std::memcpy(tag.data(), in + inLen, tagLen);
+    std::memcpy(tag.data(), inBytes.data() + inLen, tagLen);
     const auto outLen = inLen;
     Bytes out(outLen, 0);
 
-    const auto evp = Evp(keyLen);
+    const auto evp = Evp(keyBytes.size());
     if (evp.context() == nullptr) [[unlikely]]
     {
         dynxxLogPrint(Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
@@ -380,14 +376,14 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
         return {};
     }
 
-    ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
+    ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorBytes.size()), nullptr);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
-    ret = EVP_DecryptInit_ex(evp.context(), nullptr, nullptr, key, initVector);
+    ret = EVP_DecryptInit_ex(evp.context(), nullptr, nullptr, keyBytes.data(), initVectorBytes.data());
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -396,9 +392,9 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
 
     int len;
 
-    if (aad != nullptr && aadLen > 0) [[likely]]
+    if (const auto aadLen = aadBytes.size(); aadLen > 0) [[likely]]
     {
-        ret = EVP_DecryptUpdate(evp.context(), nullptr, &len, aad, static_cast<int>(aadLen));
+        ret = EVP_DecryptUpdate(evp.context(), nullptr, &len, aadBytes.data(), static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
             dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
@@ -406,7 +402,7 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
         }
     }
 
-    ret = EVP_DecryptUpdate(evp.context(), out.data(), &len, in, static_cast<int>(inLen));
+    ret = EVP_DecryptUpdate(evp.context(), out.data(), &len, inBytes.data(), static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptUpdate decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));

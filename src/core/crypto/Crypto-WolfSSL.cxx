@@ -12,8 +12,6 @@
 #include <wolfssl/wolfcrypt/rsa.h>
 #include <wolfssl/wolfcrypt/coding.h>
 
-#include <DynXX/CXX/Log.hxx>
-
 namespace 
 {
     constexpr auto OK = 0;

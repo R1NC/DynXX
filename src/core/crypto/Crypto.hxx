@@ -9,6 +9,7 @@
 #include <openssl/rsa.h>
 
 #include <DynXX/CXX/Types.hxx>
+#include <DynXX/CXX/Log.hxx>
 
 #include "../concurrent/ConcurrentUtil.hxx"
 
@@ -38,26 +39,26 @@ namespace DynXX::Core::Crypto {
 
         static constexpr auto checkGcmParams(BytesView in, BytesView key, BytesView initVector,
                                              BytesView aad, const size_t tagBits) {
-            const auto inBytes = in.data(), keyBytes = key.data(), initVectorBytes = initVector.data(), aadBytes = aad.
-                    data();
-            const auto inLen = in.size(), keyLen = key.size(), initVectorLen = initVector.size(), aadLen = aad.size();
-            const auto tagLen = tagBits / 8;
-            if (inBytes == nullptr || inLen == 0) {
+            using enum DynXXLogLevelX;
+            const auto inLen = in.size();
+            if (in.empty()) {
+                dynxxLogPrint(Error, "aesGcm invalid inBytes");
                 return false;
             }
-            if (keyBytes == nullptr || (keyLen != 16 && keyLen != 24 && keyLen != 32)) {
+            if (const auto keyLen = key.size(); keyLen % 8 != 0 || keyLen < 16 || keyLen > 32) {
+                dynxxLogPrint(Error, "aesGcm invalid keyBytes");
                 return false;
             }
-            if (initVectorBytes == nullptr || initVectorLen != 12) {
+            if (const auto initVectorLen = initVector.size(); initVectorLen != 12) {
+                dynxxLogPrint(Error, "aesGcm invalid initVectorBytes");
                 return false;
             }
-            if (aadLen > 16 || (aadLen > 0 && aadBytes == nullptr)) {
+            if (const auto aadLen = aad.size(); aadLen > 16) {
+                dynxxLogPrint(Error, "aesGcm invalid aadBytes");
                 return false;
             }
-            if (tagBits != 96 && tagBits != 104 && tagBits != 112 && tagBits != 120 && tagBits != 128) {
-                return false;
-            }
-            if (inLen <= tagLen) {
+            if (tagBits % 8 != 0 || tagBits / 8 >= inLen || tagBits < 96 || tagBits > 128) {
+                dynxxLogPrint(Error, "aesGcm invalid tagBits");
                 return false;
             }
             return true;
