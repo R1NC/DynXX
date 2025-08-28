@@ -7,16 +7,15 @@
 #include "core/zip/Zip.hxx"
 #include "core/coding/Coding.hxx"
 #include "core/crypto/Crypto.hxx"
-#include "core/device/Device.hxx"
 #include "core/log/Log.hxx"
+
+#include <DynXX/CXX/Macro.hxx>
 
 #if defined(USE_CURL)
 #include "core/net/HttpClient.hxx"
 #else
 #include "core/net/HttpClient-wasm.hxx"
 #endif
-
-#include <DynXX/CXX/Macro.hxx>
 
 #if defined(USE_LUA)
 #include "bridge/LuaBridge.hxx"
@@ -32,6 +31,10 @@
 
 #if defined(USE_KV)
 #include "core/store/KV.hxx"
+#endif
+
+#if defined(USE_DEVICE)
+#include "core/device/Device.hxx"
 #endif
 
 #if defined(USE_STD_CHAR_CONV_INT)
@@ -248,6 +251,8 @@ void dynxxRelease() {
 
 // Device.Device
 
+#if defined(USE_DEVICE)
+
 DynXXDeviceTypeX dynxxDeviceType() {
     return static_cast<DynXXDeviceTypeX>(Device::deviceType());
 }
@@ -271,6 +276,8 @@ std::string dynxxDeviceOsVersion() {
 DynXXDeviceCpuArchX dynxxDeviceCpuArch() {
     return static_cast<DynXXDeviceCpuArchX>(Device::cpuArch());
 }
+
+#endif
 
 // Log
 

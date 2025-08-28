@@ -42,6 +42,8 @@ void dynxx_release() {
 
 // Device.DeviceInfo
 
+#if defined(USE_DEVICE)
+
 EXPORT_AUTO
 int dynxx_device_type() {
     return static_cast<int>(dynxxDeviceType());
@@ -75,6 +77,8 @@ EXPORT_AUTO
 int dynxx_device_cpu_arch() {
     return static_cast<int>(dynxxDeviceCpuArch());
 }
+
+#endif
 
 // Log
 

@@ -18,8 +18,7 @@ enum DynXXDeviceType {
     DynXXDeviceTypeAppleTV,
     DynXXDeviceTypeHarmonyOS,
     DynXXDeviceTypeWindows,
-    DynXXDeviceTypeLinux,
-    DynXXDeviceTypeWeb
+    DynXXDeviceTypeLinux
 };
 
 /**

@@ -13,8 +13,7 @@ enum class DynXXDeviceTypeX: int {
     AppleTV,
     HarmonyOS,
     Windows,
-    Linux,
-    Web
+    Linux
 };
 
 enum class DynXXDeviceCpuArchX: int {
