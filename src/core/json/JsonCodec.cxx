@@ -188,25 +188,33 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
             continue;
         }
         std::string k(node->string);
-        if (const auto type = nodeReadType(node); type == Float)
-        {
-            dict.emplace(k, readFloat(node));
-        }
-        else if (type == Int32)
-        {
-            dict.emplace(k, readInt32(node));
-        }
-        else if (type == Int64)
-        {
-            dict.emplace(k, readInt64(node));
-        }
-        else if (type == String)
-        {
-            dict.emplace(k, makeStr(node->valuestring));
-        }
-        else
-        {
-            dict.emplace(k, nodeToStr(node).value_or(""));
+        const auto type = nodeReadType(node);
+        switch(type) {
+            case Float:
+            {
+                dict.emplace(k, readFloat(node));
+                break;
+            }
+            case Int32:
+            {
+                dict.emplace(k, readInt32(node));
+                break;
+            }
+            case Int64:
+            {
+                dict.emplace(k, readInt64(node));
+                break;
+            }
+            case String:
+            {
+                dict.emplace(k, makeStr(node->valuestring));
+                break;
+            }
+            default:
+            {
+                dict.emplace(k, nodeToStr(node).value_or(""));
+                break;
+            }
         }
     }
 
@@ -311,6 +319,8 @@ std::optional<std::string> DynXX::Core::Json::Decoder::readString(const DynXXJso
         }
         default:
         {
+            dynxxLogPrintF(Error, "FAILED TO PARSE JSON STRING({}): INVALID NODE TYPE({})", 
+                cj->string, cj->type);
             return std::nullopt;
         }
     }
@@ -320,25 +330,30 @@ std::optional<double> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNode
 {
     const auto type = nodeReadType(node);
     const auto cj = this->reinterpretNode(node);
-    if (type == Int32)
-    {
-        return {readInt32(cj)};
-    } 
-    if (type == Int64)
-    {
-        return {readInt64(cj)};
-    } 
-    if (type == Float)
-    {
-        return {readFloat(cj)};
-    } 
-    if (type == String)
-    {
-        return {str2float64(makeStr(cj->valuestring))};
-    }
-    dynxxLogPrintF(Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
+    switch(type) {
+        case Int32:
+        {
+            return {readInt32(cj)};
+        }
+        case Int64:
+        {
+            return {readInt64(cj)};
+        }
+        case Float:
+        {
+            return {readFloat(cj)};
+        }
+        case String:
+        {
+            return {str2float64(makeStr(cj->valuestring))};
+        }
+        default:
+        {
+            dynxxLogPrintF(Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
                 cj->string, cj->type);
-    return std::nullopt;
+            return std::nullopt;
+        }
+    }
 }
 
 DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readChild(const DynXXJsonNodeHandle node) const
