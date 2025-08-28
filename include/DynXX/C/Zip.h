@@ -3,7 +3,12 @@
 
 #include "Types.h"
 
+#include <stdio.h>
+
 EXTERN_C_BEGIN
+
+typedef void* DynXXZipHandle;
+typedef void* DynXXUnZipHandle;
 
 /**
  * ZIP compress mode
@@ -30,7 +35,7 @@ enum DynXXZFormat {
  * @param format header type, see `DynXXZFormat`
  * @return a ZIP handle
  */
-void *dynxx_z_zip_init(int mode, size_t bufferSize, int format);
+DynXXZipHandle dynxx_z_zip_init(int mode, size_t bufferSize, int format);
 
 /**
  * @brief input data to ZIP process
@@ -40,7 +45,7 @@ void *dynxx_z_zip_init(int mode, size_t bufferSize, int format);
  * @param inFinish Whether input is finished or not
  * @return The received data length, return `0` if error occurred
  */
-size_t dynxx_z_zip_input(void *const zip, const byte *inBytes, size_t inLen, bool inFinish);
+size_t dynxx_z_zip_input(const DynXXZipHandle zip, const byte *inBytes, size_t inLen, bool inFinish);
 
 /**
  * @brief process the ZIP input data
@@ -48,20 +53,20 @@ size_t dynxx_z_zip_input(void *const zip, const byte *inBytes, size_t inLen, boo
  * @param outLen a pointer to read the output data length
  * @return output data bytes, return `nullptr` if error occurred
  */
-const byte *dynxx_z_zip_process_do(void *const zip, size_t *outLen);
+const byte *dynxx_z_zip_process_do(const DynXXZipHandle zip, size_t *outLen);
 
 /**
  * @brief check whether all the ZIP data inputed before are processed
  * @param zip The ZIP handle
  * @return whether finished or not
  */
-bool dynxx_z_zip_process_finished(void *const zip);
+bool dynxx_z_zip_process_finished(const DynXXZipHandle zip);
 
 /**
  * @brief release a ZIP process
  * @param zip The ZIP handle
  */
-void dynxx_z_zip_release(void *const zip);
+void dynxx_z_zip_release(const DynXXZipHandle zip);
 
 /**
  * @brief initialize a UNZIP process
@@ -69,7 +74,7 @@ void dynxx_z_zip_release(void *const zip);
  * @param format header type, see `DynXXZFormat`
  * @return a UNZIP handle
  */
-void *dynxx_z_unzip_init(size_t bufferSize, int header);
+DynXXUnZipHandle dynxx_z_unzip_init(size_t bufferSize, int header);
 
 /**
  * @brief input data to UNZIP process
@@ -79,7 +84,7 @@ void *dynxx_z_unzip_init(size_t bufferSize, int header);
  * @param inFinish Whether input is finished or not
  * @return The received data length, return `0` if error occurred
  */
-size_t dynxx_z_unzip_input(void *const unzip, const byte *inBytes, size_t inLen, bool inFinish);
+size_t dynxx_z_unzip_input(const DynXXUnZipHandle unzip, const byte *inBytes, size_t inLen, bool inFinish);
 
 /**
  * @brief process the UNZIP input data
@@ -87,20 +92,20 @@ size_t dynxx_z_unzip_input(void *const unzip, const byte *inBytes, size_t inLen,
  * @param outLen a pointer to read the output data length
  * @return output data bytes, return `nullptr` if error occurred
  */
-const byte *dynxx_z_unzip_process_do(void *const unzip, size_t *outLen);
+const byte *dynxx_z_unzip_process_do(const DynXXUnZipHandle unzip, size_t *outLen);
 
 /**
  * @brief check whether all the ZIP data inputed before are processed
  * @param unzip The UNZIP handle
  * @return whether finished or not
  */
-bool dynxx_z_unzip_process_finished(void *const unzip);
+bool dynxx_z_unzip_process_finished(const DynXXUnZipHandle unzip);
 
 /**
  * @brief release a unzip process
  * @param unzip The unzip handle
  */
-void dynxx_z_unzip_release(void *const unzip);
+void dynxx_z_unzip_release(const DynXXUnZipHandle unzip);
 
 /**
  * @brief ZIP for C FILE
@@ -112,7 +117,7 @@ void dynxx_z_unzip_release(void *const unzip);
  * @param cFILEOut Output C `FILE`
  * @return whether finished or not
  */
-bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, void *const cFILEIn, void *const cFILEOut);
+bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *const cFILEIn, FILE *const cFILEOut);
 
 /**
  * @brief UNZIP for C FILE
@@ -123,30 +128,7 @@ bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, void *const cFIL
  * @param cFILEOut Output C `FILE`
  * @return whether finished or not
  */
-bool dynxx_z_cfile_unzip(size_t bufferSize, int format, void *const cFILEIn, void *const cFILEOut);
-
-/**
- * @brief ZIP for C++ Stream
- * @warning Not accessible in JS/Lua!
- * @param mode ZIP mode, see `DynXXZipCompressMode`
- * @param bufferSize buffer size，must be positive
- * @param format header type, see `DynXXZFormat`
- * @param cxxStreamIn Input C++ Stream(`istream`)
- * @param cxxStreamOut Output C++ Stream(`ostream`)
- * @return whether finished or not
- */
-bool dynxx_z_cxxstream_zip(int mode, size_t bufferSize, int format, void *const cxxStreamIn, void *const cxxStreamOut);
-
-/**
- * @brief UNZIP for C++ Stream
- * @warning Not accessible in JS/Lua!
- * @param bufferSize buffer size，must be positive
- * @param format header type, see `DynXXZFormat`
- * @param cxxStreamIn Input C++ Stream(`istream`)
- * @param cxxStreamOut Output C++ Stream(`ostream`)
- * @return whether finished or not
- */
-bool dynxx_z_cxxstream_unzip(size_t bufferSize, int format, void *const cxxStreamIn, void *const cxxStreamOut);
+bool dynxx_z_cfile_unzip(size_t bufferSize, int format, FILE *const cFILEIn, FILE *const cFILEOut);
 
 /**
  * @brief ZIP for bytes

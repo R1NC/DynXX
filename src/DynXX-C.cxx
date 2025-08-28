@@ -260,7 +260,7 @@ const char *dynxx_net_http_request(const char *url, const char *params, int meth
                                     const char **form_field_mime_v,
                                     const char **form_field_data_v,
                                     size_t form_field_count,
-                                    void *const cFILE, size_t file_size,
+                                    FILE *const cFILE, size_t file_size,
                                     size_t timeout) {
     if (url == nullptr) {
         return "";
@@ -291,7 +291,7 @@ const char *dynxx_net_http_request(const char *url, const char *params, int meth
                                          params ? params : "",
                                          {},
                                          vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
-                                         static_cast<std::FILE *>(cFILE), file_size, timeout);
+                                         cFILE, file_size, timeout);
     const auto s = t.toJson();
     return dupStr(s.value_or(""));
 }
@@ -313,12 +313,12 @@ bool dynxx_net_http_download(const char *url, const char *file_path, size_t time
 #if defined(USE_DB)
 
 EXPORT_AUTO
-void *dynxx_store_sqlite_open(const char *_id) {
+DynXXDBConnHandle dynxx_store_sqlite_open(const char *_id) {
     return dynxxStoreSqliteOpen(makeStr(_id));
 }
 
 EXPORT_AUTO
-bool dynxx_store_sqlite_execute(void *const conn, const char *sql) {
+bool dynxx_store_sqlite_execute(const DynXXDBConnHandle conn, const char *sql) {
     if (conn == nullptr || sql == nullptr) {
         return false;
     }
@@ -326,7 +326,7 @@ bool dynxx_store_sqlite_execute(void *const conn, const char *sql) {
 }
 
 EXPORT_AUTO
-void *dynxx_store_sqlite_query_do(void *const conn, const char *sql) {
+DynXXDBQueryResultHandle dynxx_store_sqlite_query_do(const DynXXDBConnHandle conn, const char *sql) {
     if (conn == nullptr || sql == nullptr) {
         return nullptr;
     }
@@ -334,12 +334,12 @@ void *dynxx_store_sqlite_query_do(void *const conn, const char *sql) {
 }
 
 EXPORT_AUTO
-bool dynxx_store_sqlite_query_read_row(void *const query_result) {
+bool dynxx_store_sqlite_query_read_row(const DynXXDBQueryResultHandle query_result) {
     return dynxxStoreSqliteQueryReadRow(query_result);
 }
 
 EXPORT_AUTO
-const char *dynxx_store_sqlite_query_read_column_text(void *const query_result, const char *column) {
+const char *dynxx_store_sqlite_query_read_column_text(const DynXXDBQueryResultHandle query_result, const char *column) {
     if (query_result == nullptr || column == nullptr) {
         return "";
     }
@@ -348,7 +348,7 @@ const char *dynxx_store_sqlite_query_read_column_text(void *const query_result, 
 }
 
 EXPORT_AUTO
-int64_t dynxx_store_sqlite_query_read_column_integer(void *const query_result, const char *column) {
+int64_t dynxx_store_sqlite_query_read_column_integer(const DynXXDBQueryResultHandle query_result, const char *column) {
     if (query_result == nullptr || column == nullptr) {
         return 0;
     }
@@ -357,7 +357,7 @@ int64_t dynxx_store_sqlite_query_read_column_integer(void *const query_result, c
 }
 
 EXPORT_AUTO
-double dynxx_store_sqlite_query_read_column_float(void *const query_result, const char *column) {
+double dynxx_store_sqlite_query_read_column_float(const DynXXDBQueryResultHandle query_result, const char *column) {
     if (query_result == nullptr || column == nullptr) {
         return 0.0;
     }
@@ -366,12 +366,12 @@ double dynxx_store_sqlite_query_read_column_float(void *const query_result, cons
 }
 
 EXPORT_AUTO
-void dynxx_store_sqlite_query_drop(void *const query_result) {
+void dynxx_store_sqlite_query_drop(const DynXXDBQueryResultHandle query_result) {
     dynxxStoreSqliteQueryDrop(query_result);
 }
 
 EXPORT_AUTO
-void dynxx_store_sqlite_close(void *const conn) {
+void dynxx_store_sqlite_close(const DynXXDBConnHandle conn) {
     dynxxStoreSqliteClose(conn);
 }
 
@@ -382,12 +382,12 @@ void dynxx_store_sqlite_close(void *const conn) {
 #if defined(USE_KV)
 
 EXPORT_AUTO
-void *dynxx_store_kv_open(const char *_id) {
+DynXXKVConnHandle dynxx_store_kv_open(const char *_id) {
     return dynxxStoreKvOpen(makeStr(_id));
 }
 
 EXPORT_AUTO
-const char *dynxx_store_kv_read_string(void *const conn, const char *k) {
+const char *dynxx_store_kv_read_string(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return nullptr;
     }
@@ -396,7 +396,7 @@ const char *dynxx_store_kv_read_string(void *const conn, const char *k) {
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_write_string(void *const conn, const char *k, const char *v) {
+bool dynxx_store_kv_write_string(const DynXXKVConnHandle conn, const char *k, const char *v) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
@@ -404,7 +404,7 @@ bool dynxx_store_kv_write_string(void *const conn, const char *k, const char *v)
 }
 
 EXPORT_AUTO
-int64_t dynxx_store_kv_read_integer(void *const conn, const char *k) {
+int64_t dynxx_store_kv_read_integer(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return 0;
     }
@@ -413,7 +413,7 @@ int64_t dynxx_store_kv_read_integer(void *const conn, const char *k) {
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_write_integer(void *const conn, const char *k, int64_t v) {
+bool dynxx_store_kv_write_integer(const DynXXKVConnHandle conn, const char *k, int64_t v) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
@@ -421,7 +421,7 @@ bool dynxx_store_kv_write_integer(void *const conn, const char *k, int64_t v) {
 }
 
 EXPORT_AUTO
-double dynxx_store_kv_read_float(void *const conn, const char *k) {
+double dynxx_store_kv_read_float(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return 0.0;
     }
@@ -430,7 +430,7 @@ double dynxx_store_kv_read_float(void *const conn, const char *k) {
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_write_float(void *const conn, const char *k, double v) {
+bool dynxx_store_kv_write_float(const DynXXKVConnHandle conn, const char *k, double v) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
@@ -438,7 +438,7 @@ bool dynxx_store_kv_write_float(void *const conn, const char *k, double v) {
 }
 
 EXPORT_AUTO
-char *const *dynxx_store_kv_all_keys(void *const conn, size_t *len) {
+char *const *dynxx_store_kv_all_keys(const DynXXKVConnHandle conn, size_t *len) {
     const auto t = dynxxStoreKvAllKeys(conn);
     if (len) {
         *len = t.size();
@@ -447,7 +447,7 @@ char *const *dynxx_store_kv_all_keys(void *const conn, size_t *len) {
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_contains(void *const conn, const char *k) {
+bool dynxx_store_kv_contains(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
@@ -455,7 +455,7 @@ bool dynxx_store_kv_contains(void *const conn, const char *k) {
 }
 
 EXPORT_AUTO
-bool dynxx_store_kv_remove(void *const conn, const char *k) {
+bool dynxx_store_kv_remove(const DynXXKVConnHandle conn, const char *k) {
     if (conn == nullptr || k == nullptr) {
         return false;
     }
@@ -463,12 +463,12 @@ bool dynxx_store_kv_remove(void *const conn, const char *k) {
 }
 
 EXPORT_AUTO
-void dynxx_store_kv_clear(void *const conn) {
+void dynxx_store_kv_clear(const DynXXKVConnHandle conn) {
     dynxxStoreKvClear(conn);
 }
 
 EXPORT_AUTO
-void dynxx_store_kv_close(void *const conn) {
+void dynxx_store_kv_close(const DynXXKVConnHandle conn) {
     dynxxStoreKvClose(conn);
 }
 
@@ -477,23 +477,29 @@ void dynxx_store_kv_close(void *const conn) {
 // Json.Decoder
 
 EXPORT_AUTO
-int dynxx_json_read_type(void *const cjson) {
-    return static_cast<int>(dynxxJsonReadType(cjson));
+int dynxx_json_node_read_type(const DynXXJsonNodeHandle node) {
+    return static_cast<int>(dynxxJsonNodeReadType(node));
 }
 
 EXPORT_AUTO
-const char *dynxx_json_to_str(void *const cjson) {
-    const auto s = dynxxJsonToStr(cjson);
+const char *dynxx_json_node_read_name(const DynXXJsonNodeHandle node) {
+    const auto s = dynxxJsonNodeReadName(node);
     return dupStr(s.value_or(""));
 }
 
 EXPORT_AUTO
-void *dynxx_json_decoder_init(const char *json) {
+const char *dynxx_json_node_to_str(const DynXXJsonNodeHandle node) {
+    const auto s = dynxxJsonNodeToStr(node);
+    return dupStr(s.value_or(""));
+}
+
+EXPORT_AUTO
+DynXXJsonDecoderHandle dynxx_json_decoder_init(const char *json) {
     return dynxxJsonDecoderInit(json);
 }
 
 EXPORT_AUTO
-void *dynxx_json_decoder_read_node(void *const decoder, void *const node, const char *k) {
+DynXXJsonNodeHandle dynxx_json_decoder_read_node(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node, const char *k) {
     if (decoder == nullptr || k == nullptr) {
         return nullptr;
     }
@@ -501,111 +507,101 @@ void *dynxx_json_decoder_read_node(void *const decoder, void *const node, const 
 }
 
 EXPORT_AUTO
-const char *dynxx_json_decoder_read_string(void *const decoder, void *const node) {
+const char *dynxx_json_decoder_read_string(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
     const auto s = dynxxJsonDecoderReadString(decoder, node);
     return dupStr(s.value_or(""));
 }
 
 EXPORT_AUTO
-double dynxx_json_decoder_read_number(void *const decoder, void *const node) {
+double dynxx_json_decoder_read_number(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadNumber(decoder, node).value_or(0.0);
 }
 
 EXPORT_AUTO
-void *dynxx_json_decoder_read_child(void *const decoder, void *const node) {
+DynXXJsonNodeHandle dynxx_json_decoder_read_child(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadChild(decoder, node);
 }
 
 EXPORT_AUTO
-void *dynxx_json_decoder_read_next(void *const decoder, void *const node) {
+int dynxx_json_decoder_read_children_count(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+    return dynxxJsonDecoderReadChildrenCount(decoder, node);
+}
+
+EXPORT_AUTO
+DynXXJsonNodeHandle dynxx_json_decoder_read_next(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadNext(decoder, node);
 }
 
 EXPORT_AUTO
-void dynxx_json_decoder_release(void *const decoder) {
+void dynxx_json_decoder_release(const DynXXJsonDecoderHandle decoder) {
     dynxxJsonDecoderRelease(decoder);
 }
 
 // Zip
 
 EXPORT_AUTO
-void *dynxx_z_zip_init(int mode, size_t bufferSize, int format) {
+DynXXZipHandle dynxx_z_zip_init(int mode, size_t bufferSize, int format) {
     return dynxxZZipInit(static_cast<DynXXZipCompressModeX>(mode), bufferSize, static_cast<DynXXZFormatX>(format));
 }
 
 EXPORT_AUTO
-size_t dynxx_z_zip_input(void *const zip, const byte *inBytes, size_t inLen, bool inFinish) {
+size_t dynxx_z_zip_input(const DynXXZipHandle zip, const byte *inBytes, size_t inLen, bool inFinish) {
     return dynxxZZipInput(zip, makeBytes(inBytes, inLen), inFinish);
 }
 
 EXPORT_AUTO
-const byte *dynxx_z_zip_process_do(void *const zip, size_t *outLen) {
+const byte *dynxx_z_zip_process_do(const DynXXZipHandle zip, size_t *outLen) {
     const auto bytes = dynxxZZipProcessDo(zip);
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
-bool dynxx_z_zip_process_finished(void *const zip) {
+bool dynxx_z_zip_process_finished(const DynXXZipHandle zip) {
     return dynxxZZipProcessFinished(zip);
 }
 
 EXPORT_AUTO
-void dynxx_z_zip_release(void *const zip) {
+void dynxx_z_zip_release(const DynXXZipHandle zip) {
     dynxxZZipRelease(zip);
 }
 
 EXPORT_AUTO
-void *dynxx_z_unzip_init(size_t bufferSize, int format) {
+DynXXUnZipHandle dynxx_z_unzip_init(size_t bufferSize, int format) {
     return dynxxZUnzipInit(bufferSize, static_cast<DynXXZFormatX>(format));
 }
 
 EXPORT_AUTO
-size_t dynxx_z_unzip_input(void *const unzip, const byte *inBytes, size_t inLen, bool inFinish) {
+size_t dynxx_z_unzip_input(const DynXXUnZipHandle unzip, const byte *inBytes, size_t inLen, bool inFinish) {
     return dynxxZUnzipInput(unzip, makeBytes(inBytes, inLen), inFinish);
 }
 
 EXPORT_AUTO
-const byte *dynxx_z_unzip_process_do(void *const unzip, size_t *outLen) {
+const byte *dynxx_z_unzip_process_do(const DynXXUnZipHandle unzip, size_t *outLen) {
     const auto bytes = dynxxZUnzipProcessDo(unzip);
     return handleBytes(bytes, outLen);
 }
 
 EXPORT_AUTO
-bool dynxx_z_unzip_process_finished(void *const unzip) {
+bool dynxx_z_unzip_process_finished(const DynXXUnZipHandle unzip) {
     return dynxxZUnzipProcessFinished(unzip);
 }
 
 EXPORT_AUTO
-void dynxx_z_unzip_release(void *const unzip) {
+void dynxx_z_unzip_release(const DynXXUnZipHandle unzip) {
     dynxxZUnzipRelease(unzip);
 }
 
 #if !defined(__EMSCRIPTEN__)
 
 EXPORT_AUTO
-bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, void *const cFILEIn, void *const cFILEOut) {
-    return dynxxZCFileZip(static_cast<std::FILE *>(cFILEIn), static_cast<std::FILE *>(cFILEOut),
+bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *const cFILEIn, FILE *const cFILEOut) {
+    return dynxxZCFileZip(cFILEIn, cFILEOut,
                            static_cast<DynXXZipCompressModeX>(mode), bufferSize, static_cast<DynXXZFormatX>(format));
 }
 
 EXPORT_AUTO
-bool dynxx_z_cfile_unzip(size_t bufferSize, int format, void *const cFILEIn, void *const cFILEOut) {
-    return dynxxZCFileUnzip(static_cast<std::FILE *>(cFILEIn), static_cast<std::FILE *>(cFILEOut),
-                             bufferSize, static_cast<DynXXZFormatX>(format));
-}
-
-EXPORT_AUTO
-bool dynxx_z_cxxstream_zip(int mode, size_t bufferSize, int format, void *const cxxStreamIn,
-                            void *const cxxStreamOut) {
-    return dynxxZCxxStreamZip(static_cast<std::istream *>(cxxStreamIn), static_cast<std::ostream *>(cxxStreamOut),
-                               static_cast<DynXXZipCompressModeX>(mode), bufferSize,
-                               static_cast<DynXXZFormatX>(format));
-}
-
-EXPORT_AUTO
-bool dynxx_z_cxxstream_unzip(size_t bufferSize, int format, void *const cxxStreamIn, void *const cxxStreamOut) {
-    return dynxxZCxxStreamUnzip(static_cast<std::istream *>(cxxStreamIn), static_cast<std::ostream *>(cxxStreamOut),
-                                 bufferSize, static_cast<DynXXZFormatX>(format));
+bool dynxx_z_cfile_unzip(size_t bufferSize, int format, FILE *const cFILEIn, FILE *const cFILEOut) {
+    return dynxxZCFileUnzip(cFILEIn, cFILEOut, bufferSize, static_cast<DynXXZFormatX>(format));
 }
 
 #endif

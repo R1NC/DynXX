@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "Types.hxx"
+#include "../C/Json.h"
 
 enum class DynXXJsonNodeTypeX : int {
     Unknown,
@@ -17,33 +18,33 @@ enum class DynXXJsonNodeTypeX : int {
     Null,
 };
 
-DynXXJsonNodeTypeX dynxxJsonReadType(void *const cjson);
+DynXXJsonNodeTypeX dynxxJsonNodeReadType(const DynXXJsonNodeHandle node);
 
-std::optional<std::string> dynxxJsonReadName(void *const cjson);
+std::optional<std::string> dynxxJsonNodeReadName(const DynXXJsonNodeHandle node);
 
-std::optional<std::string> dynxxJsonToStr(void *const cjson);
+std::optional<std::string> dynxxJsonNodeToStr(const DynXXJsonNodeHandle node);
 
 std::optional<std::string> dynxxJsonFromDictAny(const DictAny &dict);
 
 std::optional<DictAny> dynxxJsonToDictAny(const std::string &json);
 
-void *dynxxJsonDecoderInit(const std::string_view json);
+DynXXJsonDecoderHandle dynxxJsonDecoderInit(const std::string_view json);
 
-void *dynxxJsonDecoderReadNode(void *const decoder, std::string_view k, void *const node = nullptr);
+DynXXJsonNodeHandle dynxxJsonDecoderReadNode(const DynXXJsonDecoderHandle decoder, std::string_view k, const DynXXJsonNodeHandle node = nullptr);
 
-std::optional<std::string> dynxxJsonDecoderReadString(void *const decoder, void *const node = nullptr);
+std::optional<std::string> dynxxJsonDecoderReadString(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = nullptr);
 
-std::optional<double> dynxxJsonDecoderReadNumber(void *const decoder, void *const node = nullptr);
+std::optional<double> dynxxJsonDecoderReadNumber(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = nullptr);
 
-void *dynxxJsonDecoderReadChild(void *const decoder, void *const node = nullptr);
+DynXXJsonNodeHandle dynxxJsonDecoderReadChild(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = nullptr);
 
-size_t dynxxJsonDecoderReadChildrenCount(void *const decoder, void *const node = nullptr);
+size_t dynxxJsonDecoderReadChildrenCount(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = nullptr);
 
-void dynxxJsonDecoderReadChildren(void *const decoder, std::function<void(size_t idx, const void *childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback,
-                                   void *const node = nullptr);
+void dynxxJsonDecoderReadChildren(const DynXXJsonDecoderHandle decoder, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback,
+                                   const DynXXJsonNodeHandle node = nullptr);
 
-void *dynxxJsonDecoderReadNext(void *const decoder, void *const node = nullptr);
+DynXXJsonNodeHandle dynxxJsonDecoderReadNext(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = nullptr);
 
-void dynxxJsonDecoderRelease(void *const decoder);
+void dynxxJsonDecoderRelease(const DynXXJsonDecoderHandle decoder);
 
 #endif // DYNXX_INCLUDE_JSON_HXX_

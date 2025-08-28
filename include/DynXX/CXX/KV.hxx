@@ -2,29 +2,30 @@
 #define DYNXX_INCLUDE_KV_HXX_
 
 #include "Types.hxx"
+#include "../C/KV.h"
 
-void *dynxxStoreKvOpen(const std::string &_id);
+DynXXKVConnHandle dynxxStoreKvOpen(const std::string &_id);
 
-std::optional<std::string> dynxxStoreKvReadString(void *const conn, std::string_view k);
+std::optional<std::string> dynxxStoreKvReadString(const DynXXKVConnHandle conn, std::string_view k);
 
-bool dynxxStoreKvWriteString(void *const conn, std::string_view k, const std::string &v);
+bool dynxxStoreKvWriteString(const DynXXKVConnHandle conn, std::string_view k, const std::string &v);
 
-std::optional<int64_t> dynxxStoreKvReadInteger(void *const conn, std::string_view k);
+std::optional<int64_t> dynxxStoreKvReadInteger(const DynXXKVConnHandle conn, std::string_view k);
 
-bool dynxxStoreKvWriteInteger(void *const conn, std::string_view k, int64_t v);
+bool dynxxStoreKvWriteInteger(const DynXXKVConnHandle conn, std::string_view k, int64_t v);
 
-std::optional<double> dynxxStoreKvReadFloat(void *const conn, std::string_view k);
+std::optional<double> dynxxStoreKvReadFloat(const DynXXKVConnHandle conn, std::string_view k);
 
-bool dynxxStoreKvWriteFloat(void *const conn, std::string_view k, double v);
+bool dynxxStoreKvWriteFloat(const DynXXKVConnHandle conn, std::string_view k, double v);
 
-std::vector<std::string> dynxxStoreKvAllKeys(void *const conn);
+std::vector<std::string> dynxxStoreKvAllKeys(const DynXXKVConnHandle conn);
 
-bool dynxxStoreKvContains(void *const conn, std::string_view k);
+bool dynxxStoreKvContains(const DynXXKVConnHandle conn, std::string_view k);
 
-bool dynxxStoreKvRemove(void *const conn, std::string_view k);
+bool dynxxStoreKvRemove(const DynXXKVConnHandle conn, std::string_view k);
 
-void dynxxStoreKvClear(void *const conn);
+void dynxxStoreKvClear(const DynXXKVConnHandle conn);
 
-void dynxxStoreKvClose(void *const conn);
+void dynxxStoreKvClose(const DynXXKVConnHandle conn);
 
 #endif // DYNXX_INCLUDE_KV_HXX_

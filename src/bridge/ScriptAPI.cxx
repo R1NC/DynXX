@@ -32,7 +32,7 @@ namespace
         });
 #endif
         const auto cj = cJSON_CreateIntArray(intV.data(), static_cast<int>(intV.size()));
-        const auto json = dynxxJsonToStr(cj);
+        const auto json = dynxxJsonNodeToStr(cj);
         cJSON_Delete(cj);
         return json.value_or("");
     }
@@ -44,7 +44,7 @@ namespace
         {
             cJSON_AddItemToArray(cj, cJSON_CreateString(it.c_str()));
         }
-        const auto json = dynxxJsonToStr(cj);
+        const auto json = dynxxJsonNodeToStr(cj);
         cJSON_Delete(cj);
         return json.value_or("");
     }
@@ -102,7 +102,7 @@ namespace
             const auto len = decoder.readChildrenCount(byte_vNode);
             data.reserve(len);
             decoder.readChildren(byte_vNode, 
-                            [&data, &decoder](size_t, void *const childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)
+                            [&data, &decoder](size_t, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)
                             {
                                 data.emplace_back(decoder.readNumber(childNode).value_or(0));
                             });
@@ -118,7 +118,7 @@ namespace
             const auto len = decoder.readChildrenCount(str_vNode);
             v.reserve(len);
             decoder.readChildren(str_vNode,
-                             [&v, &decoder](size_t, void *const childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)
+                             [&v, &decoder](size_t, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)
                              {
                                  v.emplace_back(decoder.readString(childNode).value_or(""));
                              });

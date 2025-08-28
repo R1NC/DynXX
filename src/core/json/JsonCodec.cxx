@@ -46,9 +46,9 @@ namespace
     }
 }
 
-DynXXJsonNodeTypeX DynXX::Core::Json::cJSONReadType(void *const cjson)
+DynXXJsonNodeTypeX DynXX::Core::Json::nodeReadType(const DynXXJsonNodeHandle node)
 {
-    const auto cj = static_cast<cJSON *>(cjson);
+    const auto cj = static_cast<cJSON *>(node);
     if (cj == nullptr) [[unlikely]]
     {
         return Unknown;
@@ -77,9 +77,9 @@ DynXXJsonNodeTypeX DynXX::Core::Json::cJSONReadType(void *const cjson)
     }
 }
 
-std::optional<std::string> DynXX::Core::Json::cJSONReadName(void *const cjson)
+std::optional<std::string> DynXX::Core::Json::nodeReadName(const DynXXJsonNodeHandle node)
 {
-    const auto cj = static_cast<cJSON *>(cjson);
+    const auto cj = static_cast<cJSON *>(node);
     if (cj == nullptr || cj->string == nullptr) [[unlikely]]
     {
         return std::nullopt;
@@ -87,13 +87,13 @@ std::optional<std::string> DynXX::Core::Json::cJSONReadName(void *const cjson)
     return {cj->string};
 }
 
-std::optional<std::string> DynXX::Core::Json::cJSONToStr(void *const cjson)
+std::optional<std::string> DynXX::Core::Json::nodeToStr(const DynXXJsonNodeHandle node)
 {
-    if (!cjson) [[unlikely]]
+    if (!node) [[unlikely]]
     {
         return std::nullopt;
     }
-    const auto jsonChars = cJSON_PrintUnformatted(static_cast<cJSON *>(cjson));
+    const auto jsonChars = cJSON_PrintUnformatted(static_cast<cJSON *>(node));
     if (!jsonChars) [[unlikely]]
     {
         return std::nullopt;
@@ -156,7 +156,7 @@ std::optional<std::string> DynXX::Core::Json::jsonFromDictAny(const DictAny &dic
             }
         }
     }
-    auto json = cJSONToStr(cjson);
+    auto json = nodeToStr(cjson);
     cJSON_Delete(cjson);
     return json;
 }
@@ -173,7 +173,7 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
         return std::nullopt;
     }
 
-    if (cJSONReadType(cjson) != Object) [[unlikely]]
+    if (nodeReadType(cjson) != Object) [[unlikely]]
     {
         cJSON_Delete(cjson);
         return std::nullopt;
@@ -187,7 +187,7 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
             continue;
         }
         std::string k(node->string);
-        if (const auto type = cJSONReadType(node); type == Float)
+        if (const auto type = nodeReadType(node); type == Float)
         {
             dict.emplace(k, readFloat(node));
         }
@@ -205,7 +205,7 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
         }
         else
         {
-            dict.emplace(k, cJSONToStr(node).value_or(""));
+            dict.emplace(k, nodeToStr(node).value_or(""));
         }
     }
 
@@ -255,7 +255,7 @@ DynXX::Core::Json::Decoder &DynXX::Core::Json::Decoder::operator=(Decoder &&othe
     return *this;
 }
 
-const cJSON *DynXX::Core::Json::Decoder::reinterpretNode(void *const node) const
+const cJSON *DynXX::Core::Json::Decoder::reinterpretNode(const DynXXJsonNodeHandle node) const
 {
     if (node == nullptr)
     {
@@ -264,7 +264,7 @@ const cJSON *DynXX::Core::Json::Decoder::reinterpretNode(void *const node) const
     return static_cast<const cJSON *>(node);
 }
 
-void *DynXX::Core::Json::Decoder::readNode(void *const node, std::string_view k) const
+DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readNode(const DynXXJsonNodeHandle node, std::string_view k) const
 {
     if (const auto cj = this->reinterpretNode(node); cj != nullptr) [[likely]]
     {
@@ -273,20 +273,20 @@ void *DynXX::Core::Json::Decoder::readNode(void *const node, std::string_view k)
     return nullptr;
 }
 
-void *DynXX::Core::Json::Decoder::operator[](std::string_view k) const
+DynXXJsonNodeHandle DynXX::Core::Json::Decoder::operator[](std::string_view k) const
 {
     return this->readNode(nullptr, k);
 }
 
-std::optional<std::string> DynXX::Core::Json::Decoder::readString(void *const node) const
+std::optional<std::string> DynXX::Core::Json::Decoder::readString(const DynXXJsonNodeHandle node) const
 {
     const auto cj = this->reinterpretNode(node);
-    switch(cJSONReadType(node))
+    switch(nodeReadType(node))
     {
         case Object:
         case Array:
         {
-            return cJSONToStr(node);
+            return nodeToStr(node);
         }
         case String:
         {
@@ -315,9 +315,9 @@ std::optional<std::string> DynXX::Core::Json::Decoder::readString(void *const no
     }
 }
 
-std::optional<double> DynXX::Core::Json::Decoder::readNumber(void *const node) const
+std::optional<double> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNodeHandle node) const
 {
-    const auto type = cJSONReadType(node);
+    const auto type = nodeReadType(node);
     const auto cj = this->reinterpretNode(node);
     if (type == Int32)
     {
@@ -340,18 +340,18 @@ std::optional<double> DynXX::Core::Json::Decoder::readNumber(void *const node) c
     return std::nullopt;
 }
 
-void *DynXX::Core::Json::Decoder::readChild(void *const node) const
+DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readChild(const DynXXJsonNodeHandle node) const
 {
-    if (const auto type = cJSONReadType(node); type == Object || type == Array) [[likely]]
+    if (const auto type = nodeReadType(node); type == Object || type == Array) [[likely]]
     {
         return this->reinterpretNode(node)->child;
     }
     return nullptr;
 }
 
-size_t DynXX::Core::Json::Decoder::readChildrenCount(void *const node) const
+size_t DynXX::Core::Json::Decoder::readChildrenCount(const DynXXJsonNodeHandle node) const
 {
-    if (const auto type = cJSONReadType(node); type != Object && type != Array) [[unlikely]]
+    if (const auto type = nodeReadType(node); type != Object && type != Array) [[unlikely]]
     {
         return 0;
     }
@@ -359,9 +359,9 @@ size_t DynXX::Core::Json::Decoder::readChildrenCount(void *const node) const
     return cJSON_GetArraySize(cj);
 }
 
-void DynXX::Core::Json::Decoder::readChildren(void *const node, std::function<void(size_t idx, void *const childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback) const
+void DynXX::Core::Json::Decoder::readChildren(const DynXXJsonNodeHandle node, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback) const
 {
-    if (const auto type = cJSONReadType(node); type != Object && type != Array) [[unlikely]]
+    if (const auto type = nodeReadType(node); type != Object && type != Array) [[unlikely]]
     {
         return;
     }
@@ -369,13 +369,13 @@ void DynXX::Core::Json::Decoder::readChildren(void *const node, std::function<vo
     const auto& cbk = std::move(callback);
     for (auto childNode = this->readChild(node); childNode != nullptr; childNode = this->readNext(childNode), idx++)
     {
-        const auto type = cJSONReadType(childNode);
-        const auto name = cJSONReadName(childNode);
+        const auto type = nodeReadType(childNode);
+        const auto name = nodeReadName(childNode);
         cbk(idx, childNode, type, name);
     }
 }
 
-void *DynXX::Core::Json::Decoder::readNext(void *const node) const
+DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readNext(const DynXXJsonNodeHandle node) const
 {
     const auto cj = this->reinterpretNode(node);
     return cj ? cj->next : nullptr;

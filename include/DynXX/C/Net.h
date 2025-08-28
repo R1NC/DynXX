@@ -3,6 +3,8 @@
 
 #include "Types.h"
 
+#include <stdio.h>
+
 EXTERN_C_BEGIN
 
 static const size_t DYNXX_HTTP_DEFAULT_TIMEOUT = 15 * 1000;
@@ -46,7 +48,7 @@ const char *dynxx_net_http_request(const char *url, const char *params, int meth
                                     const char **form_field_mime_v,
                                     const char **form_field_data_v,
                                     size_t form_field_count,
-                                    void *const cFILE, size_t file_size,
+                                    FILE *const cFILE, size_t file_size,
                                     size_t timeout);
 
 /**

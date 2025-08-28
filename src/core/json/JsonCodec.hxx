@@ -11,11 +11,11 @@
 #include <DynXX/CXX/Json.hxx>
 
 namespace DynXX::Core::Json {
-    DynXXJsonNodeTypeX cJSONReadType(void *const cjson);
-    
-    std::optional<std::string> cJSONReadName(void *const cjson);
+    DynXXJsonNodeTypeX nodeReadType(const DynXXJsonNodeHandle node);
 
-    std::optional<std::string> cJSONToStr(void *const cjson);
+    std::optional<std::string> nodeReadName(const DynXXJsonNodeHandle node);
+
+    std::optional<std::string> nodeToStr(const DynXXJsonNodeHandle node);
 
     std::optional<std::string> jsonFromDictAny(const DictAny &dict);
 
@@ -35,21 +35,21 @@ namespace DynXX::Core::Json {
 
         Decoder &operator=(Decoder &&) noexcept;
 
-        void *readChild(void *const node) const;
+        DynXXJsonNodeHandle readChild(const DynXXJsonNodeHandle node) const;
 
-        void *readNext(void *const node) const;
+        DynXXJsonNodeHandle readNext(const DynXXJsonNodeHandle node) const;
 
-        size_t readChildrenCount(void *const node) const;
+        size_t readChildrenCount(const DynXXJsonNodeHandle node) const;
 
-        void readChildren(void *const node, std::function<void(size_t idx, void *const childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback) const;
+        void readChildren(const DynXXJsonNodeHandle node, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback) const;
 
-        void *readNode(void *const node, std::string_view k) const;
+        DynXXJsonNodeHandle readNode(const DynXXJsonNodeHandle node, std::string_view k) const;
 
-        void *operator[](std::string_view k) const;
+        DynXXJsonNodeHandle operator[](std::string_view k) const;
 
-        std::optional<std::string> readString(void *const node) const;
+        std::optional<std::string> readString(const DynXXJsonNodeHandle node) const;
 
-        std::optional<double> readNumber(void *const node) const;
+        std::optional<double> readNumber(const DynXXJsonNodeHandle node) const;
 
         ~Decoder();
 
@@ -60,7 +60,7 @@ namespace DynXX::Core::Json {
 
         void cleanup() noexcept;
 
-        const cJSON *reinterpretNode(void *const node) const;
+        const cJSON *reinterpretNode(const DynXXJsonNodeHandle node) const;
     };
 }
 

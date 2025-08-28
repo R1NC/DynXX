@@ -2,6 +2,7 @@
 #define DYNXX_INCLUDE_Z_HXX_
 
 #include "Types.hxx"
+#include "../C/Zip.h"
 
 constexpr size_t DynXXZDefaultBufferSize = 16 * 1024;
 
@@ -17,28 +18,28 @@ enum class DynXXZFormatX : int {
     Raw = 2,
 };
 
-void *dynxxZZipInit(const DynXXZipCompressModeX mode = DynXXZipCompressModeX::Default,
+DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode = DynXXZipCompressModeX::Default,
                      size_t bufferSize = DynXXZDefaultBufferSize,
                      const DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-size_t dynxxZZipInput(void *const zip, const Bytes &inBytes, bool inFinish);
+size_t dynxxZZipInput(const DynXXZipHandle zip, const Bytes &inBytes, bool inFinish);
 
-Bytes dynxxZZipProcessDo(void *const zip);
+Bytes dynxxZZipProcessDo(const DynXXZipHandle zip);
 
-bool dynxxZZipProcessFinished(void *const zip);
+bool dynxxZZipProcessFinished(const DynXXZipHandle zip);
 
-void dynxxZZipRelease(void *const zip);
+void dynxxZZipRelease(const DynXXZipHandle zip);
 
-void *dynxxZUnzipInit(size_t bufferSize = DynXXZDefaultBufferSize,
+DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize = DynXXZDefaultBufferSize,
                        const DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-size_t dynxxZUnzipInput(void *const unzip, const Bytes &inBytes, bool inFinish);
+size_t dynxxZUnzipInput(const DynXXUnZipHandle unzip, const Bytes &inBytes, bool inFinish);
 
-Bytes dynxxZUnzipProcessDo(void *const unzip);
+Bytes dynxxZUnzipProcessDo(const DynXXUnZipHandle unzip);
 
-bool dynxxZUnzipProcessFinished(void *const unzip);
+bool dynxxZUnzipProcessFinished(const DynXXUnZipHandle unzip);
 
-void dynxxZUnzipRelease(void *const unzip);
+void dynxxZUnzipRelease(const DynXXUnZipHandle unzip);
 
 bool dynxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut,
                      const DynXXZipCompressModeX mode = DynXXZipCompressModeX::Default,
