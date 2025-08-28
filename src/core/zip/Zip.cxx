@@ -233,7 +233,7 @@ DynXX::Core::Z::Zip::Zip(int mode, size_t bufferSize, int format) : ZBase(buffer
     if (this->ret != Z_OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "deflateInit error:{}", this->ret);
-        throw std::runtime_error("deflateInit failed");
+        throw ZException(this->ret, "deflateInit failed");
     }
 }
 
@@ -253,7 +253,7 @@ DynXX::Core::Z::UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, 
     if (this->ret != Z_OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "inflateInit error:{}", this->ret);
-        throw std::runtime_error("inflateInit failed");
+        throw ZException(this->ret, "inflateInit failed");
     }
 }
 

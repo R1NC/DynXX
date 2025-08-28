@@ -11,6 +11,13 @@
 #include <DynXX/CXX/Types.hxx>
 
 namespace DynXX::Core::Z {
+    
+    class ZException : public std::runtime_error {
+    public:
+        const int ret{Z_OK};
+        explicit ZException(int ret, const std::string& msg): std::runtime_error(msg), ret(ret) {}
+    };
+    
     template<typename T>
     class ZBase {
     public:

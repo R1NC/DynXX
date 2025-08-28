@@ -803,8 +803,8 @@ DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize
         zip = new Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
     } catch (const std::invalid_argument &e) {
         dynxxLogPrintF(Error, "dynxxZZipInit invalid_argument: {}", e.what());
-    } catch (const std::runtime_error &e) {
-        dynxxLogPrintF(Error, "dynxxZZipInit runtime_error: {}", e.what());
+    } catch (const Z::ZException &e) {
+        dynxxLogPrintF(Error, "dynxxZZipInit failed, ret:{} msg:{}", e.ret, e.what());
     }
     return zip;
 }
@@ -847,8 +847,8 @@ DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) 
         unzip = new Z::UnZip(bufferSize, static_cast<int>(format));
     } catch (const std::invalid_argument &e) {
         dynxxLogPrintF(Error, "dynxxZUnzipInit invalid_argument: {}", e.what());
-    } catch (const std::runtime_error &e) {
-        dynxxLogPrintF(Error, "dynxxZUnzipInit runtime_error: {}", e.what());
+    } catch (const Z::ZException &e) {
+        dynxxLogPrintF(Error, "dynxxZUnzipInit failed, ret:{} msg:{}", e.ret, e.what());
     }
     return unzip;
 }
