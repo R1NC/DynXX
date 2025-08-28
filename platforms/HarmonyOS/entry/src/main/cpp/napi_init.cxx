@@ -195,7 +195,7 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
 
     auto res =
         dynxx_net_http_request(cUrl, cParams, iMethod, header_v, header_c, form_field_name_v, form_field_mime_v,
-                                form_field_data_v, form_field_count, static_cast<void *>(cFILE), fileLength, lTimeout);
+                                form_field_data_v, form_field_count, cFILE, fileLength, lTimeout);
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
@@ -508,7 +508,7 @@ napi_value jsonReadType(napi_env env, napi_callback_info info) {
 
     auto node = args.c > 1 ? napiValue2long(env, args.v[0]) : 0;
 
-    auto res = dynxx_json_read_type(addr2ptr(node));
+    auto res = dynxx_json_node_read_type(addr2ptr(node));
     return int2NapiValue(env, res);
 }
 

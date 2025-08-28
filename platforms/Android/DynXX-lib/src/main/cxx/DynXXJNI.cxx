@@ -165,7 +165,7 @@ namespace {
                                             const_cast<const char **>(cFormFieldMimeV),
                                             const_cast<const char **>(cFormFieldDataV),
                                             formFieldCount,
-                                            static_cast<void *>(cFILE), fileLength,
+                                            cFILE, fileLength,
                                             static_cast<const size_t>(timeout));
         auto jStr = boxJString(env, cRsp);
         freeX(cRsp);
@@ -709,7 +709,7 @@ namespace {
 
     jint jsonReadType(JNIEnv *env, jobject thiz,
                       jlong node) {
-        return dynxx_json_read_type(addr2ptr(node));
+        return dynxx_json_node_read_type(addr2ptr(node));
     }
 
     jlong jsonDecoderInit(JNIEnv *env, jobject thiz,
