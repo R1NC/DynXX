@@ -30,7 +30,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         const std::vector<std::string> &formFieldNameV = {},
                                         const std::vector<std::string> &formFieldMimeV = {},
                                         const std::vector<std::string> &formFieldDataV = {},
-                                        const std::FILE *cFILE = nullptr, size_t fileSize = 0,
+                                        std::FILE *cFILE = nullptr, size_t fileSize = 0,
                                         size_t timeout = DynXXHttpDefaultTimeout);
 
 DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
@@ -41,7 +41,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         const std::vector<std::string> &formFieldNameV = {},
                                         const std::vector<std::string> &formFieldMimeV = {},
                                         const std::vector<std::string> &formFieldDataV = {},
-                                        const std::FILE *cFILE = nullptr, size_t fileSize = 0,
+                                        std::FILE *cFILE = nullptr, size_t fileSize = 0,
                                         size_t timeout = DynXXHttpDefaultTimeout);
 
 bool dynxxNetHttpDownload(std::string_view url, const std::string_view filePath,

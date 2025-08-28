@@ -383,7 +383,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         const std::vector<std::string> &formFieldNameV,
                                         const std::vector<std::string> &formFieldMimeV,
                                         const std::vector<std::string> &formFieldDataV,
-                                        const std::FILE *cFILE, size_t fileSize,
+                                        std::FILE *cFILE, size_t fileSize,
                                         size_t timeout) {
     DynXXHttpResponse rsp;
 #if defined(USE_CURL)
@@ -463,7 +463,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         const std::vector<std::string> &formFieldNameV,
                                         const std::vector<std::string> &formFieldMimeV,
                                         const std::vector<std::string> &formFieldDataV,
-                                        const std::FILE *cFILE, size_t fileSize,
+                                        std::FILE *cFILE, size_t fileSize,
                                         size_t timeout) {
     std::stringstream ssParams;
     for (const auto &[k, v]: params) {

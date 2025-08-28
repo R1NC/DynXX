@@ -205,7 +205,7 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
                                                                 std::string_view params,
                                                                  const BytesView rawBody,
                                                                  const std::vector<HttpFormField> &formFields,
-                                                                 const std::FILE *cFILE, size_t fileSize,
+                                                                std::FILE *cFILE, size_t fileSize,
                                                                  size_t timeout) const {
 
     auto curl = createReq(url, headers, params, method, timeout);

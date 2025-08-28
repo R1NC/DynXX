@@ -117,7 +117,7 @@ void dynxx_z_unzip_release(const DynXXUnZipHandle unzip);
  * @param cFILEOut Output C `FILE`
  * @return whether finished or not
  */
-bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *const cFILEIn, FILE *const cFILEOut);
+bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *cFILEIn, FILE *cFILEOut);
 
 /**
  * @brief UNZIP for C FILE
@@ -128,7 +128,7 @@ bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *const cFIL
  * @param cFILEOut Output C `FILE`
  * @return whether finished or not
  */
-bool dynxx_z_cfile_unzip(size_t bufferSize, int format, FILE *const cFILEIn, FILE *const cFILEOut);
+bool dynxx_z_cfile_unzip(size_t bufferSize, int format, FILE *cFILEIn, FILE *cFILEOut);
 
 /**
  * @brief ZIP for bytes

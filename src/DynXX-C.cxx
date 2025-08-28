@@ -260,7 +260,7 @@ const char *dynxx_net_http_request(const char *url, const char *params, int meth
                                     const char **form_field_mime_v,
                                     const char **form_field_data_v,
                                     size_t form_field_count,
-                                    FILE *const cFILE, size_t file_size,
+                                    FILE *cFILE, size_t file_size,
                                     size_t timeout) {
     if (url == nullptr) {
         return "";
@@ -594,13 +594,13 @@ void dynxx_z_unzip_release(const DynXXUnZipHandle unzip) {
 #if !defined(__EMSCRIPTEN__)
 
 EXPORT_AUTO
-bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *const cFILEIn, FILE *const cFILEOut) {
+bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *cFILEIn, FILE *cFILEOut) {
     return dynxxZCFileZip(cFILEIn, cFILEOut,
                            static_cast<DynXXZipCompressModeX>(mode), bufferSize, static_cast<DynXXZFormatX>(format));
 }
 
 EXPORT_AUTO
-bool dynxx_z_cfile_unzip(size_t bufferSize, int format, FILE *const cFILEIn, FILE *const cFILEOut) {
+bool dynxx_z_cfile_unzip(size_t bufferSize, int format, FILE *cFILEIn, FILE *cFILEOut) {
     return dynxxZCFileUnzip(cFILEIn, cFILEOut, bufferSize, static_cast<DynXXZFormatX>(format));
 }
 

@@ -48,7 +48,7 @@ const char *dynxx_net_http_request(const char *url, const char *params, int meth
                                     const char **form_field_mime_v,
                                     const char **form_field_data_v,
                                     size_t form_field_count,
-                                    FILE *const cFILE, size_t file_size,
+                                    FILE *cFILE, size_t file_size,
                                     size_t timeout);
 
 /**
