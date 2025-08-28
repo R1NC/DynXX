@@ -10,6 +10,7 @@
 namespace
 {
     using enum DynXXJsonNodeTypeX;
+    using enum DynXXLogLevelX;
 
     bool isNum(const cJSON *const cj)
     {
@@ -122,7 +123,7 @@ std::optional<std::string> DynXX::Core::Json::jsonFromDictAny(const DictAny &dic
             }
             else [[unlikely]]
             {
-                dynxxLogPrintF(DynXXLogLevelX::Error, "FAILED TO PARSE JSON VALUE: {}", s);
+                dynxxLogPrintF(Error, "FAILED TO PARSE JSON VALUE: {}", s);
                 return nullptr;
             }
         }
@@ -151,7 +152,7 @@ std::optional<std::string> DynXX::Core::Json::jsonFromDictAny(const DictAny &dic
         {
             if (!cJSON_AddItemToObject(cjson, k.c_str(), node)) [[unlikely]]
             {
-                dynxxLogPrintF(DynXXLogLevelX::Error, "FAILED TO ADD JSON VALUE: {}", k);
+                dynxxLogPrintF(Error, "FAILED TO ADD JSON VALUE: {}", k);
                 cJSON_Delete(node);
             }
         }
@@ -335,7 +336,7 @@ std::optional<double> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNode
     {
         return {str2float64(makeStr(cj->valuestring))};
     }
-    dynxxLogPrintF(DynXXLogLevelX::Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
+    dynxxLogPrintF(Error, "FAILED TO PARSE JSON NUMBER({}): INVALID NODE TYPE({})", 
                 cj->string, cj->type);
     return std::nullopt;
 }

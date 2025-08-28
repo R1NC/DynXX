@@ -2,6 +2,10 @@
 
 #include <DynXX/CXX/Log.hxx>
 
+namespace {
+    using enum DynXXLogLevelX;
+}
+
 // - Worker
 
 DynXX::Core::Concurrent::Worker::Worker() : Worker(1000uz)
@@ -56,7 +60,7 @@ DynXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs{
 
             if (func) [[likely]] 
             {
-                dynxxLogPrintF(DynXXLogLevelX::Debug, "Worker@{} run task on thread:{}", reinterpret_cast<uintptr_t>(this), currentThreadId());
+                dynxxLogPrintF(Debug, "Worker@{} run task on thread:{}", reinterpret_cast<uintptr_t>(this), currentThreadId());
                 func();
             }
         }
@@ -91,7 +95,7 @@ DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(Tas
     {
         auto lock = std::scoped_lock(this->mutex);
         this->taskQueue.emplace(std::move(task));
-        dynxxLogPrintF(DynXXLogLevelX::Debug, "Worker@{} taskCount:{}", reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
+        dynxxLogPrintF(Debug, "Worker@{} taskCount:{}", reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
     }
     
     this->cv.notify_one();
@@ -127,7 +131,7 @@ DynXX::Core::Concurrent::Executor& DynXX::Core::Concurrent::Executor::operator>>
     {
         auto worker = std::make_unique<Worker>(this->sleepMicroSecs);
         this->workerPool.emplace_back(std::move(worker));
-        dynxxLogPrintF(DynXXLogLevelX::Debug, "Executor created new worker, poolSize:{} poolCapacity:{} cpuCores:{}", 
+        dynxxLogPrintF(Debug, "Executor created new worker, poolSize:{} poolCapacity:{} cpuCores:{}", 
                         this->workerPool.size(), this->workerPoolCapacity, countCPUCore());
     }
     

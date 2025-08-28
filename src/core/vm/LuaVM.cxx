@@ -8,8 +8,9 @@
 #include <DynXX/CXX/Log.hxx>
 #include <DynXX/CXX/Types.hxx>
 
-namespace
-{
+namespace {
+    using enum DynXXLogLevelX;
+    
 #if defined(USE_LIBUV)
     struct Timer
     {
@@ -123,7 +124,7 @@ namespace
         const char *luaErrMsg = lua_tostring(L, -1);                            \
         if (luaErrMsg != nullptr)                                               \
         {                                                                       \
-            dynxxLogPrintF(DynXXLogLevelX::Error, "{}{}", prefix, luaErrMsg); \
+            dynxxLogPrintF(Error, "{}{}", prefix, luaErrMsg); \
         }                                                                       \
     } while (0)
 }

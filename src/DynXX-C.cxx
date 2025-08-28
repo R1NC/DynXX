@@ -6,11 +6,13 @@
 #endif
 
 namespace {
+    using namespace DynXX::Core::Util::Type;
+
     byte *handleBytes(const BytesView bytes, size_t *outLen = nullptr) {
         if (outLen) [[likely]] {
             *outLen = bytes.size();
         }
-        return DynXX::Core::Util::Type::copyBytes(bytes);
+        return copyBytes(bytes);
     }
 }
 
@@ -443,7 +445,7 @@ char *const *dynxx_store_kv_all_keys(const DynXXKVConnHandle conn, size_t *len) 
     if (len) {
         *len = t.size();
     }
-    return DynXX::Core::Util::Type::copyStrVector(t, DYNXX_STORE_KV_KEY_MAX_LENGTH);
+    return copyStrVector(t, DYNXX_STORE_KV_KEY_MAX_LENGTH);
 }
 
 EXPORT_AUTO

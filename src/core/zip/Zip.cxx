@@ -17,6 +17,8 @@
 
 
 namespace {
+    using enum DynXXLogLevelX;
+    
     template<typename T>
     concept ReadBytesFuncT = requires(T f) {
         { f() } -> std::convertible_to<Bytes>;
@@ -190,13 +192,13 @@ Bytes DynXX::Core::Z::ZBase<T>::processDo()
     this->zs.avail_out = static_cast<unsigned int>(this->bufferSize);
     this->zs.next_out = this->outBuffer;
 
-    // dynxxLogPrintF(DynXXLogLevelX::Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
+    // dynxxLogPrintF(Debug, "z process before avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
     static_cast<T *>(this)->processImp();
-    // dynxxLogPrintF(DynXXLogLevelX::Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
+    // dynxxLogPrintF(Debug, "z process after avIn:{} avOut:{}", (this->zs).avail_in, (this->zs).avail_out);
 
     if (this->ret != Z_OK && ret != Z_STREAM_END) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "z process error:{}", this->ret);
+        dynxxLogPrintF(Error, "z process error:{}", this->ret);
         return {};
     }
 
@@ -230,7 +232,7 @@ DynXX::Core::Z::Zip::Zip(int mode, size_t bufferSize, int format) : ZBase(buffer
     this->ret = deflateInit2(&(this->zs), mode, Z_DEFLATED, this->windowBits(), 8, Z_DEFAULT_STRATEGY);
     if (this->ret != Z_OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "deflateInit error:{}", this->ret);
+        dynxxLogPrintF(Error, "deflateInit error:{}", this->ret);
         throw std::runtime_error("deflateInit failed");
     }
 }
@@ -250,7 +252,7 @@ DynXX::Core::Z::UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, 
     this->ret = inflateInit2(&this->zs, this->windowBits());
     if (this->ret != Z_OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "inflateInit error:{}", this->ret);
+        dynxxLogPrintF(Error, "inflateInit error:{}", this->ret);
         throw std::runtime_error("inflateInit failed");
     }
 }

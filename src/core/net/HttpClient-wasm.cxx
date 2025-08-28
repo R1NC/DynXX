@@ -11,8 +11,9 @@
 namespace {
     constexpr auto GET_METHOD = "GET";
     constexpr auto POST_METHOD = "POST";
-
     constexpr auto SLEEP_MS = 5;
+
+    using enum DynXXLogLevelX;
 
     std::string buildUrl(const std::string_view baseUrl, const std::string_view params) {
         if (params.empty()) [[unlikely]] {
@@ -111,7 +112,7 @@ DynXXHttpResponse DynXX::Core::Net::WasmHttpClient::request(const std::string_vi
 
     auto const fullUrl = buildUrl(url, params);
             
-    dynxxLogPrintF(DynXXLogLevelX::Debug, "WasmHttpClient.request url: {}", fullUrl);
+    dynxxLogPrintF(Debug, "WasmHttpClient.request url: {}", fullUrl);
 
     emscripten_fetch_attr_t attr;
     emscripten_fetch_attr_init(&attr);
@@ -123,7 +124,7 @@ DynXXHttpResponse DynXX::Core::Net::WasmHttpClient::request(const std::string_vi
     std::vector<const char*> headerPtrs;
     for (const auto& header : headers) {
         headerPtrs.push_back(header.c_str());
-        dynxxLogPrintF(DynXXLogLevelX::Debug, "WasmHttpClient.request header: {}", header);
+        dynxxLogPrintF(Debug, "WasmHttpClient.request header: {}", header);
     }
     headerPtrs.push_back(nullptr);
     if (!headers.empty()) [[likely]] {
@@ -140,7 +141,7 @@ DynXXHttpResponse DynXX::Core::Net::WasmHttpClient::request(const std::string_vi
             
     auto const fetch = emscripten_fetch(&attr, fullUrl.c_str());
     if (!fetch) [[unlikely]] {
-        dynxxLogPrint(DynXXLogLevelX::Error, "WasmHttpClient.request failed");
+        dynxxLogPrint(Error, "WasmHttpClient.request failed");
         return response;
     }
             
@@ -157,7 +158,7 @@ DynXXHttpResponse DynXX::Core::Net::WasmHttpClient::request(const std::string_vi
 
     emscripten_fetch_close(fetch);
             
-    dynxxLogPrintF(DynXXLogLevelX::Debug, "WasmHttpClient.request response code: {}", response.code);
+    dynxxLogPrintF(Debug, "WasmHttpClient.request response code: {}", response.code);
             
     return response;
 }

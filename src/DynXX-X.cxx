@@ -44,6 +44,7 @@ namespace {
     auto constexpr VERSION = "1.0.0";
 
     using namespace DynXX::Core;
+    using enum DynXXLogLevelX;
 
 #if defined(USE_CURL)
     std::unique_ptr<Net::HttpClient> _http_client = nullptr;
@@ -111,10 +112,10 @@ namespace {
         try {
             return f(str, nullptr, 10);
         } catch (const std::invalid_argument &e) {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<i> invalid_argument err: {}", e.what());
+            dynxxLogPrintF(Error, "s2n<i> invalid_argument err: {}", e.what());
             return defaultValue;
         } catch (const std::out_of_range &e) {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<i> out_of_range err: {}", e.what());
+            dynxxLogPrintF(Error, "s2n<i> out_of_range err: {}", e.what());
             return defaultValue;
         }
     }
@@ -124,10 +125,10 @@ namespace {
         try {
             return f(str, nullptr);
         } catch (const std::invalid_argument &e) {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<f> invalid_argument err: {}", e.what());
+            dynxxLogPrintF(Error, "s2n<f> invalid_argument err: {}", e.what());
             return defaultValue;
         } catch (const std::out_of_range &e) {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "s2n<f> out_of_range err: {}", e.what());
+            dynxxLogPrintF(Error, "s2n<f> out_of_range err: {}", e.what());
             return defaultValue;
         }
     }
@@ -724,7 +725,7 @@ std::optional<DictAny> dynxxJsonToDictAny(const std::string &json) {
 DynXXJsonDecoderHandle dynxxJsonDecoderInit(const std::string_view json) {
     auto decoder = new(std::nothrow) Json::Decoder(json);
     if (decoder == nullptr) {
-        dynxxLogPrint(DynXXLogLevelX::Error, "new JsonDecoder failed");
+        dynxxLogPrint(Error, "new JsonDecoder failed");
     }
     return decoder;
 }
@@ -801,9 +802,9 @@ DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize
     try {
         zip = new Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
     } catch (const std::invalid_argument &e) {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZZipInit invalid_argument: {}", e.what());
+        dynxxLogPrintF(Error, "dynxxZZipInit invalid_argument: {}", e.what());
     } catch (const std::runtime_error &e) {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZZipInit runtime_error: {}", e.what());
+        dynxxLogPrintF(Error, "dynxxZZipInit runtime_error: {}", e.what());
     }
     return zip;
 }
@@ -845,9 +846,9 @@ DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) 
     try {
         unzip = new Z::UnZip(bufferSize, static_cast<int>(format));
     } catch (const std::invalid_argument &e) {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZUnzipInit invalid_argument: {}", e.what());
+        dynxxLogPrintF(Error, "dynxxZUnzipInit invalid_argument: {}", e.what());
     } catch (const std::runtime_error &e) {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "dynxxZUnzipInit runtime_error: {}", e.what());
+        dynxxLogPrintF(Error, "dynxxZUnzipInit runtime_error: {}", e.what());
     }
     return unzip;
 }

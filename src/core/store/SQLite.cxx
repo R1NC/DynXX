@@ -6,7 +6,9 @@
 
 namespace
 {
-    #define PRINT_ERR(rc, db) dynxxLogPrint(DynXXLogLevelX::Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
+    using enum DynXXLogLevelX;
+    
+    #define PRINT_ERR(rc, db) dynxxLogPrint(Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
 
     constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
 }
@@ -44,7 +46,7 @@ DynXX::Core::Store::SQLite::Connection::Connection(const std::string &_id, sqlit
 {
     if (!this->execute(sEnableWAL)) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Warn, "SQLite enable WAL failed");
+        dynxxLogPrint(Warn, "SQLite enable WAL failed");
     }
 }
 
@@ -53,19 +55,19 @@ bool DynXX::Core::Store::SQLite::Connection::execute(std::string_view sql) const
     auto lock = std::scoped_lock(this->mutex);
     if (this->db == nullptr) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.execute DB nullptr");
+        dynxxLogPrint(Error, "SQLite.execute DB nullptr");
         return false;
     }
     
     const auto sqlOp = nullTerminatedCStr(sql);
     if (!sqlOp.has_value()) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.execute SQL not null terminated");
+        dynxxLogPrint(Error, "SQLite.execute SQL not null terminated");
         return false;
     }
     
     const auto rc = sqlite3_exec(this->db, sqlOp.value(), nullptr, nullptr, nullptr);
-    // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.exec ret:{}", rc);
+    // dynxxLogPrintF(Debug, "SQLite.exec ret:{}", rc);
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -79,7 +81,7 @@ std::unique_ptr<DynXX::Core::Store::SQLite::Connection::QueryResult> DynXX::Core
     auto lock = std::scoped_lock(this->mutex);
     if (this->db == nullptr) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.query DB nullptr");
+        dynxxLogPrint(Error, "SQLite.query DB nullptr");
         return nullptr;
     }
     sqlite3_stmt *stmt;
@@ -87,12 +89,12 @@ std::unique_ptr<DynXX::Core::Store::SQLite::Connection::QueryResult> DynXX::Core
     const auto sqlOp = nullTerminatedCStr(sql);
     if (!sqlOp.has_value()) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.query SQL not null terminated");
+        dynxxLogPrint(Error, "SQLite.query SQL not null terminated");
         return nullptr;
     }
 
     const auto rc = sqlite3_prepare_v2(this->db, sqlOp.value(), static_cast<int>(sql.size()), &stmt, nullptr);
-    // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.query ret:{}", rc);
+    // dynxxLogPrintF(Debug, "SQLite.query ret:{}", rc);
     if (rc != SQLITE_OK)
     {
         PRINT_ERR(rc, this->db);
@@ -119,11 +121,11 @@ bool DynXX::Core::Store::SQLite::Connection::QueryResult::readRow() const
     auto lock = std::unique_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.readRow STMT nullptr");
+        dynxxLogPrint(Error, "SQLite.readRow STMT nullptr");
         return false;
     }
     const auto rc = sqlite3_step(this->stmt);
-    // dynxxLogPrintF(DynXXLogLevelX::Debug, "SQLite.step ret:{}", rc);
+    // dynxxLogPrintF(Debug, "SQLite.step ret:{}", rc);
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
         PRINT_ERR(rc, nullptr);
@@ -136,7 +138,7 @@ std::optional<Any> DynXX::Core::Store::SQLite::Connection::QueryResult::readColu
     auto lock = std::shared_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.readColumn STMT nullptr");
+        dynxxLogPrint(Error, "SQLite.readColumn STMT nullptr");
         return std::nullopt;
     }
     auto colCount = sqlite3_column_count(this->stmt);
@@ -145,7 +147,7 @@ std::optional<Any> DynXX::Core::Store::SQLite::Connection::QueryResult::readColu
         const auto columnOp = nullTerminatedCStr(column);
         if (!columnOp.has_value()) [[unlikely]]
         {
-            dynxxLogPrint(DynXXLogLevelX::Error, "SQLite.readColumn column not null terminated");
+            dynxxLogPrint(Error, "SQLite.readColumn column not null terminated");
             return std::nullopt;
         }
         if (strcmp(sqlite3_column_name(this->stmt, i), columnOp.value()) != 0)

@@ -14,13 +14,15 @@ namespace
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
+    using enum DynXXLogLevelX;
+
 // JSVM dump error
 
     void printJsErr(JSContext *ctx, const JSValueConst val)
     {
         if (const auto str = JS_ToCString(ctx, val))
         {
-            dynxxLogPrint(DynXXLogLevelX::Error, str);
+            dynxxLogPrint(Error, str);
             JS_FreeCString(ctx, str);
         }
     }
@@ -51,7 +53,7 @@ namespace
         const auto jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
         if (JS_IsException(jEvalRet)) [[unlikely]]
         {
-            dynxxLogPrint(DynXXLogLevelX::Error, "JS_Eval failed ->");
+            dynxxLogPrint(Error, "JS_Eval failed ->");
             dumpJsErr(ctx);
             return false;
         }
@@ -60,7 +62,7 @@ namespace
         {
             if (JS_VALUE_GET_TAG(jEvalRet) != JS_TAG_MODULE) [[unlikely]]
             { // Check whether it's a JS Module or not，or QJS may crash
-                dynxxLogPrint(DynXXLogLevelX::Error, "JS try to load invalid module");
+                dynxxLogPrint(Error, "JS try to load invalid module");
                 JS_FreeValue(ctx, jEvalRet);
                 return false;
             }
@@ -108,13 +110,13 @@ namespace
     {
         auto jPromise = new(std::nothrow) Promise();
         if (!jPromise) [[unlikely]] {
-            dynxxLogPrint(DynXXLogLevelX::Error, "new Promise failed");
+            dynxxLogPrint(Error, "new Promise failed");
             return nullptr;
         }
         jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
         if (JS_IsException(jPromise->p)) [[unlikely]]
         {
-            dynxxLogPrint(DynXXLogLevelX::Error, "JS_NewPromise failed ->");
+            dynxxLogPrint(Error, "JS_NewPromise failed ->");
             dumpJsErr(ctx);
             JS_FreeValue(ctx, jPromise->p);
             return nullptr;
@@ -127,7 +129,7 @@ namespace
         const auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
         if (JS_IsException(jCallRet)) [[unlikely]]
         {
-            dynxxLogPrint(DynXXLogLevelX::Error, "JS_CallPromise failed ->");
+            dynxxLogPrint(Error, "JS_CallPromise failed ->");
             dumpJsErr(ctx);
         }
 
@@ -246,7 +248,7 @@ bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *func
     const auto jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
     if (JS_IsException(jFunc)) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "JS_NewCFunction failed ->");
+        dynxxLogPrint(Error, "JS_NewCFunction failed ->");
         dumpJsErr(this->context);
         res = false;
     }
@@ -254,7 +256,7 @@ bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *func
     {
         if (!JS_DefinePropertyValueStr(this->context, this->jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE)) [[unlikely]]
         {
-            dynxxLogPrint(DynXXLogLevelX::Error, "JS_DefinePropertyValueStr failed ->");
+            dynxxLogPrint(Error, "JS_DefinePropertyValueStr failed ->");
             dumpJsErr(this->context);
             res = false;
         }
@@ -301,7 +303,7 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
 
         if (JS_IsException(jRes)) [[unlikely]]
         {
-            dynxxLogPrint(DynXXLogLevelX::Error, "JS_Call failed ->");
+            dynxxLogPrint(Error, "JS_Call failed ->");
             dumpJsErr(this->context);
         }
         else [[likely]]
@@ -321,7 +323,7 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
     else [[unlikely]]
     {
         lock.unlock();
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Can not find JS func:{}", func);
+        dynxxLogPrintF(Error, "Can not find JS func:{}", func);
     }
 
     return success? std::make_optional(s): std::nullopt;

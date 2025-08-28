@@ -15,6 +15,8 @@
 
 namespace
 {
+    using enum DynXXLogLevelX;
+
     size_t on_post_read(char *buffer, const size_t size, size_t nmemb, void *userdata)
     {
         const auto pBytes = static_cast<Bytes *>(userdata);
@@ -30,7 +32,7 @@ namespace
     size_t on_upload_read(char *ptr, const size_t size, size_t nmemb, void *stream)
     {
         const auto ret = std::fread(ptr, size, nmemb, static_cast<std::FILE *>(stream));
-        dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient read {} bytes from file", ret);
+        dynxxLogPrintF(Debug, "HttpClient read {} bytes from file", ret);
         return ret;
     }
 
@@ -38,7 +40,7 @@ namespace
         auto& file = *static_cast<std::ofstream*>(userp);
         file.write(contents, size * nmemb);
         const auto ret = file.good() ? size * nmemb : 0;
-        dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient write {} bytes to file", ret);
+        dynxxLogPrintF(Debug, "HttpClient write {} bytes to file", ret);
         return ret;
     }
 
@@ -72,7 +74,7 @@ namespace
         auto aUrl = ada::parse(url);
         if (!aUrl) [[unlikely]]
         {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient INVALID URL: {}", url);
+            dynxxLogPrintF(Error, "HttpClient INVALID URL: {}", url);
             return false;
         }
 #endif
@@ -145,7 +147,7 @@ namespace
         curl_slist *headerList = nullptr;
         for (const auto &it : headers)
         {
-            dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient.req header: {}", it);
+            dynxxLogPrintF(Debug, "HttpClient.req header: {}", it);
             headerList = curl_slist_append(headerList, it.c_str());
         }
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
@@ -162,7 +164,7 @@ namespace
             fixedUrl += params;
         }
     
-        dynxxLogPrintF(DynXXLogLevelX::Debug, "HttpClient.req url: {}", fixedUrl);
+        dynxxLogPrintF(Debug, "HttpClient.req url: {}", fixedUrl);
         curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
 
         return curl;
@@ -183,7 +185,7 @@ namespace
 
         if (curlCode != CURLE_OK) [[unlikely]]
         {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient.req error:{}", curl_easy_strerror(curlCode));
+            dynxxLogPrintF(Error, "HttpClient.req error:{}", curl_easy_strerror(curlCode));
         }
 
         curl_easy_cleanup(curl);
@@ -275,7 +277,7 @@ bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::str
     std::ofstream file(filePath.data(), std::ios::binary);
     if (!file) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "HttpClient.download fopen error:{}", filePath);
+        dynxxLogPrintF(Error, "HttpClient.download fopen error:{}", filePath);
         return false;
     }
 

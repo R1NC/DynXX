@@ -25,6 +25,8 @@ namespace
     constexpr auto OK = 1;
     constexpr auto AES_Key_BITS = 128;
 
+    using enum DynXXLogLevelX;
+
     std::optional<std::string> readErrMsg()
     {
         const auto err = ERR_get_error();
@@ -104,14 +106,14 @@ namespace
         const auto ctx = EVP_MD_CTX_create();
         if (ctx == nullptr) [[unlikely]]
         {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_MD_CTX_create failed, err: {}", readErrMsg().value_or(""));
+            dynxxLogPrintF(Error, "EVP_MD_CTX_create failed, err: {}", readErrMsg().value_or(""));
             return {};
         }
 
         auto ret = EVP_DigestInit_ex(ctx, md, nullptr);
         if (ret != OK) [[unlikely]]
         {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestInit_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            dynxxLogPrintF(Error, "EVP_DigestInit_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
             EVP_MD_CTX_destroy(ctx);
             return {};
         }
@@ -119,7 +121,7 @@ namespace
         ret = EVP_DigestUpdate(ctx, in, inLen);
         if (ret != OK) [[unlikely]]
         {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestUpdate failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            dynxxLogPrintF(Error, "EVP_DigestUpdate failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
             EVP_MD_CTX_destroy(ctx);
             return {};
         }
@@ -127,7 +129,7 @@ namespace
         ret = EVP_DigestFinal_ex(ctx, out.data(), &outLen);
         if (ret != OK) [[unlikely]]
         {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "EVP_DigestFinal_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            dynxxLogPrintF(Error, "EVP_DigestFinal_ex failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
             EVP_MD_CTX_destroy(ctx);
             return {};
         }
@@ -174,11 +176,11 @@ Bytes DynXX::Core::Crypto::rand(size_t len)
     });
     if (RAND_status() != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "RAND_poll failed, status: {}", RAND_status());
+        dynxxLogPrintF(Error, "RAND_poll failed, status: {}", RAND_status());
     }
     if (const auto ret = RAND_bytes(out.data(), static_cast<int>(len)); ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "RAND_bytes failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "RAND_bytes failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
     return out;
@@ -209,7 +211,7 @@ Bytes DynXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
 
     if (const auto ret = AES_set_encrypt_key(key, AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "AES_set_encrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "AES_set_encrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
     
@@ -238,7 +240,7 @@ Bytes DynXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
     AES_KEY aes_key;
     if (const auto ret = AES_set_decrypt_key(key, AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "AES_set_decrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "AES_set_decrypt_key failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -286,28 +288,28 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
     const auto evp = Evp(keyLen);
     if (evp.context() == nullptr) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
+        dynxxLogPrint(Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
     auto ret = EVP_EncryptInit_ex(evp.context(), evp.cipher(), nullptr, nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_EncryptInit_ex(evp.context(), nullptr, nullptr, key, initVector);
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -318,7 +320,7 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
         ret = EVP_EncryptUpdate(evp.context(), nullptr, &len, aad, static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
             return {};
         }
     }
@@ -326,21 +328,21 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
     ret = EVP_EncryptUpdate(evp.context(), out.data(), &len, in, static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptUpdate encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptUpdate encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_EncryptFinal_ex(evp.context(), out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_EncryptFinal_ex encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptFinal_ex encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
     out.insert(out.end(), tag.begin(), tag.end());
@@ -367,28 +369,28 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
     const auto evp = Evp(keyLen);
     if (evp.context() == nullptr) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
+        dynxxLogPrint(Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
     auto ret = EVP_DecryptInit_ex(evp.context(), evp.cipher(), nullptr, nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorLen), nullptr);
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DecryptInit_ex(evp.context(), nullptr, nullptr, key, initVector);
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -399,7 +401,7 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
         ret = EVP_DecryptUpdate(evp.context(), nullptr, &len, aad, static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
-            dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+            dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptUpdate aad failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
             return {};
         }
     }
@@ -407,21 +409,21 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
     ret = EVP_DecryptUpdate(evp.context(), out.data(), &len, in, static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptUpdate decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptUpdate decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_CIPHER_CTX_ctrl(evp.context(), EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
     ret = EVP_DecryptFinal_ex(evp.context(), out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "aesGcmDecrypt EVP_DecryptFinal_ex decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptFinal_ex decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return {};
     }
 
@@ -459,14 +461,14 @@ std::string DynXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPub
 {
     if (base64.empty()) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "RSA genKey: empty base64 input");
+        dynxxLogPrint(Error, "RSA genKey: empty base64 input");
         return {};
     }
     
     const auto cleanedBase64 = dynxxCodingStrTrim(base64);
     if (!Base64::validate(cleanedBase64)) [[unlikely]]
     {
-        dynxxLogPrint(DynXXLogLevelX::Error, "RSA genKey: invalid cleanedBase64");
+        dynxxLogPrint(Error, "RSA genKey: invalid cleanedBase64");
         return {};
     }
     
@@ -509,7 +511,7 @@ DynXX::Core::Crypto::RSA::Codec::Codec(BytesView key, int padding) : padding(pad
     this->bmem = BIO_new_mem_buf(key.data(), static_cast<int>(key.size()));
     if (!this->bmem) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO mem buffer for RSA, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to create BIO mem buffer for RSA, err: {}", readErrMsg().value_or(""));
     }
 }
 
@@ -573,7 +575,7 @@ DynXX::Core::Crypto::RSA::Encrypt::Encrypt(BytesView key, int padding) : Codec(k
     this->rsa = PEM_read_bio_RSA_PUBKEY(this->bmem, nullptr, nullptr, nullptr);
     if (!this->rsa) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "RSA Failed to create public key, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "RSA Failed to create public key, err: {}", readErrMsg().value_or(""));
     }
 }
 
@@ -586,7 +588,7 @@ std::optional<Bytes> DynXX::Core::Crypto::RSA::Encrypt::process(BytesView in) co
     Bytes outBytes(this->outLen(), 0);
     if (const auto ret = RSA_public_encrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, this->padding); ret == -1) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "RSA encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "RSA encrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return std::nullopt;
     }
     return {outBytes};
@@ -601,7 +603,7 @@ DynXX::Core::Crypto::RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(k
     this->rsa = PEM_read_bio_RSAPrivateKey(this->bmem, nullptr, nullptr, nullptr);
     if (!this->rsa) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "RSA Failed to create private key, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "RSA Failed to create private key, err: {}", readErrMsg().value_or(""));
     }
 }
 
@@ -614,7 +616,7 @@ std::optional<Bytes> DynXX::Core::Crypto::RSA::Decrypt::process(BytesView in) co
     Bytes outBytes(this->outLen(), 0);
     if (const auto ret = RSA_private_decrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, this->padding); ret == -1) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "RSA decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "RSA decrypt failed, ret: {}, err: {}", ret, readErrMsg().value_or(""));
         return std::nullopt;
     }
     return {outBytes};
@@ -657,14 +659,14 @@ Bytes DynXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     const auto b64 = BIO_new(BIO_f_base64());
     if (!b64) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to create BIO for Base64, err: {}", readErrMsg().value_or(""));
         return {};
     }
 
     const auto bsmem = BIO_new(BIO_s_mem());
     if (!bsmem) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO mem for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to create BIO mem for Base64, err: {}", readErrMsg().value_or(""));
         BIO_free(b64);
         return {};
     }
@@ -677,21 +679,21 @@ Bytes DynXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     const auto bpush = BIO_push(b64, bsmem);
     if (!bpush) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
 
     if (const auto writeResult = BIO_write(b64, in, static_cast<int>(inLen)); writeResult <= 0) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to write to Base64 BIO, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to write to Base64 BIO, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
 
     if (const auto flushResult = BIO_flush(b64); flushResult <= 0) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to flush Base64 BIO, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to flush Base64 BIO, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
@@ -700,7 +702,7 @@ Bytes DynXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     const auto outLen = BIO_get_mem_data(bpush, &outBytes);
     if (outLen <= 0 || outBytes == nullptr) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to get Base64 encoded data, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to get Base64 encoded data, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
@@ -730,7 +732,7 @@ Bytes DynXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
         {
             continue;
         }
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Invalid Base64 char: {}", in[i]);
+        dynxxLogPrintF(Error, "Invalid Base64 char: {}", in[i]);
         return {};
     }
 
@@ -738,14 +740,14 @@ Bytes DynXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
     const auto bmem = BIO_new_mem_buf(in, static_cast<int>(inLen));
     if (!bmem) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO mem buffer for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to create BIO mem buffer for Base64, err: {}", readErrMsg().value_or(""));
         return {};
     }
 
     const auto b64 = BIO_new(BIO_f_base64());
     if (!b64) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to create BIO for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to create BIO for Base64, err: {}", readErrMsg().value_or(""));
         BIO_free_all(bmem);
         return {};
     }
@@ -753,7 +755,7 @@ Bytes DynXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
     const auto bpush = BIO_push(b64, bmem);
     if (!bpush) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to push BIO mem for Base64, err: {}", readErrMsg().value_or(""));
         BIO_free_all(b64);
         return {};
     }
@@ -769,7 +771,7 @@ Bytes DynXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
     const auto bytesRead = BIO_read(bpush, outBytes.data(), static_cast<int>(outLen));
     if (bytesRead <= 0) [[unlikely]]
     {
-        dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to decode Base64, err: {}", readErrMsg().value_or(""));
+        dynxxLogPrintF(Error, "Failed to decode Base64, err: {}", readErrMsg().value_or(""));
         BIO_free_all(bpush);
         return {};
     }
