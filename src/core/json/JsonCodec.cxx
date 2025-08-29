@@ -4,7 +4,6 @@
 #include <climits>
 
 #include <DynXX/CXX/Log.hxx>
-#include <DynXX/CXX/Types.hxx>
 #include <DynXX/CXX/Coding.hxx>
 
 namespace

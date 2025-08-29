@@ -7,7 +7,6 @@
 
 #include <functional>
 
-#include <DynXX/CXX/Types.hxx>
 #include <DynXX/CXX/Json.hxx>
 
 namespace DynXX::Core::Json {

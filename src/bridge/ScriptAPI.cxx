@@ -223,7 +223,9 @@ std::string dynxx_root_pathS([[maybe_unused]] std::string_view json)
     return dynxxRootPath();
 }
 
-// Device.DeviceInfo
+// Device
+
+#if defined(USE_DEVICE)
 
 int dynxx_device_typeS([[maybe_unused]] std::string_view json)
 {
@@ -249,6 +251,8 @@ int dynxx_device_cpu_archS([[maybe_unused]] std::string_view json)
 {
     return static_cast<int>(dynxxDeviceCpuArch());
 }
+
+#endif
 
 // Log
 
@@ -338,6 +342,8 @@ bool dynxx_net_http_downloadS(std::string_view json)
 }
 
 // SQLite
+
+#if defined(USE_DB)
 
 std::string dynxx_sqlite_openS(std::string_view json)
 {
@@ -501,7 +507,11 @@ void dynxx_sqlite_closeS(std::string_view json)
     dynxxSQLiteClose(conn);
 }
 
+#endif
+
 // KV
+
+#if defined(USE_KV)
 
 std::string dynxx_kv_openS(std::string_view json)
 {
@@ -713,6 +723,8 @@ void dynxx_kv_closeS(std::string_view json)
 
     dynxxKVClose(conn);
 }
+
+#endif
 
 // Coding
 

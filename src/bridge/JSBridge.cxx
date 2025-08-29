@@ -125,17 +125,20 @@ DEF_API(dynxx_call_platform, STRING)
 DEF_API(dynxx_get_version, STRING)
 DEF_API(dynxx_root_path, STRING)
 
+#if defined(USE_DEVICE)
 DEF_API(dynxx_device_type, INT32)
 DEF_API(dynxx_device_name, STRING)
 DEF_API(dynxx_device_manufacturer, STRING)
 DEF_API(dynxx_device_os_version, STRING)
 DEF_API(dynxx_device_cpu_arch, INT32)
+#endif
 
 DEF_API(dynxx_log_print, VOID)
 
 DEF_API_ASYNC(dynxx_net_http_request, STRING)
 DEF_API_ASYNC(dynxx_net_http_download, BOOL)
 
+#if defined(USE_DB)
 DEF_API(dynxx_sqlite_open, STRING)
 DEF_API_ASYNC(dynxx_sqlite_execute, BOOL)
 DEF_API_ASYNC(dynxx_sqlite_query_do, STRING)
@@ -145,7 +148,9 @@ DEF_API(dynxx_sqlite_query_read_column_integer, INT64)
 DEF_API(dynxx_sqlite_query_read_column_float, FLOAT)
 DEF_API(dynxx_sqlite_query_drop, VOID)
 DEF_API(dynxx_sqlite_close, VOID)
+#endif
 
+#if defined(USE_KV)
 DEF_API(dynxx_kv_open, STRING)
 DEF_API(dynxx_kv_read_string, STRING)
 DEF_API(dynxx_kv_write_string, BOOL)
@@ -158,6 +163,7 @@ DEF_API(dynxx_kv_contains, BOOL)
 DEF_API(dynxx_kv_remove, BOOL)
 DEF_API(dynxx_kv_clear, VOID)
 DEF_API(dynxx_kv_close, VOID)
+#endif
 
 DEF_API(dynxx_coding_hex_bytes2str, STRING)
 DEF_API(dynxx_coding_hex_str2bytes, STRING)
