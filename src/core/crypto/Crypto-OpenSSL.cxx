@@ -61,36 +61,63 @@ namespace
         }
     }
 
-    class EvpCipherCtx
+    class EvpCipher
     {
     public:
-        EvpCipherCtx(const EvpCipherCtx &) = delete;
-        EvpCipherCtx &operator=(const EvpCipherCtx &) = delete;
-        EvpCipherCtx(EvpCipherCtx &&) = delete;
-        EvpCipherCtx &operator=(EvpCipherCtx &&) = delete;
+        EvpCipher(const EvpCipher &) = delete;
+        EvpCipher &operator=(const EvpCipher &) = delete;
+        EvpCipher(EvpCipher &&) = delete;
+        EvpCipher &operator=(EvpCipher &&) = delete;
 
-        explicit EvpCipherCtx()
+        explicit EvpCipher()
         {
             this->ctx = EVP_CIPHER_CTX_new();
         }
 
-        EVP_CIPHER_CTX* context() const
+        bool valid() const
         {
-            return this->ctx;
+            return this->ctx != nullptr;
         }
 
-        int ctrl(int type, int arg, void *ptr = nullptr)
+        int ctrl(int type, int arg, RawPtr ptr = nullptr)
         {
-            if (this->ctx == nullptr) [[unlikely]]
+            if (!valid()) [[unlikely]]
             {
                 return -1;
             }
             return EVP_CIPHER_CTX_ctrl(this->ctx, type, arg, ptr);
         }
 
-        ~EvpCipherCtx()
+        int init(const bool encrypt, const EVP_CIPHER *type, const unsigned char *key, const unsigned char *iv, ENGINE *impl = nullptr)
         {
-            if (this->ctx != nullptr) [[likely]]
+            if (!valid()) [[unlikely]]
+            {
+                return -1;
+            }
+            return encrypt ? EVP_EncryptInit_ex(this->ctx, type, impl, key, iv) : EVP_DecryptInit_ex(this->ctx, type, impl, key, iv);
+        }
+
+        int update(const bool encrypt, unsigned char *out, int *outl, const unsigned char *in, int inl)
+        {
+            if (!valid()) [[unlikely]]
+            {
+                return -1;
+            }
+            return encrypt ? EVP_EncryptUpdate(this->ctx, out, outl, in, inl) : EVP_DecryptUpdate(this->ctx, out, outl, in, inl);
+        }
+
+        int final(const bool encrypt, unsigned char *out, int *outl)
+        {
+            if (!valid()) [[unlikely]]
+            {
+                return -1;
+            }
+            return encrypt ? EVP_EncryptFinal_ex(this->ctx, out, outl) : EVP_DecryptFinal_ex(this->ctx, out, outl);
+        }
+
+        ~EvpCipher()
+        {
+            if (valid()) [[likely]]
             {
                 EVP_CIPHER_CTX_free(this->ctx);
                 this->ctx = nullptr;
@@ -101,30 +128,57 @@ namespace
         EVP_CIPHER_CTX *ctx;
     };
 
-    class EvpMdCtx {
+    class EvpDigest {
     public:
-        EvpMdCtx(const EvpMdCtx &) = delete;
-        EvpMdCtx &operator=(const EvpMdCtx &) = delete;
-        EvpMdCtx(EvpMdCtx &&) = delete;
-        EvpMdCtx &operator=(EvpMdCtx &&) = delete;
+        EvpDigest(const EvpDigest &) = delete;
+        EvpDigest &operator=(const EvpDigest &) = delete;
+        EvpDigest(EvpDigest &&) = delete;
+        EvpDigest &operator=(EvpDigest &&) = delete;
 
-        EvpMdCtx()
+        EvpDigest()
         {
             this->ctx = EVP_MD_CTX_create();
         }
 
-        ~EvpMdCtx()
+        ~EvpDigest()
         {
-            if (this->ctx != nullptr) [[likely]]
+            if (valid()) [[likely]]
             {
                 EVP_MD_CTX_destroy(this->ctx);
                 this->ctx = nullptr;
             }
         }
 
-        EVP_MD_CTX* context() const
+        bool valid() const
         {
-            return this->ctx;
+            return this->ctx != nullptr;
+        }
+
+        int init(const EVP_MD *type, ENGINE *impl = nullptr)
+        {
+            if (!valid()) [[unlikely]]
+            {
+                return -1;
+            }
+            return EVP_DigestInit_ex(this->ctx, type, impl);
+        }
+
+        int update(const void *d, const size_t cnt)
+        {
+            if (!valid()) [[unlikely]]
+            {
+                return -1;
+            }
+            return EVP_DigestUpdate(this->ctx, d, cnt);
+        }
+
+        int final(unsigned char *md, unsigned int *s)
+        {
+            if (!valid()) [[unlikely]]
+            {
+                return -1;
+            }
+            return EVP_DigestFinal_ex(this->ctx, md, s);
         }
 
     private:
@@ -141,28 +195,28 @@ namespace
         unsigned int outLen = EVP_MD_size(md);
         Bytes out(static_cast<size_t>(outLen), 0);
 
-        const auto ctx = EvpMdCtx();
-        if (ctx.context() == nullptr) [[unlikely]]
+        auto digest = EvpDigest();
+        if (!digest.valid()) [[unlikely]]
         {
             dynxxLogPrintF(Error, "EVP_MD_CTX_create failed, err: {}", errMsg());
             return {};
         }
 
-        auto ret = EVP_DigestInit_ex(ctx.context(), md, nullptr);
+        auto ret = digest.init(md);
         if (ret != OK) [[unlikely]]
         {
             dynxxLogPrintF(Error, "EVP_DigestInit_ex failed, ret: {}, err: {}", ret, errMsg());
             return {};
         }
 
-        ret = EVP_DigestUpdate(ctx.context(), in, inLen);
+        ret = digest.update(in, inLen);
         if (ret != OK) [[unlikely]]
         {
             dynxxLogPrintF(Error, "EVP_DigestUpdate failed, ret: {}, err: {}", ret, errMsg());
             return {};
         }
 
-        ret = EVP_DigestFinal_ex(ctx.context(), out.data(), &outLen);
+        ret = digest.final(out.data(), &outLen);
         if (ret != OK) [[unlikely]]
         {
             dynxxLogPrintF(Error, "EVP_DigestFinal_ex failed, ret: {}, err: {}", ret, errMsg());
@@ -316,28 +370,28 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
     const auto outLen = inLen;
     Bytes out(outLen, 0);
 
-    auto evpCipherCtx = EvpCipherCtx();
-    if (evpCipherCtx.context() == nullptr) [[unlikely]]
+    auto cipher = EvpCipher();
+    if (!cipher.valid()) [[unlikely]]
     {
         dynxxLogPrint(Error, "aesGcmEncrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
-    auto ret = EVP_EncryptInit_ex(evpCipherCtx.context(), aesGcmCipher(keyBytes.size()), nullptr, nullptr, nullptr);
+    auto ret = cipher.init(true, aesGcmCipher(keyBytes.size()), nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    ret = evpCipherCtx.ctrl(EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorBytes.size()));
+    ret = cipher.ctrl(EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorBytes.size()));
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    ret = EVP_EncryptInit_ex(evpCipherCtx.context(), nullptr, nullptr, keyBytes.data(), initVectorBytes.data());
+    ret = cipher.init(true, nullptr, keyBytes.data(), initVectorBytes.data());
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptInit_ex initVector failed, ret: {}, err: {}", ret, errMsg());
@@ -348,7 +402,7 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
 
     if (const auto aadLen = aadBytes.size(); aadLen > 0) [[likely]]
     {
-        ret = EVP_EncryptUpdate(evpCipherCtx.context(), nullptr, &len, aadBytes.data(), static_cast<int>(aadLen));
+        ret = cipher.update(true, nullptr, &len, aadBytes.data(), static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
             dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptUpdate aad failed, ret: {}, err: {}", ret, errMsg());
@@ -356,21 +410,21 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
         }
     }
 
-    ret = EVP_EncryptUpdate(evpCipherCtx.context(), out.data(), &len, inBytes.data(), static_cast<int>(inLen));
+    ret = cipher.update(true, out.data(), &len, inBytes.data(), static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptUpdate encrypt failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    ret = EVP_EncryptFinal_ex(evpCipherCtx.context(), out.data(), &len);
+    ret = cipher.final(true, out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptFinal_ex encrypt failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    ret = evpCipherCtx.ctrl(EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag.data());
+    ret = cipher.ctrl(EVP_CTRL_GCM_GET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_GET_TAG failed, ret: {}, err: {}", ret, errMsg());
@@ -396,28 +450,28 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
     const auto outLen = inLen;
     Bytes out(outLen, 0);
 
-    auto evpCipherCtx = EvpCipherCtx();
-    if (evpCipherCtx.context() == nullptr) [[unlikely]]
+    auto cipher = EvpCipher();
+    if (!cipher.valid()) [[unlikely]]
     {
         dynxxLogPrint(Error, "aesGcmDecrypt EVP_CIPHER_CTX_new failed");
         return {};
     }
 
-    auto ret = EVP_DecryptInit_ex(evpCipherCtx.context(), aesGcmCipher(keyBytes.size()), nullptr, nullptr, nullptr);
+    auto ret = cipher.init(false, aesGcmCipher(keyBytes.size()), nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    ret = evpCipherCtx.ctrl(EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorBytes.size()));
+    ret = cipher.ctrl(EVP_CTRL_GCM_SET_IVLEN, static_cast<int>(initVectorBytes.size()));
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_IVLEN failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    ret = EVP_DecryptInit_ex(evpCipherCtx.context(), nullptr, nullptr, keyBytes.data(), initVectorBytes.data());
+    ret = cipher.init(false, nullptr, keyBytes.data(), initVectorBytes.data());
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptInit_ex initVector failed, ret: {}, err: {}", ret, errMsg());
@@ -428,7 +482,7 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
 
     if (const auto aadLen = aadBytes.size(); aadLen > 0) [[likely]]
     {
-        ret = EVP_DecryptUpdate(evpCipherCtx.context(), nullptr, &len, aadBytes.data(), static_cast<int>(aadLen));
+        ret = cipher.update(false, nullptr, &len, aadBytes.data(), static_cast<int>(aadLen));
         if (ret != OK) [[unlikely]]
         {
             dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptUpdate aad failed, ret: {}, err: {}", ret, errMsg());
@@ -436,21 +490,21 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
         }
     }
 
-    ret = EVP_DecryptUpdate(evpCipherCtx.context(), out.data(), &len, inBytes.data(), static_cast<int>(inLen));
+    ret = cipher.update(false, out.data(), &len, inBytes.data(), static_cast<int>(inLen));
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptUpdate decrypt failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    ret = evpCipherCtx.ctrl(EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag.data());
+    ret = cipher.ctrl(EVP_CTRL_GCM_SET_TAG, static_cast<int>(tagLen), tag.data());
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_CIPHER_CTX_ctrl EVP_CTRL_GCM_SET_TAG failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    ret = EVP_DecryptFinal_ex(evpCipherCtx.context(), out.data(), &len);
+    ret = cipher.final(false, out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptFinal_ex decrypt failed, ret: {}, err: {}", ret, errMsg());
