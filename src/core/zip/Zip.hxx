@@ -59,6 +59,7 @@ namespace DynXX::Core::Z {
     public:
         Zip() = delete;
 
+        /// @throws `std::invalid_argument` & `ZException`
         explicit Zip(int mode, size_t bufferSize, int format) noexcept(false);
 
         Zip(const Zip &) = delete;
@@ -81,6 +82,7 @@ namespace DynXX::Core::Z {
     public:
         UnZip() = delete;
 
+        /// @throws `std::invalid_argument` & `ZException`
         explicit UnZip(size_t bufferSize, int format) noexcept(false);
 
         UnZip(const UnZip &) = delete;

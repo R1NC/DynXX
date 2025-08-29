@@ -242,6 +242,10 @@ void DynXX::Core::Json::Decoder::cleanup() noexcept
 DynXX::Core::Json::Decoder::Decoder(std::string_view json)
 {
     this->cjson = cJSON_Parse(json.data());
+    if (this->cjson == nullptr) [[unlikely]]
+    {
+        dynxxLogPrintF(Error, "FAILED TO PARSE JSON: {}", json);
+    }
 }
 
 DynXX::Core::Json::Decoder::~Decoder()
@@ -290,6 +294,10 @@ DynXXJsonNodeHandle DynXX::Core::Json::Decoder::operator[](std::string_view k) c
 std::optional<std::string> DynXX::Core::Json::Decoder::readString(const DynXXJsonNodeHandle node) const
 {
     const auto cj = this->reinterpretNode(node);
+    if (cj == nullptr) [[unlikely]]
+    {
+        return std::nullopt;
+    }
     switch(nodeReadType(node))
     {
         case Object:
@@ -328,9 +336,12 @@ std::optional<std::string> DynXX::Core::Json::Decoder::readString(const DynXXJso
 
 std::optional<double> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNodeHandle node) const
 {
-    const auto type = nodeReadType(node);
     const auto cj = this->reinterpretNode(node);
-    switch(type) {
+    if (cj == nullptr) [[unlikely]]
+    {
+        return std::nullopt;
+    }
+    switch(nodeReadType(node)) {
         case Int32:
         {
             return {readInt32(cj)};
@@ -358,20 +369,29 @@ std::optional<double> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNode
 
 DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readChild(const DynXXJsonNodeHandle node) const
 {
-    if (const auto type = nodeReadType(node); type == Object || type == Array) [[likely]]
+    const auto cj = this->reinterpretNode(node);
+    if (cj == nullptr) [[unlikely]]
     {
-        return ptr2addr(this->reinterpretNode(node)->child);
+        return 0;
+    }
+    if (const auto type = nodeReadType(node); type == Object || type == Array) [[likely]]
+    {   
+        return ptr2addr(cj->child);
     }
     return 0;
 }
 
 size_t DynXX::Core::Json::Decoder::readChildrenCount(const DynXXJsonNodeHandle node) const
 {
+    auto cj = this->reinterpretNode(node);
+    if (cj == nullptr) [[unlikely]]
+    {
+        return 0;
+    }
     if (const auto type = nodeReadType(node); type != Object && type != Array) [[unlikely]]
     {
         return 0;
     }
-    auto cj = this->reinterpretNode(node);
     return cJSON_GetArraySize(cj);
 }
 

@@ -106,7 +106,7 @@ namespace
             return encrypt ? EVP_EncryptUpdate(this->ctx, out, outl, in, inl) : EVP_DecryptUpdate(this->ctx, out, outl, in, inl);
         }
 
-        int final(const bool encrypt, unsigned char *out, int *outl)
+        int finish(const bool encrypt, unsigned char *out, int *outl)
         {
             if (!valid()) [[unlikely]]
             {
@@ -172,7 +172,7 @@ namespace
             return EVP_DigestUpdate(this->ctx, d, cnt);
         }
 
-        int final(unsigned char *md, unsigned int *s)
+        int finish(unsigned char *md, unsigned int *s)
         {
             if (!valid()) [[unlikely]]
             {
@@ -216,7 +216,7 @@ namespace
             return {};
         }
 
-        ret = digest.final(out.data(), &outLen);
+        ret = digest.finish(out.data(), &outLen);
         if (ret != OK) [[unlikely]]
         {
             dynxxLogPrintF(Error, "EVP_DigestFinal_ex failed, ret: {}, err: {}", ret, errMsg());
@@ -417,7 +417,7 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
         return {};
     }
 
-    ret = cipher.final(true, out.data(), &len);
+    ret = cipher.finish(true, out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptFinal_ex encrypt failed, ret: {}, err: {}", ret, errMsg());
@@ -504,7 +504,7 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
         return {};
     }
 
-    ret = cipher.final(false, out.data(), &len);
+    ret = cipher.finish(false, out.data(), &len);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptFinal_ex decrypt failed, ret: {}, err: {}", ret, errMsg());

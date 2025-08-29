@@ -806,7 +806,7 @@ void dynxxJsonDecoderRelease(const DynXXJsonDecoderHandle decoder) {
 
 DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize, const DynXXZFormatX format) {
     try {
-        const auto zip = new Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
+        const auto zip = new(std::nothrow) Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
         return ptr2addr(zip);
     } catch (const std::invalid_argument &e) {
         dynxxLogPrintF(Error, "dynxxZZipInit invalid_argument: {}", e.what());
@@ -850,7 +850,7 @@ void dynxxZZipRelease(const DynXXZipHandle zip) {
 
 DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) {
     try {
-        const auto unzip = new Z::UnZip(bufferSize, static_cast<int>(format));
+        const auto unzip = new(std::nothrow) Z::UnZip(bufferSize, static_cast<int>(format));
         return ptr2addr(unzip);
     } catch (const std::invalid_argument &e) {
         dynxxLogPrintF(Error, "dynxxZUnzipInit invalid_argument: {}", e.what());
