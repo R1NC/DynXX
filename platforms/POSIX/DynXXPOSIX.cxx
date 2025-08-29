@@ -1,6 +1,6 @@
 #include "DynXXPOSIX.h"
 
-#include "../../include/DynXX/C/DynXX.h"
+#include "../../include/DynXX/CXX/DynXX.hxx"
 
 #include <iostream>
 #include <fstream>
@@ -145,14 +145,16 @@ void dynxx_posix_testJsonDecoder()
 void dynxx_posix_testZip()
 {
     static constexpr auto kZBufferSize = 1024z;
+    static const auto format = DynXXZFormatX::GZip;
+    static const auto mode = DynXXZipCompressModeX::Default;
     std::ifstream zipIS("../Android/app/src/main/assets/prepare_data.sql", std::ios::in);
     std::ofstream zipOS("./x.zip", std::ios::out);
-    auto zipRes = dynxx_z_cxxstream_zip(DynXXZipCompressModeDefault, kZBufferSize, DynXXZFormatZLib, (void *)&zipIS, (void *)&zipOS);
+    auto zipRes = dynxxZCxxStreamZip(mode, kZBufferSize, format, &zipIS, &zipOS);
     std::cout << "zip res:" << zipRes << std::endl;
 
     std::ifstream unzipIS("./x.zip", std::ios::in);
     std::ofstream unzipOS("./x.txt", std::ios::out);
-    auto unzipRes = dynxx_z_cxxstream_unzip(kZBufferSize, DynXXZFormatZLib, (void *)&unzipIS, (void *)&unzipOS);
+    auto unzipRes = dynxxZCxxStreamUnzip(kZBufferSize, format, &unzipIS, &unzipOS);
     std::cout << "unzip res:" << unzipRes << std::endl;
 }
 

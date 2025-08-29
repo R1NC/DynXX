@@ -32,12 +32,12 @@ namespace DynXX::Core::Net {
         [[nodiscard]] DynXXHttpResponse request(std::string_view url, int method,
                                                  const std::vector<std::string> &headers,
                                                 std::string_view params,
-                                                 const BytesView rawBody,
+                                                 BytesView rawBody,
                                                  const std::vector<HttpFormField> &formFields,
                                                 std::FILE *cFILE, size_t fileSize,
                                                  size_t timeout) const;
 
-        [[nodiscard]] bool download(std::string_view url, const std::string_view filePath, size_t timeout) const;
+        [[nodiscard]] bool download(std::string_view url, std::string_view filePath, size_t timeout) const;
 
         ~HttpClient();
     };

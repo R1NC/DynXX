@@ -49,7 +49,7 @@ namespace
 
 DynXXJsonNodeTypeX DynXX::Core::Json::nodeReadType(const DynXXJsonNodeHandle node)
 {
-    const auto cj = static_cast<cJSON *>(node);
+    const auto cj = addr2ptr<cJSON>(node);
     if (cj == nullptr) [[unlikely]]
     {
         return Unknown;
@@ -80,7 +80,7 @@ DynXXJsonNodeTypeX DynXX::Core::Json::nodeReadType(const DynXXJsonNodeHandle nod
 
 std::optional<std::string> DynXX::Core::Json::nodeReadName(const DynXXJsonNodeHandle node)
 {
-    const auto cj = static_cast<cJSON *>(node);
+    const auto cj = addr2ptr<cJSON>(node);
     if (cj == nullptr || cj->string == nullptr) [[unlikely]]
     {
         return std::nullopt;
@@ -94,7 +94,7 @@ std::optional<std::string> DynXX::Core::Json::nodeToStr(const DynXXJsonNodeHandl
     {
         return std::nullopt;
     }
-    const auto jsonChars = cJSON_PrintUnformatted(static_cast<cJSON *>(node));
+    const auto jsonChars = cJSON_PrintUnformatted(addr2ptr<cJSON>(node));
     if (!jsonChars) [[unlikely]]
     {
         return std::nullopt;
@@ -157,7 +157,7 @@ std::optional<std::string> DynXX::Core::Json::jsonFromDictAny(const DictAny &dic
             }
         }
     }
-    auto json = nodeToStr(cjson);
+    auto json = nodeToStr(ptr2addr(cjson));
     cJSON_Delete(cjson);
     return json;
 }
@@ -174,7 +174,7 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
         return std::nullopt;
     }
 
-    if (nodeReadType(cjson) != Object) [[unlikely]]
+    if (nodeReadType(ptr2addr(cjson)) != Object) [[unlikely]]
     {
         cJSON_Delete(cjson);
         return std::nullopt;
@@ -188,7 +188,7 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
             continue;
         }
         std::string k(node->string);
-        const auto type = nodeReadType(node);
+        const auto type = nodeReadType(ptr2addr(node));
         switch(type) {
             case Float:
             {
@@ -212,7 +212,7 @@ std::optional<DictAny> DynXX::Core::Json::jsonToDictAny(const std::string &json)
             }
             default:
             {
-                dict.emplace(k, nodeToStr(node).value_or(""));
+                dict.emplace(k, nodeToStr(ptr2addr(node)).value_or(""));
                 break;
             }
         }
@@ -239,7 +239,7 @@ void DynXX::Core::Json::Decoder::cleanup() noexcept
     this->cjson = nullptr;
 }
 
-DynXX::Core::Json::Decoder::Decoder(const std::string_view json)
+DynXX::Core::Json::Decoder::Decoder(std::string_view json)
 {
     this->cjson = cJSON_Parse(json.data());
 }
@@ -266,25 +266,25 @@ DynXX::Core::Json::Decoder &DynXX::Core::Json::Decoder::operator=(Decoder &&othe
 
 const cJSON *DynXX::Core::Json::Decoder::reinterpretNode(const DynXXJsonNodeHandle node) const
 {
-    if (node == nullptr)
+    if (node == 0)
     {
         return this->cjson;
     }
-    return static_cast<const cJSON *>(node);
+    return addr2ptr<cJSON>(node);
 }
 
 DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readNode(const DynXXJsonNodeHandle node, std::string_view k) const
 {
     if (const auto cj = this->reinterpretNode(node); cj != nullptr) [[likely]]
     {
-        return cJSON_GetObjectItemCaseSensitive(cj, k.data());
+        return ptr2addr(cJSON_GetObjectItemCaseSensitive(cj, k.data()));
     }
-    return nullptr;
+    return 0;
 }
 
 DynXXJsonNodeHandle DynXX::Core::Json::Decoder::operator[](std::string_view k) const
 {
-    return this->readNode(nullptr, k);
+    return this->readNode(0, k);
 }
 
 std::optional<std::string> DynXX::Core::Json::Decoder::readString(const DynXXJsonNodeHandle node) const
@@ -360,9 +360,9 @@ DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readChild(const DynXXJsonNodeHan
 {
     if (const auto type = nodeReadType(node); type == Object || type == Array) [[likely]]
     {
-        return this->reinterpretNode(node)->child;
+        return ptr2addr(this->reinterpretNode(node)->child);
     }
-    return nullptr;
+    return 0;
 }
 
 size_t DynXX::Core::Json::Decoder::readChildrenCount(const DynXXJsonNodeHandle node) const
@@ -383,7 +383,7 @@ void DynXX::Core::Json::Decoder::readChildren(const DynXXJsonNodeHandle node, st
     }
     auto idx = 0;
     const auto& cbk = std::move(callback);
-    for (auto childNode = this->readChild(node); childNode != nullptr; childNode = this->readNext(childNode), idx++)
+    for (auto childNode = this->readChild(node); childNode != 0; childNode = this->readNext(childNode), idx++)
     {
         const auto type = nodeReadType(childNode);
         const auto name = nodeReadName(childNode);
@@ -394,5 +394,5 @@ void DynXX::Core::Json::Decoder::readChildren(const DynXXJsonNodeHandle node, st
 DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readNext(const DynXXJsonNodeHandle node) const
 {
     const auto cj = this->reinterpretNode(node);
-    return cj ? cj->next : nullptr;
+    return cj ? ptr2addr(cj->next) : 0;
 }

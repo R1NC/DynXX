@@ -225,7 +225,7 @@ napi_value sqliteOpen(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto _id = napiValue2chars(env, args.v[0]);
-    auto res = ptr2addr(dynxx_sqlite_open(_id));
+    auto res = dynxx_sqlite_open(_id);
     auto nv = long2NapiValue(env, res);
 
     freeX(_id);
@@ -238,7 +238,7 @@ napi_value sqliteExecute(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto sql = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_sqlite_execute(addr2ptr(conn), sql);
+    auto res = dynxx_sqlite_execute(conn, sql);
     auto nv = bool2NapiValue(env, res);
 
     freeX(sql);
@@ -251,7 +251,7 @@ napi_value sqliteQueryDo(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto sql = napiValue2chars(env, args.v[1]);
 
-    auto res = ptr2addr(dynxx_sqlite_query_do(addr2ptr(conn), sql));
+    auto res = dynxx_sqlite_query_do(conn, sql);
     auto nv = long2NapiValue(env, res);
 
     freeX(sql);
@@ -263,7 +263,7 @@ napi_value sqliteQueryReadRow(napi_env env, napi_callback_info info) {
 
     auto query_result = napiValue2long(env, args.v[0]);
 
-    auto res = dynxx_sqlite_query_read_row(addr2ptr(query_result));
+    auto res = dynxx_sqlite_query_read_row(query_result);
     return bool2NapiValue(env, res);
 }
 
@@ -273,7 +273,7 @@ napi_value sqliteQueryReadColumnText(napi_env env, napi_callback_info info) {
     auto query_result = napiValue2long(env, args.v[0]);
     auto column = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_sqlite_query_read_column_text(addr2ptr(query_result), column);
+    auto res = dynxx_sqlite_query_read_column_text(query_result, column);
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
@@ -287,7 +287,7 @@ napi_value sqliteQueryReadColumnInteger(napi_env env, napi_callback_info info) {
     auto query_result = napiValue2long(env, args.v[0]);
     auto column = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_sqlite_query_read_column_integer(addr2ptr(query_result), column);
+    auto res = dynxx_sqlite_query_read_column_integer(query_result, column);
     auto nv = long2NapiValue(env, res);
 
     freeX(column);
@@ -300,7 +300,7 @@ napi_value sqliteQueryReadColumnFloat(napi_env env, napi_callback_info info) {
     auto query_result = napiValue2long(env, args.v[0]);
     auto column = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_sqlite_query_read_column_float(addr2ptr(query_result), column);
+    auto res = dynxx_sqlite_query_read_column_float(query_result, column);
     auto nv = double2NapiValue(env, res);
 
     freeX(column);
@@ -311,7 +311,7 @@ napi_value sqliteQueryDrop(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto query_result = napiValue2long(env, args.v[0]);
-    dynxx_sqlite_query_drop(addr2ptr(query_result));
+    dynxx_sqlite_query_drop(query_result);
 
     return int2NapiValue(env, napi_ok);
 }
@@ -320,7 +320,7 @@ napi_value sqliteClose(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
-    dynxx_sqlite_close(addr2ptr(conn));
+    dynxx_sqlite_close(conn);
 
     return int2NapiValue(env, napi_ok);
 }
@@ -331,7 +331,7 @@ napi_value kvOpen(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto _id = napiValue2chars(env, args.v[0]);
-    auto res = ptr2addr(dynxx_kv_open(_id));
+    auto res = dynxx_kv_open(_id);
     auto nv = long2NapiValue(env, res);
 
     freeX(_id);
@@ -344,7 +344,7 @@ napi_value kvReadString(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_kv_read_string(addr2ptr(conn), k);
+    auto res = dynxx_kv_read_string(conn, k);
     auto nv = chars2NapiValue(env, res);
 
     freeX(res);
@@ -359,7 +359,7 @@ napi_value kvWriteString(napi_env env, napi_callback_info info) {
     auto k = napiValue2chars(env, args.v[1]);
     auto v = napiValue2chars(env, args.v[2]);
 
-    auto res = dynxx_kv_write_string(addr2ptr(conn), k, v);
+    auto res = dynxx_kv_write_string(conn, k, v);
     auto nv = bool2NapiValue(env, res);
 
     freeX(v);
@@ -373,7 +373,7 @@ napi_value kvReadInteger(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_kv_read_integer(addr2ptr(conn), k);
+    auto res = dynxx_kv_read_integer(conn, k);
     auto nv = long2NapiValue(env, res);
 
     freeX(k);
@@ -387,7 +387,7 @@ napi_value kvWriteInteger(napi_env env, napi_callback_info info) {
     auto k = napiValue2chars(env, args.v[1]);
     auto v = napiValue2long(env, args.v[2]);
 
-    auto res = dynxx_kv_write_integer(addr2ptr(conn), k, v);
+    auto res = dynxx_kv_write_integer(conn, k, v);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
@@ -400,7 +400,7 @@ napi_value kvReadFloat(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_kv_read_integer(addr2ptr(conn), k);
+    auto res = dynxx_kv_read_integer(conn, k);
     auto nv = double2NapiValue(env, res);
 
     freeX(k);
@@ -414,7 +414,7 @@ napi_value kvWriteFloat(napi_env env, napi_callback_info info) {
     auto k = napiValue2chars(env, args.v[1]);
     auto v = napiValue2double(env, args.v[2]);
 
-    auto res = dynxx_kv_write_integer(addr2ptr(conn), k, v);
+    auto res = dynxx_kv_write_integer(conn, k, v);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
@@ -427,7 +427,7 @@ napi_value kvContains(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_kv_contains(addr2ptr(conn), k);
+    auto res = dynxx_kv_contains(conn, k);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
@@ -440,7 +440,7 @@ napi_value kvRemove(napi_env env, napi_callback_info info) {
     auto conn = napiValue2long(env, args.v[0]);
     auto k = napiValue2chars(env, args.v[1]);
 
-    auto res = dynxx_kv_remove(addr2ptr(conn), k);
+    auto res = dynxx_kv_remove(conn, k);
     auto nv = bool2NapiValue(env, res);
 
     freeX(k);
@@ -451,7 +451,7 @@ napi_value kvClear(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
-    dynxx_kv_clear(addr2ptr(conn));
+    dynxx_kv_clear(conn);
 
     return int2NapiValue(env, napi_ok);
 }
@@ -460,7 +460,7 @@ napi_value kvClose(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto conn = napiValue2long(env, args.v[0]);
-    dynxx_kv_close(addr2ptr(conn));
+    dynxx_kv_close(conn);
 
     return int2NapiValue(env, napi_ok);
 }
@@ -508,7 +508,7 @@ napi_value jsonReadType(napi_env env, napi_callback_info info) {
 
     auto node = args.c > 1 ? napiValue2long(env, args.v[0]) : 0;
 
-    auto res = dynxx_json_node_read_type(addr2ptr(node));
+    auto res = dynxx_json_node_read_type(node);
     return int2NapiValue(env, res);
 }
 
@@ -517,7 +517,7 @@ napi_value jsonDecoderInit(napi_env env, napi_callback_info info) {
 
     auto cJson = napiValue2chars(env, args.v[0]);
 
-    auto res = ptr2addr(dynxx_json_decoder_init(cJson));
+    auto res = dynxx_json_decoder_init(cJson);
     auto v = long2NapiValue(env, res);
 
     freeX(cJson);
@@ -531,7 +531,7 @@ napi_value jsonDecoderReadNode(napi_env env, napi_callback_info info) {
     auto cK = napiValue2chars(env, args.v[1]);
     auto node = args.c > 2 ? napiValue2long(env, args.v[2]) : 0;
 
-    auto res = ptr2addr(dynxx_json_decoder_read_node(addr2ptr(decoder), addr2ptr(node), cK));
+    auto res = dynxx_json_decoder_read_node(decoder, node, cK);
     auto v = long2NapiValue(env, res);
 
     freeX(cK);
@@ -544,7 +544,7 @@ napi_value jsonDecoderReadChild(napi_env env, napi_callback_info info) {
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto res = ptr2addr(dynxx_json_decoder_read_child(addr2ptr(decoder), addr2ptr(node)));
+    auto res = dynxx_json_decoder_read_child(decoder, node);
     return long2NapiValue(env, res);
 }
 
@@ -554,7 +554,7 @@ napi_value jsonDecoderReadNext(napi_env env, napi_callback_info info) {
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto res = ptr2addr(dynxx_json_decoder_read_next(addr2ptr(decoder), addr2ptr(node)));
+    auto res = dynxx_json_decoder_read_next(decoder, node);
     return long2NapiValue(env, res);
 }
 
@@ -564,7 +564,7 @@ napi_value jsonDecoderReadString(napi_env env, napi_callback_info info) {
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto cRes = dynxx_json_decoder_read_string(addr2ptr(decoder), addr2ptr(node));
+    auto cRes = dynxx_json_decoder_read_string(decoder, node);
     auto v = chars2NapiValue(env, cRes);
 
     freeX(cRes);
@@ -577,7 +577,7 @@ napi_value jsonDecoderReadNumber(napi_env env, napi_callback_info info) {
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto res = dynxx_json_decoder_read_number(addr2ptr(decoder), addr2ptr(node));
+    auto res = dynxx_json_decoder_read_number(decoder, node);
     return double2NapiValue(env, res);
 }
 
@@ -586,7 +586,7 @@ napi_value jsonDecoderRelease(napi_env env, napi_callback_info info) {
 
     auto decoder = napiValue2long(env, args.v[0]);
 
-    dynxx_json_decoder_release(addr2ptr(decoder));
+    dynxx_json_decoder_release(decoder);
 
     return int2NapiValue(env, napi_ok);
 }

@@ -386,7 +386,7 @@ Bytes dynxxCryptoBase64Decode(BytesView in, bool noNewLines) {
 DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         DynXXHttpMethodX method,
                                         std::string_view params,
-                                        const BytesView rawBody,
+                                        BytesView rawBody,
                                         const std::vector<std::string> &headerV,
                                         const std::vector<std::string> &formFieldNameV,
                                         const std::vector<std::string> &formFieldMimeV,
@@ -458,7 +458,7 @@ std::optional<std::string> DynXXHttpResponse::toJson() const {
         return std::nullopt;
     }
 
-    auto json = dynxxJsonNodeToStr(cj);
+    auto json = dynxxJsonNodeToStr(ptr2addr(cj));
     cJSON_Delete(cj);
     return json;
 }
@@ -466,7 +466,7 @@ std::optional<std::string> DynXXHttpResponse::toJson() const {
 DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         DynXXHttpMethodX method,
                                         const DictAny &params,
-                                        const BytesView rawBody,
+                                        BytesView rawBody,
                                         const Dict &headers,
                                         const std::vector<std::string> &formFieldNameV,
                                         const std::vector<std::string> &formFieldMimeV,
@@ -503,7 +503,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
 }
 
 #if defined(USE_CURL)
-bool dynxxNetHttpDownload(std::string_view url, const std::string_view filePath, size_t timeout) {
+bool dynxxNetHttpDownload(std::string_view url, std::string_view filePath, size_t timeout) {
     if (!_http_client || url.empty() || filePath.empty()) {
         return false;
     }
@@ -517,45 +517,45 @@ bool dynxxNetHttpDownload(std::string_view url, const std::string_view filePath,
 
 DynXXSQLiteConnHandle dynxxSQLiteOpen(const std::string &_id) {
     if (!_sqlite || !_root || _id.empty()) {
-        return nullptr;
+        return 0;
     }
     std::string dbPath = *_root + "/" + _id + ".db";
     if (const auto ptr = _sqlite->open(dbPath).lock()) [[likely]] {
-        return ptr.get();
+        return ptr2addr(ptr.get());
     }
-    return nullptr;
+    return 0;
 }
 
 bool dynxxSQLiteExecute(const DynXXSQLiteConnHandle conn, std::string_view sql) {
-    if (conn == nullptr || sql.empty()) {
+    if (conn == 0 || sql.empty()) {
         return false;
     }
-    const auto xconn = static_cast<Store::SQLite::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::SQLite::Connection>(conn);
     return xconn->execute(sql);
 }
 
 DynXXSQLiteQueryResultHandle dynxxSQLiteQueryDo(const DynXXSQLiteConnHandle conn, std::string_view sql) {
-    if (conn == nullptr || sql.empty()) {
-        return nullptr;
+    if (conn == 0 || sql.empty()) {
+        return 0;
     }
-    const auto xconn = static_cast<Store::SQLite::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::SQLite::Connection>(conn);
     auto ptrQr = xconn->query(sql);
-    return ptrQr ? ptrQr.release() : nullptr; //trans ownership to C API, not release the memory.
+    return ptrQr ? ptr2addr(ptrQr.release()) : 0; //trans ownership to C API, not release the memory.
 }
 
 bool dynxxSQLiteQueryReadRow(const DynXXSQLiteQueryResultHandle query_result) {
-    if (query_result == nullptr) {
+    if (query_result == 0) {
         return false;
     }
-    const auto xqr = static_cast<Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = addr2ptr<Store::SQLite::Connection::QueryResult>(query_result);
     return xqr->readRow();
 }
 
 std::optional<std::string> dynxxSQLiteQueryReadColumnText(const DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
-    if (query_result == nullptr || column.empty()) {
+    if (query_result == 0 || column.empty()) {
         return std::nullopt;
     }
-    const auto xqr = static_cast<Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = addr2ptr<Store::SQLite::Connection::QueryResult>(query_result);
     auto v = (*xqr)[column];
     if (!v.has_value()) [[unlikely]] {
         return std::nullopt;
@@ -564,10 +564,10 @@ std::optional<std::string> dynxxSQLiteQueryReadColumnText(const DynXXSQLiteQuery
 }
 
 std::optional<int64_t> dynxxSQLiteQueryReadColumnInteger(const DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
-    if (query_result == nullptr || column.empty()) {
+    if (query_result == 0 || column.empty()) {
         return std::nullopt;
     }
-    const auto xqr = static_cast<Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = addr2ptr<Store::SQLite::Connection::QueryResult>(query_result);
     const auto v = (*xqr)[column];
     if (!v.has_value()) [[unlikely]] {
         return std::nullopt;
@@ -576,10 +576,10 @@ std::optional<int64_t> dynxxSQLiteQueryReadColumnInteger(const DynXXSQLiteQueryR
 }
 
 std::optional<double> dynxxSQLiteQueryReadColumnFloat(const DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
-    if (query_result == nullptr || column.empty()) {
+    if (query_result == 0 || column.empty()) {
         return std::nullopt;
     }
-    const auto xqr = static_cast<Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = addr2ptr<Store::SQLite::Connection::QueryResult>(query_result);
     const auto v = (*xqr)[column];
     if (!v.has_value()) [[unlikely]] {
         return std::nullopt;
@@ -588,17 +588,17 @@ std::optional<double> dynxxSQLiteQueryReadColumnFloat(const DynXXSQLiteQueryResu
 }
 
 void dynxxSQLiteQueryDrop(const DynXXSQLiteQueryResultHandle query_result) {
-    if (query_result == nullptr) {
+    if (query_result == 0) {
         return;
     }
-    const auto xqr = static_cast<Store::SQLite::Connection::QueryResult *>(query_result);
+    const auto xqr = addr2ptr<Store::SQLite::Connection::QueryResult>(query_result);
     delete xqr;
 }
 
 void dynxxSQLiteClose(const DynXXSQLiteConnHandle conn) {
-    if (conn == nullptr || _sqlite == nullptr)
+    if (conn == 0 || _sqlite == nullptr)
         return;
-    const auto xconn = static_cast<Store::SQLite::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::SQLite::Connection>(conn);
     _sqlite->close(xconn->id());
 }
 
@@ -610,98 +610,98 @@ void dynxxSQLiteClose(const DynXXSQLiteConnHandle conn) {
 
 DynXXKVConnHandle dynxxKVOpen(const std::string &_id) {
     if (!_kv || _id.empty()) {
-        return nullptr;
+        return 0;
     }
     if (const auto ptr = _kv->open(_id).lock()) [[likely]] {
-        return ptr.get();
+        return ptr2addr(ptr.get());
     }
-    return nullptr;
+    return 0;
 }
 
 std::optional<std::string> dynxxKVReadString(const DynXXKVConnHandle conn, std::string_view k) {
-    if (conn == nullptr || k.empty()) {
+    if (conn == 0 || k.empty()) {
         return std::nullopt;
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     return xconn->readString(k);
 }
 
 bool dynxxKVWriteString(const DynXXKVConnHandle conn, std::string_view k, const std::string &v) {
-    if (conn == nullptr || k.empty()) {
+    if (conn == 0 || k.empty()) {
         return false;
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     return xconn->write(k, v);
 }
 
 std::optional<int64_t> dynxxKVReadInteger(const DynXXKVConnHandle conn, std::string_view k) {
-    if (conn == nullptr || k.empty()) {
+    if (conn == 0 || k.empty()) {
         return std::nullopt;
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     return xconn->readInteger(k);
 }
 
 bool dynxxKVWriteInteger(const DynXXKVConnHandle conn, std::string_view k, int64_t v) {
-    if (conn == nullptr || k.empty()) {
+    if (conn == 0 || k.empty()) {
         return false;
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     return xconn->write(k, v);
 }
 
 std::optional<double> dynxxKVReadFloat(const DynXXKVConnHandle conn, std::string_view k) {
-    if (conn == nullptr || k.empty()) {
+    if (conn == 0 || k.empty()) {
         return std::nullopt;
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     return xconn->readFloat(k);
 }
 
 bool dynxxKVWriteFloat(const DynXXKVConnHandle conn, std::string_view k, double v) {
-    if (conn == nullptr || k.empty()) {
+    if (conn == 0 || k.empty()) {
         return false;
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     return xconn->write(k, v);
 }
 
 std::vector<std::string> dynxxKVAllKeys(const DynXXKVConnHandle conn) {
-    if (conn == nullptr) {
+    if (conn == 0) {
         return {};
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     return xconn->allKeys();
 }
 
 bool dynxxKVContains(const DynXXKVConnHandle conn, std::string_view k) {
-    if (conn == nullptr || k.empty()) {
+    if (conn == 0 || k.empty()) {
         return false;
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     return xconn->contains(k);
 }
 
 bool dynxxKVRemove(const DynXXKVConnHandle conn, std::string_view k) {
-    if (conn == nullptr || k.empty()) {
+    if (conn == 0 || k.empty()) {
         return false;
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     return xconn->remove(k);
 }
 
 void dynxxKVClear(const DynXXKVConnHandle conn) {
-    if (conn == nullptr) {
+    if (conn == 0) {
         return;
     }
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     xconn->clear();
 }
 
 void dynxxKVClose(const DynXXKVConnHandle conn) {
-    if (conn == nullptr || _kv == nullptr)
+    if (conn == 0 || _kv == nullptr)
         return;
-    const auto xconn = static_cast<Store::KV::Connection *>(conn);
+    const auto xconn = addr2ptr<Store::KV::Connection>(conn);
     _kv->close(xconn->id());
 }
 
@@ -729,83 +729,83 @@ std::optional<DictAny> dynxxJsonToDictAny(const std::string &json) {
     return Json::jsonToDictAny(json);
 }
 
-DynXXJsonDecoderHandle dynxxJsonDecoderInit(const std::string_view json) {
+DynXXJsonDecoderHandle dynxxJsonDecoderInit(std::string_view json) {
     auto decoder = new(std::nothrow) Json::Decoder(json);
     if (decoder == nullptr) {
         dynxxLogPrint(Error, "new JsonDecoder failed");
     }
-    return decoder;
+    return ptr2addr(decoder);
 }
 
 DynXXJsonNodeHandle dynxxJsonDecoderReadNode(const DynXXJsonDecoderHandle decoder, std::string_view k, const DynXXJsonNodeHandle node) {
-    if (decoder == nullptr || k.empty()) {
-        return nullptr;
+    if (decoder == 0 || k.empty()) {
+        return 0;
     }
-    const auto xdecoder = static_cast<Json::Decoder *>(decoder);
+    const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
     return xdecoder->readNode(node, k);
 }
 
 std::optional<std::string> dynxxJsonDecoderReadString(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
-    if (decoder == nullptr) {
+    if (decoder == 0) {
         return std::nullopt;
     }
-    const auto xdecoder = static_cast<Json::Decoder *>(decoder);
+    const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
     return xdecoder->readString(node);
 }
 
 std::optional<double> dynxxJsonDecoderReadNumber(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
-    if (decoder == nullptr) {
+    if (decoder == 0) {
         return std::nullopt;
     }
-    const auto xdecoder = static_cast<Json::Decoder *>(decoder);
+    const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
     return xdecoder->readNumber(node);
 }
 
 DynXXJsonNodeHandle dynxxJsonDecoderReadChild(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
-    if (decoder == nullptr) {
-        return nullptr;
+    if (decoder == 0) {
+        return 0;
     }
-    const auto xdecoder = static_cast<Json::Decoder *>(decoder);
+    const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
     return xdecoder->readChild(node);
 }
 
 size_t dynxxJsonDecoderReadChildrenCount(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
-    if (decoder == nullptr) {
+    if (decoder == 0) {
         return 0;
     }
-    const auto xdecoder = static_cast<Json::Decoder *>(decoder);
+    const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
     return xdecoder->readChildrenCount(node);
 }
 
 void dynxxJsonDecoderReadChildren(const DynXXJsonDecoderHandle decoder, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback,
                                    const DynXXJsonNodeHandle node) {
-    if (decoder == nullptr) {
+    if (decoder == 0) {
         return;
     }
-    const auto xdecoder = static_cast<Json::Decoder *>(decoder);
+    const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
     xdecoder->readChildren(node, std::move(callback));
 }
 
 DynXXJsonNodeHandle dynxxJsonDecoderReadNext(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
-    if (decoder == nullptr) {
-        return nullptr;
+    if (decoder == 0) {
+        return 0;
     }
-    const auto xdecoder = static_cast<Json::Decoder *>(decoder);
+    const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
     return xdecoder->readNext(node);
 }
 
 void dynxxJsonDecoderRelease(const DynXXJsonDecoderHandle decoder) {
-    if (decoder == nullptr) {
+    if (decoder == 0) {
         return;
     }
-    const auto xdecoder = static_cast<Json::Decoder *>(decoder);
+    const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
     delete xdecoder;
 }
 
 // Zip
 
 DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize, const DynXXZFormatX format) {
-    DynXXZipHandle zip = nullptr;
+    RawPtr zip = nullptr;
     try {
         zip = new Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
     } catch (const std::invalid_argument &e) {
@@ -813,43 +813,43 @@ DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize
     } catch (const Z::ZException &e) {
         dynxxLogPrintF(Error, "dynxxZZipInit failed, ret:{} msg:{}", e.ret, e.what());
     }
-    return zip;
+    return ptr2addr(zip);
 }
 
 size_t dynxxZZipInput(const DynXXZipHandle zip, const Bytes &inBytes, bool inFinish) {
-    if (zip == nullptr) {
+    if (zip == 0) {
         return 0;
     }
-    const auto xzip = static_cast<Z::Zip *>(zip);
+    const auto xzip = addr2ptr<Z::Zip>(zip);
     return xzip->input(inBytes, inFinish);
 }
 
 Bytes dynxxZZipProcessDo(const DynXXZipHandle zip) {
-    if (zip == nullptr) {
+    if (zip == 0) {
         return {};
     }
-    const auto xzip = static_cast<Z::Zip *>(zip);
+    const auto xzip = addr2ptr<Z::Zip>(zip);
     return xzip->processDo();
 }
 
 bool dynxxZZipProcessFinished(const DynXXZipHandle zip) {
-    if (zip == nullptr) {
+    if (zip == 0) {
         return false;
     }
-    const auto xzip = static_cast<Z::Zip *>(zip);
+    const auto xzip = addr2ptr<Z::Zip>(zip);
     return xzip->processFinished();
 }
 
 void dynxxZZipRelease(const DynXXZipHandle zip) {
-    if (zip == nullptr) {
+    if (zip == 0) {
         return;
     }
-    const auto xzip = static_cast<Z::Zip *>(zip);
+    const auto xzip = addr2ptr<Z::Zip>(zip);
     delete xzip;
 }
 
 DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) {
-    DynXXUnZipHandle unzip = nullptr;
+    RawPtr unzip = nullptr;
     try {
         unzip = new Z::UnZip(bufferSize, static_cast<int>(format));
     } catch (const std::invalid_argument &e) {
@@ -857,38 +857,38 @@ DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) 
     } catch (const Z::ZException &e) {
         dynxxLogPrintF(Error, "dynxxZUnzipInit failed, ret:{} msg:{}", e.ret, e.what());
     }
-    return unzip;
+    return ptr2addr(unzip);
 }
 
 size_t dynxxZUnzipInput(const DynXXUnZipHandle unzip, const Bytes &inBytes, bool inFinish) {
-    if (unzip == nullptr) {
+    if (unzip == 0) {
         return 0;
     }
-    const auto xunzip = static_cast<Z::UnZip *>(unzip);
+    const auto xunzip = addr2ptr<Z::UnZip>(unzip);
     return xunzip->input(inBytes, inFinish);
 }
 
 Bytes dynxxZUnzipProcessDo(const DynXXUnZipHandle unzip) {
-    if (unzip == nullptr) {
+    if (unzip == 0) {
         return {};
     }
-    const auto xunzip = static_cast<Z::UnZip *>(unzip);
+    const auto xunzip = addr2ptr<Z::UnZip>(unzip);
     return xunzip->processDo();
 }
 
 bool dynxxZUnzipProcessFinished(const DynXXUnZipHandle unzip) {
-    if (unzip == nullptr) {
+    if (unzip == 0) {
         return false;
     }
-    const auto xunzip = static_cast<Z::UnZip *>(unzip);
+    const auto xunzip = addr2ptr<Z::UnZip>(unzip);
     return xunzip->processFinished();
 }
 
 void dynxxZUnzipRelease(const DynXXUnZipHandle unzip) {
-    if (unzip == nullptr) {
+    if (unzip == 0) {
         return;
     }
-    const auto xunzip = static_cast<Z::UnZip *>(unzip);
+    const auto xunzip = addr2ptr<Z::UnZip>(unzip);
     delete xunzip;
 }
 

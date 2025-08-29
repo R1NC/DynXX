@@ -299,14 +299,14 @@ namespace {
         auto cId = env->GetStringUTFChars(id, nullptr);
         const auto res = dynxx_sqlite_open(cId);
         env->ReleaseStringUTFChars(id, cId);
-        return ptr2addr(res);
+        return res;
     }
 
     jboolean sqliteExecute(JNIEnv *env, jobject thiz,
                                 jlong conn,
                                 jstring sql) {
         auto cSql = env->GetStringUTFChars(sql, nullptr);
-        auto res = dynxx_sqlite_execute(addr2ptr(conn), cSql);
+        auto res = dynxx_sqlite_execute(conn, cSql);
         env->ReleaseStringUTFChars(sql, cSql);
         return res;
     }
@@ -315,21 +315,21 @@ namespace {
                              jlong conn,
                              jstring sql) {
         auto cSql = env->GetStringUTFChars(sql, nullptr);
-        const auto res = dynxx_sqlite_query_do(addr2ptr(conn), cSql);
+        const auto res = dynxx_sqlite_query_do(conn, cSql);
         env->ReleaseStringUTFChars(sql, cSql);
-        return ptr2addr(res);
+        return res;
     }
 
     jboolean sqliteQueryReadRow(JNIEnv *env, jobject thiz,
                                      jlong query_result) {
-        return dynxx_sqlite_query_read_row(addr2ptr(query_result));
+        return dynxx_sqlite_query_read_row(query_result);
     }
 
     jstring sqliteQueryReadColumnText(JNIEnv *env, jobject thiz,
                                            jlong query_result,
                                            jstring column) {
         auto cColumn = env->GetStringUTFChars(column, nullptr);
-        auto cRes = dynxx_sqlite_query_read_column_text(addr2ptr(query_result), cColumn);
+        auto cRes = dynxx_sqlite_query_read_column_text(query_result, cColumn);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
         env->ReleaseStringUTFChars(column, cColumn);
@@ -340,7 +340,7 @@ namespace {
                                             jlong query_result,
                                             jstring column) {
         auto cColumn = env->GetStringUTFChars(column, nullptr);
-        auto res = dynxx_sqlite_query_read_column_integer(addr2ptr(query_result), cColumn);
+        auto res = dynxx_sqlite_query_read_column_integer(query_result, cColumn);
         env->ReleaseStringUTFChars(column, cColumn);
         return res;
     }
@@ -349,19 +349,19 @@ namespace {
                                             jlong query_result,
                                             jstring column) {
         auto cColumn = env->GetStringUTFChars(column, nullptr);
-        auto res = dynxx_sqlite_query_read_column_float(addr2ptr(query_result), cColumn);
+        auto res = dynxx_sqlite_query_read_column_float(query_result, cColumn);
         env->ReleaseStringUTFChars(column, cColumn);
         return res;
     }
 
     void sqliteQueryDrop(JNIEnv *env, jobject thiz,
                               jlong query_result) {
-        dynxx_sqlite_query_drop(addr2ptr(query_result));
+        dynxx_sqlite_query_drop(query_result);
     }
 
     void sqliteClose(JNIEnv *env, jobject thiz,
                           jlong conn) {
-        dynxx_sqlite_close(addr2ptr(conn));
+        dynxx_sqlite_close(conn);
     }
 
 // Srore.KV
@@ -371,14 +371,14 @@ namespace {
         auto cId = env->GetStringUTFChars(id, nullptr);
         const auto res = dynxx_kv_open(cId);
         env->ReleaseStringUTFChars(id, cId);
-        return ptr2addr(res);
+        return res;
     }
 
     jstring kvReadString(JNIEnv *env, jobject thiz,
                               jlong conn,
                               jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto cRes = dynxx_kv_read_string(addr2ptr(conn), cK);
+        auto cRes = dynxx_kv_read_string(conn, cK);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
         env->ReleaseStringUTFChars(k, cK);
@@ -390,7 +390,7 @@ namespace {
                                 jstring k, jstring v) {
         auto cK = env->GetStringUTFChars(k, nullptr);
         auto cV = env->GetStringUTFChars(v, nullptr);
-        auto res = dynxx_kv_write_string(addr2ptr(conn), cK, cV);
+        auto res = dynxx_kv_write_string(conn, cK, cV);
         env->ReleaseStringUTFChars(v, cV);
         env->ReleaseStringUTFChars(k, cK);
         return res;
@@ -400,7 +400,7 @@ namespace {
                              jlong conn,
                              jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_kv_read_integer(addr2ptr(conn), cK);
+        auto res = dynxx_kv_read_integer(conn, cK);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
@@ -409,7 +409,7 @@ namespace {
                                  jlong conn,
                                  jstring k, jlong v) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_kv_write_integer(addr2ptr(conn), cK, v);
+        auto res = dynxx_kv_write_integer(conn, cK, v);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
@@ -418,7 +418,7 @@ namespace {
                              jlong conn,
                              jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_kv_read_float(addr2ptr(conn), cK);
+        auto res = dynxx_kv_read_float(conn, cK);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
@@ -427,7 +427,7 @@ namespace {
                                jlong conn,
                                jstring k, jdouble v) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_kv_write_float(addr2ptr(conn), cK, v);
+        auto res = dynxx_kv_write_float(conn, cK, v);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
@@ -436,7 +436,7 @@ namespace {
                              jlong conn,
                              jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_kv_contains(addr2ptr(conn), cK);
+        auto res = dynxx_kv_contains(conn, cK);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
@@ -445,19 +445,19 @@ namespace {
                            jlong conn,
                            jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        auto res = dynxx_kv_remove(addr2ptr(conn), cK);
+        auto res = dynxx_kv_remove(conn, cK);
         env->ReleaseStringUTFChars(k, cK);
         return res;
     }
 
     void kvClear(JNIEnv *env, jobject thiz,
                       jlong conn) {
-        dynxx_kv_clear(addr2ptr(conn));
+        dynxx_kv_clear(conn);
     }
 
     void kvClose(JNIEnv *env, jobject thiz,
                       jlong conn) {
-        dynxx_kv_close(addr2ptr(conn));
+        dynxx_kv_close(conn);
     }
 
 // Device
@@ -709,7 +709,7 @@ namespace {
 
     jint jsonReadType(JNIEnv *env, jobject thiz,
                       jlong node) {
-        return dynxx_json_node_read_type(addr2ptr(node));
+        return dynxx_json_node_read_type(node);
     }
 
     jlong jsonDecoderInit(JNIEnv *env, jobject thiz,
@@ -717,7 +717,7 @@ namespace {
         auto cJson = env->GetStringUTFChars(json, nullptr);
         const auto res = dynxx_json_decoder_init(cJson);
         env->ReleaseStringUTFChars(json, cJson);
-        return ptr2addr(res);
+        return res;
     }
 
     jlong jsonDecoderReadNode(JNIEnv *env, jobject thiz,
@@ -725,15 +725,15 @@ namespace {
                               jlong node,
                               jstring k) {
         auto cK = env->GetStringUTFChars(k, nullptr);
-        const auto res = dynxx_json_decoder_read_node(addr2ptr(decoder), addr2ptr(node), cK);
+        const auto res = dynxx_json_decoder_read_node(decoder, node, cK);
         env->ReleaseStringUTFChars(k, cK);
-        return ptr2addr(res);
+        return res;
     }
 
     jstring jsonDecoderReadString(JNIEnv *env, jobject thiz,
                                   jlong decoder,
                                   jlong node) {
-        auto cRes = dynxx_json_decoder_read_string(addr2ptr(decoder), addr2ptr(node));
+        auto cRes = dynxx_json_decoder_read_string(decoder, node);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
         return jStr;
@@ -742,31 +742,31 @@ namespace {
     jdouble jsonDecoderReadNumber(JNIEnv *env, jobject thiz,
                                   jlong decoder,
                                   jlong node) {
-        return dynxx_json_decoder_read_number(addr2ptr(decoder), addr2ptr(node));
+        return dynxx_json_decoder_read_number(decoder, node);
     }
 
     jlong jsonDecoderReadChild(JNIEnv *env, jobject thiz,
                                jlong decoder,
                                jlong node) {
-        return ptr2addr(dynxx_json_decoder_read_child(addr2ptr(decoder), addr2ptr(node)));
+        return dynxx_json_decoder_read_child(decoder, node);
     }
 
     jlong jsonDecoderReadNext(JNIEnv *env, jobject thiz,
                               jlong decoder,
                               jlong node) {
-        return ptr2addr(dynxx_json_decoder_read_next(addr2ptr(decoder), addr2ptr(node)));
+        return dynxx_json_decoder_read_next(decoder, node);
     }
 
     void jsonDecoderRelease(JNIEnv *env, jobject thiz,
                             jlong decoder) {
-        dynxx_json_decoder_release(addr2ptr(decoder));
+        dynxx_json_decoder_release(decoder);
     }
 
 // Zip
 
     jlong zZipInit(JNIEnv *env, jobject thiz,
                    jint mode, jlong bufferSize, jint format) {
-        return ptr2addr(dynxx_z_zip_init(mode, bufferSize, format));
+        return dynxx_z_zip_init(mode, bufferSize, format);
     }
 
     jlong zZipInput(JNIEnv *env, jobject thiz,
@@ -775,7 +775,7 @@ namespace {
         auto cIn = env->GetByteArrayElements(inBytes, nullptr);
         // auto inLen = env->GetArrayLength(input);
 
-        auto ret = dynxx_z_zip_input(addr2ptr(zip), reinterpret_cast<const byte *>(cIn), inLen,
+        auto ret = dynxx_z_zip_input(zip, reinterpret_cast<const byte *>(cIn), inLen,
                                       inFinish);
 
         env->ReleaseByteArrayElements(inBytes, cIn, JNI_ABORT);
@@ -785,7 +785,7 @@ namespace {
 
     jbyteArray zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip) {
         size_t outLen = 0;
-        const auto cRes = dynxx_z_zip_process_do(addr2ptr(zip), &outLen);
+        const auto cRes = dynxx_z_zip_process_do(zip, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
         return jba;
@@ -793,17 +793,17 @@ namespace {
 
     jboolean zZipProcessFinished(JNIEnv *env, jobject thiz,
                                  jlong zip) {
-        return dynxx_z_zip_process_finished(addr2ptr(zip));
+        return dynxx_z_zip_process_finished(zip);
     }
 
     void zZipRelease(JNIEnv *env, jobject thiz,
                      jlong zip) {
-        dynxx_z_zip_release(addr2ptr(zip));
+        dynxx_z_zip_release(zip);
     }
 
     jlong zUnZipInit(JNIEnv *env, jobject thiz,
                      jlong bufferSize, jint format) {
-        return ptr2addr(dynxx_z_unzip_init(bufferSize, format));
+        return dynxx_z_unzip_init(bufferSize, format);
     }
 
     jlong zUnZipInput(JNIEnv *env, jobject thiz,
@@ -812,7 +812,7 @@ namespace {
         auto cIn = env->GetByteArrayElements(inBytes, nullptr);
         // auto inLen = env->GetArrayLength(input);
 
-        auto ret = dynxx_z_unzip_input(addr2ptr(unzip), reinterpret_cast<const byte *>(cIn), inLen,
+        auto ret = dynxx_z_unzip_input(unzip, reinterpret_cast<const byte *>(cIn), inLen,
                                         inFinish);
 
         env->ReleaseByteArrayElements(inBytes, cIn, JNI_ABORT);
@@ -822,7 +822,7 @@ namespace {
 
     jbyteArray zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip) {
         size_t outLen = 0;
-        const auto cRes = dynxx_z_unzip_process_do(addr2ptr(unzip), &outLen);
+        const auto cRes = dynxx_z_unzip_process_do(unzip, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
         return jba;
@@ -830,12 +830,12 @@ namespace {
 
     jboolean zUnZipProcessFinished(JNIEnv *env, jobject thiz,
                                    jlong unzip) {
-        return dynxx_z_unzip_process_finished(addr2ptr(unzip));
+        return dynxx_z_unzip_process_finished(unzip);
     }
 
     void zUnZipRelease(JNIEnv *env, jobject thiz,
                        jlong unzip) {
-        dynxx_z_unzip_release(addr2ptr(unzip));
+        dynxx_z_unzip_release(unzip);
     }
 
     jbyteArray zZipBytes(JNIEnv *env, jobject thiz,

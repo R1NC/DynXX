@@ -18,7 +18,7 @@
 
 namespace 
 {
-    bool checkIfaName(const ifaddrs *ifa, const std::string_view name)
+    bool checkIfaName(const ifaddrs *ifa, std::string_view name)
     {
         if (!ifa || !ifa->ifa_name) [[unlikely]]
         {

@@ -1,6 +1,6 @@
 #import "DynXXApple.h"
 
-#import <DynXX/C/DynXX.h>
+#import <DynXX/CXX/DynXX.hxx>
 #include <fstream>
 
 #define NSString2CharP(nsstr) [nsstr cStringUsingEncoding:NSUTF8StringEncoding]
@@ -10,8 +10,8 @@
 static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"timeout\":66666}";
 
 @interface DynXXApple () {
-    void *_db_conn;
-    void *_kv_conn;
+    DynXXSQLiteConnHandle _db_conn;
+    DynXXKVConnHandle _kv_conn;
 }
 @end
 
@@ -185,16 +185,18 @@ static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=
 
 - (void)testZip {
     static const size_t kZBufferSize = 1024;
+    static const auto format = DynXXZFormatX::GZip;
+    static const auto mode = DynXXZipCompressModeX::Default;
     NSString *sqlPath = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"prepare_data.sql"];
     std::ifstream zipIS(NSString2CharP(sqlPath), std::ios::in);
     NSString *zipPath = [self.root stringByAppendingPathComponent:@"xxx.zip"];
     std::ofstream zipOS(NSString2CharP(zipPath), std::ios::out);
-    auto zipRes = dynxx_z_cxxstream_zip(DynXXZipCompressModeDefault, kZBufferSize, DynXXZFormatGZip, static_cast<void *>(&zipIS), static_cast<void *>(&zipOS));
+    auto zipRes = dynxxZCxxStreamZip(mode, kZBufferSize, format, &zipIS, &zipOS);
     if (zipRes) {
         NSString *txtPath = [self.root stringByAppendingPathComponent:@"xxx.txt"];
         std::ifstream unzipIS(NSString2CharP(zipPath), std::ios::in);
         std::ofstream unzipOS(NSString2CharP(txtPath), std::ios::out);
-        auto unzipRes = dynxx_z_cxxstream_unzip(kZBufferSize, DynXXZFormatGZip, static_cast<void *>(&unzipIS), static_cast<void *>(&unzipOS));
+        auto unzipRes = dynxxZCxxStreamUnzip(kZBufferSize, format, &unzipIS, &unzipOS);
         if (unzipRes);
     }
 }

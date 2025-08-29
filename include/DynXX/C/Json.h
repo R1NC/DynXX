@@ -17,8 +17,8 @@ enum DynXXJsonNodeType {
     DynXXJsonNodeTypeNull
 };
 
-typedef void* DynXXJsonNodeHandle;
-typedef void* DynXXJsonDecoderHandle;
+typedef address DynXXJsonNodeHandle;
+typedef address DynXXJsonDecoderHandle;
 
 /**
  * @brief Read json node type

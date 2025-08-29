@@ -147,7 +147,7 @@ namespace
         
         static constexpr std::array<bool, 256> createValidTable() noexcept {
             std::array<bool, 256> table{};
-            constexpr const std::string_view validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+            constexpr std::string_view validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
             for (const auto c : validChars) {
                 table[charIdx(c)] = true;
             }

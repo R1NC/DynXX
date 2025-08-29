@@ -25,7 +25,7 @@ using DynXXHttpResponse = DynXXHttpResponse;
 DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         DynXXHttpMethodX method,
                                         std::string_view params,
-                                        const BytesView rawBody = {},
+                                        BytesView rawBody = {},
                                         const std::vector<std::string> &headerV = {},
                                         const std::vector<std::string> &formFieldNameV = {},
                                         const std::vector<std::string> &formFieldMimeV = {},
@@ -36,7 +36,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
 DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         DynXXHttpMethodX method,
                                         const DictAny &params,
-                                        const BytesView rawBody = {},
+                                        BytesView rawBody = {},
                                         const Dict &headers = {},
                                         const std::vector<std::string> &formFieldNameV = {},
                                         const std::vector<std::string> &formFieldMimeV = {},
@@ -44,7 +44,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         std::FILE *cFILE = nullptr, size_t fileSize = 0,
                                         size_t timeout = DynXXHttpDefaultTimeout);
 
-bool dynxxNetHttpDownload(std::string_view url, const std::string_view filePath,
+bool dynxxNetHttpDownload(std::string_view url, std::string_view filePath,
                            size_t timeout = DynXXHttpDefaultTimeout);
 
 #endif // DYNXX_INCLUDE_NET_HXX_

@@ -17,7 +17,7 @@ namespace DynXX::Core::Util::Type {
         return sArr;
     }
 
-    inline byte *copyBytes(const BytesView t) {
+    inline byte *copyBytes(BytesView t) {
         const auto cs = t.data();
         const auto len = t.size();
         if (cs == nullptr || len == 0) [[unlikely]] {

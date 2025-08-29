@@ -7,7 +7,7 @@ EXTERN_C_BEGIN
 
 static const size_t DYNXX_STORE_KV_KEY_MAX_LENGTH = 256; /**< Max length of the KV Key */
 
-typedef void* DynXXKVConnHandle;
+typedef address DynXXKVConnHandle;
 
 /**
  * @brief open KV Store, support to access from multiple processes

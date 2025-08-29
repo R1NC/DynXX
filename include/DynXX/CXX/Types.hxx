@@ -142,11 +142,17 @@ double str2float64(const std::string &str, const double defaultF = MinFloat64);
 
 template<typename T = void>
 T *addr2ptr(const address addr) {
+    if (addr == 0) [[unlikely]] {
+        return nullptr;
+    }
     return reinterpret_cast<T *>(addr);
 }
 
 template<typename T = void>
 address ptr2addr(const T *ptr) {
+    if (ptr == nullptr) [[unlikely]] {
+        return 0;
+    }
     return reinterpret_cast<address>(ptr);
 }
 
@@ -285,7 +291,7 @@ inline const char *dupCStr(const char *cstr, [[maybe_unused]] size_t len) {
 #endif
 }
 
-inline const char *dupStr(const std::string_view sv) {
+inline const char *dupStr(std::string_view sv) {
     if (sv.empty()) [[unlikely]] {
         return nullptr;
     }
@@ -337,7 +343,7 @@ void freeX(T * &ptr) {
     if (!ptr) [[unlikely]] {
         return;
     }
-    std::free(static_cast<void *>(ptr));
+    std::free(static_cast<RawPtr>(ptr));
     ptr = nullptr;
 }
 

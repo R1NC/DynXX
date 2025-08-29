@@ -162,11 +162,11 @@ std::string DynXX::Core::Coding::strTrim(std::string_view str)
 #endif
 }
 
-std::string DynXX::Core::Coding::strEscapeQuotes(const std::string_view& str) 
+std::string DynXX::Core::Coding::strEscapeQuotes(std::string_view str) 
 {
     std::string result;
     result.reserve(str.size() * 2);
-    static const std::string_view escapeChars = R"("\\")";
+    static std::string_view escapeChars = R"("\\")";
     
 #if defined(__cpp_lib_ranges)
     std::ranges::for_each(str, [&result](char c) 

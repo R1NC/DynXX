@@ -7,8 +7,8 @@
 
 EXTERN_C_BEGIN
 
-typedef void* DynXXZipHandle;
-typedef void* DynXXUnZipHandle;
+typedef address DynXXZipHandle;
+typedef address DynXXUnZipHandle;
 
 /**
  * ZIP compress mode

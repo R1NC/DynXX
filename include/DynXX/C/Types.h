@@ -10,6 +10,7 @@
 EXTERN_C_BEGIN
 typedef unsigned char byte;
 typedef intptr_t address;
+typedef void* RawPtr;
 
 EXTERN_C_END
 

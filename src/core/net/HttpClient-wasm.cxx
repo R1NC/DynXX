@@ -15,7 +15,7 @@ namespace {
 
     using enum DynXXLogLevelX;
 
-    std::string buildUrl(const std::string_view baseUrl, const std::string_view params) {
+    std::string buildUrl(std::string_view baseUrl, std::string_view params) {
         if (params.empty()) [[unlikely]] {
             return std::string(baseUrl);
         }
@@ -102,11 +102,11 @@ namespace {
     }
 }
 
-DynXXHttpResponse DynXX::Core::Net::WasmHttpClient::request(const std::string_view url, 
+DynXXHttpResponse DynXX::Core::Net::WasmHttpClient::request(std::string_view url, 
                                                  const int method,
                                                  const std::vector<std::string> &headers,
-                                                 const std::string_view params,
-                                                 const BytesView rawBody,
+                                                 std::string_view params,
+                                                 BytesView rawBody,
                                                  const size_t timeout) {
     DynXXHttpResponse response;
 

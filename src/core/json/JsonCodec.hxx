@@ -25,7 +25,7 @@ namespace DynXX::Core::Json {
     public:
         Decoder() = delete;
 
-        explicit Decoder(const std::string_view json);
+        explicit Decoder(std::string_view json);
 
         Decoder(const Decoder &) = delete;
 

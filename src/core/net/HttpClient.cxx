@@ -17,7 +17,7 @@ namespace
 {
     using enum DynXXLogLevelX;
 
-    size_t on_post_read(char *buffer, const size_t size, size_t nmemb, void *userdata)
+    size_t on_post_read(char *buffer, const size_t size, size_t nmemb, RawPtr userdata)
     {
         const auto pBytes = static_cast<Bytes *>(userdata);
         const auto len = static_cast<long>(std::min<size_t>(size * nmemb, pBytes->size()));
@@ -29,14 +29,14 @@ namespace
         return len;
     }
 
-    size_t on_upload_read(char *ptr, const size_t size, size_t nmemb, void *stream)
+    size_t on_upload_read(char *ptr, const size_t size, size_t nmemb, RawPtr stream)
     {
         const auto ret = std::fread(ptr, size, nmemb, static_cast<std::FILE *>(stream));
         dynxxLogPrintF(Debug, "HttpClient read {} bytes from file", ret);
         return ret;
     }
 
-    size_t on_download_write(const char *contents, const size_t size, const size_t nmemb, void *userp) {
+    size_t on_download_write(const char *contents, const size_t size, const size_t nmemb, RawPtr userp) {
         auto& file = *static_cast<std::ofstream*>(userp);
         file.write(contents, size * nmemb);
         const auto ret = file.good() ? size * nmemb : 0;
@@ -44,14 +44,14 @@ namespace
         return ret;
     }
 
-    size_t on_write(const char *contents, const size_t size, size_t nmemb, void *userp)
+    size_t on_write(const char *contents, const size_t size, size_t nmemb, RawPtr userp)
     {
         const auto pS = static_cast<std::string *>(userp);
         pS->append(contents, size * nmemb);
         return size * nmemb;
     }
 
-    size_t on_handle_rsp_headers(const char *buffer, const size_t size, size_t nitems, void *userdata)
+    size_t on_handle_rsp_headers(const char *buffer, const size_t size, size_t nitems, RawPtr userdata)
     {
         const auto pHeaders = static_cast<Dict *>(userdata);
         std::string header(buffer, size * nitems);
@@ -205,7 +205,7 @@ DynXX::Core::Net::HttpClient::~HttpClient()
 DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, int method,
                                                                  const std::vector<std::string> &headers,
                                                                 std::string_view params,
-                                                                 const BytesView rawBody,
+                                                                 BytesView rawBody,
                                                                  const std::vector<HttpFormField> &formFields,
                                                                 std::FILE *cFILE, size_t fileSize,
                                                                  size_t timeout) const {
@@ -267,7 +267,7 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
     return rsp;
 }
 
-bool DynXX::Core::Net::HttpClient::download(std::string_view url, const std::string_view filePath, size_t timeout) const {
+bool DynXX::Core::Net::HttpClient::download(std::string_view url, std::string_view filePath, size_t timeout) const {
     auto curl = createReq(url, {}, {}, DynXXNetHttpMethodGet, timeout);
     if (!curl) [[unlikely]]
     {

@@ -8,7 +8,7 @@
 namespace {
     using namespace DynXX::Core::Util::Type;
 
-    byte *handleBytes(const BytesView bytes, size_t *outLen = nullptr) {
+    byte *handleBytes(BytesView bytes, size_t *outLen = nullptr) {
         if (outLen) [[likely]] {
             *outLen = bytes.size();
         }
@@ -325,7 +325,7 @@ DynXXSQLiteConnHandle dynxx_sqlite_open(const char *_id) {
 
 EXPORT_AUTO
 bool dynxx_sqlite_execute(const DynXXSQLiteConnHandle conn, const char *sql) {
-    if (conn == nullptr || sql == nullptr) {
+    if (conn == 0 || sql == nullptr) {
         return false;
     }
     return dynxxSQLiteExecute(conn, sql);
@@ -333,8 +333,8 @@ bool dynxx_sqlite_execute(const DynXXSQLiteConnHandle conn, const char *sql) {
 
 EXPORT_AUTO
 DynXXSQLiteQueryResultHandle dynxx_sqlite_query_do(const DynXXSQLiteConnHandle conn, const char *sql) {
-    if (conn == nullptr || sql == nullptr) {
-        return nullptr;
+    if (conn == 0 || sql == nullptr) {
+        return 0;
     }
     return dynxxSQLiteQueryDo(conn, sql);
 }
@@ -346,7 +346,7 @@ bool dynxx_sqlite_query_read_row(const DynXXSQLiteQueryResultHandle query_result
 
 EXPORT_AUTO
 const char *dynxx_sqlite_query_read_column_text(const DynXXSQLiteQueryResultHandle query_result, const char *column) {
-    if (query_result == nullptr || column == nullptr) {
+    if (query_result == 0 || column == nullptr) {
         return "";
     }
     const auto s = dynxxSQLiteQueryReadColumnText(query_result, column);
@@ -355,7 +355,7 @@ const char *dynxx_sqlite_query_read_column_text(const DynXXSQLiteQueryResultHand
 
 EXPORT_AUTO
 int64_t dynxx_sqlite_query_read_column_integer(const DynXXSQLiteQueryResultHandle query_result, const char *column) {
-    if (query_result == nullptr || column == nullptr) {
+    if (query_result == 0 || column == nullptr) {
         return 0;
     }
     const auto i = dynxxSQLiteQueryReadColumnInteger(query_result, column);
@@ -364,7 +364,7 @@ int64_t dynxx_sqlite_query_read_column_integer(const DynXXSQLiteQueryResultHandl
 
 EXPORT_AUTO
 double dynxx_sqlite_query_read_column_float(const DynXXSQLiteQueryResultHandle query_result, const char *column) {
-    if (query_result == nullptr || column == nullptr) {
+    if (query_result == 0 || column == nullptr) {
         return 0.0;
     }
     const auto f = dynxxSQLiteQueryReadColumnFloat(query_result, column);
@@ -394,7 +394,7 @@ DynXXKVConnHandle dynxx_kv_open(const char *_id) {
 
 EXPORT_AUTO
 const char *dynxx_kv_read_string(const DynXXKVConnHandle conn, const char *k) {
-    if (conn == nullptr || k == nullptr) {
+    if (conn == 0 || k == nullptr) {
         return nullptr;
     }
     const auto s = dynxxKVReadString(conn, k);
@@ -403,7 +403,7 @@ const char *dynxx_kv_read_string(const DynXXKVConnHandle conn, const char *k) {
 
 EXPORT_AUTO
 bool dynxx_kv_write_string(const DynXXKVConnHandle conn, const char *k, const char *v) {
-    if (conn == nullptr || k == nullptr) {
+    if (conn == 0 || k == nullptr) {
         return false;
     }
     return dynxxKVWriteString(conn, k, v == nullptr ? "" : v);
@@ -411,7 +411,7 @@ bool dynxx_kv_write_string(const DynXXKVConnHandle conn, const char *k, const ch
 
 EXPORT_AUTO
 int64_t dynxx_kv_read_integer(const DynXXKVConnHandle conn, const char *k) {
-    if (conn == nullptr || k == nullptr) {
+    if (conn == 0 || k == nullptr) {
         return 0;
     }
     const auto i = dynxxKVReadInteger(conn, k);
@@ -420,7 +420,7 @@ int64_t dynxx_kv_read_integer(const DynXXKVConnHandle conn, const char *k) {
 
 EXPORT_AUTO
 bool dynxx_kv_write_integer(const DynXXKVConnHandle conn, const char *k, int64_t v) {
-    if (conn == nullptr || k == nullptr) {
+    if (conn == 0 || k == nullptr) {
         return false;
     }
     return dynxxKVWriteInteger(conn, k, v);
@@ -428,7 +428,7 @@ bool dynxx_kv_write_integer(const DynXXKVConnHandle conn, const char *k, int64_t
 
 EXPORT_AUTO
 double dynxx_kv_read_float(const DynXXKVConnHandle conn, const char *k) {
-    if (conn == nullptr || k == nullptr) {
+    if (conn == 0 || k == nullptr) {
         return 0.0;
     }
     const auto f = dynxxKVReadFloat(conn, k);
@@ -437,7 +437,7 @@ double dynxx_kv_read_float(const DynXXKVConnHandle conn, const char *k) {
 
 EXPORT_AUTO
 bool dynxx_kv_write_float(const DynXXKVConnHandle conn, const char *k, double v) {
-    if (conn == nullptr || k == nullptr) {
+    if (conn == 0 || k == nullptr) {
         return false;
     }
     return dynxxKVWriteFloat(conn, k, v);
@@ -454,7 +454,7 @@ char *const *dynxx_kv_all_keys(const DynXXKVConnHandle conn, size_t *len) {
 
 EXPORT_AUTO
 bool dynxx_kv_contains(const DynXXKVConnHandle conn, const char *k) {
-    if (conn == nullptr || k == nullptr) {
+    if (conn == 0 || k == nullptr) {
         return false;
     }
     return dynxxKVContains(conn, k);
@@ -462,7 +462,7 @@ bool dynxx_kv_contains(const DynXXKVConnHandle conn, const char *k) {
 
 EXPORT_AUTO
 bool dynxx_kv_remove(const DynXXKVConnHandle conn, const char *k) {
-    if (conn == nullptr || k == nullptr) {
+    if (conn == 0 || k == nullptr) {
         return false;
     }
     return dynxxKVRemove(conn, k);
@@ -506,8 +506,8 @@ DynXXJsonDecoderHandle dynxx_json_decoder_init(const char *json) {
 
 EXPORT_AUTO
 DynXXJsonNodeHandle dynxx_json_decoder_read_node(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node, const char *k) {
-    if (decoder == nullptr || k == nullptr) {
-        return nullptr;
+    if (decoder == 0 || k == nullptr) {
+        return 0;
     }
     return dynxxJsonDecoderReadNode(decoder, k, node);
 }

@@ -5,8 +5,8 @@
 
 EXTERN_C_BEGIN
 
-typedef void* DynXXSQLiteConnHandle;
-typedef void* DynXXSQLiteQueryResultHandle;
+typedef address DynXXSQLiteConnHandle;
+typedef address DynXXSQLiteQueryResultHandle;
 
 /**
  * @brief Open DB
