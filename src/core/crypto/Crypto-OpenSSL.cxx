@@ -23,6 +23,7 @@ namespace
 {
     constexpr auto OK = 1;
     constexpr auto AES_Key_BITS = 128;
+    constexpr auto MaxErrMsgLen = 256;
 
     using enum DynXXLogLevelX;
 
@@ -34,15 +35,16 @@ namespace
             return std::nullopt;
         }
 
-        char errMsg[256];
-        ERR_error_string_n(err, errMsg, sizeof(errMsg));
-        const auto actualLen = std::strlen(errMsg);
-        if (actualLen <= 0) [[unlikely]]
+        std::string errMsg;
+        errMsg.resize(MaxErrMsgLen);
+        ERR_error_string_n(err, errMsg.data(), errMsg.size());
+        const auto actualLen = std::strlen(errMsg.data());
+        if (actualLen == 0) [[unlikely]]
         {
             return std::nullopt;
         }
-
-        return {std::string(errMsg, actualLen)};
+        errMsg.resize(actualLen);
+        return {errMsg};
     }
 
     class Evp
