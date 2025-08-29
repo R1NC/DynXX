@@ -35,6 +35,8 @@ namespace DynXX::Core::Json {
 
         Decoder &operator=(Decoder &&) noexcept;
 
+        bool valid() const;
+
         DynXXJsonNodeHandle readChild(const DynXXJsonNodeHandle node) const;
 
         DynXXJsonNodeHandle readNext(const DynXXJsonNodeHandle node) const;

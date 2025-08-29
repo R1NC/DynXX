@@ -731,8 +731,9 @@ std::optional<DictAny> dynxxJsonToDictAny(const std::string &json) {
 
 DynXXJsonDecoderHandle dynxxJsonDecoderInit(std::string_view json) {
     auto decoder = new(std::nothrow) Json::Decoder(json);
-    if (decoder == nullptr) {
+    if (decoder == nullptr || !decoder->valid()) [[unlikely]] {
         dynxxLogPrint(Error, "new JsonDecoder failed");
+        return 0;
     }
     return ptr2addr(decoder);
 }

@@ -136,35 +136,63 @@ namespace
         JsonParser() = delete;
         explicit JsonParser(std::string_view json) : decoder(json) {}
 
+        bool valid() const { 
+            return this->decoder.valid(); 
+        }
+
         std::optional<std::string> str(std::string_view k) const
         {
+            if (!this->valid()) [[unlikely]]
+            {
+                return std::nullopt;
+            }
             return parseStr(this->decoder, k);
         }
 
         template <NumberT T>
         std::optional<T> num(std::string_view k) const
         {
+            if (!this->valid()) [[unlikely]]
+            {
+                return std::nullopt;
+            }
             return parseNum<T>(this->decoder, k);
         }
 
         address addr(std::string_view k) const
         {
+            if (!this->valid()) [[unlikely]]
+            {
+                return 0;
+            }
             return this->num<address>(k).value_or(0);
         }
 
         Bytes byteArray(std::string_view k) const
         {
+            if (!this->valid()) [[unlikely]]
+            {
+                return {};
+            }
             return parseByteArray(this->decoder, k);
         }
 
         std::vector<std::string> strArray(std::string_view k) const
         {
+            if (!this->valid()) [[unlikely]]
+            {
+                return {};
+            }
             return parseStrArray(this->decoder, k);
         }
 
         template <typename T = void>
         T* ptr(std::string_view k) const
         {
+            if (!this->valid()) [[unlikely]]
+            {
+                return nullptr;
+            }
             return parsePtr<T>(this->decoder, k);
         }
 
@@ -245,11 +273,12 @@ void dynxx_log_printS(std::string_view json)
 
 std::string dynxx_net_http_requestS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
+    
     const auto [url, params] = parser.strX("url", "params");
     const auto [method, fileSize, timeout] = parser.numX<DynXXHttpMethodX, size_t, size_t>("method", "fileSize", "timeout");
 
@@ -292,11 +321,11 @@ std::string dynxx_net_http_requestS(std::string_view json)
 
 bool dynxx_net_http_downloadS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto [url, file] = parser.strX("url", "file");
     const auto timeout = parser.num<size_t>("timeout");
 
@@ -312,11 +341,11 @@ bool dynxx_net_http_downloadS(std::string_view json)
 
 std::string dynxx_sqlite_openS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto _id = parser.str("_id");
     if (_id == std::nullopt)
     {
@@ -333,11 +362,11 @@ std::string dynxx_sqlite_openS(std::string_view json)
 
 bool dynxx_sqlite_executeS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto sql = parser.str("sql");
     if (conn == 0 || sql == std::nullopt)
@@ -350,11 +379,11 @@ bool dynxx_sqlite_executeS(std::string_view json)
 
 std::string dynxx_sqlite_query_doS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto sql = parser.str("sql");
     if (conn == 0 || sql == std::nullopt)
@@ -372,11 +401,11 @@ std::string dynxx_sqlite_query_doS(std::string_view json)
 
 bool dynxx_sqlite_query_read_rowS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto query_result = parser.addr("query_result");
     if (query_result == 0)
     {
@@ -388,11 +417,11 @@ bool dynxx_sqlite_query_read_rowS(std::string_view json)
 
 std::string dynxx_sqlite_query_read_column_textS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto query_result = parser.addr("query_result");
     const auto column = parser.str("column");
     if (query_result == 0 || column == std::nullopt)
@@ -406,11 +435,11 @@ std::string dynxx_sqlite_query_read_column_textS(std::string_view json)
 
 int64_t dynxx_sqlite_query_read_column_integerS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return 0;
     }
-    const JsonParser parser(json);
     const auto query_result = parser.addr("query_result");
     const auto column = parser.str("column");
     if (query_result == 0 || column == std::nullopt)
@@ -424,11 +453,11 @@ int64_t dynxx_sqlite_query_read_column_integerS(std::string_view json)
 
 double dynxx_sqlite_query_read_column_floatS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return 0;
     }
-    const JsonParser parser(json);
     const auto query_result = parser.addr("query_result");
     const auto column = parser.str("column");
     if (query_result == 0 || column == std::nullopt)
@@ -442,11 +471,11 @@ double dynxx_sqlite_query_read_column_floatS(std::string_view json)
 
 void dynxx_sqlite_query_dropS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return;
     }
-    const JsonParser parser(json);
     const auto query_result = parser.addr("query_result");
     if (query_result == 0)
     {
@@ -458,11 +487,11 @@ void dynxx_sqlite_query_dropS(std::string_view json)
 
 void dynxx_sqlite_closeS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     if (conn == 0)
     {
@@ -476,11 +505,11 @@ void dynxx_sqlite_closeS(std::string_view json)
 
 std::string dynxx_kv_openS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto _id = parser.str("_id");
     if (_id == std::nullopt)
     {
@@ -497,11 +526,11 @@ std::string dynxx_kv_openS(std::string_view json)
 
 std::string dynxx_kv_read_stringS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto k = parser.str("k");
     if (conn == 0 || k == std::nullopt)
@@ -515,11 +544,11 @@ std::string dynxx_kv_read_stringS(std::string_view json)
 
 bool dynxx_kv_write_stringS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto [k, v] = parser.strX("k", "v");
     if (conn == 0 || k == std::nullopt)
@@ -532,11 +561,11 @@ bool dynxx_kv_write_stringS(std::string_view json)
 
 int64_t dynxx_kv_read_integerS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return 0;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto k = parser.str("k");
     if (conn == 0 || k == std::nullopt)
@@ -550,11 +579,11 @@ int64_t dynxx_kv_read_integerS(std::string_view json)
 
 bool dynxx_kv_write_integerS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto k = parser.str("k");
     const auto v = parser.num<int64_t>("v");
@@ -568,11 +597,11 @@ bool dynxx_kv_write_integerS(std::string_view json)
 
 double dynxx_kv_read_floatS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return 0;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto k = parser.str("k");
     if (conn == 0 || k == std::nullopt)
@@ -586,11 +615,11 @@ double dynxx_kv_read_floatS(std::string_view json)
 
 bool dynxx_kv_write_floatS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto k = parser.str("k");
     const auto v = parser.num<double>("v");
@@ -604,11 +633,11 @@ bool dynxx_kv_write_floatS(std::string_view json)
 
 std::string dynxx_kv_all_keysS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     if (conn == 0)
     {
@@ -621,11 +650,11 @@ std::string dynxx_kv_all_keysS(std::string_view json)
 
 bool dynxx_kv_containsS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto k = parser.str("k");
     if (conn == 0 || k == std::nullopt)
@@ -638,11 +667,11 @@ bool dynxx_kv_containsS(std::string_view json)
 
 bool dynxx_kv_removeS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     const auto k = parser.str("k");
     if (conn == 0 || k == std::nullopt)
@@ -655,11 +684,11 @@ bool dynxx_kv_removeS(std::string_view json)
 
 void dynxx_kv_clearS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     if (conn == 0)
     {
@@ -671,11 +700,11 @@ void dynxx_kv_clearS(std::string_view json)
 
 void dynxx_kv_closeS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return;
     }
-    const JsonParser parser(json);
     const auto conn = parser.addr("conn");
     if (conn == 0)
     {
@@ -689,11 +718,11 @@ void dynxx_kv_closeS(std::string_view json)
 
 std::string dynxx_coding_case_upperS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto str = parser.str("str");
     if (str == std::nullopt)
@@ -705,11 +734,11 @@ std::string dynxx_coding_case_upperS(std::string_view json)
 
 std::string dynxx_coding_case_lowerS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto str = parser.str("str");
     if (str == std::nullopt)
@@ -721,11 +750,11 @@ std::string dynxx_coding_case_lowerS(std::string_view json)
 
 std::string dynxx_coding_hex_bytes2strS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -738,11 +767,11 @@ std::string dynxx_coding_hex_bytes2strS(std::string_view json)
 
 std::string dynxx_coding_hex_str2bytesS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto str = parser.str("str");
     if (str == std::nullopt)
@@ -756,11 +785,11 @@ std::string dynxx_coding_hex_str2bytesS(std::string_view json)
 
 std::string dynxx_coding_bytes2strS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -773,11 +802,11 @@ std::string dynxx_coding_bytes2strS(std::string_view json)
 
 std::string dynxx_coding_str2bytesS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto str = parser.str("str");
     if (str == std::nullopt)
@@ -793,11 +822,11 @@ std::string dynxx_coding_str2bytesS(std::string_view json)
 
 std::string dynxx_crypto_randS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto outLen = parser.num<size_t>("len");
     if (outLen == std::nullopt)
     {
@@ -809,11 +838,11 @@ std::string dynxx_crypto_randS(std::string_view json)
 
 std::string dynxx_crypto_aes_encryptS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -833,11 +862,11 @@ std::string dynxx_crypto_aes_encryptS(std::string_view json)
 
 std::string dynxx_crypto_aes_decryptS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -857,11 +886,11 @@ std::string dynxx_crypto_aes_decryptS(std::string_view json)
 
 std::string dynxx_crypto_aes_gcm_encryptS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -891,11 +920,11 @@ std::string dynxx_crypto_aes_gcm_encryptS(std::string_view json)
 
 std::string dynxx_crypto_aes_gcm_decryptS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -925,11 +954,11 @@ std::string dynxx_crypto_aes_gcm_decryptS(std::string_view json)
 
 std::string dynxx_crypto_rsa_gen_keyS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto base64 = parser.str("base64");
     if (base64 == std::nullopt)
@@ -948,11 +977,11 @@ std::string dynxx_crypto_rsa_gen_keyS(std::string_view json)
 
 std::string dynxx_crypto_rsa_encryptS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -978,11 +1007,11 @@ std::string dynxx_crypto_rsa_encryptS(std::string_view json)
 
 std::string dynxx_crypto_rsa_decryptS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -1008,11 +1037,11 @@ std::string dynxx_crypto_rsa_decryptS(std::string_view json)
 
 std::string dynxx_crypto_hash_md5S(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -1026,11 +1055,11 @@ std::string dynxx_crypto_hash_md5S(std::string_view json)
 
 std::string dynxx_crypto_hash_sha1S(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -1044,11 +1073,11 @@ std::string dynxx_crypto_hash_sha1S(std::string_view json)
 
 std::string dynxx_crypto_hash_sha256S(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     if (in.empty())
@@ -1062,11 +1091,11 @@ std::string dynxx_crypto_hash_sha256S(std::string_view json)
 
 std::string dynxx_crypto_base64_encodeS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     const auto noNewLines = parser.num<bool>("noNewLines");
@@ -1081,11 +1110,11 @@ std::string dynxx_crypto_base64_encodeS(std::string_view json)
 
 std::string dynxx_crypto_base64_decodeS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
 
     const auto in = parser.byteArray("inBytes");
     const auto noNewLines = parser.num<bool>("noNewLines");
@@ -1102,11 +1131,11 @@ std::string dynxx_crypto_base64_decodeS(std::string_view json)
 
 std::string dynxx_z_zip_initS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto [mode, bufferSize, format] = parser.numX<DynXXZipCompressModeX, size_t, DynXXZFormatX>("mode", "bufferSize", "format");
 
     if (mode == std::nullopt || bufferSize == std::nullopt || format == std::nullopt)
@@ -1124,11 +1153,11 @@ std::string dynxx_z_zip_initS(std::string_view json)
 
 size_t dynxx_z_zip_inputS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return 0;
     }
-    const JsonParser parser(json);
     const auto zip = parser.addr("zip");
     if (zip == 0)
     {
@@ -1152,11 +1181,11 @@ size_t dynxx_z_zip_inputS(std::string_view json)
 
 std::string dynxx_z_zip_process_doS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto zip = parser.addr("zip");
     if (zip == 0)
     {
@@ -1169,11 +1198,11 @@ std::string dynxx_z_zip_process_doS(std::string_view json)
 
 bool dynxx_z_zip_process_finishedS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto zip = parser.addr("zip");
     if (zip == 0)
     {
@@ -1185,11 +1214,11 @@ bool dynxx_z_zip_process_finishedS(std::string_view json)
 
 void dynxx_z_zip_releaseS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return;
     }
-    const JsonParser parser(json);
     const auto zip = parser.addr("zip");
     if (zip == 0)
     {
@@ -1201,11 +1230,11 @@ void dynxx_z_zip_releaseS(std::string_view json)
 
 std::string dynxx_z_unzip_initS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto [bufferSize, format] = parser.numX<size_t, DynXXZFormatX>("bufferSize", "format");
     if (bufferSize == std::nullopt || format == std::nullopt)
     {
@@ -1222,11 +1251,11 @@ std::string dynxx_z_unzip_initS(std::string_view json)
 
 size_t dynxx_z_unzip_inputS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return 0;
     }
-    const JsonParser parser(json);
     const auto unzip = parser.addr("unzip");
     if (unzip == 0)
     {
@@ -1250,11 +1279,11 @@ size_t dynxx_z_unzip_inputS(std::string_view json)
 
 std::string dynxx_z_unzip_process_doS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto unzip = parser.addr("unzip");
     if (unzip == 0)
     {
@@ -1267,11 +1296,11 @@ std::string dynxx_z_unzip_process_doS(std::string_view json)
 
 bool dynxx_z_unzip_process_finishedS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return false;
     }
-    const JsonParser parser(json);
     const auto unzip = parser.addr("unzip");
     if (unzip == 0)
     {
@@ -1283,11 +1312,11 @@ bool dynxx_z_unzip_process_finishedS(std::string_view json)
 
 void dynxx_z_unzip_releaseS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return;
     }
-    const JsonParser parser(json);
     const auto unzip = parser.addr("unzip");
     if (unzip == 0)
     {
@@ -1299,11 +1328,11 @@ void dynxx_z_unzip_releaseS(std::string_view json)
 
 std::string dynxx_z_bytes_zipS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto [mode, bufferSize, format] = parser.numX<DynXXZipCompressModeX, size_t, DynXXZFormatX>("mode", "bufferSize", "format");
     const auto in = parser.byteArray("inBytes");
     if (in.empty() || mode == std::nullopt || bufferSize == std::nullopt || format == std::nullopt)
@@ -1317,11 +1346,11 @@ std::string dynxx_z_bytes_zipS(std::string_view json)
 
 std::string dynxx_z_bytes_unzipS(std::string_view json)
 {
-    if (json.empty())
+    const JsonParser parser(json);
+    if (!parser.valid())
     {
         return {};
     }
-    const JsonParser parser(json);
     const auto [bufferSize, format] = parser.numX<size_t, DynXXZFormatX>("bufferSize", "format");
     const auto in = parser.byteArray("inBytes");
     if (in.empty() || bufferSize == std::nullopt || format == std::nullopt)

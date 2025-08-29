@@ -268,9 +268,18 @@ DynXX::Core::Json::Decoder &DynXX::Core::Json::Decoder::operator=(Decoder &&othe
     return *this;
 }
 
+bool DynXX::Core::Json::Decoder::valid() const
+{
+    return this->cjson != nullptr;
+}
+
 const cJSON *DynXX::Core::Json::Decoder::reinterpretNode(const DynXXJsonNodeHandle node) const
 {
-    if (node == 0)
+    if (!this->valid()) [[unlikely]]
+    {
+        return nullptr;
+    }
+    if (node == 0) [[likely]]
     {
         return this->cjson;
     }
@@ -279,11 +288,12 @@ const cJSON *DynXX::Core::Json::Decoder::reinterpretNode(const DynXXJsonNodeHand
 
 DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readNode(const DynXXJsonNodeHandle node, std::string_view k) const
 {
-    if (const auto cj = this->reinterpretNode(node); cj != nullptr) [[likely]]
+    if (!this->valid() || k.empty()) [[unlikely]]
     {
-        return ptr2addr(cJSON_GetObjectItemCaseSensitive(cj, k.data()));
+        return 0;
     }
-    return 0;
+    const auto cj = this->reinterpretNode(node); 
+    return ptr2addr(cJSON_GetObjectItemCaseSensitive(cj, k.data()));
 }
 
 DynXXJsonNodeHandle DynXX::Core::Json::Decoder::operator[](std::string_view k) const
@@ -293,11 +303,12 @@ DynXXJsonNodeHandle DynXX::Core::Json::Decoder::operator[](std::string_view k) c
 
 std::optional<std::string> DynXX::Core::Json::Decoder::readString(const DynXXJsonNodeHandle node) const
 {
-    const auto cj = this->reinterpretNode(node);
-    if (cj == nullptr) [[unlikely]]
+    
+    if (!this->valid()) [[unlikely]]
     {
         return std::nullopt;
     }
+    const auto cj = this->reinterpretNode(node);
     switch(nodeReadType(node))
     {
         case Object:
@@ -336,11 +347,11 @@ std::optional<std::string> DynXX::Core::Json::Decoder::readString(const DynXXJso
 
 std::optional<double> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNodeHandle node) const
 {
-    const auto cj = this->reinterpretNode(node);
-    if (cj == nullptr) [[unlikely]]
+    if (!this->valid()) [[unlikely]]
     {
         return std::nullopt;
     }
+    const auto cj = this->reinterpretNode(node);
     switch(nodeReadType(node)) {
         case Int32:
         {
@@ -369,11 +380,11 @@ std::optional<double> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNode
 
 DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readChild(const DynXXJsonNodeHandle node) const
 {
-    const auto cj = this->reinterpretNode(node);
-    if (cj == nullptr) [[unlikely]]
+    if (!this->valid()) [[unlikely]]
     {
         return 0;
     }
+    const auto cj = this->reinterpretNode(node);
     if (const auto type = nodeReadType(node); type == Object || type == Array) [[likely]]
     {   
         return ptr2addr(cj->child);
@@ -383,11 +394,11 @@ DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readChild(const DynXXJsonNodeHan
 
 size_t DynXX::Core::Json::Decoder::readChildrenCount(const DynXXJsonNodeHandle node) const
 {
-    auto cj = this->reinterpretNode(node);
-    if (cj == nullptr) [[unlikely]]
+    if (!this->valid()) [[unlikely]]
     {
         return 0;
     }
+    const auto cj = this->reinterpretNode(node);
     if (const auto type = nodeReadType(node); type != Object && type != Array) [[unlikely]]
     {
         return 0;
@@ -397,6 +408,10 @@ size_t DynXX::Core::Json::Decoder::readChildrenCount(const DynXXJsonNodeHandle n
 
 void DynXX::Core::Json::Decoder::readChildren(const DynXXJsonNodeHandle node, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback) const
 {
+    if (!this->valid()) [[unlikely]]
+    {
+        return;
+    }
     if (const auto type = nodeReadType(node); type != Object && type != Array) [[unlikely]]
     {
         return;
@@ -413,6 +428,10 @@ void DynXX::Core::Json::Decoder::readChildren(const DynXXJsonNodeHandle node, st
 
 DynXXJsonNodeHandle DynXX::Core::Json::Decoder::readNext(const DynXXJsonNodeHandle node) const
 {
+    if (!this->valid()) [[unlikely]]
+    {
+        return 0;
+    }
     const auto cj = this->reinterpretNode(node);
-    return cj ? ptr2addr(cj->next) : 0;
+    return ptr2addr(cj->next);
 }
