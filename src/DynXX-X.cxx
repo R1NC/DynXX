@@ -805,15 +805,15 @@ void dynxxJsonDecoderRelease(const DynXXJsonDecoderHandle decoder) {
 // Zip
 
 DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize, const DynXXZFormatX format) {
-    RawPtr zip = nullptr;
     try {
-        zip = new Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
+        const auto zip = new Z::Zip(static_cast<int>(mode), bufferSize, static_cast<int>(format));
+        return ptr2addr(zip);
     } catch (const std::invalid_argument &e) {
         dynxxLogPrintF(Error, "dynxxZZipInit invalid_argument: {}", e.what());
     } catch (const Z::ZException &e) {
         dynxxLogPrintF(Error, "dynxxZZipInit failed, ret:{} msg:{}", e.ret, e.what());
     }
-    return ptr2addr(zip);
+    return 0;
 }
 
 size_t dynxxZZipInput(const DynXXZipHandle zip, const Bytes &inBytes, bool inFinish) {
@@ -849,15 +849,15 @@ void dynxxZZipRelease(const DynXXZipHandle zip) {
 }
 
 DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) {
-    RawPtr unzip = nullptr;
     try {
-        unzip = new Z::UnZip(bufferSize, static_cast<int>(format));
+        const auto unzip = new Z::UnZip(bufferSize, static_cast<int>(format));
+        return ptr2addr(unzip);
     } catch (const std::invalid_argument &e) {
         dynxxLogPrintF(Error, "dynxxZUnzipInit invalid_argument: {}", e.what());
     } catch (const Z::ZException &e) {
         dynxxLogPrintF(Error, "dynxxZUnzipInit failed, ret:{} msg:{}", e.ret, e.what());
     }
-    return ptr2addr(unzip);
+    return 0;
 }
 
 size_t dynxxZUnzipInput(const DynXXUnZipHandle unzip, const Bytes &inBytes, bool inFinish) {

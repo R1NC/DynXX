@@ -71,8 +71,7 @@ namespace
             return false;
         }
 #if defined(USE_ADA)
-        auto aUrl = ada::parse(url);
-        if (!aUrl) [[unlikely]]
+        if (!ada::parse(url)) [[unlikely]]
         {
             dynxxLogPrintF(Error, "HttpClient INVALID URL: {}", url);
             return false;
@@ -99,11 +98,9 @@ namespace
         {
             return false;
         }
-        static const auto protocolHttps = "https:";
-        if (aUrl->get_protocol() == protocolHttps)
+        if (static const auto protocolHttps = "https:"; aUrl->get_protocol() == protocolHttps)
 #else
-        static const auto prefixHttps = "https://";
-        if (url.starts_with(prefixHttps))
+        if (static const auto prefixHttps = "https://"; url.starts_with(prefixHttps))
 #endif
         { // TODO: verify SSL cet
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -140,9 +137,8 @@ namespace
         curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
-        //curl_easy_setopt(curl, CURLOPT_USERAGENT, "DynXX");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "DynXX");
         curl_easy_setopt(curl, CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
-        //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
         curl_slist *headerList = nullptr;
         for (const auto &it : headers)

@@ -63,8 +63,12 @@ concept KeyType = std::convertible_to<T, std::string_view> ||
 template<class T, class U>
 concept DerivedT = std::is_base_of_v<U, T>;
 
-template<typename T>
-concept PolymorphicT = std::is_polymorphic_v<T>;
+template<typename To, typename From>
+concept PolymorphicConvertible = 
+    std::is_polymorphic_v<From> && std::is_polymorphic_v<To> &&
+    (std::is_base_of_v<To, From> || std::is_base_of_v<From, To> || requires(From* f) {
+        dynamic_cast<To*>(f); 
+    });
 
 template<typename T>
 concept MemcpyableT = std::is_trivially_copyable_v<T>;
@@ -90,9 +94,10 @@ concept Iterable = requires(T a)
 
 // Utils using concept
 
-template<PolymorphicT T>
-T *dynamicCastX(void *ptr) {
-    return dynamic_cast<T *>(ptr);
+template<typename To, typename From>
+requires PolymorphicConvertible<To, From>
+To* dynamicCastX(From* ptr) noexcept {
+    return dynamic_cast<To*>(ptr);
 }
 
 template<HashableT T>
