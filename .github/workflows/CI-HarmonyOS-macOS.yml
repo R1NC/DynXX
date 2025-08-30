@@ -24,9 +24,9 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Install Dependencies
+    - name: Setup Cmake
       run: |
-        brew install cmake ninja
+        brew install cmake ninja | true
 
     - name: Setup HarmonyOS SDK
       run: |

@@ -29,9 +29,9 @@ jobs:
       with:
         version: 3.1.65
 
-    - name: Install Dependencies
+    - name: Setup Cmake
       run: |
-        brew install cmake ninja
+        brew install cmake ninja | true
 
     - name: Build
       env:

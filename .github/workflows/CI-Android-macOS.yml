@@ -23,15 +23,15 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Set up JDK
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Dependencies
+      - name: Setup Cmake
         run: |
-          brew install cmake ninja
+          brew install cmake ninja | true
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
