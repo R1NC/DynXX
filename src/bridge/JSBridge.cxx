@@ -210,25 +210,30 @@ static void registerFuncs() {
 
     BIND_API(dynxx_log_print);
 
+#if defined(USE_DEVICE)
     BIND_API(dynxx_device_type);
     BIND_API(dynxx_device_name);
     BIND_API(dynxx_device_manufacturer);
     BIND_API(dynxx_device_os_version);
     BIND_API(dynxx_device_cpu_arch);
+#endif
 
     BIND_API(dynxx_net_http_request);
     BIND_API(dynxx_net_http_download);
 
+#if defined(USE_DB)
     BIND_API(dynxx_sqlite_open);
     BIND_API(dynxx_sqlite_execute);
     BIND_API(dynxx_sqlite_query_do);
     BIND_API(dynxx_sqlite_query_read_row);
     BIND_API(dynxx_sqlite_query_read_column_text);
-    BIND_API(dynxx_sqlite_query_read_column_integer);
+   BIND_API(dynxx_sqlite_query_read_column_integer);
     BIND_API(dynxx_sqlite_query_read_column_float);
     BIND_API(dynxx_sqlite_query_drop);
     BIND_API(dynxx_sqlite_close);
+#endif
 
+#if defined(USE_KV)
     BIND_API(dynxx_kv_open);
     BIND_API(dynxx_kv_read_string);
     BIND_API(dynxx_kv_write_string);
@@ -241,6 +246,7 @@ static void registerFuncs() {
     BIND_API(dynxx_kv_remove);
     BIND_API(dynxx_kv_clear);
     BIND_API(dynxx_kv_close);
+#endif
 
     BIND_API(dynxx_coding_hex_bytes2str);
     BIND_API(dynxx_coding_hex_str2bytes);
