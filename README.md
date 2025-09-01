@@ -1,27 +1,20 @@
 # DynXX
 
 [<img src="https://img.shields.io/sonar/quality_gate/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&logo=sonar&label=Sonar%20-%20Quality%20Gate"/>][36]
-[<img src="https://img.shields.io/sonar/violations/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&format=long&logo=sonar&label=Sonar%20-%20Violations"/>][42]
+[<img src="https://img.shields.io/sonar/violations/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&format=long&logo=sonar&label=Sonar%20-%20Violations"/>][25]
  
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Android-macOS.yml?branch=main&label=CI%20-%20Android&logo=android&logoColor=3DDC84"/>][41]
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Android-macOS.yml?branch=main&label=CI%20-%20Android&logo=android&logoColor=3DDC84"/>][26]
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-iOS.yml?branch=main&label=CI%20-%20iOS&logo=Apple&logoColor=white"/>][33]
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-HarmonyOS-macOS.yml?branch=main&label=CI%20-%20HarmonyOS&logo=Huawei&logoColor=FF0000"/>][43]       
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-HarmonyOS-macOS.yml?branch=main&label=CI%20-%20HarmonyOS&logo=Huawei&logoColor=FF0000"/>][24]       
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Windows-MSVC.yml?branch=main&label=CI%20-%20Windows&logo=gitforwindows&logoColor=0078D4"/>][35]
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-macOS.yml?branch=main&label=CI%20-%20macOS&logo=Apple&logoColor=white"/>][34]
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Linux-Ubuntu.yml?branch=main&label=CI%20-%20Linux&logo=Linux&logoColor=FBB726"/>][37]      
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-WASM-macOS.yml?branch=main&label=CI%20-%20WASM&logo=WebAssembly&logoColor=654FF0"/>][38] 
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Linux-Ubuntu.yml?branch=main&label=CI%20-%20Linux&logo=Linux&logoColor=FBB726"/>][30]      
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-WASM-macOS.yml?branch=main&label=CI%20-%20WASM&logo=WebAssembly&logoColor=654FF0"/>][29] 
 
 A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 > :point_right: The Rust version([DynRS][31]) is in works.
-> <details>
-> <summary>Why Rust?</summary>
-> 
-> * Guarantee memory safety by the compiler, not the programmer;
-> * Powerful third-party dependency management tool - [Crates][23], no need to struggle with CMake;
-> * First-class [WASM support][24], no other toolchain needed(Like [Emscripten][27]);
-> * Complete cross-platform support - [FFI][25], [CXX][26], [jni][28], [ojbc2][29], [ohos-rs][30].
-> </details>
+
 
 ## Architecture
 
@@ -68,11 +61,11 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | [std::from_chars][19] for float              | C++17    | All;                               |
 | [std::format][12]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
 | [std::ranges][13]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
-| [std::jthread][39]                           | C++20    | Apple;                             |
+| [std::jthread][28]                           | C++20    | Apple;                             |
 | [Heterogeneous lookup for hash map/set][32]  | C++20    | HarmonyOS;                         |
 | [std::ranges::views::enumerate][20]          | C++23    | Clang, Apple & HarmonyOS;          |
 | [std::ranges::views::chunk][14]              | C++23    | Clang, Apple & HarmonyOS;          |
-| [std::move_only_function][44]                | C++23    | Clang, Apple & HarmonyOS;          |
+| [std::move_only_function][23]                | C++23    | Clang, Apple & HarmonyOS;          |
 
 <details>
 
@@ -90,7 +83,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 * [curl][4]: Networking;
 * [cJSON][5]: JSON codec;
 * [iOS-cmake][18]: CMake toolchain for Apple platforms;
-* [json.lua][40]: JSON codec for Lua;
+* [json.lua][27]: JSON codec for Lua;
 * [libuv][6]: Asynchronous I/O;
 * [lua][7]: Lua runtime;
 * [MMKV][8]: Key-value storage;
@@ -122,25 +115,17 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [20]: https://en.cppreference.com/w/cpp/ranges/enumerate_view
 [21]: https://developer.apple.com/xcode/cpp/
 [22]: https://en.cppreference.com/w/cpp/compiler_support
-[23]: https://crates.io/
-[24]: https://rustwasm.github.io/docs/book/
-[25]: https://doc.rust-lang.org/nomicon/ffi.html
-[26]: https://cxx.rs/
-[27]: https://emscripten.org/
-[28]: https://docs.rs/jni/latest/jni/
-[29]: https://docs.rs/objc2/latest/objc2/
-[30]: https://ohos.rs/
+[23]: https://en.cppreference.com/w/cpp/utility/functional/move_only_function.html
+[24]: ../../actions/workflows/CI-HarmonyOS-macOS.yml
+[25]: https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&id=R1NC_DynXX
+[26]: ../../actions/workflows/CI-Android-macOS.yml
+[27]: https://gist.github.com/tylerneylon/59f4bcf316be525b30ab
+[28]: https://en.cppreference.com/w/cpp/thread/jthread.html
+[29]: ../../actions/workflows/CI-WASM-macOS.yml
+[30]: ../../actions/workflows/CI-Linux-Ubuntu.yml
 [31]: https://github.com/R1NC/DynRS
 [32]: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0919r3.html
 [33]: ../../actions/workflows/CI-iOS.yml
 [34]: ../../actions/workflows/CI-macOS.yml
 [35]: ../../actions/workflows/CI-Windows-MSVC.yml
 [36]: https://sonarcloud.io/project/overview?id=R1NC_DynXX
-[37]: ../../actions/workflows/CI-Linux-Ubuntu.yml
-[38]: ../../actions/workflows/CI-WASM-macOS.yml
-[39]: https://en.cppreference.com/w/cpp/thread/jthread.html
-[40]: https://gist.github.com/tylerneylon/59f4bcf316be525b30ab
-[41]: ../../actions/workflows/CI-Android-macOS.yml
-[42]: https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&id=R1NC_DynXX
-[43]: ../../actions/workflows/CI-HarmonyOS-macOS.yml
-[44]: https://en.cppreference.com/w/cpp/utility/functional/move_only_function.html
