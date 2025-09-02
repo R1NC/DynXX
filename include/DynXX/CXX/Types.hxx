@@ -348,7 +348,7 @@ T *mallocX(const size_t count = 1) {
 // free for non-const & non-void types
 template<typename T>
     requires (!ConstT<T> && !VoidT<T>)
-void freeX(T * ptr) {
+void freeX(T * &ptr) {
     if (!ptr) [[unlikely]] {
         return;
     }
@@ -359,7 +359,7 @@ void freeX(T * ptr) {
 // free for non-const & void types
 template<typename T>
     requires (!ConstT<T> && VoidT<T>)
-void freeX(T * ptr) {
+void freeX(T * &ptr) {
     if (!ptr) [[unlikely]] {
         return;
     }
@@ -370,7 +370,7 @@ void freeX(T * ptr) {
 // free for const & non-void types
 template<typename T>
     requires (ConstT<T> && !VoidT<T>)
-void freeX(T * ptr) {
+void freeX(T * &ptr) {
     if (!ptr) [[unlikely]] {
         return;
     }
@@ -381,7 +381,7 @@ void freeX(T * ptr) {
 // free for const & void types
 template<typename T>
     requires (ConstT<T> && VoidT<T>)
-void freeX(T * ptr) {
+void freeX(T * &ptr) {
     if (!ptr) [[unlikely]] {
         return;
     }

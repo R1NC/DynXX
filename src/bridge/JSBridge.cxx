@@ -58,7 +58,7 @@ namespace {
         if (msg == nullptr || msgCbk == nullptr) {
             return {};
         }
-        const auto res = msgCbk(msg);
+        auto res = msgCbk(msg);
         if (res == nullptr) [[unlikely]] {
             return {};
         }

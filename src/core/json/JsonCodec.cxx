@@ -93,7 +93,7 @@ std::optional<std::string> DynXX::Core::Json::nodeToStr(const DynXXJsonNodeHandl
     {
         return std::nullopt;
     }
-    const auto jsonChars = cJSON_PrintUnformatted(addr2ptr<cJSON>(node));
+    auto jsonChars = cJSON_PrintUnformatted(addr2ptr<cJSON>(node));
     if (!jsonChars) [[unlikely]]
     {
         return std::nullopt;
