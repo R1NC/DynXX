@@ -8,6 +8,7 @@
 #include <functional>
 
 #include <DynXX/CXX/Macro.hxx>
+#include <DynXX/CXX/Types.hxx>
 
 #include "../core/vm/JSVM.hxx"
 #include "ScriptAPI.hxx"
@@ -61,7 +62,9 @@ namespace {
         if (res == nullptr) [[unlikely]] {
             return {};
         }
-        return {res};
+        std::string s(res);
+        freeX(res);
+        return s;
     }
 }
 

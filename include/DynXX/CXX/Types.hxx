@@ -132,6 +132,8 @@ constexpr auto MinFloat32 = MinV<float>();
 constexpr auto MaxFloat32 = MaxV<float>();
 constexpr auto MinFloat64 = MinV<double>();
 constexpr auto MaxFloat64 = MaxV<double>();
+constexpr auto MinFloat128 = MinV<long double>();
+constexpr auto MaxFloat128 = MaxV<long double>();
 
 // String to Number
 
@@ -142,6 +144,8 @@ int64_t str2int64(const std::string &str, const int64_t defaultI = MinInt64);
 float str2float32(const std::string &str, const float defaultF = MinFloat32);
 
 double str2float64(const std::string &str, const double defaultF = MinFloat64);
+
+long double str2float128(const std::string &str, const long double defaultF = MinFloat128);
 
 // Pointer cast
 
@@ -344,7 +348,7 @@ T *mallocX(const size_t count = 1) {
 // free for non-const & non-void types
 template<typename T>
     requires (!ConstT<T> && !VoidT<T>)
-void freeX(T * &ptr) {
+void freeX(T * ptr) {
     if (!ptr) [[unlikely]] {
         return;
     }
@@ -355,7 +359,7 @@ void freeX(T * &ptr) {
 // free for non-const & void types
 template<typename T>
     requires (!ConstT<T> && VoidT<T>)
-void freeX(T * &ptr) {
+void freeX(T * ptr) {
     if (!ptr) [[unlikely]] {
         return;
     }
@@ -366,7 +370,7 @@ void freeX(T * &ptr) {
 // free for const & non-void types
 template<typename T>
     requires (ConstT<T> && !VoidT<T>)
-void freeX(T * &ptr) {
+void freeX(T * ptr) {
     if (!ptr) [[unlikely]] {
         return;
     }
@@ -377,7 +381,7 @@ void freeX(T * &ptr) {
 // free for const & void types
 template<typename T>
     requires (ConstT<T> && VoidT<T>)
-void freeX(T * &ptr) {
+void freeX(T * ptr) {
     if (!ptr) [[unlikely]] {
         return;
     }

@@ -99,7 +99,7 @@ std::optional<std::string> DynXX::Core::Json::nodeToStr(const DynXXJsonNodeHandl
         return std::nullopt;
     }
     std::string json(jsonChars);
-    std::free(jsonChars);
+    freeX(jsonChars);
     json = dynxxCodingStrTrim(json);
     return {json};
 }

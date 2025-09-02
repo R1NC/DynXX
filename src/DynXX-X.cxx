@@ -169,6 +169,14 @@ double str2float64(const std::string &str, const double defaultF) {
 #endif
 }
 
+long double str2float128(const std::string &str, const long double defaultF) {
+#if defined(USE_STD_CHAR_CONV_FLOAT)
+    return fromChars<long double>(str, defaultF);
+#else
+    return s2n<long double>(str, defaultF, stox<long double>());
+#endif
+}
+
 std::string dynxxGetVersion() {
     return VERSION;
 }
