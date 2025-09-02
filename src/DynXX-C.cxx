@@ -519,7 +519,7 @@ const char *dynxx_json_decoder_read_string(const DynXXJsonDecoderHandle decoder,
 }
 
 EXPORT_AUTO
-long dynxx_json_decoder_read_integer(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+int64_t dynxx_json_decoder_read_integer(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadInteger(decoder, node).value_or(0);
 }
 
