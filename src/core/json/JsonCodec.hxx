@@ -52,6 +52,28 @@ namespace DynXX::Core::Json {
 
         std::optional<Num> readNumber(const DynXXJsonNodeHandle node) const;
 
+        template <typename T> 
+        requires (IntegerT<T> || EnumT<T>)
+        std::optional<T> readNumInt(const DynXXJsonNodeHandle node) const {
+            const auto v = this->readNumber(node);
+            if (v == std::nullopt) [[unlikely]] {
+                return std::nullopt;
+            }
+            const auto i = *std::get_if<int64_t>(&v.value());
+            return {static_cast<T>(i)};
+        }
+
+        template <typename T> 
+        requires FloatT<T>
+        std::optional<T> readNumFloat(const DynXXJsonNodeHandle node) const {
+            const auto v = this->readNumber(node);
+            if (v == std::nullopt) [[unlikely]] {
+                return std::nullopt;
+            }
+            const auto f = *std::get_if<double>(&v.value());
+            return {static_cast<T>(f)};
+        }
+
         ~Decoder();
 
     private:

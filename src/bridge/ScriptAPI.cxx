@@ -62,13 +62,7 @@ namespace
         {
             return std::nullopt;
         }
-        const auto v = decoder.readNumber(node);
-        if (v == std::nullopt) [[unlikely]]
-        {
-            return std::nullopt;
-        }
-        const auto i = *std::get_if<int64_t>(&v.value());
-        return {static_cast<T>(i)};
+        return decoder.readNumInt<T>(node);
     }
 
     template <FloatT T>
@@ -79,13 +73,7 @@ namespace
         {
             return std::nullopt;
         }
-        const auto v = decoder.readNumber(node);
-        if (v == std::nullopt) [[unlikely]]
-        {
-            return std::nullopt;
-        }
-        const auto f = *std::get_if<double>(&v.value());
-        return {static_cast<T>(f)};
+        return decoder.readNumFloat<T>(node);
     }
 
     template <NumberT... Ns, KeyType... Ks>
@@ -131,11 +119,9 @@ namespace
             decoder.readChildren(byte_vNode, 
                             [&data, &decoder](size_t, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)
                             {
-                                const auto n = decoder.readNumber(childNode);
-                                if (n.has_value())
+                                if (const auto n = decoder.readNumInt<byte>(childNode); n.has_value())
                                 {
-                                    const auto i = *std::get_if<int64_t>(&n.value());
-                                    data.emplace_back(static_cast<uint8_t>(i));
+                                    data.emplace_back(n.value());
                                 }
                             });
         }
