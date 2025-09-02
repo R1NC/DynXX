@@ -15,7 +15,7 @@ namespace DynXX::Core::Store::KV {
         public:
             Connection() = default;
 
-            explicit Connection(const std::string &_id);
+            explicit Connection(const CidT cid, MMKV *kv);
 
             Connection(const Connection &) = delete;
 
@@ -41,12 +41,12 @@ namespace DynXX::Core::Store::KV {
 
             void clear() const;
 
-            DictKeyType id() const { return this->_id; }
+            CidT cid() const { return this->_cid; }
 
             ~Connection();
 
         private:
-            std::string _id;
+            const CidT _cid{0};
             MMKV *kv{nullptr};
             mutable std::shared_mutex mutex;
     };
@@ -66,8 +66,6 @@ namespace DynXX::Core::Store::KV {
         KVStore &operator=(KVStore &&) = delete;
 
         std::weak_ptr<KV::Connection> open(const std::string &_id);
-
-        void close(const DictKeyType _id);
 
         ~KVStore();
     };

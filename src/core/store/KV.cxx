@@ -4,6 +4,10 @@
 
 #include <DynXX/CXX/Log.hxx>
 
+namespace {
+    using enum DynXXLogLevelX;
+}
+
 DynXX::Core::Store::KV::KVStore::KVStore(const std::string &root)
 {
     decltype(root) sRoot(root);
@@ -17,14 +21,16 @@ DynXX::Core::Store::KV::KVStore::KVStore(const std::string &root)
 
 std::weak_ptr<DynXX::Core::Store::KV::Connection> DynXX::Core::Store::KV::KVStore::open(const std::string &_id)
 {
-    return ConnPool<KV::Connection>::open(_id, [&_id]() { 
-        return std::make_shared<KV::Connection>(_id); 
+    const auto cid = genCid(_id);
+    return ConnPool<KV::Connection>::open(cid, [cid, &_id]() { 
+        const auto kv = MMKV::mmkvWithID(_id, MMKV_MULTI_PROCESS);
+        if (!kv) [[unlikely]]
+        {
+            dynxxLogPrint(Error, "MMKV mmkvWithID failed");
+            return std::shared_ptr<KV::Connection>(nullptr);
+        }
+        return std::make_shared<KV::Connection>(cid, kv); 
     });
-}
-
-void DynXX::Core::Store::KV::KVStore::close(const DictKeyType _id)
-{
-    ConnPool<KV::Connection>::close(_id);
 }
 
 DynXX::Core::Store::KV::KVStore::~KVStore()
@@ -32,9 +38,8 @@ DynXX::Core::Store::KV::KVStore::~KVStore()
     MMKV::onExit();
 }
 
-DynXX::Core::Store::KV::Connection::Connection(const std::string &_id) : _id(_id)
+DynXX::Core::Store::KV::Connection::Connection(const CidT cid, MMKV *kv) : _cid(cid), kv(kv)
 {
-    this->kv = MMKV::mmkvWithID(_id, MMKV_MULTI_PROCESS);
     MMKV::setLogLevel(MMKVLogNone);
 }
 

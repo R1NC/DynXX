@@ -599,7 +599,7 @@ void dynxxSQLiteClose(const DynXXSQLiteConnHandle conn) {
     if (conn == 0 || _sqlite == nullptr)
         return;
     const auto xconn = addr2ptr<Store::SQLite::Connection>(conn);
-    _sqlite->close(xconn->id());
+    _sqlite->close(xconn->cid());
 }
 
 #endif
@@ -702,7 +702,7 @@ void dynxxKVClose(const DynXXKVConnHandle conn) {
     if (conn == 0 || _kv == nullptr)
         return;
     const auto xconn = addr2ptr<Store::KV::Connection>(conn);
-    _kv->close(xconn->id());
+    _kv->close(xconn->cid());
 }
 
 #endif

@@ -12,6 +12,12 @@
 
 namespace DynXX::Core::Store {
 
+    using CidT = size_t;
+
+    inline CidT genCid(const DictKeyType key) {
+        return std::hash<DictKeyType>{}(key);
+    }
+
     template<typename ConnT>
     class ConnPool {
     public:
@@ -25,9 +31,9 @@ namespace DynXX::Core::Store {
 
         ConnPool &operator=(ConnPool &&) = delete;
 
-        void close(const DictKeyType _id) {
+        void close(const CidT cid) {
             auto lock = std::scoped_lock(this->mutex);
-            auto it = this->conns.find(_id);
+            auto it = this->conns.find(cid);
             if (it != this->conns.end()) {
                 it->second.reset();
                 this->conns.erase(it);
@@ -48,15 +54,15 @@ namespace DynXX::Core::Store {
         }
 
     protected:
-        std::weak_ptr<ConnT> open(const DictKeyType _id, std::function<std::shared_ptr<ConnT>()> &&creatorF) {
+        std::weak_ptr<ConnT> open(const CidT cid, std::function<std::shared_ptr<ConnT>()> &&creatorF) {
             auto lock = std::scoped_lock(this->mutex);
             
-            if (auto it = this->conns.find(_id); it != this->conns.end() && it->second) {
+            if (auto it = this->conns.find(cid); it != this->conns.end() && it->second) {
                 return it->second;
             }
             
             if (auto conn = std::move(creatorF)(); conn) {
-                this->conns.emplace(_id, conn);
+                this->conns.emplace(cid, conn);
                 return conn;
             }
             
@@ -65,11 +71,7 @@ namespace DynXX::Core::Store {
     
     private:
         std::mutex mutex;
-    #if defined(__cpp_lib_generic_unordered_lookup)
-        std::unordered_map<std::string, std::shared_ptr<ConnT>, TransparentStringHash, TransparentEqual> conns;
-    #else
-        std::unordered_map<std::string, std::shared_ptr<ConnT>> conns;
-    #endif
+        std::unordered_map<CidT, std::shared_ptr<ConnT>> conns;
     };
 }
 

@@ -21,20 +21,16 @@ DynXX::Core::Store::SQLite::SQLiteStore::SQLiteStore()
 
 std::weak_ptr<DynXX::Core::Store::SQLite::Connection> DynXX::Core::Store::SQLite::SQLiteStore::open(const std::string &file)
 {
-    return ConnPool<SQLite::Connection>::open(file, [&file]() {
+    const auto cid = genCid(file);
+    return ConnPool<SQLite::Connection>::open(cid, [cid, &file]() {
         sqlite3 *db;
-        if (const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK) [[unlikely]] {
+        if (const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK || db == nullptr) [[unlikely]] {
             PRINT_ERR(rc, db);
             if (db) sqlite3_close(db);
             return std::shared_ptr<SQLite::Connection>(nullptr);
         }
-        return std::make_shared<SQLite::Connection>(file, db);
+        return std::make_shared<SQLite::Connection>(cid, db);
     });
-}
-
-void DynXX::Core::Store::SQLite::SQLiteStore::close(const DictKeyType _id)
-{
-    ConnPool<SQLite::Connection>::close(_id);
 }
 
 DynXX::Core::Store::SQLite::SQLiteStore::~SQLiteStore()
@@ -42,7 +38,7 @@ DynXX::Core::Store::SQLite::SQLiteStore::~SQLiteStore()
     sqlite3_shutdown();
 }
 
-DynXX::Core::Store::SQLite::Connection::Connection(const std::string &_id, sqlite3 *db) : _id(_id), db{db}
+DynXX::Core::Store::SQLite::Connection::Connection(const CidT cid, sqlite3 *db) : _cid(cid), db{db}
 {
     if (!this->execute(sEnableWAL)) [[unlikely]]
     {
