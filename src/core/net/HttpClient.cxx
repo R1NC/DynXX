@@ -17,7 +17,7 @@ namespace
 {
     using enum DynXXLogLevelX;
 
-        struct Req {
+    struct Req {
         CURL *curl{nullptr};
         curl_slist *headers{nullptr};
         curl_mime *mime{nullptr};
@@ -25,10 +25,6 @@ namespace
         Req() = default;
         Req(const Req&) = delete;
         Req& operator=(const Req&) = delete;
-        
-        ~Req() {
-            cleanup();
-        }
         
         Req(Req&& other) noexcept {
             this->moveImp(std::move(other));
@@ -40,6 +36,10 @@ namespace
                 this->moveImp(std::move(other));
             }
             return *this;
+        }
+
+        ~Req() {
+            cleanup();
         }
         
     private:
