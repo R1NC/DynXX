@@ -112,7 +112,6 @@ namespace DynXX::Core::VM {
 
     private:
         lua_State *lstate{nullptr};
-        std::unique_ptr<std::thread> threadTimer{nullptr};
     };
 }
 
