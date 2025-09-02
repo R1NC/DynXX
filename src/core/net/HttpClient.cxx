@@ -109,23 +109,30 @@ namespace
         return true;
     }
 
-    CURL *createReq(std::string_view url, const std::vector<std::string> &headers,
+    struct Req {
+        CURL *curl{nullptr};
+        curl_slist *headers{nullptr};
+        curl_mime *mime{nullptr};
+    };
+
+    Req createReq(std::string_view url, const std::vector<std::string> &headers,
                             std::string_view params, int method, size_t timeout)
     {
+        Req req;
         if (!checkUrlValid(url)) [[unlikely]]
         {
-            return nullptr;
+            return req;
         }
 
-        auto curl = curl_easy_init();
-        if (!curl) [[unlikely]]
+        req.curl = curl_easy_init();
+        if (!req.curl) [[unlikely]]
         {
-            return nullptr;
+            return req;
         }
 
-        if (!handleSSL(curl, url)) [[unlikely]]
+        if (!handleSSL(req.curl, url)) [[unlikely]]
         {
-            return nullptr;
+            return req;
         }
 
         auto _timeout = timeout;
@@ -133,20 +140,19 @@ namespace
         {
             _timeout = DYNXX_HTTP_DEFAULT_TIMEOUT;
         }
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
-        curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
+        curl_easy_setopt(req.curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
+        curl_easy_setopt(req.curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "DynXX");
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
+        curl_easy_setopt(req.curl, CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
+        curl_easy_setopt(req.curl, CURLOPT_USERAGENT, "DynXX");
+        curl_easy_setopt(req.curl, CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
 
-        curl_slist *headerList = nullptr;
         for (const auto &it : headers)
         {
             dynxxLogPrintF(Debug, "HttpClient.req header: {}", it);
-            headerList = curl_slist_append(headerList, it.c_str());
+            req.headers = curl_slist_append(req.headers, it.c_str());
         }
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerList);
+        curl_easy_setopt(req.curl, CURLOPT_HTTPHEADER, req.headers);
 
         std::string fixedUrl;
         fixedUrl.reserve(url.size() + (method == DynXXNetHttpMethodGet && !params.empty() ? params.size() + 1 : 0));
@@ -161,19 +167,19 @@ namespace
         }
     
         dynxxLogPrintF(Debug, "HttpClient.req url: {}", fixedUrl);
-        curl_easy_setopt(curl, CURLOPT_URL, fixedUrl.c_str());
+        curl_easy_setopt(req.curl, CURLOPT_URL, fixedUrl.c_str());
 
-        return curl;
+        return req;
     }
 
-    void sendReq(CURL *curl, DynXXHttpResponse &rsp)
+    void submitReq(const Req &req, DynXXHttpResponse &rsp)
     {
-        auto curlCode = curl_easy_perform(curl);
+        auto curlCode = curl_easy_perform(req.curl);
 
-        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
+        curl_easy_getinfo(req.curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
 
         char *contentType;
-        curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
+        curl_easy_getinfo(req.curl, CURLINFO_CONTENT_TYPE, &contentType);
         if (contentType)
         {
             rsp.contentType = contentType;
@@ -184,7 +190,17 @@ namespace
             dynxxLogPrintF(Error, "HttpClient.req error:{}", curl_easy_strerror(curlCode));
         }
 
-        curl_easy_cleanup(curl);
+        if (req.headers)
+        {
+            curl_slist_free_all(req.headers);
+        }
+
+        if (req.mime)
+        {
+            curl_mime_free(req.mime);
+        }
+
+        curl_easy_cleanup(req.curl);
     }
 }
 
@@ -206,23 +222,23 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
                                                                 std::FILE *cFILE, size_t fileSize,
                                                                  size_t timeout) const {
 
-    auto curl = createReq(url, headers, params, method, timeout);
-    if (!curl) [[unlikely]]
+    auto req = createReq(url, headers, params, method, timeout);
+    if (!req.curl) [[unlikely]]
     {
         return {};
     }
 
     if (cFILE != nullptr)
     {
-        curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-        curl_easy_setopt(curl, CURLOPT_READFUNCTION, on_upload_read);
-        curl_easy_setopt(curl, CURLOPT_READDATA, cFILE);
-        curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, fileSize);
+        curl_easy_setopt(req.curl, CURLOPT_UPLOAD, 1L);
+        curl_easy_setopt(req.curl, CURLOPT_READFUNCTION, on_upload_read);
+        curl_easy_setopt(req.curl, CURLOPT_READDATA, cFILE);
+        curl_easy_setopt(req.curl, CURLOPT_INFILESIZE_LARGE, fileSize);
     }
     else if (!formFields.empty())
     {
-        const auto cmime = curl_mime_init(curl);
-        const auto part = curl_mime_addpart(cmime);
+        req.mime = curl_mime_init(req.curl);
+        const auto part = curl_mime_addpart(req.mime);
 
         for (const auto &[name, mime, data] : formFields)
         {
@@ -231,41 +247,41 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
             curl_mime_data(part, data.c_str(), CURL_ZERO_TERMINATED);
         }
 
-        curl_easy_setopt(curl, CURLOPT_MIMEPOST, cmime);
+        curl_easy_setopt(req.curl, CURLOPT_MIMEPOST, req.mime);
     }
     else if (method == DynXXNetHttpMethodPost)
     {
-        curl_easy_setopt(curl, CURLOPT_POST, 1L);
+        curl_easy_setopt(req.curl, CURLOPT_POST, 1L);
         if (rawBody.empty())
         {
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, params.data());
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, params.size());
+            curl_easy_setopt(req.curl, CURLOPT_POSTFIELDS, params.data());
+            curl_easy_setopt(req.curl, CURLOPT_POSTFIELDSIZE, params.size());
         }
         else
         {
-            curl_easy_setopt(curl, CURLOPT_READFUNCTION, on_post_read);
-            curl_easy_setopt(curl, CURLOPT_READDATA, &rawBody);
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, nullptr);
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, rawBody.size());
+            curl_easy_setopt(req.curl, CURLOPT_READFUNCTION, on_post_read);
+            curl_easy_setopt(req.curl, CURLOPT_READDATA, &rawBody);
+            curl_easy_setopt(req.curl, CURLOPT_POSTFIELDS, nullptr);
+            curl_easy_setopt(req.curl, CURLOPT_POSTFIELDSIZE, rawBody.size());
         }
     }
 
     DynXXHttpResponse rsp;
 
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_write);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &rsp.data);
+    curl_easy_setopt(req.curl, CURLOPT_WRITEFUNCTION, on_write);
+    curl_easy_setopt(req.curl, CURLOPT_WRITEDATA, &rsp.data);
 
-    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, on_handle_rsp_headers);
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &rsp.headers);
+    curl_easy_setopt(req.curl, CURLOPT_HEADERFUNCTION, on_handle_rsp_headers);
+    curl_easy_setopt(req.curl, CURLOPT_HEADERDATA, &rsp.headers);
 
-    sendReq(curl, rsp);
+    submitReq(req, rsp);
     
     return rsp;
 }
 
 bool DynXX::Core::Net::HttpClient::download(std::string_view url, std::string_view filePath, size_t timeout) const {
-    auto curl = createReq(url, {}, {}, DynXXNetHttpMethodGet, timeout);
-    if (!curl) [[unlikely]]
+    auto req = createReq(url, {}, {}, DynXXNetHttpMethodGet, timeout);
+    if (!req.curl) [[unlikely]]
     {
         return false;
     }
@@ -277,12 +293,12 @@ bool DynXX::Core::Net::HttpClient::download(std::string_view url, std::string_vi
         return false;
     }
 
-    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_download_write);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
+    curl_easy_setopt(req.curl, CURLOPT_NOPROGRESS, 1L);
+    curl_easy_setopt(req.curl, CURLOPT_WRITEFUNCTION, on_download_write);
+    curl_easy_setopt(req.curl, CURLOPT_WRITEDATA, &file);
 
     DynXXHttpResponse rsp;
-    sendReq(curl, rsp);
+    submitReq(req, rsp);
 
     file.close();
 
