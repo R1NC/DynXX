@@ -1,6 +1,8 @@
 #if defined(USE_LUA)
 #include "LuaVM.hxx"
 
+#include <memory>
+
 #if defined(USE_LIBUV)
 #include <uv.h>
 #endif
@@ -10,6 +12,7 @@
 
 namespace {
     using enum DynXXLogLevelX;
+    using namespace DynXX::Core::Concurrent;
     
 #if defined(USE_LIBUV)
     struct Timer
@@ -20,6 +23,8 @@ namespace {
         bool repeat{false};
         bool finished{false};
     };
+
+    std::unique_ptr<Executor> timerExecutor = nullptr;
 
     void _loop_init()
     {
@@ -50,15 +55,20 @@ namespace {
 
     uv_timer_t *_timer_start(Timer *timer_data)
     {
+        if (!timerExecutor) [[unlikely]]
+        {
+            return nullptr;
+        }
+        
         auto timerP = mallocX<uv_timer_t>();
         timerP->data = timer_data;
 
-        std::thread([timerP] {
+        (*timerExecutor) >> [timerP] {
             uv_timer_init(uv_default_loop(), timerP);
             const auto data = static_cast<Timer *>(timerP->data);
             uv_timer_start(timerP, _timer_cb, data->timeout, data->repeat ? data->timeout : 0);
             _loop_prepare();
-        }).detach();
+        };
 
         return timerP;
     }
@@ -136,6 +146,7 @@ DynXX::Core::VM::LuaVM::LuaVM()
 #if defined(USE_LIBUV)
     lua_register_lib(this->lstate, "Timer", lib_timer_funcs);
     _loop_init();
+    timerExecutor = std::make_unique<Executor>(1, 1000uz);
 #endif
 }
 
@@ -143,6 +154,7 @@ DynXX::Core::VM::LuaVM::~LuaVM()
 {
     this->active = false;
 #if defined(USE_LIBUV)
+    timerExecutor.reset();
     _loop_stop();
 #endif    
     lua_close(this->lstate);
