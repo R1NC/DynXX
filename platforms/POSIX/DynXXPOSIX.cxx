@@ -125,7 +125,7 @@ void dynxx_posix_testJsonDecoder()
         }
         if (const auto methodNode = dynxx_json_decoder_read_node(jsonDecoder, nullptr, "method"))
         {
-            const auto method = dynxx_json_decoder_read_number(jsonDecoder, methodNode);
+            const auto method = dynxx_json_decoder_read_integer(jsonDecoder, methodNode);
             std::cout << "method:" << method << std::endl;
         }
         if (const auto headerVNode = dynxx_json_decoder_read_node(jsonDecoder, nullptr, "header_v"))

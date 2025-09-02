@@ -739,10 +739,16 @@ namespace {
         return jStr;
     }
 
-    jdouble jsonDecoderReadNumber(JNIEnv *env, jobject thiz,
+    jlong jsonDecoderReadInteger(JNIEnv *env, jobject thiz,
                                   jlong decoder,
                                   jlong node) {
-        return dynxx_json_decoder_read_number(decoder, node);
+        return dynxx_json_decoder_read_integer(decoder, node);
+    }
+
+    jlong jsonDecoderReadFloat(JNIEnv *env, jobject thiz,
+                                 jlong decoder,
+                                 jlong node) {
+        return dynxx_json_decoder_read_float(decoder, node);
     }
 
     jlong jsonDecoderReadChild(JNIEnv *env, jobject thiz,
@@ -935,7 +941,8 @@ namespace {
             DECLARE_JNI_FUNC(jsonDecoderInit, "(" LJLS_ ")J"),
             DECLARE_JNI_FUNC(jsonDecoderReadNode, "(JJ" LJLS_ ")J"),
             DECLARE_JNI_FUNC(jsonDecoderReadString, "(JJ)" LJLS_),
-            DECLARE_JNI_FUNC(jsonDecoderReadNumber, "(JJ)D"),
+            DECLARE_JNI_FUNC(jsonDecoderReadInteger, "(JJ)J"),
+            DECLARE_JNI_FUNC(jsonDecoderReadFloat, "(JJ)D"),
             DECLARE_JNI_FUNC(jsonDecoderReadChild, "(JJ)J"),
             DECLARE_JNI_FUNC(jsonDecoderReadNext, "(JJ)J"),
             DECLARE_JNI_FUNC(jsonDecoderRelease, "(J)V"),

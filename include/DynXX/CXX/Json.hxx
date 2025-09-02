@@ -34,7 +34,9 @@ DynXXJsonNodeHandle dynxxJsonDecoderReadNode(const DynXXJsonDecoderHandle decode
 
 std::optional<std::string> dynxxJsonDecoderReadString(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = 0);
 
-std::optional<double> dynxxJsonDecoderReadNumber(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = 0);
+std::optional<int64_t> dynxxJsonDecoderReadInteger(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = 0);
+
+std::optional<double> dynxxJsonDecoderReadFloat(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = 0);
 
 DynXXJsonNodeHandle dynxxJsonDecoderReadChild(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = 0);
 

@@ -88,5 +88,6 @@ export const jsonDecoderReadNode: (decoder: number, k: string, node?: number) =>
 export const jsonDecoderReadChild: (decoder: number, node?: number) => number;
 export const jsonDecoderReadNext: (decoder: number, node?: number) => number;
 export const jsonDecoderReadString: (decoder: number, node?: number) => string;
-export const jsonDecoderReadNumber: (decoder: number, node?: number) => number;
+export const jsonDecoderReadInteger: (decoder: number, node?: number) => number;
+export const jsonDecoderReadFloat: (decoder: number, node?: number) => number;
 export const jsonDecoderRelease: (decoder: number) => void;

@@ -167,7 +167,7 @@ static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=
         }
         auto methodNode = dynxx_json_decoder_read_node(jsonDecoder, nullptr, "method");
         if (methodNode) {
-            auto method = dynxx_json_decoder_read_number(jsonDecoder, methodNode);
+            auto method = dynxx_json_decoder_read_integer(jsonDecoder, methodNode);
             NSLog(@"method:%f", method);
         }
         auto headerVNode = dynxx_json_decoder_read_node(jsonDecoder, nullptr, "header_v");

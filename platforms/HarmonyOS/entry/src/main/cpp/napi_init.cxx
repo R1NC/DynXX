@@ -571,13 +571,23 @@ napi_value jsonDecoderReadString(napi_env env, napi_callback_info info) {
     return v;
 }
 
-napi_value jsonDecoderReadNumber(napi_env env, napi_callback_info info) {
+napi_value jsonDecoderReadInteger(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto decoder = napiValue2long(env, args.v[0]);
     auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
 
-    auto res = dynxx_json_decoder_read_number(decoder, node);
+    auto res = dynxx_json_decoder_read_integer(decoder, node);
+    return long2NapiValue(env, res);
+}
+
+napi_value jsonDecoderReadFloat(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto decoder = napiValue2long(env, args.v[0]);
+    auto node = args.c > 1 ? napiValue2long(env, args.v[1]) : 0;
+
+    auto res = dynxx_json_decoder_read_float(decoder, node);
     return double2NapiValue(env, res);
 }
 
@@ -972,7 +982,8 @@ napi_value NAPI_DynXX_RegisterFuncs(napi_env env, napi_value exports) {
         NAPI(jsonDecoderReadChild),
         NAPI(jsonDecoderReadNext),
         NAPI(jsonDecoderReadString),
-        NAPI(jsonDecoderReadNumber),
+        NAPI(jsonDecoderReadInteger),
+        NAPI(jsonDecoderReadFloat),
         NAPI(jsonDecoderRelease),
 
         NAPI(codingHexBytes2str),

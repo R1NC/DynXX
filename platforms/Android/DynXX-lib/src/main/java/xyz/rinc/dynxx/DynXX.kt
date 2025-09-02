@@ -80,7 +80,8 @@ class DynXX {
         external fun jsonDecoderInit(json: String): Long
         external fun jsonDecoderReadNode(decoder: Long, node: Long, k: String): Long
         external fun jsonDecoderReadString(decoder: Long, node: Long): String?
-        external fun jsonDecoderReadNumber(decoder: Long, node: Long): Double
+        external fun jsonDecoderReadInteger(decoder: Long, node: Long): Long
+        external fun jsonDecoderReadFloat(decoder: Long, node: Long): Double
         external fun jsonDecoderReadChild(decoder: Long, node: Long): Long
         external fun jsonDecoderReadNext(decoder: Long, node: Long): Long
         external fun jsonDecoderRelease(decoder: Long)

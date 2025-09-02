@@ -344,7 +344,7 @@ std::optional<std::string> DynXX::Core::Json::Decoder::readString(const DynXXJso
     }
 }
 
-std::optional<double> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNodeHandle node) const
+std::optional<Num> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNodeHandle node) const
 {
     if (!this->valid()) [[unlikely]]
     {
@@ -366,7 +366,11 @@ std::optional<double> DynXX::Core::Json::Decoder::readNumber(const DynXXJsonNode
         }
         case String:
         {
-            return {str2float64(makeStr(cj->valuestring))};
+            const auto str = makeStr(cj->valuestring);
+            if (str.find('.') != std::string::npos) {
+                return {str2float64(str)};
+            }
+            return {str2int64(str)};
         }
         default:
         {

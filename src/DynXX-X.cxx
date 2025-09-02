@@ -762,12 +762,28 @@ std::optional<std::string> dynxxJsonDecoderReadString(const DynXXJsonDecoderHand
     return xdecoder->readString(node);
 }
 
-std::optional<double> dynxxJsonDecoderReadNumber(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+std::optional<int64_t> dynxxJsonDecoderReadInteger(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
     if (decoder == 0) {
         return std::nullopt;
     }
     const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
-    return xdecoder->readNumber(node);
+    const auto n = xdecoder->readNumber(node);
+    if (!n.has_value()) {
+        return std::nullopt;
+    }
+    return {*std::get_if<int64_t>(&n.value())};
+}
+
+std::optional<double> dynxxJsonDecoderReadFloat(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+    if (decoder == 0) {
+        return std::nullopt;
+    }
+    const auto xdecoder = addr2ptr<Json::Decoder>(decoder);
+    const auto n = xdecoder->readNumber(node);
+    if (!n.has_value()) {
+        return std::nullopt;
+    }
+    return {*std::get_if<double>(&n.value())};
 }
 
 DynXXJsonNodeHandle dynxxJsonDecoderReadChild(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {

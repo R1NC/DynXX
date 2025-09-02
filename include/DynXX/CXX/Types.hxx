@@ -167,6 +167,8 @@ address ptr2addr(const T *ptr) {
 
 // Any Type
 
+using Num = std::variant<int64_t, double>;
+
 using Any = std::variant<int64_t, double, std::string>;
 
 inline auto Any2String(const Any &v, const std::string &defaultS = {}) {

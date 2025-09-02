@@ -66,12 +66,20 @@ DynXXJsonNodeHandle dynxx_json_decoder_read_node(const DynXXJsonDecoderHandle de
 const char *dynxx_json_decoder_read_string(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
 
 /**
- * @brief Read number from the JOSON node
+ * @brief Read integer number from the JOSON node
  * @param decoder JSON decoder
  * @param node JSON node, `nullptr` represents the root
  * @return Number
  */
-double dynxx_json_decoder_read_number(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
+int64_t dynxx_json_decoder_read_integer(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
+
+/**
+ * @brief Read float number from the JOSON node
+ * @param decoder JSON decoder
+ * @param node JSON node, `nullptr` represents the root
+ * @return Number
+ */
+double dynxx_json_decoder_read_float(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
 
 /**
  * @brief Read first child node of the Object/Array node

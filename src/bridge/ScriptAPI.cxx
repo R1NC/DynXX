@@ -53,7 +53,8 @@ namespace
         return json;
     }
 
-    template <NumberT T>
+    template <typename T> 
+    requires (IntegerT<T> || EnumT<T>)
     std::optional<T> parseNum(const Decoder &decoder, std::string_view k)
     {
         const auto node = decoder[k];
@@ -61,8 +62,30 @@ namespace
         {
             return std::nullopt;
         }
-        const auto v = decoder.readNumber(node).value();
-        return static_cast<T>(v);
+        const auto v = decoder.readNumber(node);
+        if (v == std::nullopt) [[unlikely]]
+        {
+            return std::nullopt;
+        }
+        const auto i = *std::get_if<int64_t>(&v.value());
+        return {static_cast<T>(i)};
+    }
+
+    template <FloatT T>
+    std::optional<T> parseNum(const Decoder &decoder, std::string_view k)
+    {
+        const auto node = decoder[k];
+        if (node == 0) [[unlikely]]
+        {
+            return std::nullopt;
+        }
+        const auto v = decoder.readNumber(node);
+        if (v == std::nullopt) [[unlikely]]
+        {
+            return std::nullopt;
+        }
+        const auto f = *std::get_if<double>(&v.value());
+        return {static_cast<T>(f)};
     }
 
     template <NumberT... Ns, KeyType... Ks>
@@ -108,7 +131,12 @@ namespace
             decoder.readChildren(byte_vNode, 
                             [&data, &decoder](size_t, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)
                             {
-                                data.emplace_back(decoder.readNumber(childNode).value_or(0));
+                                const auto n = decoder.readNumber(childNode);
+                                if (n.has_value())
+                                {
+                                    const auto i = *std::get_if<int64_t>(&n.value());
+                                    data.emplace_back(static_cast<uint8_t>(i));
+                                }
                             });
         }
         return data;

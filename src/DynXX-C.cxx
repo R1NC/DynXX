@@ -519,8 +519,13 @@ const char *dynxx_json_decoder_read_string(const DynXXJsonDecoderHandle decoder,
 }
 
 EXPORT_AUTO
-double dynxx_json_decoder_read_number(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
-    return dynxxJsonDecoderReadNumber(decoder, node).value_or(0.0);
+long dynxx_json_decoder_read_integer(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+    return dynxxJsonDecoderReadInteger(decoder, node).value_or(0);
+}
+
+EXPORT_AUTO
+double dynxx_json_decoder_read_float(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+    return dynxxJsonDecoderReadFloat(decoder, node).value_or(0.0);
 }
 
 EXPORT_AUTO

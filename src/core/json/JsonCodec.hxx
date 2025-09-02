@@ -50,7 +50,7 @@ namespace DynXX::Core::Json {
 
         std::optional<std::string> readString(const DynXXJsonNodeHandle node) const;
 
-        std::optional<double> readNumber(const DynXXJsonNodeHandle node) const;
+        std::optional<Num> readNumber(const DynXXJsonNodeHandle node) const;
 
         ~Decoder();
 
