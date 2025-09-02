@@ -17,6 +17,54 @@ namespace
 {
     using enum DynXXLogLevelX;
 
+        struct Req {
+        CURL *curl{nullptr};
+        curl_slist *headers{nullptr};
+        curl_mime *mime{nullptr};
+
+        Req() = default;
+        Req(const Req&) = delete;
+        Req& operator=(const Req&) = delete;
+        
+        ~Req() {
+            cleanup();
+        }
+        
+        Req(Req&& other) noexcept {
+            this->moveImp(std::move(other));
+        }
+        
+        Req& operator=(Req&& other) noexcept {
+            if (this != &other) {
+                cleanup();
+                this->moveImp(std::move(other));
+            }
+            return *this;
+        }
+        
+    private:
+        void moveImp(Req&& other) noexcept {
+            this->curl = std::exchange(other.curl, nullptr);
+            this->headers = std::exchange(other.headers, nullptr);
+            this->mime = std::exchange(other.mime, nullptr);
+        }
+
+        void cleanup() {
+            if (this->headers) {
+                curl_slist_free_all(this->headers);
+                this->headers = nullptr;
+            }
+            if (this->mime) {
+                curl_mime_free(this->mime);
+                this->mime = nullptr;
+            }
+            if (this->curl) {
+                curl_easy_cleanup(this->curl);
+                this->curl = nullptr;
+            }
+        }
+    };
+
     size_t on_post_read(char *buffer, const size_t size, size_t nmemb, RawPtr userdata)
     {
         const auto pBytes = static_cast<Bytes *>(userdata);
@@ -109,12 +157,6 @@ namespace
         return true;
     }
 
-    struct Req {
-        CURL *curl{nullptr};
-        curl_slist *headers{nullptr};
-        curl_mime *mime{nullptr};
-    };
-
     Req createReq(std::string_view url, const std::vector<std::string> &headers,
                             std::string_view params, int method, size_t timeout)
     {
@@ -189,18 +231,6 @@ namespace
         {
             dynxxLogPrintF(Error, "HttpClient.req error:{}", curl_easy_strerror(curlCode));
         }
-
-        if (req.headers)
-        {
-            curl_slist_free_all(req.headers);
-        }
-
-        if (req.mime)
-        {
-            curl_mime_free(req.mime);
-        }
-
-        curl_easy_cleanup(req.curl);
     }
 }
 
