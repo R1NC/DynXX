@@ -28,7 +28,9 @@ namespace
                 return;
             }
             this->mime = curl_mime_init(this->curl);
-            this->setOpt(CURLOPT_SSLVERSION, CURL_SSLVERSION_DEFAULT);
+            this->setOpt(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+            this->setOpt(CURLOPT_SSL_VERIFYPEER, 1L);
+            this->setOpt(CURLOPT_SSL_VERIFYHOST, 2L);
             this->setOpt(CURLOPT_USERAGENT, "DynXX");
             this->setOpt(CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
         };
