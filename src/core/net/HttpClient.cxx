@@ -17,6 +17,22 @@ namespace
 {
     using enum DynXXLogLevelX;
 
+    const char *errMsg(CURLcode code) {
+        return curl_easy_strerror(code);
+    }
+
+    bool globalInit() {
+        if (const auto ret = curl_global_init(CURL_GLOBAL_DEFAULT); ret != CURLE_OK) {
+            dynxxLogPrintF(Error, "HttpClient globalInit failed! msg: {}", errMsg(ret));
+            return false;
+        }
+        return true;
+    }
+
+    void globalRelease() {
+        curl_global_cleanup();
+    }
+
     struct Req {
         CURL *curl{nullptr};
         curl_slist *headers{nullptr};
@@ -25,6 +41,7 @@ namespace
         Req() {
             this->curl = curl_easy_init();
             if (!this->curl) [[unlikely]] {
+                dynxxLogPrint(Error, "HttpClient.Req init failed");
                 return;
             }
             this->mime = curl_mime_init(this->curl);
@@ -52,13 +69,14 @@ namespace
         
         bool appendHeader(const char *string) {
             if (!string) [[unlikely]] {
+                dynxxLogPrint(Error, "HttpClient appendHeader invalid params");
                 return false;
             }
             if (auto newHeaders = curl_slist_append(this->headers, string); newHeaders) {
                 this->headers = newHeaders;
                 return true;
             } else [[unlikely]] {
-                dynxxLogPrintF(Error, "Failed to append header: {}", string);
+                dynxxLogPrintF(Error, "HttpClient appendHeader failed: {}", string);
                 return false;
             }
         }
@@ -72,47 +90,69 @@ namespace
 
         bool addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, const size_t dataLen) const {
             if (!part || !name || !type || !dataP || dataLen == 0) [[unlikely]] {
+                dynxxLogPrint(Error, "HttpClient addMime invalid params");
                 return false;
             }
-            if (curl_mime_name(part, name) != CURLE_OK) [[unlikely]] {
-                dynxxLogPrintF(Error, "Failed to add mime name: {}", name);
+            auto ret = curl_mime_name(part, name);
+            if (ret != CURLE_OK) [[unlikely]] {
+                dynxxLogPrintF(Error, "HttpClient addMimeName failed! name: {}, msg: {}", name, errMsg(ret));
                 return false;
             }
-            if (curl_mime_type(part, type) != CURLE_OK) [[unlikely]] {
-                dynxxLogPrintF(Error, "Failed to add mime type: {}", type);
+            ret = curl_mime_type(part, type);
+            if (ret != CURLE_OK) [[unlikely]] {
+                dynxxLogPrintF(Error, "HttpClient addMimeType failed! name: {} type: {}, msg: {}", name, type, errMsg(ret));
                 return false;
             }
-            if (curl_mime_data(part, dataP, dataLen) != CURLE_OK) [[unlikely]] {
-                dynxxLogPrintF(Error, "Failed to add mime data");
+            ret = curl_mime_data(part, dataP, dataLen);
+            if (ret != CURLE_OK) [[unlikely]] {
+                dynxxLogPrintF(Error, "HttpClient addMimeData failed! name: {} type: {}, msg: {}", name, type, errMsg(ret));
                 return false;
             }
             return true;
         }
 
         template <typename T>
-        CURLcode setOpt(CURLoption option, T value) {
+        bool setOpt(CURLoption option, T value) {
             if (!this->curl) [[unlikely]]
             {
-                return CURLE_FAILED_INIT;
+                dynxxLogPrint(Error, "HttpClient setOpt invalid curl");
+                return false;
             }
-            return curl_easy_setopt(this->curl, option, value);
+            const auto ret = curl_easy_setopt(this->curl, option, value);
+            if (ret != CURLE_OK) [[unlikely]] {
+                dynxxLogPrintF(Error, "HttpClient setOpt failed! option: {}, msg: {}", static_cast<int>(option), errMsg(ret));
+                return false;
+            }
+            return true;
         }
 
-        CURLcode perform() {
+        bool perform() {
             if (!this->curl) [[unlikely]]
             {
-                return CURLE_FAILED_INIT;
+                dynxxLogPrint(Error, "HttpClient perform invalid curl");
+                return false;
             }
-            return curl_easy_perform(this->curl);
+            const auto ret = curl_easy_perform(this->curl);
+            if (ret != CURLE_OK) [[unlikely]] {
+                dynxxLogPrintF(Error, "HttpClient perform failed! msg: {}", errMsg(ret));
+                return false;
+            }
+            return true;
         }
 
         template <typename T>
-        CURLcode getInfo(CURLINFO info, T value) {
+        bool getInfo(CURLINFO info, T value) {
             if (!this->curl) [[unlikely]]
             {
-                return CURLE_FAILED_INIT;
+                dynxxLogPrint(Error, "HttpClient getInfo invalid curl");
+                return false;
             }
-            return curl_easy_getinfo(this->curl, info, value);
+            const auto ret = curl_easy_getinfo(this->curl, info, value);
+            if (ret != CURLE_OK) [[unlikely]] {
+                dynxxLogPrintF(Error, "HttpClient getInfo failed! info: {}, msg: {}", static_cast<int>(info), errMsg(ret));
+                return false;
+            }
+            return true;
         }
 
         ~Req() {
@@ -260,6 +300,7 @@ namespace
         Req req;
         if (!req.curl || !checkUrlValid(url) || !handleSSL(req, url)) [[unlikely]]
         {
+            dynxxLogPrintF(Error, "HttpClient createReq error:{}", url);
             return req;
         }
 
@@ -299,25 +340,19 @@ namespace
 
     bool submitReq(Req &req, DynXXHttpResponse &rsp)
     {
-        auto ret = req.perform();
-        if (ret != CURLE_OK) [[unlikely]]
+        if (!req.perform()) [[unlikely]]
         {
-            dynxxLogPrintF(Error, "HttpClient submitReq perform error:{}", curl_easy_strerror(ret));
             return false;
         }
 
-        ret = req.getInfo(CURLINFO_RESPONSE_CODE, &(rsp.code));
-        if (ret != CURLE_OK) [[unlikely]]
+        if (!req.getInfo(CURLINFO_RESPONSE_CODE, &(rsp.code))) [[unlikely]]
         {
-            dynxxLogPrintF(Error, "HttpClient submitReq get rsp code error:{}", curl_easy_strerror(ret));
             return false;
         }
 
         char *contentType = nullptr;
-        ret = req.getInfo(CURLINFO_CONTENT_TYPE, &contentType);
-        if (ret != CURLE_OK) [[unlikely]]
+        if (!req.getInfo(CURLINFO_CONTENT_TYPE, &contentType)) [[unlikely]]
         {
-            dynxxLogPrintF(Error, "HttpClient submitReq get rsp contentType error:{}", curl_easy_strerror(ret));
             return false;
         } 
         if (contentType) [[likely]]
@@ -331,12 +366,12 @@ namespace
 
 DynXX::Core::Net::HttpClient::HttpClient()
 {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
+    globalInit();
 }
 
 DynXX::Core::Net::HttpClient::~HttpClient()
 {
-    curl_global_cleanup();
+    globalRelease();
 }
 
 DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, int method,
