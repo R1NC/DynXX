@@ -33,18 +33,19 @@ namespace
         curl_global_cleanup();
     }
 
-    struct Req {
-        CURL *curl{nullptr};
-        curl_slist *headers{nullptr};
-        curl_mime *mime{nullptr};
+    class Req {
+    private:
+            CURL *curl{nullptr};
+            curl_slist *headers{nullptr};
+            curl_mime *mime{nullptr};
 
+    public:
         Req() {
             this->curl = curl_easy_init();
             if (!this->curl) [[unlikely]] {
                 dynxxLogPrint(Error, "HttpClient.Req init failed");
                 return;
             }
-            this->mime = curl_mime_init(this->curl);
             this->setOpt(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
             this->setOpt(CURLOPT_SSL_VERIFYPEER, 1L);
             this->setOpt(CURLOPT_SSL_VERIFYHOST, 2L);
@@ -66,6 +67,10 @@ namespace
             }
             return *this;
         }
+
+        bool valid() const {
+            return this->curl != nullptr;
+        }
         
         bool appendHeader(const char *string) {
             if (!string) [[unlikely]] {
@@ -74,6 +79,7 @@ namespace
             }
             if (auto newHeaders = curl_slist_append(this->headers, string); newHeaders) {
                 this->headers = newHeaders;
+                this->setOpt(CURLOPT_HTTPHEADER, this->headers);
                 return true;
             } else [[unlikely]] {
                 dynxxLogPrintF(Error, "HttpClient appendHeader failed: {}", string);
@@ -84,6 +90,14 @@ namespace
         curl_mimepart *addMimePart() {
             if (!this->mime) [[unlikely]] {
                 return nullptr;
+            }
+            if (!this->mime) {
+                this->mime = curl_mime_init(this->curl);
+                if (!this->mime) [[unlikely]] {
+                    dynxxLogPrint(Error, "HttpClient addMimePart init failed");
+                    return nullptr;
+                }
+                this->setOpt(CURLOPT_MIMEPOST, this->mime);
             }
             return curl_mime_addpart(this->mime);
         }
@@ -298,7 +312,7 @@ namespace
                             std::string_view params, int method, size_t timeout)
     {
         Req req;
-        if (!req.curl || !checkUrlValid(url) || !handleSSL(req, url)) [[unlikely]]
+        if (!req.valid() || !checkUrlValid(url) || !handleSSL(req, url)) [[unlikely]]
         {
             dynxxLogPrintF(Error, "HttpClient createReq error:{}", url);
             return req;
@@ -318,7 +332,6 @@ namespace
             dynxxLogPrintF(Debug, "HttpClient.req header: {}", it);
             req.appendHeader(it.c_str());
         }
-        req.setOpt(CURLOPT_HTTPHEADER, req.headers);
 
         std::string fixedUrl;
         fixedUrl.reserve(url.size() + (method == DynXXNetHttpMethodGet && !params.empty() ? params.size() + 1 : 0));
@@ -383,7 +396,7 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
                                                                  size_t timeout) const {
 
     auto req = createReq(url, headers, params, method, timeout);
-    if (!req.curl) [[unlikely]]
+    if (!req.valid()) [[unlikely]]
     {
         return {};
     }
@@ -402,7 +415,6 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
         {
             req.addMimeData(part, name.c_str(), mime.c_str(), data.c_str(), data.size());
         }
-        req.setOpt(CURLOPT_MIMEPOST, req.mime);
     }
     else if (method == DynXXNetHttpMethodPost)
     {
@@ -436,7 +448,7 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
 
 bool DynXX::Core::Net::HttpClient::download(std::string_view url, std::string_view filePath, size_t timeout) const {
     auto req = createReq(url, {}, {}, DynXXNetHttpMethodGet, timeout);
-    if (!req.curl) [[unlikely]]
+    if (!req.valid()) [[unlikely]]
     {
         return false;
     }
