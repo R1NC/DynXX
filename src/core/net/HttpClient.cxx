@@ -50,14 +50,16 @@ namespace
             return *this;
         }
         
-        void appendHeader(const char *string) {
+        bool appendHeader(const char *string) {
             if (!string) [[unlikely]] {
-                return;
+                return false;
             }
             if (auto newHeaders = curl_slist_append(this->headers, string); newHeaders) {
                 this->headers = newHeaders;
+                return true;
             } else [[unlikely]] {
                 dynxxLogPrintF(Error, "Failed to append header: {}", string);
+                return false;
             }
         }
 
@@ -68,13 +70,23 @@ namespace
             return curl_mime_addpart(this->mime);
         }
 
-        void addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, const size_t dataLen) const {
+        bool addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, const size_t dataLen) const {
             if (!part || !name || !type || !dataP || dataLen == 0) [[unlikely]] {
-                return;
+                return false;
             }
-            curl_mime_name(part, name);
-            curl_mime_type(part, type);
-            curl_mime_data(part, dataP, dataLen);
+            if (curl_mime_name(part, name) != CURLE_OK) [[unlikely]] {
+                dynxxLogPrintF(Error, "Failed to add mime name: {}", name);
+                return false;
+            }
+            if (curl_mime_type(part, type) != CURLE_OK) [[unlikely]] {
+                dynxxLogPrintF(Error, "Failed to add mime type: {}", type);
+                return false;
+            }
+            if (curl_mime_data(part, dataP, dataLen) != CURLE_OK) [[unlikely]] {
+                dynxxLogPrintF(Error, "Failed to add mime data");
+                return false;
+            }
+            return true;
         }
 
         template <typename T>
