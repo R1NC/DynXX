@@ -132,8 +132,7 @@ namespace
                 dynxxLogPrint(Error, "HttpClient setOpt invalid curl");
                 return false;
             }
-            const auto ret = curl_easy_setopt(this->curl, option, value);
-            if (ret != CURLE_OK) [[unlikely]] {
+            if (const auto ret = curl_easy_setopt(this->curl, option, value); ret != CURLE_OK) [[unlikely]] {
                 dynxxLogPrintF(Error, "HttpClient setOpt failed! option: {}, msg: {}", static_cast<int>(option), errMsg(ret));
                 return false;
             }
@@ -146,8 +145,7 @@ namespace
                 dynxxLogPrint(Error, "HttpClient perform invalid curl");
                 return false;
             }
-            const auto ret = curl_easy_perform(this->curl);
-            if (ret != CURLE_OK) [[unlikely]] {
+            if (const auto ret = curl_easy_perform(this->curl); ret != CURLE_OK) [[unlikely]] {
                 dynxxLogPrintF(Error, "HttpClient perform failed! msg: {}", errMsg(ret));
                 return false;
             }
@@ -161,8 +159,7 @@ namespace
                 dynxxLogPrint(Error, "HttpClient getInfo invalid curl");
                 return false;
             }
-            const auto ret = curl_easy_getinfo(this->curl, info, value);
-            if (ret != CURLE_OK) [[unlikely]] {
+            if (const auto ret = curl_easy_getinfo(this->curl, info, value); ret != CURLE_OK) [[unlikely]] {
                 dynxxLogPrintF(Error, "HttpClient getInfo failed! info: {}, msg: {}", static_cast<int>(info), errMsg(ret));
                 return false;
             }
