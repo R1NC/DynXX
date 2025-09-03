@@ -100,46 +100,51 @@ namespace
 
 // JS Promise wrapper
 
-    struct Promise
+    class JSPromise
     {
+    private:
+        JSContext *ctx{nullptr};
         JSValue p{JS_UNDEFINED};
         JSValue f[2]{JS_UNDEFINED, JS_UNDEFINED};
+    
+    public:
+        JSPromise() = delete;
+        JSPromise(const JSPromise &) = delete;
+        JSPromise(JSPromise &&) = delete;
+        JSPromise &operator=(const JSPromise &) = delete;
+        JSPromise &operator=(JSPromise &&) = delete;
+
+        explicit JSPromise(JSContext *ctx) : ctx(ctx) {
+            this->p = JS_NewPromiseCapability(ctx, this->f);
+            if (JS_IsException(this->p)) [[unlikely]] {
+                dynxxLogPrint(Error, "JSVM_NewPromise failed ->");
+                dumpJsErr(ctx);
+                JS_FreeValue(ctx, this->p);
+                this->p = JS_UNDEFINED;
+            }
+        }
+
+        void callbackJS(JSValue &ret) {
+            const auto jCallRet = JS_Call(this->ctx, this->f[0], JS_UNDEFINED, 1, &ret);
+            if (JS_IsException(jCallRet)) [[unlikely]] {
+                dynxxLogPrint(Error, "JSVM_CallPromise failed ->");
+                dumpJsErr(this->ctx);
+            }
+            JS_FreeValue(this->ctx, ret);
+            JS_FreeValue(this->ctx, jCallRet);
+        }
+
+        JSValue jsObj() const {
+            return this->p;
+        }
+
+        ~JSPromise()
+        {
+            JS_FreeValue(this->ctx, this->f[0]);
+            JS_FreeValue(this->ctx, this->f[1]);
+            //JS_FreeValue(this->ctx, this->p);
+        }
     };
-
-    Promise* _newPromise(JSContext *ctx)
-    {
-        auto jPromise = new(std::nothrow) Promise();
-        if (!jPromise) [[unlikely]] {
-            dynxxLogPrint(Error, "new Promise failed");
-            return nullptr;
-        }
-        jPromise->p = JS_NewPromiseCapability(ctx, jPromise->f);
-        if (JS_IsException(jPromise->p)) [[unlikely]]
-        {
-            dynxxLogPrint(Error, "JS_NewPromise failed ->");
-            dumpJsErr(ctx);
-            JS_FreeValue(ctx, jPromise->p);
-            return nullptr;
-        }
-        return jPromise;
-    }
-
-    void _callbackPromise(JSContext *ctx, Promise *jPromise, JSValue jRet)
-    {
-        const auto jCallRet = JS_Call(ctx, jPromise->f[0], JS_UNDEFINED, 1, &jRet);
-        if (JS_IsException(jCallRet)) [[unlikely]]
-        {
-            dynxxLogPrint(Error, "JS_CallPromise failed ->");
-            dumpJsErr(ctx);
-        }
-
-        JS_FreeValue(ctx, jCallRet);
-        JS_FreeValue(ctx, jRet);
-        JS_FreeValue(ctx, jPromise->f[0]);
-        JS_FreeValue(ctx, jPromise->f[1]);
-        // JS_FreeValue(ctx, jPromise->p);
-        delete jPromise;
-    }
 }
 
 // JSVM Internal
@@ -331,21 +336,22 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
 
 JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
 {
-    auto jPromise = _newPromise(this->context);
-    if (!jPromise) [[unlikely]]
-    {
-        return JS_EXCEPTION;
+    auto jPromise = new(std::nothrow) JSPromise(this->context);
+    if (!jPromise) [[unlikely]] {
+        dynxxLogPrint(Error, "new Promise failed");
+        return JS_UNDEFINED;
     }
     
     this->executor >> [&mtx = this->vmMutex, ctx = this->context, jPromise, cbk = std::move(jf)] {
         auto lock = std::scoped_lock(mtx);
 
-        const auto jRet = cbk();
+        auto ret = cbk();
+        jPromise->callbackJS(ret);
 
-        _callbackPromise(ctx, jPromise, jRet);
+        delete jPromise;
     };
 
-    return jPromise->p;
+    return jPromise->jsObj();
 }
 
 JSValue DynXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&vf)
