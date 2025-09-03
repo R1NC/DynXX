@@ -370,6 +370,8 @@ namespace
             rsp.contentType = contentType;
         }
 
+        dynxxLogPrintF(Debug, "HttpClient.rsp code: {} data: {}", rsp.code, rsp.data);
+
         return true;
     }
 }
