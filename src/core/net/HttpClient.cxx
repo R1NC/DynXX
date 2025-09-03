@@ -54,7 +54,11 @@ namespace
             if (!string) [[unlikely]] {
                 return;
             }
-            this->headers = curl_slist_append(this->headers, string);
+            if (auto newHeaders = curl_slist_append(this->headers, string); newHeaders) {
+                this->headers = newHeaders;
+            } else [[unlikely]] {
+                dynxxLogPrintF(Error, "Failed to append header: {}", string);
+            }
         }
 
         curl_mimepart *addMimePart() {
