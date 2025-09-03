@@ -42,7 +42,7 @@ DynXXJsonNodeHandle dynxxJsonDecoderReadChild(const DynXXJsonDecoderHandle decod
 
 size_t dynxxJsonDecoderReadChildrenCount(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = 0);
 
-void dynxxJsonDecoderReadChildren(const DynXXJsonDecoderHandle decoder, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback,
+void dynxxJsonDecoderReadChildren(const DynXXJsonDecoderHandle decoder, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback,
                                    const DynXXJsonNodeHandle node = 0);
 
 DynXXJsonNodeHandle dynxxJsonDecoderReadNext(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = 0);

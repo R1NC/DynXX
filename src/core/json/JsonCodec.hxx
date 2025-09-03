@@ -42,7 +42,7 @@ namespace DynXX::Core::Json {
 
         size_t readChildrenCount(const DynXXJsonNodeHandle node) const;
 
-        void readChildren(const DynXXJsonNodeHandle node, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback) const;
+        void readChildren(const DynXXJsonNodeHandle node, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback) const;
 
         DynXXJsonNodeHandle readNode(const DynXXJsonNodeHandle node, std::string_view k) const;
 

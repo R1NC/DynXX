@@ -412,13 +412,13 @@ size_t DynXX::Core::Json::Decoder::readChildrenCount(const DynXXJsonNodeHandle n
         return 0;
     }
     size_t count = 0;
-    this->readChildren(node, [&count](size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName) {
+    this->readChildren(node, [&count](size_t, const DynXXJsonNodeHandle, const DynXXJsonNodeTypeX, std::string_view) {
         count++;
     });
     return count;
 }
 
-void DynXX::Core::Json::Decoder::readChildren(const DynXXJsonNodeHandle node, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback) const
+void DynXX::Core::Json::Decoder::readChildren(const DynXXJsonNodeHandle node, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback) const
 {
     if (!this->valid()) [[unlikely]]
     {
@@ -433,7 +433,7 @@ void DynXX::Core::Json::Decoder::readChildren(const DynXXJsonNodeHandle node, st
     for (auto childNode = this->readChild(node); childNode != 0; childNode = this->readNext(childNode), idx++)
     {
         const auto type = nodeReadType(childNode);
-        const auto name = nodeReadName(childNode);
+        const auto name = nodeReadName(childNode).value_or("");
         cbk(idx, childNode, type, name);
     }
 }
