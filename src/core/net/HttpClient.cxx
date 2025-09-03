@@ -65,9 +65,13 @@ namespace
         }
     };
 
-    size_t on_post_read(char *buffer, const size_t size, size_t nmemb, RawPtr userdata)
+    size_t on_post_read(char *buffer, const size_t size, size_t nmemb, RawPtr userp)
     {
-        const auto pBytes = static_cast<Bytes *>(userdata);
+        if (!buffer || !userp) [[unlikely]]
+        {
+            return 0;
+        }
+        const auto pBytes = static_cast<Bytes *>(userp);
         const auto len = static_cast<long>(std::min<size_t>(size * nmemb, pBytes->size()));
         if (len > 0) [[likely]]
         {
@@ -77,31 +81,47 @@ namespace
         return len;
     }
 
-    size_t on_upload_read(char *ptr, const size_t size, size_t nmemb, RawPtr stream)
+    size_t on_upload_read(char *buffer, const size_t size, size_t nmemb, RawPtr userp)
     {
-        const auto ret = std::fread(ptr, size, nmemb, static_cast<std::FILE *>(stream));
+        if (!buffer || !userp) [[unlikely]]
+        {
+            return 0;
+        }
+        const auto ret = std::fread(buffer, size, nmemb, static_cast<std::FILE *>(userp));
         dynxxLogPrintF(Debug, "HttpClient read {} bytes from file", ret);
         return ret;
     }
 
-    size_t on_download_write(const char *contents, const size_t size, const size_t nmemb, RawPtr userp) {
+    size_t on_download_write(const char *buffer, const size_t size, const size_t nmemb, RawPtr userp) {
+        if (!buffer || !userp) [[unlikely]]
+        {
+            return 0;
+        }
         auto& file = *static_cast<std::ofstream*>(userp);
-        file.write(contents, size * nmemb);
+        file.write(buffer, size * nmemb);
         const auto ret = file.good() ? size * nmemb : 0;
         dynxxLogPrintF(Debug, "HttpClient write {} bytes to file", ret);
         return ret;
     }
 
-    size_t on_write(const char *contents, const size_t size, size_t nmemb, RawPtr userp)
+    size_t on_write_rsp_data(const char *buffer, const size_t size, size_t nmemb, RawPtr userp)
     {
+        if (!buffer || !userp) [[unlikely]]
+        {
+            return 0;
+        }
         const auto pS = static_cast<std::string *>(userp);
-        pS->append(contents, size * nmemb);
+        pS->append(buffer, size * nmemb);
         return size * nmemb;
     }
 
-    size_t on_handle_rsp_headers(const char *buffer, const size_t size, size_t nitems, RawPtr userdata)
+    size_t on_write_rsp_headers(const char *buffer, const size_t size, size_t nitems, RawPtr userp)
     {
-        const auto pHeaders = static_cast<Dict *>(userdata);
+        if (!buffer || !userp) [[unlikely]]
+        {
+            return 0;
+        }
+        const auto pHeaders = static_cast<Dict *>(userp);
         std::string header(buffer, size * nitems);
         if (const auto colonPos = header.find(':'); colonPos != std::string::npos) [[likely]]
         {
@@ -298,10 +318,10 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
 
     DynXXHttpResponse rsp;
 
-    curl_easy_setopt(req.curl, CURLOPT_WRITEFUNCTION, on_write);
+    curl_easy_setopt(req.curl, CURLOPT_WRITEFUNCTION, on_write_rsp_data);
     curl_easy_setopt(req.curl, CURLOPT_WRITEDATA, &rsp.data);
 
-    curl_easy_setopt(req.curl, CURLOPT_HEADERFUNCTION, on_handle_rsp_headers);
+    curl_easy_setopt(req.curl, CURLOPT_HEADERFUNCTION, on_write_rsp_headers);
     curl_easy_setopt(req.curl, CURLOPT_HEADERDATA, &rsp.headers);
 
     submitReq(req, rsp);

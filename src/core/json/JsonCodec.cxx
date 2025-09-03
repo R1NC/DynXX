@@ -402,11 +402,20 @@ size_t DynXX::Core::Json::Decoder::readChildrenCount(const DynXXJsonNodeHandle n
         return 0;
     }
     const auto cj = this->reinterpretNode(node);
-    if (const auto type = nodeReadType(node); type != Object && type != Array) [[unlikely]]
+    const auto type = nodeReadType(node);
+    if (type == Array) [[likely]]
+    {
+        return cJSON_GetArraySize(cj);
+    }
+    if (type != Object) [[unlikely]]
     {
         return 0;
     }
-    return cJSON_GetArraySize(cj);
+    size_t count = 0;
+    this->readChildren(node, [&count](size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName) {
+        count++;
+    });
+    return count;
 }
 
 void DynXX::Core::Json::Decoder::readChildren(const DynXXJsonNodeHandle node, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, const std::optional<std::string> childName)> &&callback) const

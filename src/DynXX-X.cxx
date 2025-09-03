@@ -448,6 +448,9 @@ std::optional<std::string> DynXXHttpResponse::toJson() const {
 
     const auto cjHeaders = cJSON_CreateObject();
     for (const auto &[k, v]: this->headers) {
+        if (k.empty() || v.empty()) [[unlikely]] {
+            continue;
+        }
         if (!cJSON_AddStringToObject(cjHeaders, k.c_str(), v.c_str())) [[unlikely]] {
             cJSON_Delete(cjHeaders);
             cJSON_Delete(cj);
@@ -461,7 +464,7 @@ std::optional<std::string> DynXXHttpResponse::toJson() const {
         return std::nullopt;
     }
 
-    if (!cJSON_AddStringToObject(cj, "data", this->data.c_str())) [[unlikely]] {
+    if (!cJSON_AddStringToObject(cj, "data", this->data.empty() ? "" : this->data.c_str())) [[unlikely]] {
         cJSON_Delete(cj);
         return std::nullopt;
     }
