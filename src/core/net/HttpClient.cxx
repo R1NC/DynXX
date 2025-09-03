@@ -62,7 +62,7 @@ namespace
             return curl_mime_addpart(this->mime);
         }
 
-        void addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, const size_t dataLen) {
+        void addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, const size_t dataLen) const {
             if (!part || !name || !type || !dataP || dataLen == 0) [[unlikely]] {
                 return;
             }
@@ -71,16 +71,13 @@ namespace
             curl_mime_data(part, dataP, dataLen);
         }
 
-        CURLcode setOpt(CURLoption option, ...) {
+        template <typename T>
+        CURLcode setOpt(CURLoption option, T value) {
             if (!this->curl) [[unlikely]]
             {
                 return CURLE_FAILED_INIT;
             }
-            va_list args;
-            va_start(args, option);
-            const auto ret = curl_easy_setopt(this->curl, option, va_arg(args, long));
-            va_end(args);
-            return ret;
+            return curl_easy_setopt(this->curl, option, value);
         }
 
         CURLcode perform() {
@@ -91,16 +88,13 @@ namespace
             return curl_easy_perform(this->curl);
         }
 
-        CURLcode getInfo(CURLINFO info, ... ) {
+        template <typename T>
+        CURLcode getInfo(CURLINFO info, T value) {
             if (!this->curl) [[unlikely]]
             {
                 return CURLE_FAILED_INIT;
             }
-            va_list args;
-            va_start(args, info);
-            const auto ret = curl_easy_getinfo(this->curl, info, va_arg(args, long));
-            va_end(args);
-            return ret;
+            return curl_easy_getinfo(this->curl, info, value);
         }
 
         ~Req() {
