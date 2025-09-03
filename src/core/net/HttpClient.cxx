@@ -281,23 +281,35 @@ namespace
         return req;
     }
 
-    void submitReq(Req &req, DynXXHttpResponse &rsp)
+    bool submitReq(Req &req, DynXXHttpResponse &rsp)
     {
-        auto curlCode = req.perform();
+        auto ret = req.perform();
+        if (ret != CURLE_OK) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "HttpClient submitReq perform error:{}", curl_easy_strerror(ret));
+            return false;
+        }
 
-        req.getInfo(CURLINFO_RESPONSE_CODE, &(rsp.code));
+        ret = req.getInfo(CURLINFO_RESPONSE_CODE, &(rsp.code));
+        if (ret != CURLE_OK) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "HttpClient submitReq get rsp code error:{}", curl_easy_strerror(ret));
+            return false;
+        }
 
-        char *contentType;
-        req.getInfo(CURLINFO_CONTENT_TYPE, &contentType);
-        if (contentType)
+        char *contentType = nullptr;
+        ret = req.getInfo(CURLINFO_CONTENT_TYPE, &contentType);
+        if (ret != CURLE_OK) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "HttpClient submitReq get rsp contentType error:{}", curl_easy_strerror(ret));
+            return false;
+        } 
+        if (contentType) [[likely]]
         {
             rsp.contentType = contentType;
         }
 
-        if (curlCode != CURLE_OK) [[unlikely]]
-        {
-            dynxxLogPrintF(Error, "HttpClient.req error:{}", curl_easy_strerror(curlCode));
-        }
+        return true;
     }
 }
 
