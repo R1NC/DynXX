@@ -24,7 +24,13 @@ namespace
 
         Req() {
             this->curl = curl_easy_init();
+            if (!this->curl) [[unlikely]] {
+                return;
+            }
             this->mime = curl_mime_init(this->curl);
+            this->setOpt(CURLOPT_SSLVERSION, CURL_SSLVERSION_DEFAULT);
+            this->setOpt(CURLOPT_USERAGENT, "DynXX");
+            this->setOpt(CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
         };
 
         Req(const Req&) = delete;
@@ -252,9 +258,6 @@ namespace
         }
         req.setOpt(CURLOPT_CONNECTTIMEOUT_MS, _timeout);
         req.setOpt(CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
-
-        req.setOpt(CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
-        req.setOpt(CURLOPT_USERAGENT, "DynXX");
         req.setOpt(CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
 
         for (const auto &it : headers)
