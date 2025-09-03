@@ -22,7 +22,11 @@ namespace
         curl_slist *headers{nullptr};
         curl_mime *mime{nullptr};
 
-        Req() = default;
+        Req() {
+            this->curl = curl_easy_init();
+            this->mime = curl_mime_init(this->curl);
+        };
+
         Req(const Req&) = delete;
         Req& operator=(const Req&) = delete;
         
@@ -31,11 +35,66 @@ namespace
         }
         
         Req& operator=(Req&& other) noexcept {
-            if (this != &other) {
+            if (this != &other) [[likely]] {
                 cleanup();
                 this->moveImp(std::move(other));
             }
             return *this;
+        }
+        
+        void appendHeader(const char *string) {
+            if (!string) [[unlikely]] {
+                return;
+            }
+            this->headers = curl_slist_append(this->headers, string);
+        }
+
+        curl_mimepart *addMimePart() {
+            if (!this->mime) [[unlikely]] {
+                return nullptr;
+            }
+            return curl_mime_addpart(this->mime);
+        }
+
+        void addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, const size_t dataLen) {
+            if (!part || !name || !type || !dataP || dataLen == 0) [[unlikely]] {
+                return;
+            }
+            curl_mime_name(part, name);
+            curl_mime_type(part, type);
+            curl_mime_data(part, dataP, dataLen);
+        }
+
+        CURLcode setOpt(CURLoption option, ...) {
+            if (!this->curl) [[unlikely]]
+            {
+                return CURLE_FAILED_INIT;
+            }
+            va_list args;
+            va_start(args, option);
+            const auto ret = curl_easy_setopt(this->curl, option, va_arg(args, long));
+            va_end(args);
+            return ret;
+        }
+
+        CURLcode perform() {
+            if (!this->curl) [[unlikely]]
+            {
+                return CURLE_FAILED_INIT;
+            }
+            return curl_easy_perform(this->curl);
+        }
+
+        CURLcode getInfo(CURLINFO info, ... ) {
+            if (!this->curl) [[unlikely]]
+            {
+                return CURLE_FAILED_INIT;
+            }
+            va_list args;
+            va_start(args, info);
+            const auto ret = curl_easy_getinfo(this->curl, info, va_arg(args, long));
+            va_end(args);
+            return ret;
         }
 
         ~Req() {
@@ -58,7 +117,7 @@ namespace
                 curl_mime_free(this->mime);
                 this->mime = nullptr;
             }
-            if (this->curl) {
+            if (this->curl) [[likely]] {
                 curl_easy_cleanup(this->curl);
                 this->curl = nullptr;
             }
@@ -158,7 +217,7 @@ namespace
 #endif
     }
 
-    bool handleSSL(CURL * curl, std::string_view url)
+    bool handleSSL(Req &req, std::string_view url)
     {
 #if defined(USE_ADA)
         const auto aUrl = ada::parse(url);
@@ -171,8 +230,8 @@ namespace
         if (static const auto prefixHttps = "https://"; url.starts_with(prefixHttps))
 #endif
         { // TODO: verify SSL cet
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+            req.setOpt(CURLOPT_SSL_VERIFYPEER, 0L);
+            req.setOpt(CURLOPT_SSL_VERIFYHOST, 0L);
         }
         return true;
     }
@@ -181,18 +240,7 @@ namespace
                             std::string_view params, int method, size_t timeout)
     {
         Req req;
-        if (!checkUrlValid(url)) [[unlikely]]
-        {
-            return req;
-        }
-
-        req.curl = curl_easy_init();
-        if (!req.curl) [[unlikely]]
-        {
-            return req;
-        }
-
-        if (!handleSSL(req.curl, url)) [[unlikely]]
+        if (!req.curl || !checkUrlValid(url) || !handleSSL(req, url)) [[unlikely]]
         {
             return req;
         }
@@ -202,19 +250,19 @@ namespace
         {
             _timeout = DYNXX_HTTP_DEFAULT_TIMEOUT;
         }
-        curl_easy_setopt(req.curl, CURLOPT_CONNECTTIMEOUT_MS, _timeout);
-        curl_easy_setopt(req.curl, CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
+        req.setOpt(CURLOPT_CONNECTTIMEOUT_MS, _timeout);
+        req.setOpt(CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
 
-        curl_easy_setopt(req.curl, CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
-        curl_easy_setopt(req.curl, CURLOPT_USERAGENT, "DynXX");
-        curl_easy_setopt(req.curl, CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
+        req.setOpt(CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
+        req.setOpt(CURLOPT_USERAGENT, "DynXX");
+        req.setOpt(CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
 
         for (const auto &it : headers)
         {
             dynxxLogPrintF(Debug, "HttpClient.req header: {}", it);
-            req.headers = curl_slist_append(req.headers, it.c_str());
+            req.appendHeader(it.c_str());
         }
-        curl_easy_setopt(req.curl, CURLOPT_HTTPHEADER, req.headers);
+        req.setOpt(CURLOPT_HTTPHEADER, req.headers);
 
         std::string fixedUrl;
         fixedUrl.reserve(url.size() + (method == DynXXNetHttpMethodGet && !params.empty() ? params.size() + 1 : 0));
@@ -229,19 +277,19 @@ namespace
         }
     
         dynxxLogPrintF(Debug, "HttpClient.req url: {}", fixedUrl);
-        curl_easy_setopt(req.curl, CURLOPT_URL, fixedUrl.c_str());
+        req.setOpt(CURLOPT_URL, fixedUrl.c_str());
 
         return req;
     }
 
-    void submitReq(const Req &req, DynXXHttpResponse &rsp)
+    void submitReq(Req &req, DynXXHttpResponse &rsp)
     {
-        auto curlCode = curl_easy_perform(req.curl);
+        auto curlCode = req.perform();
 
-        curl_easy_getinfo(req.curl, CURLINFO_RESPONSE_CODE, &(rsp.code));
+        req.getInfo(CURLINFO_RESPONSE_CODE, &(rsp.code));
 
         char *contentType;
-        curl_easy_getinfo(req.curl, CURLINFO_CONTENT_TYPE, &contentType);
+        req.getInfo(CURLINFO_CONTENT_TYPE, &contentType);
         if (contentType)
         {
             rsp.contentType = contentType;
@@ -280,49 +328,44 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
 
     if (cFILE != nullptr)
     {
-        curl_easy_setopt(req.curl, CURLOPT_UPLOAD, 1L);
-        curl_easy_setopt(req.curl, CURLOPT_READFUNCTION, on_upload_read);
-        curl_easy_setopt(req.curl, CURLOPT_READDATA, cFILE);
-        curl_easy_setopt(req.curl, CURLOPT_INFILESIZE_LARGE, fileSize);
+        req.setOpt(CURLOPT_UPLOAD, 1L);
+        req.setOpt(CURLOPT_READFUNCTION, on_upload_read);
+        req.setOpt(CURLOPT_READDATA, cFILE);
+        req.setOpt(CURLOPT_INFILESIZE_LARGE, fileSize);
     }
     else if (!formFields.empty())
     {
-        req.mime = curl_mime_init(req.curl);
-        const auto part = curl_mime_addpart(req.mime);
-
+        const auto part = req.addMimePart();
         for (const auto &[name, mime, data] : formFields)
         {
-            curl_mime_name(part, name.c_str());
-            curl_mime_type(part, mime.c_str());
-            curl_mime_data(part, data.c_str(), CURL_ZERO_TERMINATED);
+            req.addMimeData(part, name.c_str(), mime.c_str(), data.c_str(), data.size());
         }
-
-        curl_easy_setopt(req.curl, CURLOPT_MIMEPOST, req.mime);
+        req.setOpt(CURLOPT_MIMEPOST, req.mime);
     }
     else if (method == DynXXNetHttpMethodPost)
     {
-        curl_easy_setopt(req.curl, CURLOPT_POST, 1L);
+        req.setOpt(CURLOPT_POST, 1L);
         if (rawBody.empty())
         {
-            curl_easy_setopt(req.curl, CURLOPT_POSTFIELDS, params.data());
-            curl_easy_setopt(req.curl, CURLOPT_POSTFIELDSIZE, params.size());
+            req.setOpt(CURLOPT_POSTFIELDS, params.data());
+            req.setOpt(CURLOPT_POSTFIELDSIZE, params.size());
         }
         else
         {
-            curl_easy_setopt(req.curl, CURLOPT_READFUNCTION, on_post_read);
-            curl_easy_setopt(req.curl, CURLOPT_READDATA, &rawBody);
-            curl_easy_setopt(req.curl, CURLOPT_POSTFIELDS, nullptr);
-            curl_easy_setopt(req.curl, CURLOPT_POSTFIELDSIZE, rawBody.size());
+            req.setOpt(CURLOPT_READFUNCTION, on_post_read);
+            req.setOpt(CURLOPT_READDATA, &rawBody);
+            req.setOpt(CURLOPT_POSTFIELDS, nullptr);
+            req.setOpt(CURLOPT_POSTFIELDSIZE, rawBody.size());
         }
     }
 
     DynXXHttpResponse rsp;
 
-    curl_easy_setopt(req.curl, CURLOPT_WRITEFUNCTION, on_write_rsp_data);
-    curl_easy_setopt(req.curl, CURLOPT_WRITEDATA, &rsp.data);
+    req.setOpt(CURLOPT_WRITEFUNCTION, on_write_rsp_data);
+    req.setOpt(CURLOPT_WRITEDATA, &rsp.data);
 
-    curl_easy_setopt(req.curl, CURLOPT_HEADERFUNCTION, on_write_rsp_headers);
-    curl_easy_setopt(req.curl, CURLOPT_HEADERDATA, &rsp.headers);
+    req.setOpt(CURLOPT_HEADERFUNCTION, on_write_rsp_headers);
+    req.setOpt(CURLOPT_HEADERDATA, &rsp.headers);
 
     submitReq(req, rsp);
     
@@ -343,9 +386,9 @@ bool DynXX::Core::Net::HttpClient::download(std::string_view url, std::string_vi
         return false;
     }
 
-    curl_easy_setopt(req.curl, CURLOPT_NOPROGRESS, 1L);
-    curl_easy_setopt(req.curl, CURLOPT_WRITEFUNCTION, on_download_write);
-    curl_easy_setopt(req.curl, CURLOPT_WRITEDATA, &file);
+    req.setOpt(CURLOPT_NOPROGRESS, 1L);
+    req.setOpt(CURLOPT_WRITEFUNCTION, on_download_write);
+    req.setOpt(CURLOPT_WRITEDATA, &file);
 
     DynXXHttpResponse rsp;
     submitReq(req, rsp);
