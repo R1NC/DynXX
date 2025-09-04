@@ -71,7 +71,7 @@ namespace DynXX::Core::Concurrent {
 
         Worker &operator=(Worker &&) = delete;
 
-        ~Worker() = default;
+        ~Worker() override = default;
 
         Worker &operator>>(TaskT &&task);
 
