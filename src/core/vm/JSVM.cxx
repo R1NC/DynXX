@@ -204,7 +204,7 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
     return ret;
 }
 
-// JSValueHash & JSValueEqual
+// JSValueHash and JSValueEqual
 
 std::size_t DynXX::Core::VM::JSVM::JSValueHash::operator()(const JSValue &jv) const 
 {
@@ -435,9 +435,7 @@ DynXX::Core::VM::JSVM::~JSVM()
         JS_FreeValue(this->context.get(), jv);
     }
     JS_FreeValue(this->context.get(), jGlobal);
-    this->context.reset();
 
     js_std_free_handlers(this->runtime.get());
-    this->runtime.reset();
 }
 #endif

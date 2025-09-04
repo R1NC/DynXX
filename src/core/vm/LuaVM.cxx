@@ -167,6 +167,7 @@ DynXX::Core::VM::LuaVM::~LuaVM()
     timerExecutor.reset();
     _loop_stop();
 #endif
+
 }
 
 void DynXX::Core::VM::LuaVM::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
