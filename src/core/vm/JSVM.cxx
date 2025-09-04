@@ -103,7 +103,7 @@ namespace
     class JSPromise
     {
     private:
-        JSContext *ctx{nullptr};
+        std::weak_ptr<JSContext> ctx{};
         JSValue p{JS_UNDEFINED};
         JSValue f[2]{JS_UNDEFINED, JS_UNDEFINED};
     
@@ -114,35 +114,48 @@ namespace
         JSPromise &operator=(const JSPromise &) = delete;
         JSPromise &operator=(JSPromise &&) = delete;
 
-        explicit JSPromise(JSContext *ctx) : ctx(ctx) {
-            this->p = JS_NewPromiseCapability(ctx, this->f);
+        explicit JSPromise(const std::shared_ptr<JSContext> &ctx) : ctx(ctx) {
+            const auto weakCtx = this->ctx.lock();
+            if (!weakCtx) [[unlikely]] {
+                return;
+            }
+            this->p = JS_NewPromiseCapability(weakCtx.get(), this->f);
+            JSValue funcs[2];
             if (JS_IsException(this->p)) [[unlikely]] {
                 dynxxLogPrint(Error, "JSVM_NewPromise failed ->");
-                dumpJsErr(ctx);
-                JS_FreeValue(ctx, this->p);
+                dumpJsErr(weakCtx.get());
+                JS_FreeValue(weakCtx.get(), this->p);
                 this->p = JS_UNDEFINED;
             }
         }
 
         void callbackJS(JSValue &ret) {
-            const auto jCallRet = JS_Call(this->ctx, this->f[0], JS_UNDEFINED, 1, &ret);
+            const auto weakCtx = this->ctx.lock();
+            if (!weakCtx) [[unlikely]] {
+                return;
+            }
+            const auto jCallRet = JS_Call(weakCtx.get(), this->f[0], JS_UNDEFINED, 1, &ret);
             if (JS_IsException(jCallRet)) [[unlikely]] {
                 dynxxLogPrint(Error, "JSVM_CallPromise failed ->");
-                dumpJsErr(this->ctx);
+                dumpJsErr(weakCtx.get());
             }
-            JS_FreeValue(this->ctx, ret);
-            JS_FreeValue(this->ctx, jCallRet);
+            JS_FreeValue(weakCtx.get(), ret);
+            JS_FreeValue(weakCtx.get(), jCallRet);
         }
 
-        JSValue jsObj() const {
+        JSValue& jsObj() {
             return this->p;
         }
 
         ~JSPromise()
         {
-            JS_FreeValue(this->ctx, this->f[0]);
-            JS_FreeValue(this->ctx, this->f[1]);
-            //JS_FreeValue(this->ctx, this->p);
+            const auto weakCtx = this->ctx.lock();
+            if (!weakCtx) [[unlikely]] {
+                return;
+            }
+            JS_FreeValue(weakCtx.get(), this->f[0]);
+            JS_FreeValue(weakCtx.get(), this->f[1]);
+            //JS_FreeValue(weakCtx.get(), this->p);
         }
     };
 }
@@ -155,21 +168,22 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
     for (;;)
     {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
+        const auto ctx = this->context.get();
         if (!tryLock()) [[unlikely]]
         {
             sleep();
             continue;
         }
-        if (const auto state = JS_PromiseState(this->context, obj); state == JS_PROMISE_FULFILLED)
+        if (const auto state = JS_PromiseState(ctx, obj); state == JS_PROMISE_FULFILLED)
         {
-            ret = JS_PromiseResult(this->context, obj);
-            JS_FreeValue(this->context, obj);
+            ret = JS_PromiseResult(ctx, obj);
+            JS_FreeValue(ctx, obj);
             break;
         }
         else if (state == JS_PROMISE_REJECTED)
         {
-            ret = JS_Throw(this->context, JS_PromiseResult(this->context, obj));
-            JS_FreeValue(this->context, obj);
+            ret = JS_Throw(ctx, JS_PromiseResult(ctx, obj));
+            JS_FreeValue(ctx, obj);
             break;
         }
         else if (state == JS_PROMISE_PENDING)
@@ -221,27 +235,26 @@ bool DynXX::Core::VM::JSVM::JSValueEqual::operator()(const JSValue &left, const 
 
 // JSVM API
 
-DynXX::Core::VM::JSVM::JSVM()
+DynXX::Core::VM::JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
 {
-    this->runtime = JS_NewRuntime();
-    js_std_init_handlers(this->runtime);
-    JS_SetModuleLoaderFunc(this->runtime, nullptr, js_module_loader, nullptr);
+    js_std_init_handlers(this->runtime.get());
+    JS_SetModuleLoaderFunc(this->runtime.get(), nullptr, js_module_loader, nullptr);
     js_std_set_worker_new_context_func(_newContext);
 
-    this->context = _newContext(this->runtime);
-    this->jGlobal = JS_GetGlobalObject(this->context);// Can not free here, will be called in future
+    this->context = std::shared_ptr<JSContext>(_newContext(this->runtime.get()), JS_FreeContext);
+    this->jGlobal = JS_GetGlobalObject(this->context.get());// Can not free here, will be called in future
 
     this->executor >> [this]() {
         if (tryLock())
         {
-            js_std_loop_promise(context);
+            js_std_loop_promise(context.get());
             unlock();
         }
     };
     this->executor >> [this]() {
         if (tryLock())
         {
-            js_std_loop_timer(context);
+            js_std_loop_timer(context.get());
             unlock();
         }
     };
@@ -250,19 +263,20 @@ DynXX::Core::VM::JSVM::JSVM()
 bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
 {
     auto res = true;
-    const auto jFunc = JS_NewCFunction(this->context, funcC, funcJ.c_str(), 1);
+    const auto ctx = this->context.get();
+    const auto jFunc = JS_NewCFunction(ctx, funcC, funcJ.c_str(), 1);
     if (JS_IsException(jFunc)) [[unlikely]]
     {
         dynxxLogPrint(Error, "JS_NewCFunction failed ->");
-        dumpJsErr(this->context);
+        dumpJsErr(ctx);
         res = false;
     }
     else [[likely]]
     {
-        if (!JS_DefinePropertyValueStr(this->context, this->jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE)) [[unlikely]]
+        if (!JS_DefinePropertyValueStr(ctx, this->jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE)) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_DefinePropertyValueStr failed ->");
-            dumpJsErr(this->context);
+            dumpJsErr(ctx);
             res = false;
         }
     }
@@ -282,12 +296,12 @@ bool DynXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
 
 bool DynXX::Core::VM::JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
     auto lock = std::scoped_lock(this->vmMutex);
-    return _loadScript(this->context, script, name, isModule);
+    return _loadScript(this->context.get(), script, name, isModule);
 }
 
 bool DynXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
     auto lock = std::scoped_lock(this->vmMutex);
-    return js_std_eval_binary(this->context, bytes.data(), bytes.size(), 0);
+    return js_std_eval_binary(this->context.get(), bytes.data(), bytes.size(), 0);
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
@@ -296,12 +310,14 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
     std::string s;
     auto success = false;
 
-    if (const auto jFunc = JS_GetPropertyStr(this->context, this->jGlobal, func.data()); JS_IsFunction(this->context, jFunc)) [[likely]]
+    const auto ctx = this->context.get();
+
+    if (const auto jFunc = JS_GetPropertyStr(ctx, this->jGlobal, func.data()); JS_IsFunction(ctx, jFunc)) [[likely]]
     {
-        const auto jParams = JS_NewString(this->context, params.data());
+        const auto jParams = JS_NewString(ctx, params.data());
         JSValue argv[] = {jParams};
 
-        auto jRes = JS_Call(this->context, jFunc, this->jGlobal, sizeof(argv), argv);
+        auto jRes = JS_Call(ctx, jFunc, this->jGlobal, sizeof(argv), argv);
 
         /// Release the lock imediately, to avoid blocking the JS event loop.
         lock.unlock();
@@ -309,7 +325,7 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
         if (JS_IsException(jRes)) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_Call failed ->");
-            dumpJsErr(this->context);
+            dumpJsErr(ctx);
         }
         else [[likely]]
         {
@@ -318,12 +334,12 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
             {/// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
                 jRes = this->jAwait(jRes); // Handle promise if needed
             }
-            const auto cS = JS_ToCString(this->context, jRes);
+            const auto cS = JS_ToCString(ctx, jRes);
             s = std::move(makeStr(cS));
-            JS_FreeCString(this->context, cS);
+            JS_FreeCString(ctx, cS);
         }
-        JS_FreeValue(this->context, jRes);
-        JS_FreeValue(this->context, jParams);
+        JS_FreeValue(ctx, jRes);
+        JS_FreeValue(ctx, jParams);
     }
     else [[unlikely]]
     {
@@ -342,7 +358,7 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
         return JS_UNDEFINED;
     }
     
-    this->executor >> [&mtx = this->vmMutex, ctx = this->context, jPromise, cbk = std::move(jf)] {
+    this->executor >> [&mtx = this->vmMutex, jPromise, cbk = std::move(jf)] {
         auto lock = std::scoped_lock(mtx);
 
         auto ret = cbk();
@@ -364,48 +380,48 @@ JSValue DynXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&vf)
 
 JSValue DynXX::Core::VM::JSVM::newPromiseBool(std::function<bool()> &&bf)
 {
-    return this->newPromise([ctx = this->context, cbk = std::move(bf)]{
+    return this->newPromise([&ctx = this->context, cbk = std::move(bf)]{
         const auto ret = cbk();
-        return JS_NewBool(ctx, ret);
+        return JS_NewBool(ctx.get(), ret);
     });
 }
 
 JSValue DynXX::Core::VM::JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
 {
-    return this->newPromise([ctx = this->context, cbk = std::move(i32f)]{
+    return this->newPromise([&ctx = this->context, cbk = std::move(i32f)]{
         const auto ret = cbk();
-        return JS_NewInt32(ctx, ret);
+        return JS_NewInt32(ctx.get(), ret);
     });
 }
 
 JSValue DynXX::Core::VM::JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
 {
-    return this->newPromise([ctx = this->context, cbk = std::move(i64f)]{
+    return this->newPromise([&ctx = this->context, cbk = std::move(i64f)]{
         const auto ret = cbk();
-        return JS_NewInt64(ctx, ret);
+        return JS_NewInt64(ctx.get(), ret);
     });
 }
 
 JSValue DynXX::Core::VM::JSVM::newPromiseFloat(std::function<double()> &&ff)
 {
-    return this->newPromise([ctx = this->context, cbk = std::move(ff)]{
+    return this->newPromise([&ctx = this->context, cbk = std::move(ff)]{
         const auto ret = cbk();
-        return JS_NewFloat64(ctx, ret);
+        return JS_NewFloat64(ctx.get(), ret);
     });
 }
 
 JSValue DynXX::Core::VM::JSVM::newPromiseString(std::function<const std::string()> &&sf)
 {
-    return this->newPromise([ctx = this->context, cbk = std::move(sf)]{
+    return this->newPromise([&ctx = this->context, cbk = std::move(sf)]{
         const auto ret = cbk();
-        return JS_NewString(ctx, ret.c_str() != nullptr ? ret.c_str() : "");
+        return JS_NewString(ctx.get(), ret.c_str() != nullptr ? ret.c_str() : "");
     });
 }
 
 DynXX::Core::VM::JSVM::~JSVM()
 {
     this->active = false;
-    js_std_loop_cancel(this->runtime);
+    js_std_loop_cancel(this->runtime.get());
 
     js_std_set_worker_new_context_func(nullptr);
 
@@ -416,14 +432,12 @@ DynXX::Core::VM::JSVM::~JSVM()
             // Free a module will cause crash in QJS
             continue;
         }
-        JS_FreeValue(this->context, jv);
+        JS_FreeValue(this->context.get(), jv);
     }
-    JS_FreeValue(this->context, jGlobal);
-    JS_FreeContext(this->context);
-    this->context = nullptr;
+    JS_FreeValue(this->context.get(), jGlobal);
+    this->context.reset();
 
-    js_std_free_handlers(this->runtime);
-    JS_FreeRuntime(this->runtime);
-    this->runtime = nullptr;
+    js_std_free_handlers(this->runtime.get());
+    this->runtime.reset();
 }
 #endif

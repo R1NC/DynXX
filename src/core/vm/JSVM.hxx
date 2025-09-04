@@ -193,8 +193,8 @@ namespace DynXX::Core::VM {
         ~JSVM() override;
 
     private:
-        JSRuntime *runtime{nullptr};
-        JSContext *context{nullptr};
+        std::unique_ptr<JSRuntime, void(*)(JSRuntime*)> runtime;
+        std::shared_ptr<JSContext> context{nullptr};
         JSValue jGlobal{JS_UNDEFINED};
 
         // Custom hash function for JSValue
