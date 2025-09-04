@@ -55,7 +55,7 @@ void DynXX::Core::Concurrent::Daemon::update(TaskT &&sth)
 {
     {
         auto lock = std::scoped_lock(this->mutex);
-        sth();
+        std::move(sth)();
     }
     
     this->cv.notify_one();
@@ -108,9 +108,9 @@ DynXX::Core::Concurrent::Worker::~Worker()
 
 DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
 {
-    this->update([&mutex = this->mutex, task = std::move(task), &queue = this->taskQueue, addr = reinterpret_cast<uintptr_t>(this)]() {
-        auto lock = std::scoped_lock(mutex);
-        queue.emplace(std::move(task));
+    this->update([&mtx = this->mutex, tsk = std::move(task), &queue = this->taskQueue, addr = reinterpret_cast<uintptr_t>(this)]() {
+        auto lock = std::scoped_lock(mtx);
+        queue.emplace(tsk);
         dynxxLogPrintF(Debug, "Worker@{} taskCount:{}", addr, queue.size());
     });
     
