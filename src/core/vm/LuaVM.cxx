@@ -149,7 +149,7 @@ namespace {
     } while (0)
 }
 
-DynXX::Core::VM::LuaVM::LuaVM() : lstate(luaL_newstate(), lua_close)
+DynXX::Core::VM::LuaVM::LuaVM()
 {
     const auto L = this->lstate.get();
     luaL_openlibs(L);
