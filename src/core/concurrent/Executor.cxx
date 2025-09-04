@@ -104,7 +104,7 @@ DynXX::Core::Concurrent::Worker::Worker() :
 
 DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
 {
-    this->update([&mtx = this->mutex, tsk = std::move(task), &queue = this->taskQueue, addr = reinterpret_cast<uintptr_t>(this)]() {
+    this->update([&mtx = this->mutex, tsk = std::move(task), &queue = this->taskQueue, addr = reinterpret_cast<uintptr_t>(this)]() mutable {
         auto lock = std::scoped_lock(mtx);
         queue.emplace(std::move(tsk));
         dynxxLogPrintF(Debug, "Worker@{} taskCount:{}", addr, queue.size());
