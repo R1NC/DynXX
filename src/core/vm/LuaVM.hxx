@@ -111,7 +111,7 @@ namespace DynXX::Core::VM {
         ~LuaVM() override;
 
     private:
-        std::unique_ptr<lua_State, void(*)(lua_State*)> lstate{luaL_newstate(), lua_close};
+        std::unique_ptr<lua_State, void(*)(lua_State*)> lstate(luaL_newstate(), lua_close);
     };
 }
 
