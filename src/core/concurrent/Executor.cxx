@@ -66,11 +66,9 @@ DynXX::Core::Concurrent::Daemon::~Daemon()
 #if defined(__cpp_lib_jthread)
     // jthread automatically handles stop request and join
 #else
-    {
-        auto lock = std::scoped_lock(this->mutex);
+    this->update([this]() {
         this->shouldStop = true;
-    }
-    this->notify();
+    });
     
     if (this->thread.joinable()) [[likely]] 
     {
