@@ -101,7 +101,7 @@ namespace {
         }
         if (release)
         {
-            freeX(uvTimer->data);
+            delete lTimer;
             freeX(uvTimer);
         }
     }

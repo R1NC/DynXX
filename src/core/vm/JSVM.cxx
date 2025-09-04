@@ -120,7 +120,6 @@ namespace
                 return;
             }
             this->p = JS_NewPromiseCapability(weakCtx.get(), this->f);
-            JSValue funcs[2];
             if (JS_IsException(this->p)) [[unlikely]] {
                 dynxxLogPrint(Error, "JSVM_NewPromise failed ->");
                 dumpJsErr(weakCtx.get());
