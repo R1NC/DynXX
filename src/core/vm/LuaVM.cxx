@@ -156,7 +156,7 @@ DynXX::Core::VM::LuaVM::LuaVM() : lstate(luaL_newstate(), lua_close)
 #if defined(USE_LIBUV)
     lua_register_lib(L, "Timer", lib_timer_funcs);
     _loop_init();
-    timerExecutor = std::make_unique<Executor>(1, 1000uz);
+    timerExecutor = std::make_unique<Executor>(1);
 #endif
 }
 

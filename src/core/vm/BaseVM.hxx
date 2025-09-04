@@ -24,7 +24,7 @@ namespace DynXX::Core::VM {
 
     protected:
         std::atomic<bool> active{false};
-        std::recursive_timed_mutex vmMutex;
+        mutable std::recursive_timed_mutex vmMutex;
         Concurrent::Executor executor;
 
         [[nodiscard]] bool tryLock();

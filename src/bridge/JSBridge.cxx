@@ -63,7 +63,7 @@ namespace {
             return {};
         }
         std::string s(res);
-        freeX(res);
+        //freeX(res);
         return s;
     }
 }

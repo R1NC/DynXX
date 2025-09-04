@@ -6,15 +6,11 @@ namespace {
     using enum DynXXLogLevelX;
 }
 
-// - Worker
+// - Daemon
 
-DynXX::Core::Concurrent::Worker::Worker() : Worker(1000uz)
+DynXX::Core::Concurrent::Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker) : runLoop{std::move(runLoop)}, runChecker{std::move(runChecker)}
 {
-}
-
-DynXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs{sleepMicroSecs}
-{
-#if defined(__cpp_lib_jthread)
+    #if defined(__cpp_lib_jthread)
     this->thread = std::jthread([this](std::stop_token stoken) {
         while (!stoken.stop_requested())
 #else
@@ -23,13 +19,13 @@ DynXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs{
 #endif
         {
             auto lock = std::unique_lock(this->mutex);
-            // Wait for tasks or stop signal
+            // Wait for stop signal
             this->cv.wait(lock, [this
 #if defined(__cpp_lib_jthread)
                 , &stoken
 #endif
                 ]() {
-                return !this->taskQueue.empty() || 
+                return this->runChecker() ||
 #if defined(__cpp_lib_jthread)
                 stoken.stop_requested()
 #else
@@ -44,30 +40,28 @@ DynXX::Core::Concurrent::Worker::Worker(size_t sleepMicroSecs) : sleepMicroSecs{
 #else
                 shouldStop.load()
 #endif
-            ) 
-            {
+            ) {
                 break;
             }
 
-            if (taskQueue.empty()) [[unlikely]] 
-            {
-                continue;
-            }
+            this->runLoop();
 
-            auto func = std::move(taskQueue.front());
-            taskQueue.pop();
             lock.unlock();
-
-            if (func) [[likely]] 
-            {
-                dynxxLogPrintF(Debug, "Worker@{} run task on thread:{}", reinterpret_cast<uintptr_t>(this), currentThreadId());
-                func();
-            }
         }
     });
 }
 
-DynXX::Core::Concurrent::Worker::~Worker()
+void DynXX::Core::Concurrent::Daemon::update(TaskT &&sth)
+{
+    {
+        auto lock = std::scoped_lock(this->mutex);
+        sth();
+    }
+    
+    this->cv.notify_one();
+}
+
+DynXX::Core::Concurrent::Daemon::~Daemon()
 {
 #if defined(__cpp_lib_jthread)
     // jthread automatically handles stop request and join
@@ -76,40 +70,61 @@ DynXX::Core::Concurrent::Worker::~Worker()
         auto lock = std::scoped_lock(this->mutex);
         this->shouldStop = true;
     }
-    this->cv.notify_one();
+    this->notify();
     
-    if (this->thread.joinable()) 
+    if (this->thread.joinable()) [[likely]] 
     {
         this->thread.join();
     }
 #endif
 }
 
-void DynXX::Core::Concurrent::Worker::sleep() const
+// - Worker
+
+DynXX::Core::Concurrent::Worker::Worker() : 
+ Daemon([this]() {
+    if (taskQueue.empty()) [[unlikely]] 
+    {
+        return;
+    }
+
+    auto func = std::move(taskQueue.front());
+    taskQueue.pop();
+
+    if (func) [[likely]] 
+    {
+        dynxxLogPrintF(Debug, "Worker@{} run task on thread:{}", reinterpret_cast<uintptr_t>(this), currentThreadId());
+        func();
+    }
+}, [this]() {
+    auto lock = std::scoped_lock(this->mutex);
+    return !this->taskQueue.empty();
+})
 {
-    DynXX::Core::Concurrent::sleep(this->sleepMicroSecs);
+}
+
+DynXX::Core::Concurrent::Worker::~Worker()
+{
 }
 
 DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
 {
-    {
-        auto lock = std::scoped_lock(this->mutex);
-        this->taskQueue.emplace(std::move(task));
-        dynxxLogPrintF(Debug, "Worker@{} taskCount:{}", reinterpret_cast<uintptr_t>(this), this->taskQueue.size());
-    }
-    
-    this->cv.notify_one();
+    this->update([&mutex = this->mutex, task = std::move(task), &queue = this->taskQueue, addr = reinterpret_cast<uintptr_t>(this)]() {
+        auto lock = std::scoped_lock(mutex);
+        queue.emplace(std::move(task));
+        dynxxLogPrintF(Debug, "Worker@{} taskCount:{}", addr, queue.size());
+    });
     
     return *this;
 }
 
 // - Executor
 
-DynXX::Core::Concurrent::Executor::Executor() : Executor(0uz, 1000uz)
+DynXX::Core::Concurrent::Executor::Executor() : Executor(0uz)
 {
 }
 
-DynXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity, size_t sleepMicroSecs) : workerPoolCapacity{workerPoolCapacity}, sleepMicroSecs{sleepMicroSecs}
+DynXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity) : workerPoolCapacity{workerPoolCapacity}
 {
     if (this->workerPoolCapacity == 0)
     {
@@ -129,7 +144,7 @@ DynXX::Core::Concurrent::Executor& DynXX::Core::Concurrent::Executor::operator>>
 
     if (this->workerPool.size() < this->workerPoolCapacity)
     {
-        auto worker = std::make_unique<Worker>(this->sleepMicroSecs);
+        auto worker = std::make_unique<Worker>();
         this->workerPool.emplace_back(std::move(worker));
         dynxxLogPrintF(Debug, "Executor created new worker, poolSize:{} poolCapacity:{} cpuCores:{}", 
                         this->workerPool.size(), this->workerPoolCapacity, countCPUCore());
