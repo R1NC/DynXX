@@ -102,10 +102,6 @@ DynXX::Core::Concurrent::Worker::Worker() :
 {
 }
 
-DynXX::Core::Concurrent::Worker::~Worker()
-{
-}
-
 DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
 {
     this->update([&mtx = this->mutex, tsk = std::move(task), &queue = this->taskQueue, addr = reinterpret_cast<uintptr_t>(this)]() {
