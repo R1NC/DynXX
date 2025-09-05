@@ -5,11 +5,15 @@
 
 #include <DynXX/CXX/Log.hxx>
 #include <DynXX/CXX/Coding.hxx>
+#include <DynXX/CXX/Memory.hxx>
+
+#include "../util/MemUtil.hxx"
 
 namespace
 {
     using enum DynXXJsonNodeTypeX;
     using enum DynXXLogLevelX;
+    using namespace DynXX::Core::Util::Mem;
 
     bool isNum(const cJSON *const cj)
     {

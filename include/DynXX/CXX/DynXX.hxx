@@ -12,6 +12,7 @@
 #include "Crypto.hxx"
 #include "Zip.hxx"
 #include "Device.hxx"
+#include "Memory.hxx"
 
 std::string dynxxGetVersion();
 

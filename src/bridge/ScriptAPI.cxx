@@ -10,10 +10,12 @@
 #include <DynXX/CXX/DynXX.hxx>
 #include <DynXX/C/Net.h>
 #include "../core/json/JsonCodec.hxx"
+#include "../core/util/MemUtil.hxx"
 
 namespace
 {
     using namespace DynXX::Core::Json;
+    using namespace DynXX::Core::Util::Mem;
 
     std::string cjToStr(cJSON* cj) {
         return dynxxJsonNodeToStr(ptr2addr(cj)).value_or("");

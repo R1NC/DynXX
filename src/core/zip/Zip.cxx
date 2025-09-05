@@ -4,8 +4,9 @@
 #include <stdexcept>
 #include <functional>
 
-#include <DynXX/CXX/Log.hxx>
 #include "DynXX/C/Zip.h"
+#include <DynXX/CXX/Log.hxx>
+#include <DynXX/CXX/Memory.hxx>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>

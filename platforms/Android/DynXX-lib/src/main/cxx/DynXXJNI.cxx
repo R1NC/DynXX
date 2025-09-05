@@ -2,7 +2,6 @@
 
 #include "JNIUtil.hxx"
 #include "../../../../../../build.Android/output/include/DynXX/C/DynXX.h"
-#include "../../../../../../build.Android/output/include/DynXX/CXX/Types.hxx"
 
 namespace {
 

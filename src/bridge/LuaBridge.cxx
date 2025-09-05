@@ -1,9 +1,8 @@
 #if defined(USE_LUA)
 #include "LuaBridge.hxx"
 
-#include <memory>
-
 #include <DynXX/CXX/Macro.hxx>
+#include <DynXX/CXX/Memory.hxx>
 
 #include "../core/vm/LuaVM.hxx"
 #include "ScriptAPI.hxx"

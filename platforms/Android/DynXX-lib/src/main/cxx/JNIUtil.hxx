@@ -4,7 +4,7 @@
 #include <jni.h>
 #include <string>
 
-#include "../../../../../../build.Android/output/include/DynXX/CXX/Types.hxx"
+#include "../../../../../../build.Android/output/include/DynXX/CXX/Memory.hxx"
 
 #define L "L"
 #define _ ";"

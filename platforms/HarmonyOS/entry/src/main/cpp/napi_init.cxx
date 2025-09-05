@@ -5,7 +5,7 @@
 #include <napi_util.hxx>
 
 #include "../../../../../../build.HarmonyOS/output/include/DynXX/C/DynXX.h"
-#include "../../../../../../build.HarmonyOS/output/include/DynXX/CXX/Types.hxx"
+#include "../../../../../../build.HarmonyOS/output/include/DynXX/CXX/Memory.hxx"
 
 namespace {
 

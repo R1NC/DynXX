@@ -8,7 +8,7 @@
 #endif
 
 #include <DynXX/CXX/Log.hxx>
-#include <DynXX/CXX/Types.hxx>
+#include <DynXX/CXX/Memory.hxx>
 
 namespace {
     using enum DynXXLogLevelX;
