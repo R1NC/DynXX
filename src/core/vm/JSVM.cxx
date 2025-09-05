@@ -362,7 +362,8 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
     this->executor >> [&mtx = this->vmMutex, handle, cbk = std::move(jf)] {
         auto lock = std::scoped_lock(mtx);
 
-        promiseCache->get(handle)->callbackJS(cbk());
+        auto ret = cbk();
+        promiseCache->get(handle)->callbackJS(ret);
 
         promiseCache->remove(handle);
     };
