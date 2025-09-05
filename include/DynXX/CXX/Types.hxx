@@ -19,6 +19,14 @@
 #include <limits>
 #include <type_traits>
 
+// Assertions
+
+#define AssertMove(T) \
+    static_assert(std::is_move_constructible_v<T>, #T " MUST BE MOVE CONSTRUCTIBLE!"); \
+    static_assert(std::is_move_assignable_v<T>, #T " MUST BE MOVE ASSIGNABLE!"); \
+    static_assert(std::is_nothrow_move_constructible_v<T>, #T " MUST BE NOTHROW MOVE CONSTRUCTIBLE!"); \
+    static_assert(std::is_nothrow_move_assignable_v<T>, #T " MUST BE NOTHROW MOVE ASSIGNABLE!")
+
 // Concepts
 
 template<typename T>
@@ -77,13 +85,20 @@ concept HashableT = requires(T a)
 };
 
 template<typename T>
-concept Comparable = requires(T a, T b)
+concept CompletelyComparableT = requires(T a, T b)
 {
-    { a < b } -> std::convertible_to<bool>;
+    { a <=> b } -> std::convertible_to<std::partial_ordering>;
 };
 
 template<typename T>
-concept Iterable = requires(T a)
+concept EqualityComparableT = requires(T a, T b)
+{
+    { a == b } -> std::convertible_to<bool>;
+    { a != b } -> std::convertible_to<bool>;
+};
+
+template<typename T>
+concept IterableT = requires(T a)
 {
     { std::begin(a) } -> std::input_iterator;
     { std::end(a) } -> std::sentinel_for<decltype(std::begin(a))>;
@@ -102,18 +117,12 @@ std::size_t getHash(const T &value) {
     return std::hash<T>{}(value);
 }
 
-template<Iterable T>
+template<IterableT T>
 void iterate(const T &container, std::function<void(const typename T::value_type &)> &&func) {
     for (const auto &e: container) {
         std::move(func)(e);
     }
 }
-
-#define AssertMove(T) \
-    static_assert(std::is_move_constructible_v<T>, #T " MUST BE MOVE CONSTRUCTIBLE!"); \
-    static_assert(std::is_move_assignable_v<T>, #T " MUST BE MOVE ASSIGNABLE!"); \
-    static_assert(std::is_nothrow_move_constructible_v<T>, #T " MUST BE NOTHROW MOVE CONSTRUCTIBLE!"); \
-    static_assert(std::is_nothrow_move_assignable_v<T>, #T " MUST BE NOTHROW MOVE ASSIGNABLE!")
 
 // Limits constants
 
@@ -198,7 +207,13 @@ struct TransparentEqual {
     using is_transparent = void;
     template<typename T1, typename T2>
     bool operator()(const T1& lhs, const T2& rhs) const noexcept {
-        return lhs == rhs;
+        if constexpr (CompletelyComparableT<T1> && CompletelyComparableT<T2>) {
+            return (lhs <=> rhs) == 0;
+        } else if constexpr (EqualityComparableT<T1> && EqualityComparableT<T2>) {
+            return lhs == rhs;
+        } else {
+            static_assert(sizeof(T1) == 0, "Types must be comparable");
+        }
     }
 };
 using Dict = std::unordered_map<std::string, std::string, TransparentStringHash, TransparentEqual>;
