@@ -130,7 +130,7 @@ struct Index {
               }
               let methodNode = DynXX.jsonDecoderReadNode(jsonDecoder, "method")
               if (methodNode != 0) {
-                let method = DynXX.jsonDecoderReadNumber(jsonDecoder, methodNode)
+                let method = DynXX.jsonDecoderReadInteger(jsonDecoder, methodNode)
                 DynXX.logPrint(LogLevel.Debug, `method:${method}`)
               }
               let headerVNode = DynXX.jsonDecoderReadNode(jsonDecoder, "header_v")

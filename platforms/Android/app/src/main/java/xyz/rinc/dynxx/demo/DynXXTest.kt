@@ -132,7 +132,7 @@ class DynXXTest {
                 }
                 val methodNode = DynXX.jsonDecoderReadNode(jsonDecoder, 0, "method")
                 if (methodNode != 0L) {
-                    val method = DynXX.jsonDecoderReadNumber(jsonDecoder, methodNode)
+                    val method = DynXX.jsonDecoderReadInteger(jsonDecoder, methodNode)
                     DynXXHelper.logPrint(LogLevel.Debug, "method:${method.toInt()}")
                 }
                 val headerVNode = DynXX.jsonDecoderReadNode(jsonDecoder, 0, "header_v")
