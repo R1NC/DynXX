@@ -109,6 +109,12 @@ void iterate(const T &container, std::function<void(const typename T::value_type
     }
 }
 
+#define AssertMove(T) \
+    static_assert(std::is_move_constructible_v<T>, #T " MUST BE MOVE CONSTRUCTIBLE!"); \
+    static_assert(std::is_move_assignable_v<T>, #T " MUST BE MOVE ASSIGNABLE!"); \
+    static_assert(std::is_nothrow_move_constructible_v<T>, #T " MUST BE NOTHROW MOVE CONSTRUCTIBLE!"); \
+    static_assert(std::is_nothrow_move_assignable_v<T>, #T " MUST BE NOTHROW MOVE ASSIGNABLE!")
+
 // Limits constants
 
 template<NumberT T>

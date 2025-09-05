@@ -19,6 +19,7 @@ struct DynXXHttpResponse {
 
     [[nodiscard]] std::optional<std::string> toJson() const;
 };
+AssertMove(DynXXHttpResponse);
 
 using DynXXHttpResponse = DynXXHttpResponse;
 
