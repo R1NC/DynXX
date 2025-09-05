@@ -185,7 +185,7 @@ inline auto Any2Float(const Any &a, const double defaultF = MinFloat64) {
 
 // Dict Type
 
-#if defined(__cpp_lib_generic_unordered_lookup)
+#if !defined(_WIN32) && defined(__cpp_lib_generic_unordered_lookup)
 // Custom transparent hasher for string-like types
 struct TransparentStringHash {
     using is_transparent = void;//enable transparent hasher
