@@ -194,7 +194,7 @@ inline auto Any2Float(const Any &a, const double defaultF = MinFloat64) {
 
 // Dict Type
 
-#if !defined(_WIN32) && defined(__cpp_lib_generic_unordered_lookup)
+#if defined(__cpp_lib_generic_unordered_lookup)
 // Custom transparent hasher for string-like types
 struct TransparentStringHash {
     using is_transparent = void;//enable transparent hasher
@@ -222,10 +222,10 @@ using DictKeyType = std::string_view;
 #else
 using Dict = std::unordered_map<std::string, std::string>;
 using DictAny = std::unordered_map<std::string, Any>;
-using DictKeyType = std::string&;
+using DictKeyType = const std::string&;
 #endif
 
-inline std::optional<std::string> dictAnyReadString(const DictAny &dict, const DictKeyType key) {
+inline std::optional<std::string> dictAnyReadString(const DictAny &dict, DictKeyType key) {
     auto it = dict.find(key);
     if (it == dict.end()) [[unlikely]] {
         return std::nullopt;
@@ -233,11 +233,11 @@ inline std::optional<std::string> dictAnyReadString(const DictAny &dict, const D
     return {Any2String(it->second)};
 }
 
-inline auto dictAnyReadString(const DictAny &dict, const DictKeyType key, const std::string &defaultS) {
+inline auto dictAnyReadString(const DictAny &dict, DictKeyType key, const std::string &defaultS) {
     return dictAnyReadString(dict, key).value_or(defaultS);
 }
 
-inline std::optional<int64_t> dictAnyReadInteger(const DictAny &dict, const DictKeyType key) {
+inline std::optional<int64_t> dictAnyReadInteger(const DictAny &dict, DictKeyType key) {
     auto it = dict.find(key);
     if (it == dict.end()) [[unlikely]] {
         return std::nullopt;
@@ -245,11 +245,11 @@ inline std::optional<int64_t> dictAnyReadInteger(const DictAny &dict, const Dict
     return {Any2Integer(it->second)};
 }
 
-inline auto dictAnyReadInteger(const DictAny &dict, const DictKeyType key, const int64_t defaultI) {
+inline auto dictAnyReadInteger(const DictAny &dict, DictKeyType key, const int64_t defaultI) {
     return dictAnyReadInteger(dict, key).value_or(defaultI);
 }
 
-inline std::optional<double> dictAnyReadFloat(const DictAny &dict, const DictKeyType key) {
+inline std::optional<double> dictAnyReadFloat(const DictAny &dict, DictKeyType key) {
     auto it = dict.find(key);
     if (it == dict.end()) [[unlikely]] {
         return std::nullopt;
@@ -257,7 +257,7 @@ inline std::optional<double> dictAnyReadFloat(const DictAny &dict, const DictKey
     return {Any2Float(it->second)};
 }
 
-inline auto dictAnyReadFloat(const DictAny &dict, const DictKeyType key, const double defaultF) {
+inline auto dictAnyReadFloat(const DictAny &dict, DictKeyType key, const double defaultF) {
     return dictAnyReadFloat(dict, key).value_or(defaultF);
 }
 

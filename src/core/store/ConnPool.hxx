@@ -14,7 +14,7 @@ namespace DynXX::Core::Store {
 
     using CidT = size_t;
 
-    inline CidT genCid(const DictKeyType key) {
+    inline CidT genCid(DictKeyType key) {
         return std::hash<DictKeyType>{}(key);
     }
 
