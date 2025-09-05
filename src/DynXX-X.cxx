@@ -49,7 +49,6 @@ namespace {
 
     using namespace DynXX::Core;
     using namespace DynXX::Core::Net;
-    using namespace DynXX::Core::Store;
     using namespace DynXX::Core::Z;
     using namespace DynXX::Core::Util;
 
@@ -63,6 +62,11 @@ namespace {
     std::unique_ptr<HttpClient> _http_client{nullptr};
 #endif
 
+#if defined(USE_KV) || defined(USE_DB)
+    using namespace DynXX::Core::Store;
+    std::unique_ptr<const std::string> _root{nullptr};
+#endif
+
 #if defined(USE_DB)
     std::unique_ptr<SQLite::SQLiteStore> _sqlite{nullptr};
     std::unique_ptr<Mem::PtrCache<SQLite::Connection::QueryResult>> sqlQRCache{nullptr};
@@ -70,10 +74,6 @@ namespace {
 
 #if defined(USE_KV)
     std::unique_ptr<KV::KVStore> _kv{nullptr};
-#endif
-
-#if defined(USE_KV) || defined(USE_DB)
-    std::unique_ptr<const std::string> _root{nullptr};
 #endif
 
 #if defined(USE_STD_CHAR_CONV_INT)
