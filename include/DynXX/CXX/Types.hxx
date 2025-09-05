@@ -194,7 +194,13 @@ struct TransparentStringHash {
         return std::hash<std::string_view>{}(key);
     }
 };
-using TransparentEqual = std::equal_to<void>;
+struct TransparentEqual {
+    using is_transparent = void;
+    template<typename T1, typename T2>
+    bool operator()(const T1& lhs, const T2& rhs) const noexcept {
+        return lhs == rhs;
+    }
+};
 using Dict = std::unordered_map<std::string, std::string, TransparentStringHash, TransparentEqual>;
 using DictAny = std::unordered_map<std::string, Any, TransparentStringHash, TransparentEqual>;
 using DictKeyType = std::string_view;
