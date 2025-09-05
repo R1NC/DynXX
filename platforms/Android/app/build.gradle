@@ -39,7 +39,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.1'
     }
-    ndkVersion '29.0.13846066 rc3'
+    ndkVersion '29.0.14033849 rc4'
 }
 
 dependencies {

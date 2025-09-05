@@ -1,5 +1,7 @@
 #include "napi_util.hxx"
 
+#include "../../../../../../build.HarmonyOS/output/include/DynXX/CXX/Memory.hxx"
+
 #include <cstring>
 
 Args::Args(napi_env env, napi_callback_info info) : env(env), info(info) {
