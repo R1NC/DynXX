@@ -58,7 +58,6 @@ namespace {
     std::unique_ptr<Mem::PtrCache<Json::Decoder>> jsonDecoderCache{nullptr};
     std::unique_ptr<Mem::PtrCache<Zip>> zipCache{nullptr};
     std::unique_ptr<Mem::PtrCache<UnZip>> unzipCache{nullptr};
-    std::unique_ptr<Mem::PtrCache<SQLite::Connection::QueryResult>> sqlQRCache{nullptr};
 
 #if defined(USE_CURL)
     std::unique_ptr<HttpClient> _http_client{nullptr};
@@ -66,6 +65,7 @@ namespace {
 
 #if defined(USE_DB)
     std::unique_ptr<SQLite::SQLiteStore> _sqlite{nullptr};
+    std::unique_ptr<Mem::PtrCache<SQLite::Connection::QueryResult>> sqlQRCache{nullptr};
 #endif
 
 #if defined(USE_KV)
@@ -205,7 +205,6 @@ bool dynxxInit(const std::string &root) {
     jsonDecoderCache = std::make_unique<Mem::PtrCache<Json::Decoder>>();
     zipCache = std::make_unique<Mem::PtrCache<Zip>>();
     unzipCache = std::make_unique<Mem::PtrCache<UnZip>>();
-    sqlQRCache = std::make_unique<Mem::PtrCache<SQLite::Connection::QueryResult>>();
 
 #if defined(USE_KV) || defined(USE_DB)
     if (_root) {
@@ -219,6 +218,7 @@ bool dynxxInit(const std::string &root) {
     
 #if defined(USE_DB)
     _sqlite = std::make_unique<SQLite::SQLiteStore>();
+    sqlQRCache = std::make_unique<Mem::PtrCache<SQLite::Connection::QueryResult>>();
 #endif
 
 #if defined(USE_KV)
@@ -244,7 +244,6 @@ void dynxxRelease() {
     jsonDecoderCache.reset();
     zipCache.reset();
     unzipCache.reset();
-    sqlQRCache.reset();
 
 #if defined(USE_KV) || defined(USE_DB)
     if (!_root) {
@@ -258,6 +257,7 @@ void dynxxRelease() {
 #endif
 
 #if defined(USE_DB)
+    sqlQRCache.reset();
     _sqlite->closeAll();
     _sqlite.reset();
 #endif

@@ -6,6 +6,7 @@
 #include <utility>
 
 #include <DynXX/CXX/Log.hxx>
+#include "../util/MemUtil.hxx"
 
 namespace
 {
@@ -157,6 +158,8 @@ namespace
             //JS_FreeValue(weakCtx.get(), this->p);
         }
     };
+
+    std::unique_ptr<Mem::PtrCache<JSPromise>> promiseCache{nullptr};
 }
 
 // JSVM Internal
@@ -242,6 +245,8 @@ DynXX::Core::VM::JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
 
     this->context = std::shared_ptr<JSContext>(_newContext(this->runtime.get()), JS_FreeContext);
     this->jGlobal = JS_GetGlobalObject(this->context.get());// Can not free here, will be called in future
+
+    this->promiseCache = std::make_unique<Mem::PtrCache<JSPromise>>();
 
     this->executor >> [this]() {
         if (tryLock())
@@ -351,19 +356,15 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
 
 JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
 {
-    auto jPromise = new(std::nothrow) JSPromise(this->context);
-    if (!jPromise) [[unlikely]] {
-        dynxxLogPrint(Error, "new Promise failed");
-        return JS_UNDEFINED;
-    }
-    
+    const auto jPromise = this->promiseCache->add(std::make_unique<JSPromise>(this->context));
+
     this->executor >> [&mtx = this->vmMutex, jPromise, cbk = std::move(jf)] {
         auto lock = std::scoped_lock(mtx);
 
         auto ret = cbk();
         jPromise->callbackJS(ret);
 
-        delete jPromise;
+        this->promiseCache->remove(jPromise);
     };
 
     return jPromise->jsObj();
@@ -419,6 +420,8 @@ JSValue DynXX::Core::VM::JSVM::newPromiseString(std::function<const std::string(
 
 DynXX::Core::VM::JSVM::~JSVM()
 {
+    this->promiseCache.reset();
+
     this->active = false;
     js_std_loop_cancel(this->runtime.get());
 
@@ -433,6 +436,8 @@ DynXX::Core::VM::JSVM::~JSVM()
         }
         JS_FreeValue(this->context.get(), jv);
     }
+    this->jValueCache.clear();
+
     JS_FreeValue(this->context.get(), jGlobal);
 
     js_std_free_handlers(this->runtime.get());
