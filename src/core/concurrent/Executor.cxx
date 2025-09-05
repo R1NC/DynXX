@@ -86,7 +86,7 @@ DynXX::Core::Concurrent::Daemon::~Daemon()
 
 DynXX::Core::Concurrent::Worker::Worker() : 
  Daemon([this]() {
-    std::function<void()> func;
+    TaskT func;
     {
         auto lock = std::scoped_lock(this->mutex);
         if (taskQueue.empty()) [[unlikely]] 
