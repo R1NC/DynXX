@@ -8,19 +8,27 @@ namespace {
 
 // - Daemon
 
-DynXX::Core::Concurrent::Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker) : runLoop{std::move(runLoop)}, runChecker{std::move(runChecker)}
+DynXX::Core::Concurrent::Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, const size_t timeoutMicroSecs) :
+ runLoop(std::move(runLoop)), runChecker(std::move(runChecker))
 {
-    #if defined(__cpp_lib_jthread)
-    this->thread = std::jthread([this](std::stop_token stoken) {
+    this->thread = 
+#if defined(__cpp_lib_jthread)
+        std::jthread(
+#else
+        std::thread(
+#endif
+        [this, timeout = timeoutMicroSecs]
+#if defined(__cpp_lib_jthread)
+        (std::stop_token stoken) {
         while (!stoken.stop_requested())
 #else
-    this->thread = std::thread([this]() {
+        () {
         while (!shouldStop.load())
 #endif
         {
             auto lock = std::unique_lock(this->mutex);
             // Wait for stop signal
-            this->cv.wait(lock, [this
+            this->cv.wait_for(lock, std::chrono::microseconds(timeout), [this
 #if defined(__cpp_lib_jthread)
                 , &stoken
 #endif
@@ -31,8 +39,7 @@ DynXX::Core::Concurrent::Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker
 #else
                 shouldStop.load()
 #endif
-                ;
-            });
+            ;});
             
             if (
 #if defined(__cpp_lib_jthread)
@@ -40,9 +47,7 @@ DynXX::Core::Concurrent::Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker
 #else
                 shouldStop.load()
 #endif
-            ) {
-                break;
-            }
+            ) { break; }
 
             this->runLoop();
 
@@ -81,14 +86,16 @@ DynXX::Core::Concurrent::Daemon::~Daemon()
 
 DynXX::Core::Concurrent::Worker::Worker() : 
  Daemon([this]() {
-    auto lock = std::scoped_lock(this->mutex);
-    if (taskQueue.empty()) [[unlikely]] 
+    std::function<void()> func;
     {
-        return;
+        auto lock = std::scoped_lock(this->mutex);
+        if (taskQueue.empty()) [[unlikely]] 
+        {
+            return;
+        }
+        func = std::move(taskQueue.front());
+        taskQueue.pop();
     }
-
-    auto func = std::move(taskQueue.front());
-    taskQueue.pop();
 
     if (func) [[likely]] 
     {

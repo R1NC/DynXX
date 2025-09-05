@@ -30,7 +30,7 @@ namespace DynXX::Core::Concurrent {
     public:
         Daemon() = delete;
 
-        explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; });
+        explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; }, const size_t timeoutMicroSecs = 100);
 
         Daemon(const Daemon &) = delete;
 
