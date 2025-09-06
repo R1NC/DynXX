@@ -17,13 +17,11 @@ struct DynXXHttpResponse {
     Dict headers;
     std::string data;
 
-    [[nodiscard]] std::optional<std::string> toJson() const;
+    std::optional<std::string> toJson() const;
 };
 #ifndef _WIN32
 AssertMove(DynXXHttpResponse);
 #endif
-
-using DynXXHttpResponse = DynXXHttpResponse;
 
 DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         DynXXHttpMethodX method,
