@@ -9,7 +9,7 @@ std::string dynxxCodingCaseLower(std::string_view str);
 
 std::string dynxxCodingHexBytes2str(BytesView bytes);
 
-Bytes dynxxCodingHexStr2bytes(const std::string &str);
+Bytes dynxxCodingHexStr2bytes(const std::string_view str);
 
 Bytes dynxxCodingStr2bytes(std::string_view str);
 

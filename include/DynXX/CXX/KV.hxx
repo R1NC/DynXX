@@ -1,7 +1,6 @@
 #ifndef DYNXX_INCLUDE_KV_HXX_
 #define DYNXX_INCLUDE_KV_HXX_
 
-#include "Types.hxx"
 #include "../C/KV.h"
 
 DynXXKVConnHandle dynxxKVOpen(const std::string &_id);

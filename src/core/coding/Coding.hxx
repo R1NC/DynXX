@@ -15,7 +15,7 @@ namespace DynXX::Core::Coding {
     namespace Hex {
         std::string bytes2str(BytesView bytes);
 
-        Bytes str2bytes(const std::string &str);
+        Bytes str2bytes(const std::string_view str);
     }
 
     std::string bytes2str(BytesView bytes);

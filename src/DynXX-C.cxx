@@ -122,7 +122,10 @@ const char *dynxx_coding_case_lower(const char *str) {
 
 EXPORT_AUTO
 const byte *dynxx_coding_hex_str2bytes(const char *str, size_t *outLen) {
-    const auto bytes = dynxxCodingHexStr2bytes(makeStr(str));
+    if (str == nullptr) {
+        return nullptr;
+    }
+    const auto bytes = dynxxCodingHexStr2bytes(str);
     return handleBytes(bytes, outLen);
 }
 
@@ -133,18 +136,18 @@ const char *dynxx_coding_hex_bytes2str(const byte *inBytes, size_t inLen) {
 }
 
 EXPORT_AUTO
-const char *dynxx_coding_bytes2str(const byte *inBytes, size_t inLen) {
-    const auto s = dynxxCodingBytes2str(makeBytesView(inBytes, inLen));
-    return dupStr(s);
-}
-
-EXPORT_AUTO
 const byte *dynxx_coding_str2bytes(const char *str, size_t *outLen) {
     if (str == nullptr) {
         return nullptr;
     }
     const auto bytes = dynxxCodingStr2bytes(str);
     return handleBytes(bytes, outLen);
+}
+
+EXPORT_AUTO
+const char *dynxx_coding_bytes2str(const byte *inBytes, size_t inLen) {
+    const auto s = dynxxCodingBytes2str(makeBytesView(inBytes, inLen));
+    return dupStr(s);
 }
 
 EXPORT_AUTO

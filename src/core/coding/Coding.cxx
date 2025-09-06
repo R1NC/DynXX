@@ -79,7 +79,7 @@ std::string DynXX::Core::Coding::Hex::bytes2str(BytesView bytes)
 #endif
 }
 
-Bytes DynXX::Core::Coding::Hex::str2bytes(const std::string &str)
+Bytes DynXX::Core::Coding::Hex::str2bytes(const std::string_view str)
 {
     std::string filteredStr;
     filteredStr.reserve(str.size());
@@ -97,12 +97,11 @@ Bytes DynXX::Core::Coding::Hex::str2bytes(const std::string &str)
         return {};
     }
 
-    std::string fixedStr = str;
-    if (fixedStr.length() % 2 != 0) [[unlikely]]
+    if (filteredStr.length() % 2 != 0) [[unlikely]]
     {
-        fixedStr.insert(0, "0");
+        filteredStr.insert(0, "0");
     }
-    auto sLen = str.length();
+    auto sLen = filteredStr.length();
       
     auto transF = [](const auto& chunk) { 
         std::string s(chunk.begin(), chunk.end());
@@ -114,7 +113,7 @@ Bytes DynXX::Core::Coding::Hex::str2bytes(const std::string &str)
         return static_cast<byte>(hex);
     };
 #if defined(__cpp_lib_ranges_chunk)
-    auto byteView = fixedStr 
+    auto byteView = filteredStr 
         | std::ranges::views::chunk(2) 
         | std::ranges::views::transform(transF);
     return Bytes(byteView.begin(), byteView.end());
@@ -123,7 +122,7 @@ Bytes DynXX::Core::Coding::Hex::str2bytes(const std::string &str)
     bytes.reserve(sLen / 2);
     for (decltype(sLen) i(0); i < sLen; i += 2)
     {
-        auto s = fixedStr.substr(i, 2);
+        auto s = filteredStr.substr(i, 2);
         bytes.emplace_back(transF(s));
     }
     return bytes;
