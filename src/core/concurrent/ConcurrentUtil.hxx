@@ -53,7 +53,7 @@ namespace DynXX::Core::Concurrent {
         size_t count = 0;
         do {
             const auto timeout = std::chrono::steady_clock::now() + std::chrono::microseconds(timeoutMicroSecs);
-            if (locked = mtx.try_lock_until(timeout)) {
+            if (locked = mtx.try_lock_until(timeout); locked) {
                 return true;
             }
             count++;
