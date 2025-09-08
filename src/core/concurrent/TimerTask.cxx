@@ -12,7 +12,6 @@ namespace {
 DynXX::Core::Concurrent::TimerTask::TimerTask(TaskT&& task, size_t timeoutMicroSecs) :
     Daemon(
         [this]() {
-            const auto addr = reinterpret_cast<uintptr_t>(this);
             this->userTask();
             this->lastExecuteTime = nowInMicroSecs();
         },
