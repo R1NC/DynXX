@@ -20,6 +20,7 @@ Podfile linguist-vendored=true
 *.jar linguist-vendored=true
 *.properties linguist-vendored=true
 *.mk linguist-vendored=true
+*.cmake linguist-vendored=true
 *.pro linguist-vendored=true
 *.gradle linguist-vendored=true
 gradlew linguist-vendored=true
