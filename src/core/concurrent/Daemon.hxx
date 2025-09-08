@@ -38,11 +38,11 @@ namespace DynXX::Core::Concurrent {
 
         Daemon &operator=(Daemon &&) = delete;
 
+        void update(TaskT &&sth);
+
     public:
 
         virtual ~Daemon();
-
-        void update(TaskT &&sth);
 
     private:
         mutable std::mutex mutex;
