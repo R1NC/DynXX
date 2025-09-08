@@ -1,17 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-# Use ccache to turbo compile speed
-find_program(CCACHE_FOUND ccache)
-if(CCACHE_FOUND)
-    set(CMAKE_C_COMPILER_LAUNCHER ccache)
-    set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
-endif()
-
-string(
-    COMPARE EQUAL
-    "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"
-    IS_ROOT
-)
+include(cmake/DynXX.cmake)
 
 #if(IS_ROOT)
     set(CMAKE_C_COMPILER "clang")
@@ -21,24 +10,11 @@ string(
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #endif()
 
+initBeforeProject()
+
 project(DynXX)
 
-# Enable Parallel Build
-include(ProcessorCount)
-ProcessorCount(N)
-if(NOT N EQUAL 0)
-    set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
-endif()
-
-## Check Apple Version for C++ new features
-function(checkAppleVersionLimit iosV macV RESULT_VAR)
-    if(APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "${iosV}") OR 
-                  (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "${macV}")))
-        set(${RESULT_VAR} FALSE PARENT_SCOPE)
-    else()
-        set(${RESULT_VAR} TRUE PARENT_SCOPE)
-    endif()
-endfunction()
+initAfterProject()
 
 ## Definitions:
 
@@ -131,19 +107,16 @@ if(ANDROID) # Android can not find built-in `ifaddrs.h`;
 endif()
 
 if(EMSCRIPTEN)
-    add_executable(${PROJECT_NAME} ${SRC_FILES})
-    set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
-    set(WASM_LINK_FLAGS "-s ALLOW_TABLE_GROWTH -s FETCH -s ASYNCIFY=1")
-    set(WASM_EXPORTS_RUNTIME_METHODS "['getValue','setValue','UTF8ToString','lengthBytesUTF8','stringToUTF8','addFunction']")
-    set(WASM_BASE_EXPORTS_FUNCS "'_malloc','_free','_dynxx_init','_dynxx_release'")
+    set(EXPORT_FUNCS "'_dynxx_init','_dynxx_release'")
     if(USE_LUA)
-        # WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
-        set(WASM_EXTRA_EXPORTS_FUNCS ",'_dynxx_lua_loadS','_dynxx_lua_call'")
-    else()
-        set(WASM_EXTRA_EXPORTS_FUNCS "")
+        set(EXPORT_FUNCS "${EXPORT_FUNCS},'_dynxx_lua_loadS','_dynxx_lua_call'")
     endif()
-    set(WASM_EXPORTED_FUNCS "[${WASM_BASE_EXPORTS_FUNCS}${WASM_EXTRA_EXPORTS_FUNCS}]")
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${WASM_LINK_FLAGS} -s EXPORTED_RUNTIME_METHODS=${WASM_EXPORTS_RUNTIME_METHODS} -s EXPORTED_FUNCTIONS=${WASM_EXPORTED_FUNCS}")
+    addWasmExe(${PROJECT_NAME} 
+        SRC_FILES ${SRC_FILES} 
+        LINK_FLAGS "-s FETCH -s ASYNCIFY=1"
+        RUNTIME_METHODS "'addFunction'"
+        FUNCS ${EXPORT_FUNCS}
+    )
 else()
     add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 endif()
@@ -293,14 +266,7 @@ target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
 
 ## install headers
 
-include(GNUInstallDirs)
-install(DIRECTORY include/DynXX 
-    DESTINATION include 
-    COMPONENT headers
-    FILES_MATCHING 
-    PATTERN "*.h"
-    PATTERN "*.hxx"
-)
+installHeaders(include/DynXX include)
 
 ## Custom commands
 
@@ -318,51 +284,4 @@ execute_process(
 
 ## Print Messages:
 
-message("")
-message("${PROJECT_NAME}")
-message(" └─ IS_ROOT: ${IS_ROOT}")
-message(" └─ CCACHE: ${CCACHE_FOUND}")
-message(" └─ CMAKE:")
-message("     └─ VERSION: ${CMAKE_VERSION}")
-message("     └─ LANGUAGE:")
-message("         └─ STANDARD: C${CMAKE_C_STANDARD}, C++${CMAKE_CXX_STANDARD}")
-message("     └─ COMPILER:")
-message("         └─ C: ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION} (${CMAKE_C_COMPILER})")
-message("         └─ C++: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} (${CMAKE_CXX_COMPILER})")
-message("     └─ LINKER: ${CMAKE_LINKER}")
-message("     └─ HOST_SYSTEM: ${CMAKE_HOST_SYSTEM_NAME} ${CMAKE_HOST_SYSTEM_VERSION}")
-message("     └─ TARGET: ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION} ${CMAKE_SYSTEM_PROCESSOR}")
-message("     └─ BUILD_PARALLEL_LEVEL: ${CMAKE_BUILD_PARALLEL_LEVEL}")
-message("     └─ BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-message("     └─ GENERATOR: ${CMAKE_GENERATOR}")
-message("     └─ MAKE_PROGRAM: ${CMAKE_MAKE_PROGRAM}")
-message("     └─ CROSSCOMPILING: ${CMAKE_CROSSCOMPILING}")
-if(CMAKE_TOOLCHAIN_FILE)
-    message("     └─ TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
-endif()
-if(APPLE)
-    message("     └─ OSX:")
-    message("         └─ DEPLOYMENT_TARGET: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
-    message("         └─ ARCHITECTURES: ${CMAKE_OSX_ARCHITECTURES}")
-endif()
-if(ANDROID)
-    message("     └─ ANDROID:")
-    message("         └─ ABI: ${ANDROID_ABI}")
-    message("         └─ API_LEVEL: ${ANDROID_NATIVE_API_LEVEL}")
-endif()
-message(" └─ OPTIONS:")
-message("     └─ USE_STD_TO_CHARS: ${USE_STD_TO_CHARS}")
-message("     └─ USE_CURL: ${USE_CURL}")
-message("     └─ USE_LUA: ${USE_LUA}")
-message("     └─ USE_QJS: ${USE_QJS}")
-message("     └─ USE_KV: ${USE_KV}")
-message("     └─ USE_DB: ${USE_DB}")
-message("     └─ USE_DEVICE: ${USE_DEVICE}")
-message("     └─ USE_LIBUV: ${USE_LIBUV}")
-message("     └─ USE_SPDLOG: ${USE_SPDLOG}")
-message("     └─ USE_ADA: ${USE_ADA}")
-message(" └─ LINK_LIBS:")
-foreach(x IN LISTS LINK_LIBS)
-    message("     └─ ${x}")
-endforeach()
-message("")
+printBuildInfo()
