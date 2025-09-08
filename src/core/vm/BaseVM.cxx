@@ -12,12 +12,7 @@ namespace
 
 bool DynXX::Core::VM::BaseVM::tryLock(size_t timeoutMicroSecs, size_t retryCount)
 {
-    bool locked = false;
-    size_t count = 0;
-    do {
-        locked = this->vmMutex.try_lock_for(std::chrono::microseconds(timeoutMicroSecs));
-    } while (!locked && count++ < retryCount);
-    return locked;
+    return DynXX::Core::Concurrent::tryLock(this->vmMutex, timeoutMicroSecs, retryCount);
 }
 
 void DynXX::Core::VM::BaseVM::unlock()

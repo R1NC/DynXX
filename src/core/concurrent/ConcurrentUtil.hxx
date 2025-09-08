@@ -45,9 +45,14 @@ namespace DynXX::Core::Concurrent {
     };
 
     template<TimedLockableT T>
-    [[nodiscard]] bool tryLock(T &mtx, const size_t microSecs) {
+    [[nodiscard]] bool tryLock(T &mtx, const size_t microSecs, size_t retryCount = 0) {
         const auto timeout = std::chrono::steady_clock::now() + std::chrono::microseconds(microSecs);
-        return mtx.try_lock_until(timeout);
+        bool locked = false;
+        size_t count = 0;
+        do {
+            locked = mtx.try_lock_until(timeout);
+        } while (!locked && count++ < retryCount);
+        return locked;
     }
 
     template<typename T>
