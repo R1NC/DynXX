@@ -3,61 +3,13 @@
 
 #if defined(__cplusplus)
 
-#include <atomic>
-#include <condition_variable>
-#include <functional>
 #include <queue>
 #include <vector>
 
 #include "ConcurrentUtil.hxx"
+#include "Daemon.hxx"
 
 namespace DynXX::Core::Concurrent {
-    using TaskT = std::
-#if defined(__cpp_lib_move_only_function)
-    move_only_function
-#else
-    function
-#endif
-    <void()>;
-
-    using RunChecker = std::function<bool()>;
-
-    class
-#if !defined(__cpp_lib_jthread)
-        alignas(CacheLineSize)
-#endif
-        Daemon {
-    public:
-        Daemon() = delete;
-
-        explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; }, const size_t timeoutMicroSecs = 100);
-
-        Daemon(const Daemon &) = delete;
-
-        Daemon &operator=(const Daemon &) = delete;
-
-        Daemon(Daemon &&) = delete;
-
-        Daemon &operator=(Daemon &&) = delete;
-
-        virtual ~Daemon();
-
-        void update(TaskT &&sth);
-
-    private:
-        mutable std::mutex mutex;
-        std::condition_variable cv;
-
-        TaskT runLoop;
-        RunChecker runChecker;
-
-#if defined(__cpp_lib_jthread)
-        std::jthread thread;
-#else
-        std::thread thread;
-        std::atomic<bool> shouldStop{false};
-#endif
-    };
 
     class Worker final : public Daemon {
     public:

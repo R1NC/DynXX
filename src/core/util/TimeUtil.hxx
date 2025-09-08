@@ -11,7 +11,7 @@ namespace DynXX::Core::Util::Time
 template <typename clockT, typename durationT>
 uint64_t castNow()
 {
-    return std::chrono::duration_cast<std::chrono::durationT>(clockT::now().time_since_epoch()).count();
+    return std::chrono::duration_cast<durationT>(clockT::now().time_since_epoch()).count();
 }
 
 inline uint64_t nowInMilliSecs()
