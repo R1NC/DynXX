@@ -316,7 +316,11 @@ bool DynXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
 std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func, std::string_view params, bool await) {
-    auto lock = std::unique_lock(this->vmMutex);
+    if (!tryLock(1000, 100)) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "JSVM::callFunc failed to lock");
+        return std::nullopt;
+    }
     std::string s;
     auto success = false;
 
@@ -330,7 +334,7 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
         auto jRes = JS_Call(ctx, jFunc, this->jGlobal, sizeof(argv), argv);
 
         /// Release the lock imediately, to avoid blocking the JS event loop.
-        lock.unlock();
+        unlock();
 
         if (JS_IsException(jRes)) [[unlikely]]
         {
@@ -353,7 +357,7 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
     }
     else [[unlikely]]
     {
-        lock.unlock();
+        unlock();
         dynxxLogPrintF(Error, "Can not find JS func:{}", func);
     }
 

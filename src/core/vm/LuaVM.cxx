@@ -203,18 +203,25 @@ bool DynXX::Core::VM::LuaVM::loadScript(const std::string &script)
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
 std::optional<std::string> DynXX::Core::VM::LuaVM::callFunc(std::string_view func, std::string_view params)
 {
-    auto lock = std::scoped_lock(this->vmMutex);
+    if (!tryLock(1000, 100)) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "LuaVM::callFunc failed to lock");
+        return std::nullopt;
+    }
     const auto L = this->lstate.get();
     lua_getglobal(L, func.data());
     lua_pushstring(L, params.data());
     if (const auto ret = lua_pcall(L, 1, 1, 0); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`lua_pcall` error:");
+        unlock();
         return std::nullopt;
     }
+    
     const auto s = makeStr(lua_tostring(L, -1));
 
     lua_pop(L, 1);
+    unlock();
     return {s};
 }
 #endif
