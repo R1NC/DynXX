@@ -13,14 +13,11 @@ DynXX::Core::Concurrent::TimerTask::TimerTask(TaskT&& task, size_t timeoutMicroS
     Daemon(
         [this]() {
             const auto addr = reinterpret_cast<uintptr_t>(this);
-            dynxxLogPrintF(Debug, "TimerTask@{} executing task", addr);
-            
             try {
                 this->userTask();
             } catch (const std::exception& e) {
                 dynxxLogPrintF(Error, "TimerTask@{} exception: {}", addr, e.what());
             }
-            
             this->lastExecuteTime = nowInMicroSecs();
         },
         [this, timeoutMicroSecs]() {

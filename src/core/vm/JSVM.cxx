@@ -15,8 +15,12 @@ namespace
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
+    constexpr auto JS_LOOP_TIMEOUT_MICROSECS = 1 * 1000;
+    constexpr auto JS_CBK_PROMISE_TIMEOUT_MICROSECS = 10 * 1000;
+
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Util;
+    using namespace DynXX::Core::Concurrent;
 
 // JSVM dump error
 
@@ -249,20 +253,21 @@ DynXX::Core::VM::JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
 
     promiseCache = std::make_unique<Mem::PtrCache<JSPromise>>();
 
-    this->executor >> [this]() {
-        if (tryLock())
-        {
-            js_std_loop_promise(context.get());
-            unlock();
-        }
-    };
-    this->executor >> [this]() {
+    this->timerLooperTask = std::make_unique<TimerTask>([this]() {
         if (tryLock())
         {
             js_std_loop_timer(context.get());
             unlock();
         }
-    };
+    }, JS_LOOP_TIMEOUT_MICROSECS);
+
+    this->promiseLooperTask = std::make_unique<TimerTask>([this]() {
+        if (tryLock())
+        {
+            js_std_loop_promise(context.get());
+            unlock();
+        }
+    }, JS_LOOP_TIMEOUT_MICROSECS);
 }
 
 bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -359,13 +364,17 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
 {
     const auto handle = promiseCache->add(std::make_unique<JSPromise>(this->context));
 
-    this->executor >> [&mtx = this->vmMutex, handle, cbk = std::move(jf)] {
-        auto lock = std::scoped_lock(mtx);
-
+    this->executor >> [handle, cbk = std::move(jf), this] {
+        if (!this->tryLock(JS_CBK_PROMISE_TIMEOUT_MICROSECS)) [[unlikely]]
+        {
+            dynxxLogPrint(Error, "JSVM::newPromise failed to lock");
+            promiseCache->remove(handle);
+            return;
+        }
         auto ret = cbk();
         promiseCache->get(handle)->callbackJS(ret);
-
         promiseCache->remove(handle);
+        this->unlock();
     };
 
     return promiseCache->get(handle)->jsObj();
@@ -422,6 +431,8 @@ JSValue DynXX::Core::VM::JSVM::newPromiseString(std::function<const std::string(
 DynXX::Core::VM::JSVM::~JSVM()
 {
     promiseCache.reset();
+    this->timerLooperTask.reset();
+    this->promiseLooperTask.reset();
 
     this->active = false;
     js_std_loop_cancel(this->runtime.get());
@@ -440,7 +451,9 @@ DynXX::Core::VM::JSVM::~JSVM()
     this->jValueCache.clear();
 
     JS_FreeValue(this->context.get(), jGlobal);
+    this->context.reset();
 
     js_std_free_handlers(this->runtime.get());
+    this->runtime.reset();
 }
 #endif

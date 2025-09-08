@@ -145,11 +145,12 @@ function jTestSQLite(): void {
                     } else {
                         DynXXLogPrint(DynXXLogLevel.Debug, `SQLite query failed!!!`)
                     }
+                    DynXXSQLiteClose(conn)
                 })
             } else {
                 DynXXLogPrint(DynXXLogLevel.Debug, `SQLite execute failed!!!`)
+                DynXXSQLiteClose(conn)
             }
-            DynXXSQLiteClose(conn)
         })
     } else {
         DynXXLogPrint(DynXXLogLevel.Debug, `SQLite open failed!!!`)

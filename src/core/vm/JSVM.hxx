@@ -10,6 +10,7 @@
 #include <DynXX/CXX/Types.hxx>
 
 #include "BaseVM.hxx"
+#include "../concurrent/TimerTask.hxx"
 
 #define JS_FUNC_PARAMS                                                         \
   JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv
@@ -196,6 +197,9 @@ namespace DynXX::Core::VM {
         std::unique_ptr<JSRuntime, void(*)(JSRuntime*)> runtime;
         std::shared_ptr<JSContext> context{nullptr};
         JSValue jGlobal{JS_UNDEFINED};
+
+        std::unique_ptr<DynXX::Core::Concurrent::TimerTask> timerLooperTask{nullptr};
+        std::unique_ptr<DynXX::Core::Concurrent::TimerTask> promiseLooperTask{nullptr};
 
         // Custom hash function for JSValue
         struct JSValueHash {

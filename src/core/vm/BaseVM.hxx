@@ -27,7 +27,7 @@ namespace DynXX::Core::VM {
         mutable std::recursive_timed_mutex vmMutex;
         Concurrent::Executor executor;
 
-        [[nodiscard]] bool tryLock();
+        [[nodiscard]] bool tryLock(size_t timeoutMicroSecs = 1000uz);
 
         void unlock();
 
