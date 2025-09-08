@@ -283,5 +283,21 @@ execute_process(
 )
 
 ## Print Messages:
-
-printBuildInfo()
+message("")
+printBaseBuildInfo()
+message(" └─ OPTIONS:")
+message("     └─ USE_STD_TO_CHARS: ${USE_STD_TO_CHARS}")
+message("     └─ USE_CURL: ${USE_CURL}")
+message("     └─ USE_LUA: ${USE_LUA}")
+message("     └─ USE_QJS: ${USE_QJS}")
+message("     └─ USE_KV: ${USE_KV}")
+message("     └─ USE_DB: ${USE_DB}")
+message("     └─ USE_DEVICE: ${USE_DEVICE}")
+message("     └─ USE_LIBUV: ${USE_LIBUV}")
+message("     └─ USE_SPDLOG: ${USE_SPDLOG}")
+message("     └─ USE_ADA: ${USE_ADA}")
+message(" └─ LINK_LIBS:")
+foreach(x IN LISTS LINK_LIBS)
+    message("     └─ ${x}")
+endforeach()
+message("")
