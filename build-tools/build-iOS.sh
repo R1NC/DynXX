@@ -30,7 +30,7 @@ build4ios() {
     fi
     
     cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/Apple/apple.toolchain.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/Apple/ios.toolchain.cmake \
     -DCMAKE_SYSTEM_NAME=iOS \
     -DCMAKE_INSTALL_PREFIX=. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
