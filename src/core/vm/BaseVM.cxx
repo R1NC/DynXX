@@ -10,9 +10,14 @@ namespace
     constexpr auto SleepMicroSecs = 1000uz;
 }
 
-bool DynXX::Core::VM::BaseVM::tryLock(size_t timeoutMicroSecs, size_t retryCount)
+bool DynXX::Core::VM::BaseVM::tryLockUntil(const size_t timeoutMicroSecs)
 {
-    return DynXX::Core::Concurrent::tryLock(this->vmMutex, timeoutMicroSecs, retryCount);
+    return DynXX::Core::Concurrent::tryLockUntil(this->vmMutex, timeoutMicroSecs);
+}
+
+bool DynXX::Core::VM::BaseVM::lockAutoRetry(const size_t retryCount)
+{
+    return DynXX::Core::Concurrent::lockAutoRetry(this->vmMutex, retryCount, SleepMicroSecs);
 }
 
 void DynXX::Core::VM::BaseVM::unlock()

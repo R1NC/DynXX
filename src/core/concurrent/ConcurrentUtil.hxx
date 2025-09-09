@@ -45,18 +45,30 @@ namespace DynXX::Core::Concurrent {
     };
 
     template<TimedLockableT T>
-    [[nodiscard]] bool tryLock(T &mtx, const size_t timeoutMicroSecs, const size_t retryCount = 0, const size_t sleepMicroSecs = 1) {
-        if (timeoutMicroSecs == 0 || retryCount == 0) {
+    [[nodiscard]] bool tryLockUntil(T &mtx, const size_t timeoutMicroSecs) {
+        if (timeoutMicroSecs == 0) {
             return mtx.try_lock();
         }
+        const auto timeout = std::chrono::steady_clock::now() + std::chrono::microseconds(timeoutMicroSecs);
+        return mtx.try_lock_until(timeout);
+    }
+
+    template<TimedLockableT T>
+    [[nodiscard]] bool lockAutoRetry(T &mtx, const size_t retryCount, const size_t sleepMicroSecs = 1uz) {
         bool locked = false;
         size_t count = 0;
         do {
-            if (const auto timeout = std::chrono::steady_clock::now() + std::chrono::microseconds(timeoutMicroSecs), locked = mtx.try_lock_until(timeout); locked) {
+            locked = mtx.try_lock();
+            if (locked) {
                 return true;
             }
+            if (retryCount == 0) [[unlikely]] {
+                return false;
+            }
+            if (sleepMicroSecs > 0) [[likely]] {
+                sleep(sleepMicroSecs);
+            }
             count++;
-            sleep(sleepMicroSecs);
         } while (count < retryCount);
         return false;
     }

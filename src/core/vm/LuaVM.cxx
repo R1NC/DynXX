@@ -13,6 +13,8 @@
 namespace {
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Concurrent;
+
+    constexpr size_t LuaCallRetryCount = 100;
     
 #if defined(USE_LIBUV)
     struct LuaTimer
@@ -203,7 +205,7 @@ bool DynXX::Core::VM::LuaVM::loadScript(const std::string &script)
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
 std::optional<std::string> DynXX::Core::VM::LuaVM::callFunc(std::string_view func, std::string_view params)
 {
-    if (!tryLock(1000, 100)) [[unlikely]]
+    if (!lockAutoRetry(LuaCallRetryCount)) [[unlikely]]
     {
         dynxxLogPrint(Error, "LuaVM::callFunc failed to lock");
         return std::nullopt;
@@ -217,7 +219,7 @@ std::optional<std::string> DynXX::Core::VM::LuaVM::callFunc(std::string_view fun
         unlock();
         return std::nullopt;
     }
-    
+
     const auto s = makeStr(lua_tostring(L, -1));
 
     lua_pop(L, 1);

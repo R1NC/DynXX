@@ -15,8 +15,9 @@ namespace
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
-    constexpr auto JS_LOOP_TIMEOUT_MICROSECS = 1 * 1000;
-    constexpr auto JS_CBK_PROMISE_TIMEOUT_MICROSECS = 10 * 1000;
+    constexpr auto JSLoopTimeoutMicroSecs = 1 * 1000;
+    constexpr auto JSPromiseTimeoutMicroSecs = 10 * 1000;
+    constexpr size_t JSCallRetryCount = 100;
 
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Util;
@@ -176,7 +177,7 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
     {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
         const auto ctx = this->context.get();
-        if (!tryLock()) [[unlikely]]
+        if (!tryLockUntil(JSLoopTimeoutMicroSecs)) [[unlikely]]
         {
             sleep();
             continue;
@@ -254,20 +255,20 @@ DynXX::Core::VM::JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
     promiseCache = std::make_unique<Mem::PtrCache<JSPromise>>();
 
     this->timerLooperTask = std::make_unique<TimerTask>([this]() {
-        if (tryLock())
+        if (tryLockUntil(JSLoopTimeoutMicroSecs))
         {
             js_std_loop_timer(context.get());
             unlock();
         }
-    }, JS_LOOP_TIMEOUT_MICROSECS);
+    }, JSLoopTimeoutMicroSecs);
 
     this->promiseLooperTask = std::make_unique<TimerTask>([this]() {
-        if (tryLock())
+        if (tryLockUntil(JSLoopTimeoutMicroSecs))
         {
             js_std_loop_promise(context.get());
             unlock();
         }
-    }, JS_LOOP_TIMEOUT_MICROSECS);
+    }, JSLoopTimeoutMicroSecs);
 }
 
 bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -316,7 +317,7 @@ bool DynXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
 std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func, std::string_view params, bool await) {
-    if (!tryLock(1000, 100)) [[unlikely]]
+    if (!lockAutoRetry(JSCallRetryCount)) [[unlikely]]
     {
         dynxxLogPrint(Error, "JSVM::callFunc failed to lock");
         return std::nullopt;
@@ -369,7 +370,7 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
     const auto handle = promiseCache->add(std::make_unique<JSPromise>(this->context));
 
     this->executor >> [handle, cbk = std::move(jf), this] {
-        if (!this->tryLock(JS_CBK_PROMISE_TIMEOUT_MICROSECS)) [[unlikely]]
+        if (!this->tryLockUntil(JSPromiseTimeoutMicroSecs)) [[unlikely]]
         {
             dynxxLogPrint(Error, "JSVM::newPromise failed to lock");
             promiseCache->remove(handle);
