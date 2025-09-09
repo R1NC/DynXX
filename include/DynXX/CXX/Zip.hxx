@@ -4,7 +4,7 @@
 #include "Types.hxx"
 #include "../C/Zip.h"
 
-constexpr size_t DynXXZDefaultBufferSize = 16 * 1024;
+constexpr auto DynXXZDefaultBufferSize = 16 * 1024uz;
 
 enum class DynXXZipCompressModeX : int {
     Default = -1,

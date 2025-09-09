@@ -15,9 +15,9 @@ namespace
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
-    constexpr auto JSLoopTimeoutMicroSecs = 1 * 1000;
-    constexpr size_t JSCallRetryCount = 10;
-    constexpr size_t JSCallSleepMicroSecs = 100 * 1000;
+    constexpr auto JSLoopTimeoutMicroSecs = 1 * 1000uz;
+    constexpr auto JSCallRetryCount = 10uz;
+    constexpr auto JSCallSleepMicroSecs = 100 * 1000uz;
 
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Util;

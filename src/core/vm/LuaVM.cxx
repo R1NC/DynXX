@@ -14,8 +14,8 @@ namespace {
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Concurrent;
 
-    constexpr size_t LuaCallRetryCount = 10;
-    constexpr size_t LuaCallSleepMicroSecs = 100 * 1000;
+    constexpr auto LuaCallRetryCount = 10uz;
+    constexpr auto LuaCallSleepMicroSecs = 100 * 1000uz;
     
 #if defined(USE_LIBUV)
     struct LuaTimer

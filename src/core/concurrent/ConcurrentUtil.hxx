@@ -12,11 +12,11 @@
 
 namespace DynXX::Core::Concurrent {
 
-    static constexpr size_t CacheLineSize =
+    static constexpr auto CacheLineSize =
 #if defined(__cpp_lib_hardware_interference_size)
             std::hardware_destructive_interference_size
 #else
-    64
+    64uz
 #endif
     ;
 
