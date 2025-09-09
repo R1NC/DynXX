@@ -15,7 +15,7 @@ namespace {
     using namespace DynXX::Core::Concurrent;
 
     constexpr size_t LuaCallRetryCount = 100;
-    constexpr size_t JSCallSleepMicroSecs = 50 * 1000;
+    constexpr size_t LuaCallSleepMicroSecs = 50 * 1000;
     
 #if defined(USE_LIBUV)
     struct LuaTimer
