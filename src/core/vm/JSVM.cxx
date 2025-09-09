@@ -370,16 +370,18 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
     const auto handle = promiseCache->add(std::make_unique<JSPromise>(this->context));
 
     this->executor >> [handle, cbk = std::move(jf), this] {
-        if (!this->tryLockUntil(JSPromiseTimeoutMicroSecs)) [[unlikely]]
+        auto ret = cbk();
+
+        if (!this->lockAutoRetry(JSCallRetryCount)) [[unlikely]]
         {
-            dynxxLogPrint(Error, "JSVM::newPromise failed to lock");
+            dynxxLogPrint(Error, "JSVM::newPromise failed to cbk");
             promiseCache->remove(handle);
             return;
         }
-        auto ret = cbk();
         promiseCache->get(handle)->callbackJS(ret);
-        promiseCache->remove(handle);
         this->unlock();
+
+        promiseCache->remove(handle);
     };
 
     return promiseCache->get(handle)->jsObj();
