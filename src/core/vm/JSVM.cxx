@@ -17,7 +17,7 @@ namespace
 
     constexpr auto JSLoopTimeoutMicroSecs = 1 * 1000;
     constexpr size_t JSCallRetryCount = 10;
-    constexpr size_t JSCallSleepMicroSecs = 50 * 1000;
+    constexpr size_t JSCallSleepMicroSecs = 100 * 1000;
 
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Util;
@@ -350,9 +350,6 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
 
         auto jRes = JS_Call(ctx, jFunc, this->jGlobal, sizeof(argv), argv);
 
-        /// Release the lock imediately, to avoid blocking the JS event loop.
-        unlock();
-
         if (JS_IsException(jRes)) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_Call failed ->");
@@ -374,9 +371,10 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
     }
     else [[unlikely]]
     {
-        unlock();
         dynxxLogPrintF(Error, "Can not find JS func:{}", func);
     }
+
+    this->unlock();
 
     return success? std::make_optional(s): std::nullopt;
 }
