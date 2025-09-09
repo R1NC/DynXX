@@ -299,10 +299,26 @@ bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *func
 
 bool DynXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
 {
-    std::ifstream ifs(file.c_str());
-    std::ostringstream ss;
-    ss << ifs.rdbuf();
-    return this->loadScript(ss.str(), file, isModule);
+    try {
+        std::ifstream ifs(file.c_str());
+        ifs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        if (!ifs.is_open()) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "JSVM::loadFile {} open failed", file.c_str());
+            return false;
+        }
+        std::ostringstream ss;
+        ss << ifs.rdbuf();
+        return this->loadScript(ss.str(), file, isModule);
+    }
+    catch (const std::ios_base::failure& e) {
+        dynxxLogPrintF(Error, "JSVM::loadFile {} IO error: {}", file.c_str(), e.what());
+        return false;
+    }
+    catch (const std::exception& e) {
+        dynxxLogPrintF(Error, "JSVM::loadFile {} error: {}", file.c_str(), e.what());
+        return false;
+    }
 }
 
 bool DynXX::Core::VM::JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
