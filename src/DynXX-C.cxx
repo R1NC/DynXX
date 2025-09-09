@@ -1,5 +1,7 @@
 #if defined(__cplusplus)
 
+#include <utility>
+
 #include <DynXX/C/KV.h>
 #include <DynXX/CXX/DynXX.hxx>
 #include "core/util/TypeUtil.hxx"
@@ -46,7 +48,7 @@ void dynxx_release() {
 
 EXPORT_AUTO
 int dynxx_device_type() {
-    return static_cast<int>(dynxxDeviceType());
+    return std::to_underlying(dynxxDeviceType());
 }
 
 EXPORT_AUTO
@@ -75,7 +77,7 @@ const char *dynxx_device_os_version() {
 
 EXPORT_AUTO
 int dynxx_device_cpu_arch() {
-    return static_cast<int>(dynxxDeviceCpuArch());
+    return std::to_underlying(dynxxDeviceCpuArch());
 }
 
 #endif
@@ -487,7 +489,7 @@ void dynxx_kv_close(const DynXXKVConnHandle conn) {
 
 EXPORT_AUTO
 int dynxx_json_node_read_type(const DynXXJsonNodeHandle node) {
-    return static_cast<int>(dynxxJsonNodeReadType(node));
+    return std::to_underlying(dynxxJsonNodeReadType(node));
 }
 
 EXPORT_AUTO
