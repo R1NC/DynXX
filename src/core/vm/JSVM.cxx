@@ -16,8 +16,8 @@ namespace
                                          "globalThis.os = os;\n";
 
     constexpr auto JSLoopTimeoutMicroSecs = 1 * 1000;
-    constexpr auto JSPromiseTimeoutMicroSecs = 10 * 1000;
-    constexpr size_t JSCallRetryCount = 100;
+    constexpr size_t JSCallRetryCount = 10;
+    constexpr size_t JSCallSleepMicroSecs = 50 * 1000;
 
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Util;
@@ -317,7 +317,7 @@ bool DynXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
 std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func, std::string_view params, bool await) {
-    if (!lockAutoRetry(JSCallRetryCount)) [[unlikely]]
+    if (!lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
     {
         dynxxLogPrint(Error, "JSVM::callFunc failed to lock");
         return std::nullopt;
@@ -372,7 +372,7 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
     this->executor >> [handle, cbk = std::move(jf), this] {
         auto ret = cbk();
 
-        if (!this->lockAutoRetry(JSCallRetryCount)) [[unlikely]]
+        if (!this->lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
         {
             dynxxLogPrint(Error, "JSVM::newPromise failed to cbk");
             promiseCache->remove(handle);

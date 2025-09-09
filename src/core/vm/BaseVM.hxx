@@ -28,7 +28,7 @@ namespace DynXX::Core::VM {
         Concurrent::Executor executor;
 
         [[nodiscard]] bool tryLockUntil(const size_t timeoutMicroSecs);
-        [[nodiscard]] bool lockAutoRetry(const size_t retryCount);
+        [[nodiscard]] bool lockAutoRetry(const size_t retryCount, const size_t sleepMicroSecs);
 
         void unlock();
 
