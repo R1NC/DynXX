@@ -373,6 +373,7 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
         return JS_UNDEFINED;
     }
     const auto handle = promiseCache->add(std::make_unique<JSPromise>(this->context));
+    auto result = promiseCache->get(handle)->jsObj();
     this->unlock();
 
     this->executor >> [handle, cbk = std::move(jf), this] {
@@ -390,7 +391,7 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
         this->unlock();
     };
 
-    return promiseCache->get(handle)->jsObj();
+    return result;
 }
 
 JSValue DynXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&vf)
