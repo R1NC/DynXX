@@ -367,21 +367,27 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
 
 JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
 {
+    if (!this->lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "JSVM::newPromise create failed to lock");
+        return JS_UNDEFINED;
+    }
     const auto handle = promiseCache->add(std::make_unique<JSPromise>(this->context));
+    this->unlock();
 
     this->executor >> [handle, cbk = std::move(jf), this] {
         auto ret = cbk();
 
         if (!this->lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
         {
-            dynxxLogPrint(Error, "JSVM::newPromise failed to cbk");
+            dynxxLogPrint(Error, "JSVM::newPromise callback failed to lock");
             promiseCache->remove(handle);
             return;
         }
         promiseCache->get(handle)->callbackJS(ret);
-        this->unlock();
-
         promiseCache->remove(handle);
+
+        this->unlock();
     };
 
     return promiseCache->get(handle)->jsObj();
