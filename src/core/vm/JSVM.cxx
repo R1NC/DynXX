@@ -7,6 +7,7 @@
 
 #include <DynXX/CXX/Log.hxx>
 #include "../util/MemUtil.hxx"
+#include "../util/TimeUtil.hxx"
 
 namespace
 {
@@ -18,6 +19,7 @@ namespace
     constexpr auto JSLoopTimeoutMicroSecs = 1 * 1000uz;
     constexpr auto JSCallRetryCount = 10uz;
     constexpr auto JSCallSleepMicroSecs = 100 * 1000uz;
+    constexpr auto JSAwaitMaxTimeMicroSecs = 15 * 1000 * 1000uz;
 
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Util;
@@ -176,8 +178,10 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
         return obj;
     }
 
+    auto beginTime = nowInMicroSecs();
+
     auto ret = JS_UNDEFINED;
-    auto done = false;
+    auto needWait = true;
 
     do {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
@@ -185,7 +189,7 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
         if (tryLockUntil(JSLoopTimeoutMicroSecs)) [[unlikely]]
         {
             const auto state = JS_PromiseState(ctx, obj);
-            done = state != JS_PROMISE_PENDING;
+            needWait = state == JS_PROMISE_PENDING;
             switch (state)
             {
             case JS_PROMISE_FULFILLED:
@@ -202,10 +206,15 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
             unlock();
         }
 
-        if (!done) {
+        if (needWait && nowInMicroSecs() - beginTime > JSAwaitMaxTimeMicroSecs) [[unlikely]] {
+            dynxxLogPrint(Error, "JSVM await timeout");
+            needWait = false;
+        }
+
+        if (needWait) {
             sleep();
         }
-    } while (!done);
+    } while (needWait);
 
     return ret;
 }
