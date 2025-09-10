@@ -172,43 +172,41 @@ namespace
 
 JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
 {
+    if (JS_VALUE_GET_TAG(obj) != JS_TAG_OBJECT) [[unlikely]] {
+        return obj;
+    }
+
     auto ret = JS_UNDEFINED;
-    for (;;)
-    {
+    auto done = false;
+
+    do {
         /// Do not force to acquire the lock, to avoid blocking the JS event loop.
         const auto ctx = this->context.get();
-        if (!tryLockUntil(JSLoopTimeoutMicroSecs)) [[unlikely]]
+        if (tryLockUntil(JSLoopTimeoutMicroSecs)) [[unlikely]]
         {
-            sleep();
-            continue;
-        }
-        if (const auto state = JS_PromiseState(ctx, obj); state == JS_PROMISE_FULFILLED)
-        {
-            ret = JS_PromiseResult(ctx, obj);
-            JS_FreeValue(ctx, obj);
-            break;
-        }
-        else if (state == JS_PROMISE_REJECTED)
-        {
-            ret = JS_Throw(ctx, JS_PromiseResult(ctx, obj));
-            JS_FreeValue(ctx, obj);
-            break;
-        }
-        else if (state == JS_PROMISE_PENDING)
-        {
-            /// Promise is executing: release the lock, sleep for a while. To avoid blocking the js event loop, or overloading CPU.
+            const auto state = JS_PromiseState(ctx, obj);
+            done = state != JS_PROMISE_PENDING;
+            switch (state)
+            {
+            case JS_PROMISE_FULFILLED:
+                ret = JS_PromiseResult(ctx, obj);
+                JS_FreeValue(ctx, obj);
+                break;
+            case JS_PROMISE_REJECTED:
+                ret = JS_Throw(ctx, JS_PromiseResult(ctx, obj));
+                JS_FreeValue(ctx, obj);
+                break;
+            default:
+                break;
+            }
             unlock();
+        }
+
+        if (!done) {
             sleep();
-            continue;
         }
-        else
-        {
-            /// Not a Promise: release the lock, return the result immediately.
-            ret = obj;
-            break;
-        }
-    }
-    unlock();
+    } while (!done);
+
     return ret;
 }
 
