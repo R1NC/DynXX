@@ -178,7 +178,7 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
         return obj;
     }
 
-    auto beginTime = nowInMicroSecs();
+    auto beginTime = Time::nowInMicroSecs();
 
     auto ret = JS_UNDEFINED;
     auto needWait = true;
@@ -206,7 +206,7 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
             unlock();
         }
 
-        if (needWait && nowInMicroSecs() - beginTime > JSAwaitMaxTimeMicroSecs) [[unlikely]] {
+        if (needWait && Time::nowInMicroSecs() - beginTime > JSAwaitMaxTimeMicroSecs) [[unlikely]] {
             dynxxLogPrint(Error, "JSVM await timeout");
             needWait = false;
         }
