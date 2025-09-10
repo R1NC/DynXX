@@ -744,7 +744,7 @@ namespace {
         return dynxx_json_decoder_read_integer(decoder, node);
     }
 
-    jlong jsonDecoderReadFloat(JNIEnv *env, jobject thiz,
+    jdouble jsonDecoderReadFloat(JNIEnv *env, jobject thiz,
                                  jlong decoder,
                                  jlong node) {
         return dynxx_json_decoder_read_float(decoder, node);
