@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <utility>
+#include <array>
 
 #include <DynXX/CXX/Log.hxx>
 #include "../util/MemUtil.hxx"
@@ -114,7 +115,7 @@ namespace
     private:
         std::weak_ptr<JSContext> ctx{};
         JSValue p{JS_UNDEFINED};
-        JSValue f[2]{JS_UNDEFINED, JS_UNDEFINED};
+        std::array<JSValue, 2> f{JS_UNDEFINED, JS_UNDEFINED};
     
     public:
         JSPromise() = delete;
@@ -128,7 +129,7 @@ namespace
             if (!weakCtx) [[unlikely]] {
                 return;
             }
-            this->p = JS_NewPromiseCapability(weakCtx.get(), this->f);
+            this->p = JS_NewPromiseCapability(weakCtx.get(), this->f.data());
             if (JS_IsException(this->p)) [[unlikely]] {
                 dynxxLogPrint(Error, "JSVM_NewPromise failed ->");
                 dumpJsErr(weakCtx.get());
@@ -353,9 +354,9 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
     if (const auto jFunc = JS_GetPropertyStr(ctx, this->jGlobal, func.data()); JS_IsFunction(ctx, jFunc)) [[likely]]
     {
         const auto jParams = JS_NewString(ctx, params.data());
-        JSValue argv[] = {jParams};
+        std::array<JSValue, 1> argv{jParams};
 
-        auto jRes = JS_Call(ctx, jFunc, this->jGlobal, sizeof(argv), argv);
+        auto jRes = JS_Call(ctx, jFunc, this->jGlobal, argv.size(), argv.data());
 
         if (JS_IsException(jRes)) [[unlikely]]
         {
