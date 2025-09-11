@@ -13,9 +13,11 @@ namespace DynXX::Core::Net {
         std::string name;
         std::string mime;
         std::string data;
-    };
 
-    using HttpFormField = HttpFormField;
+        HttpFormField() = delete;
+        explicit HttpFormField(const std::string& name, const std::string& mime, const std::string& data)
+            : name(name), mime(mime), data(data) {}
+    };
 
     class HttpClient {
     public:
