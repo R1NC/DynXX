@@ -63,12 +63,16 @@ namespace
 #if defined(USE_SPDLOG)
     void spdLogPrepare() 
     {
-        DynXX::Core::Concurrent::callOnce([]() {
+        const auto rootPath = dynxxRootPath();
+        if (!rootPath.has_value()) [[unlikely]] {
+            return;
+        }
+        DynXX::Core::Concurrent::callOnce([&dir = rootPath.value()]() {
             try 
             {
                 const auto& logger = spdlog::daily_logger_mt(
                     "dynxx_spdlog",
-                    dynxxRootPath() + "/log.txt",
+                    dir + "/log.txt",
                     0,
                     0 
                 );

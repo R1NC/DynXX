@@ -193,11 +193,11 @@ std::string dynxxGetVersion() {
 }
 
 #if defined(USE_KV) || defined(USE_DB)
-std::string dynxxRootPath() {
+std::optional<std::string> dynxxRootPath() {
     if (!_root) {
-        return {};
+        return std::nullopt;
     }
-    return *_root;
+    return std::make_optional(*_root);
 }
 #endif
 
@@ -222,7 +222,7 @@ bool dynxxInit(const std::string &root) {
 #endif
 
 #if defined(USE_KV)
-    _kv = std::make_unique<KV::KVStore>(*_root);
+    _kv = std::make_unique<KV::KVStore>(dynxxRootPath().value());
 #endif
 
 #if defined(USE_CURL)
@@ -551,7 +551,11 @@ DynXXSQLiteConnHandle dynxxSQLiteOpen(const std::string &_id) {
     if (!_sqlite || !_root || _id.empty()) {
         return 0;
     }
-    std::string dbPath = *_root + "/" + _id + ".db";
+    const auto rootPath = dynxxRootPath();
+    if (!rootPath.has_value()) [[unlikely]] {
+        return 0;
+    }
+    std::string dbPath = rootPath.value() + "/" + _id + ".db";
     if (const auto ptr = _sqlite->open(dbPath).lock()) [[likely]] {
         return Mem::ptr2addr(ptr.get());
     }

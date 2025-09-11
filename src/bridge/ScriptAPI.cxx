@@ -236,7 +236,7 @@ std::string dynxx_get_versionS([[maybe_unused]] std::string_view json)
 
 std::string dynxx_root_pathS([[maybe_unused]] std::string_view json)
 {
-    return dynxxRootPath();
+    return dynxxRootPath().value_or("");
 }
 
 // Device

@@ -27,7 +27,7 @@ const char *dynxx_get_version() {
 #if defined(USE_DB) || defined(USE_KV)
 EXPORT_AUTO
 const char *dynxx_root_path() {
-    const auto s = dynxxRootPath();
+    const auto s = dynxxRootPath().value_or("");
     return dupStr(s);
 }
 #endif
