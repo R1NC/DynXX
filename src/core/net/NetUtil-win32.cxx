@@ -4,6 +4,8 @@
 
 #include "NetUtil.hxx"
 
+#include <array>
+
 #include <winsock2.h>
 #include <windows.h>
 #include <ws2def.h>
@@ -106,8 +108,8 @@ std::string DynXX::Core::Net::Util::publicIpV4()
         return {};
     }
 
-    char ipStr[INET_ADDRSTRLEN];
-    InetNtopA(AF_INET, &name.sin_addr, ipStr, INET_ADDRSTRLEN);
+    std::array<char, INET_ADDRSTRLEN> ipStr;
+    InetNtopA(AF_INET, &name.sin_addr, ipStr.data(), INET_ADDRSTRLEN);
     closesocket(sock);
     WSACleanup();
 
@@ -149,8 +151,8 @@ std::string DynXX::Core::Net::Util::publicIpV6()
         return {};
     }
 
-    char ipStr[INET6_ADDRSTRLEN];
-    InetNtopA(AF_INET6, &name.sin6_addr, ipStr, INET6_ADDRSTRLEN);
+    std::array<char, INET6_ADDRSTRLEN> ipStr;
+    InetNtopA(AF_INET6, &name.sin6_addr, ipStr.data(), INET6_ADDRSTRLEN);
     closesocket(sock);
     WSACleanup();
 
