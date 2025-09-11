@@ -61,6 +61,26 @@ namespace
     }
 
 #if defined(USE_SPDLOG)
+    void spdLogSetLevel(int level)
+    {
+        switch(level) {
+            case DynXXLogLevelDebug:
+                spdlog::set_level(spdlog::level::debug);
+                break;
+            case DynXXLogLevelInfo:
+                spdlog::set_level(spdlog::level::info);
+                break;
+            case DynXXLogLevelWarn:
+                spdlog::set_level(spdlog::level::warn);
+                break;
+            case DynXXLogLevelError:
+                spdlog::set_level(spdlog::level::err);
+                break;
+            default:
+                spdlog::set_level(spdlog::level::off);
+        }
+    }
+
     void spdLogPrepare() 
     {
         const auto rootPath = dynxxRootPath();
@@ -78,23 +98,6 @@ namespace
                 );
                 spdlog::set_default_logger(logger);
                 spdlog::set_pattern("[%Y-%m-%d_%H:%M:%S.%e] [%l] [%t] %v");
-                switch(_level)
-                {
-                    case DynXXLogLevelDebug:
-                        spdlog::set_level(spdlog::level::debug);
-                        break;
-                    case DynXXLogLevelInfo:
-                        spdlog::set_level(spdlog::level::info);
-                        break;
-                    case DynXXLogLevelWarn:
-                        spdlog::set_level(spdlog::level::warn);
-                        break;
-                    case DynXXLogLevelError:
-                        spdlog::set_level(spdlog::level::err);
-                        break;
-                    default:
-                        spdlog::set_level(spdlog::level::off);
-                }
                 spdlog::flush_on(spdlog::level::debug);
             }
             catch (const spdlog::spdlog_ex& ex) 
@@ -102,6 +105,8 @@ namespace
                 std::cerr << "SpdLog init failed: " << ex.what() << std::endl;
             }
         });
+
+        spdLogSetLevel(_level);
     }
 
     void spdLogPrint(const int level, std::string_view content)
