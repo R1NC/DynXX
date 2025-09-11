@@ -6,10 +6,10 @@
 
 #include <array>
 
-#include <winsock2.h>
-#include <windows.h>
+#include <WinSock2.h>
+#include <Windows.h>
 #include <ws2def.h>
-#include <ws2tcpip.h>
+#include <WS2tcpip.h>
 #include <iphlpapi.h>
 
 #pragma comment(lib, "ws2_32.lib")

@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <windows.h>
+#include <Windows.h>
 
 #include <DynXX/C/Device.h>
 
