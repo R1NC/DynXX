@@ -113,7 +113,7 @@ std::string DynXX::Core::Net::Util::publicIpV4()
     closesocket(sock);
     WSACleanup();
 
-    return std::string(ipStr);
+    return std::string(ipStr.data());
 }
 
 std::string DynXX::Core::Net::Util::publicIpV6()
@@ -156,7 +156,7 @@ std::string DynXX::Core::Net::Util::publicIpV6()
     closesocket(sock);
     WSACleanup();
 
-    return std::string(ipStr);
+    return std::string(ipStr.data());
 }
 
 #endif
