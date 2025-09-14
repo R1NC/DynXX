@@ -13,7 +13,7 @@
 #include "ScriptAPI.hxx"
 
 namespace {
-    std::unique_ptr<DynXX::Core::VM::JSVM> vm = nullptr;
+    std::shared_ptr<DynXX::Core::VM::JSVM> vm = nullptr;
     std::function<const char *(const char *msg)> msgCbk = nullptr;
 
 #define DEF_API(f, T) DEF_JS_FUNC_##T(f##J, f##S)
@@ -290,7 +290,7 @@ void dynxx_js_init() {
     if (vm) [[unlikely]] {
         return;
     }
-    vm = std::make_unique<DynXX::Core::VM::JSVM>();
+    vm = std::make_shared<DynXX::Core::VM::JSVM>();
     registerFuncs();
 }
 

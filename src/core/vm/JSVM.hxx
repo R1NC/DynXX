@@ -216,6 +216,8 @@ namespace DynXX::Core::VM {
         JSValue newPromise(std::function<JSValue()> &&jf);
 
         JSValue jAwait(const JSValue obj);
+
+        void beforeLoad();
     };
 }
 

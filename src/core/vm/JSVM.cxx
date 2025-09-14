@@ -261,22 +261,6 @@ DynXX::Core::VM::JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
     this->jGlobal = JS_GetGlobalObject(this->context.get());// Can not free here, will be called in future
 
     promiseCache = std::make_unique<Mem::PtrCache<JSPromise>>();
-
-    this->timerLooperTask = std::make_unique<TimerTask>([this]() {
-        if (tryLockUntil(JSLoopTimeoutMicroSecs))
-        {
-            js_std_loop_timer(context.get());
-            unlock();
-        }
-    }, JSLoopTimeoutMicroSecs);
-
-    this->promiseLooperTask = std::make_unique<TimerTask>([this]() {
-        if (tryLockUntil(JSLoopTimeoutMicroSecs))
-        {
-            js_std_loop_promise(context.get());
-            unlock();
-        }
-    }, JSLoopTimeoutMicroSecs);
 }
 
 bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
@@ -305,6 +289,33 @@ bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *func
     return res;
 }
 
+void DynXX::Core::VM::JSVM::beforeLoad()
+{
+    this->timerLooperTask = std::make_unique<TimerTask>([weakSelf = std::weak_ptr<BaseVM>(this->shared_from_this())]() {
+        const auto self = std::dynamic_pointer_cast<JSVM>(weakSelf.lock());
+        if (!self) [[unlikely]] {
+            return;
+        }
+        if (self->tryLockUntil(JSLoopTimeoutMicroSecs))
+        {
+            js_std_loop_timer(self->context.get());
+            self->unlock();
+        }
+    }, JSLoopTimeoutMicroSecs);
+
+    this->promiseLooperTask = std::make_unique<TimerTask>([weakSelf = std::weak_ptr<BaseVM>(this->shared_from_this())]() {
+        const auto self = std::dynamic_pointer_cast<JSVM>(weakSelf.lock());
+        if (!self) [[unlikely]] {
+            return;
+        }
+        if (self->tryLockUntil(JSLoopTimeoutMicroSecs))
+        {
+            js_std_loop_promise(self->context.get());
+            self->unlock();
+        }
+    }, JSLoopTimeoutMicroSecs);
+}
+
 bool DynXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
 {
     try {
@@ -331,11 +342,13 @@ bool DynXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
 
 bool DynXX::Core::VM::JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
     auto lock = std::scoped_lock(this->vmMutex);
+    this->beforeLoad();
     return _loadScript(this->context.get(), script, name, isModule);
 }
 
 bool DynXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
     auto lock = std::scoped_lock(this->vmMutex);
+    this->beforeLoad();
     return js_std_eval_binary(this->context.get(), bytes.data(), bytes.size(), 0);
 }
 

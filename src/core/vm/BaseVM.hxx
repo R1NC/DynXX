@@ -8,7 +8,7 @@
 #include "../concurrent/Executor.hxx"
 
 namespace DynXX::Core::VM {
-    class BaseVM {
+    class BaseVM : public std::enable_shared_from_this<BaseVM> {
     public:
         BaseVM();
 
