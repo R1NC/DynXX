@@ -138,20 +138,13 @@ std::optional<std::string> DynXX::Core::Json::jsonFromDictAny(const DictAny &dic
 
     for (const auto &[k, v] : dict) 
     {
-        cJSON *node = nullptr;
-        if (std::holds_alternative<int64_t>(v)) 
-        {
-            node = cJSON_CreateNumber(static_cast<double>(std::get<int64_t>(v)));
-        } 
-        else if (std::holds_alternative<double>(v)) 
-        {
-            node = cJSON_CreateNumber(std::get<double>(v));
-        } 
-        else if (std::holds_alternative<std::string>(v)) 
-        {
-            node = parseStringF(std::get<std::string>(v));
-        }
-        if (node) [[likely]]
+        if (const auto node = std::visit([&](const auto &x) {
+            if constexpr (std::is_same_v<std::decay_t<decltype(x)>, std::string>) {
+                return parseStringF(x);
+            } else {
+                return cJSON_CreateNumber(static_cast<double>(x));
+            }
+        }, v)) [[likely]]
         {
             if (!cJSON_AddItemToObject(cjson, k.c_str(), node)) [[unlikely]]
             {

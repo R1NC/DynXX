@@ -162,34 +162,36 @@ long double str2float128(const std::string &str, const long double defaultF = Mi
 // Any Type
 
 using Num = std::variant<int64_t, double>;
-
 using Any = std::variant<int64_t, double, std::string>;
 
-inline auto Any2String(const Any &v, const std::string &defaultS = {}) {
-    if (std::holds_alternative<std::string>(v)) [[likely]] {
-        return std::get<std::string>(v);
-    }
-    if (std::holds_alternative<int64_t>(v)) [[unlikely]] {
-        return std::to_string(std::get<int64_t>(v));
-    }
-    if (std::holds_alternative<double>(v)) [[unlikely]] {
-        return std::to_string(std::get<double>(v));
-    }
-    return defaultS;
+inline auto Any2String(const Any &v) {
+    return std::visit([](const auto &x) {
+        if constexpr (std::is_same_v<std::decay_t<decltype(x)>, std::string>) {
+            return x;
+        } else {
+            return std::to_string(x);
+        }
+    }, v);
 }
 
 inline auto Any2Integer(const Any &a, const int64_t defaultI = MinInt64) {
-    if (!std::holds_alternative<std::string>(a)) [[likely]] {
-        return std::get<int64_t>(a);
-    }
-    return str2int64(std::get<std::string>(a), defaultI);
+    return std::visit([defaultI](const auto &x) {
+        if constexpr (std::is_same_v<std::decay_t<decltype(x)>, std::string>) {
+            return str2int64(x, defaultI);
+        } else {
+            return static_cast<int64_t>(x);
+        }
+    }, a);
 }
 
 inline auto Any2Float(const Any &a, const double defaultF = MinFloat64) {
-    if (!std::holds_alternative<std::string>(a)) [[likely]] {
-        return std::get<double>(a);
-    }
-    return str2float64(std::get<std::string>(a), defaultF);
+    return std::visit([defaultF](const auto &x) {
+        if constexpr (std::is_same_v<std::decay_t<decltype(x)>, std::string>) {
+            return str2float64(x, defaultF);
+        } else {
+            return static_cast<double>(x);
+        }
+    }, a);
 }
 
 // Dict Type
