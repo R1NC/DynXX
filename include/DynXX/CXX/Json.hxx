@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_JSON_HXX_
-#define DYNXX_INCLUDE_JSON_HXX_
+#ifndef DYNXX_INCLUDE_CXX_JSON_HXX_
+#define DYNXX_INCLUDE_CXX_JSON_HXX_
 
 #include <functional>
 
@@ -49,4 +49,4 @@ DynXXJsonNodeHandle dynxxJsonDecoderReadNext(const DynXXJsonDecoderHandle decode
 
 void dynxxJsonDecoderRelease(const DynXXJsonDecoderHandle decoder);
 
-#endif // DYNXX_INCLUDE_JSON_HXX_
+#endif // DYNXX_INCLUDE_CXX_JSON_HXX_

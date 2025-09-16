@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_NET_HXX_
-#define DYNXX_INCLUDE_NET_HXX_
+#ifndef DYNXX_INCLUDE_CXX_NET_HXX_
+#define DYNXX_INCLUDE_CXX_NET_HXX_
 
 #include "Types.hxx"
 
@@ -48,4 +48,4 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
 bool dynxxNetHttpDownload(std::string_view url, std::string_view filePath,
                            size_t timeout = DynXXHttpDefaultTimeout);
 
-#endif // DYNXX_INCLUDE_NET_HXX_
+#endif // DYNXX_INCLUDE_CXX_NET_HXX_

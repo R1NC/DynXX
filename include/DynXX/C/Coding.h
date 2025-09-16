@@ -1,9 +1,9 @@
-#ifndef DYNXX_INCLUDE_CODING_H_
-#define DYNXX_INCLUDE_CODING_H_
+#ifndef DYNXX_INCLUDE_C_CODING_H_
+#define DYNXX_INCLUDE_C_CODING_H_
 
 #include "Types.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 /**
  * @brief transfer string to upper case
@@ -58,6 +58,6 @@ const byte *dynxx_coding_str2bytes(const char *str, size_t *outLen);
  */
 const char *dynxx_coding_str_trim(const char *str);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_CODING_H_
+#endif // DYNXX_INCLUDE_C_CODING_H_

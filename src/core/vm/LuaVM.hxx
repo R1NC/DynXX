@@ -3,11 +3,11 @@
 
 #include <DynXX/C/Macro.h>
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
 #if defined(__cplusplus)
 

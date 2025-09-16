@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_H_
-#define DYNXX_INCLUDE_H_
+#ifndef DYNXX_INCLUDE_C_DYNXX_H_
+#define DYNXX_INCLUDE_C_DYNXX_H_
 
 #ifndef NOMINMAX
 #define NOMINMAX  // prevent windows redefining min/max
@@ -17,7 +17,7 @@
 #include "Lua.h"
 #include "JS.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 /**
  * @brief Read version
@@ -45,6 +45,6 @@ const char *dynxx_root_path();
  */
 void dynxx_release(void);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_H_
+#endif // DYNXX_INCLUDE_C_DYNXX_H_

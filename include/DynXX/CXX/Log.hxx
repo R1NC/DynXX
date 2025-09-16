@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_LOG_HXX_
-#define DYNXX_INCLUDE_LOG_HXX_
+#ifndef DYNXX_INCLUDE_CXX_LOG_HXX_
+#define DYNXX_INCLUDE_CXX_LOG_HXX_
 
 #include <functional>
 
@@ -58,4 +58,4 @@ void dynxxLogPrintF(DynXXLogLevelX level, std::string_view format, Args... args)
     dynxxLogPrint(level, fContent);
 }
 
-#endif // DYNXX_INCLUDE_LOG_HXX_
+#endif // DYNXX_INCLUDE_CXX_LOG_HXX_

@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_MEMORY_HXX_
-#define DYNXX_INCLUDE_MEMORY_HXX_
+#ifndef DYNXX_INCLUDE_CXX_MEMORY_HXX_
+#define DYNXX_INCLUDE_CXX_MEMORY_HXX_
 
 #if defined(_WIN32)
 #include <malloc.h>
@@ -113,4 +113,4 @@ void freeX(T * &ptr) {
 
 #endif
 
-#endif // DYNXX_INCLUDE_MEMORY_HXX_
+#endif // DYNXX_INCLUDE_CXX_MEMORY_HXX_

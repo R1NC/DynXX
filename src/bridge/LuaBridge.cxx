@@ -53,18 +53,18 @@ std::optional<std::string> dynxxLuaCall(std::string_view f, std::string_view ps)
 // C API
 
 #if !defined(__EMSCRIPTEN__)
-EXPORT
+DYNXX_EXPORT
 bool dynxx_lua_loadF(const char *file) {
     return dynxxLuaLoadF(makeStr(file));
 }
 #endif
 
-EXPORT
+DYNXX_EXPORT
 bool dynxx_lua_loadS(const char *script) {
     return dynxxLuaLoadS(makeStr(script));
 }
 
-EXPORT
+DYNXX_EXPORT
 const char *dynxx_lua_call(const char *f, const char *ps) {
     if (f == nullptr) [[unlikely]] 
     {

@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_CODING_HXX_
-#define DYNXX_INCLUDE_CODING_HXX_
+#ifndef DYNXX_INCLUDE_CXX_CODING_HXX_
+#define DYNXX_INCLUDE_CXX_CODING_HXX_
 
 #include "Types.hxx"
 
@@ -17,4 +17,4 @@ std::string dynxxCodingBytes2str(BytesView bytes);
 
 std::string dynxxCodingStrTrim(std::string_view str);
 
-#endif // DYNXX_INCLUDE_CODING_HXX_
+#endif // DYNXX_INCLUDE_CXX_CODING_HXX_

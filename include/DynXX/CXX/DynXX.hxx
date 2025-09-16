@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_HXX_
-#define DYNXX_INCLUDE_HXX_
+#ifndef DYNXX_INCLUDE_CXX_DYNXX_HXX_
+#define DYNXX_INCLUDE_CXX_DYNXX_HXX_
 
 #include "Net.hxx"
 #include "KV.hxx"
@@ -22,4 +22,4 @@ std::optional<std::string> dynxxRootPath();
 
 void dynxxRelease();
 
-#endif // DYNXX_INCLUDE_HXX_
+#endif // DYNXX_INCLUDE_CXX_DYNXX_HXX_

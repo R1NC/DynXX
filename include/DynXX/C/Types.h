@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_TYPES_H_
-#define DYNXX_INCLUDE_TYPES_H_
+#ifndef DYNXX_INCLUDE_C_TYPES_H_
+#define DYNXX_INCLUDE_C_TYPES_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -7,11 +7,11 @@
 
 #include "Macro.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 typedef unsigned char byte;
 typedef intptr_t address;
 typedef void* RawPtr;
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_TYPES_H_
+#endif // DYNXX_INCLUDE_C_TYPES_H_

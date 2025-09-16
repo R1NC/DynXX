@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_SQLITE_HXX_
-#define DYNXX_INCLUDE_SQLITE_HXX_
+#ifndef DYNXX_INCLUDE_CXX_SQLITE_HXX_
+#define DYNXX_INCLUDE_CXX_SQLITE_HXX_
 
 #include "Types.hxx"
 #include "../C/SQLite.h"
@@ -22,4 +22,4 @@ void dynxxSQLiteQueryDrop(const DynXXSQLiteQueryResultHandle query_result);
 
 void dynxxSQLiteClose(const DynXXSQLiteConnHandle conn);
 
-#endif // DYNXX_INCLUDE_SQLITE_HXX_
+#endif // DYNXX_INCLUDE_CXX_SQLITE_HXX_

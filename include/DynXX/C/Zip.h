@@ -1,11 +1,11 @@
-#ifndef DYNXX_INCLUDE_ZIP_H_
-#define DYNXX_INCLUDE_ZIP_H_
+#ifndef DYNXX_INCLUDE_C_ZIP_H_
+#define DYNXX_INCLUDE_C_ZIP_H_
 
 #include "Types.h"
 
 #include <stdio.h>
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 typedef address DynXXZipHandle;
 typedef address DynXXUnZipHandle;
@@ -154,6 +154,6 @@ const byte *dynxx_z_bytes_zip(int mode, size_t bufferSize, int format, const byt
  */
 const byte *dynxx_z_bytes_unzip(size_t bufferSize, int format, const byte *inBytes, size_t inLen, size_t *outLen);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_ZIP_H_
+#endif // DYNXX_INCLUDE_C_ZIP_H_

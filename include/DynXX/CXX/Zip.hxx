@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_Z_HXX_
-#define DYNXX_INCLUDE_Z_HXX_
+#ifndef DYNXX_INCLUDE_CXX_ZIP_HXX_
+#define DYNXX_INCLUDE_CXX_ZIP_HXX_
 
 #include "Types.hxx"
 #include "../C/Zip.h"
@@ -68,4 +68,4 @@ Bytes dynxxZBytesUnzip(const Bytes &inBytes,
                         size_t bufferSize = DynXXZDefaultBufferSize,
                         const DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-#endif // DYNXX_INCLUDE_Z_HXX_
+#endif // DYNXX_INCLUDE_CXX_ZIP_HXX_

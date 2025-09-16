@@ -1,11 +1,11 @@
-#ifndef DYNXX_INCLUDE_NET_H_
-#define DYNXX_INCLUDE_NET_H_
+#ifndef DYNXX_INCLUDE_C_NET_H_
+#define DYNXX_INCLUDE_C_NET_H_
 
 #include "Types.h"
 
 #include <stdio.h>
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 static const size_t DYNXX_HTTP_DEFAULT_TIMEOUT = 15 * 1000;
 
@@ -60,6 +60,6 @@ const char *dynxx_net_http_request(const char *url, const char *params, int meth
  */
 bool dynxx_net_http_download(const char *url, const char *file_path, size_t timeout);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_NET_H_
+#endif // DYNXX_INCLUDE_C_NET_H_

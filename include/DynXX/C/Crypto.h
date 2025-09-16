@@ -1,9 +1,9 @@
-#ifndef DYNXX_INCLUDE_CRYPTO_H_
-#define DYNXX_INCLUDE_CRYPTO_H_
+#ifndef DYNXX_INCLUDE_C_CRYPTO_H_
+#define DYNXX_INCLUDE_C_CRYPTO_H_
 
 #include "Types.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 /**
  * @brief Generate random bytes
@@ -163,6 +163,6 @@ const byte *dynxx_crypto_base64_encode(const byte *inBytes, size_t inLen, bool n
  */
 const byte *dynxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_CRYPTO_H_
+#endif // DYNXX_INCLUDE_C_CRYPTO_H_

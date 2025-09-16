@@ -90,22 +90,22 @@ void dynxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &c
 
 // C API
 
-EXPORT_AUTO
+DYNXX_EXPORT_AUTO
 bool dynxx_js_loadF(const char *file, bool is_module) {
     return dynxxJsLoadF(makeStr(file), is_module);
 }
 
-EXPORT_AUTO
+DYNXX_EXPORT_AUTO
 bool dynxx_js_loadS(const char *script, const char *name, bool is_module) {
     return dynxxJsLoadS(makeStr(script), makeStr(name), is_module);
 }
 
-EXPORT_AUTO
+DYNXX_EXPORT_AUTO
 bool dynxx_js_loadB(const byte *bytes, size_t len, bool is_module) {
     return dynxxJsLoadB(makeBytes(bytes, len), is_module);
 }
 
-EXPORT_AUTO
+DYNXX_EXPORT_AUTO
 const char *dynxx_js_call(const char *func, const char *params, bool await) {
     if (func == nullptr) [[unlikely]] {
         return "";
@@ -114,7 +114,7 @@ const char *dynxx_js_call(const char *func, const char *params, bool await) {
     return dupStr(s);
 }
 
-EXPORT_AUTO
+DYNXX_EXPORT_AUTO
 void dynxx_js_set_msg_callback(const char *(*const callback)(const char *msg)) {
     dynxxJsSetMsgCallback(callback);
 }

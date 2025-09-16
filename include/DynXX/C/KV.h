@@ -1,9 +1,9 @@
-#ifndef DYNXX_INCLUDE_KV_H_
-#define DYNXX_INCLUDE_KV_H_
+#ifndef DYNXX_INCLUDE_C_KV_H_
+#define DYNXX_INCLUDE_C_KV_H_
 
 #include "Types.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 static const size_t DYNXX_STORE_KV_KEY_MAX_LENGTH = 256; /**< Max length of the KV Key */
 
@@ -103,6 +103,6 @@ void dynxx_kv_clear(const DynXXKVConnHandle conn);
  */
 void dynxx_kv_close(const DynXXKVConnHandle conn);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_KV_H_
+#endif // DYNXX_INCLUDE_C_KV_H_

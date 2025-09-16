@@ -1,9 +1,9 @@
-#ifndef DYNXX_INCLUDE_SQLITE_H_
-#define DYNXX_INCLUDE_SQLITE_H_
+#ifndef DYNXX_INCLUDE_C_SQLITE_H_
+#define DYNXX_INCLUDE_C_SQLITE_H_
 
 #include "Types.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 typedef address DynXXSQLiteConnHandle;
 typedef address DynXXSQLiteQueryResultHandle;
@@ -74,6 +74,6 @@ void dynxx_sqlite_query_drop(const DynXXSQLiteQueryResultHandle query_result);
  */
 void dynxx_sqlite_close(const DynXXSQLiteConnHandle conn);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_SQLITE_H_
+#endif // DYNXX_INCLUDE_C_SQLITE_H_

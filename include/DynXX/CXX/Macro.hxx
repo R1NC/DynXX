@@ -1,16 +1,7 @@
-#ifndef DYNXX_INTERNAL_HXX_
-#define DYNXX_INTERNAL_HXX_
+#ifndef DYNXX_INCLUDE_CXX_MACRO_HXX_
+#define DYNXX_INCLUDE_CXX_MACRO_HXX_
 
 #if defined(__cplusplus)
-
-// WARNING: Export with `EMSCRIPTEN_KEEPALIVE` will cause Lua running automatically.
-#define EXPORT extern "C"
-#if defined(__EMSCRIPTEN__)
-        #include <emscripten/emscripten.h>
-        #define EXPORT_AUTO EXPORT EMSCRIPTEN_KEEPALIVE
-#else
-        #define EXPORT_AUTO EXPORT
-#endif
 
 #if defined(__cpp_lib_to_chars) && defined(USE_STD_TO_CHARS)
         #if (__cpp_lib_to_chars >= 201611L)
@@ -27,4 +18,4 @@
 
 #endif
 
-#endif // DYNXX_INTERNAL_HXX_
+#endif // DYNXX_INCLUDE_CXX_MACRO_HXX_

@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_CRYPTO_HXX_
-#define DYNXX_INCLUDE_CRYPTO_HXX_
+#ifndef DYNXX_INCLUDE_CXX_CRYPTO_HXX_
+#define DYNXX_INCLUDE_CXX_CRYPTO_HXX_
 
 #include "Types.hxx"
 
@@ -40,4 +40,4 @@ Bytes dynxxCryptoBase64Encode(BytesView in, bool noNewLines = true);
 
 Bytes dynxxCryptoBase64Decode(BytesView in, bool noNewLines = true);
 
-#endif // DYNXX_INCLUDE_CRYPTO_HXX_
+#endif // DYNXX_INCLUDE_CXX_CRYPTO_HXX_

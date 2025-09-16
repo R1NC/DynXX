@@ -1,9 +1,9 @@
-#ifndef DYNXX_INCLUDE_DEVICE_H_
-#define DYNXX_INCLUDE_DEVICE_H_
+#ifndef DYNXX_INCLUDE_C_DEVICE_H_
+#define DYNXX_INCLUDE_C_DEVICE_H_
 
 #include "Types.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 /**
  * Device Type
@@ -69,6 +69,6 @@ const char *dynxx_device_os_version();
  */
 int dynxx_device_cpu_arch();
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_DEVICE_H_
+#endif // DYNXX_INCLUDE_C_DEVICE_H_

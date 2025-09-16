@@ -1,9 +1,9 @@
-#ifndef DYNXX_INCLUDE_JS_H_
-#define DYNXX_INCLUDE_JS_H_
+#ifndef DYNXX_INCLUDE_C_JS_H_
+#define DYNXX_INCLUDE_C_JS_H_
 
 #include "Types.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 /**
  * @brief Load JS file
@@ -50,6 +50,6 @@ const char *dynxx_js_call(const char *func, const char *params, bool await);
  */
 void dynxx_js_set_msg_callback(const char *(*const callback)(const char *msg));
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_JS_H_
+#endif // DYNXX_INCLUDE_C_JS_H_

@@ -1,9 +1,9 @@
-#ifndef DYNXX_INCLUDE_LUA_H_
-#define DYNXX_INCLUDE_LUA_H_
+#ifndef DYNXX_INCLUDE_C_LUA_H_
+#define DYNXX_INCLUDE_C_LUA_H_
 
 #include "Types.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 /**
  * @brief Load Lua file
@@ -31,6 +31,6 @@ bool dynxx_lua_loadS(const char *script);
  */
 const char *dynxx_lua_call(const char *func, const char *params);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_LUA_H_
+#endif // DYNXX_INCLUDE_C_LUA_H_

@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_TYPES_HXX_
-#define DYNXX_INCLUDE_TYPES_HXX_
+#ifndef DYNXX_INCLUDE_CXX_TYPES_HXX_
+#define DYNXX_INCLUDE_CXX_TYPES_HXX_
 
 #include "../C/Types.h"
 
@@ -299,4 +299,4 @@ inline std::optional<const char*> nullTerminatedCStr(std::string_view sv) {
 
 #endif
 
-#endif // DYNXX_INCLUDE_TYPES_HXX_
+#endif // DYNXX_INCLUDE_CXX_TYPES_HXX_

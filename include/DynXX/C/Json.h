@@ -1,9 +1,9 @@
-#ifndef DYNXX_INCLUDE_JSON_H_
-#define DYNXX_INCLUDE_JSON_H_
+#ifndef DYNXX_INCLUDE_C_JSON_H_
+#define DYNXX_INCLUDE_C_JSON_H_
 
 #include "Types.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 enum DynXXJsonNodeType {
     DynXXJsonNodeTypeUnknown,
@@ -111,6 +111,6 @@ DynXXJsonNodeHandle dynxx_json_decoder_read_next(const DynXXJsonDecoderHandle de
  */
 void dynxx_json_decoder_release(const DynXXJsonDecoderHandle decoder);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_JSON_H_
+#endif // DYNXX_INCLUDE_C_JSON_H_

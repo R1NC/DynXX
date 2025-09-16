@@ -1,9 +1,9 @@
-#ifndef DYNXX_INCLUDE_LOG_LOG_H_
-#define DYNXX_INCLUDE_LOG_LOG_H_
+#ifndef DYNXX_INCLUDE_C_LOG_H_
+#define DYNXX_INCLUDE_C_LOG_H_
 
 #include "Types.h"
 
-EXTERN_C_BEGIN
+DYNXX_EXTERN_C_BEGIN
 
 /**
  *
@@ -38,6 +38,6 @@ void dynxx_log_set_callback(void (*const callback)(int level, const char *conten
  */
 void dynxx_log_print(int level, const char *content);
 
-EXTERN_C_END
+DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_LOG_LOG_H_
+#endif // DYNXX_INCLUDE_C_LOG_H_

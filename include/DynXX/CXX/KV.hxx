@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_KV_HXX_
-#define DYNXX_INCLUDE_KV_HXX_
+#ifndef DYNXX_INCLUDE_CXX_KV_HXX_
+#define DYNXX_INCLUDE_CXX_KV_HXX_
 
 #include "../C/KV.h"
 
@@ -27,4 +27,4 @@ void dynxxKVClear(const DynXXKVConnHandle conn);
 
 void dynxxKVClose(const DynXXKVConnHandle conn);
 
-#endif // DYNXX_INCLUDE_KV_HXX_
+#endif // DYNXX_INCLUDE_CXX_KV_HXX_

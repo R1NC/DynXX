@@ -1,5 +1,5 @@
-#ifndef DYNXX_INCLUDE_JS_HXX_
-#define DYNXX_INCLUDE_JS_HXX_
+#ifndef DYNXX_INCLUDE_CXX_JS_HXX_
+#define DYNXX_INCLUDE_CXX_JS_HXX_
 
 #include "Types.hxx"
 
@@ -15,4 +15,4 @@ std::optional<std::string> dynxxJsCall(std::string_view func, std::string_view p
 
 void dynxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback);
 
-#endif // DYNXX_INCLUDE_JS_H_
+#endif // DYNXX_INCLUDE_CXX_JS_HXX_
