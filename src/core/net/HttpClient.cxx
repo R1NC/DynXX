@@ -46,9 +46,7 @@ namespace
                 dynxxLogPrint(Error, "HttpClient.Req init failed");
                 return;
             }
-            this->setOpt(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-            this->setOpt(CURLOPT_SSL_VERIFYPEER, 1L);
-            this->setOpt(CURLOPT_SSL_VERIFYHOST, 2L);
+            this->setOpt(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
             this->setOpt(CURLOPT_USERAGENT, "DynXX");
             this->setOpt(CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
         };
@@ -298,9 +296,18 @@ namespace
 #else
         if (static const auto prefixHttps = "https://"; url.starts_with(prefixHttps))
 #endif
-        { // TODO: verify SSL cet
+        { 
+            req.setOpt(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_MAX_TLSv1_3);
+            req.setOpt(CURLOPT_SSL_SESSIONID_CACHE, 1L);
+            req.setOpt(CURLOPT_SSL_ENABLE_ALPN, 1L);
+            req.setOpt(CURLOPT_SSL_ENABLE_NPN, 1L);
+#if defined(ENABLE_SSL_CERT)
+            req.setOpt(CURLOPT_SSL_VERIFYPEER, 1L);
+            req.setOpt(CURLOPT_SSL_VERIFYHOST, 2L);
+#else
             req.setOpt(CURLOPT_SSL_VERIFYPEER, 0L);
             req.setOpt(CURLOPT_SSL_VERIFYHOST, 0L);
+#endif
         }
         return true;
     }
