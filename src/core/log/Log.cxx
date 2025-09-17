@@ -214,7 +214,7 @@ void DynXX::Core::Log::setCallback(const std::function<void(int level, const cha
 
 void DynXX::Core::Log::print(int level, std::string_view content)
 {
-    DynXX::Core::Concurrent::callOnce([&]() {
+    DynXX::Core::Concurrent::callOnce([]() {
         prepareStdIO();
     });
 
