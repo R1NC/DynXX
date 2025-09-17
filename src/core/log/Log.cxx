@@ -39,6 +39,15 @@ namespace
     constexpr auto TAG = "DYNXX";
     constexpr auto MAX_LEN = 1023uz;
 
+    bool isDebug() {
+        return _level == DynXXLogLevelDebug;
+    }
+
+    void prepareStdIO() {
+        std::ios::sync_with_stdio(false);
+        std::cin.tie(nullptr);
+    }
+
     void stdLogPrint(int level, std::string_view content)
     {
 #if defined(__ANDROID__)
@@ -98,7 +107,7 @@ namespace
                 );
                 spdlog::set_default_logger(logger);
                 spdlog::set_pattern("[%Y-%m-%d_%H:%M:%S.%e] [%l] [%t] %v");
-                spdlog::flush_on(spdlog::level::debug);
+                spdlog::flush_on(isDebug() ? spdlog::level::debug : spdlog::level::warn);
             }
             catch (const spdlog::spdlog_ex& ex) 
             {
@@ -205,6 +214,10 @@ void DynXX::Core::Log::setCallback(const std::function<void(int level, const cha
 
 void DynXX::Core::Log::print(int level, std::string_view content)
 {
+    DynXX::Core::Concurrent::callOnce([&]() {
+        prepareStdIO();
+    });
+
     auto lock = std::scoped_lock(_mutex);
 
     if (level < _level || level < DynXXLogLevelDebug || level >= DynXXLogLevelNone) [[unlikely]]
