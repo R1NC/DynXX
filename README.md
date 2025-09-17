@@ -1,6 +1,6 @@
 # DynXX
 
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/Lint.yml?branch=main&label=Lint&logo=sonarqubeforide"/>][37]
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CodeQL.yml?branch=main&label=CodeQL&logo=githubactions"/>][37]
 [<img src="https://img.shields.io/sonar/quality_gate/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&logo=sonar&label=Sonar%20-%20Quality%20Gate"/>][36]
 [<img src="https://img.shields.io/sonar/violations/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&format=long&logo=sonar&label=Sonar%20-%20Violations"/>][25]
  
@@ -130,4 +130,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [34]: ../../actions/workflows/CI-macOS.yml
 [35]: ../../actions/workflows/CI-Windows-MSVC.yml
 [36]: https://sonarcloud.io/project/overview?id=R1NC_DynXX
-[37]: ../../actions/workflows/Lint.yml
+[37]: ../../actions/workflows/CodeQL.yml
