@@ -23,24 +23,26 @@ namespace
     }
 }
 
-int DynXX::Core::Device::deviceType()
+namespace DynXX::Core::Device {
+
+int deviceType()
 {
     return DynXXDeviceTypeApplePhone;
 }
 
-std::string DynXX::Core::Device::deviceName()
+std::string deviceName()
 {
     struct utsname systemInfo;
     uname(&systemInfo);
     return systemInfo.machine;
 }
 
-std::string DynXX::Core::Device::deviceManufacturer()
+std::string deviceManufacturer()
 {
     return "Apple";
 }
 
-std::string DynXX::Core::Device::deviceModel()
+std::string deviceModel()
 {
     static dispatch_once_t get_system_model_once;
     static std::string *model;
@@ -52,7 +54,7 @@ std::string DynXX::Core::Device::deviceModel()
     return *model;
 }
 
-std::string DynXX::Core::Device::osVersion()
+std::string osVersion()
 {
     static dispatch_once_t get_system_version_once;
     static std::string *osv;
@@ -64,7 +66,7 @@ std::string DynXX::Core::Device::osVersion()
     return *osv;
 }
 
-int DynXX::Core::Device::cpuArch()
+int cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
     return DynXXDeviceCpuArchARM_64;
@@ -73,5 +75,7 @@ int DynXX::Core::Device::cpuArch()
 #endif
     return DynXXDeviceCpuArchUnknown;
 }
+
+} // namespace DynXX::Core::Device
 
 #endif

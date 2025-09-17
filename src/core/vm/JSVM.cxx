@@ -171,9 +171,11 @@ namespace
     std::unique_ptr<Mem::PtrCache<JSPromise>> promiseCache{nullptr};
 }
 
+namespace DynXX::Core::VM {
+
 // JSVM Internal
 
-JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
+JSValue JSVM::jAwait(const JSValue obj)
 {
     if (JS_VALUE_GET_TAG(obj) != JS_TAG_OBJECT) [[unlikely]] {
         return obj;
@@ -222,12 +224,12 @@ JSValue DynXX::Core::VM::JSVM::jAwait(const JSValue obj)
 
 // JSValueHash and JSValueEqual
 
-std::size_t DynXX::Core::VM::JSVM::JSValueHash::operator()(const JSValue &jv) const 
+std::size_t JSVM::JSValueHash::operator()(const JSValue &jv) const 
 {
     return std::hash<void *>()(JS_VALUE_GET_PTR(jv));
 }
 
-bool DynXX::Core::VM::JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) const 
+bool JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) const 
 {
     if (JS_VALUE_GET_TAG(left) != JS_VALUE_GET_TAG(right)) 
     {
@@ -251,7 +253,7 @@ bool DynXX::Core::VM::JSVM::JSValueEqual::operator()(const JSValue &left, const 
 
 // JSVM API
 
-DynXX::Core::VM::JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
+JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
 {
     js_std_init_handlers(this->runtime.get());
     JS_SetModuleLoaderFunc(this->runtime.get(), nullptr, js_module_loader, nullptr);
@@ -263,7 +265,7 @@ DynXX::Core::VM::JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
     promiseCache = std::make_unique<Mem::PtrCache<JSPromise>>();
 }
 
-bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
+bool JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
 {
     auto res = true;
     const auto ctx = this->context.get();
@@ -289,7 +291,7 @@ bool DynXX::Core::VM::JSVM::bindFunc(const std::string &funcJ, JSCFunction *func
     return res;
 }
 
-void DynXX::Core::VM::JSVM::beforeLoad()
+void JSVM::beforeLoad()
 {
     this->timerLooperTask = std::make_unique<TimerTask>([weakSelf = std::weak_ptr<BaseVM>(this->shared_from_this())]() {
         const auto self = std::dynamic_pointer_cast<JSVM>(weakSelf.lock());
@@ -316,7 +318,7 @@ void DynXX::Core::VM::JSVM::beforeLoad()
     }, JSLoopTimeoutMicroSecs);
 }
 
-bool DynXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
+bool JSVM::loadFile(const std::string &file, bool isModule)
 {
     try {
         std::ifstream ifs(file.c_str());
@@ -340,20 +342,20 @@ bool DynXX::Core::VM::JSVM::loadFile(const std::string &file, bool isModule)
     }
 }
 
-bool DynXX::Core::VM::JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
+bool JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
     auto lock = std::scoped_lock(this->vmMutex);
     this->beforeLoad();
     return _loadScript(this->context.get(), script, name, isModule);
 }
 
-bool DynXX::Core::VM::JSVM::loadBinary(const Bytes &bytes, bool isModule) {
+bool JSVM::loadBinary(const Bytes &bytes, bool isModule) {
     auto lock = std::scoped_lock(this->vmMutex);
     this->beforeLoad();
     return js_std_eval_binary(this->context.get(), bytes.data(), bytes.size(), 0);
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
-std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func, std::string_view params, bool await) {
+std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_view params, bool await) {
     if (!lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
     {
         dynxxLogPrint(Error, "JSVM::callFunc failed to lock");
@@ -400,7 +402,7 @@ std::optional<std::string> DynXX::Core::VM::JSVM::callFunc(std::string_view func
     return success? std::make_optional(s): std::nullopt;
 }
 
-JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
+JSValue JSVM::newPromise(std::function<JSValue()> &&jf)
 {
     if (!this->lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
     {
@@ -429,7 +431,7 @@ JSValue DynXX::Core::VM::JSVM::newPromise(std::function<JSValue()> &&jf)
     return result;
 }
 
-JSValue DynXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&vf)
+JSValue JSVM::newPromiseVoid(std::function<void()> &&vf)
 {
     return this->newPromise([cbk = std::move(vf)]() {
         cbk();
@@ -437,7 +439,7 @@ JSValue DynXX::Core::VM::JSVM::newPromiseVoid(std::function<void()> &&vf)
     });
 }
 
-JSValue DynXX::Core::VM::JSVM::newPromiseBool(std::function<bool()> &&bf)
+JSValue JSVM::newPromiseBool(std::function<bool()> &&bf)
 {
     return this->newPromise([&ctx = this->context, cbk = std::move(bf)]{
         const auto ret = cbk();
@@ -445,7 +447,7 @@ JSValue DynXX::Core::VM::JSVM::newPromiseBool(std::function<bool()> &&bf)
     });
 }
 
-JSValue DynXX::Core::VM::JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
+JSValue JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
 {
     return this->newPromise([&ctx = this->context, cbk = std::move(i32f)]{
         const auto ret = cbk();
@@ -453,7 +455,7 @@ JSValue DynXX::Core::VM::JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
     });
 }
 
-JSValue DynXX::Core::VM::JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
+JSValue JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
 {
     return this->newPromise([&ctx = this->context, cbk = std::move(i64f)]{
         const auto ret = cbk();
@@ -461,7 +463,7 @@ JSValue DynXX::Core::VM::JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
     });
 }
 
-JSValue DynXX::Core::VM::JSVM::newPromiseFloat(std::function<double()> &&ff)
+JSValue JSVM::newPromiseFloat(std::function<double()> &&ff)
 {
     return this->newPromise([&ctx = this->context, cbk = std::move(ff)]{
         const auto ret = cbk();
@@ -469,7 +471,7 @@ JSValue DynXX::Core::VM::JSVM::newPromiseFloat(std::function<double()> &&ff)
     });
 }
 
-JSValue DynXX::Core::VM::JSVM::newPromiseString(std::function<const std::string()> &&sf)
+JSValue JSVM::newPromiseString(std::function<const std::string()> &&sf)
 {
     return this->newPromise([&ctx = this->context, cbk = std::move(sf)]{
         const auto ret = cbk();
@@ -477,7 +479,7 @@ JSValue DynXX::Core::VM::JSVM::newPromiseString(std::function<const std::string(
     });
 }
 
-DynXX::Core::VM::JSVM::~JSVM()
+JSVM::~JSVM()
 {
     promiseCache.reset();
     this->timerLooperTask.reset();
@@ -505,4 +507,7 @@ DynXX::Core::VM::JSVM::~JSVM()
     js_std_free_handlers(this->runtime.get());
     this->runtime.reset();
 }
+
+} // namespace DynXX::Core::VM
+
 #endif

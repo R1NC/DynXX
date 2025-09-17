@@ -8,7 +8,9 @@ namespace {
 
 // - Worker
 
-DynXX::Core::Concurrent::Worker::Worker() : 
+namespace DynXX::Core::Concurrent {
+
+Worker::Worker() : 
  Daemon([this]() {
     TaskT func;
     {
@@ -33,7 +35,7 @@ DynXX::Core::Concurrent::Worker::Worker() :
 {
 }
 
-DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(TaskT&& task)
+Worker& Worker::operator>>(TaskT&& task)
 {
     this->update([&mtx = this->mutex, tsk = std::move(task), &queue = this->taskQueue, addr = reinterpret_cast<uintptr_t>(this)]() mutable {
         auto lock = std::scoped_lock(mtx);
@@ -46,11 +48,11 @@ DynXX::Core::Concurrent::Worker& DynXX::Core::Concurrent::Worker::operator>>(Tas
 
 // - Executor
 
-DynXX::Core::Concurrent::Executor::Executor() : Executor(0uz)
+Executor::Executor() : Executor(0uz)
 {
 }
 
-DynXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity) : workerPoolCapacity{workerPoolCapacity}
+Executor::Executor(size_t workerPoolCapacity) : workerPoolCapacity{workerPoolCapacity}
 {
     if (this->workerPoolCapacity == 0)
     {
@@ -59,12 +61,12 @@ DynXX::Core::Concurrent::Executor::Executor(size_t workerPoolCapacity) : workerP
     this->workerPool.reserve(this->workerPoolCapacity);
 }
 
-DynXX::Core::Concurrent::Executor::~Executor()
+Executor::~Executor()
 {
     this->workerPool.clear();
 }
 
-DynXX::Core::Concurrent::Executor& DynXX::Core::Concurrent::Executor::operator>>(TaskT&& task)
+Executor& Executor::operator>>(TaskT&& task)
 {
     auto lock = std::scoped_lock(this->mutex);
 
@@ -82,3 +84,5 @@ DynXX::Core::Concurrent::Executor& DynXX::Core::Concurrent::Executor::operator>>
     
     return *this;
 }
+
+} // namespace DynXX::Core::Concurrent

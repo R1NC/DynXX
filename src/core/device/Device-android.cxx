@@ -49,37 +49,41 @@ namespace
     }
 }
 
-int DynXX::Core::Device::deviceType()
+namespace DynXX::Core::Device {
+
+int deviceType()
 {
     return DynXXDeviceTypeAndroid;
 }
 
-std::string DynXX::Core::Device::deviceName()
+std::string deviceName()
 {
     return sysProperty(SYS_PROPERTY_MODEL);
 }
 
-std::string DynXX::Core::Device::deviceManufacturer()
+std::string deviceManufacturer()
 {
     return sysProperty(SYS_PROPERTY_MANUFACTURER);
 }
 
-std::string DynXX::Core::Device::deviceModel()
+std::string deviceModel()
 {
     return sysProperty(SYS_PROPERTY_MODEL);
 }
 
-std::string DynXX::Core::Device::osVersion()
+std::string osVersion()
 {
     return sysProperty(SYS_PROPERTY_VERSION_RELEASE);
 }
 
-int DynXX::Core::Device::cpuArch()
+int cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
     return DynXXDeviceCpuArchARM_64;
 #endif
     return DynXXDeviceCpuArchARM;
 }
+
+} // namespace DynXX::Core::Device
 
 #endif

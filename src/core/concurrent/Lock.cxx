@@ -1,11 +1,15 @@
 #include "Lock.hxx"
 
-void DynXX::Core::Concurrent::SpinLock::lock() 
+namespace DynXX::Core::Concurrent {
+
+void SpinLock::lock() 
 {
     while (lockFlag.exchange(true, std::memory_order_acquire));
 }
 
-void DynXX::Core::Concurrent::SpinLock::unlock() 
+void SpinLock::unlock() 
 {
     lockFlag.store(false, std::memory_order_release);
 }
+
+} // namespace DynXX::Core::Concurrent

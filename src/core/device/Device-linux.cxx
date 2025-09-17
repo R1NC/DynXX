@@ -3,39 +3,43 @@
 
 #include <DynXX/C/Device.h>
 
-int DynXX::Core::Device::deviceType()
+namespace DynXX::Core::Device {
+
+int deviceType()
 {
     return DynXXDeviceTypeLinux;
 }
 
-std::string DynXX::Core::Device::deviceName()
+std::string deviceName()
 {
     //TODO
     return {};
 }
 
-std::string DynXX::Core::Device::deviceManufacturer()
+std::string deviceManufacturer()
 {
     //TODO
     return {};
 }
 
-std::string DynXX::Core::Device::deviceModel()
+std::string deviceModel()
 {
     //TODO
     return {};
 }
 
-std::string DynXX::Core::Device::osVersion()
+std::string osVersion()
 {
     //TODO
     return {};
 }
 
-int DynXX::Core::Device::cpuArch()
+int cpuArch()
 {
     //TODO
     return DynXXDeviceCpuArchUnknown;
 }
+
+} // namespace DynXX::Core::Device
 
 #endif

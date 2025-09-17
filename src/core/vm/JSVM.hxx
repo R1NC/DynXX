@@ -198,8 +198,8 @@ namespace DynXX::Core::VM {
         std::shared_ptr<JSContext> context{nullptr};
         JSValue jGlobal{JS_UNDEFINED};
 
-        std::unique_ptr<DynXX::Core::Concurrent::TimerTask> timerLooperTask{nullptr};
-        std::unique_ptr<DynXX::Core::Concurrent::TimerTask> promiseLooperTask{nullptr};
+        std::unique_ptr<Concurrent::TimerTask> timerLooperTask{nullptr};
+        std::unique_ptr<Concurrent::TimerTask> promiseLooperTask{nullptr};
 
         // Custom hash function for JSValue
         struct JSValueHash {

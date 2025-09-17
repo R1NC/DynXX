@@ -19,6 +19,7 @@
 
 namespace {
     using enum DynXXLogLevelX;
+    using namespace DynXX::Core::Z;
     
     template<typename T>
     concept ReadBytesFuncT = requires(T f) {
@@ -36,7 +37,7 @@ namespace {
     };
 
     template <typename T, ReadBytesFuncT RFT, WriteBytesFuncT WFT, FlushFuncT FFT = std::function<void()>>
-    bool process(DynXX::Core::Z::ZBase<T> &zb, const size_t bufferSize, 
+    bool process(ZBase<T> &zb, const size_t bufferSize, 
               RFT &&readF, WFT &&writeF, FFT &&flushF = [](){})
     {
         auto inputFinished = false;
@@ -70,7 +71,7 @@ namespace {
 #if !defined(__EMSCRIPTEN__)
 
     template <typename T>
-    bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, DynXX::Core::Z::ZBase<T> &zb)
+    bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, ZBase<T> &zb)
     {
         return process(zb, bufferSize,
             [bufferSize, inStream]
@@ -91,7 +92,7 @@ namespace {
     }
 
     template <typename T>
-    bool processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, DynXX::Core::Z::ZBase<T> &zb)
+    bool processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, ZBase<T> &zb)
     {
         return process(zb, bufferSize,
             [bufferSize, inFile]
@@ -114,7 +115,7 @@ namespace {
 #endif
 
     template <typename T>
-    Bytes processBytes(size_t bufferSize, const Bytes &in, DynXX::Core::Z::ZBase<T> &zb)
+    Bytes processBytes(size_t bufferSize, const Bytes &in, ZBase<T> &zb)
     {
         long pos(0);
         Bytes outBytes;
@@ -138,8 +139,10 @@ namespace {
     }
 }
 
+namespace DynXX::Core::Z {
+
 template <typename T>
-int DynXX::Core::Z::ZBase<T>::windowBits() const
+int ZBase<T>::windowBits() const
 {
     if (this->format == DynXXZFormatGZip)
     {
@@ -153,7 +156,7 @@ int DynXX::Core::Z::ZBase<T>::windowBits() const
 }
 
 template <typename T>
-DynXX::Core::Z::ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{bufferSize}, format{format}
+ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{bufferSize}, format{format}
 {
     if (bufferSize == 0) [[unlikely]]
     {
@@ -168,7 +171,7 @@ DynXX::Core::Z::ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{buff
 }
 
 template <typename T>
-size_t DynXX::Core::Z::ZBase<T>::input(const Bytes &bytes, bool finish)
+size_t ZBase<T>::input(const Bytes &bytes, bool finish)
 {
     if (bytes.empty()) [[unlikely]]
     {
@@ -186,7 +189,7 @@ size_t DynXX::Core::Z::ZBase<T>::input(const Bytes &bytes, bool finish)
 }
 
 template <typename T>
-Bytes DynXX::Core::Z::ZBase<T>::processDo()
+Bytes ZBase<T>::processDo()
 {
     std::memset(this->outBuffer, 0, this->bufferSize);
     this->zs.avail_out = static_cast<unsigned int>(this->bufferSize);
@@ -205,23 +208,23 @@ Bytes DynXX::Core::Z::ZBase<T>::processDo()
 }
 
 template <typename T>
-bool DynXX::Core::Z::ZBase<T>::processFinished() const
+bool ZBase<T>::processFinished() const
 {
     return this->zs.avail_out != 0;
 }
 
 template <typename T>
-DynXX::Core::Z::ZBase<T>::~ZBase()
+ZBase<T>::~ZBase()
 {
     freeX(inBuffer);
     freeX(outBuffer);
 }
 
 // Explicit template instantiation
-template class DynXX::Core::Z::ZBase<DynXX::Core::Z::Zip>;
-template class DynXX::Core::Z::ZBase<DynXX::Core::Z::UnZip>;
+template class ZBase<Zip>;
+template class ZBase<UnZip>;
 
-DynXX::Core::Z::Zip::Zip(int mode, size_t bufferSize, int format) : ZBase(bufferSize, format)
+Zip::Zip(int mode, size_t bufferSize, int format) : ZBase(bufferSize, format)
 {
     if (mode != DynXXZipCompressModeDefault && mode != DynXXZipCompressModePreferSize && mode != DynXXZipCompressModePreferSpeed) [[unlikely]]
     {
@@ -235,17 +238,17 @@ DynXX::Core::Z::Zip::Zip(int mode, size_t bufferSize, int format) : ZBase(buffer
     }
 }
 
-void DynXX::Core::Z::Zip::processImp()
+void Zip::processImp()
 {
     this->ret = deflate(&(this->zs), this->inFinish ? Z_FINISH : Z_NO_FLUSH);
 }
 
-DynXX::Core::Z::Zip::~Zip()
+Zip::~Zip()
 {
     deflateEnd(&(this->zs));
 }
 
-DynXX::Core::Z::UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, format)
+UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, format)
 {
     this->ret = inflateInit2(&this->zs, this->windowBits());
     if (this->ret != Z_OK) [[unlikely]]
@@ -255,12 +258,12 @@ DynXX::Core::Z::UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, 
     }
 }
 
-void DynXX::Core::Z::UnZip::processImp()
+void UnZip::processImp()
 {
     this->ret = inflate(&(this->zs), Z_NO_FLUSH);
 }
 
-DynXX::Core::Z::UnZip::~UnZip()
+UnZip::~UnZip()
 {
     inflateEnd(&this->zs);
 }
@@ -269,13 +272,13 @@ DynXX::Core::Z::UnZip::~UnZip()
 
 // Cxx stream
 
-bool DynXX::Core::Z::zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
+bool zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
 {
     Zip zip(mode, bufferSize, format);
     return processCxxStream(bufferSize, inStream, outStream, zip);
 }
 
-bool DynXX::Core::Z::unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
+bool unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
 {
     UnZip unzip(bufferSize, format);
     return processCxxStream(bufferSize, inStream, outStream, unzip);
@@ -283,13 +286,13 @@ bool DynXX::Core::Z::unzip(size_t bufferSize, int format, std::istream *inStream
 
 // C FILE
 
-bool DynXX::Core::Z::zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
+bool zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 {
     Zip zip(mode, bufferSize, format);
     return processCFILE(bufferSize, inFile, outFile, zip);
 }
 
-bool DynXX::Core::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
+bool unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 {
     UnZip unzip(bufferSize, format);
     return processCFILE(bufferSize, inFile, outFile, unzip);
@@ -299,14 +302,16 @@ bool DynXX::Core::Z::unzip(size_t bufferSize, int format, std::FILE *inFile, std
 
 // Bytes
 
-Bytes DynXX::Core::Z::zip(int mode, size_t bufferSize, int format, const Bytes &bytes)
+Bytes zip(int mode, size_t bufferSize, int format, const Bytes &bytes)
 {
     Zip zip(mode, bufferSize, format);
     return processBytes(bufferSize, bytes, zip);
 }
 
-Bytes DynXX::Core::Z::unzip(size_t bufferSize, int format, const Bytes &bytes)
+Bytes unzip(size_t bufferSize, int format, const Bytes &bytes)
 {
     UnZip unzip(bufferSize, format);
     return processBytes(bufferSize, bytes, unzip);
 }
+
+} // namespace DynXX::Core::Z

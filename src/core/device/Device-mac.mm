@@ -35,30 +35,32 @@ namespace
 #endif
 }
 
-int DynXX::Core::Device::deviceType()
+namespace DynXX::Core::Device {
+
+int deviceType()
 {
     return DynXXDeviceTypeAppleMac;
 }
 
-std::string DynXX::Core::Device::deviceName()
+std::string deviceName()
 {
     struct utsname systemInfo{};
     uname(&systemInfo);
     return makeStr(systemInfo.machine);
 }
 
-std::string DynXX::Core::Device::deviceManufacturer()
+std::string deviceManufacturer()
 {
     return "Apple";
 }
 
-std::string DynXX::Core::Device::deviceModel()
+std::string deviceModel()
 {
     //TODO
     return {};
 }
 
-std::string DynXX::Core::Device::osVersion()
+std::string osVersion()
 {
     NSOperatingSystemVersion version = NSProcessInfo.processInfo.operatingSystemVersion;
     int major = static_cast<int32_t>(version.majorVersion);
@@ -69,7 +71,7 @@ std::string DynXX::Core::Device::osVersion()
     return ss.str();
 }
 
-int DynXX::Core::Device::cpuArch()
+int cpuArch()
 {
 #if defined(ARCH_CPU_X86_64)
     if (!ProcessIsTranslated())
@@ -80,5 +82,7 @@ int DynXX::Core::Device::cpuArch()
     return DynXXDeviceCpuArchARM_64;
 #endif
 }
+
+} // namespace DynXX::Core::Device
 
 #endif

@@ -6,7 +6,9 @@ namespace {
     using enum DynXXLogLevelX;
 }
 
-DynXX::Core::Concurrent::Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, const size_t timeoutMicroSecs) :
+namespace DynXX::Core::Concurrent {
+
+Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, const size_t timeoutMicroSecs) :
  runLoop(std::move(runLoop)), runChecker(std::move(runChecker))
 {
     this->thread = 
@@ -54,7 +56,7 @@ DynXX::Core::Concurrent::Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker
     });
 }
 
-void DynXX::Core::Concurrent::Daemon::update(TaskT &&sth)
+void Daemon::update(TaskT &&sth)
 {
     {
         auto lock = std::scoped_lock(this->mutex);
@@ -64,7 +66,7 @@ void DynXX::Core::Concurrent::Daemon::update(TaskT &&sth)
     this->cv.notify_one();
 }
 
-DynXX::Core::Concurrent::Daemon::~Daemon()
+Daemon::~Daemon()
 {
 #if defined(__cpp_lib_jthread)
     // jthread automatically handles stop request and join
@@ -79,3 +81,5 @@ DynXX::Core::Concurrent::Daemon::~Daemon()
     }
 #endif
 }
+
+} // namespace DynXX::Core::Concurrent

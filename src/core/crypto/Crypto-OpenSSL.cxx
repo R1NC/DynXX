@@ -249,9 +249,11 @@ namespace
     };
 }
 
+namespace DynXX::Core::Crypto {
+
 // Rand
 
-Bytes DynXX::Core::Crypto::rand(size_t len)
+Bytes rand(size_t len)
 {
     if (len == 0) [[unlikely]]
     {
@@ -275,7 +277,7 @@ Bytes DynXX::Core::Crypto::rand(size_t len)
 
 // AES
 
-Bytes DynXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
+Bytes AES::encrypt(BytesView inBytes, BytesView keyBytes)
 {
     if (inBytes.empty() || keyBytes.size() != AES_BLOCK_SIZE) [[unlikely]]
     {
@@ -310,7 +312,7 @@ Bytes DynXX::Core::Crypto::AES::encrypt(BytesView inBytes, BytesView keyBytes)
     return out;
 }
 
-Bytes DynXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
+Bytes AES::decrypt(BytesView inBytes, BytesView keyBytes)
 {
     if (inBytes.empty() || keyBytes.size() != AES_BLOCK_SIZE || inBytes.size() % AES_BLOCK_SIZE != 0) [[unlikely]]
     {
@@ -357,9 +359,9 @@ Bytes DynXX::Core::Crypto::AES::decrypt(BytesView inBytes, BytesView keyBytes)
 
 // AES-GCM
 
-Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
+Bytes AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
 {
-    if (!checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
+    if (!AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
         return {};
     }
@@ -435,9 +437,9 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes
     return out;
 }
 
-Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
+Bytes AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
 {
-    if (!checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
+    if (!AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
         return {};
     }
@@ -517,7 +519,7 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes
 
 // MD5
 
-Bytes DynXX::Core::Crypto::Hash::md5(BytesView inBytes)
+Bytes Hash::md5(BytesView inBytes)
 {
     const auto md = EVP_md5();
     return evpHash(inBytes, md);
@@ -525,7 +527,7 @@ Bytes DynXX::Core::Crypto::Hash::md5(BytesView inBytes)
 
 // SHA1
 
-Bytes DynXX::Core::Crypto::Hash::sha1(BytesView inBytes)
+Bytes Hash::sha1(BytesView inBytes)
 {
     const auto md = EVP_sha1();
     return evpHash(inBytes, md);
@@ -533,7 +535,7 @@ Bytes DynXX::Core::Crypto::Hash::sha1(BytesView inBytes)
 
 // SHA256
 
-Bytes DynXX::Core::Crypto::Hash::sha256(BytesView inBytes)
+Bytes Hash::sha256(BytesView inBytes)
 {
     const auto md = EVP_sha256();
     return evpHash(inBytes, md);
@@ -541,7 +543,7 @@ Bytes DynXX::Core::Crypto::Hash::sha256(BytesView inBytes)
 
 // RSA
 
-std::string DynXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPublic) 
+std::string RSA::genKey(std::string_view base64, bool isPublic) 
 {
     if (base64.empty()) [[unlikely]]
     {
@@ -590,7 +592,7 @@ std::string DynXX::Core::Crypto::RSA::genKey(std::string_view base64, bool isPub
     return result; 
 }
 
-DynXX::Core::Crypto::RSA::Codec::Codec(BytesView key, int padding) : padding(padding)
+RSA::Codec::Codec(BytesView key, int padding) : padding(padding)
 {
     this->bmem = BIO_new_mem_buf(key.data(), static_cast<int>(key.size()));
     if (!this->bmem) [[unlikely]]
@@ -599,14 +601,14 @@ DynXX::Core::Crypto::RSA::Codec::Codec(BytesView key, int padding) : padding(pad
     }
 }
 
-void DynXX::Core::Crypto::RSA::Codec::moveImp(Codec &&other) noexcept
+void RSA::Codec::moveImp(Codec &&other) noexcept
 {
     this->padding = other.padding;
     this->bmem = std::exchange(other.bmem, nullptr);
     this->rsa = std::exchange(other.rsa, nullptr);
 }
 
-void DynXX::Core::Crypto::RSA::Codec::cleanup() noexcept
+void RSA::Codec::cleanup() noexcept
 {
     if (this->bmem != nullptr) [[likely]]
     {
@@ -620,13 +622,13 @@ void DynXX::Core::Crypto::RSA::Codec::cleanup() noexcept
     }
 }
 
-DynXX::Core::Crypto::RSA::Codec::Codec(Codec &&other) noexcept
+RSA::Codec::Codec(Codec &&other) noexcept
     : padding(other.padding)
 {
     this->moveImp(std::move(other));
 }
 
-DynXX::Core::Crypto::RSA::Codec& DynXX::Core::Crypto::RSA::Codec::operator=(Codec &&other) noexcept
+RSA::Codec& RSA::Codec::operator=(Codec &&other) noexcept
 {
     if (this != &other) [[likely]]
     {
@@ -636,12 +638,12 @@ DynXX::Core::Crypto::RSA::Codec& DynXX::Core::Crypto::RSA::Codec::operator=(Code
     return *this;
 }
 
-DynXX::Core::Crypto::RSA::Codec::~Codec()
+RSA::Codec::~Codec()
 {
     this->cleanup();
 }
 
-std::size_t DynXX::Core::Crypto::RSA::Codec::outLen() const
+std::size_t RSA::Codec::outLen() const
 {
     if (this->rsa == nullptr) [[unlikely]]
     {
@@ -650,7 +652,7 @@ std::size_t DynXX::Core::Crypto::RSA::Codec::outLen() const
     return RSA_size(this->rsa);
 }
 
-DynXX::Core::Crypto::RSA::Encrypt::Encrypt(BytesView key, int padding) : Codec(key, padding)
+RSA::Encrypt::Encrypt(BytesView key, int padding) : Codec(key, padding)
 {
     if (this->bmem == nullptr) [[unlikely]]
     {
@@ -663,7 +665,7 @@ DynXX::Core::Crypto::RSA::Encrypt::Encrypt(BytesView key, int padding) : Codec(k
     }
 }
 
-std::optional<Bytes> DynXX::Core::Crypto::RSA::Encrypt::process(BytesView in) const
+std::optional<Bytes> RSA::Encrypt::process(BytesView in) const
 {
     if (this->rsa == nullptr) [[unlikely]]
     {
@@ -678,7 +680,7 @@ std::optional<Bytes> DynXX::Core::Crypto::RSA::Encrypt::process(BytesView in) co
     return {outBytes};
 }
 
-DynXX::Core::Crypto::RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(key, padding)
+RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(key, padding)
 {
     if (this->bmem == nullptr) [[unlikely]]
     {
@@ -691,7 +693,7 @@ DynXX::Core::Crypto::RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(k
     }
 }
 
-std::optional<Bytes> DynXX::Core::Crypto::RSA::Decrypt::process(BytesView in) const
+std::optional<Bytes> RSA::Decrypt::process(BytesView in) const
 {
     if (this->rsa == nullptr) [[unlikely]]
     {
@@ -708,7 +710,7 @@ std::optional<Bytes> DynXX::Core::Crypto::RSA::Decrypt::process(BytesView in) co
 
 // Base64
 
-bool DynXX::Core::Crypto::Base64::validate(std::string_view in)
+bool Base64::validate(std::string_view in)
 {
     if (in.empty() || in.size() % 4 != 0) [[unlikely]]
     {
@@ -731,7 +733,7 @@ bool DynXX::Core::Crypto::Base64::validate(std::string_view in)
 #endif
 }
 
-Bytes DynXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
+Bytes Base64::encode(BytesView inBytes, bool noNewLines)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -800,7 +802,7 @@ Bytes DynXX::Core::Crypto::Base64::encode(BytesView inBytes, bool noNewLines)
     return out;
 }
 
-Bytes DynXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
+Bytes Base64::decode(BytesView inBytes, bool noNewLines)
 {
     const auto in = inBytes.data();
     const auto inLen = inBytes.size();
@@ -864,3 +866,5 @@ Bytes DynXX::Core::Crypto::Base64::decode(BytesView inBytes, bool noNewLines)
     outBytes.resize(bytesRead);
     return outBytes;
 }
+
+} // namespace DynXX::Core::Crypto

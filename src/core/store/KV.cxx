@@ -8,7 +8,9 @@ namespace {
     using enum DynXXLogLevelX;
 }
 
-DynXX::Core::Store::KV::KVStore::KVStore(const std::string &root)
+namespace DynXX::Core::Store::KV {
+
+KVStore::KVStore(const std::string &root)
 {
     decltype(root) sRoot(root);
     auto logLevel = MMKVLogNone;
@@ -19,31 +21,31 @@ DynXX::Core::Store::KV::KVStore::KVStore(const std::string &root)
 #endif
 }
 
-std::weak_ptr<DynXX::Core::Store::KV::Connection> DynXX::Core::Store::KV::KVStore::open(const std::string &_id)
+std::weak_ptr<Connection> KVStore::open(const std::string &_id)
 {
     const auto cid = genCid(_id);
-    return ConnPool<KV::Connection>::open(cid, [cid, &_id]() { 
+    return ConnPool<Connection>::open(cid, [cid, &_id]() { 
         const auto kv = MMKV::mmkvWithID(_id, MMKV_MULTI_PROCESS);
         if (!kv) [[unlikely]]
         {
             dynxxLogPrint(Error, "MMKV mmkvWithID failed");
-            return std::shared_ptr<KV::Connection>(nullptr);
+            return std::shared_ptr<Connection>(nullptr);
         }
-        return std::make_shared<KV::Connection>(cid, kv); 
+        return std::make_shared<Connection>(cid, kv); 
     });
 }
 
-DynXX::Core::Store::KV::KVStore::~KVStore()
+KVStore::~KVStore()
 {
     MMKV::onExit();
 }
 
-DynXX::Core::Store::KV::Connection::Connection(const CidT cid, MMKV *kv) : _cid(cid), kv(kv)
+Connection::Connection(const CidT cid, MMKV *kv) : _cid(cid), kv(kv)
 {
     MMKV::setLogLevel(MMKVLogNone);
 }
 
-std::optional<std::string> DynXX::Core::Store::KV::Connection::readString(std::string_view k) const
+std::optional<std::string> Connection::readString(std::string_view k) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (!this->kv->containsKey(k)) [[unlikely]]
@@ -55,7 +57,7 @@ std::optional<std::string> DynXX::Core::Store::KV::Connection::readString(std::s
     return s;
 }
 
-std::optional<int64_t> DynXX::Core::Store::KV::Connection::readInteger(std::string_view k) const
+std::optional<int64_t> Connection::readInteger(std::string_view k) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (!this->kv->containsKey(k)) [[unlikely]]
@@ -65,7 +67,7 @@ std::optional<int64_t> DynXX::Core::Store::KV::Connection::readInteger(std::stri
     return {this->kv->getInt64(k)};
 }
 
-std::optional<double> DynXX::Core::Store::KV::Connection::readFloat(std::string_view k) const
+std::optional<double> Connection::readFloat(std::string_view k) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (!this->kv->containsKey(k)) [[unlikely]]
@@ -75,7 +77,7 @@ std::optional<double> DynXX::Core::Store::KV::Connection::readFloat(std::string_
     return {this->kv->getDouble(k)};
 }
 
-bool DynXX::Core::Store::KV::Connection::write(std::string_view k, const Any &v) const
+bool Connection::write(std::string_view k, const Any &v) const
 {
     auto lock = std::unique_lock(this->mutex);
     return std::visit(
@@ -87,35 +89,37 @@ bool DynXX::Core::Store::KV::Connection::write(std::string_view k, const Any &v)
     );
 }
 
-std::vector<std::string> DynXX::Core::Store::KV::Connection::allKeys() const
+std::vector<std::string> Connection::allKeys() const
 {
     auto lock = std::shared_lock(this->mutex);
     return this->kv->allKeys(false);
 }
 
-bool DynXX::Core::Store::KV::Connection::contains(std::string_view k) const
+bool Connection::contains(std::string_view k) const
 {
     auto lock = std::shared_lock(this->mutex);
     return this->kv->containsKey(k);
 }
 
-bool DynXX::Core::Store::KV::Connection::remove(std::string_view k) const
+bool Connection::remove(std::string_view k) const
 {
     auto lock = std::unique_lock(this->mutex);
     return this->kv->removeValueForKey(k);
 }
 
-void DynXX::Core::Store::KV::Connection::clear() const
+void Connection::clear() const
 {
     auto lock = std::unique_lock(this->mutex);
     this->kv->clearAll();
     this->kv->clearMemoryCache();
 }
 
-DynXX::Core::Store::KV::Connection::~Connection()
+Connection::~Connection()
 {
     this->kv->close();
     this->kv = nullptr;
 }
+
+} // namespace DynXX::Core::Store::KV
 
 #endif

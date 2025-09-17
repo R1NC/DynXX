@@ -32,6 +32,8 @@ void _dynxx_log_apple(const char*);
 
 namespace
 {
+    using namespace DynXX::Core::Concurrent;
+
     int _level = DynXXLogLevelNone;
     std::function<void(int level, const char *content)> _callback = nullptr;
     std::mutex _mutex;
@@ -96,7 +98,7 @@ namespace
         if (!rootPath.has_value()) [[unlikely]] {
             return;
         }
-        DynXX::Core::Concurrent::callOnce([&dir = rootPath.value()]() {
+        callOnce([&dir = rootPath.value()]() {
             try 
             {
                 const auto& logger = spdlog::daily_logger_mt(
@@ -191,7 +193,9 @@ namespace
     }
 }
 
-void DynXX::Core::Log::setLevel(int level)
+namespace DynXX::Core::Log {
+
+void setLevel(int level)
 {
     if (level < DynXXLogLevelDebug || level > DynXXLogLevelNone) [[unlikely]]
     {
@@ -206,15 +210,15 @@ void DynXX::Core::Log::setLevel(int level)
     _level = level;
 }
 
-void DynXX::Core::Log::setCallback(const std::function<void(int level, const char *content)> &callback)
+void setCallback(const std::function<void(int level, const char *content)> &callback)
 {
     auto lock = std::scoped_lock(_mutex);
     _callback = callback;
 }
 
-void DynXX::Core::Log::print(int level, std::string_view content)
+void print(int level, std::string_view content)
 {
-    DynXX::Core::Concurrent::callOnce([]() {
+    callOnce([]() {
         prepareStdIO();
     });
 
@@ -227,3 +231,5 @@ void DynXX::Core::Log::print(int level, std::string_view content)
 
     logPrintInBlocks(level, content);
 }
+
+} // namespace DynXX::Core::Log

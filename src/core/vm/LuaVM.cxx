@@ -152,7 +152,9 @@ namespace {
     } while (0)
 }
 
-DynXX::Core::VM::LuaVM::LuaVM() : lstate(luaL_newstate(), lua_close)
+namespace DynXX::Core::VM {
+
+LuaVM::LuaVM() : lstate(luaL_newstate(), lua_close)
 {
     const auto L = this->lstate.get();
     luaL_openlibs(L);
@@ -163,7 +165,7 @@ DynXX::Core::VM::LuaVM::LuaVM() : lstate(luaL_newstate(), lua_close)
 #endif
 }
 
-DynXX::Core::VM::LuaVM::~LuaVM()
+LuaVM::~LuaVM()
 {
     this->active = false;
 #if defined(USE_LIBUV)
@@ -173,12 +175,12 @@ DynXX::Core::VM::LuaVM::~LuaVM()
 
 }
 
-void DynXX::Core::VM::LuaVM::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
+void LuaVM::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
     lua_register(this->lstate.get(), funcName.c_str(), funcPointer);
 }
 
 #if !defined(__EMSCRIPTEN__)
-bool DynXX::Core::VM::LuaVM::loadFile(const std::string &file)
+bool LuaVM::loadFile(const std::string &file)
 {
     auto lock = std::scoped_lock(this->vmMutex);
     const auto L = this->lstate.get();
@@ -191,7 +193,7 @@ bool DynXX::Core::VM::LuaVM::loadFile(const std::string &file)
 }
 #endif
 
-bool DynXX::Core::VM::LuaVM::loadScript(const std::string &script)
+bool LuaVM::loadScript(const std::string &script)
 {
     auto lock = std::scoped_lock(this->vmMutex);
     const auto L = this->lstate.get();
@@ -204,7 +206,7 @@ bool DynXX::Core::VM::LuaVM::loadScript(const std::string &script)
 }
 
 /// WARNING: Nested call between native and Lua requires a reenterable `recursive_mutex` here!
-std::optional<std::string> DynXX::Core::VM::LuaVM::callFunc(std::string_view func, std::string_view params)
+std::optional<std::string> LuaVM::callFunc(std::string_view func, std::string_view params)
 {
     if (!lockAutoRetry(LuaCallRetryCount, LuaCallSleepMicroSecs)) [[unlikely]]
     {
@@ -227,4 +229,7 @@ std::optional<std::string> DynXX::Core::VM::LuaVM::callFunc(std::string_view fun
     unlock();
     return {s};
 }
+
+} // namespace DynXX::Core::VM
+
 #endif

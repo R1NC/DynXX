@@ -7,7 +7,9 @@
 #include <numeric>
 #endif
 
-std::string DynXX::Core::Coding::Case::upper(std::string_view str)
+namespace DynXX::Core::Coding {
+
+std::string Case::upper(std::string_view str)
 {
     std::string s(str);
     s.reserve(str.size());
@@ -19,7 +21,7 @@ std::string DynXX::Core::Coding::Case::upper(std::string_view str)
     return s;
 }
 
-std::string DynXX::Core::Coding::Case::lower(std::string_view str)
+std::string Case::lower(std::string_view str)
 {
     std::string s(str);
     s.reserve(str.size());
@@ -31,7 +33,7 @@ std::string DynXX::Core::Coding::Case::lower(std::string_view str)
     return s;
 }
 
-std::string DynXX::Core::Coding::Hex::bytes2str(BytesView bytes)
+std::string Hex::bytes2str(BytesView bytes)
 {
     if (bytes.empty()) [[unlikely]]
     {
@@ -79,7 +81,7 @@ std::string DynXX::Core::Coding::Hex::bytes2str(BytesView bytes)
 #endif
 }
 
-Bytes DynXX::Core::Coding::Hex::str2bytes(const std::string_view str)
+Bytes Hex::str2bytes(const std::string_view str)
 {
     std::string filteredStr;
     filteredStr.reserve(str.size());
@@ -129,17 +131,17 @@ Bytes DynXX::Core::Coding::Hex::str2bytes(const std::string_view str)
 #endif
 }
 
-std::string DynXX::Core::Coding::bytes2str(BytesView bytes)
+std::string bytes2str(BytesView bytes)
 {
     return {bytes.begin(), bytes.end()};
 }
 
-Bytes DynXX::Core::Coding::str2bytes(std::string_view str)
+Bytes str2bytes(std::string_view str)
 {
     return {str.begin(), str.end()};
 }
 
-std::string DynXX::Core::Coding::strTrim(std::string_view str) 
+std::string strTrim(std::string_view str) 
 {
 #if defined(__cpp_lib_ranges)
     auto findSpaceF = [](char c) { return std::isspace(static_cast<int>(c)); };
@@ -161,7 +163,7 @@ std::string DynXX::Core::Coding::strTrim(std::string_view str)
 #endif
 }
 
-std::string DynXX::Core::Coding::strEscapeQuotes(std::string_view str) 
+std::string strEscapeQuotes(std::string_view str) 
 {
     std::string result;
     result.reserve(str.size() * 2);
@@ -188,3 +190,5 @@ std::string DynXX::Core::Coding::strEscapeQuotes(std::string_view str)
 
     return result;
 }
+
+} // namespace DynXX::Core::Coding

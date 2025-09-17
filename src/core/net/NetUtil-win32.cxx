@@ -15,7 +15,9 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "iphlpapi.lib")
 
-std::string DynXX::Core::Net::Util::macAddress()
+namespace DynXX::Core::Net::Util {
+
+std::string macAddress()
 {
     PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
     ULONG outBufLen = 0;
@@ -43,7 +45,7 @@ std::string DynXX::Core::Net::Util::macAddress()
     return macAddress;
 }
 
-DynXX::Core::Net::Util::NetType DynXX::Core::Net::Util::netType() 
+NetType netType() 
 {
     PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
     ULONG outBufLen = 0;
@@ -74,7 +76,7 @@ DynXX::Core::Net::Util::NetType DynXX::Core::Net::Util::netType()
     return result;
 }
 
-std::string DynXX::Core::Net::Util::publicIpV4()
+std::string publicIpV4()
 {
     if (WSADATA wsaData; WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
     {
@@ -116,7 +118,7 @@ std::string DynXX::Core::Net::Util::publicIpV4()
     return std::string(ipStr.data());
 }
 
-std::string DynXX::Core::Net::Util::publicIpV6()
+std::string publicIpV6()
 {
     if (WSADATA wsaData; WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
     {
@@ -158,5 +160,7 @@ std::string DynXX::Core::Net::Util::publicIpV6()
 
     return std::string(ipStr.data());
 }
+
+} // namespace DynXX::Core::Net::Util
 
 #endif

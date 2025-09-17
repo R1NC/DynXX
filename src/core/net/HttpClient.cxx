@@ -382,17 +382,19 @@ namespace
     }
 }
 
-DynXX::Core::Net::HttpClient::HttpClient()
+namespace DynXX::Core::Net {
+
+HttpClient::HttpClient()
 {
     globalInit();
 }
 
-DynXX::Core::Net::HttpClient::~HttpClient()
+HttpClient::~HttpClient()
 {
     globalRelease();
 }
 
-DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, int method,
+DynXXHttpResponse HttpClient::request(std::string_view url, int method,
                                                                  const std::vector<std::string> &headers,
                                                                 std::string_view params,
                                                                  BytesView rawBody,
@@ -451,7 +453,7 @@ DynXXHttpResponse DynXX::Core::Net::HttpClient::request(std::string_view url, in
     return rsp;
 }
 
-bool DynXX::Core::Net::HttpClient::download(std::string_view url, std::string_view filePath, size_t timeout) const {
+bool HttpClient::download(std::string_view url, std::string_view filePath, size_t timeout) const {
     auto req = createReq(url, {}, {}, DynXXNetHttpMethodGet, timeout);
     if (!req.valid()) [[unlikely]]
     {
@@ -476,5 +478,7 @@ bool DynXX::Core::Net::HttpClient::download(std::string_view url, std::string_vi
 
     return rsp.code == 200;
 }
+
+} // namespace DynXX::Core::Net
 
 #endif

@@ -9,7 +9,9 @@ namespace {
     using namespace DynXX::Core::Util::Time;
 }
 
-DynXX::Core::Concurrent::TimerTask::TimerTask(TaskT&& task, size_t timeoutMicroSecs) :
+namespace DynXX::Core::Concurrent {
+
+TimerTask::TimerTask(TaskT&& task, size_t timeoutMicroSecs) :
     Daemon(
         [this]() {
             this->userTask();
@@ -25,3 +27,5 @@ DynXX::Core::Concurrent::TimerTask::TimerTask(TaskT&& task, size_t timeoutMicroS
 {
     this->lastExecuteTime = nowInMicroSecs();
 }
+
+} // namespace DynXX::Core::Concurrent

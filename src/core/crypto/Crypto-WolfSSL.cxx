@@ -19,7 +19,9 @@ namespace
     using enum DynXXLogLevelX;
 }
 
-bool DynXX::Core::Crypto::rand(size_t len, byte *bytes)
+namespace DynXX::Core::Crypto {
+
+bool rand(size_t len, byte *bytes)
 {
     if (len == 0 || bytes == nullptr) [[unlikely]]
     {
@@ -29,7 +31,7 @@ bool DynXX::Core::Crypto::rand(size_t len, byte *bytes)
     return ret == WOLFSSL_SUCCESS;
 }
 
-Bytes DynXX::Core::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
+Bytes AES::encrypt(const Bytes &inBytes, const Bytes &keyBytes)
 {
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -83,7 +85,7 @@ Bytes DynXX::Core::Crypto::AES::encrypt(const Bytes &inBytes, const Bytes &keyBy
     return wrapBytes(out, outLen);
 }
 
-Bytes DynXX::Core::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
+Bytes AES::decrypt(const Bytes &inBytes, const Bytes &keyBytes)
 {
     auto in = inBytes.data(), key = keyBytes.data();
     auto inLen = inBytes.size(), keyLen = keyBytes.size();
@@ -138,9 +140,9 @@ Bytes DynXX::Core::Crypto::AES::decrypt(const Bytes &inBytes, const Bytes &keyBy
     return wrapBytes(out, outLen);
 }
 
-Bytes DynXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, size_t tagBits)
+Bytes AES::gcmEncrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, size_t tagBits)
 {
-    if (!DynXX::Core::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
+    if (!AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
         return {};
     }
@@ -182,9 +184,9 @@ Bytes DynXX::Core::Crypto::AES::gcmEncrypt(const Bytes &inBytes, const Bytes &ke
     return wrapBytes(out, outLen);
 }
 
-Bytes DynXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, size_t tagBits)
+Bytes AES::gcmDecrypt(const Bytes &inBytes, const Bytes &keyBytes, const Bytes &initVectorBytes, const Bytes &aadBytes, size_t tagBits)
 {
-    if (!DynXX::Core::Crypto::AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
+    if (!AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
         return {};
     }
@@ -226,7 +228,7 @@ Bytes DynXX::Core::Crypto::AES::gcmDecrypt(const Bytes &inBytes, const Bytes &ke
     return wrapBytes(out, outLen);
 }
 
-Bytes DynXX::Core::Crypto::Hash::md5(const Bytes &inBytes)
+Bytes Hash::md5(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -266,7 +268,7 @@ Bytes DynXX::Core::Crypto::Hash::md5(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
-Bytes DynXX::Core::Crypto::Hash::sha256(const Bytes &inBytes)
+Bytes Hash::sha256(const Bytes &inBytes)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -306,7 +308,7 @@ Bytes DynXX::Core::Crypto::Hash::sha256(const Bytes &inBytes)
     return wrapBytes(out, outLen);
 }
 
-Bytes DynXX::Core::Crypto::Base64::encode(const Bytes &inBytes, bool noNewLines)
+Bytes Base64::encode(const Bytes &inBytes, bool noNewLines)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -331,7 +333,7 @@ Bytes DynXX::Core::Crypto::Base64::encode(const Bytes &inBytes, bool noNewLines)
     return wrapBytes(outBuffer, outLen);
 }
 
-Bytes DynXX::Core::Crypto::Base64::decode(const Bytes &inBytes, bool noNewLines)
+Bytes Base64::decode(const Bytes &inBytes, bool noNewLines)
 {
     auto in = inBytes.data();
     auto inLen = inBytes.size();
@@ -353,4 +355,7 @@ Bytes DynXX::Core::Crypto::Base64::decode(const Bytes &inBytes, bool noNewLines)
 
     return wrapBytes(outBuffer, outLen);
 }
+
+} // namespace Core::Crypto
+
 #endif

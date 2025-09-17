@@ -102,7 +102,9 @@ namespace {
     }
 }
 
-DynXXHttpResponse DynXX::Core::Net::WasmHttpClient::request(std::string_view url, 
+namespace DynXX::Core::Net {
+
+DynXXHttpResponse WasmHttpClient::request(std::string_view url, 
                                                  const int method,
                                                  const std::vector<std::string> &headers,
                                                  std::string_view params,
@@ -162,5 +164,7 @@ DynXXHttpResponse DynXX::Core::Net::WasmHttpClient::request(std::string_view url
             
     return response;
 }
+
+} // namespace DynXX::Core::Net
 
 #endif // __EMSCRIPTEN__

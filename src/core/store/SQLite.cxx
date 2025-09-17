@@ -13,32 +13,34 @@ namespace
     constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
 }
 
-DynXX::Core::Store::SQLite::SQLiteStore::SQLiteStore()
+namespace DynXX::Core::Store::SQLite {
+
+SQLiteStore::SQLiteStore()
 {
     sqlite3_config(SQLITE_CONFIG_SERIALIZED);
     sqlite3_initialize();
 }
 
-std::weak_ptr<DynXX::Core::Store::SQLite::Connection> DynXX::Core::Store::SQLite::SQLiteStore::open(const std::string &file)
+std::weak_ptr<Connection> SQLiteStore::open(const std::string &file)
 {
     const auto cid = genCid(file);
-    return ConnPool<SQLite::Connection>::open(cid, [cid, &file]() {
+    return ConnPool<Connection>::open(cid, [cid, &file]() {
         sqlite3 *db;
         if (const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK || db == nullptr) [[unlikely]] {
             PRINT_ERR(rc, db);
             if (db) sqlite3_close(db);
-            return std::shared_ptr<SQLite::Connection>(nullptr);
+            return std::shared_ptr<Connection>(nullptr);
         }
-        return std::make_shared<SQLite::Connection>(cid, db);
+        return std::make_shared<Connection>(cid, db);
     });
 }
 
-DynXX::Core::Store::SQLite::SQLiteStore::~SQLiteStore()
+SQLiteStore::~SQLiteStore()
 {
     sqlite3_shutdown();
 }
 
-DynXX::Core::Store::SQLite::Connection::Connection(const CidT cid, sqlite3 *db) : _cid(cid), db{db}
+Connection::Connection(const CidT cid, sqlite3 *db) : _cid(cid), db{db}
 {
     if (!this->execute(sEnableWAL)) [[unlikely]]
     {
@@ -46,7 +48,7 @@ DynXX::Core::Store::SQLite::Connection::Connection(const CidT cid, sqlite3 *db) 
     }
 }
 
-bool DynXX::Core::Store::SQLite::Connection::execute(std::string_view sql) const
+bool Connection::execute(std::string_view sql) const
 {
     auto lock = std::scoped_lock(this->mutex);
     if (this->db == nullptr) [[unlikely]]
@@ -71,7 +73,7 @@ bool DynXX::Core::Store::SQLite::Connection::execute(std::string_view sql) const
     return rc == SQLITE_OK;
 }
 
-std::unique_ptr<DynXX::Core::Store::SQLite::Connection::QueryResult> DynXX::Core::Store::SQLite::Connection::query(std::string_view sql) const
+std::unique_ptr<Connection::QueryResult> Connection::query(std::string_view sql) const
 {
     auto lock = std::scoped_lock(this->mutex);
     if (this->db == nullptr) [[unlikely]]
@@ -94,10 +96,10 @@ std::unique_ptr<DynXX::Core::Store::SQLite::Connection::QueryResult> DynXX::Core
         return nullptr;
     }
 
-    return std::make_unique<DynXX::Core::Store::SQLite::Connection::QueryResult>(stmt);
+    return std::make_unique<Connection::QueryResult>(stmt);
 }
 
-DynXX::Core::Store::SQLite::Connection::~Connection()
+Connection::~Connection()
 {
     if (this->db != nullptr) [[likely]]
     {
@@ -105,11 +107,11 @@ DynXX::Core::Store::SQLite::Connection::~Connection()
     }
 }
 
-DynXX::Core::Store::SQLite::Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) : stmt{stmt}
+Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) : stmt{stmt}
 {
 }
 
-bool DynXX::Core::Store::SQLite::Connection::QueryResult::readRow() const
+bool Connection::QueryResult::readRow() const
 {
     auto lock = std::unique_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
@@ -125,7 +127,7 @@ bool DynXX::Core::Store::SQLite::Connection::QueryResult::readRow() const
     return rc == SQLITE_ROW;
 }
 
-std::optional<Any> DynXX::Core::Store::SQLite::Connection::QueryResult::readColumn(std::string_view column) const
+std::optional<Any> Connection::QueryResult::readColumn(std::string_view column) const
 {
     auto lock = std::shared_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
@@ -161,16 +163,18 @@ std::optional<Any> DynXX::Core::Store::SQLite::Connection::QueryResult::readColu
     return std::nullopt;
 }
 
-std::optional<Any> DynXX::Core::Store::SQLite::Connection::QueryResult::operator[](std::string_view column) const {
+std::optional<Any> Connection::QueryResult::operator[](std::string_view column) const {
     return this->readColumn(column);
 }
 
-DynXX::Core::Store::SQLite::Connection::QueryResult::~QueryResult()
+Connection::QueryResult::~QueryResult()
 {
     if (this->stmt != nullptr) [[likely]]
     {
         sqlite3_finalize(this->stmt);
     }
 }
+
+} // namespace DynXX::Core::Store::SQLite
 
 #endif
