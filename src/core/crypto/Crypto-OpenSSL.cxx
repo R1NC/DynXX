@@ -260,9 +260,12 @@ Bytes rand(size_t len)
         return {};
     }
     Bytes out(len, 0);
-    Concurrent::callOnce([]() {
+
+    static std::once_flag flag;
+    std::call_once(flag, []() {
         RAND_poll();
     });
+    
     if (RAND_status() != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "RAND_poll failed, status: {}", RAND_status());

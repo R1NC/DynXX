@@ -4,6 +4,8 @@
 #if defined(__cplusplus)
 
 #include <random>
+#include <mutex>
+#include <functional>
 
 #include <openssl/bio.h>
 #include <openssl/rsa.h>
@@ -23,7 +25,8 @@ namespace DynXX::Core::Crypto {
         }
 
         static std::mt19937 generator;
-        Concurrent::callOnce([]() {
+        static std::once_flag flag;
+        std::call_once(flag, []() {
             std::random_device rd;
             generator.seed(rd());
         });

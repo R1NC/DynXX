@@ -104,6 +104,11 @@ concept IterableT = requires(T a)
     { std::end(a) } -> std::sentinel_for<decltype(std::begin(a))>;
 };
 
+template<typename F>
+concept RunnableT = requires(F&& f) {
+    { std::invoke(std::forward<F>(f)) } -> std::same_as<void>;
+};
+
 // Utils using concept
 
 template<typename To, typename From>

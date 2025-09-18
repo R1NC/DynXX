@@ -4,8 +4,11 @@
 #if defined(__cplusplus)
 
 #include <atomic>
+#include <mutex>
 #include <condition_variable>
 #include <functional>
+
+#include <DynXX/CXX/Types.hxx>
 
 #include "ConcurrentUtil.hxx"
 
@@ -38,7 +41,14 @@ namespace DynXX::Core::Concurrent {
 
         Daemon &operator=(Daemon &&) = delete;
 
-        void update(TaskT &&sth);
+        template<RunnableT T>
+        void update(T &&f) {
+            {
+                auto lock = std::scoped_lock(this->mutex);
+                std::invoke(std::forward<T>(f));
+            }
+            this->loopCondition.notify_one();
+        }
 
     public:
 
@@ -46,10 +56,7 @@ namespace DynXX::Core::Concurrent {
 
     private:
         mutable std::mutex mutex;
-        std::condition_variable cv;
-
-        TaskT runLoop;
-        RunChecker runChecker;
+        std::condition_variable loopCondition;
 
 #if defined(__cpp_lib_jthread)
         std::jthread thread;

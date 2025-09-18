@@ -8,8 +8,7 @@ namespace {
 
 namespace DynXX::Core::Concurrent {
 
-Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, const size_t timeoutMicroSecs) :
- runLoop(std::move(runLoop)), runChecker(std::move(runChecker))
+Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, const size_t timeoutMicroSecs)
 {
     this->thread = 
 #if defined(__cpp_lib_jthread)
@@ -17,27 +16,44 @@ Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, const size_t timeoutMic
 #else
         std::thread(
 #endif
-        [this, timeout = timeoutMicroSecs]
-#if defined(__cpp_lib_jthread)
-        (std::stop_token stoken) {
-        while (!stoken.stop_requested())
-#else
-        () {
-        while (!shouldStop.load())
+        [timeout = std::chrono::microseconds(timeoutMicroSecs), 
+            loop = std::move(runLoop), 
+            checker = std::move(runChecker),
+            &mtx = this->mutex, 
+            &cv = this->loopCondition
+#if !defined(__cpp_lib_jthread)
+        , &stopFlag = this->shouldStop
 #endif
-        {
-            auto lock = std::unique_lock(this->mutex);
-            // Wait for stop signal
-            this->cv.wait_for(lock, std::chrono::microseconds(timeout), [this
+        ](
 #if defined(__cpp_lib_jthread)
-                , &stoken
+        std::stop_token stoken
+#endif
+        ) 
+#if defined(__cpp_lib_move_only_function)
+        mutable 
+#endif
+        { 
+        while (
+#if defined(__cpp_lib_jthread)
+        !stoken.stop_requested()
+#else
+        !stopFlag.load()
+#endif
+        ) {
+            auto lock = std::unique_lock(mtx);
+            // Wait for stop signal
+            cv.wait_for(lock, timeout, [&checker, 
+#if defined(__cpp_lib_jthread)
+                &stoken
+#else
+                &stopFlag
 #endif
                 ]() {
-                return this->runChecker() ||
+                return checker() ||
 #if defined(__cpp_lib_jthread)
                 stoken.stop_requested()
 #else
-                shouldStop.load()
+                stopFlag.load()
 #endif
             ;});
             
@@ -45,25 +61,15 @@ Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, const size_t timeoutMic
 #if defined(__cpp_lib_jthread)
                 stoken.stop_requested()
 #else
-                shouldStop.load()
+                stopFlag.load()
 #endif
             ) { break; }
 
-            this->runLoop();
+            loop();
 
             lock.unlock();
         }
     });
-}
-
-void Daemon::update(TaskT &&sth)
-{
-    {
-        auto lock = std::scoped_lock(this->mutex);
-        std::move(sth)();
-    }
-    
-    this->cv.notify_one();
 }
 
 Daemon::~Daemon()
@@ -71,8 +77,8 @@ Daemon::~Daemon()
 #if defined(__cpp_lib_jthread)
     // jthread automatically handles stop request and join
 #else
-    this->update([this]() {
-        this->shouldStop = true;
+    this->update([&stopFlag = this->shouldStop]() {
+        stopFlag.store(true);
     });
     
     if (this->thread.joinable()) [[likely]] 

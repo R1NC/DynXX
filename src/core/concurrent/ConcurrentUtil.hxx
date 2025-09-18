@@ -4,7 +4,6 @@
 #if defined(__cplusplus)
 
 #include <new>
-#include <mutex>
 #include <thread>
 #include <string>
 #include <chrono>
@@ -71,18 +70,6 @@ namespace DynXX::Core::Concurrent {
             count++;
         } while (count < retryCount);
         return false;
-    }
-
-    template<typename T>
-    concept RunnableT = requires(T t)
-    {
-        { t() } -> std::same_as<void>;
-    };
-
-    template<RunnableT T>
-    void callOnce(T &&func) {
-        static std::once_flag flag;
-        std::call_once(flag, std::forward<T>(func));
     }
 }
 

@@ -98,7 +98,9 @@ namespace
         if (!rootPath.has_value()) [[unlikely]] {
             return;
         }
-        callOnce([&dir = rootPath.value()]() {
+
+        static std::once_flag flag;
+        std::call_once(flag, [&dir = rootPath.value()]() {
             try 
             {
                 const auto& logger = spdlog::daily_logger_mt(
@@ -218,7 +220,8 @@ void setCallback(const std::function<void(int level, const char *content)> &call
 
 void print(int level, std::string_view content)
 {
-    callOnce([]() {
+    static std::once_flag flag;
+    std::call_once(flag, []() {
         prepareStdIO();
     });
 
