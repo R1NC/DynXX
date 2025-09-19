@@ -66,7 +66,7 @@ const byte *dynxx_crypto_aes_gcm_encrypt(const byte *inBytes, size_t inLen,
  * @param initVectorLen initVector bytes length（MUST BE 12!!）
  * @param aadBytes Additional Authentication Data (AAD) bytes（Can be `nullptr`）
  * @param aadLen Additional Authentication Data (AAD) length（Must <= 16）
- * @param tagBits tag bits length（MUST BE 96//104/112/120/128!!）
+ * @param tagBits tag bits length（MUST BE 96/104/112/120/128!!）
  * @param outLen output bytes length（Not include the tag）
  * @return output bytes data（No tag on tail）
  */
