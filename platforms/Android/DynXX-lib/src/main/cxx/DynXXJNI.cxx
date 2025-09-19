@@ -84,7 +84,7 @@ namespace {
 
     void logSetLevel(JNIEnv *env, jobject thiz,
                      jint level) {
-        dynxx_log_set_level(level);
+        dynxx_log_set_level(static_cast<DynXXLogLevel>(level));
     }
 
     void logSetCallback(JNIEnv *env, jobject thiz,
@@ -104,7 +104,7 @@ namespace {
     void logPrint(JNIEnv *env, jobject thiz,
                   jint level, jstring content) {
         auto cContent = env->GetStringUTFChars(content, nullptr);
-        dynxx_log_print(level, cContent);
+        dynxx_log_print(static_cast<DynXXLogLevel>(level), cContent);
         env->ReleaseStringUTFChars(content, cContent);
     }
 
@@ -158,7 +158,7 @@ namespace {
         auto cFilePath = filePath ? env->GetStringUTFChars(filePath, nullptr) : "";
         auto cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
 
-        auto cRsp = dynxx_net_http_request(cUrl, cParams, static_cast<const int>(method),
+        auto cRsp = dynxx_net_http_request(cUrl, cParams, static_cast<DynXXHttpMethod>(method),
                                             const_cast<const char **>(cHeaderV), headerCount,
                                             const_cast<const char **>(cFormFieldNameV),
                                             const_cast<const char **>(cFormFieldMimeV),
@@ -632,6 +632,55 @@ namespace {
         return jba;
     }
 
+    jstring cryptoRsaGenKey(JNIEnv *env, jobject thiz,
+                            jstring base64,
+                            jboolean is_public) {
+        auto cBase64 = env->GetStringUTFChars(base64, nullptr);
+
+        auto cRes = dynxx_crypto_rsa_gen_key(cBase64, is_public);
+        auto jstr = env->NewStringUTF(cRes);
+
+        env->ReleaseStringUTFChars(base64, cBase64);
+        freeX(cRes);
+        return jstr;
+    }
+
+    jbyteArray cryptoRsaEncrypt(JNIEnv *env, jobject thiz,
+        jbyteArray input, jbyteArray key, jint padding) {
+        auto cIn = env->GetByteArrayElements(input, nullptr);
+        auto inLen = env->GetArrayLength(input);
+        auto cKey = env->GetByteArrayElements(key, nullptr);
+        auto keyLen = env->GetArrayLength(key);
+
+        size_t outLen;
+        const auto cRes = dynxx_crypto_rsa_encrypt(reinterpret_cast<const byte *>(cIn), inLen,
+                                                    reinterpret_cast<const byte *>(cKey), keyLen,
+                                                    static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
+        auto jba = moveToJByteArray(env, cRes, outLen, true);
+
+        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+        env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
+        return jba;
+    }
+
+    jbyteArray cryptoRsaDecrypt(JNIEnv *env, jobject thiz,
+        jbyteArray input, jbyteArray key, jint padding) {
+        auto cIn = env->GetByteArrayElements(input, nullptr);
+        auto inLen = env->GetArrayLength(input);
+        auto cKey = env->GetByteArrayElements(key, nullptr);
+        auto keyLen = env->GetArrayLength(key);
+
+        size_t outLen;
+        const auto cRes = dynxx_crypto_rsa_decrypt(reinterpret_cast<const byte *>(cIn), inLen,
+                                                    reinterpret_cast<const byte *>(cKey), keyLen,
+                                                    static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
+        auto jba = moveToJByteArray(env, cRes, outLen, true);
+
+        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+        env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
+        return jba;
+    }
+
     jbyteArray cryptoHashMd5(JNIEnv *env, jobject thiz,
                              jbyteArray input) {
         auto cIn = env->GetByteArrayElements(input, nullptr);
@@ -771,7 +820,7 @@ namespace {
 
     jlong zZipInit(JNIEnv *env, jobject thiz,
                    jint mode, jlong bufferSize, jint format) {
-        return dynxx_z_zip_init(mode, bufferSize, format);
+        return dynxx_z_zip_init(static_cast<DynXXZipCompressMode>(mode), bufferSize, static_cast<DynXXZFormat>(format));
     }
 
     jlong zZipInput(JNIEnv *env, jobject thiz,
@@ -808,7 +857,7 @@ namespace {
 
     jlong zUnZipInit(JNIEnv *env, jobject thiz,
                      jlong bufferSize, jint format) {
-        return dynxx_z_unzip_init(bufferSize, format);
+        return dynxx_z_unzip_init(bufferSize, static_cast<DynXXZFormat>(format));
     }
 
     jlong zUnZipInput(JNIEnv *env, jobject thiz,
@@ -850,7 +899,7 @@ namespace {
         auto inLen = env->GetArrayLength(bytes);
 
         size_t outLen;
-        const auto cRes = dynxx_z_bytes_zip(mode, buffer_size, format,
+        const auto cRes = dynxx_z_bytes_zip(static_cast<DynXXZipCompressMode>(mode), buffer_size, static_cast<DynXXZFormat>(format),
                                              reinterpret_cast<const byte *>(cIn), inLen, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -864,7 +913,7 @@ namespace {
         auto inLen = env->GetArrayLength(bytes);
 
         size_t outLen;
-        const auto cRes = dynxx_z_bytes_unzip(buffer_size, format,
+        const auto cRes = dynxx_z_bytes_unzip(buffer_size, static_cast<DynXXZFormat>(format),
                                                reinterpret_cast<const byte *>(cIn), inLen, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
@@ -930,6 +979,10 @@ namespace {
             DECLARE_JNI_FUNC(cryptoAesDecrypt, "([B[B)[B"),
             DECLARE_JNI_FUNC(cryptoAesGcmEncrypt, "([B[B[B[BI)[B"),
             DECLARE_JNI_FUNC(cryptoAesGcmDecrypt, "([B[B[B[BI)[B"),
+            DECLARE_JNI_FUNC(cryptoRsaGenKey, "(" LJLS_ "Z)" LJLS_),
+            DECLARE_JNI_FUNC(cryptoRsaEncrypt, "([B[BI)[B"),
+            DECLARE_JNI_FUNC(cryptoRsaDecrypt, "([B[BI)[B"),
+
             DECLARE_JNI_FUNC(cryptoHashMd5, "([B)[B"),
             DECLARE_JNI_FUNC(cryptoHashSha1, "([B)[B"),
             DECLARE_JNI_FUNC(cryptoHashSha256, "([B)[B"),

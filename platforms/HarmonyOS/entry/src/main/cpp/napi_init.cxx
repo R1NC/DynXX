@@ -127,9 +127,9 @@ void engineLogCallback(int level, const char *content) {
 napi_value logSetLevel(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
-    auto level = napiValue2int(env, args.v[0]);
+    const auto level = napiValue2int(env, args.v[0]);
 
-    dynxx_log_set_level(level);
+    dynxx_log_set_level(static_cast<DynXXLogLevel>(level));
 
     return int2NapiValue(env, napi_ok);
 }
@@ -161,10 +161,10 @@ napi_value logSetCallback(napi_env env, napi_callback_info info) {
 napi_value logPrint(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
-    auto level = napiValue2int(env, args.v[0]);
+    const auto level = napiValue2int(env, args.v[0]);
     auto content = napiValue2chars(env, args.v[1]);
 
-    dynxx_log_print(level, content);
+    dynxx_log_print(static_cast<DynXXLogLevel>(level), content);
     freeX(content);
 
     return int2NapiValue(env, napi_ok);
@@ -176,7 +176,7 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
     auto cUrl = napiValue2chars(env, args.v[0]);
-    auto iMethod = napiValue2int(env, args.v[1]);
+    const auto iMethod = napiValue2int(env, args.v[1]);
     auto cParams = args.c > 2 ? napiValue2chars(env, args.v[2]) : "";
 
     auto header_c = args.c > 3 ? napiValueArrayLen(env, args.v[3]) : 0;
@@ -194,7 +194,7 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
     auto lTimeout = args.c > 9 ? napiValue2long(env, args.v[9]) : 15000;
 
     auto res =
-        dynxx_net_http_request(cUrl, cParams, iMethod, header_v, header_c, form_field_name_v, form_field_mime_v,
+        dynxx_net_http_request(cUrl, cParams, static_cast<DynXXNetHttpMethod>(iMethod), header_v, header_c, form_field_name_v, form_field_mime_v,
                                 form_field_data_v, form_field_count, cFILE, fileLength, lTimeout);
     auto nv = chars2NapiValue(env, res);
 
@@ -737,6 +737,60 @@ napi_value cryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
     return v;
 }
 
+// Crypto RSA
+
+napi_value cryptoRsaGenKey(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto base64 = napiValue2chars(env, args.v[0]);
+    auto is_public = napiValue2bool(env, args.v[1]);
+
+    auto cRes = dynxx_crypto_rsa_gen_key(base64, is_public);
+    auto v = napiValue2chars(env, cRes);
+
+    freeX(cRes);
+    freeX(base64);
+    return v;
+}
+
+napi_value cryptoRsaEncrypt(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+    auto keyLen = napiValueArrayLen(env, args.v[1]);
+    auto keyBytes = napiValue2byteArray(env, args.v[1], keyLen);
+    auto padding = napiValue2int(env, args.v[2]);
+
+    size_t outLen;
+    auto outBytes = dynxx_crypto_rsa_encrypt(inBytes, inLen, keyBytes, keyLen, padding, &outLen);
+    auto v = byteArray2NapiValue(env, outBytes, outLen);
+
+    freeX(outBytes);
+    freeX(keyBytes);
+    freeX(inBytes);
+    return v;
+}
+
+napi_value cryptoRsaDecrypt(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto inLen = napiValueArrayLen(env, args.v[0]);
+    auto inBytes = napiValue2byteArray(env, args.v[0], inLen);
+    auto keyLen = napiValueArrayLen(env, args.v[1]);
+    auto keyBytes = napiValue2byteArray(env, args.v[1], keyLen);
+    auto padding = napiValue2int(env, args.v[2]);
+
+    size_t outLen;
+    auto outBytes = dynxx_crypto_rsa_decrypt(inBytes, inLen, keyBytes, keyLen, padding, &outLen);
+    auto v = byteArray2NapiValue(env, outBytes, outLen);
+
+    freeX(outBytes);
+    freeX(keyBytes);
+    freeX(inBytes);
+    return v;
+}
+
 napi_value cryptoHashMd5(napi_env env, napi_callback_info info) {
     Args args(env, info);
 
@@ -994,6 +1048,9 @@ napi_value NAPI_DynXX_RegisterFuncs(napi_env env, napi_value exports) {
         NAPI(cryptoAesDecrypt),
         NAPI(cryptoAesGcmEncrypt),
         NAPI(cryptoAesGcmDecrypt),
+        NAPI(cryptoRsaGenKey),
+        NAPI(cryptoRsaEncrypt),
+        NAPI(cryptoRsaDecrypt),
         NAPI(cryptoHashMd5),
         NAPI(cryptoHashSha1),
         NAPI(cryptoHashSha256),

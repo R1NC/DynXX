@@ -70,6 +70,9 @@ class DynXX {
         external fun cryptoAesDecrypt(input: ByteArray, key: ByteArray): ByteArray
         external fun cryptoAesGcmEncrypt(input: ByteArray, key: ByteArray, initVector: ByteArray, aad: ByteArray?, tagBits: Int): ByteArray
         external fun cryptoAesGcmDecrypt(input: ByteArray, key: ByteArray, initVector: ByteArray, aad: ByteArray?, tagBits: Int): ByteArray
+        external fun cryptoRsaGenKey(base64: String, isPublic: Boolean): String
+        external fun cryptoRsaEncrypt(input: ByteArray, key: ByteArray, padding: Int): ByteArray
+        external fun cryptoRsaDecrypt(input: ByteArray, key: ByteArray, padding: Int): ByteArray
         external fun cryptoHashMd5(input: ByteArray): ByteArray
         external fun cryptoHashSha1(input: ByteArray): ByteArray
         external fun cryptoHashSha256(input: ByteArray): ByteArray

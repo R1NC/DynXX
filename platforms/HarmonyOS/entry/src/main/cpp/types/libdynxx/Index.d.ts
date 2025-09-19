@@ -76,6 +76,11 @@ export const cryptoAesEncrypt: (inBytes: number[], keyBytes: number[]) => number
 export const cryptoAesDecrypt: (inBytes: number[], keyBytes: number[]) => number[];
 export const cryptoAesGcmEncrypt: (inBytes: number[], keyBytes: number[], initVectorBytes: number[], tagBits: number, aadBytes?: number[]) => number[];
 export const cryptoAesGcmDecrypt: (inBytes: number[], keyBytes: number[], initVectorBytes: number[], tagBits: number, aadBytes?: number[]) => number[];
+
+export const cryptoRsaGenKey: (base64: string, is_public: boolean) => string;
+export const cryptoRsaEncrypt: (inBytes: number[], keyBytes: number[], padding: number) => number[];
+export const cryptoRsaDecrypt: (inBytes: number[], keyBytes: number[], padding: number) => number[];
+
 export const cryptoHashMd5: (inBytes: number[]) => number[];
 export const cryptoHashSha1: (inBytes: number[]) => number[];
 export const cryptoHashSha256: (inBytes: number[]) => number[];
