@@ -288,11 +288,15 @@ inline Bytes makeBytes(const byte *data, const size_t len) {
 }
 
 template<CharacterT T>
-std::string makeStr(const T *ptr) {
+std::string makeStr(const T *ptr, const size_t len = 0) {
     if (ptr == nullptr) [[unlikely]] {
         return {};
     }
-    return {reinterpret_cast<const char *>(ptr)};
+    const auto cstr = reinterpret_cast<const char *>(ptr);
+    if (len == 0) {
+        return {cstr};
+    }
+    return {cstr, len};
 }
 
 // C String Utils

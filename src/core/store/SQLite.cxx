@@ -151,7 +151,11 @@ std::optional<Any> Connection::QueryResult::readColumn(std::string_view column) 
         switch(sqlite3_column_type(this->stmt, i))
         {
             case SQLITE_TEXT:
-                return {makeStr(sqlite3_column_text(this->stmt, i))};
+                {
+                    const auto data = sqlite3_column_text(this->stmt, i);
+                    const auto len = sqlite3_column_bytes(this->stmt, i);
+                    return {makeStr(data, len)};
+                }
             case SQLITE_INTEGER:
                 return {sqlite3_column_int64(this->stmt, i)};
             case SQLITE_FLOAT:

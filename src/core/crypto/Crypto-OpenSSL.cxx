@@ -29,22 +29,20 @@ namespace
 
     std::string errMsg()
     {
-        const auto err = ERR_get_error();
-        if (err == 0) [[unlikely]]
+        
+        if (const auto err = ERR_get_error(); err != 0) [[likely]]
         {
-            return {};
+            std::string errMsg;
+            errMsg.resize(MaxErrMsgLen);
+            ERR_error_string_n(err, errMsg.data(), errMsg.size());
+            if (const auto actualLen = std::strlen(errMsg.data()); actualLen != 0) [[likely]] 
+            {
+                errMsg.resize(actualLen);
+                return errMsg;
+            }
         }
 
-        std::string errMsg;
-        errMsg.resize(MaxErrMsgLen);
-        ERR_error_string_n(err, errMsg.data(), errMsg.size());
-        const auto actualLen = std::strlen(errMsg.data());
-        if (actualLen == 0) [[unlikely]]
-        {
-            return {};
-        }
-        errMsg.resize(actualLen);
-        return {errMsg.data(), actualLen};
+        return {};
     }
 
     const EVP_CIPHER* aesGcmCipher(const int keyLen)
