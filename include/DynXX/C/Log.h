@@ -22,7 +22,7 @@ enum DynXXLogLevel {
  * @warning Not accessible in JS/Lua!
  * @param level Log level
  */
-void dynxx_log_set_level(int level);
+void dynxx_log_set_level(DynXXLogLevel level);
 
 /**
  * @brief Set log callback
@@ -36,7 +36,7 @@ void dynxx_log_set_callback(void (*const callback)(int level, const char *conten
  * @param level Log level
  * @param content Log content
  */
-void dynxx_log_print(int level, const char *content);
+void dynxx_log_print(DynXXLogLevel level, const char *content);
 
 DYNXX_EXTERN_C_END
 

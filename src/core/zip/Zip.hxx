@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include <DynXX/CXX/Types.hxx>
+#include <DynXX/CXX/Zip.hxx>
 
 namespace DynXX::Core::Z {
     
@@ -23,7 +24,7 @@ namespace DynXX::Core::Z {
     public:
         ZBase() = delete;
 
-        explicit ZBase(size_t bufferSize, int format);
+        explicit ZBase(size_t bufferSize, DynXXZFormatX format);
 
         ZBase(const ZBase &) = delete;
 
@@ -52,7 +53,7 @@ namespace DynXX::Core::Z {
         byte *inBuffer{nullptr};
         byte *outBuffer{nullptr};
         const size_t bufferSize;
-        const int format;
+        const DynXXZFormatX format;
     };
 
     class Zip final : public ZBase<Zip> {
@@ -60,7 +61,7 @@ namespace DynXX::Core::Z {
         Zip() = delete;
 
         /// @throws `std::invalid_argument` & `ZException`
-        explicit Zip(int mode, size_t bufferSize, int format) noexcept(false);
+        explicit Zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format) noexcept(false);
 
         Zip(const Zip &) = delete;
 
@@ -83,7 +84,7 @@ namespace DynXX::Core::Z {
         UnZip() = delete;
 
         /// @throws `std::invalid_argument` & `ZException`
-        explicit UnZip(size_t bufferSize, int format) noexcept(false);
+        explicit UnZip(size_t bufferSize, DynXXZFormatX format) noexcept(false);
 
         UnZip(const UnZip &) = delete;
 
@@ -103,19 +104,19 @@ namespace DynXX::Core::Z {
 
 #if !defined(__EMSCRIPTEN__)
 
-    bool zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream);
+    bool zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, std::istream *inStream, std::ostream *outStream);
 
-    bool unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream);
+    bool unzip(size_t bufferSize, DynXXZFormatX format, std::istream *inStream, std::ostream *outStream);
 
-    bool zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile);
+    bool zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, std::FILE *inFile, std::FILE *outFile);
 
-    bool unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile);
+    bool unzip(size_t bufferSize, DynXXZFormatX format, std::FILE *inFile, std::FILE *outFile);
 
 #endif
 
-    Bytes zip(int mode, size_t bufferSize, int format, const Bytes &bytes);
+    Bytes zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, const Bytes &bytes);
 
-    Bytes unzip(size_t bufferSize, int format, const Bytes &bytes);
+    Bytes unzip(size_t bufferSize, DynXXZFormatX format, const Bytes &bytes);
 }
 
 #endif

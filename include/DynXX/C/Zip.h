@@ -35,7 +35,7 @@ enum DynXXZFormat {
  * @param format header type, see `DynXXZFormat`
  * @return a ZIP handle
  */
-DynXXZipHandle dynxx_z_zip_init(int mode, size_t bufferSize, int format);
+DynXXZipHandle dynxx_z_zip_init(DynXXZipCompressMode mode, size_t bufferSize, DynXXZFormat format);
 
 /**
  * @brief input data to ZIP process
@@ -74,7 +74,7 @@ void dynxx_z_zip_release(const DynXXZipHandle zip);
  * @param format header type, see `DynXXZFormat`
  * @return a UNZIP handle
  */
-DynXXUnZipHandle dynxx_z_unzip_init(size_t bufferSize, int header);
+DynXXUnZipHandle dynxx_z_unzip_init(size_t bufferSize, DynXXZFormat format);
 
 /**
  * @brief input data to UNZIP process
@@ -117,7 +117,7 @@ void dynxx_z_unzip_release(const DynXXUnZipHandle unzip);
  * @param cFILEOut Output C `FILE`
  * @return whether finished or not
  */
-bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *cFILEIn, FILE *cFILEOut);
+bool dynxx_z_cfile_zip(DynXXZipCompressMode mode, size_t bufferSize, DynXXZFormat format, FILE *cFILEIn, FILE *cFILEOut);
 
 /**
  * @brief UNZIP for C FILE
@@ -128,7 +128,7 @@ bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *cFILEIn, F
  * @param cFILEOut Output C `FILE`
  * @return whether finished or not
  */
-bool dynxx_z_cfile_unzip(size_t bufferSize, int format, FILE *cFILEIn, FILE *cFILEOut);
+bool dynxx_z_cfile_unzip(size_t bufferSize, DynXXZFormat format, FILE *cFILEIn, FILE *cFILEOut);
 
 /**
  * @brief ZIP for bytes
@@ -140,7 +140,7 @@ bool dynxx_z_cfile_unzip(size_t bufferSize, int format, FILE *cFILEIn, FILE *cFI
  * @param outLen A pointer to read output bytes length
  * @return output bytes data
  */
-const byte *dynxx_z_bytes_zip(int mode, size_t bufferSize, int format, const byte *inBytes, size_t inLen,
+const byte *dynxx_z_bytes_zip(DynXXZipCompressMode mode, size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen,
                                size_t *outLen);
 
 /**
@@ -152,7 +152,7 @@ const byte *dynxx_z_bytes_zip(int mode, size_t bufferSize, int format, const byt
  * @param outLen A pointer to read output bytes length
  * @return output bytes data
  */
-const byte *dynxx_z_bytes_unzip(size_t bufferSize, int format, const byte *inBytes, size_t inLen, size_t *outLen);
+const byte *dynxx_z_bytes_unzip(size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen, size_t *outLen);
 
 DYNXX_EXTERN_C_END
 

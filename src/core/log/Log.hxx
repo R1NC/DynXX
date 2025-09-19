@@ -6,12 +6,14 @@
 #include <string_view>
 #include <functional>
 
+#include <DynXX/CXX/Log.hxx>
+
 namespace DynXX::Core::Log {
-    void setLevel(int level);
+    void setLevel(DynXXLogLevelX level);
 
     void setCallback(const std::function<void(int level, const char *content)> &callback);
 
-    void print(int level, std::string_view content);
+    void print(DynXXLogLevelX level, std::string_view content);
 }
 
 #endif

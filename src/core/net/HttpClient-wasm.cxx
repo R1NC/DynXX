@@ -14,6 +14,7 @@ namespace {
     constexpr auto SLEEP_MS = 5;
 
     using enum DynXXLogLevelX;
+    using enum DynXXHttpMethodX;
 
     std::string buildUrl(std::string_view baseUrl, std::string_view params) {
         if (params.empty()) [[unlikely]] {
@@ -29,8 +30,8 @@ namespace {
         return result;
     }
 
-    void setMethod(emscripten_fetch_attr_t& attr, const int method) {
-        if (method == DynXXNetHttpMethodPost) {
+    void setMethod(emscripten_fetch_attr_t& attr, const DynXXHttpMethodX method) {
+        if (method == Post) {
             std::copy_n(POST_METHOD, std::strlen(POST_METHOD) + 1, attr.requestMethod);
         } else {
             std::copy_n(GET_METHOD, std::strlen(GET_METHOD) + 1, attr.requestMethod);
@@ -105,7 +106,7 @@ namespace {
 namespace DynXX::Core::Net {
 
 DynXXHttpResponse WasmHttpClient::request(std::string_view url, 
-                                                 const int method,
+                                                 const DynXXHttpMethodX method,
                                                  const std::vector<std::string> &headers,
                                                  std::string_view params,
                                                  BytesView rawBody,

@@ -78,7 +78,7 @@ namespace
         return decoder.readNumFloat<T>(node);
     }
 
-    template <NumberT... Ns, KeyType... Ks>
+    template <NumberT... Ns, KeyT... Ks>
     auto parseNumX(const Decoder &decoder, Ks... ks)
     {
         return std::make_tuple(parseNum<Ns>(decoder, ks)...);
@@ -90,7 +90,7 @@ namespace
         return node == 0 ? std::nullopt : decoder.readString(node);
     }
 
-    template <KeyType... Ks>
+    template <KeyT... Ks>
     auto parseStrX(const Decoder &decoder, Ks... ks)
     {
         return std::make_tuple(parseStr(decoder, ks)...);
@@ -212,13 +212,13 @@ namespace
             return parsePtr<T>(this->decoder, k);
         }
 
-        template <KeyType... Ks>
+        template <KeyT... Ks>
         auto strX(Ks... ks) const
         {
             return std::make_tuple(parseStr(this->decoder, ks)...);
         }
 
-        template <NumberT... Ns, KeyType... Ks>
+        template <NumberT... Ns, KeyT... Ks>
         auto numX(Ks... ks) const
         {
             return std::make_tuple(parseNum<Ns>(this->decoder, ks)...);

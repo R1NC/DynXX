@@ -101,7 +101,7 @@ const char *dynxx_crypto_rsa_gen_key(const char *base64, bool isPublic);
  * @return output bytes data
  */
 const byte *dynxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
-                                      const byte *keyBytes, size_t keyLen, int padding, size_t *outLen);
+                                      const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, size_t *outLen);
 
 /**
  * @brief RSA Decrypt
@@ -114,7 +114,7 @@ const byte *dynxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
  * @return output bytes data
  */
 const byte *dynxx_crypto_rsa_decrypt(const byte *inBytes, size_t inLen,
-                                      const byte *keyBytes, size_t keyLen, int padding, size_t *outLen);
+                                      const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, size_t *outLen);
 
 /**
  * @brief MD5 hash

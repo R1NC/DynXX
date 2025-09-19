@@ -31,7 +31,7 @@ namespace DynXX::Core::Net {
 
         HttpClient &operator=(HttpClient &&) = delete;
 
-        [[nodiscard]] DynXXHttpResponse request(std::string_view url, int method,
+        [[nodiscard]] DynXXHttpResponse request(std::string_view url, DynXXHttpMethodX method,
                                                  const std::vector<std::string> &headers,
                                                 std::string_view params,
                                                  BytesView rawBody,

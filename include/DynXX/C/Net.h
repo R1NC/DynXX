@@ -20,10 +20,10 @@ static const size_t DYNXX_HTTP_FORM_FIELD_DATA_MAX_LENGTH = 64 * 1024;
 /**
  * HTTP method
  */
-enum DynXXNetHttpMethod {
-    DynXXNetHttpMethodGet,
-    DynXXNetHttpMethodPost,
-    DynXXNetHttpMethodPut,
+enum DynXXHttpMethod {
+    DynXXHttpMethodGet,
+    DynXXHttpMethodPost,
+    DynXXHttpMethodPut,
 };
 
 /**
@@ -42,7 +42,7 @@ enum DynXXNetHttpMethod {
  * @param timeout Timeout(milliseconds)
  * @return response
  */
-const char *dynxx_net_http_request(const char *url, const char *params, int method,
+const char *dynxx_net_http_request(const char *url, const char *params, DynXXHttpMethod method,
                                     const char **header_v, size_t header_c,
                                     const char **form_field_name_v,
                                     const char **form_field_mime_v,

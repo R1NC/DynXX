@@ -12,6 +12,7 @@
 
 #include <DynXX/CXX/Types.hxx>
 #include <DynXX/CXX/Log.hxx>
+#include <DynXX/CXX/Crypto.hxx>
 
 #include "../concurrent/ConcurrentUtil.hxx"
 
@@ -84,7 +85,7 @@ namespace DynXX::Core::Crypto {
             Codec(Codec &&other) noexcept;
             Codec &operator=(Codec &&other) noexcept;
         
-            explicit Codec(BytesView key, int padding);
+            explicit Codec(BytesView key, DynXXCryptoRSAPaddingX padding);
         
             virtual std::optional<Bytes> process(BytesView in) const = 0;
         
@@ -98,7 +99,7 @@ namespace DynXX::Core::Crypto {
             
             BIO *bmem{nullptr};
             rsa_st *rsa{nullptr};
-            int padding;
+            DynXXCryptoRSAPaddingX padding;
         };
     
         class Encrypt final : public Codec
@@ -111,7 +112,7 @@ namespace DynXX::Core::Crypto {
             Encrypt &operator=(Encrypt &&other) noexcept = default;
             ~Encrypt() override = default;
         
-            explicit Encrypt(BytesView key, int padding);
+            explicit Encrypt(BytesView key, DynXXCryptoRSAPaddingX padding);
         
             std::optional<Bytes> process(BytesView in) const override;
         };
@@ -126,7 +127,7 @@ namespace DynXX::Core::Crypto {
             Decrypt &operator=(Decrypt &&other) noexcept = default;
             ~Decrypt() override = default;
         
-            explicit Decrypt(BytesView key, int padding);
+            explicit Decrypt(BytesView key, DynXXCryptoRSAPaddingX padding);
         
             std::optional<Bytes> process(BytesView in) const override;
         };

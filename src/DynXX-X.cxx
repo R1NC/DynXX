@@ -311,7 +311,7 @@ DynXXDeviceCpuArchX dynxxDeviceCpuArch() {
 // Log
 
 void dynxxLogSetLevel(DynXXLogLevelX level) {
-    Log::setLevel(static_cast<int>(level));
+    Log::setLevel(level);
 }
 
 void dynxxLogSetCallback(const std::function<void(int level, const char *content)> &callback) {
@@ -319,7 +319,7 @@ void dynxxLogSetCallback(const std::function<void(int level, const char *content
 }
 
 void dynxxLogPrint(DynXXLogLevelX level, std::string_view content) {
-    Log::print(static_cast<int>(level), content);
+    Log::print(level, content);
 }
 
 // Coding
@@ -381,12 +381,12 @@ std::string dynxxCryptoRsaGenKey(std::string_view base64, bool isPublic) {
 }
 
 Bytes dynxxCryptoRsaEncrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding) {
-    const auto enc = Crypto::RSA::Encrypt(key, static_cast<int>(padding));
+    const auto enc = Crypto::RSA::Encrypt(key, padding);
     return enc.process(in).value_or(Bytes{});
 }
 
 Bytes dynxxCryptoRsaDecrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding) {
-    const auto dec = Crypto::RSA::Decrypt(key, static_cast<int>(padding));
+    const auto dec = Crypto::RSA::Decrypt(key, padding);
     return dec.process(in).value_or(Bytes{});
 }
 
@@ -447,10 +447,10 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
         );
     }
 
-    return _http_client->request(url, static_cast<int>(method), headerV, params, rawBody, vFormFields, cFILE, fileSize,
+    return _http_client->request(url,   method, headerV, params, rawBody, vFormFields, cFILE, fileSize,
                                  timeout);
 #else
-    return WasmHttpClient::request(url, static_cast<int>(method), headerV, params, rawBody, timeout);
+    return WasmHttpClient::request(url, method, headerV, params, rawBody, timeout);
 #endif
 }
 
@@ -867,7 +867,7 @@ void dynxxJsonDecoderRelease(const DynXXJsonDecoderHandle decoder) {
 
 DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize, const DynXXZFormatX format) {
     try {
-        const auto zip = zipCache->add(std::make_unique<Zip>(static_cast<int>(mode), bufferSize, static_cast<int>(format)));
+        const auto zip = zipCache->add(std::make_unique<Zip>(mode, bufferSize, format));
         return zip;
     } catch (const std::invalid_argument &e) {
         dynxxLogPrintF(Error, "dynxxZZipInit invalid_argument: {}", e.what());
@@ -919,7 +919,7 @@ void dynxxZZipRelease(const DynXXZipHandle zip) {
 
 DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) {
     try {
-        const auto unzip = unzipCache->add(std::make_unique<UnZip>(bufferSize, static_cast<int>(format)));
+        const auto unzip = unzipCache->add(std::make_unique<UnZip>(bufferSize, format));
         return unzip;
     } catch (const std::invalid_argument &e) {
         dynxxLogPrintF(Error, "dynxxZUnzipInit invalid_argument: {}", e.what());
@@ -979,7 +979,7 @@ bool dynxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut, const DynXXZipCompr
     if (cFILEIn == nullptr || cFILEOut == nullptr) {
         return false;
     }
-    return zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), cFILEIn, cFILEOut);
+    return zip(mode, bufferSize, format, cFILEIn, cFILEOut);
 }
 
 bool dynxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut, size_t bufferSize, const DynXXZFormatX format) {
@@ -989,7 +989,7 @@ bool dynxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut, size_t bufferSize
     if (cFILEIn == nullptr || cFILEOut == nullptr) {
         return false;
     }
-    return unzip(bufferSize, static_cast<int>(format), cFILEIn, cFILEOut);
+    return unzip(bufferSize, format, cFILEIn, cFILEOut);
 }
 
 bool dynxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, const DynXXZipCompressModeX mode,
@@ -1000,8 +1000,7 @@ bool dynxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, c
     if (cxxStreamIn == nullptr || cxxStreamOut == nullptr) {
         return false;
     }
-    return zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), cxxStreamIn,
-                                cxxStreamOut);
+    return zip(mode, bufferSize, format, cxxStreamIn, cxxStreamOut);
 }
 
 bool dynxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, size_t bufferSize,
@@ -1012,7 +1011,7 @@ bool dynxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut,
     if (cxxStreamIn == nullptr || cxxStreamOut == nullptr) {
         return false;
     }
-    return unzip(bufferSize, static_cast<int>(format), cxxStreamIn, cxxStreamOut);
+    return unzip(bufferSize, format, cxxStreamIn, cxxStreamOut);
 }
 
 #endif
@@ -1025,7 +1024,7 @@ Bytes dynxxZBytesZip(const Bytes &inBytes, const DynXXZipCompressModeX mode, siz
     if (inBytes.empty()) {
         return {};
     }
-    return zip(static_cast<int>(mode), bufferSize, static_cast<int>(format), inBytes);
+    return zip(mode, bufferSize, format, inBytes);
 }
 
 Bytes dynxxZBytesUnzip(const Bytes &inBytes, size_t bufferSize, const DynXXZFormatX format) {
@@ -1035,5 +1034,5 @@ Bytes dynxxZBytesUnzip(const Bytes &inBytes, size_t bufferSize, const DynXXZForm
     if (inBytes.empty()) {
         return {};
     }
-    return unzip(bufferSize, static_cast<int>(format), inBytes);
+    return unzip(bufferSize, format, inBytes);
 }

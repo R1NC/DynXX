@@ -592,7 +592,7 @@ std::string RSA::genKey(std::string_view base64, bool isPublic)
     return result; 
 }
 
-RSA::Codec::Codec(BytesView key, int padding) : padding(padding)
+RSA::Codec::Codec(BytesView key, DynXXCryptoRSAPaddingX padding) : padding(padding)
 {
     this->bmem = BIO_new_mem_buf(key.data(), static_cast<int>(key.size()));
     if (!this->bmem) [[unlikely]]
@@ -652,7 +652,7 @@ std::size_t RSA::Codec::outLen() const
     return RSA_size(this->rsa);
 }
 
-RSA::Encrypt::Encrypt(BytesView key, int padding) : Codec(key, padding)
+RSA::Encrypt::Encrypt(BytesView key, DynXXCryptoRSAPaddingX padding) : Codec(key, padding)
 {
     if (this->bmem == nullptr) [[unlikely]]
     {
@@ -672,7 +672,7 @@ std::optional<Bytes> RSA::Encrypt::process(BytesView in) const
         return std::nullopt;
     }
     Bytes outBytes(this->outLen(), 0);
-    if (const auto ret = RSA_public_encrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, this->padding); ret == -1) [[unlikely]]
+    if (const auto ret = RSA_public_encrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, underlying(this->padding)); ret == -1) [[unlikely]]
     {
         dynxxLogPrintF(Error, "RSA encrypt failed, ret: {}, err: {}", ret, errMsg());
         return std::nullopt;
@@ -680,7 +680,7 @@ std::optional<Bytes> RSA::Encrypt::process(BytesView in) const
     return {outBytes};
 }
 
-RSA::Decrypt::Decrypt(BytesView key, int padding) : Codec(key, padding)
+RSA::Decrypt::Decrypt(BytesView key, DynXXCryptoRSAPaddingX padding) : Codec(key, padding)
 {
     if (this->bmem == nullptr) [[unlikely]]
     {
@@ -700,7 +700,7 @@ std::optional<Bytes> RSA::Decrypt::process(BytesView in) const
         return std::nullopt;
     }
     Bytes outBytes(this->outLen(), 0);
-    if (const auto ret = RSA_private_decrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, this->padding); ret == -1) [[unlikely]]
+    if (const auto ret = RSA_private_decrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, underlying(this->padding)); ret == -1) [[unlikely]]
     {
         dynxxLogPrintF(Error, "RSA decrypt failed, ret: {}, err: {}", ret, errMsg());
         return std::nullopt;

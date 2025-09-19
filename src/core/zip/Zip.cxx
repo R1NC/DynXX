@@ -19,6 +19,8 @@
 
 namespace {
     using enum DynXXLogLevelX;
+    using enum DynXXZipCompressModeX;
+    using enum DynXXZFormatX;
     using namespace DynXX::Core::Z;
     
     template<typename T>
@@ -144,11 +146,11 @@ namespace DynXX::Core::Z {
 template <typename T>
 int ZBase<T>::windowBits() const
 {
-    if (this->format == DynXXZFormatGZip)
+    if (this->format == GZip)
     {
         return 16 | MAX_WBITS;
     }
-    if (this->format == DynXXZFormatRaw)
+    if (this->format == Raw)
     {
         return -MAX_WBITS;
     }
@@ -156,13 +158,13 @@ int ZBase<T>::windowBits() const
 }
 
 template <typename T>
-ZBase<T>::ZBase(size_t bufferSize, int format) : bufferSize{bufferSize}, format{format}
+ZBase<T>::ZBase(size_t bufferSize, DynXXZFormatX format) : bufferSize{bufferSize}, format{format}
 {
     if (bufferSize == 0) [[unlikely]]
     {
         throw std::invalid_argument("bufferSize invalid");
     }
-    if (format != DynXXZFormatRaw && format != DynXXZFormatZLib && format != DynXXZFormatGZip) [[unlikely]]
+    if (format != Raw && format != ZLib && format != GZip) [[unlikely]]
     {
         throw std::invalid_argument("format invalid");
     }
@@ -224,13 +226,13 @@ ZBase<T>::~ZBase()
 template class ZBase<Zip>;
 template class ZBase<UnZip>;
 
-Zip::Zip(int mode, size_t bufferSize, int format) : ZBase(bufferSize, format)
+Zip::Zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format) : ZBase(bufferSize, format)
 {
-    if (mode != DynXXZipCompressModeDefault && mode != DynXXZipCompressModePreferSize && mode != DynXXZipCompressModePreferSpeed) [[unlikely]]
+    if (mode != Default && mode != PreferSize && mode != PreferSpeed) [[unlikely]]
     {
         throw std::invalid_argument("mode invalid");
     }
-    this->ret = deflateInit2(&(this->zs), mode, Z_DEFLATED, this->windowBits(), 8, Z_DEFAULT_STRATEGY);
+    this->ret = deflateInit2(&(this->zs), underlying(mode), Z_DEFLATED, this->windowBits(), 8, Z_DEFAULT_STRATEGY);
     if (this->ret != Z_OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "deflateInit error:{}", this->ret);
@@ -248,7 +250,7 @@ Zip::~Zip()
     deflateEnd(&(this->zs));
 }
 
-UnZip::UnZip(size_t bufferSize, int format) : ZBase(bufferSize, format)
+UnZip::UnZip(size_t bufferSize, DynXXZFormatX format) : ZBase(bufferSize, format)
 {
     this->ret = inflateInit2(&this->zs, this->windowBits());
     if (this->ret != Z_OK) [[unlikely]]
@@ -272,13 +274,13 @@ UnZip::~UnZip()
 
 // Cxx stream
 
-bool zip(int mode, size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
+bool zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, std::istream *inStream, std::ostream *outStream)
 {
     Zip zip(mode, bufferSize, format);
     return processCxxStream(bufferSize, inStream, outStream, zip);
 }
 
-bool unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *outStream)
+bool unzip(size_t bufferSize, DynXXZFormatX format, std::istream *inStream, std::ostream *outStream)
 {
     UnZip unzip(bufferSize, format);
     return processCxxStream(bufferSize, inStream, outStream, unzip);
@@ -286,13 +288,13 @@ bool unzip(size_t bufferSize, int format, std::istream *inStream, std::ostream *
 
 // C FILE
 
-bool zip(int mode, size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
+bool zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, std::FILE *inFile, std::FILE *outFile)
 {
     Zip zip(mode, bufferSize, format);
     return processCFILE(bufferSize, inFile, outFile, zip);
 }
 
-bool unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
+bool unzip(size_t bufferSize, DynXXZFormatX format, std::FILE *inFile, std::FILE *outFile)
 {
     UnZip unzip(bufferSize, format);
     return processCFILE(bufferSize, inFile, outFile, unzip);
@@ -302,13 +304,13 @@ bool unzip(size_t bufferSize, int format, std::FILE *inFile, std::FILE *outFile)
 
 // Bytes
 
-Bytes zip(int mode, size_t bufferSize, int format, const Bytes &bytes)
+Bytes zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, const Bytes &bytes)
 {
     Zip zip(mode, bufferSize, format);
     return processBytes(bufferSize, bytes, zip);
 }
 
-Bytes unzip(size_t bufferSize, int format, const Bytes &bytes)
+Bytes unzip(size_t bufferSize, DynXXZFormatX format, const Bytes &bytes)
 {
     UnZip unzip(bufferSize, format);
     return processBytes(bufferSize, bytes, unzip);

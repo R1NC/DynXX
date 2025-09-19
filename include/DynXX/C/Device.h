@@ -45,7 +45,7 @@ enum DynXXDeviceCpuArch {
  * @brief Read device type
  * @return device type
  */
-int dynxx_device_type();
+DynXXDeviceType dynxx_device_type();
 
 /**
  * @brief Read device name
@@ -75,7 +75,7 @@ const char *dynxx_device_os_version();
  * @brief Read CPU arch
  * @return CPU arch
  */
-int dynxx_device_cpu_arch();
+DynXXDeviceCpuArch dynxx_device_cpu_arch();
 
 DYNXX_EXTERN_C_END
 

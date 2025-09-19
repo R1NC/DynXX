@@ -25,7 +25,7 @@ typedef address DynXXJsonDecoderHandle;
  * @param node JSON node
  * @return `DynXXJsonNodeType`
  */
-int dynxx_json_node_read_type(const DynXXJsonNodeHandle node);
+DynXXJsonNodeType dynxx_json_node_read_type(const DynXXJsonNodeHandle node);
 
 /**
  * @brief Read json node name

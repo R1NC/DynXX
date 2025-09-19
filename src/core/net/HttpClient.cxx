@@ -16,6 +16,7 @@
 namespace
 {
     using enum DynXXLogLevelX;
+    using enum DynXXHttpMethodX;
 
     const char *errMsg(CURLcode code) {
         return curl_easy_strerror(code);
@@ -312,7 +313,7 @@ namespace
     }
 
     Req createReq(std::string_view url, const std::vector<std::string> &headers,
-                            std::string_view params, int method, size_t timeout)
+                            std::string_view params, DynXXHttpMethodX method, size_t timeout)
     {
         Req req;
         if (!req.valid() || !checkUrlValid(url) || !handleSSL(req, url)) [[unlikely]]
@@ -328,7 +329,7 @@ namespace
         }
         req.setOpt(CURLOPT_CONNECTTIMEOUT_MS, _timeout);
         req.setOpt(CURLOPT_SERVER_RESPONSE_TIMEOUT_MS, _timeout);
-        req.setOpt(CURLOPT_HTTPGET, method == DynXXNetHttpMethodGet ? 1L : 0L);
+        req.setOpt(CURLOPT_HTTPGET, method == Get ? 1L : 0L);
 
         for (const auto &it : headers)
         {
@@ -337,9 +338,9 @@ namespace
         }
 
         std::string fixedUrl;
-        fixedUrl.reserve(url.size() + (method == DynXXNetHttpMethodGet && !params.empty() ? params.size() + 1 : 0));
+        fixedUrl.reserve(url.size() + (method == Get && !params.empty() ? params.size() + 1 : 0));
         fixedUrl = url;
-        if (method == DynXXNetHttpMethodGet && !params.empty())
+        if (method == Get && !params.empty())
         {
             if (!checkUrlHasSearch(fixedUrl))
             {
@@ -394,7 +395,7 @@ HttpClient::~HttpClient()
     globalRelease();
 }
 
-DynXXHttpResponse HttpClient::request(std::string_view url, int method,
+DynXXHttpResponse HttpClient::request(std::string_view url, DynXXHttpMethodX method,
                                                                  const std::vector<std::string> &headers,
                                                                 std::string_view params,
                                                                  BytesView rawBody,
@@ -423,7 +424,7 @@ DynXXHttpResponse HttpClient::request(std::string_view url, int method,
             req.addMimeData(part, name.c_str(), mime.c_str(), data.c_str(), data.size());
         }
     }
-    else if (method == DynXXNetHttpMethodPost)
+    else if (method == Post)
     {
         req.setOpt(CURLOPT_POST, 1L);
         if (rawBody.empty())
@@ -454,7 +455,7 @@ DynXXHttpResponse HttpClient::request(std::string_view url, int method,
 }
 
 bool HttpClient::download(std::string_view url, std::string_view filePath, size_t timeout) const {
-    auto req = createReq(url, {}, {}, DynXXNetHttpMethodGet, timeout);
+    auto req = createReq(url, {}, {}, Get, timeout);
     if (!req.valid()) [[unlikely]]
     {
         return false;

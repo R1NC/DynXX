@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include <DynXX/C/KV.h>
+#include <DynXX/C/DynXX.h>
 #include <DynXX/CXX/DynXX.hxx>
 #include "core/util/TypeUtil.hxx"
 #endif
@@ -47,8 +47,8 @@ void dynxx_release() {
 #if defined(USE_DEVICE)
 
 DYNXX_EXPORT_AUTO
-int dynxx_device_type() {
-    return std::to_underlying(dynxxDeviceType());
+DynXXDeviceType dynxx_device_type() {
+    return static_cast<DynXXDeviceType>(dynxxDeviceType());
 }
 
 DYNXX_EXPORT_AUTO
@@ -76,8 +76,8 @@ const char *dynxx_device_os_version() {
 }
 
 DYNXX_EXPORT_AUTO
-int dynxx_device_cpu_arch() {
-    return std::to_underlying(dynxxDeviceCpuArch());
+DynXXDeviceCpuArch dynxx_device_cpu_arch() {
+    return static_cast<DynXXDeviceCpuArch>(dynxxDeviceCpuArch());
 }
 
 #endif
@@ -85,7 +85,7 @@ int dynxx_device_cpu_arch() {
 // Log
 
 DYNXX_EXPORT_AUTO
-void dynxx_log_set_level(int level) {
+void dynxx_log_set_level(DynXXLogLevel level) {
     dynxxLogSetLevel(static_cast<DynXXLogLevelX>(level));
 }
 
@@ -95,7 +95,7 @@ void dynxx_log_set_callback(void (*const callback)(int level, const char *conten
 }
 
 DYNXX_EXPORT_AUTO
-void dynxx_log_print(int level, const char *content) {
+void dynxx_log_print(DynXXLogLevel level, const char *content) {
     if (content == nullptr) {
         return;
     }
@@ -218,7 +218,7 @@ const char *dynxx_crypto_rsa_gen_key(const char *base64, bool isPublic) {
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
-                                      const byte *keyBytes, size_t keyLen, int padding, size_t *outLen) {
+                                      const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, size_t *outLen) {
     const auto bytes = dynxxCryptoRsaEncrypt(makeBytesView(inBytes, inLen), makeBytesView(keyBytes, keyLen),
                                                static_cast<DynXXCryptoRSAPaddingX>(padding));
     return handleBytes(bytes, outLen);
@@ -226,7 +226,7 @@ const byte *dynxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_rsa_decrypt(const byte *inBytes, size_t inLen,
-                                      const byte *keyBytes, size_t keyLen, int padding, size_t *outLen) {
+                                      const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, size_t *outLen) {
     const auto bytes = dynxxCryptoRsaDecrypt(makeBytesView(inBytes, inLen), makeBytesView(keyBytes, keyLen),
                                                static_cast<DynXXCryptoRSAPaddingX>(padding));
     return handleBytes(bytes, outLen);
@@ -265,7 +265,7 @@ const byte *dynxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool n
 // Net.Http
 
 DYNXX_EXPORT_AUTO
-const char *dynxx_net_http_request(const char *url, const char *params, int method,
+const char *dynxx_net_http_request(const char *url, const char *params, DynXXHttpMethod method,
                                     const char **header_v, size_t header_c,
                                     const char **form_field_name_v,
                                     const char **form_field_mime_v,
@@ -488,8 +488,8 @@ void dynxx_kv_close(const DynXXKVConnHandle conn) {
 // Json.Decoder
 
 DYNXX_EXPORT_AUTO
-int dynxx_json_node_read_type(const DynXXJsonNodeHandle node) {
-    return std::to_underlying(dynxxJsonNodeReadType(node));
+DynXXJsonNodeType dynxx_json_node_read_type(const DynXXJsonNodeHandle node) {
+    return static_cast<DynXXJsonNodeType>(dynxxJsonNodeReadType(node));
 }
 
 DYNXX_EXPORT_AUTO
@@ -556,7 +556,7 @@ void dynxx_json_decoder_release(const DynXXJsonDecoderHandle decoder) {
 // Zip
 
 DYNXX_EXPORT_AUTO
-DynXXZipHandle dynxx_z_zip_init(int mode, size_t bufferSize, int format) {
+DynXXZipHandle dynxx_z_zip_init(DynXXZipCompressMode mode, size_t bufferSize, DynXXZFormat format) {
     return dynxxZZipInit(static_cast<DynXXZipCompressModeX>(mode), bufferSize, static_cast<DynXXZFormatX>(format));
 }
 
@@ -582,7 +582,7 @@ void dynxx_z_zip_release(const DynXXZipHandle zip) {
 }
 
 DYNXX_EXPORT_AUTO
-DynXXUnZipHandle dynxx_z_unzip_init(size_t bufferSize, int format) {
+DynXXUnZipHandle dynxx_z_unzip_init(size_t bufferSize, DynXXZFormat format) {
     return dynxxZUnzipInit(bufferSize, static_cast<DynXXZFormatX>(format));
 }
 
@@ -610,20 +610,20 @@ void dynxx_z_unzip_release(const DynXXUnZipHandle unzip) {
 #if !defined(__EMSCRIPTEN__)
 
 DYNXX_EXPORT_AUTO
-bool dynxx_z_cfile_zip(int mode, size_t bufferSize, int format, FILE *cFILEIn, FILE *cFILEOut) {
+bool dynxx_z_cfile_zip(DynXXZipCompressMode mode, size_t bufferSize, DynXXZFormat format, FILE *cFILEIn, FILE *cFILEOut) {
     return dynxxZCFileZip(cFILEIn, cFILEOut,
                            static_cast<DynXXZipCompressModeX>(mode), bufferSize, static_cast<DynXXZFormatX>(format));
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_z_cfile_unzip(size_t bufferSize, int format, FILE *cFILEIn, FILE *cFILEOut) {
+bool dynxx_z_cfile_unzip(size_t bufferSize, DynXXZFormat format, FILE *cFILEIn, FILE *cFILEOut) {
     return dynxxZCFileUnzip(cFILEIn, cFILEOut, bufferSize, static_cast<DynXXZFormatX>(format));
 }
 
 #endif
 
 DYNXX_EXPORT_AUTO
-const byte *dynxx_z_bytes_zip(int mode, size_t bufferSize, int format, const byte *inBytes, size_t inLen,
+const byte *dynxx_z_bytes_zip(DynXXZipCompressMode mode, size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen,
                                size_t *outLen) {
     const auto bytes = dynxxZBytesZip(makeBytes(inBytes, inLen),
                                         static_cast<DynXXZipCompressModeX>(mode), bufferSize,
@@ -632,7 +632,7 @@ const byte *dynxx_z_bytes_zip(int mode, size_t bufferSize, int format, const byt
 }
 
 DYNXX_EXPORT_AUTO
-const byte *dynxx_z_bytes_unzip(size_t bufferSize, int format, const byte *inBytes, size_t inLen, size_t *outLen) {
+const byte *dynxx_z_bytes_unzip(size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen, size_t *outLen) {
     const auto bytes = dynxxZBytesUnzip(makeBytes(inBytes, inLen),
                                           bufferSize, static_cast<DynXXZFormatX>(format));
     return handleBytes(bytes, outLen);
