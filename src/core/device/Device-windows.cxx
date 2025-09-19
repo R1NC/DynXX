@@ -10,15 +10,28 @@
 
 namespace DynXX::Core::Device {
 
-int deviceType()
+DynXXDeviceTypeX deviceType()
 {
-    return DynXXDeviceTypeWindows;
+    return DynXXDeviceTypeX::Windows;
 }
 
 std::string deviceName()
 {
-    //TODO
-    return {};
+    static const auto name = []() -> std::string {
+        DWORD size = 0;
+        if (!GetComputerNameA(nullptr, &size)) [[unlikely]] {
+            if (GetLastError() != ERROR_BUFFER_OVERFLOW)  [[unlikely]] {
+                return {};
+            }
+        }
+        std::string result(size, '\0');
+        if (!GetComputerNameA(result.data(), &size)) [[unlikely]] {
+            return {};
+        }
+        result.resize(size);
+        return result;
+    }();
+    return name;
 }
 
 std::string deviceManufacturer()
@@ -35,13 +48,22 @@ std::string deviceModel()
 std::string osVersion()
 {
     //TODO
-    return {};
+    return "Windows Unknown";
 }
 
-int cpuArch()
+DynXXDeviceCpuArchX cpuArch()
 {
-    //TODO
-    return DynXXDeviceCpuArchUnknown;
+#if defined(_M_X64) || defined(__x86_64__)
+    return DynXXDeviceCpuArchX::X86_64;
+#elif defined(_M_ARM64) || defined(__aarch64__)
+    return DynXXDeviceCpuArchX::ARM_64;
+#elif defined(_M_IX86) || defined(__i386__)
+    return DynXXDeviceCpuArchX::X86;
+#elif defined(_M_ARM) || defined(__arm__)
+    return DynXXDeviceCpuArchX::ARM;
+#else
+    return DynXXDeviceCpuArchX::Unknown;
+#endif
 }
 
 } // namespace DynXX::Core::Device

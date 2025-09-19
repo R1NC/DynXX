@@ -36,11 +36,17 @@ namespace
     constexpr auto SYS_PROPERTY_TAGS = "ro.build.tags";
     constexpr auto SYS_PROPERTY_FINGERPRINT = "ro.build.fingerprint";
 
-    std::string sysProperty(const std::string &k)
+    std::string sysProperty(const char *k)
     {
-        char v[PROP_VALUE_MAX];
-        __system_property_get(k.c_str(), v);
-        return v[0] ? v : "";
+        if (!k) [[unlikely]] {
+            return {};
+        }
+        std::string buffer(PROP_VALUE_MAX - 1, '\0');
+        const auto len = __system_property_get(k, buffer.data());
+        if (len <= 0) [[unlikely]] {
+            return {};
+        }
+        return {buffer.data(), static_cast<size_t>(len)};
     }
 
     int apiLevel()
@@ -51,9 +57,9 @@ namespace
 
 namespace DynXX::Core::Device {
 
-int deviceType()
+DynXXDeviceTypeX deviceType()
 {
-    return DynXXDeviceTypeAndroid;
+    return DynXXDeviceTypeX::Android;
 }
 
 std::string deviceName()
@@ -76,12 +82,12 @@ std::string osVersion()
     return sysProperty(SYS_PROPERTY_VERSION_RELEASE);
 }
 
-int cpuArch()
+DynXXDeviceCpuArchX cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
-    return DynXXDeviceCpuArchARM_64;
+    return DynXXDeviceCpuArchX::ARM_64;
 #endif
-    return DynXXDeviceCpuArchARM;
+    return DynXXDeviceCpuArchX::ARM;
 }
 
 } // namespace DynXX::Core::Device

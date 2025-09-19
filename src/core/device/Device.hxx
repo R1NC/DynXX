@@ -5,8 +5,10 @@
 
 #include <string>
 
+#include <DynXX/CXX/Device.hxx>
+
 namespace DynXX::Core::Device {
-    int deviceType();
+    DynXXDeviceTypeX deviceType();
 
     std::string deviceName();
 
@@ -16,7 +18,7 @@ namespace DynXX::Core::Device {
 
     std::string osVersion();
 
-    int cpuArch();
+    DynXXDeviceCpuArchX cpuArch();
 }
 
 #endif

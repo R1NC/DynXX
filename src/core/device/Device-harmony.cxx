@@ -8,9 +8,9 @@
 namespace DynXX::Core::Device {
 
 
-int deviceType()
+DynXXDeviceTypeX deviceType()
 {
-    return DynXXDeviceTypeHarmonyOS;
+    return DynXXDeviceTypeX::HarmonyOS;
 }
 
 std::string deviceName()
@@ -33,12 +33,12 @@ std::string osVersion()
     return OH_GetDistributionOSVersion();
 }
 
-int cpuArch()
+DynXXDeviceCpuArchX cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
-    return DynXXDeviceCpuArchARM_64;
+    return DynXXDeviceCpuArchX::ARM_64;
 #endif
-    return DynXXDeviceCpuArchARM;
+    return DynXXDeviceCpuArchX::ARM;
 }
 
 } // namespace DynXX::Core::Device

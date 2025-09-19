@@ -13,21 +13,32 @@
 
 namespace
 {
-    char *sysCtlByName(const char *key) 
-    {
-        size_t size;
-        sysctlbyname(key, nullptr, &size, nullptr, 0);
-        auto value = reinterpret_cast<char*>(malloc(size * sizeof(char)));
-        sysctlbyname(key, value, &size, nullptr, 0);
-        return value;
+    std::string sysCtlByName(const char* key) {
+        if (!key) return {};
+        size_t size = 0;
+        
+        if (const auto ret = sysctlbyname(key, nullptr, &size, nullptr, 0); ret != 0 || size == 0) [[unlikely]] {
+            return {};
+        }
+        
+        std::string result(size, '\0');
+        if (sysctlbyname(key, result.data(), &size, nullptr, 0) != 0) [[unlikely]] {
+            return {};
+        }
+
+        if (!result.empty() && result.back() == '\0') {
+            result.pop_back();
+        }
+
+        return result;
     }
 }
 
 namespace DynXX::Core::Device {
 
-int deviceType()
+DynXXDeviceTypeX deviceType()
 {
-    return DynXXDeviceTypeApplePhone;
+    return DynXXDeviceTypeX::ApplePhone;
 }
 
 std::string deviceName()
@@ -44,36 +55,36 @@ std::string deviceManufacturer()
 
 std::string deviceModel()
 {
-    static dispatch_once_t get_system_model_once;
-    static std::string *model;
-    dispatch_once(&get_system_model_once, ^{
-        @autoreleasepool {
-            model = new std::string(sysCtlByName("hw.machine"));
-        }
-    });
-    return *model;
+    static const auto model = sysCtlByName("hw.machine");
+    return model;
 }
 
 std::string osVersion()
 {
-    static dispatch_once_t get_system_version_once;
-    static std::string *osv;
-    dispatch_once(&get_system_version_once, ^{
+    static const auto version = []() -> std::string {
         @autoreleasepool {
-            osv = new std::string(NSString2CharP(UIDevice.currentDevice.systemVersion));
+            NSString *nsVersion = UIDevice.currentDevice.systemVersion;
+            if (!nsVersion) [[unlikely]] {
+                return "Unknown";
+            }
+            const auto cstr = NSString2CharP(nsVersion);
+            if (!cstr) [[unlikely]] {
+                return "Unknown";
+            }
+            return {cstr};
         }
-    });
-    return *osv;
+    }();
+    return version;
 }
 
-int cpuArch()
+DynXXDeviceCpuArchX cpuArch()
 {
 #if defined(__aarch64__) || defined(_M_ARM64)
-    return DynXXDeviceCpuArchARM_64;
+    return DynXXDeviceCpuArchX::ARM_64;
 #elif defined(__arm__)
-    return DynXXDeviceCpuArchARM;
+    return DynXXDeviceCpuArchX::ARM;
 #endif
-    return DynXXDeviceCpuArchUnknown;
+    return DynXXDeviceCpuArchX::Unknown;
 }
 
 } // namespace DynXX::Core::Device

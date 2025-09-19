@@ -29,7 +29,6 @@ namespace
 
     std::string errMsg()
     {
-        
         if (const auto err = ERR_get_error(); err != 0) [[likely]]
         {
             std::string errMsg;

@@ -20,9 +20,17 @@ enum class DynXXDeviceCpuArchX: int {
     Unknown,
     X86,
     X86_64,
-    IA64,
     ARM,
-    ARM_64
+    ARM_64,
+    IA64,
+    MIPS,
+    MIPS_64,
+    RISCV,
+    RISCV_64,
+    PowerPC,
+    PowerPC_64,
+    S390,
+    S390_64
 };
 
 DynXXDeviceTypeX dynxxDeviceType();

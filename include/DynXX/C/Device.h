@@ -28,9 +28,17 @@ enum DynXXDeviceCpuArch {
     DynXXDeviceCpuArchUnknown,
     DynXXDeviceCpuArchX86,
     DynXXDeviceCpuArchX86_64,
-    DynXXDeviceCpuArchIA64,
     DynXXDeviceCpuArchARM,
-    DynXXDeviceCpuArchARM_64
+    DynXXDeviceCpuArchARM_64,
+    DynXXDeviceCpuArchIA64,
+    DynXXDeviceCpuArchMIPS,
+    DynXXDeviceCpuArchMIPS_64,
+    DynXXDeviceCpuArchRISCV,
+    DynXXDeviceCpuArchRISCV_64,
+    DynXXDeviceCpuArchPowerPC,
+    DynXXDeviceCpuArchPowerPC_64,
+    DynXXDeviceCpuArchS390,
+    DynXXDeviceCpuArchS390_64
 };
 
 /**

@@ -283,7 +283,7 @@ void dynxxRelease() {
 #if defined(USE_DEVICE)
 
 DynXXDeviceTypeX dynxxDeviceType() {
-    return static_cast<DynXXDeviceTypeX>(Device::deviceType());
+    return Device::deviceType();
 }
 
 std::string dynxxDeviceName() {
@@ -303,7 +303,7 @@ std::string dynxxDeviceOsVersion() {
 }
 
 DynXXDeviceCpuArchX dynxxDeviceCpuArch() {
-    return static_cast<DynXXDeviceCpuArchX>(Device::cpuArch());
+    return Device::cpuArch();
 }
 
 #endif

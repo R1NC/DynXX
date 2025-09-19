@@ -37,9 +37,9 @@ namespace
 
 namespace DynXX::Core::Device {
 
-int deviceType()
+DynXXDeviceTypeX deviceType()
 {
-    return DynXXDeviceTypeAppleMac;
+    return DynXXDeviceTypeX::AppleMac;
 }
 
 std::string deviceName()
@@ -62,24 +62,32 @@ std::string deviceModel()
 
 std::string osVersion()
 {
-    NSOperatingSystemVersion version = NSProcessInfo.processInfo.operatingSystemVersion;
-    int major = static_cast<int32_t>(version.majorVersion);
-    int minor = static_cast<int32_t>(version.minorVersion);
-    int bugfix = static_cast<int32_t>(version.patchVersion);
-    std::ostringstream ss;
-    ss << major << "." << minor << "." << bugfix;  
-    return ss.str();
+    static const auto version = []() -> std::string {
+        NSOperatingSystemVersion ver = NSProcessInfo.processInfo.operatingSystemVersion;
+        int major = static_cast<int32_t>(ver.majorVersion);
+        int minor = static_cast<int32_t>(ver.minorVersion);
+        int patch = static_cast<int32_t>(ver.patchVersion);
+        std::string result;
+        result.reserve(16);
+        result += std::to_string(major);
+        result += '.';
+        result += std::to_string(minor);
+        result += '.';
+        result += std::to_string(patch);
+        return result;
+    }();
+    return version;
 }
 
-int cpuArch()
+DynXXDeviceCpuArchX cpuArch()
 {
 #if defined(ARCH_CPU_X86_64)
     if (!ProcessIsTranslated())
     {
-        return DynXXDeviceCpuArchX86_64;
+        return DynXXDeviceCpuArchX::X86_64;
     }
 #else
-    return DynXXDeviceCpuArchARM_64;
+    return DynXXDeviceCpuArchX::ARM_64;
 #endif
 }
 
