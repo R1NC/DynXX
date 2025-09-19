@@ -343,13 +343,13 @@ bool JSVM::loadFile(const std::string &file, bool isModule)
 }
 
 bool JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
-    auto lock = std::scoped_lock(this->vmMutex);
+    const auto lock = std::scoped_lock(this->vmMutex);
     this->beforeLoad();
     return _loadScript(this->context.get(), script, name, isModule);
 }
 
 bool JSVM::loadBinary(const Bytes &bytes, bool isModule) {
-    auto lock = std::scoped_lock(this->vmMutex);
+    const auto lock = std::scoped_lock(this->vmMutex);
     this->beforeLoad();
     return js_std_eval_binary(this->context.get(), bytes.data(), bytes.size(), 0);
 }
@@ -413,7 +413,7 @@ JSValue JSVM::newPromise(std::function<JSValue()> &&jf)
     auto result = promiseCache->get(handle)->jsObj();
     this->unlock();
 
-    this->executor >> [handle, cbk = std::move(jf), this] {
+    this->submitTask([handle, cbk = std::move(jf), this] {
         auto ret = cbk();
 
         if (!this->lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
@@ -426,7 +426,7 @@ JSValue JSVM::newPromise(std::function<JSValue()> &&jf)
         promiseCache->remove(handle);
 
         this->unlock();
-    };
+    });
 
     return result;
 }
@@ -485,7 +485,6 @@ JSVM::~JSVM()
     this->timerLooperTask.reset();
     this->promiseLooperTask.reset();
 
-    this->active = false;
     js_std_loop_cancel(this->runtime.get());
 
     js_std_set_worker_new_context_func(nullptr);

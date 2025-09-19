@@ -23,9 +23,7 @@ namespace DynXX::Core::VM {
         virtual ~BaseVM();
 
     protected:
-        std::atomic<bool> active{false};
         mutable std::recursive_timed_mutex vmMutex;
-        Concurrent::Executor executor;
 
         [[nodiscard]] bool tryLockUntil(const size_t timeoutMicroSecs);
         [[nodiscard]] bool lockAutoRetry(const size_t retryCount, const size_t sleepMicroSecs);
@@ -33,6 +31,12 @@ namespace DynXX::Core::VM {
         void unlock();
 
         void sleep() const;
+
+        void submitTask(DynXX::Core::Concurrent::TaskT &&task);
+    
+    private:
+        std::atomic<bool> active{false};
+        Concurrent::Executor executor;
     };
 }
 

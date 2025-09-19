@@ -167,12 +167,10 @@ LuaVM::LuaVM() : lstate(luaL_newstate(), lua_close)
 
 LuaVM::~LuaVM()
 {
-    this->active = false;
 #if defined(USE_LIBUV)
     timerExecutor.reset();
     _loop_stop();
 #endif
-
 }
 
 void LuaVM::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
