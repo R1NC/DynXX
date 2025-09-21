@@ -30,7 +30,7 @@ enum DynXXHttpMethod {
  * @brief http request
  * @param url URL
  * @param params params(transfer multiple params like `v1=a&v2=b`)
- * @param method HTTP method, see `DynXXNetHttpMethod`
+ * @param method HTTP method, see `DynXXHttpMethod`
  * @param header_v HTTP header vector, max length is `DYNXX_HTTP_HEADER_MAX_LENGTH`
  * @param header_c HTTP header count, max count is `DYNXX_HTTP_HEADER_MAX_COUNT`
  * @param form_field_name_v Form field name vector, max length is `DYNXX_HTTP_FORM_FIELD_NAME_MAX_LENGTH`

@@ -96,3 +96,16 @@ export const jsonDecoderReadString: (decoder: number, node?: number) => string;
 export const jsonDecoderReadInteger: (decoder: number, node?: number) => number;
 export const jsonDecoderReadFloat: (decoder: number, node?: number) => number;
 export const jsonDecoderRelease: (decoder: number) => void;
+
+export const zZipInit: (mode: number, bufferSize: number, format: number) => number;
+export const zZipInput: (zip: number, inBytes: number[], inFinish: boolean) => number;
+export const zZipProcessDo: (zip: number) => number[];
+export const zZipProcessFinished: (zip: number) => boolean;
+export const zZipRelease: (zip: number) => void;
+export const zUnZipInit: (bufferSize: number, format: number) => number;
+export const zUnZipInput: (unzip: number, inBytes: number[], inFinish: boolean) => number;
+export const zUnZipProcessDo: (unzip: number) => number[];
+export const zUnZipProcessFinished: (unzip: number) => boolean;
+export const zUnZipRelease: (unzip: number) => void;
+export const zZipBytes: (mode: number, bufferSize: number, format: number, inBytes: number[]) => number[];
+export const zUnzipBytes: (bufferSize: number, format: number, inBytes: number[]) => number[];

@@ -825,9 +825,9 @@ namespace {
 
     jlong zZipInput(JNIEnv *env, jobject thiz,
                     jlong zip,
-                    jbyteArray inBytes, jint inLen, jboolean inFinish) {
+                    jbyteArray inBytes, jboolean inFinish) {
         auto cIn = env->GetByteArrayElements(inBytes, nullptr);
-        // auto inLen = env->GetArrayLength(input);
+        auto inLen = env->GetArrayLength(inBytes);
 
         auto ret = dynxx_z_zip_input(zip, reinterpret_cast<const byte *>(cIn), inLen,
                                       inFinish);
@@ -862,9 +862,9 @@ namespace {
 
     jlong zUnZipInput(JNIEnv *env, jobject thiz,
                       jlong unzip,
-                      jbyteArray inBytes, jint inLen, jboolean inFinish) {
+                      jbyteArray inBytes, jboolean inFinish) {
         auto cIn = env->GetByteArrayElements(inBytes, nullptr);
-        // auto inLen = env->GetArrayLength(input);
+        auto inLen = env->GetArrayLength(inBytes);
 
         auto ret = dynxx_z_unzip_input(unzip, reinterpret_cast<const byte *>(cIn), inLen,
                                         inFinish);
@@ -1000,12 +1000,12 @@ namespace {
             DECLARE_JNI_FUNC(jsonDecoderRelease, "(J)V"),
 
             DECLARE_JNI_FUNC(zZipInit, "(IJI)J"),
-            DECLARE_JNI_FUNC(zZipInput, "(J[BIZ)J"),
+            DECLARE_JNI_FUNC(zZipInput, "(J[BZ)J"),
             DECLARE_JNI_FUNC(zZipProcessDo, "(J)[B"),
             DECLARE_JNI_FUNC(zZipProcessFinished, "(J)Z"),
             DECLARE_JNI_FUNC(zZipRelease, "(J)V"),
             DECLARE_JNI_FUNC(zUnZipInit, "(JI)J"),
-            DECLARE_JNI_FUNC(zUnZipInput, "(J[BIZ)J"),
+            DECLARE_JNI_FUNC(zUnZipInput, "(J[BZ)J"),
             DECLARE_JNI_FUNC(zUnZipProcessDo, "(J)[B"),
             DECLARE_JNI_FUNC(zUnZipProcessFinished, "(J)Z"),
             DECLARE_JNI_FUNC(zUnZipRelease, "(J)V"),

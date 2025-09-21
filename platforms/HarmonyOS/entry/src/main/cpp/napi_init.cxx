@@ -194,7 +194,7 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
     auto lTimeout = args.c > 9 ? napiValue2long(env, args.v[9]) : 15000;
 
     auto res =
-        dynxx_net_http_request(cUrl, cParams, static_cast<DynXXNetHttpMethod>(iMethod), header_v, header_c, form_field_name_v, form_field_mime_v,
+        dynxx_net_http_request(cUrl, cParams, static_cast<DynXXHttpMethod>(iMethod), header_v, header_c, form_field_name_v, form_field_mime_v,
                                 form_field_data_v, form_field_count, cFILE, fileLength, lTimeout);
     auto nv = chars2NapiValue(env, res);
 
@@ -746,7 +746,7 @@ napi_value cryptoRsaGenKey(napi_env env, napi_callback_info info) {
     auto is_public = napiValue2bool(env, args.v[1]);
 
     auto cRes = dynxx_crypto_rsa_gen_key(base64, is_public);
-    auto v = napiValue2chars(env, cRes);
+    auto v = chars2NapiValue(env, cRes);
 
     freeX(cRes);
     freeX(base64);
@@ -763,7 +763,7 @@ napi_value cryptoRsaEncrypt(napi_env env, napi_callback_info info) {
     auto padding = napiValue2int(env, args.v[2]);
 
     size_t outLen;
-    auto outBytes = dynxx_crypto_rsa_encrypt(inBytes, inLen, keyBytes, keyLen, padding, &outLen);
+    auto outBytes = dynxx_crypto_rsa_encrypt(inBytes, inLen, keyBytes, keyLen, static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -782,7 +782,7 @@ napi_value cryptoRsaDecrypt(napi_env env, napi_callback_info info) {
     auto padding = napiValue2int(env, args.v[2]);
 
     size_t outLen;
-    auto outBytes = dynxx_crypto_rsa_decrypt(inBytes, inLen, keyBytes, keyLen, padding, &outLen);
+    auto outBytes = dynxx_crypto_rsa_decrypt(inBytes, inLen, keyBytes, keyLen, static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -861,6 +861,152 @@ napi_value cryptoBase64Decode(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_base64_decode(inBytes, inLen, noNewLines, &outLen);
+    auto v = byteArray2NapiValue(env, outBytes, outLen);
+
+    freeX(outBytes);
+    freeX(inBytes);
+    return v;
+}
+
+// zip
+
+napi_value zZipInit(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto mode = napiValue2int(env, args.v[0]);
+    auto bufferSize = napiValue2long(env, args.v[1]);
+    auto format = napiValue2int(env, args.v[2]);
+
+    auto zip = dynxx_z_zip_init(static_cast<DynXXZipCompressMode>(mode), bufferSize, static_cast<DynXXZFormat>(format));
+    return int2NapiValue(env, zip);
+}
+
+napi_value zZipInput(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto zip = napiValue2long(env, args.v[0]);
+    auto inLen = napiValueArrayLen(env, args.v[1]);
+    auto inBytes = napiValue2byteArray(env, args.v[1], inLen);
+    auto inFinish = napiValue2bool(env, args.v[2]);
+
+    auto res = dynxx_z_zip_input(zip, inBytes, inLen, inFinish);
+    return int2NapiValue(env, res);
+}
+
+napi_value zZipProcessDo(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto zip = napiValue2long(env, args.v[0]);
+
+    size_t outLen;
+    auto outBytes = dynxx_z_zip_process_do(zip, &outLen);
+    auto v = byteArray2NapiValue(env, outBytes, outLen);
+
+    freeX(outBytes);
+    return v;
+}
+
+napi_value zZipProcessFinished(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto zip = napiValue2long(env, args.v[0]);
+
+    auto res = dynxx_z_zip_process_finished(zip);
+    return bool2NapiValue(env, res);
+}
+
+napi_value zZipRelease(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto zip = napiValue2long(env, args.v[0]);
+
+    dynxx_z_zip_release(zip);
+
+    return int2NapiValue(env, napi_ok);
+}
+
+napi_value zUnZipInit(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto bufferSize = napiValue2long(env, args.v[0]);
+    auto format = napiValue2int(env, args.v[1]);
+
+    auto zip = dynxx_z_unzip_init(bufferSize, static_cast<DynXXZFormat>(format));
+    return int2NapiValue(env, zip);
+}
+
+napi_value zUnZipInput(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto zip = napiValue2long(env, args.v[0]);
+    auto inLen = napiValueArrayLen(env, args.v[1]);
+    auto inBytes = napiValue2byteArray(env, args.v[1], inLen);
+    auto inFinish = napiValue2bool(env, args.v[2]);
+
+    auto res = dynxx_z_unzip_input(zip, inBytes, inLen, inFinish);
+    return int2NapiValue(env, res);
+}
+
+napi_value zUnZipProcessDo(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto zip = napiValue2long(env, args.v[0]);
+
+    size_t outLen;
+    auto outBytes = dynxx_z_unzip_process_do(zip, &outLen);
+    auto v = byteArray2NapiValue(env, outBytes, outLen);
+
+    freeX(outBytes);
+    return v;
+}
+
+napi_value zUnZipProcessFinished(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto zip = napiValue2long(env, args.v[0]);
+
+    auto res = dynxx_z_unzip_process_finished(zip);
+    return bool2NapiValue(env, res);
+}
+
+napi_value zUnZipRelease(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto zip = napiValue2long(env, args.v[0]);
+
+    dynxx_z_unzip_release(zip);
+
+    return int2NapiValue(env, napi_ok);
+}
+
+napi_value zZipBytes(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto mode = napiValue2int(env, args.v[0]);
+    auto bufferSize = napiValue2long(env, args.v[1]);
+    auto format = napiValue2int(env, args.v[2]);
+    auto inLen = napiValueArrayLen(env, args.v[3]);
+    auto inBytes = napiValue2byteArray(env, args.v[3], inLen);
+
+    size_t outLen;
+    auto outBytes = dynxx_z_bytes_zip(static_cast<DynXXZipCompressMode>(mode), bufferSize, static_cast<DynXXZFormat>(format), inBytes, inLen, &outLen);
+    auto v = byteArray2NapiValue(env, outBytes, outLen);
+
+    freeX(outBytes);
+    freeX(inBytes);
+    return v;
+}
+
+napi_value zUnzipBytes(napi_env env, napi_callback_info info) {
+    Args args(env, info);
+
+    auto bufferSize = napiValue2long(env, args.v[0]);
+    auto format = napiValue2int(env, args.v[1]);
+    auto inLen = napiValueArrayLen(env, args.v[2]);
+    auto inBytes = napiValue2byteArray(env, args.v[2], inLen);
+
+    size_t outLen;
+    auto outBytes = dynxx_z_bytes_unzip(bufferSize, static_cast<DynXXZFormat>(format), inBytes, inLen, &outLen);
     auto v = byteArray2NapiValue(env, outBytes, outLen);
 
     freeX(outBytes);
@@ -1056,6 +1202,19 @@ napi_value NAPI_DynXX_RegisterFuncs(napi_env env, napi_value exports) {
         NAPI(cryptoHashSha256),
         NAPI(cryptoBase64Encode),
         NAPI(cryptoBase64Decode),
+
+        NAPI(zZipInit),
+        NAPI(zZipInput),
+        NAPI(zZipProcessDo),
+        NAPI(zZipProcessFinished),
+        NAPI(zZipRelease),
+        NAPI(zUnZipInit),
+        NAPI(zUnZipInput),
+        NAPI(zUnZipProcessDo),
+        NAPI(zUnZipProcessFinished),
+        NAPI(zUnZipRelease),
+        NAPI(zZipBytes),
+        NAPI(zUnzipBytes),
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
