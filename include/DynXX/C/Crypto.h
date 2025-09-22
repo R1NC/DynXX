@@ -17,7 +17,7 @@ const byte *dynxx_crypto_rand(size_t len);
  * @param inBytes input bytes data
  * @param inLen input bytes length
  * @param keyBytes key bytes data
- * @param keyLen key bytes length（MUST BE 16!!）
+ * @param keyLen key bytes length（MUST BE 16/24/32!!）
  * @param outLen a pointer to read output bytes length
  * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
  */
@@ -29,7 +29,7 @@ const byte *dynxx_crypto_aes_encrypt(const byte *inBytes, size_t inLen, const by
  * @param inBytes input bytes data
  * @param inLen input bytes length
  * @param keyBytes key bytes data
- * @param keyLen key bytes length（MUST BE 16!!）
+ * @param keyLen key bytes length（MUST BE 16/24/32!!）
  * @param outLen a pointer to read output bytes length
  * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
  */

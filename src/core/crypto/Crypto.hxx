@@ -11,7 +11,6 @@
 #include <openssl/rsa.h>
 
 #include <DynXX/CXX/Types.hxx>
-#include <DynXX/CXX/Log.hxx>
 #include <DynXX/CXX/Crypto.hxx>
 
 #include "../concurrent/ConcurrentUtil.hxx"
@@ -40,33 +39,6 @@ namespace DynXX::Core::Crypto {
         Bytes encrypt(BytesView in, BytesView key);
 
         Bytes decrypt(BytesView in, BytesView key);
-
-        static constexpr auto checkGcmParams(BytesView in, BytesView key, BytesView initVector,
-                                             BytesView aad, const size_t tagBits) {
-            using enum DynXXLogLevelX;
-            const auto inLen = in.size();
-            if (in.empty()) {
-                dynxxLogPrint(Error, "aesGcm invalid inBytes");
-                return false;
-            }
-            if (const auto keyLen = key.size(); keyLen % 8 != 0 || keyLen < 16 || keyLen > 32) {
-                dynxxLogPrint(Error, "aesGcm invalid keyBytes");
-                return false;
-            }
-            if (const auto initVectorLen = initVector.size(); initVectorLen != 12) {
-                dynxxLogPrint(Error, "aesGcm invalid initVectorBytes");
-                return false;
-            }
-            if (const auto aadLen = aad.size(); aadLen > 16) {
-                dynxxLogPrint(Error, "aesGcm invalid aadBytes");
-                return false;
-            }
-            if (tagBits % 8 != 0 || tagBits / 8 >= inLen || tagBits < 96 || tagBits > 128) {
-                dynxxLogPrint(Error, "aesGcm invalid tagBits");
-                return false;
-            }
-            return true;
-        }
 
         Bytes gcmEncrypt(BytesView in, BytesView key, BytesView initVector, BytesView aad, size_t tagBits);
 

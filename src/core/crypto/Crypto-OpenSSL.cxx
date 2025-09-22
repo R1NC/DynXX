@@ -16,13 +16,13 @@
 #include <openssl/md5.h>
 
 #include <DynXX/CXX/Coding.hxx>
+#include <DynXX/CXX/Log.hxx>
 
 #include "../concurrent/ConcurrentUtil.hxx"
 
 namespace
 {
     constexpr auto OK = 1;
-    constexpr auto AES_Key_BITS = 128;
     constexpr auto MaxErrMsgLen = 256;
 
     using enum DynXXLogLevelX;
@@ -182,6 +182,39 @@ namespace
         EVP_MD_CTX *ctx;
     };
 
+    bool checkAesParams(BytesView in, BytesView key) {
+        if (in.empty()) {
+            dynxxLogPrint(Error, "aes invalid inBytes");
+            return false;
+        }
+        if (const auto keyLen = key.size(); keyLen % 8 != 0 || keyLen < 16 || keyLen > 32) {
+            dynxxLogPrint(Error, "aes invalid keyBytes");
+            return false;
+        }
+        return true;
+    }
+
+    bool checkAesGcmParams(BytesView in, BytesView key, BytesView initVector,
+                                             BytesView aad, const size_t tagBits) {
+        if (!checkAesParams(in, key)) {
+            return false;
+        }
+        const auto inLen = in.size();
+        if (const auto initVectorLen = initVector.size(); initVectorLen != 12) {
+            dynxxLogPrint(Error, "aesGcm invalid initVectorBytes");
+            return false;
+        }
+        if (const auto aadLen = aad.size(); aadLen > 16) {
+            dynxxLogPrint(Error, "aesGcm invalid aadBytes");
+            return false;
+        }
+        if (tagBits % 8 != 0 || tagBits / 8 >= inLen || tagBits < 96 || tagBits > 128) {
+            dynxxLogPrint(Error, "aesGcm invalid tagBits");
+            return false;
+        }
+        return true;
+    }
+
     Bytes evpHash(BytesView inBytes, const EVP_MD* md) {
         const auto in = inBytes.data();
         const auto inLen = inBytes.size();
@@ -279,7 +312,7 @@ Bytes rand(size_t len)
 
 Bytes AES::encrypt(BytesView inBytes, BytesView keyBytes)
 {
-    if (inBytes.empty() || keyBytes.size() != AES_BLOCK_SIZE) [[unlikely]]
+    if (!checkAesParams(inBytes, keyBytes)) [[unlikely]]
     {
         return {};
     }
@@ -298,7 +331,7 @@ Bytes AES::encrypt(BytesView inBytes, BytesView keyBytes)
 
     AES_KEY aes_key;
 
-    if (const auto ret = AES_set_encrypt_key(keyBytes.data(), AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
+    if (const auto ret = AES_set_encrypt_key(keyBytes.data(), keyBytes.size() * 8, &aes_key); ret != 0) [[unlikely]]
     {
         dynxxLogPrintF(Error, "AES_set_encrypt_key failed, ret: {}, err: {}", ret, errMsg());
         return {};
@@ -314,7 +347,7 @@ Bytes AES::encrypt(BytesView inBytes, BytesView keyBytes)
 
 Bytes AES::decrypt(BytesView inBytes, BytesView keyBytes)
 {
-    if (inBytes.empty() || keyBytes.size() != AES_BLOCK_SIZE || inBytes.size() % AES_BLOCK_SIZE != 0) [[unlikely]]
+    if (!checkAesParams(inBytes, keyBytes)) [[unlikely]]
     {
         return {};
     }
@@ -326,7 +359,7 @@ Bytes AES::decrypt(BytesView inBytes, BytesView keyBytes)
     Bytes out(inLen, 0);
 
     AES_KEY aes_key;
-    if (const auto ret = AES_set_decrypt_key(keyBytes.data(), AES_Key_BITS, &aes_key); ret != 0) [[unlikely]]
+    if (const auto ret = AES_set_decrypt_key(keyBytes.data(), keyBytes.size() * 8, &aes_key); ret != 0) [[unlikely]]
     {
         dynxxLogPrintF(Error, "AES_set_decrypt_key failed, ret: {}, err: {}", ret, errMsg());
         return {};
@@ -361,7 +394,7 @@ Bytes AES::decrypt(BytesView inBytes, BytesView keyBytes)
 
 Bytes AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
 {
-    if (!AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
+    if (!checkAesGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
         return {};
     }
@@ -439,7 +472,7 @@ Bytes AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVecto
 
 Bytes AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes, BytesView initVectorBytes, BytesView aadBytes, size_t tagBits)
 {
-    if (!AES::checkGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
+    if (!checkAesGcmParams(inBytes, keyBytes, initVectorBytes, aadBytes, tagBits)) [[unlikely]]
     {
         return {};
     }
