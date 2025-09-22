@@ -40,7 +40,7 @@
     do {                                                                                                               \
         if (status != napi_ok) {                                                                                       \
             PRINT_NAPI_STATUS_ERR(env, status, errMsg);                                                                \
-            return int2NapiValue(env, napi_cancelled);                                                                 \
+            return napiValueFromInt(env, napi_cancelled);                                                                 \
         }                                                                                                              \
     } while (0);
 
@@ -53,53 +53,67 @@
     } while (0);
 
 
-class Args {
+size_t napiValueArrayLen(napi_env env, napi_value nv);
+const char *napiValueToChars(napi_env env, napi_value nv);
+bool napiValueToBool(napi_env env, napi_value nv);
+int napiValueToInt(napi_env env, napi_value nv);
+long napiValueToLong(napi_env env, napi_value nv);
+double napiValueToDouble(napi_env env, napi_value nv);
+const byte *napiValueToByteArray(napi_env env, napi_value nv, size_t len);
+const char **napiValueToCharsArray(napi_env env, napi_value nv, size_t len);
+
+napi_value napiValueFromChars(napi_env env, const char *c);
+napi_value napiValueFromLong(napi_env env, long l);
+napi_value napiValueFromInt(napi_env env, int i);
+napi_value napiValueFromBool(napi_env env, bool b);
+napi_value napiValueFromDouble(napi_env env, double d);
+napi_value napiValueFromByteArray(napi_env env, const byte *byteArray, size_t len);
+napi_value napiValueFromCharsArray(napi_env env, const char **charsArray, size_t len);
+
+class NapiCallContext {
 public:
-    size_t c{0};
-    napi_value *v{nullptr};
+    NapiCallContext() = delete;
+    NapiCallContext(napi_env env, napi_callback_info info);
+    NapiCallContext(const NapiCallContext &) = delete;
+    NapiCallContext & operator = (const NapiCallContext &) = delete;
+    NapiCallContext(NapiCallContext &&) = delete;
+    NapiCallContext & operator = (NapiCallContext &&) = delete;
+    ~NapiCallContext();
 
-    Args() = delete;
-    Args(napi_env env, napi_callback_info info);
-    Args(const Args &) = delete;
-    Args & operator = (const Args &) = delete;
-    Args(Args &&) = delete;
-    Args & operator = (Args &&) = delete;
+    napi_value argAt(size_t i);
+    size_t argCount() const;
 
-    ~Args();
+    size_t argArrayLenAt(size_t i);
+    const char *argCharsAt(size_t i);
+    bool argBoolAt(size_t i);
+    int argIntAt(size_t i);
+    long argLongAt(size_t i);
+    double argDoubleAt(size_t i);
+    const byte *argByteArrayAt(size_t i);
+    const char **argCharsArrayAt(size_t i);
+
+    size_t napiValueArrayLen(napi_value nv);
+    const char *napiValueToChars(napi_value nv);
+    bool napiValueToBool(napi_value nv);
+    int napiValueToInt(napi_value nv);
+    long napiValueToLong(napi_value nv);
+    double napiValueToDouble(napi_value nv);
+    const byte *napiValueToByteArray(napi_value nv, size_t len);
+    const char **napiValueToCharsArray(napi_value nv, size_t len);
+
+    napi_value napiValueFromChars(const char *c);
+    napi_value napiValueFromLong(long l);
+    napi_value napiValueFromInt(int i);
+    napi_value napiValueFromBool(bool b);
+    napi_value napiValueFromDouble(double d);
+    napi_value napiValueFromByteArray(const byte *byteArray, size_t len);
+    napi_value napiValueFromCharsArray(const char **charsArray, size_t len);
+
 private:
     napi_env env;
-    napi_callback_info info;
+    napi_callback_info cbkInfo;
+    size_t argc{0};
+    napi_value *argv{nullptr};
 };
-
-
-size_t napiValueArrayLen(napi_env env, napi_value nv);
-
-const char *napiValue2chars(napi_env env, napi_value nv);
-
-bool napiValue2bool(napi_env env, napi_value nv);
-
-int napiValue2int(napi_env env, napi_value nv);
-
-long napiValue2long(napi_env env, napi_value nv);
-
-double napiValue2double(napi_env env, napi_value nv);
-
-const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len);
-
-const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len);
-
-napi_value chars2NapiValue(napi_env env, const char *c);
-
-napi_value long2NapiValue(napi_env env, long l);
-
-napi_value int2NapiValue(napi_env env, int i);
-
-napi_value bool2NapiValue(napi_env env, bool b);
-
-napi_value double2NapiValue(napi_env env, double d);
-
-napi_value byteArray2NapiValue(napi_env, const byte *byteArray, size_t len);
-
-napi_value charsArray2NapiValue(napi_env, const char **charsArray, size_t len);
 
 #endif

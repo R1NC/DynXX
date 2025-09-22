@@ -4,13 +4,7 @@
 
 #include <cstring>
 
-Args::Args(napi_env env, napi_callback_info info) : env(env), info(info) {
-    auto status = napi_get_cb_info(env, info, &this->c, nullptr, nullptr, nullptr);
-    this->v = mallocX<napi_value>(this->c);
-    status = napi_get_cb_info(env, info, &this->c, this->v, nullptr, nullptr);
-}
-
-Args::~Args() { freeX(this->v); }
+// static Utils
 
 size_t napiValueArrayLen(napi_env env, napi_value nv) {
     uint32_t len;
@@ -19,7 +13,7 @@ size_t napiValueArrayLen(napi_env env, napi_value nv) {
     return len;
 }
 
-const char *napiValue2chars(napi_env env, napi_value nv) {
+const char *napiValueToChars(napi_env env, napi_value nv) {
     size_t len;
     auto status = napi_get_value_string_utf8(env, nv, nullptr, 0, &len);
     CHECK_NAPI_STATUS_RETURN_PTR(env, status, "napi_get_value_string_utf8() failed");
@@ -29,35 +23,35 @@ const char *napiValue2chars(napi_env env, napi_value nv) {
     return cStr;
 }
 
-bool napiValue2bool(napi_env env, napi_value nv) {
+bool napiValueToBool(napi_env env, napi_value nv) {
     bool b = false;
     auto status = napi_get_value_bool(env, nv, &b);
     CHECK_NAPI_STATUS_RETURN_NUM(env, status, "napi_get_value_bool() failed");
     return b;
 }
 
-int napiValue2int(napi_env env, napi_value nv) {
+int napiValueToInt(napi_env env, napi_value nv) {
     int i;
     auto status = napi_get_value_int32(env, nv, &i);
     CHECK_NAPI_STATUS_RETURN_NUM(env, status, "napi_get_value_int32() failed");
     return i;
 }
 
-long napiValue2long(napi_env env, napi_value nv) {
+long napiValueToLong(napi_env env, napi_value nv) {
     long l;
     auto status = napi_get_value_int64(env, nv, &l);
     CHECK_NAPI_STATUS_RETURN_NUM(env, status, "napi_get_value_int64() failed");
     return l;
 }
 
-double napiValue2double(napi_env env, napi_value nv) {
+double napiValueToDouble(napi_env env, napi_value nv) {
     double d;
     auto status = napi_get_value_double(env, nv, &d);
     CHECK_NAPI_STATUS_RETURN_NUM(env, status, "napi_get_value_double() failed");
     return d;
 }
 
-const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len) {
+const byte *napiValueToByteArray(napi_env env, napi_value nv, size_t len) {
     if (len == 0) {
         return nullptr;
     }
@@ -66,12 +60,12 @@ const byte *napiValue2byteArray(napi_env env, napi_value nv, size_t len) {
         napi_value vByte;
         auto status = napi_get_element(env, nv, i, &vByte);
         CHECK_NAPI_STATUS_RETURN_PTR(env, status, "napi_get_element() failed");
-        byteArray[i] = napiValue2int(env, vByte);
+        byteArray[i] = napiValueToInt(env, vByte);
     }
     return byteArray;
 }
 
-const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len) {
+const char **napiValueToCharsArray(napi_env env, napi_value nv, size_t len) {
     if (len == 0) {
         return nullptr;
     }
@@ -80,12 +74,12 @@ const char **napiValue2charsArray(napi_env env, napi_value nv, size_t len) {
         napi_value vChars;
         auto status = napi_get_element(env, nv, i, &vChars);
         CHECK_NAPI_STATUS_RETURN_PTR(env, status, "napi_get_element() failed");
-        charsArray[i] = napiValue2chars(env, vChars);
+        charsArray[i] = napiValueToChars(env, vChars);
     }
     return charsArray;
 }
 
-napi_value chars2NapiValue(napi_env env, const char *c) {
+napi_value napiValueFromChars(napi_env env, const char *c) {
     if (c == nullptr) {
         c = "";
     }
@@ -95,52 +89,170 @@ napi_value chars2NapiValue(napi_env env, const char *c) {
     return v;
 }
 
-napi_value long2NapiValue(napi_env env, long l) {
+napi_value napiValueFromLong(napi_env env, long l) {
     napi_value v;
     auto status = napi_create_int64(env, l, &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_int64() failed");
     return v;
 }
 
-napi_value int2NapiValue(napi_env env, int i) {
+napi_value napiValueFromInt(napi_env env, int i) {
     napi_value v;
     auto status = napi_create_int32(env, i, &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_int32() failed");
     return v;
 }
 
-napi_value bool2NapiValue(napi_env env, bool b) {
+napi_value napiValueFromBool(napi_env env, bool b) {
     napi_value v;
     auto status = napi_get_boolean(env, b, &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_get_boolean() failed");
     return v;
 }
 
-napi_value double2NapiValue(napi_env env, double d) {
+napi_value napiValueFromDouble(napi_env env, double d) {
     napi_value v;
     auto status = napi_create_double(env, d, &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_double() failed");
     return v;
 }
 
-napi_value byteArray2NapiValue(napi_env env, const byte *byteArray, size_t len) {
+napi_value napiValueFromByteArray(napi_env env, const byte *byteArray, size_t len) {
     napi_value v;
     auto status = napi_create_array_with_length(env, len, &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_array_with_length() failed");
     for (decltype(len) i = 0; i < len; i++) {
-        status = napi_set_element(env, v, i, int2NapiValue(env, byteArray[i]));
+        status = napi_set_element(env, v, i, napiValueFromInt(env, byteArray[i]));
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_set_element() failed");
     }
     return v;
 }
 
-napi_value charsArray2NapiValue(napi_env env, const char **charsArray, size_t len) {
+napi_value napiValueFromCharsArray(napi_env env, const char **charsArray, size_t len) {
     napi_value v;
     auto status = napi_create_array_with_length(env, len, &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_array_with_length() failed");
     for (decltype(len) i = 0; i < len; i++) {
-        status = napi_set_element(env, v, i, chars2NapiValue(env, charsArray[i]));
+        status = napi_set_element(env, v, i, napiValueFromChars(env, charsArray[i]));
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_set_element() failed");
     }
     return v;
+}
+
+// NapiCallContext
+
+NapiCallContext::NapiCallContext(napi_env env, napi_callback_info cbkInfo) : env(env), cbkInfo(cbkInfo) {
+    auto status = napi_get_cb_info(this->env, cbkInfo, &this->argc, nullptr, nullptr, nullptr);
+    this->argv = mallocX<napi_value>(this->argc);
+    status = napi_get_cb_info(this->env, cbkInfo, &this->argc, this->argv, nullptr, nullptr);
+}
+
+NapiCallContext::~NapiCallContext() {
+    if (this->argv != nullptr) {
+        freeX(this->argv);
+        this->argv = nullptr;
+    }
+}
+
+napi_value NapiCallContext::argAt(size_t i) {
+    if (i >= this->argCount()) [[unlikely]] {
+        return this->napiValueFromInt(napi_invalid_arg);
+    }
+    return this->argv[i];
+}
+
+size_t NapiCallContext::argArrayLenAt(size_t i) {
+    return this->napiValueArrayLen(this->argAt(i));
+}
+
+const char *NapiCallContext::argCharsAt(size_t i) {
+    return this->napiValueToChars(this->argAt(i));
+}
+
+bool NapiCallContext::argBoolAt(size_t i) {
+    return this->napiValueToBool(this->argAt(i));
+}
+
+int NapiCallContext::argIntAt(size_t i) {
+    return this->napiValueToInt(this->argAt(i));
+}
+
+long NapiCallContext::argLongAt(size_t i) {
+    return this->napiValueToLong(this->argAt(i));
+}
+
+double NapiCallContext::argDoubleAt(size_t i) {
+    return this->napiValueToDouble(this->argAt(i));
+}
+
+const byte *NapiCallContext::argByteArrayAt(size_t i) {
+    return this->napiValueToByteArray(this->argAt(i), argArrayLenAt(i));
+}
+
+const char **NapiCallContext::argCharsArrayAt(size_t i) {
+    return this->napiValueToCharsArray(this->argAt(i), argArrayLenAt(i));
+}
+
+size_t NapiCallContext::argCount() const {
+    return this->argc;
+}
+
+size_t NapiCallContext::napiValueArrayLen(napi_value nv) {
+    return ::napiValueArrayLen(this->env, nv);
+}
+
+const char *NapiCallContext::napiValueToChars(napi_value nv) {
+    return ::napiValueToChars(this->env, nv);
+}
+
+bool NapiCallContext::napiValueToBool(napi_value nv) {
+    return ::napiValueToBool(this->env, nv);
+}
+
+int NapiCallContext::napiValueToInt(napi_value nv) {
+    return ::napiValueToInt(this->env, nv);
+}
+
+long NapiCallContext::napiValueToLong(napi_value nv) {
+    return ::napiValueToLong(this->env, nv);
+}
+
+double NapiCallContext::napiValueToDouble(napi_value nv) {
+    return ::napiValueToDouble(this->env, nv);
+}
+
+const byte *NapiCallContext::napiValueToByteArray(napi_value nv, size_t len) {
+    return ::napiValueToByteArray(this->env, nv, len);
+}
+
+const char **NapiCallContext::napiValueToCharsArray(napi_value nv, size_t len) {
+    return ::napiValueToCharsArray(this->env, nv, len);
+}
+
+napi_value NapiCallContext::napiValueFromChars(const char *c) {
+    return ::napiValueFromChars(this->env, c);
+}
+
+napi_value NapiCallContext::napiValueFromLong(long l) {
+    return ::napiValueFromLong(this->env, l);
+}
+
+napi_value NapiCallContext::napiValueFromInt(int i) {
+    return ::napiValueFromInt(this->env, i);
+}
+
+napi_value NapiCallContext::napiValueFromBool(bool b) {
+    return ::napiValueFromBool(this->env, b);
+}
+
+napi_value NapiCallContext::napiValueFromDouble(double d) {
+    return ::napiValueFromDouble(this->env, d);
+}
+
+napi_value NapiCallContext::napiValueFromByteArray(const byte *byteArray, size_t len) {
+    return ::napiValueFromByteArray(this->env, byteArray, len);
+}
+
+napi_value NapiCallContext::napiValueFromCharsArray(const char **charsArray, size_t len) {
+    return ::napiValueFromCharsArray(this->env, charsArray, len);
 }
