@@ -183,11 +183,11 @@ namespace
     };
 
     bool checkAesParams(BytesView in, BytesView key) {
-        if (in.empty()) {
+        if (in.empty()) [[unlikely]] {
             dynxxLogPrint(Error, "aes invalid inBytes");
             return false;
         }
-        if (const auto keyLen = key.size(); keyLen % 8 != 0 || keyLen < 16 || keyLen > 32) {
+        if (const auto keyLen = key.size(); keyLen % 8 != 0 || keyLen < 16 || keyLen > 32) [[unlikely]] {
             dynxxLogPrint(Error, "aes invalid keyBytes");
             return false;
         }
@@ -196,19 +196,19 @@ namespace
 
     bool checkAesGcmParams(BytesView in, BytesView key, BytesView initVector,
                                              BytesView aad, const size_t tagBits) {
-        if (!checkAesParams(in, key)) {
+        if (!checkAesParams(in, key)) [[unlikely]] {
             return false;
         }
         const auto inLen = in.size();
-        if (const auto initVectorLen = initVector.size(); initVectorLen != 12) {
+        if (const auto initVectorLen = initVector.size(); initVectorLen != 12) [[unlikely]] {
             dynxxLogPrint(Error, "aesGcm invalid initVectorBytes");
             return false;
         }
-        if (const auto aadLen = aad.size(); aadLen > 16) {
+        if (const auto aadLen = aad.size(); aadLen > 16) [[unlikely]] {
             dynxxLogPrint(Error, "aesGcm invalid aadBytes");
             return false;
         }
-        if (tagBits % 8 != 0 || tagBits / 8 >= inLen || tagBits < 96 || tagBits > 128) {
+        if (tagBits % 8 != 0 || tagBits / 8 >= inLen || tagBits < 96 || tagBits > 128) [[unlikely]] {
             dynxxLogPrint(Error, "aesGcm invalid tagBits");
             return false;
         }
