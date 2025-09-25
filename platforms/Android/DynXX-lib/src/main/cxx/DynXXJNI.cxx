@@ -4,7 +4,6 @@
 #include "../../../../../../build.Android/output/include/DynXX/C/DynXX.h"
 
 namespace {
-
     JavaVM *sVM;
     jclass sJClass;
     jobject sLogCallback;
@@ -49,10 +48,10 @@ namespace {
         }
         auto jMsg = boxJString(env, msg);
         auto jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
-        auto cRes = env->GetStringUTFChars(reinterpret_cast<jstring>(jRes), nullptr);
+        auto cRes = readJString(env, jRes);
         auto newRes = dupStr(cRes);
         if (cRes) {
-           env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jRes), cRes);
+           releaseJString(env, jRes, cRes);
         }
         env->DeleteLocalRef(jMsg);
         env->DeleteLocalRef(jRes);
@@ -61,33 +60,33 @@ namespace {
 
 // Engine base API
 
-    jstring getVersion(JNIEnv *env, jobject thiz) {
+    jstring getVersion(JNIEnv *env, [[maybe_unused]] jobject thiz) {
         auto cV = dynxx_get_version();
         auto jStr = boxJString(env, cV);
         freeX(cV);
         return jStr;
     }
 
-    jboolean init(JNIEnv *env, jobject thiz,
+    jboolean init(JNIEnv *env, [[maybe_unused]] jobject thiz,
                   jstring root) {
-        auto cRoot = env->GetStringUTFChars(root, nullptr);
+        auto cRoot = readJString(env, root);
         auto res = dynxx_init(cRoot);
-        env->ReleaseStringUTFChars(root, cRoot);
+        releaseJString(env, root, cRoot);
         return res;
     }
 
-    void release(JNIEnv *env, jobject thiz) {
+    void release([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz) {
         dynxx_release();
     }
 
 // Log
 
-    void logSetLevel(JNIEnv *env, jobject thiz,
+    void logSetLevel([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                      jint level) {
         dynxx_log_set_level(static_cast<DynXXLogLevel>(level));
     }
 
-    void logSetCallback(JNIEnv *env, jobject thiz,
+    void logSetCallback(JNIEnv *env, [[maybe_unused]] jobject thiz,
                         jobject callback) {
         if (callback) {
             dynxx_log_set_callback(log_callback);
@@ -101,81 +100,68 @@ namespace {
         }
     }
 
-    void logPrint(JNIEnv *env, jobject thiz,
+    void logPrint(JNIEnv *env, [[maybe_unused]] jobject thiz,
                   jint level, jstring content) {
-        auto cContent = env->GetStringUTFChars(content, nullptr);
+        auto cContent = readJString(env, content);
         dynxx_log_print(static_cast<DynXXLogLevel>(level), cContent);
-        env->ReleaseStringUTFChars(content, cContent);
+        releaseJString(env, content, cContent);
     }
 
 // Net
 
-    jstring netHttpRequest(JNIEnv *env, jobject thiz,
-                           jstring url, jstring params,
-                           jint method,
-                           jobjectArray headerV,
-                           jobjectArray formFieldNameV,
-                           jobjectArray formFieldMimeV,
-                           jobjectArray formFieldDataV,
+    jstring netHttpRequest(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                           jstring url, jstring params, jint method,
+                           jobjectArray headerV, jobjectArray formFieldNameV, jobjectArray formFieldMimeV, jobjectArray formFieldDataV,
                            jstring filePath, jlong fileLength,
                            jlong timeout) {
-        auto cUrl = env->GetStringUTFChars(url, nullptr);
-        auto cParams = env->GetStringUTFChars(params, nullptr);
+        auto cUrl = readJString(env, url);
+        auto cParams = readJString(env, params);
 
         auto headerCount = env->GetArrayLength(headerV);
 
-        auto cHeaderV = mallocX<char *>(headerCount);
+        auto cHeaderV = mallocX<const char *>(headerCount);
         auto jStrHeaderV = mallocX<jstring>(headerCount);
 
         for (int i = 0; i < headerCount; i++) {
-            jStrHeaderV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(headerV, i));
-            cHeaderV[i] = const_cast<char *>(env->GetStringUTFChars(jStrHeaderV[i], nullptr));
+            jStrHeaderV[i] = readJObjectArrayItem<jstring>(env, headerV, i);
+            cHeaderV[i] = readJString(env, jStrHeaderV[i]);
         }
 
         auto formFieldCount = env->GetArrayLength(formFieldNameV);
-        auto cFormFieldNameV = mallocX<char *>(formFieldCount);
+        auto cFormFieldNameV = mallocX<const char *>(formFieldCount);
         auto jStrFormFieldNameV = mallocX<jstring>(formFieldCount);
-        auto cFormFieldMimeV = mallocX<char *>(formFieldCount);
+        auto cFormFieldMimeV = mallocX<const char *>(formFieldCount);
         auto jStrFormFieldMimeV = mallocX<jstring>(formFieldCount);
-        auto cFormFieldDataV = mallocX<char *>(formFieldCount);
+        auto cFormFieldDataV = mallocX<const char *>(formFieldCount);
         auto jStrFormFieldDataV = mallocX<jstring>(formFieldCount);
 
         for (int i = 0; i < formFieldCount; i++) {
-            jStrFormFieldNameV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(
-                    formFieldNameV, i));
-            cFormFieldNameV[i] = const_cast<char *>(env->GetStringUTFChars(jStrFormFieldNameV[i],
-                                                                           nullptr));
-            jStrFormFieldMimeV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(
-                    formFieldMimeV, i));
-            cFormFieldMimeV[i] = const_cast<char *>(env->GetStringUTFChars(jStrFormFieldMimeV[i],
-                                                                           nullptr));
-            jStrFormFieldDataV[i] = reinterpret_cast<jstring>(env->GetObjectArrayElement(
-                    formFieldDataV, i));
-            cFormFieldDataV[i] = const_cast<char *>(env->GetStringUTFChars(jStrFormFieldDataV[i],
-                                                                           nullptr));
+            jStrFormFieldNameV[i] = readJObjectArrayItem<jstring>(env, formFieldNameV, i);
+            cFormFieldNameV[i] = readJString(env, jStrFormFieldNameV[i]);
+            jStrFormFieldMimeV[i] = readJObjectArrayItem<jstring>(env,formFieldMimeV, i);
+            cFormFieldMimeV[i] = readJString(env, jStrFormFieldMimeV[i]);
+            jStrFormFieldDataV[i] = readJObjectArrayItem<jstring>(env,formFieldDataV, i);
+            cFormFieldDataV[i] = readJString(env, jStrFormFieldDataV[i]);
         }
 
-        auto cFilePath = filePath ? env->GetStringUTFChars(filePath, nullptr) : "";
+        auto cFilePath = filePath ? readJString(env, filePath) : "";
         auto cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
 
         auto cRsp = dynxx_net_http_request(cUrl, cParams, static_cast<DynXXHttpMethod>(method),
-                                            const_cast<const char **>(cHeaderV), headerCount,
-                                            const_cast<const char **>(cFormFieldNameV),
-                                            const_cast<const char **>(cFormFieldMimeV),
-                                            const_cast<const char **>(cFormFieldDataV),
-                                            formFieldCount,
+                                            cHeaderV, headerCount,
+                                            cFormFieldNameV, cFormFieldMimeV, cFormFieldDataV, formFieldCount,
                                             cFILE, fileLength,
                                             static_cast<const size_t>(timeout));
         auto jStr = boxJString(env, cRsp);
         freeX(cRsp);
 
         for (int i = 0; i < headerCount; i++) {
-            env->ReleaseStringUTFChars(jStrHeaderV[i], cHeaderV[i]);
+            releaseJString(env, jStrHeaderV[i], cHeaderV[i]);
         }
         for (int i = 0; i < formFieldCount; i++) {
-            env->ReleaseStringUTFChars(jStrFormFieldNameV[i], cFormFieldNameV[i]);
-            env->ReleaseStringUTFChars(jStrFormFieldMimeV[i], cFormFieldMimeV[i]);
-            env->ReleaseStringUTFChars(jStrFormFieldDataV[i], cFormFieldDataV[i]);
+            releaseJString(env, jStrFormFieldNameV[i], cFormFieldNameV[i]);
+            releaseJString(env, jStrFormFieldMimeV[i], cFormFieldMimeV[i]);
+            releaseJString(env, jStrFormFieldDataV[i], cFormFieldDataV[i]);
         }
 
         freeX(cHeaderV);
@@ -188,97 +174,96 @@ namespace {
         freeX(jStrFormFieldDataV);
 
         if (filePath) {
-            env->ReleaseStringUTFChars(filePath, cFilePath);
+            releaseJString(env, filePath, cFilePath);
         }
         if (cFILE) {
             std::fclose(cFILE);
         }
         if (cParams) {
-            env->ReleaseStringUTFChars(params, cParams);
+            releaseJString(env, params, cParams);
         }
-        env->ReleaseStringUTFChars(url, cUrl);
+        releaseJString(env, url, cUrl);
 
         return jStr;
     }
 
 // Lua
 
-    jboolean lLoadF(JNIEnv *env, jobject thiz,
+    jboolean lLoadF(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jstring file) {
-        auto cFile = env->GetStringUTFChars(file, nullptr);
+        auto cFile = readJString(env, file);
         auto res = dynxx_lua_loadF(cFile);
-        env->ReleaseStringUTFChars(file, cFile);
+        releaseJString(env, file, cFile);
         return res;
     }
 
-    jboolean lLoadS(JNIEnv *env, jobject thiz,
+    jboolean lLoadS(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jstring script) {
-        auto cScript = env->GetStringUTFChars(script, nullptr);
+        auto cScript = readJString(env, script);
         auto res = dynxx_lua_loadS(cScript);
-        env->ReleaseStringUTFChars(script, cScript);
+        releaseJString(env, script, cScript);
         return res;
     }
 
-    jstring lCall(JNIEnv *env, jobject thiz,
+    jstring lCall(JNIEnv *env, [[maybe_unused]] jobject thiz,
                   jstring func, jstring params) {
-        auto cFunc = env->GetStringUTFChars(func, nullptr);
-        auto cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
+        auto cFunc = readJString(env, func);
+        auto cParams = readJString(env, params);
         auto cRes = dynxx_lua_call(cFunc, cParams);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
         if (cParams) {
-            env->ReleaseStringUTFChars(params, cParams);
+            releaseJString(env, params, cParams);
         }
-        env->ReleaseStringUTFChars(func, cFunc);
+        releaseJString(env, func, cFunc);
         return jStr;
     }
 
 // JS
 
-    jboolean jLoadF(JNIEnv *env, jobject thiz,
+    jboolean jLoadF(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jstring file, jboolean is_module) {
-        auto cFile = env->GetStringUTFChars(file, nullptr);
+        auto cFile = readJString(env, file);
         auto res = dynxx_js_loadF(cFile, is_module);
-        env->ReleaseStringUTFChars(file, cFile);
+        releaseJString(env, file, cFile);
         return res;
     }
 
-    jboolean jLoadS(JNIEnv *env, jobject thiz,
+    jboolean jLoadS(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jstring script, jstring name, jboolean is_module) {
-        auto cScript = env->GetStringUTFChars(script, nullptr);
-        auto cName = env->GetStringUTFChars(name, nullptr);
+        auto cScript = readJString(env, script);
+        auto cName = readJString(env, name);
         auto res = dynxx_js_loadS(cScript, cName, is_module);
-        env->ReleaseStringUTFChars(script, cScript);
-        env->ReleaseStringUTFChars(name, cName);
+        releaseJString(env, script, cScript);
+        releaseJString(env, name, cName);
         return res;
     }
 
-    jboolean jLoadB(JNIEnv *env, jobject thiz,
+    jboolean jLoadB(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jbyteArray bytes, jboolean is_module) {
-        auto cIn = env->GetByteArrayElements(bytes, nullptr);
-        auto inLen = env->GetArrayLength(bytes);
+        auto [cIn, inLen] = readJBytes(env, bytes);
 
-        auto res = dynxx_js_loadB(reinterpret_cast<const byte *>(cIn), inLen, is_module);
+        auto res = dynxx_js_loadB(cIn, inLen, is_module);
 
-        env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
+        releaseJBytes(env, bytes, cIn);
         return res;
     }
 
-    jstring jCall(JNIEnv *env, jobject thiz,
+    jstring jCall(JNIEnv *env, [[maybe_unused]] jobject thiz,
                   jstring func, jstring params, jboolean await) {
-        auto cFunc = env->GetStringUTFChars(func, nullptr);
-        auto cParams = params ? env->GetStringUTFChars(params, nullptr) : nullptr;
+        auto cFunc = readJString(env, func);
+        auto cParams = readJString(env, params);
         auto cRes = dynxx_js_call(cFunc, cParams, await);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
         if (cParams) {
-            env->ReleaseStringUTFChars(params, cParams);
+            releaseJString(env, params, cParams);
         }
-        env->ReleaseStringUTFChars(func, cFunc);
+        releaseJString(env, func, cFunc);
         return jStr;
     }
 
-    void jSetMsgCallback(JNIEnv *env, jobject thiz,
+    void jSetMsgCallback(JNIEnv *env, [[maybe_unused]] jobject thiz,
                          jobject callback) {
         if (callback) {
             dynxx_js_set_msg_callback(js_msg_callback);
@@ -293,588 +278,517 @@ namespace {
 
 // SQLite
 
-    jlong sqliteOpen(JNIEnv *env, jobject thiz,
+    jlong sqliteOpen(JNIEnv *env, [[maybe_unused]] jobject thiz,
                           jstring id) {
-        auto cId = env->GetStringUTFChars(id, nullptr);
+        auto cId = readJString(env, id);
         const auto res = dynxx_sqlite_open(cId);
-        env->ReleaseStringUTFChars(id, cId);
+        releaseJString(env, id, cId);
         return res;
     }
 
-    jboolean sqliteExecute(JNIEnv *env, jobject thiz,
-                                jlong conn,
-                                jstring sql) {
-        auto cSql = env->GetStringUTFChars(sql, nullptr);
+    jboolean sqliteExecute(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                jlong conn, jstring sql) {
+        auto cSql = readJString(env, sql);
         auto res = dynxx_sqlite_execute(conn, cSql);
-        env->ReleaseStringUTFChars(sql, cSql);
+        releaseJString(env, sql, cSql);
         return res;
     }
 
-    jlong sqliteQueryDo(JNIEnv *env, jobject thiz,
-                             jlong conn,
-                             jstring sql) {
-        auto cSql = env->GetStringUTFChars(sql, nullptr);
+    jlong sqliteQueryDo(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                             jlong conn, jstring sql) {
+        auto cSql = readJString(env, sql);
         const auto res = dynxx_sqlite_query_do(conn, cSql);
-        env->ReleaseStringUTFChars(sql, cSql);
+        releaseJString(env, sql, cSql);
         return res;
     }
 
-    jboolean sqliteQueryReadRow(JNIEnv *env, jobject thiz,
+    jboolean sqliteQueryReadRow([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                                      jlong query_result) {
         return dynxx_sqlite_query_read_row(query_result);
     }
 
-    jstring sqliteQueryReadColumnText(JNIEnv *env, jobject thiz,
-                                           jlong query_result,
-                                           jstring column) {
-        auto cColumn = env->GetStringUTFChars(column, nullptr);
+    jstring sqliteQueryReadColumnText(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                           jlong query_result, jstring column) {
+        auto cColumn = readJString(env, column);
         auto cRes = dynxx_sqlite_query_read_column_text(query_result, cColumn);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
-        env->ReleaseStringUTFChars(column, cColumn);
+        releaseJString(env, column, cColumn);
         return jStr;
     }
 
-    jlong sqliteQueryReadColumnInteger(JNIEnv *env, jobject thiz,
-                                            jlong query_result,
-                                            jstring column) {
-        auto cColumn = env->GetStringUTFChars(column, nullptr);
+    jlong sqliteQueryReadColumnInteger(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                            jlong query_result, jstring column) {
+        auto cColumn = readJString(env, column);
         auto res = dynxx_sqlite_query_read_column_integer(query_result, cColumn);
-        env->ReleaseStringUTFChars(column, cColumn);
+        releaseJString(env, column, cColumn);
         return res;
     }
 
-    jdouble sqliteQueryReadColumnFloat(JNIEnv *env, jobject thiz,
-                                            jlong query_result,
-                                            jstring column) {
-        auto cColumn = env->GetStringUTFChars(column, nullptr);
+    jdouble sqliteQueryReadColumnFloat(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                       jlong query_result, jstring column) {
+        auto cColumn = readJString(env, column);
         auto res = dynxx_sqlite_query_read_column_float(query_result, cColumn);
-        env->ReleaseStringUTFChars(column, cColumn);
+        releaseJString(env, column, cColumn);
         return res;
     }
 
-    void sqliteQueryDrop(JNIEnv *env, jobject thiz,
-                              jlong query_result) {
+    void sqliteQueryDrop([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
+                         jlong query_result) {
         dynxx_sqlite_query_drop(query_result);
     }
 
-    void sqliteClose(JNIEnv *env, jobject thiz,
+    void sqliteClose([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                           jlong conn) {
         dynxx_sqlite_close(conn);
     }
 
 // Srore.KV
 
-    jlong kvOpen(JNIEnv *env, jobject thiz,
+    jlong kvOpen(JNIEnv *env, [[maybe_unused]] jobject thiz,
                       jstring id) {
-        auto cId = env->GetStringUTFChars(id, nullptr);
+        auto cId = readJString(env, id);
         const auto res = dynxx_kv_open(cId);
-        env->ReleaseStringUTFChars(id, cId);
+        releaseJString(env, id, cId);
         return res;
     }
 
-    jstring kvReadString(JNIEnv *env, jobject thiz,
-                              jlong conn,
-                              jstring k) {
-        auto cK = env->GetStringUTFChars(k, nullptr);
+    jstring kvReadString(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                              jlong conn, jstring k) {
+        auto cK = readJString(env, k);
         auto cRes = dynxx_kv_read_string(conn, cK);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
-        env->ReleaseStringUTFChars(k, cK);
+        releaseJString(env, k, cK);
         return jStr;
     }
 
-    jboolean kvWriteString(JNIEnv *env, jobject thiz,
-                                jlong conn,
-                                jstring k, jstring v) {
-        auto cK = env->GetStringUTFChars(k, nullptr);
-        auto cV = env->GetStringUTFChars(v, nullptr);
+    jboolean kvWriteString(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                jlong conn, jstring k, jstring v) {
+        auto cK = readJString(env, k);
+        auto cV = readJString(env, v);
         auto res = dynxx_kv_write_string(conn, cK, cV);
-        env->ReleaseStringUTFChars(v, cV);
-        env->ReleaseStringUTFChars(k, cK);
+        releaseJString(env, v, cV);
+        releaseJString(env, k, cK);
         return res;
     }
 
-    jlong kvReadInteger(JNIEnv *env, jobject thiz,
-                             jlong conn,
-                             jstring k) {
-        auto cK = env->GetStringUTFChars(k, nullptr);
+    jlong kvReadInteger(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                             jlong conn, jstring k) {
+        auto cK = readJString(env, k);
         auto res = dynxx_kv_read_integer(conn, cK);
-        env->ReleaseStringUTFChars(k, cK);
+        releaseJString(env, k, cK);
         return res;
     }
 
-    jboolean kvWriteInteger(JNIEnv *env, jobject thiz,
-                                 jlong conn,
-                                 jstring k, jlong v) {
-        auto cK = env->GetStringUTFChars(k, nullptr);
+    jboolean kvWriteInteger(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                 jlong conn, jstring k, jlong v) {
+        auto cK = readJString(env, k);
         auto res = dynxx_kv_write_integer(conn, cK, v);
-        env->ReleaseStringUTFChars(k, cK);
+        releaseJString(env, k, cK);
         return res;
     }
 
-    jdouble kvReadFloat(JNIEnv *env, jobject thiz,
-                             jlong conn,
-                             jstring k) {
-        auto cK = env->GetStringUTFChars(k, nullptr);
+    jdouble kvReadFloat(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                             jlong conn, jstring k) {
+        auto cK = readJString(env, k);
         auto res = dynxx_kv_read_float(conn, cK);
-        env->ReleaseStringUTFChars(k, cK);
+        releaseJString(env, k, cK);
         return res;
     }
 
-    jboolean kvWriteFloat(JNIEnv *env, jobject thiz,
-                               jlong conn,
-                               jstring k, jdouble v) {
-        auto cK = env->GetStringUTFChars(k, nullptr);
+    jboolean kvWriteFloat(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                               jlong conn, jstring k, jdouble v) {
+        auto cK = readJString(env, k);
         auto res = dynxx_kv_write_float(conn, cK, v);
-        env->ReleaseStringUTFChars(k, cK);
+        releaseJString(env, k, cK);
         return res;
     }
 
-    jboolean kvContains(JNIEnv *env, jobject thiz,
-                             jlong conn,
-                             jstring k) {
-        auto cK = env->GetStringUTFChars(k, nullptr);
+    jboolean kvContains(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                             jlong conn, jstring k) {
+        auto cK = readJString(env, k);
         auto res = dynxx_kv_contains(conn, cK);
-        env->ReleaseStringUTFChars(k, cK);
+        releaseJString(env, k, cK);
         return res;
     }
 
-    jboolean kvRemove(JNIEnv *env, jobject thiz,
-                           jlong conn,
-                           jstring k) {
-        auto cK = env->GetStringUTFChars(k, nullptr);
+    jboolean kvRemove(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                           jlong conn, jstring k) {
+        auto cK = readJString(env, k);
         auto res = dynxx_kv_remove(conn, cK);
-        env->ReleaseStringUTFChars(k, cK);
+        releaseJString(env, k, cK);
         return res;
     }
 
-    void kvClear(JNIEnv *env, jobject thiz,
+    void kvClear([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                       jlong conn) {
         dynxx_kv_clear(conn);
     }
 
-    void kvClose(JNIEnv *env, jobject thiz,
+    void kvClose([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                       jlong conn) {
         dynxx_kv_close(conn);
     }
 
 // Device
 
-    jint deviceType(JNIEnv *env, jobject thiz) {
+    jint deviceType([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz) {
         return dynxx_device_type();
     }
 
-    jstring deviceName(JNIEnv *env, jobject thiz) {
+    jstring deviceName(JNIEnv *env, [[maybe_unused]] jobject thiz) {
         auto cDN = dynxx_device_name();
         auto jStr = boxJString(env, cDN);
         freeX(cDN);
         return jStr;
     }
 
-    jstring deviceManufacturer(JNIEnv *env, jobject thiz) {
+    jstring deviceManufacturer(JNIEnv *env, [[maybe_unused]] jobject thiz) {
         auto cDM = dynxx_device_manufacturer();
         auto jStr = boxJString(env, cDM);
         freeX(cDM);
         return jStr;
     }
 
-    jstring deviceOsVersion(JNIEnv *env, jobject thiz) {
+    jstring deviceOsVersion(JNIEnv *env, [[maybe_unused]] jobject thiz) {
         auto cDOV = dynxx_device_os_version();
         auto jStr = boxJString(env, cDOV);
         freeX(cDOV);
         return jStr;
     }
 
-    jint deviceCpuArch(JNIEnv *env, jobject thiz) {
+    jint deviceCpuArch([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz) {
         return dynxx_device_cpu_arch();
     }
 
 // Coding
 
-    jstring codingHexBytes2Str(JNIEnv *env, jobject thiz,
+    jstring codingHexBytes2Str(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                jbyteArray bytes) {
-        auto cIn = env->GetByteArrayElements(bytes, nullptr);
-        auto inLen = env->GetArrayLength(bytes);
+        auto [cIn, inLen] = readJBytes(env, bytes);
 
-        auto cRes = dynxx_coding_hex_bytes2str(reinterpret_cast<const byte *>(cIn), inLen);
+        auto cRes = dynxx_coding_hex_bytes2str(cIn, inLen);
         auto jStr = boxJString(env, cRes);
 
         freeX(cRes);
-        env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
+        releaseJBytes(env, bytes, cIn);
         return jStr;
     }
 
-    jbyteArray codingHexStr2Bytes(JNIEnv *env,
-                                  jobject thiz,
+    jbyteArray codingHexStr2Bytes(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                   jstring str) {
-        auto cStr = env->GetStringUTFChars(str, nullptr);
+        auto cStr = readJString(env, str);
 
         size_t outLen;
         const auto cRes = dynxx_coding_hex_str2bytes(cStr, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseStringUTFChars(str, cStr);
+        releaseJString(env, str, cStr);
         return jba;
     }
 
 // Crypto
 
-    jbyteArray cryptoRandom(JNIEnv *env, jobject thiz,
+    jbyteArray cryptoRandom(JNIEnv *env, [[maybe_unused]] jobject thiz,
                             jint len) {
         const auto cRes = dynxx_crypto_rand(len);
         return moveToJByteArray(env, cRes, len, false);
     }
 
-    jbyteArray cryptoAesEncrypt(JNIEnv *env, jobject thiz,
-                                jbyteArray input,
-                                jbyteArray key) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
-        auto cKey = env->GetByteArrayElements(key, nullptr);
-        auto keyLen = env->GetArrayLength(key);
+    jbyteArray cryptoAesEncrypt(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                jbyteArray input, jbyteArray key) {
+        auto [cIn, inLen] = readJBytes(env, input);
+        auto [cKey, keyLen] = readJBytes(env, key);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_aes_encrypt(reinterpret_cast<const byte *>(cIn), inLen,
-                                                    reinterpret_cast<const byte *>(cKey), keyLen,
+        const auto cRes = dynxx_crypto_aes_encrypt(cIn, inLen,
+                                                    cKey, keyLen,
                                                     &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
-        env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
+        releaseJBytes(env, key, cKey);
         return jba;
     }
 
-    jbyteArray cryptoAesDecrypt(JNIEnv *env, jobject thiz,
-                                jbyteArray input,
-                                jbyteArray key) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
-        auto cKey = env->GetByteArrayElements(key, nullptr);
-        auto keyLen = env->GetArrayLength(key);
+    jbyteArray cryptoAesDecrypt(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                jbyteArray input, jbyteArray key) {
+        auto [cIn, inLen] = readJBytes(env, input);
+        auto [cKey, keyLen] = readJBytes(env, key);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_aes_decrypt(reinterpret_cast<const byte *>(cIn), inLen,
-                                                    reinterpret_cast<const byte *>(cKey), keyLen,
+        const auto cRes = dynxx_crypto_aes_decrypt(cIn, inLen,
+                                                    cKey, keyLen,
                                                     &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
-        env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
+        releaseJBytes(env, key, cKey);
         return jba;
     }
 
-    jbyteArray cryptoAesGcmEncrypt(JNIEnv *env, jobject thiz,
-                                   jbyteArray input,
-                                   jbyteArray key,
-                                   jbyteArray init_vector,
-                                   jbyteArray aad,
-                                   jint tag_bits) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
-        auto cKey = env->GetByteArrayElements(key, nullptr);
-        auto keyLen = env->GetArrayLength(key);
-        auto cIv = env->GetByteArrayElements(init_vector, nullptr);
-        auto ivLen = env->GetArrayLength(init_vector);
-        auto cAad = aad ? env->GetByteArrayElements(aad, nullptr) : nullptr;
-        auto aadLen = aad ? env->GetArrayLength(aad) : 0;
+    jbyteArray cryptoAesGcmEncrypt(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                   jbyteArray input, jbyteArray key, jbyteArray init_vector, jbyteArray aad, jint tag_bits) {
+        auto [cIn, inLen] = readJBytes(env, input);
+        auto [cKey, keyLen] = readJBytes(env, key);
+        auto [cIv, ivLen] = readJBytes(env, init_vector);
+        auto [cAad, aadLen] = readJBytes(env, aad);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_aes_gcm_encrypt(reinterpret_cast<const byte *>(cIn), inLen,
-                                                        reinterpret_cast<const byte *>(cKey),
-                                                        keyLen,
-                                                        reinterpret_cast<const byte *>(cIv), ivLen,
-                                                        reinterpret_cast<const byte *>(cAad),
-                                                        aadLen,
+        const auto cRes = dynxx_crypto_aes_gcm_encrypt(cIn, inLen,
+                                                        cKey, keyLen,
+                                                        cIv, ivLen,
+                                                        cAad, aadLen,
                                                         tag_bits, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
-        env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
-        env->ReleaseByteArrayElements(init_vector, cIv, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
+        releaseJBytes(env, key, cKey);
+        releaseJBytes(env, init_vector, cIv);
         if (cAad) {
-            env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
+            releaseJBytes(env, aad, cAad);
         }
         return jba;
     }
 
-    jbyteArray cryptoAesGcmDecrypt(JNIEnv *env, jobject thiz,
-                                   jbyteArray input,
-                                   jbyteArray key,
-                                   jbyteArray init_vector,
-                                   jbyteArray aad,
-                                   jint tag_bits) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
-        auto cKey = env->GetByteArrayElements(key, nullptr);
-        auto keyLen = env->GetArrayLength(key);
-        auto cIv = env->GetByteArrayElements(init_vector, nullptr);
-        auto ivLen = env->GetArrayLength(init_vector);
-        auto cAad = aad ? env->GetByteArrayElements(aad, nullptr) : nullptr;
-        auto aadLen = aad ? env->GetArrayLength(aad) : 0;
+    jbyteArray cryptoAesGcmDecrypt(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                   jbyteArray input, jbyteArray key, jbyteArray init_vector, jbyteArray aad, jint tag_bits) {
+        auto [cIn, inLen] = readJBytes(env, input);
+        auto [cKey, keyLen] = readJBytes(env, key);
+        auto [cIv, ivLen] = readJBytes(env, init_vector);
+        auto [cAad, aadLen] = readJBytes(env, aad);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_aes_gcm_decrypt(reinterpret_cast<const byte *>(cIn), inLen,
-                                                        reinterpret_cast<const byte *>(cKey),
-                                                        keyLen,
-                                                        reinterpret_cast<const byte *>(cIv), ivLen,
-                                                        reinterpret_cast<const byte *>(cAad),
-                                                        aadLen,
+        const auto cRes = dynxx_crypto_aes_gcm_decrypt(cIn, inLen,
+                                                        cKey, keyLen,
+                                                        cIv, ivLen,
+                                                        cAad, aadLen,
                                                         tag_bits, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
-        env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
-        env->ReleaseByteArrayElements(init_vector, cIv, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
+        releaseJBytes(env, key, cKey);
+        releaseJBytes(env, init_vector, cIv);
         if (cAad) {
-            env->ReleaseByteArrayElements(aad, cAad, JNI_ABORT);
+            releaseJBytes(env, aad, cAad);
         }
         return jba;
     }
 
-    jstring cryptoRsaGenKey(JNIEnv *env, jobject thiz,
-                            jstring base64,
-                            jboolean is_public) {
-        auto cBase64 = env->GetStringUTFChars(base64, nullptr);
+    jstring cryptoRsaGenKey(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                            jstring base64, jboolean is_public) {
+        auto cBase64 = readJString(env, base64);
 
         auto cRes = dynxx_crypto_rsa_gen_key(cBase64, is_public);
         auto jRes = env->NewStringUTF(cRes);
 
-        env->ReleaseStringUTFChars(base64, cBase64);
+        releaseJString(env, base64, cBase64);
         freeX(cRes);
         return jRes;
     }
 
-    jbyteArray cryptoRsaEncrypt(JNIEnv *env, jobject thiz,
-        jbyteArray input, jbyteArray key, jint padding) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
-        auto cKey = env->GetByteArrayElements(key, nullptr);
-        auto keyLen = env->GetArrayLength(key);
+    jbyteArray cryptoRsaEncrypt(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                jbyteArray input, jbyteArray key, jint padding) {
+        auto [cIn, inLen] = readJBytes(env, input);
+        auto [cKey, keyLen] = readJBytes(env, key);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_rsa_encrypt(reinterpret_cast<const byte *>(cIn), inLen,
-                                                    reinterpret_cast<const byte *>(cKey), keyLen,
+        const auto cRes = dynxx_crypto_rsa_encrypt(cIn, inLen,
+                                                    cKey, keyLen,
                                                     static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
-        env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
+        releaseJBytes(env, key, cKey);
         return jba;
     }
 
-    jbyteArray cryptoRsaDecrypt(JNIEnv *env, jobject thiz,
-        jbyteArray input, jbyteArray key, jint padding) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
-        auto cKey = env->GetByteArrayElements(key, nullptr);
-        auto keyLen = env->GetArrayLength(key);
+    jbyteArray cryptoRsaDecrypt(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                jbyteArray input, jbyteArray key, jint padding) {
+        auto [cIn, inLen] = readJBytes(env, input);
+        auto [cKey, keyLen] = readJBytes(env, key);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_rsa_decrypt(reinterpret_cast<const byte *>(cIn), inLen,
-                                                    reinterpret_cast<const byte *>(cKey), keyLen,
+        const auto cRes = dynxx_crypto_rsa_decrypt(cIn, inLen,
+                                                    cKey, keyLen,
                                                     static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
-        env->ReleaseByteArrayElements(key, cKey, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
+        releaseJBytes(env, key, cKey);
         return jba;
     }
 
-    jbyteArray cryptoHashMd5(JNIEnv *env, jobject thiz,
+    jbyteArray cryptoHashMd5(JNIEnv *env, [[maybe_unused]] jobject thiz,
                              jbyteArray input) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
+        auto [cIn, inLen] = readJBytes(env, input);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_hash_md5(reinterpret_cast<const byte *>(cIn), inLen,
-                                                 &outLen);
+        const auto cRes = dynxx_crypto_hash_md5(cIn, inLen, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
         return jba;
     }
 
-    jbyteArray cryptoHashSha1(JNIEnv *env, jobject thiz,
+    jbyteArray cryptoHashSha1(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                 jbyteArray input) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
+        auto [cIn, inLen] = readJBytes(env, input);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_hash_sha1(reinterpret_cast<const byte *>(cIn), inLen,
-                                                   &outLen);
+        const auto cRes = dynxx_crypto_hash_sha1(cIn, inLen, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
         return jba;
     }
 
-    jbyteArray cryptoHashSha256(JNIEnv *env, jobject thiz,
+    jbyteArray cryptoHashSha256(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                 jbyteArray input) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
+        auto [cIn, inLen] = readJBytes(env, input);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_hash_sha256(reinterpret_cast<const byte *>(cIn), inLen,
-                                                    &outLen);
+        const auto cRes = dynxx_crypto_hash_sha256(cIn, inLen, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
         return jba;
     }
 
-    jbyteArray cryptoBase64Encode(JNIEnv *env, jobject thiz,
-                                  jbyteArray input,
-                                  jboolean noNewLines) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
+    jbyteArray cryptoBase64Encode(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                  jbyteArray input, jboolean noNewLines) {
+        auto [cIn, inLen] = readJBytes(env, input);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_base64_encode(reinterpret_cast<const byte *>(cIn), inLen,
-                                                      noNewLines, &outLen);
+        const auto cRes = dynxx_crypto_base64_encode(cIn, inLen, noNewLines, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
         return jba;
     }
 
-    jbyteArray cryptoBase64Decode(JNIEnv *env, jobject thiz,
-                                  jbyteArray input,
-                                  jboolean noNewLines) {
-        auto cIn = env->GetByteArrayElements(input, nullptr);
-        auto inLen = env->GetArrayLength(input);
+    jbyteArray cryptoBase64Decode(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                  jbyteArray input, jboolean noNewLines) {
+        auto [cIn, inLen] = readJBytes(env, input);
 
         size_t outLen;
-        const auto cRes = dynxx_crypto_base64_decode(reinterpret_cast<const byte *>(cIn), inLen,
-                                                      noNewLines, &outLen);
+        const auto cRes = dynxx_crypto_base64_decode(cIn, inLen, noNewLines, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(input, cIn, JNI_ABORT);
+        releaseJBytes(env, input, cIn);
         return jba;
     }
 
 // JsonDecoder
 
-    jint jsonReadType(JNIEnv *env, jobject thiz,
+    jint jsonReadType([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                       jlong node) {
         return dynxx_json_node_read_type(node);
     }
 
-    jlong jsonDecoderInit(JNIEnv *env, jobject thiz,
+    jlong jsonDecoderInit(JNIEnv *env, [[maybe_unused]] jobject thiz,
                           jstring json) {
-        auto cJson = env->GetStringUTFChars(json, nullptr);
+        auto cJson = readJString(env, json);
         const auto res = dynxx_json_decoder_init(cJson);
-        env->ReleaseStringUTFChars(json, cJson);
+        releaseJString(env, json, cJson);
         return res;
     }
 
-    jlong jsonDecoderReadNode(JNIEnv *env, jobject thiz,
-                              jlong decoder,
-                              jlong node,
-                              jstring k) {
-        auto cK = env->GetStringUTFChars(k, nullptr);
+    jlong jsonDecoderReadNode(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                              jlong decoder, jlong node, jstring k) {
+        auto cK = readJString(env, k);
         const auto res = dynxx_json_decoder_read_node(decoder, node, cK);
-        env->ReleaseStringUTFChars(k, cK);
+        releaseJString(env, k, cK);
         return res;
     }
 
-    jstring jsonDecoderReadString(JNIEnv *env, jobject thiz,
-                                  jlong decoder,
-                                  jlong node) {
+    jstring jsonDecoderReadString(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                  jlong decoder, jlong node) {
         auto cRes = dynxx_json_decoder_read_string(decoder, node);
         auto jStr = boxJString(env, cRes);
         freeX(cRes);
         return jStr;
     }
 
-    jlong jsonDecoderReadInteger(JNIEnv *env, jobject thiz,
-                                  jlong decoder,
-                                  jlong node) {
+    jlong jsonDecoderReadInteger([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                  jlong decoder, jlong node) {
         return dynxx_json_decoder_read_integer(decoder, node);
     }
 
-    jdouble jsonDecoderReadFloat(JNIEnv *env, jobject thiz,
-                                 jlong decoder,
-                                 jlong node) {
+    jdouble jsonDecoderReadFloat([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
+                                 jlong decoder, jlong node) {
         return dynxx_json_decoder_read_float(decoder, node);
     }
 
-    jlong jsonDecoderReadChild(JNIEnv *env, jobject thiz,
-                               jlong decoder,
-                               jlong node) {
+    jlong jsonDecoderReadChild([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
+                               jlong decoder, jlong node) {
         return dynxx_json_decoder_read_child(decoder, node);
     }
 
-    jlong jsonDecoderReadNext(JNIEnv *env, jobject thiz,
-                              jlong decoder,
-                              jlong node) {
+    jlong jsonDecoderReadNext([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
+                              jlong decoder, jlong node) {
         return dynxx_json_decoder_read_next(decoder, node);
     }
 
-    void jsonDecoderRelease(JNIEnv *env, jobject thiz,
+    void jsonDecoderRelease([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                             jlong decoder) {
         dynxx_json_decoder_release(decoder);
     }
 
 // Zip
 
-    jlong zZipInit(JNIEnv *env, jobject thiz,
+    jlong zZipInit([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                    jint mode, jlong bufferSize, jint format) {
         return dynxx_z_zip_init(static_cast<DynXXZipCompressMode>(mode), bufferSize, static_cast<DynXXZFormat>(format));
     }
 
-    jlong zZipInput(JNIEnv *env, jobject thiz,
-                    jlong zip,
-                    jbyteArray inBytes, jboolean inFinish) {
-        auto cIn = env->GetByteArrayElements(inBytes, nullptr);
-        auto inLen = env->GetArrayLength(inBytes);
+    jlong zZipInput(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                    jlong zip, jbyteArray inBytes, jboolean inFinish) {
+        auto [cIn, inLen] = readJBytes(env, inBytes);
 
-        auto ret = dynxx_z_zip_input(zip, reinterpret_cast<const byte *>(cIn), inLen,
-                                      inFinish);
+        auto ret = dynxx_z_zip_input(zip, cIn, inLen, inFinish);
 
-        env->ReleaseByteArrayElements(inBytes, cIn, JNI_ABORT);
+        releaseJBytes(env, inBytes, cIn);
 
         return static_cast<jlong>(ret);
     }
 
-    jbyteArray zZipProcessDo(JNIEnv *env, jobject thiz, jlong zip) {
+    jbyteArray zZipProcessDo(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                             jlong zip) {
         size_t outLen = 0;
         const auto cRes = dynxx_z_zip_process_do(zip, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
-
-        return jba;
+        return moveToJByteArray(env, cRes, outLen, true);
     }
 
-    jboolean zZipProcessFinished(JNIEnv *env, jobject thiz,
+    jboolean zZipProcessFinished([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                                  jlong zip) {
         return dynxx_z_zip_process_finished(zip);
     }
 
-    void zZipRelease(JNIEnv *env, jobject thiz,
+    void zZipRelease([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                      jlong zip) {
         dynxx_z_zip_release(zip);
     }
 
-    jlong zUnZipInit(JNIEnv *env, jobject thiz,
+    jlong zUnZipInit([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                      jlong bufferSize, jint format) {
         return dynxx_z_unzip_init(bufferSize, static_cast<DynXXZFormat>(format));
     }
 
-    jlong zUnZipInput(JNIEnv *env, jobject thiz,
-                      jlong unzip,
-                      jbyteArray inBytes, jboolean inFinish) {
-        auto cIn = env->GetByteArrayElements(inBytes, nullptr);
-        auto inLen = env->GetArrayLength(inBytes);
+    jlong zUnZipInput(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                      jlong unzip, jbyteArray inBytes, jboolean inFinish) {
+        auto [cIn, inLen] = readJBytes(env, inBytes);
 
-        auto ret = dynxx_z_unzip_input(unzip, reinterpret_cast<const byte *>(cIn), inLen,
-                                        inFinish);
+        auto ret = dynxx_z_unzip_input(unzip, cIn, inLen, inFinish);
 
-        env->ReleaseByteArrayElements(inBytes, cIn, JNI_ABORT);
+        releaseJBytes(env, inBytes, cIn);
 
         return static_cast<jlong>(ret);
     }
 
-    jbyteArray zUnZipProcessDo(JNIEnv *env, jobject thiz, jlong unzip) {
+    jbyteArray zUnZipProcessDo(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                               jlong unzip) {
         size_t outLen = 0;
         const auto cRes = dynxx_z_unzip_process_do(unzip, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
@@ -882,42 +796,39 @@ namespace {
         return jba;
     }
 
-    jboolean zUnZipProcessFinished(JNIEnv *env, jobject thiz,
+    jboolean zUnZipProcessFinished([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                                    jlong unzip) {
         return dynxx_z_unzip_process_finished(unzip);
     }
 
-    void zUnZipRelease(JNIEnv *env, jobject thiz,
+    void zUnZipRelease([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                        jlong unzip) {
         dynxx_z_unzip_release(unzip);
     }
 
-    jbyteArray zZipBytes(JNIEnv *env, jobject thiz,
-                         jint mode,
-                         jlong buffer_size, jint format, jbyteArray bytes) {
-        auto cIn = env->GetByteArrayElements(bytes, nullptr);
-        auto inLen = env->GetArrayLength(bytes);
+    jbyteArray zZipBytes(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                         jint mode, jlong buffer_size, jint format, jbyteArray bytes) {
+        auto [cIn, inLen] = readJBytes(env, bytes);
 
         size_t outLen;
         const auto cRes = dynxx_z_bytes_zip(static_cast<DynXXZipCompressMode>(mode), buffer_size, static_cast<DynXXZFormat>(format),
-                                             reinterpret_cast<const byte *>(cIn), inLen, &outLen);
+                                             cIn, inLen, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
+        releaseJBytes(env, bytes, cIn);
         return jba;
     }
 
-    jbyteArray zUnZipBytes(JNIEnv *env, jobject thiz,
+    jbyteArray zUnZipBytes(JNIEnv *env, [[maybe_unused]] jobject thiz,
                            jlong buffer_size, jint format, jbyteArray bytes) {
-        auto cIn = env->GetByteArrayElements(bytes, nullptr);
-        auto inLen = env->GetArrayLength(bytes);
+        auto [cIn, inLen] = readJBytes(env, bytes);
 
         size_t outLen;
         const auto cRes = dynxx_z_bytes_unzip(buffer_size, static_cast<DynXXZFormat>(format),
-                                               reinterpret_cast<const byte *>(cIn), inLen, &outLen);
+                                               cIn, inLen, &outLen);
         auto jba = moveToJByteArray(env, cRes, outLen, true);
 
-        env->ReleaseByteArrayElements(bytes, cIn, JNI_ABORT);
+        releaseJBytes(env, bytes, cIn);
         return jba;
     }
 
@@ -1015,7 +926,7 @@ namespace {
 
 }
 
-int JNI_OnLoad(JavaVM *vm, void *reserved) {
+int JNI_OnLoad(JavaVM *vm, [[maybe_unused]] void *reserved) {
     sVM = vm;
     JNIEnv *env;
     auto v = JNI_VERSION_1_6;
@@ -1035,7 +946,7 @@ int JNI_OnLoad(JavaVM *vm, void *reserved) {
     return v;
 }
 
-void JNI_OnUnload(JavaVM *vm, void *reserved) {
+void JNI_OnUnload(JavaVM *vm, [[maybe_unused]] void *reserved) {
     dynxx_log_set_callback(nullptr);
     dynxx_js_set_msg_callback(nullptr);
 

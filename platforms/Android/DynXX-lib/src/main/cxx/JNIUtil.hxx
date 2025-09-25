@@ -32,6 +32,32 @@ inline JNIEnv *currentEnv(JavaVM *vm) {
     return env;
 }
 
+inline std::tuple<byte*, size_t> readJBytes(JNIEnv *env, jbyteArray jbArr) {
+    if (!jbArr) return {};
+    const auto jo = env->GetByteArrayElements(jbArr, nullptr);
+    auto cBytes = reinterpret_cast<byte *>(jo);
+    const auto len = env->GetArrayLength(jbArr);
+    return std::make_tuple(cBytes, len);
+}
+
+inline void releaseJBytes(JNIEnv *env, jbyteArray jbArr, byte *cBytes) {
+    env->ReleaseByteArrayElements(jbArr, reinterpret_cast<jbyte*>(cBytes), JNI_ABORT);
+}
+
+inline const char* readJString(JNIEnv *env, jobject jStr) {
+    if (!jStr) return nullptr;
+    return env->GetStringUTFChars(reinterpret_cast<jstring>(jStr), nullptr);
+}
+
+inline void releaseJString(JNIEnv *env, jobject jStr, const char* cStr) {
+    env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jStr), cStr);
+}
+
+template<typename JT>
+JT readJObjectArrayItem(JNIEnv *env, jobjectArray joArr, jsize idx) {
+    return reinterpret_cast<JT>(env->GetObjectArrayElement(joArr, idx));
+}
+
 template<NumberT T>
 jobject boxJNum(JNIEnv *env, const T j, const char *cls, const char *sig) {
     const auto jClass = env->FindClass(cls);
@@ -132,13 +158,13 @@ inline jmethodID getLambdaMethod(JNIEnv *env, const char *cls, const char *sig) 
 }
 
 inline jbyteArray
-moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, const bool needFree) {
+moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, const bool autoFree) {
     jbyteArray jba;
     if (bytes && outLen > 0) {
         jba = env->NewByteArray(static_cast<jsize>(outLen));
         env->SetByteArrayRegion(jba, 0, static_cast<jsize>(outLen),
                                 const_cast<jbyte *>(reinterpret_cast<const jbyte *>(bytes)));
-        if (needFree) {
+        if (autoFree) {
             freeX(bytes);
         }
     } else {
