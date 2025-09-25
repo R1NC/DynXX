@@ -88,11 +88,12 @@ std::tuple<const char **, size_t> napiValueToCharsArray(napi_env env, napi_value
 
 napi_value napiValueFromChars(napi_env env, const char *c) {
     if (c == nullptr) {
-        c = "";
+        return napiValueFromInt(env, napi_invalid_arg);
     }
     napi_value v;
     auto status = napi_create_string_utf8(env, c, std::strlen(c), &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_string_utf8() failed");
+    freeX(c);
     return v;
 }
 
