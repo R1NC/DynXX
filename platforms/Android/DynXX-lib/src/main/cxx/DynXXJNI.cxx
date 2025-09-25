@@ -62,9 +62,7 @@ namespace {
 
     jstring getVersion(JNIEnv *env, [[maybe_unused]] jobject thiz) {
         auto cV = dynxx_get_version();
-        auto jStr = boxJString(env, cV);
-        freeX(cV);
-        return jStr;
+        return boxJString(env, cV);
     }
 
     jboolean init(JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -153,7 +151,6 @@ namespace {
                                             cFILE, fileLength,
                                             static_cast<const size_t>(timeout));
         auto jStr = boxJString(env, cRsp);
-        freeX(cRsp);
 
         for (int i = 0; i < headerCount; i++) {
             releaseJString(env, jStrHeaderV[i], cHeaderV[i]);
@@ -211,7 +208,6 @@ namespace {
         auto cParams = readJString(env, params);
         auto cRes = dynxx_lua_call(cFunc, cParams);
         auto jStr = boxJString(env, cRes);
-        freeX(cRes);
         if (cParams) {
             releaseJString(env, params, cParams);
         }
@@ -255,7 +251,6 @@ namespace {
         auto cParams = readJString(env, params);
         auto cRes = dynxx_js_call(cFunc, cParams, await);
         auto jStr = boxJString(env, cRes);
-        freeX(cRes);
         if (cParams) {
             releaseJString(env, params, cParams);
         }
@@ -312,7 +307,6 @@ namespace {
         auto cColumn = readJString(env, column);
         auto cRes = dynxx_sqlite_query_read_column_text(query_result, cColumn);
         auto jStr = boxJString(env, cRes);
-        freeX(cRes);
         releaseJString(env, column, cColumn);
         return jStr;
     }
@@ -358,7 +352,6 @@ namespace {
         auto cK = readJString(env, k);
         auto cRes = dynxx_kv_read_string(conn, cK);
         auto jStr = boxJString(env, cRes);
-        freeX(cRes);
         releaseJString(env, k, cK);
         return jStr;
     }
@@ -409,7 +402,7 @@ namespace {
                              jlong conn) {
         size_t len;
         auto cRes = dynxx_kv_all_keys(conn, &len);
-        return moveToJStringArray(env, cRes, len, true);
+        return moveToJStringArray(env, cRes, len);
     }
 
     jboolean kvContains(JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -446,23 +439,17 @@ namespace {
 
     jstring deviceName(JNIEnv *env, [[maybe_unused]] jobject thiz) {
         auto cDN = dynxx_device_name();
-        auto jStr = boxJString(env, cDN);
-        freeX(cDN);
-        return jStr;
+        return boxJString(env, cDN);
     }
 
     jstring deviceManufacturer(JNIEnv *env, [[maybe_unused]] jobject thiz) {
         auto cDM = dynxx_device_manufacturer();
-        auto jStr = boxJString(env, cDM);
-        freeX(cDM);
-        return jStr;
+        return boxJString(env, cDM);
     }
 
     jstring deviceOsVersion(JNIEnv *env, [[maybe_unused]] jobject thiz) {
         auto cDOV = dynxx_device_os_version();
-        auto jStr = boxJString(env, cDOV);
-        freeX(cDOV);
-        return jStr;
+        return boxJString(env, cDOV);
     }
 
     jint deviceCpuArch([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz) {
@@ -477,8 +464,6 @@ namespace {
 
         auto cRes = dynxx_coding_hex_bytes2str(cIn, inLen);
         auto jStr = boxJString(env, cRes);
-
-        freeX(cRes);
         releaseJBytes(env, bytes, cIn);
         return jStr;
     }
@@ -489,7 +474,7 @@ namespace {
 
         size_t outLen;
         const auto cRes = dynxx_coding_hex_str2bytes(cStr, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJString(env, str, cStr);
         return jba;
@@ -500,7 +485,7 @@ namespace {
     jbyteArray cryptoRandom(JNIEnv *env, [[maybe_unused]] jobject thiz,
                             jint len) {
         const auto cRes = dynxx_crypto_rand(len);
-        return moveToJByteArray(env, cRes, len, false);
+        return moveToJByteArray(env, cRes, len);
     }
 
     jbyteArray cryptoAesEncrypt(JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -512,7 +497,7 @@ namespace {
         const auto cRes = dynxx_crypto_aes_encrypt(cIn, inLen,
                                                     cKey, keyLen,
                                                     &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         releaseJBytes(env, key, cKey);
@@ -528,7 +513,7 @@ namespace {
         const auto cRes = dynxx_crypto_aes_decrypt(cIn, inLen,
                                                     cKey, keyLen,
                                                     &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         releaseJBytes(env, key, cKey);
@@ -548,7 +533,7 @@ namespace {
                                                         cIv, ivLen,
                                                         cAad, aadLen,
                                                         tag_bits, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         releaseJBytes(env, key, cKey);
@@ -572,7 +557,7 @@ namespace {
                                                         cIv, ivLen,
                                                         cAad, aadLen,
                                                         tag_bits, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         releaseJBytes(env, key, cKey);
@@ -588,10 +573,9 @@ namespace {
         auto cBase64 = readJString(env, base64);
 
         auto cRes = dynxx_crypto_rsa_gen_key(cBase64, is_public);
-        auto jRes = env->NewStringUTF(cRes);
+        auto jRes = boxJString(env, cRes);
 
         releaseJString(env, base64, cBase64);
-        freeX(cRes);
         return jRes;
     }
 
@@ -604,7 +588,7 @@ namespace {
         const auto cRes = dynxx_crypto_rsa_encrypt(cIn, inLen,
                                                     cKey, keyLen,
                                                     static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         releaseJBytes(env, key, cKey);
@@ -620,7 +604,7 @@ namespace {
         const auto cRes = dynxx_crypto_rsa_decrypt(cIn, inLen,
                                                     cKey, keyLen,
                                                     static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         releaseJBytes(env, key, cKey);
@@ -633,7 +617,7 @@ namespace {
 
         size_t outLen;
         const auto cRes = dynxx_crypto_hash_md5(cIn, inLen, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         return jba;
@@ -645,7 +629,7 @@ namespace {
 
         size_t outLen;
         const auto cRes = dynxx_crypto_hash_sha1(cIn, inLen, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         return jba;
@@ -657,7 +641,7 @@ namespace {
 
         size_t outLen;
         const auto cRes = dynxx_crypto_hash_sha256(cIn, inLen, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         return jba;
@@ -669,7 +653,7 @@ namespace {
 
         size_t outLen;
         const auto cRes = dynxx_crypto_base64_encode(cIn, inLen, noNewLines, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         return jba;
@@ -681,7 +665,7 @@ namespace {
 
         size_t outLen;
         const auto cRes = dynxx_crypto_base64_decode(cIn, inLen, noNewLines, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, input, cIn);
         return jba;
@@ -714,7 +698,6 @@ namespace {
                                   jlong decoder, jlong node) {
         auto cRes = dynxx_json_decoder_read_string(decoder, node);
         auto jStr = boxJString(env, cRes);
-        freeX(cRes);
         return jStr;
     }
 
@@ -765,7 +748,7 @@ namespace {
                              jlong zip) {
         size_t outLen = 0;
         const auto cRes = dynxx_z_zip_process_do(zip, &outLen);
-        return moveToJByteArray(env, cRes, outLen, true);
+        return moveToJByteArray(env, cRes, outLen);
     }
 
     jboolean zZipProcessFinished([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -798,9 +781,7 @@ namespace {
                                jlong unzip) {
         size_t outLen = 0;
         const auto cRes = dynxx_z_unzip_process_do(unzip, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
-
-        return jba;
+        return moveToJByteArray(env, cRes, outLen);
     }
 
     jboolean zUnZipProcessFinished([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -820,7 +801,7 @@ namespace {
         size_t outLen;
         const auto cRes = dynxx_z_bytes_zip(static_cast<DynXXZipCompressMode>(mode), buffer_size, static_cast<DynXXZFormat>(format),
                                              cIn, inLen, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, bytes, cIn);
         return jba;
@@ -833,7 +814,7 @@ namespace {
         size_t outLen;
         const auto cRes = dynxx_z_bytes_unzip(buffer_size, static_cast<DynXXZFormat>(format),
                                                cIn, inLen, &outLen);
-        auto jba = moveToJByteArray(env, cRes, outLen, true);
+        auto jba = moveToJByteArray(env, cRes, outLen);
 
         releaseJBytes(env, bytes, cIn);
         return jba;

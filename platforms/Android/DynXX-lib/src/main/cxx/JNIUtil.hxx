@@ -147,6 +147,9 @@ inline jstring boxJString(JNIEnv *env, const char *str) {
     env->DeleteLocalRef(strBytes);
     env->DeleteLocalRef(charsetName);
     env->DeleteLocalRef(strClass);
+
+    freeX(str);
+
     return jStr;
 }
 
@@ -158,33 +161,27 @@ inline jmethodID getLambdaMethod(JNIEnv *env, const char *cls, const char *sig) 
 }
 
 inline jbyteArray
-moveToJByteArray(JNIEnv *env, const byte *bytes, size_t len, const bool autoFree) {
+moveToJByteArray(JNIEnv *env, const byte *bytes, size_t len) {
     if (bytes == nullptr || len == 0) {
         return env->NewByteArray(0);
     }
     jbyteArray jba = env->NewByteArray(static_cast<jsize>(len));
     env->SetByteArrayRegion(jba, 0, static_cast<jsize>(len),
                                 const_cast<jbyte *>(reinterpret_cast<const jbyte *>(bytes)));
-    if (autoFree) {
-        freeX(bytes);
-    }
+    freeX(bytes);
     return jba;
 }
 
 inline jobjectArray 
-moveToJStringArray(JNIEnv *env, const char **strs, size_t len, const bool autoFree) {
+moveToJStringArray(JNIEnv *env, const char **strs, size_t len) {
     if (strs == nullptr || len  == 0) {
         return env->NewObjectArray(0, env->FindClass(JLS), nullptr);
     }
     auto jStrs = env->NewObjectArray(static_cast<jsize>(len), env->FindClass(JLS), nullptr);
     for (size_t i = 0; i < len; i++) {
         env->SetObjectArrayElement(jStrs, static_cast<jsize>(i), boxJString(env, strs[i]));
-        if (autoFree) {
-            freeX(strs[i]);
-        }
+        freeX(strs[i]);
     }
-    if (autoFree) {
-        freeX(strs);
-    }
+    freeX(strs);
     return jStrs;
 }
