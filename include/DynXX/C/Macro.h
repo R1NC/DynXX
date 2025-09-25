@@ -34,3 +34,8 @@
 #else
     #define DYNXX_DEPRECATED(msg)
 #endif
+
+
+#if !defined(DYNXX_OUT)
+#define DYNXX_OUT
+#endif

@@ -8,11 +8,18 @@
 namespace {
     using namespace DynXX::Core::Util::Type;
 
-    byte *handleBytes(BytesView bytes, size_t *outLen = nullptr) {
+    byte *handleOutBytes(BytesView bytes, size_t *outLen = nullptr) {
         if (outLen) [[likely]] {
             *outLen = bytes.size();
         }
-        return copyBytes(bytes);
+        return dupBytes(bytes);
+    }
+
+    const char **handleOutCharsArray(const std::vector<std::string> &sv, size_t maxLen, size_t *outLen = nullptr) {
+        if (outLen) [[likely]] {
+            *outLen = sv.size();
+        }
+        return dupCharsArray(sv, maxLen);
     }
 }
 
@@ -126,7 +133,7 @@ const byte *dynxx_coding_hex_str2bytes(const char *str, size_t *outLen) {
         return nullptr;
     }
     const auto bytes = dynxxCodingHexStr2bytes(str);
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
@@ -141,7 +148,7 @@ const byte *dynxx_coding_str2bytes(const char *str, size_t *outLen) {
         return nullptr;
     }
     const auto bytes = dynxxCodingStr2bytes(str);
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
@@ -164,21 +171,21 @@ const char *dynxx_coding_str_trim(const char *str) {
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_rand(size_t len) {
     const auto bytes = dynxxCryptoRand(len);
-    return handleBytes(bytes);
+    return handleOutBytes(bytes);
 }
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_aes_encrypt(const byte *inBytes, size_t inLen, const byte *keyBytes, size_t keyLen,
                                       size_t *outLen) {
     const auto bytes = dynxxCryptoAesEncrypt(makeBytesView(inBytes, inLen), makeBytesView(keyBytes, keyLen));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_aes_decrypt(const byte *inBytes, size_t inLen, const byte *keyBytes, size_t keyLen,
                                       size_t *outLen) {
     const auto bytes = dynxxCryptoAesDecrypt(makeBytesView(inBytes, inLen), makeBytesView(keyBytes, keyLen));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
@@ -190,7 +197,7 @@ const byte *dynxx_crypto_aes_gcm_encrypt(const byte *inBytes, size_t inLen,
     const auto bytes = dynxxCryptoAesGcmEncrypt(makeBytesView(inBytes, inLen), makeBytesView(keyBytes, keyLen),
                                                   makeBytesView(initVectorBytes, initVectorLen), tagBits,
                                                   makeBytesView(aadBytes, aadLen));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
@@ -202,7 +209,7 @@ const byte *dynxx_crypto_aes_gcm_decrypt(const byte *inBytes, size_t inLen,
     const auto bytes = dynxxCryptoAesGcmDecrypt(makeBytesView(inBytes, inLen), makeBytesView(keyBytes, keyLen),
                                                   makeBytesView(initVectorBytes, initVectorLen), tagBits,
                                                   makeBytesView(aadBytes, aadLen));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
@@ -219,7 +226,7 @@ const byte *dynxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
                                       const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, size_t *outLen) {
     const auto bytes = dynxxCryptoRsaEncrypt(makeBytesView(inBytes, inLen), makeBytesView(keyBytes, keyLen),
                                                static_cast<DynXXCryptoRSAPaddingX>(padding));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
@@ -227,37 +234,37 @@ const byte *dynxx_crypto_rsa_decrypt(const byte *inBytes, size_t inLen,
                                       const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, size_t *outLen) {
     const auto bytes = dynxxCryptoRsaDecrypt(makeBytesView(inBytes, inLen), makeBytesView(keyBytes, keyLen),
                                                static_cast<DynXXCryptoRSAPaddingX>(padding));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_hash_md5(const byte *inBytes, size_t inLen, size_t *outLen) {
     const auto bytes = dynxxCryptoHashMd5(makeBytesView(inBytes, inLen));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_hash_sha1(const byte *inBytes, size_t inLen, size_t *outLen) {
     const auto bytes = dynxxCryptoHashSha1(makeBytesView(inBytes, inLen));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_hash_sha256(const byte *inBytes, size_t inLen, size_t *outLen) {
     const auto bytes = dynxxCryptoHashSha256(makeBytesView(inBytes, inLen));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_base64_encode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen) {
     const auto bytes = dynxxCryptoBase64Encode(makeBytesView(inBytes, inLen), noNewLines);
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen) {
     const auto bytes = dynxxCryptoBase64Decode(makeBytesView(inBytes, inLen), noNewLines);
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 // Net.Http
@@ -447,12 +454,9 @@ bool dynxx_kv_write_float(const DynXXKVConnHandle conn, const char *k, double v)
 }
 
 DYNXX_EXPORT_AUTO
-const char **dynxx_kv_all_keys(const DynXXKVConnHandle conn, size_t *len) {
+const char **dynxx_kv_all_keys(const DynXXKVConnHandle conn, size_t *outLen) {
     const auto t = dynxxKVAllKeys(conn);
-    if (len) {
-        *len = t.size();
-    }
-    return copyStrVector(t, DYNXX_STORE_KV_KEY_MAX_LENGTH);
+    return handleOutCharsArray(t, DYNXX_STORE_KV_KEY_MAX_LENGTH, outLen);
 }
 
 DYNXX_EXPORT_AUTO
@@ -566,7 +570,7 @@ size_t dynxx_z_zip_input(const DynXXZipHandle zip, const byte *inBytes, size_t i
 DYNXX_EXPORT_AUTO
 const byte *dynxx_z_zip_process_do(const DynXXZipHandle zip, size_t *outLen) {
     const auto bytes = dynxxZZipProcessDo(zip);
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
@@ -592,7 +596,7 @@ size_t dynxx_z_unzip_input(const DynXXUnZipHandle unzip, const byte *inBytes, si
 DYNXX_EXPORT_AUTO
 const byte *dynxx_z_unzip_process_do(const DynXXUnZipHandle unzip, size_t *outLen) {
     const auto bytes = dynxxZUnzipProcessDo(unzip);
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
@@ -626,12 +630,12 @@ const byte *dynxx_z_bytes_zip(DynXXZipCompressMode mode, size_t bufferSize, DynX
     const auto bytes = dynxxZBytesZip(makeBytes(inBytes, inLen),
                                         static_cast<DynXXZipCompressModeX>(mode), bufferSize,
                                         static_cast<DynXXZFormatX>(format));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_z_bytes_unzip(size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen, size_t *outLen) {
     const auto bytes = dynxxZBytesUnzip(makeBytes(inBytes, inLen),
                                           bufferSize, static_cast<DynXXZFormatX>(format));
-    return handleBytes(bytes, outLen);
+    return handleOutBytes(bytes, outLen);
 }

@@ -21,7 +21,7 @@ const byte *dynxx_crypto_rand(size_t len);
  * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
  */
 const byte *dynxx_crypto_aes_encrypt(const byte *inBytes, size_t inLen, const byte *keyBytes, size_t keyLen,
-                                      size_t *outLen);
+                                      DYNXX_OUT size_t *outLen);
 
 /**
  * @brief AES Decrypt
@@ -33,7 +33,7 @@ const byte *dynxx_crypto_aes_encrypt(const byte *inBytes, size_t inLen, const by
  * @return output bytes data（ALIGNED ON A 16 BYTE BOUNDARY!!）
  */
 const byte *dynxx_crypto_aes_decrypt(const byte *inBytes, size_t inLen, const byte *keyBytes, size_t keyLen,
-                                      size_t *outLen);
+                                      DYNXX_OUT size_t *outLen);
 
 /**
  * @brief AES GCM Encrypt
@@ -53,7 +53,8 @@ const byte *dynxx_crypto_aes_gcm_encrypt(const byte *inBytes, size_t inLen,
                                           const byte *keyBytes, size_t keyLen,
                                           const byte *initVectorBytes, size_t initVectorLen,
                                           const byte *aadBytes, size_t aadLen,
-                                          size_t tagBits, size_t *outLen);
+                                          size_t tagBits, 
+                                          DYNXX_OUT size_t *outLen);
 
 /**
  * @brief AES GCM Decrypt
@@ -73,7 +74,8 @@ const byte *dynxx_crypto_aes_gcm_decrypt(const byte *inBytes, size_t inLen,
                                           const byte *keyBytes, size_t keyLen,
                                           const byte *initVectorBytes, size_t initVectorLen,
                                           const byte *aadBytes, size_t aadLen,
-                                          size_t tagBits, size_t *outLen);
+                                          size_t tagBits, 
+                                          DYNXX_OUT size_t *outLen);
 
 /**
  * @brief RSA padding
@@ -100,7 +102,8 @@ const char *dynxx_crypto_rsa_gen_key(const char *base64, bool isPublic);
  * @return output bytes data
  */
 const byte *dynxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
-                                      const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, size_t *outLen);
+                                      const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, 
+                                      DYNXX_OUT size_t *outLen);
 
 /**
  * @brief RSA Decrypt
@@ -113,7 +116,8 @@ const byte *dynxx_crypto_rsa_encrypt(const byte *inBytes, size_t inLen,
  * @return output bytes data
  */
 const byte *dynxx_crypto_rsa_decrypt(const byte *inBytes, size_t inLen,
-                                      const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, size_t *outLen);
+                                      const byte *keyBytes, size_t keyLen, DynXXCryptoRSAPadding padding, 
+                                      DYNXX_OUT size_t *outLen);
 
 /**
  * @brief MD5 hash
@@ -122,7 +126,7 @@ const byte *dynxx_crypto_rsa_decrypt(const byte *inBytes, size_t inLen,
  * @param outLen a pointer to read output bytes length
  * @return output bytes data
  */
-const byte *dynxx_crypto_hash_md5(const byte *inBytes, size_t inLen, size_t *outLen);
+const byte *dynxx_crypto_hash_md5(const byte *inBytes, size_t inLen, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief SHA1
@@ -131,7 +135,7 @@ const byte *dynxx_crypto_hash_md5(const byte *inBytes, size_t inLen, size_t *out
  * @param outLen a pointer to read output bytes length
  * @return output bytes data
  */
-const byte *dynxx_crypto_hash_sha1(const byte *inBytes, size_t inLen, size_t *outLen);
+const byte *dynxx_crypto_hash_sha1(const byte *inBytes, size_t inLen, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief SHA256
@@ -140,7 +144,7 @@ const byte *dynxx_crypto_hash_sha1(const byte *inBytes, size_t inLen, size_t *ou
  * @param outLen a pointer to read output bytes length
  * @return output bytes data
  */
-const byte *dynxx_crypto_hash_sha256(const byte *inBytes, size_t inLen, size_t *outLen);
+const byte *dynxx_crypto_hash_sha256(const byte *inBytes, size_t inLen, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief Base64 encode
@@ -150,7 +154,7 @@ const byte *dynxx_crypto_hash_sha256(const byte *inBytes, size_t inLen, size_t *
  * @param outLen a pointer to read output bytes length
  * @return output bytes data
  */
-const byte *dynxx_crypto_base64_encode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen);
+const byte *dynxx_crypto_base64_encode(const byte *inBytes, size_t inLen, bool noNewLines, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief Base64 decode
@@ -160,6 +164,6 @@ const byte *dynxx_crypto_base64_encode(const byte *inBytes, size_t inLen, bool n
  * @param outLen a pointer to read output bytes length
  * @return output bytes data
  */
-const byte *dynxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen);
+const byte *dynxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool noNewLines, DYNXX_OUT size_t *outLen);
 
 DYNXX_EXTERN_C_END

@@ -32,7 +32,7 @@ const char *dynxx_coding_hex_bytes2str(const byte *inBytes, size_t inLen);
  * @param outLen A pointer to read length of the byte array
  * @return byte array
  */
-const byte *dynxx_coding_hex_str2bytes(const char *str, size_t *outLen);
+const byte *dynxx_coding_hex_str2bytes(const char *str, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief transfer byte array to string
@@ -48,7 +48,7 @@ const char *dynxx_coding_bytes2str(const byte *inBytes, size_t inLen);
  * @param outLen A pointer to read length of the byte array
  * @return byte array
  */
-const byte *dynxx_coding_str2bytes(const char *str, size_t *outLen);
+const byte *dynxx_coding_str2bytes(const char *str, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief trim string

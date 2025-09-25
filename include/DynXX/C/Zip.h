@@ -52,7 +52,7 @@ size_t dynxx_z_zip_input(const DynXXZipHandle zip, const byte *inBytes, size_t i
  * @param outLen a pointer to read the output data length
  * @return output data bytes, return `nullptr` if error occurred
  */
-const byte *dynxx_z_zip_process_do(const DynXXZipHandle zip, size_t *outLen);
+const byte *dynxx_z_zip_process_do(const DynXXZipHandle zip, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief check whether all the ZIP data inputed before are processed
@@ -91,7 +91,7 @@ size_t dynxx_z_unzip_input(const DynXXUnZipHandle unzip, const byte *inBytes, si
  * @param outLen a pointer to read the output data length
  * @return output data bytes, return `nullptr` if error occurred
  */
-const byte *dynxx_z_unzip_process_do(const DynXXUnZipHandle unzip, size_t *outLen);
+const byte *dynxx_z_unzip_process_do(const DynXXUnZipHandle unzip, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief check whether all the ZIP data inputed before are processed
@@ -140,7 +140,7 @@ bool dynxx_z_cfile_unzip(size_t bufferSize, DynXXZFormat format, FILE *cFILEIn, 
  * @return output bytes data
  */
 const byte *dynxx_z_bytes_zip(DynXXZipCompressMode mode, size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen,
-                               size_t *outLen);
+                               DYNXX_OUT size_t *outLen);
 
 /**
  * @brief UNZIP for bytes
@@ -151,6 +151,7 @@ const byte *dynxx_z_bytes_zip(DynXXZipCompressMode mode, size_t bufferSize, DynX
  * @param outLen A pointer to read output bytes length
  * @return output bytes data
  */
-const byte *dynxx_z_bytes_unzip(size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen, size_t *outLen);
+const byte *dynxx_z_bytes_unzip(size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen, 
+    DYNXX_OUT size_t *outLen);
 
 DYNXX_EXTERN_C_END
