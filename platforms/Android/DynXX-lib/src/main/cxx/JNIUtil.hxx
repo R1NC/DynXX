@@ -178,7 +178,7 @@ moveToJStringArray(JNIEnv *env, const char **strs, size_t len, const bool autoFr
     }
     auto jStrs = env->NewObjectArray(static_cast<jsize>(len), env->FindClass(JLS), nullptr);
     for (size_t i = 0; i < len; i++) {
-        env->SetObjectArrayElement(jStrs, i, boxJString(env, strs[i]));
+        env->SetObjectArrayElement(jStrs, static_cast<jsize>(i), boxJString(env, strs[i]));
         if (autoFree) {
             freeX(strs[i]);
         }

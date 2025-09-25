@@ -430,7 +430,7 @@ napi_value kvAllKeys(napi_env env, napi_callback_info info) {
 
     size_t len;
     auto cRes = dynxx_kv_all_keys(conn, &len);
-    auto nv = ctx.napiValueFromCharsArray((const char**)cRes, len);
+    auto nv = ctx.napiValueFromCharsArray(cRes, len);
 
     for (size_t i = 0; i < len; i++) {
         freeX(cRes[i]);

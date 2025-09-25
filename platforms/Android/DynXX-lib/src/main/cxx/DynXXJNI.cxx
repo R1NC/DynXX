@@ -407,9 +407,9 @@ namespace {
 
     jobjectArray kvAllKeys(JNIEnv *env, [[maybe_unused]] jobject thiz,
                              jlong conn) {
-                                size_t len;
+        size_t len;
         auto cRes = dynxx_kv_all_keys(conn, &len);
-        return moveToJStringArray(env, (const char**)cRes, len, true);
+        return moveToJStringArray(env, cRes, len, true);
     }
 
     jboolean kvContains(JNIEnv *env, [[maybe_unused]] jobject thiz,

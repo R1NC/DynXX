@@ -447,7 +447,7 @@ bool dynxx_kv_write_float(const DynXXKVConnHandle conn, const char *k, double v)
 }
 
 DYNXX_EXPORT_AUTO
-char *const *dynxx_kv_all_keys(const DynXXKVConnHandle conn, size_t *len) {
+const char **dynxx_kv_all_keys(const DynXXKVConnHandle conn, size_t *len) {
     const auto t = dynxxKVAllKeys(conn);
     if (len) {
         *len = t.size();

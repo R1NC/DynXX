@@ -72,7 +72,7 @@ bool dynxx_kv_write_float(const DynXXKVConnHandle conn, const char *k, double v)
  * @param len A pointer to read the length of the key array
  * @return A pointer to the key array
  */
-char *const *dynxx_kv_all_keys(const DynXXKVConnHandle conn, size_t *len);
+const char **dynxx_kv_all_keys(const DynXXKVConnHandle conn, size_t *len);
 
 /**
  * @brief Search key from KV Store
