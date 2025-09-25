@@ -13,7 +13,7 @@ namespace DynXX::Core::Util::Type {
             sArr[i] = mallocX<char>(len);
             std::memcpy(sArr[i], sv[i].c_str(), len);
         }
-        return sArr;
+        return const_cast<const char **>(sArr);
     }
 
     inline byte *copyBytes(BytesView t) {
