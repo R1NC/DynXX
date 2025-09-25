@@ -50,7 +50,7 @@ typedef struct {
     const char *logContent;
 } TSLogWorkData;
 
-void OnLogWorkCallTS(napi_env env, napi_value ts_callback, void *context, void *data) {
+void OnLogWorkCallTS(napi_env env, napi_value ts_callback, [[maybe_unused]] void *context, void *data) {
     if (env == nullptr || ts_callback == nullptr || data == nullptr) {
         return;
     }

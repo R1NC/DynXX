@@ -82,7 +82,6 @@ public:
     napi_value argAt(size_t i);
     size_t argCount() const;
 
-    size_t argArrayLenAt(size_t i);
     const char *argCharsAt(size_t i);
     bool argBoolAt(size_t i);
     int argIntAt(size_t i);
@@ -91,7 +90,6 @@ public:
     std::tuple<const byte *, size_t> argByteArrayAt(size_t i);
     std::tuple<const char **, size_t> argCharsArrayAt(size_t i);
 
-    size_t napiValueArrayLen(napi_value nv);
     const char *napiValueToChars(napi_value nv);
     bool napiValueToBool(napi_value nv);
     int napiValueToInt(napi_value nv);
