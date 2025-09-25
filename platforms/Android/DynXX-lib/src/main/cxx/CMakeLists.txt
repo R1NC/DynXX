@@ -5,7 +5,10 @@ project("DynXXJNI")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(${CMAKE_PROJECT_NAME} SHARED DynXXJNI.cxx)
+add_library(${CMAKE_PROJECT_NAME} SHARED
+        DynXXJNI.cxx
+        JNIUtil.cxx
+)
 
 set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.Android/output/libs/${ANDROID_ABI})
 

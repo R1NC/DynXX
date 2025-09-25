@@ -2,16 +2,17 @@
 
 #include "JNIUtil.hxx"
 #include "../../../../../../build.Android/output/include/DynXX/C/DynXX.h"
+#include "../../../../../../build.Android/output/include/DynXX/CXX/Memory.hxx"
 
 namespace {
     JavaVM *sVM;
-    jclass sJClass;
+    jclass sJNIClass;
     jobject sLogCallback;
     jmethodID sLogCallbackMethodId;
     jobject sJsMsgCallback;
     jmethodID sJsMsgCallbackMethodId;
 
-    constexpr auto JClassName = "xyz/rinc/dynxx/DynXX$Companion";
+    constexpr auto JNIClassName = "xyz/rinc/dynxx/DynXX$Companion";
 
 #define DECLARE_JNI_FUNC(func, signature) {#func, signature, reinterpret_cast<void *>(func)}
 
@@ -912,7 +913,6 @@ namespace {
             DECLARE_JNI_FUNC(zZipBytes, "(IJI[B)[B"),
             DECLARE_JNI_FUNC(zUnZipBytes, "(JI[B)[B"),
     };
-
 }
 
 int JNI_OnLoad(JavaVM *vm, [[maybe_unused]] void *reserved) {
@@ -924,11 +924,11 @@ int JNI_OnLoad(JavaVM *vm, [[maybe_unused]] void *reserved) {
         return JNI_ERR;
     }
 
-    sJClass = env->FindClass(JClassName);
-    if (sJClass == nullptr) {
+    sJNIClass = findClassInCache(env, JNIClassName);
+    if (sJNIClass == nullptr) {
         return JNI_ERR;
     }
-    ret = env->RegisterNatives(sJClass, JCFuncList, sizeof(JCFuncList) / sizeof(JNINativeMethod));
+    ret = env->RegisterNatives(sJNIClass, JCFuncList, sizeof(JCFuncList) / sizeof(JNINativeMethod));
     if (ret != JNI_OK) {
         return JNI_ERR;
     }
@@ -941,7 +941,8 @@ void JNI_OnUnload(JavaVM *vm, [[maybe_unused]] void *reserved) {
 
     auto env = currentEnv(vm);
     if (env) {
-        env->UnregisterNatives(sJClass);
+        env->UnregisterNatives(sJNIClass);
+        releaseCachedClass(env);
         env->DeleteGlobalRef(sLogCallback);
         env->DeleteGlobalRef(sJsMsgCallback);
     }
