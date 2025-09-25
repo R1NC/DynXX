@@ -18,7 +18,7 @@ struct DynXXHttpResponse {
 
     std::optional<std::string> toJson() const;
 };
-#ifndef _WIN32
+#if !defined(_WIN32)
 AssertMove(DynXXHttpResponse);
 #endif
 

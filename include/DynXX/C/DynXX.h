@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef NOMINMAX
+#if !defined(NOMINMAX)
 #define NOMINMAX  // prevent windows redefining min/max
 #endif
 
