@@ -405,6 +405,13 @@ namespace {
         return res;
     }
 
+    jobjectArray kvAllKeys(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                             jlong conn) {
+                                size_t len;
+        auto cRes = dynxx_kv_all_keys(conn, &len);
+        return moveToJStringArray(env, (const char**)cRes, len, true);
+    }
+
     jboolean kvContains(JNIEnv *env, [[maybe_unused]] jobject thiz,
                              jlong conn, jstring k) {
         auto cK = readJString(env, k);
@@ -871,6 +878,7 @@ namespace {
             DECLARE_JNI_FUNC(kvWriteInteger, "(J" LJLS_ "J)Z"),
             DECLARE_JNI_FUNC(kvReadFloat, "(J" LJLS_ ")D"),
             DECLARE_JNI_FUNC(kvWriteFloat, "(J" LJLS_ "D)Z"),
+            DECLARE_JNI_FUNC(kvAllKeys, "(J)[" LJLS_),
             DECLARE_JNI_FUNC(kvContains, "(J" LJLS_ ")Z"),
             DECLARE_JNI_FUNC(kvRemove, "(J" LJLS_ ")Z"),
             DECLARE_JNI_FUNC(kvClear, "(J)V"),

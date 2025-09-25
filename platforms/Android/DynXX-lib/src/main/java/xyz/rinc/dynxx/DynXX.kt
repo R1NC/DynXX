@@ -51,6 +51,7 @@ class DynXX {
         external fun kvWriteInteger(conn: Long, k: String, v: Long): Boolean
         external fun kvReadFloat(conn: Long, k: String): Double
         external fun kvWriteFloat(conn: Long, k: String, v: Double): Boolean
+        external fun kvAllKeys(conn: Long): Array<String>?
         external fun kvContains(conn: Long, k: String): Boolean
         external fun kvRemove(conn: Long, k: String): Boolean
         external fun kvClear(conn: Long)

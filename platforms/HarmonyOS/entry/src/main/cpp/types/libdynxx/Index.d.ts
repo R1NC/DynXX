@@ -57,6 +57,7 @@ export const kvReadInteger: (conn: number, k: string) => number;
 export const kvWriteInteger: (conn: number, k: string, v: number) => boolean;
 export const kvReadFloat: (conn: number, k: string) => number;
 export const kvWriteFloat: (conn: number, k: string, v: number) => boolean;
+export const kvAllKeys: (conn: number) => string[];
 export const kvContains: (conn: number, k: string) => boolean;
 export const kvRemove: (conn: number, k: string) => boolean;
 export const kvClear: (conn: number) => void;

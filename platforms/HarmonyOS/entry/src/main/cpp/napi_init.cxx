@@ -423,6 +423,23 @@ napi_value kvWriteFloat(napi_env env, napi_callback_info info) {
     return nv;
 }
 
+napi_value kvAllKeys(napi_env env, napi_callback_info info) {
+    NapiCallContext ctx(env, info);
+
+    auto conn = ctx.argLongAt(0);
+
+    size_t len;
+    auto cRes = dynxx_kv_all_keys(conn, &len);
+    auto nv = ctx.napiValueFromCharsArray((const char**)cRes, len);
+
+    for (size_t i = 0; i < len; i++) {
+        freeX(cRes[i]);
+    }
+    freeX(cRes);
+
+    return nv;
+}
+
 napi_value kvContains(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
@@ -1150,6 +1167,7 @@ napi_value NAPI_DynXX_RegisterFuncs(napi_env env, napi_value exports) {
         NAPI(kvWriteInteger),
         NAPI(kvReadFloat),
         NAPI(kvWriteFloat),
+        NAPI(kvAllKeys),
         NAPI(kvContains),
         NAPI(kvRemove),
         NAPI(kvClear),

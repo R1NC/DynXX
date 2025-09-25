@@ -125,6 +125,9 @@ napi_value napiValueFromDouble(napi_env env, double d) {
 }
 
 napi_value napiValueFromByteArray(napi_env env, const byte *byteArray, size_t len) {
+    if (charsArray == nullptr) {
+        return napiValueFromInt(env, napi_invalid_arg);
+    }
     napi_value v;
     auto status = napi_create_array_with_length(env, len, &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_array_with_length() failed");
@@ -136,6 +139,9 @@ napi_value napiValueFromByteArray(napi_env env, const byte *byteArray, size_t le
 }
 
 napi_value napiValueFromCharsArray(napi_env env, const char **charsArray, size_t len) {
+    if (charsArray == nullptr) {
+        return napiValueFromInt(env, napi_invalid_arg);
+    }
     napi_value v;
     auto status = napi_create_array_with_length(env, len, &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_array_with_length() failed");
