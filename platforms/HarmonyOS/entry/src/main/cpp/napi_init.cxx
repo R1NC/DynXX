@@ -183,13 +183,11 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
     const auto iMethod = ctx.argIntAt(1);
     auto cParams = ctx.argCount()> 2 ? ctx.argCharsAt(2) : "";
 
-    auto header_c = ctx.argCount()> 3 ? ctx.argArrayLenAt(3) : 0;
-    auto header_v = ctx.argCount()> 3 ? ctx.argCharsArrayAt(3) : nullptr;
+    auto [header_v, header_c] = ctx.argCharsArrayAt(3);
 
-    auto form_field_count = ctx.argCount()> 4 ? ctx.argArrayLenAt(4) : 0;
-    auto form_field_name_v = ctx.argCount()> 4 ? ctx.argCharsArrayAt(4) : nullptr;
-    auto form_field_mime_v = ctx.argCount()> 5 ? ctx.argCharsArrayAt(5) : nullptr;
-    auto form_field_data_v = ctx.argCount()> 6 ? ctx.argCharsArrayAt(6) : nullptr;
+    auto [form_field_name_v, form_field_count] = ctx.argCharsArrayAt(4);
+    auto [form_field_mime_v, form_field_mime_count] = ctx.argCharsArrayAt(5);
+    auto [form_field_data_v, form_field_data_count] = ctx.argCharsArrayAt(6);
 
     auto cFilePath = ctx.argCount()> 7 ? ctx.argCharsAt(7) : nullptr;
     auto cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
@@ -620,8 +618,7 @@ napi_value jsonDecoderRelease(napi_env env, napi_callback_info info) {
 napi_value codingHexBytes2str(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
 
     auto cRes = dynxx_coding_hex_bytes2str(inBytes, inLen);
     auto v = ctx.napiValueFromChars(cRes);
@@ -662,10 +659,8 @@ napi_value cryptoRand(napi_env env, napi_callback_info info) {
 napi_value cryptoAesEncrypt(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
-    auto keyLen = ctx.argArrayLenAt(1);
-    auto keyBytes = ctx.argByteArrayAt(1);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
+    auto [keyBytes, keyLen] = ctx.argByteArrayAt(1);
 
     size_t outLen;
     auto outBytes = dynxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
@@ -680,10 +675,8 @@ napi_value cryptoAesEncrypt(napi_env env, napi_callback_info info) {
 napi_value cryptoAesDecrypt(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
-    auto keyLen = ctx.argArrayLenAt(1);
-    auto keyBytes = ctx.argByteArrayAt(1);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
+    auto [keyBytes, keyLen] = ctx.argByteArrayAt(1);
 
     size_t outLen;
     auto outBytes = dynxx_crypto_aes_decrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
@@ -698,15 +691,11 @@ napi_value cryptoAesDecrypt(napi_env env, napi_callback_info info) {
 napi_value cryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
-    auto keyLen = ctx.argArrayLenAt(1);
-    auto keyBytes = ctx.argByteArrayAt(1);
-    auto initVectorLen = ctx.argArrayLenAt(2);
-    auto initVectorBytes = ctx.argByteArrayAt(2);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
+    auto [keyBytes, keyLen] = ctx.argByteArrayAt(1);
+    auto [initVectorBytes, initVectorLen] = ctx.argByteArrayAt(2);
     auto tagBits = ctx.argIntAt(3);
-    auto aadLen = ctx.argCount()> 4 ? ctx.argArrayLenAt(4) : 0;
-    auto aadBytes = ctx.argCount()> 4 ? ctx.argByteArrayAt(4) : nullptr;
+    auto [aadBytes, aadLen] = ctx.argByteArrayAt(4);
 
     size_t outLen;
     auto outBytes = dynxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen,
@@ -726,15 +715,11 @@ napi_value cryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
 napi_value cryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
-    auto keyLen = ctx.argArrayLenAt(1);
-    auto keyBytes = ctx.argByteArrayAt(1);
-    auto initVectorLen = ctx.argArrayLenAt(2);
-    auto initVectorBytes = ctx.argByteArrayAt(2);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
+    auto [keyBytes, keyLen] = ctx.argByteArrayAt(1);
+    auto [initVectorBytes, initVectorLen] = ctx.argByteArrayAt(2);
     auto tagBits = ctx.argIntAt(3);
-    auto aadLen = ctx.argCount()> 4 ? ctx.argArrayLenAt(4) : 0;
-    auto aadBytes = ctx.argCount()> 4 ? ctx.argByteArrayAt(4) : nullptr;
+    auto [aadBytes, aadLen] = ctx.argByteArrayAt(4);
 
     size_t outLen;
     auto outBytes = dynxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen,
@@ -770,10 +755,8 @@ napi_value cryptoRsaGenKey(napi_env env, napi_callback_info info) {
 napi_value cryptoRsaEncrypt(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
-    auto keyLen = ctx.argArrayLenAt(1);
-    auto keyBytes = ctx.argByteArrayAt(1);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
+    auto [keyBytes, keyLen] = ctx.argByteArrayAt(1);
     auto padding = ctx.argIntAt(2);
 
     size_t outLen;
@@ -789,10 +772,8 @@ napi_value cryptoRsaEncrypt(napi_env env, napi_callback_info info) {
 napi_value cryptoRsaDecrypt(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
-    auto keyLen = ctx.argArrayLenAt(1);
-    auto keyBytes = ctx.argByteArrayAt(1);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
+    auto [keyBytes, keyLen] = ctx.argByteArrayAt(1);
     auto padding = ctx.argIntAt(2);
 
     size_t outLen;
@@ -808,8 +789,7 @@ napi_value cryptoRsaDecrypt(napi_env env, napi_callback_info info) {
 napi_value cryptoHashMd5(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
 
     size_t outLen;
     auto outBytes = dynxx_crypto_hash_md5(inBytes, inLen, &outLen);
@@ -823,8 +803,7 @@ napi_value cryptoHashMd5(napi_env env, napi_callback_info info) {
 napi_value cryptoHashSha1(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
 
     size_t outLen;
     auto outBytes = dynxx_crypto_hash_sha1(inBytes, inLen, &outLen);
@@ -838,8 +817,7 @@ napi_value cryptoHashSha1(napi_env env, napi_callback_info info) {
 napi_value cryptoHashSha256(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
 
     size_t outLen;
     auto outBytes = dynxx_crypto_hash_sha256(inBytes, inLen, &outLen);
@@ -853,8 +831,7 @@ napi_value cryptoHashSha256(napi_env env, napi_callback_info info) {
 napi_value cryptoBase64Encode(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
     auto noNewLines = ctx.argBoolAt(1);
 
     size_t outLen;
@@ -869,8 +846,7 @@ napi_value cryptoBase64Encode(napi_env env, napi_callback_info info) {
 napi_value cryptoBase64Decode(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
     auto noNewLines = ctx.argBoolAt(1);
 
     size_t outLen;
@@ -899,8 +875,7 @@ napi_value zZipInput(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
     auto zip = ctx.argLongAt(0);
-    auto inLen = ctx.argArrayLenAt(1);
-    auto inBytes = ctx.argByteArrayAt(1);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(1);
     auto inFinish = ctx.argBoolAt(2);
 
     auto res = dynxx_z_zip_input(zip, inBytes, inLen, inFinish);
@@ -953,8 +928,7 @@ napi_value zUnZipInput(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
     auto zip = ctx.argLongAt(0);
-    auto inLen = ctx.argArrayLenAt(1);
-    auto inBytes = ctx.argByteArrayAt(1);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(1);
     auto inFinish = ctx.argBoolAt(2);
 
     auto res = dynxx_z_unzip_input(zip, inBytes, inLen, inFinish);
@@ -999,8 +973,7 @@ napi_value zZipBytes(napi_env env, napi_callback_info info) {
     auto mode = ctx.argIntAt(0);
     auto bufferSize = ctx.argLongAt(1);
     auto format = ctx.argIntAt(2);
-    auto inLen = ctx.argArrayLenAt(3);
-    auto inBytes = ctx.argByteArrayAt(3);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(3);
 
     size_t outLen;
     auto outBytes = dynxx_z_bytes_zip(static_cast<DynXXZipCompressMode>(mode), bufferSize, static_cast<DynXXZFormat>(format), inBytes, inLen, &outLen);
@@ -1016,8 +989,7 @@ napi_value zUnzipBytes(napi_env env, napi_callback_info info) {
 
     auto bufferSize = ctx.argLongAt(0);
     auto format = ctx.argIntAt(1);
-    auto inLen = ctx.argArrayLenAt(2);
-    auto inBytes = ctx.argByteArrayAt(2);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(2);
 
     size_t outLen;
     auto outBytes = dynxx_z_bytes_unzip(bufferSize, static_cast<DynXXZFormat>(format), inBytes, inLen, &outLen);
@@ -1104,8 +1076,7 @@ napi_value jLoadS(napi_env env, napi_callback_info info) {
 napi_value jLoadB(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
 
-    auto inLen = ctx.argArrayLenAt(0);
-    auto inBytes = ctx.argByteArrayAt(0);
+    auto [inBytes, inLen] = ctx.argByteArrayAt(0);
     auto isModule = ctx.argBoolAt(1);
 
     auto b = dynxx_js_loadB(inBytes, inLen, isModule);

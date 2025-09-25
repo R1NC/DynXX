@@ -7,8 +7,13 @@
 // static Utils
 
 size_t napiValueArrayLen(napi_env env, napi_value nv) {
+    bool is_array;
+    auto status = napi_is_array(env, nv, &is_array);
+    if (status != napi_ok || !is_array) {
+        return 0;
+    }
     uint32_t len;
-    auto status = napi_get_array_length(env, nv, &len);
+    status = napi_get_array_length(env, nv, &len);
     CHECK_NAPI_STATUS_RETURN_NUM(env, status, "napi_get_array_length() failed");
     return len;
 }
@@ -51,32 +56,34 @@ double napiValueToDouble(napi_env env, napi_value nv) {
     return d;
 }
 
-const byte *napiValueToByteArray(napi_env env, napi_value nv, size_t len) {
+std::tuple<const byte *, size_t> napiValueToByteArray(napi_env env, napi_value nv) {
+    auto len = napiValueArrayLen(env, nv);
     if (len == 0) {
-        return nullptr;
+        return {nullptr, 0};
     }
     auto byteArray = mallocX<byte>(len);
     for (decltype(len) i = 0; i < len; i++) {
         napi_value vByte;
         auto status = napi_get_element(env, nv, i, &vByte);
-        CHECK_NAPI_STATUS_RETURN_PTR(env, status, "napi_get_element() failed");
+        //CHECK_NAPI_STATUS_RETURN_PTR(env, status, "napi_get_element() failed");
         byteArray[i] = napiValueToInt(env, vByte);
     }
-    return byteArray;
+    return {byteArray, len};
 }
 
-const char **napiValueToCharsArray(napi_env env, napi_value nv, size_t len) {
+std::tuple<const char **, size_t> napiValueToCharsArray(napi_env env, napi_value nv) {
+    auto len = napiValueArrayLen(env, nv);
     if (len == 0) {
-        return nullptr;
+        return {nullptr, 0};
     }
     const auto charsArray = mallocX<const char *>(len);
     for (decltype(len) i = 0; i < len; i++) {
         napi_value vChars;
         auto status = napi_get_element(env, nv, i, &vChars);
-        CHECK_NAPI_STATUS_RETURN_PTR(env, status, "napi_get_element() failed");
+        //CHECK_NAPI_STATUS_RETURN_PTR(env, status, "napi_get_element() failed");
         charsArray[i] = napiValueToChars(env, vChars);
     }
-    return charsArray;
+    return {charsArray, len};
 }
 
 napi_value napiValueFromChars(napi_env env, const char *c) {
@@ -185,12 +192,12 @@ double NapiCallContext::argDoubleAt(size_t i) {
     return this->napiValueToDouble(this->argAt(i));
 }
 
-const byte *NapiCallContext::argByteArrayAt(size_t i) {
-    return this->napiValueToByteArray(this->argAt(i), argArrayLenAt(i));
+std::tuple<const byte *, size_t> NapiCallContext::argByteArrayAt(size_t i) {
+    return this->napiValueToByteArray(this->argAt(i));
 }
 
-const char **NapiCallContext::argCharsArrayAt(size_t i) {
-    return this->napiValueToCharsArray(this->argAt(i), argArrayLenAt(i));
+std::tuple<const char **, size_t> NapiCallContext::argCharsArrayAt(size_t i) {
+    return this->napiValueToCharsArray(this->argAt(i));
 }
 
 size_t NapiCallContext::argCount() const {
@@ -221,12 +228,12 @@ double NapiCallContext::napiValueToDouble(napi_value nv) {
     return ::napiValueToDouble(this->env, nv);
 }
 
-const byte *NapiCallContext::napiValueToByteArray(napi_value nv, size_t len) {
-    return ::napiValueToByteArray(this->env, nv, len);
+std::tuple<const byte *, size_t> NapiCallContext::napiValueToByteArray(napi_value nv) {
+    return ::napiValueToByteArray(this->env, nv);
 }
 
-const char **NapiCallContext::napiValueToCharsArray(napi_value nv, size_t len) {
-    return ::napiValueToCharsArray(this->env, nv, len);
+std::tuple<const char **, size_t> NapiCallContext::napiValueToCharsArray(napi_value nv) {
+    return ::napiValueToCharsArray(this->env, nv);
 }
 
 napi_value NapiCallContext::napiValueFromChars(const char *c) {
