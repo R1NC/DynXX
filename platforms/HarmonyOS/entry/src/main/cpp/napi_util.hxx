@@ -111,4 +111,5 @@ private:
     napi_callback_info cbkInfo;
     size_t argc{0};
     napi_value *argv{nullptr};
+    std::vector<void*> ptrVec;
 };

@@ -135,6 +135,7 @@ napi_value napiValueFromByteArray(napi_env env, const byte *byteArray, size_t le
         status = napi_set_element(env, v, i, napiValueFromInt(env, byteArray[i]));
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_set_element() failed");
     }
+    freeX(byteArray);
     return v;
 }
 
@@ -148,7 +149,9 @@ napi_value napiValueFromCharsArray(napi_env env, const char **charsArray, size_t
     for (decltype(len) i = 0; i < len; i++) {
         status = napi_set_element(env, v, i, napiValueFromChars(env, charsArray[i]));
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_set_element() failed");
+        freeX(charsArray[i]);
     }
+    freeX(charsArray);
     return v;
 }
 
@@ -162,6 +165,10 @@ NapiCallContext::NapiCallContext(napi_env env, napi_callback_info cbkInfo) : env
 
 NapiCallContext::~NapiCallContext() {
     if (this->argv != nullptr) {
+        for (auto ptr : this->ptrVec) {
+            freeX(ptr);
+        }
+        this->ptrVec.clear();
         freeX(this->argv);
         this->argv = nullptr;
     }
@@ -207,7 +214,9 @@ size_t NapiCallContext::argCount() const {
 }
 
 const char *NapiCallContext::napiValueToChars(napi_value nv) {
-    return ::napiValueToChars(this->env, nv);
+    auto ptr = ::napiValueToChars(this->env, nv);
+    this->ptrVec.push_back((void*)ptr);
+    return ptr;
 }
 
 bool NapiCallContext::napiValueToBool(napi_value nv) {
@@ -227,11 +236,18 @@ double NapiCallContext::napiValueToDouble(napi_value nv) {
 }
 
 std::tuple<const byte *, size_t> NapiCallContext::napiValueToByteArray(napi_value nv) {
-    return ::napiValueToByteArray(this->env, nv);
+    auto [ptr, len] = ::napiValueToByteArray(this->env, nv);
+    this->ptrVec.push_back((void*)ptr);
+    return {ptr, len};
 }
 
 std::tuple<const char **, size_t> NapiCallContext::napiValueToCharsArray(napi_value nv) {
-    return ::napiValueToCharsArray(this->env, nv);
+    auto [ptrV, len] = ::napiValueToCharsArray(this->env, nv);
+    for (decltype(len) i = 0; i < len; i++) {
+        this->ptrVec.push_back((void*)ptrV[i]);
+    }
+    this->ptrVec.push_back((void*)ptrV);
+    return {ptrV, len};
 }
 
 napi_value NapiCallContext::napiValueFromChars(const char *c) {

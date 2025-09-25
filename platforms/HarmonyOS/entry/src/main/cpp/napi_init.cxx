@@ -16,9 +16,7 @@ napi_value getVersion(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
     
     auto c = dynxx_get_version();
-    auto v = ctx.napiValueFromChars(c);
-    freeX(c);
-    return v;
+    return ctx.napiValueFromChars(c);
 }
 
 napi_value init(napi_env env, napi_callback_info info) {
@@ -27,10 +25,7 @@ napi_value init(napi_env env, napi_callback_info info) {
     auto root = ctx.argCharsAt(0);
 
     auto b = dynxx_init(root);
-    auto v = ctx.napiValueFromBool(b);
-
-    freeX(root);
-    return v;
+    return ctx.napiValueFromBool(b);
 }
 
 napi_value release(napi_env env, napi_callback_info info) {
@@ -169,7 +164,6 @@ napi_value logPrint(napi_env env, napi_callback_info info) {
     auto content = ctx.argCharsAt(1);
 
     dynxx_log_print(static_cast<DynXXLogLevel>(level), content);
-    freeX(content);
 
     return ctx.napiValueFromInt(napi_ok);
 }
@@ -200,23 +194,8 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
                                 form_field_data_v, form_field_count, cFILE, fileLength, lTimeout);
     auto nv = ctx.napiValueFromChars(res);
 
-    freeX(res);
-    for (decltype(header_c) i = 0; i < header_c; i++) {
-        freeX(header_v[i]);
-    }
-    for (decltype(form_field_count) i = 0; i < form_field_count; i++) {
-        freeX(form_field_name_v[i]);
-        freeX(form_field_mime_v[i]);
-        freeX(form_field_data_v[i]);
-    }
     if (cFILE) {
         std::fclose(cFILE);
-    }
-    if (cParams) {
-        freeX(cParams);
-    }
-    if (cUrl) {
-        freeX(cUrl);
     }
     return nv;
 }
@@ -228,10 +207,7 @@ napi_value sqliteOpen(napi_env env, napi_callback_info info) {
 
     auto _id = ctx.argCharsAt(0);
     auto res = dynxx_sqlite_open(_id);
-    auto nv = ctx.napiValueFromLong(res);
-
-    freeX(_id);
-    return nv;
+    return ctx.napiValueFromLong(res);
 }
 
 napi_value sqliteExecute(napi_env env, napi_callback_info info) {
@@ -241,10 +217,7 @@ napi_value sqliteExecute(napi_env env, napi_callback_info info) {
     auto sql = ctx.argCharsAt(1);
 
     auto res = dynxx_sqlite_execute(conn, sql);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(sql);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value sqliteQueryDo(napi_env env, napi_callback_info info) {
@@ -254,10 +227,7 @@ napi_value sqliteQueryDo(napi_env env, napi_callback_info info) {
     auto sql = ctx.argCharsAt(1);
 
     auto res = dynxx_sqlite_query_do(conn, sql);
-    auto nv = ctx.napiValueFromLong(res);
-
-    freeX(sql);
-    return nv;
+    return ctx.napiValueFromLong(res);
 }
 
 napi_value sqliteQueryReadRow(napi_env env, napi_callback_info info) {
@@ -276,11 +246,7 @@ napi_value sqliteQueryReadColumnText(napi_env env, napi_callback_info info) {
     auto column = ctx.argCharsAt(1);
 
     auto res = dynxx_sqlite_query_read_column_text(query_result, column);
-    auto nv = ctx.napiValueFromChars(res);
-
-    freeX(res);
-    freeX(column);
-    return nv;
+    return ctx.napiValueFromChars(res);
 }
 
 napi_value sqliteQueryReadColumnInteger(napi_env env, napi_callback_info info) {
@@ -290,10 +256,7 @@ napi_value sqliteQueryReadColumnInteger(napi_env env, napi_callback_info info) {
     auto column = ctx.argCharsAt(1);
 
     auto res = dynxx_sqlite_query_read_column_integer(query_result, column);
-    auto nv = ctx.napiValueFromLong(res);
-
-    freeX(column);
-    return nv;
+    return ctx.napiValueFromLong(res);
 }
 
 napi_value sqliteQueryReadColumnFloat(napi_env env, napi_callback_info info) {
@@ -303,10 +266,7 @@ napi_value sqliteQueryReadColumnFloat(napi_env env, napi_callback_info info) {
     auto column = ctx.argCharsAt(1);
 
     auto res = dynxx_sqlite_query_read_column_float(query_result, column);
-    auto nv = ctx.napiValueFromDouble(res);
-
-    freeX(column);
-    return nv;
+    return ctx.napiValueFromDouble(res);
 }
 
 napi_value sqliteQueryDrop(napi_env env, napi_callback_info info) {
@@ -334,10 +294,7 @@ napi_value kvOpen(napi_env env, napi_callback_info info) {
 
     auto _id = ctx.argCharsAt(0);
     auto res = dynxx_kv_open(_id);
-    auto nv = ctx.napiValueFromLong(res);
-
-    freeX(_id);
-    return nv;
+    return ctx.napiValueFromLong(res);
 }
 
 napi_value kvReadString(napi_env env, napi_callback_info info) {
@@ -347,11 +304,7 @@ napi_value kvReadString(napi_env env, napi_callback_info info) {
     auto k = ctx.argCharsAt(1);
 
     auto res = dynxx_kv_read_string(conn, k);
-    auto nv = ctx.napiValueFromChars(res);
-
-    freeX(res);
-    freeX(k);
-    return nv;
+    return ctx.napiValueFromChars(res);
 }
 
 napi_value kvWriteString(napi_env env, napi_callback_info info) {
@@ -362,11 +315,7 @@ napi_value kvWriteString(napi_env env, napi_callback_info info) {
     auto v = ctx.argCharsAt(2);
 
     auto res = dynxx_kv_write_string(conn, k, v);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(v);
-    freeX(k);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value kvReadInteger(napi_env env, napi_callback_info info) {
@@ -376,10 +325,7 @@ napi_value kvReadInteger(napi_env env, napi_callback_info info) {
     auto k = ctx.argCharsAt(1);
 
     auto res = dynxx_kv_read_integer(conn, k);
-    auto nv = ctx.napiValueFromLong(res);
-
-    freeX(k);
-    return nv;
+    return ctx.napiValueFromLong(res);
 }
 
 napi_value kvWriteInteger(napi_env env, napi_callback_info info) {
@@ -390,10 +336,7 @@ napi_value kvWriteInteger(napi_env env, napi_callback_info info) {
     auto v = ctx.argLongAt(2);
 
     auto res = dynxx_kv_write_integer(conn, k, v);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(k);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value kvReadFloat(napi_env env, napi_callback_info info) {
@@ -403,10 +346,7 @@ napi_value kvReadFloat(napi_env env, napi_callback_info info) {
     auto k = ctx.argCharsAt(1);
 
     auto res = dynxx_kv_read_float(conn, k);
-    auto nv = ctx.napiValueFromDouble(res);
-
-    freeX(k);
-    return nv;
+    return ctx.napiValueFromDouble(res);
 }
 
 napi_value kvWriteFloat(napi_env env, napi_callback_info info) {
@@ -417,10 +357,7 @@ napi_value kvWriteFloat(napi_env env, napi_callback_info info) {
     auto v = ctx.argDoubleAt(2);
 
     auto res = dynxx_kv_write_float(conn, k, v);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(k);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value kvAllKeys(napi_env env, napi_callback_info info) {
@@ -430,14 +367,7 @@ napi_value kvAllKeys(napi_env env, napi_callback_info info) {
 
     size_t len;
     auto cRes = dynxx_kv_all_keys(conn, &len);
-    auto nv = ctx.napiValueFromCharsArray(cRes, len);
-
-    for (size_t i = 0; i < len; i++) {
-        freeX(cRes[i]);
-    }
-    freeX(cRes);
-
-    return nv;
+    return ctx.napiValueFromCharsArray(cRes, len);
 }
 
 napi_value kvContains(napi_env env, napi_callback_info info) {
@@ -447,10 +377,7 @@ napi_value kvContains(napi_env env, napi_callback_info info) {
     auto k = ctx.argCharsAt(1);
 
     auto res = dynxx_kv_contains(conn, k);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(k);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value kvRemove(napi_env env, napi_callback_info info) {
@@ -460,10 +387,7 @@ napi_value kvRemove(napi_env env, napi_callback_info info) {
     auto k = ctx.argCharsAt(1);
 
     auto res = dynxx_kv_remove(conn, k);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(k);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value kvClear(napi_env env, napi_callback_info info) {
@@ -490,44 +414,35 @@ napi_value deviceType(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
     
     auto dt = dynxx_device_type();
-    auto v = ctx.napiValueFromInt(dt);
-    return v;
+    return ctx.napiValueFromInt(dt);
 }
 
 napi_value deviceName(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
     
     auto cDN = dynxx_device_name();
-    auto v = ctx.napiValueFromChars(cDN);
-    freeX(cDN);
-
-    return v;
+    return ctx.napiValueFromChars(cDN);
 }
 
 napi_value deviceManufacturer(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
     
     auto cDM = dynxx_device_manufacturer();
-    auto v = ctx.napiValueFromChars(cDM);
-    freeX(cDM);
-    return v;
+    return ctx.napiValueFromChars(cDM);
 }
 
 napi_value deviceOsVersion(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
     
-    auto cOV = dynxx_device_name();
-    auto v = ctx.napiValueFromChars(cOV);
-    freeX(cOV);
-    return v;
+    auto cOV = dynxx_device_os_version();
+    return ctx.napiValueFromChars(cOV);
 }
 
 napi_value deviceCpuArch(napi_env env, napi_callback_info info) {
     NapiCallContext ctx(env, info);
     
     auto dca = dynxx_device_cpu_arch();
-    auto v = ctx.napiValueFromInt(dca);
-    return v;
+    return ctx.napiValueFromInt(dca);
 }
 
 // JsonDecoder
@@ -547,10 +462,7 @@ napi_value jsonDecoderInit(napi_env env, napi_callback_info info) {
     auto cJson = ctx.argCharsAt(0);
 
     auto res = dynxx_json_decoder_init(cJson);
-    auto v = ctx.napiValueFromLong(res);
-
-    freeX(cJson);
-    return v;
+    return ctx.napiValueFromLong(res);
 }
 
 napi_value jsonDecoderReadNode(napi_env env, napi_callback_info info) {
@@ -561,10 +473,7 @@ napi_value jsonDecoderReadNode(napi_env env, napi_callback_info info) {
     auto node = ctx.argCount()> 2 ? ctx.argLongAt(2) : 0;
 
     auto res = dynxx_json_decoder_read_node(decoder, node, cK);
-    auto v = ctx.napiValueFromLong(res);
-
-    freeX(cK);
-    return v;
+    return ctx.napiValueFromLong(res);
 }
 
 napi_value jsonDecoderReadChild(napi_env env, napi_callback_info info) {
@@ -594,10 +503,7 @@ napi_value jsonDecoderReadString(napi_env env, napi_callback_info info) {
     auto node = ctx.argCount()> 1 ? ctx.argLongAt(1) : 0;
 
     auto cRes = dynxx_json_decoder_read_string(decoder, node);
-    auto v = ctx.napiValueFromChars(cRes);
-
-    freeX(cRes);
-    return v;
+    return ctx.napiValueFromChars(cRes);
 }
 
 napi_value jsonDecoderReadInteger(napi_env env, napi_callback_info info) {
@@ -638,11 +544,7 @@ napi_value codingHexBytes2str(napi_env env, napi_callback_info info) {
     auto [inBytes, inLen] = ctx.argByteArrayAt(0);
 
     auto cRes = dynxx_coding_hex_bytes2str(inBytes, inLen);
-    auto v = ctx.napiValueFromChars(cRes);
-
-    freeX(cRes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromChars(cRes);
 }
 
 napi_value codingHexStr2Bytes(napi_env env, napi_callback_info info) {
@@ -652,11 +554,7 @@ napi_value codingHexStr2Bytes(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto cRes = dynxx_coding_hex_str2bytes(cStr, &outLen);
-    auto v = ctx.napiValueFromByteArray(cRes, outLen);
-
-    freeX(cRes);
-    freeX(cStr);
-    return v;
+    return ctx.napiValueFromByteArray(cRes, outLen);
 }
 
 // Crypto
@@ -667,10 +565,7 @@ napi_value cryptoRand(napi_env env, napi_callback_info info) {
     auto len = ctx.argIntAt(0);
 
     auto outBytes = dynxx_crypto_rand(len);
-    auto v = ctx.napiValueFromByteArray(outBytes, len);
-    freeX(outBytes);
-
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, len);
 }
 
 napi_value cryptoAesEncrypt(napi_env env, napi_callback_info info) {
@@ -681,12 +576,7 @@ napi_value cryptoAesEncrypt(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_aes_encrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(keyBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value cryptoAesDecrypt(napi_env env, napi_callback_info info) {
@@ -697,12 +587,7 @@ napi_value cryptoAesDecrypt(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_aes_decrypt(inBytes, inLen, keyBytes, keyLen, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(keyBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value cryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
@@ -717,16 +602,7 @@ napi_value cryptoAesGcmEncrypt(napi_env env, napi_callback_info info) {
     size_t outLen;
     auto outBytes = dynxx_crypto_aes_gcm_encrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen,
                                                   aadBytes, aadLen, tagBits, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    if (aadBytes) {
-        freeX(aadBytes);
-    }
-    freeX(initVectorBytes);
-    freeX(keyBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value cryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
@@ -741,16 +617,7 @@ napi_value cryptoAesGcmDecrypt(napi_env env, napi_callback_info info) {
     size_t outLen;
     auto outBytes = dynxx_crypto_aes_gcm_decrypt(inBytes, inLen, keyBytes, keyLen, initVectorBytes, initVectorLen,
                                                   aadBytes, aadLen, tagBits, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    if (aadBytes) {
-        freeX(aadBytes);
-    }
-    freeX(initVectorBytes);
-    freeX(keyBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 // Crypto RSA
@@ -762,11 +629,7 @@ napi_value cryptoRsaGenKey(napi_env env, napi_callback_info info) {
     auto is_public = ctx.argBoolAt(1);
 
     auto cRes = dynxx_crypto_rsa_gen_key(base64, is_public);
-    auto v = ctx.napiValueFromChars(cRes);
-
-    freeX(cRes);
-    freeX(base64);
-    return v;
+    return ctx.napiValueFromChars(cRes);
 }
 
 napi_value cryptoRsaEncrypt(napi_env env, napi_callback_info info) {
@@ -778,12 +641,7 @@ napi_value cryptoRsaEncrypt(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_rsa_encrypt(inBytes, inLen, keyBytes, keyLen, static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(keyBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value cryptoRsaDecrypt(napi_env env, napi_callback_info info) {
@@ -795,12 +653,7 @@ napi_value cryptoRsaDecrypt(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_rsa_decrypt(inBytes, inLen, keyBytes, keyLen, static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(keyBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value cryptoHashMd5(napi_env env, napi_callback_info info) {
@@ -810,11 +663,7 @@ napi_value cryptoHashMd5(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_hash_md5(inBytes, inLen, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value cryptoHashSha1(napi_env env, napi_callback_info info) {
@@ -824,11 +673,7 @@ napi_value cryptoHashSha1(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_hash_sha1(inBytes, inLen, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value cryptoHashSha256(napi_env env, napi_callback_info info) {
@@ -838,11 +683,7 @@ napi_value cryptoHashSha256(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_hash_sha256(inBytes, inLen, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value cryptoBase64Encode(napi_env env, napi_callback_info info) {
@@ -853,11 +694,7 @@ napi_value cryptoBase64Encode(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_base64_encode(inBytes, inLen, noNewLines, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value cryptoBase64Decode(napi_env env, napi_callback_info info) {
@@ -868,11 +705,7 @@ napi_value cryptoBase64Decode(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_crypto_base64_decode(inBytes, inLen, noNewLines, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 // zip
@@ -906,10 +739,7 @@ napi_value zZipProcessDo(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_z_zip_process_do(zip, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value zZipProcessFinished(napi_env env, napi_callback_info info) {
@@ -959,10 +789,7 @@ napi_value zUnZipProcessDo(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_z_unzip_process_do(zip, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value zUnZipProcessFinished(napi_env env, napi_callback_info info) {
@@ -994,11 +821,7 @@ napi_value zZipBytes(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_z_bytes_zip(static_cast<DynXXZipCompressMode>(mode), bufferSize, static_cast<DynXXZFormat>(format), inBytes, inLen, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 napi_value zUnzipBytes(napi_env env, napi_callback_info info) {
@@ -1010,11 +833,7 @@ napi_value zUnzipBytes(napi_env env, napi_callback_info info) {
 
     size_t outLen;
     auto outBytes = dynxx_z_bytes_unzip(bufferSize, static_cast<DynXXZFormat>(format), inBytes, inLen, &outLen);
-    auto v = ctx.napiValueFromByteArray(outBytes, outLen);
-
-    freeX(outBytes);
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromByteArray(outBytes, outLen);
 }
 
 // Lua
@@ -1025,10 +844,7 @@ napi_value lLoadF(napi_env env, napi_callback_info info) {
     auto file = ctx.argCharsAt(0);
 
     auto res = dynxx_lua_loadF(file);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(file);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value lLoadS(napi_env env, napi_callback_info info) {
@@ -1037,10 +853,7 @@ napi_value lLoadS(napi_env env, napi_callback_info info) {
     auto script = ctx.argCharsAt(0);
 
     auto res = dynxx_lua_loadS(script);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(script);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value lCall(napi_env env, napi_callback_info info) {
@@ -1050,14 +863,7 @@ napi_value lCall(napi_env env, napi_callback_info info) {
     auto params = ctx.argCharsAt(1);
 
     auto res = dynxx_lua_call(func, params);
-    auto nv = ctx.napiValueFromChars(res);
-
-    freeX(res);
-    if (params) {
-        freeX(params);
-    }
-    freeX(func);
-    return nv;
+    return ctx.napiValueFromChars(res);
 }
 
 // JS
@@ -1069,10 +875,7 @@ napi_value jLoadF(napi_env env, napi_callback_info info) {
     auto isModule = ctx.argBoolAt(1);
 
     auto res = dynxx_js_loadF(file, isModule);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(file);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value jLoadS(napi_env env, napi_callback_info info) {
@@ -1083,11 +886,7 @@ napi_value jLoadS(napi_env env, napi_callback_info info) {
     auto isModule = ctx.argBoolAt(2);
 
     auto res = dynxx_js_loadS(script, name, isModule);
-    auto nv = ctx.napiValueFromBool(res);
-
-    freeX(script);
-    freeX(name);
-    return nv;
+    return ctx.napiValueFromBool(res);
 }
 
 napi_value jLoadB(napi_env env, napi_callback_info info) {
@@ -1097,10 +896,7 @@ napi_value jLoadB(napi_env env, napi_callback_info info) {
     auto isModule = ctx.argBoolAt(1);
 
     auto b = dynxx_js_loadB(inBytes, inLen, isModule);
-    auto v = ctx.napiValueFromBool(b);
-
-    freeX(inBytes);
-    return v;
+    return ctx.napiValueFromBool(b);
 }
 
 napi_value jCall(napi_env env, napi_callback_info info) {
@@ -1111,14 +907,7 @@ napi_value jCall(napi_env env, napi_callback_info info) {
     auto await = ctx.argBoolAt(2);
 
     auto res = dynxx_js_call(func, params, await);
-    auto nv = ctx.napiValueFromChars(res);
-
-    freeX(res);
-    if (params) {
-        freeX(params);
-    }
-    freeX(func);
-    return nv;
+    return ctx.napiValueFromChars(res);
 }
 
 #define NAPI(f)                                                                                                        \
