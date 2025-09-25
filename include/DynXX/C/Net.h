@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_NET_H_
-#define DYNXX_INCLUDE_C_NET_H_
+#pragma once
 
 #include "Types.h"
 
@@ -61,5 +60,3 @@ const char *dynxx_net_http_request(const char *url, const char *params, DynXXHtt
 bool dynxx_net_http_download(const char *url, const char *file_path, size_t timeout);
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_NET_H_

@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_DEVICE_H_
-#define DYNXX_INCLUDE_C_DEVICE_H_
+#pragma once
 
 #include "Types.h"
 
@@ -79,4 +78,3 @@ DynXXDeviceCpuArch dynxx_device_cpu_arch();
 
 DYNXX_EXTERN_C_END
 
-#endif // DYNXX_INCLUDE_C_DEVICE_H_

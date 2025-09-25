@@ -1,11 +1,8 @@
-#ifndef DYNXX_INCLUDE_CXX_TYPES_HXX_
-#define DYNXX_INCLUDE_CXX_TYPES_HXX_
+#pragma once
 
 #include "../C/Types.h"
 
 #include <string.h>
-
-#ifdef __cplusplus
 
 #include <cstring>
 #include <string_view>
@@ -52,7 +49,7 @@ concept EnumT = NumberT<T> && std::is_enum_v<T>;
 template<typename T>
 concept CharacterT =
         std::is_same_v<T, char> || std::is_same_v<T, unsigned char> || std::is_same_v<T, signed char>
-#ifdef __cpp_char8_t
+#if defined(__cpp_char8_t)
         || std::is_same_v<T, char8_t>
 #endif
         || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> || std::is_same_v<T, wchar_t>;
@@ -313,7 +310,3 @@ inline std::optional<const char*> nullTerminatedCStr(std::string_view sv) {
     }
     return sv.data();
 }
-
-#endif
-
-#endif // DYNXX_INCLUDE_CXX_TYPES_HXX_

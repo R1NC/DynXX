@@ -1,11 +1,8 @@
-#ifndef DYNXX_INCLUDE_CXX_MEMORY_HXX_
-#define DYNXX_INCLUDE_CXX_MEMORY_HXX_
+#pragma once
 
 #if defined(_WIN32)
 #include <malloc.h>
 #endif
-
-#ifdef __cplusplus
 
 #include "Types.hxx"
 
@@ -110,7 +107,3 @@ void freeX(T * &ptr) {
     std::free(const_cast<void *>(ptr));
     ptr = nullptr;
 }
-
-#endif
-
-#endif // DYNXX_INCLUDE_CXX_MEMORY_HXX_

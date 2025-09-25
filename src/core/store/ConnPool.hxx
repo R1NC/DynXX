@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_STORE_CONN_POOL_HXX_
-#define DYNXX_SRC_CORE_STORE_CONN_POOL_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <memory>
 #include <mutex>
@@ -74,7 +71,3 @@ namespace DynXX::Core::Store {
         std::unordered_map<CidT, std::shared_ptr<ConnT>> conns;
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_STORE_CONN_POOL_HXX_

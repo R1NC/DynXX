@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_CXX_DEVICE_HXX_
-#define DYNXX_INCLUDE_CXX_DEVICE_HXX_
+#pragma once
 
 #include "Types.hxx"
 
@@ -44,5 +43,3 @@ std::string dynxxDeviceModel();
 std::string dynxxDeviceOsVersion();
 
 DynXXDeviceCpuArchX dynxxDeviceCpuArch();
-
-#endif // DYNXX_INCLUDE_CXX_DEVICE_HXX_

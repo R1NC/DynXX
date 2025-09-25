@@ -1,9 +1,4 @@
-#ifndef DYNXX_SRC_CORE_DEVICE_HXX_
-#define DYNXX_SRC_CORE_DEVICE_HXX_
-
-#if defined(__cplusplus)
-
-#include <string>
+#pragma once
 
 #include <DynXX/CXX/Device.hxx>
 
@@ -20,7 +15,3 @@ namespace DynXX::Core::Device {
 
     DynXXDeviceCpuArchX cpuArch();
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_DEVICE_HXX_

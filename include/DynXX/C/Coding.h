@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_CODING_H_
-#define DYNXX_INCLUDE_C_CODING_H_
+#pragma once
 
 #include "Types.h"
 
@@ -59,5 +58,3 @@ const byte *dynxx_coding_str2bytes(const char *str, size_t *outLen);
 const char *dynxx_coding_str_trim(const char *str);
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_CODING_H_

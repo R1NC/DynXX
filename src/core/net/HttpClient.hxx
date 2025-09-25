@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_NET_HTTP_CLIENT_HXX_
-#define DYNXX_SRC_CORE_NET_HTTP_CLIENT_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <curl/curl.h>
 
@@ -44,7 +41,3 @@ namespace DynXX::Core::Net {
         ~HttpClient();
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_NET_HTTP_CLIENT_HXX_

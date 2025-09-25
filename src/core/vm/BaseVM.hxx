@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_VM_BASEVM_HXX_
-#define DYNXX_SRC_CORE_VM_BASEVM_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <atomic>
 
@@ -39,7 +36,3 @@ namespace DynXX::Core::VM {
         Concurrent::Executor executor;
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_VM_BASEVM_HXX_

@@ -12,7 +12,7 @@ namespace {
     jobject sJsMsgCallback;
     jmethodID sJsMsgCallbackMethodId;
 
-    auto JClassName = "xyz/rinc/dynxx/DynXX$Companion";
+    constexpr auto JClassName = "xyz/rinc/dynxx/DynXX$Companion";
 
 #define DECLARE_JNI_FUNC(func, signature) {#func, signature, reinterpret_cast<void *>(func)}
 
@@ -638,11 +638,11 @@ namespace {
         auto cBase64 = env->GetStringUTFChars(base64, nullptr);
 
         auto cRes = dynxx_crypto_rsa_gen_key(cBase64, is_public);
-        auto jstr = env->NewStringUTF(cRes);
+        auto jRes = env->NewStringUTF(cRes);
 
         env->ReleaseStringUTFChars(base64, cBase64);
         freeX(cRes);
-        return jstr;
+        return jRes;
     }
 
     jbyteArray cryptoRsaEncrypt(JNIEnv *env, jobject thiz,

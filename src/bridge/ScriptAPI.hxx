@@ -1,9 +1,7 @@
-#ifndef DYNXX_SRC_BRIDGE_SCRIPTAPI_HXX_
-#define DYNXX_SRC_BRIDGE_SCRIPTAPI_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <string>
+#include <string_view>
 
 std::string dynxx_get_versionS([[maybe_unused]] std::string_view json);
 
@@ -128,7 +126,3 @@ void dynxx_z_unzip_releaseS(std::string_view json);
 std::string dynxx_z_bytes_zipS(std::string_view json);
 
 std::string dynxx_z_bytes_unzipS(std::string_view json);
-
-#endif
-
-#endif // DYNXX_SRC_BRIDGE_SCRIPTAPI_HXX_

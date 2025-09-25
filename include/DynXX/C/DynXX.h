@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_DYNXX_H_
-#define DYNXX_INCLUDE_C_DYNXX_H_
+#pragma once
 
 #ifndef NOMINMAX
 #define NOMINMAX  // prevent windows redefining min/max
@@ -46,5 +45,3 @@ const char *dynxx_root_path();
 void dynxx_release(void);
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_DYNXX_H_

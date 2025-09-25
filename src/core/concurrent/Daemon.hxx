@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_CONCURRENT_DAEMON_HXX_
-#define DYNXX_SRC_CORE_CONCURRENT_DAEMON_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <atomic>
 #include <mutex>
@@ -66,7 +63,3 @@ namespace DynXX::Core::Concurrent {
 #endif
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_CONCURRENT_DAEMON_HXX_

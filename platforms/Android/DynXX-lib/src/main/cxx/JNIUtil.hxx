@@ -1,5 +1,4 @@
-#ifndef DYNXX_JNI_UTIL_HXX_
-#define DYNXX_JNI_UTIL_HXX_
+#pragma once
 
 #include <jni.h>
 #include <string>
@@ -147,5 +146,3 @@ moveToJByteArray(JNIEnv *env, const byte *bytes, size_t outLen, const bool needF
     }
     return jba;
 }
-
-#endif // DYNXX_JNI_UTIL_HXX_

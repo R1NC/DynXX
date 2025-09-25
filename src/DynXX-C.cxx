@@ -1,11 +1,9 @@
-#if defined(__cplusplus)
-
 #include <utility>
 
 #include <DynXX/C/DynXX.h>
 #include <DynXX/CXX/DynXX.hxx>
+
 #include "core/util/TypeUtil.hxx"
-#endif
 
 namespace {
     using namespace DynXX::Core::Util::Type;

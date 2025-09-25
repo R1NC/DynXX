@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_CRYPTO_HXX_
-#define DYNXX_SRC_CORE_CRYPTO_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <random>
 #include <mutex>
@@ -121,7 +118,3 @@ namespace DynXX::Core::Crypto {
         Bytes decode(BytesView in, bool noNewLines = true);
     }
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_CRYPTO_HXX_

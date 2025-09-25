@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_STORE_KV_STORE_HXX_
-#define DYNXX_SRC_CORE_STORE_KV_STORE_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <MMKV.h>
 
@@ -70,7 +67,3 @@ namespace DynXX::Core::Store::KV {
         ~KVStore();
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_STORE_KV_STORE_HXX_

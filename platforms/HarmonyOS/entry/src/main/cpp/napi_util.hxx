@@ -1,5 +1,4 @@
-#ifndef DYNXX_NAPI_UTIL_HXX_
-#define DYNXX_NAPI_UTIL_HXX_
+#pragma once
 
 #include <napi/native_api.h>
 
@@ -115,5 +114,3 @@ private:
     size_t argc{0};
     napi_value *argv{nullptr};
 };
-
-#endif

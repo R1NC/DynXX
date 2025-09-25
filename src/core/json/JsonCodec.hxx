@@ -1,9 +1,6 @@
-#ifndef DYNXX_SRC_CORE_JSON_CODEC_HXX_
-#define DYNXX_SRC_CORE_JSON_CODEC_HXX_
+#pragma once
 
 #include <cJSON.h>
-
-#if defined(__cplusplus)
 
 #include <functional>
 
@@ -86,7 +83,3 @@ namespace DynXX::Core::Json {
         const cJSON *reinterpretNode(const DynXXJsonNodeHandle node) const;
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_JSON_CODEC_HXX_

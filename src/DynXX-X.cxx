@@ -1,5 +1,3 @@
-#if defined(__cplusplus)
-
 #include <memory>
 
 #include <DynXX/CXX/DynXX.hxx>
@@ -40,8 +38,6 @@
 
 #if defined(USE_STD_CHAR_CONV_INT)
 #include <charconv>
-#endif
-
 #endif
 
 namespace {

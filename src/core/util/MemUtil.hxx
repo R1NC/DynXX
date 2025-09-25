@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_UTIL_MEMUTIL_HXX_
-#define DYNXX_SRC_CORE_UTIL_MEMUTIL_HXX_
-
-#ifdef __cplusplus
+#pragma once
 
 #include <memory>
 #include <mutex>
@@ -76,7 +73,3 @@ class PtrCache final {
 };
 
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_UTIL_MEMUTIL_HXX_

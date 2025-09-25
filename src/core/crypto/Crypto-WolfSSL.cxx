@@ -1,7 +1,6 @@
 #if defined(USE_WOLF_SSL)
 #include "Crypto.hxx"
 
-#include <string>
 #include <cstring>
 
 #include <wolfssl/wolfssl/ssl.h>

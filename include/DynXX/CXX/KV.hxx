@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_CXX_KV_HXX_
-#define DYNXX_INCLUDE_CXX_KV_HXX_
+#pragma once
 
 #include "../C/KV.h"
 
@@ -26,5 +25,3 @@ bool dynxxKVRemove(const DynXXKVConnHandle conn, std::string_view k);
 void dynxxKVClear(const DynXXKVConnHandle conn);
 
 void dynxxKVClose(const DynXXKVConnHandle conn);
-
-#endif // DYNXX_INCLUDE_CXX_KV_HXX_

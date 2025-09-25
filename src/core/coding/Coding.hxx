@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_CODING_HXX_
-#define DYNXX_SRC_CORE_CODING_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <DynXX/CXX/Types.hxx>
 
@@ -26,7 +23,3 @@ namespace DynXX::Core::Coding {
 
     std::string strEscapeQuotes(std::string_view str);
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_CODING_HXX_

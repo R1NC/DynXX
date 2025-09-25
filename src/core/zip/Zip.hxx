@@ -1,9 +1,6 @@
-#ifndef DYNXX_SRC_CORE_ZIP_HXX_
-#define DYNXX_SRC_CORE_ZIP_HXX_
+#pragma once
 
 #include <zlib.h>
-
-#if defined(__cplusplus)
 
 #include <istream>
 #include <ostream>
@@ -118,7 +115,3 @@ namespace DynXX::Core::Z {
 
     Bytes unzip(size_t bufferSize, DynXXZFormatX format, const Bytes &bytes);
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_ZIP_HXX_

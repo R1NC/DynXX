@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_CONCURRENT_LOCK_HXX_
-#define DYNXX_SRC_CORE_CONCURRENT_LOCK_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <atomic>
 
@@ -28,7 +25,3 @@ private:
 };
 
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_CONCURRENT_LOCK_HXX_

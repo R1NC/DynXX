@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_CRYPTO_H_
-#define DYNXX_INCLUDE_C_CRYPTO_H_
+#pragma once
 
 #include "Types.h"
 
@@ -164,5 +163,3 @@ const byte *dynxx_crypto_base64_encode(const byte *inBytes, size_t inLen, bool n
 const byte *dynxx_crypto_base64_decode(const byte *inBytes, size_t inLen, bool noNewLines, size_t *outLen);
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_CRYPTO_H_

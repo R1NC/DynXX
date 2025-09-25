@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_CXX_JSON_HXX_
-#define DYNXX_INCLUDE_CXX_JSON_HXX_
+#pragma once
 
 #include <functional>
 
@@ -48,5 +47,3 @@ void dynxxJsonDecoderReadChildren(const DynXXJsonDecoderHandle decoder, std::fun
 DynXXJsonNodeHandle dynxxJsonDecoderReadNext(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node = 0);
 
 void dynxxJsonDecoderRelease(const DynXXJsonDecoderHandle decoder);
-
-#endif // DYNXX_INCLUDE_CXX_JSON_HXX_

@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_SQLITE_H_
-#define DYNXX_INCLUDE_C_SQLITE_H_
+#pragma once
 
 #include "Types.h"
 
@@ -75,5 +74,3 @@ void dynxx_sqlite_query_drop(const DynXXSQLiteQueryResultHandle query_result);
 void dynxx_sqlite_close(const DynXXSQLiteConnHandle conn);
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_SQLITE_H_

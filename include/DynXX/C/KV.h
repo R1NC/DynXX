@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_KV_H_
-#define DYNXX_INCLUDE_C_KV_H_
+#pragma once
 
 #include "Types.h"
 
@@ -104,5 +103,3 @@ void dynxx_kv_clear(const DynXXKVConnHandle conn);
 void dynxx_kv_close(const DynXXKVConnHandle conn);
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_KV_H_

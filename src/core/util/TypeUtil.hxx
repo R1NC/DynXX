@@ -1,5 +1,4 @@
-#ifndef DYNXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
-#define DYNXX_SRC_CORE_UTIL_TYPEUTIL_HXX_
+#pragma once
 
 #include <DynXX/CXX/Types.hxx>
 #include <algorithm>
@@ -28,5 +27,3 @@ namespace DynXX::Core::Util::Type {
         return ncs;
     }
 }
-
-#endif // DYNXX_SRC_CORE_UTIL_TYPEUTIL_HXX_

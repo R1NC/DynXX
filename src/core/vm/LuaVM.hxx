@@ -1,5 +1,4 @@
-#ifndef DYNXX_SRC_CORE_VM_LUAVM_HXX_
-#define DYNXX_SRC_CORE_VM_LUAVM_HXX_
+#pragma once
 
 #include <DynXX/C/Macro.h>
 
@@ -8,8 +7,6 @@ DYNXX_EXTERN_C_BEGIN
 #include <lualib.h>
 #include <lauxlib.h>
 DYNXX_EXTERN_C_END
-
-#if defined(__cplusplus)
 
 #include <DynXX/CXX/Types.hxx>
 
@@ -114,7 +111,3 @@ namespace DynXX::Core::VM {
         std::unique_ptr<lua_State, void(*)(lua_State*)> lstate;
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_VM_LUAVM_HXX_

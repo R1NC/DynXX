@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_ZIP_H_
-#define DYNXX_INCLUDE_C_ZIP_H_
+#pragma once
 
 #include "Types.h"
 
@@ -155,5 +154,3 @@ const byte *dynxx_z_bytes_zip(DynXXZipCompressMode mode, size_t bufferSize, DynX
 const byte *dynxx_z_bytes_unzip(size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen, size_t *outLen);
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_ZIP_H_

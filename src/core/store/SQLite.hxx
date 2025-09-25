@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_STORE_SQLITE_STORE_HXX_
-#define DYNXX_SRC_CORE_STORE_SQLITE_STORE_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <sqlite3.h>
 
@@ -120,7 +117,3 @@ namespace DynXX::Core::Store::SQLite {
         ~SQLiteStore();
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_STORE_SQLITE_STORE_HXX_

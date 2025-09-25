@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_NET_UTIL_HXX_
-#define DYNXX_SRC_CORE_NET_UTIL_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <string>
 #include <array>
@@ -56,7 +53,3 @@ namespace DynXX::Core::Net::Util
 
             std::string publicIpV6();
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_NET_UTIL_HXX_

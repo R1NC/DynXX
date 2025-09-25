@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_CONCURRENT_TIMERTASK_HXX_
-#define DYNXX_SRC_CORE_CONCURRENT_TIMERTASK_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include "Daemon.hxx"
 
@@ -24,7 +21,3 @@ namespace DynXX::Core::Concurrent {
         size_t lastExecuteTime{0};
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_CONCURRENT_TIMERTASK_HXX_

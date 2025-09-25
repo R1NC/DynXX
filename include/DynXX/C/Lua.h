@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_LUA_H_
-#define DYNXX_INCLUDE_C_LUA_H_
+#pragma once
 
 #include "Types.h"
 
@@ -32,5 +31,3 @@ bool dynxx_lua_loadS(const char *script);
 const char *dynxx_lua_call(const char *func, const char *params);
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_LUA_H_

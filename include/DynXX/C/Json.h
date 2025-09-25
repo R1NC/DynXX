@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_JSON_H_
-#define DYNXX_INCLUDE_C_JSON_H_
+#pragma once
 
 #include "Types.h"
 
@@ -112,5 +111,3 @@ DynXXJsonNodeHandle dynxx_json_decoder_read_next(const DynXXJsonDecoderHandle de
 void dynxx_json_decoder_release(const DynXXJsonDecoderHandle decoder);
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_JSON_H_

@@ -1,5 +1,4 @@
-#ifndef DYNXX_INCLUDE_C_JS_H_
-#define DYNXX_INCLUDE_C_JS_H_
+#pragma once
 
 #include "Types.h"
 
@@ -51,5 +50,3 @@ const char *dynxx_js_call(const char *func, const char *params, bool await);
 void dynxx_js_set_msg_callback(const char *(*const callback)(const char *msg));
 
 DYNXX_EXTERN_C_END
-
-#endif // DYNXX_INCLUDE_C_JS_H_

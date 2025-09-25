@@ -1,9 +1,6 @@
-#ifndef DYNXX_SRC_CORE_VM_JSVM_HXX_
-#define DYNXX_SRC_CORE_VM_JSVM_HXX_
+#pragma once
 
 #include <quickjs-libc.h>
-
-#if defined(__cplusplus)
 
 #include <unordered_set>
 
@@ -220,7 +217,3 @@ namespace DynXX::Core::VM {
         void beforeLoad();
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_VM_JSVM_HXX_

@@ -1,7 +1,4 @@
-#ifndef DYNXX_INCLUDE_CXX_MACRO_HXX_
-#define DYNXX_INCLUDE_CXX_MACRO_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #if defined(__cpp_lib_to_chars) && defined(USE_STD_TO_CHARS)
         #if (__cpp_lib_to_chars >= 201611L)
@@ -15,7 +12,3 @@
 #if defined(__cpp_lib_format) && defined(USE_STD_TO_CHARS)
         #define USE_STD_FORMAT
 #endif
-
-#endif
-
-#endif // DYNXX_INCLUDE_CXX_MACRO_HXX_

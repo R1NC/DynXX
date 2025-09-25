@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_CONCURRENT_EXECUTOR_HXX_
-#define DYNXX_SRC_CORE_CONCURRENT_EXECUTOR_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <queue>
 #include <vector>
@@ -57,7 +54,3 @@ namespace DynXX::Core::Concurrent {
         size_t workerIndex{0uz};
     };
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_CONCURRENT_EXECUTOR_HXX_

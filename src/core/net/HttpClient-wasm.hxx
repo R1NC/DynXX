@@ -1,5 +1,4 @@
-#ifndef DYNXX_SRC_CORE_NET_HTTP_CLIENT_WASM_HXX_
-#define DYNXX_SRC_CORE_NET_HTTP_CLIENT_WASM_HXX_
+#pragma once
 
 #if defined(__EMSCRIPTEN__)
 
@@ -20,5 +19,3 @@ namespace DynXX::Core::Net
 }
 
 #endif
-
-#endif // DYNXX_SRC_CORE_NET_HTTP_CLIENT_WASM_HXX_

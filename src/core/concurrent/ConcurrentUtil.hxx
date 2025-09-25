@@ -1,7 +1,4 @@
-#ifndef DYNXX_SRC_CORE_CONCURRENT_CONCURRENTUTIL_HXX_
-#define DYNXX_SRC_CORE_CONCURRENT_CONCURRENTUTIL_HXX_
-
-#if defined(__cplusplus)
+#pragma once
 
 #include <new>
 #include <thread>
@@ -72,7 +69,3 @@ namespace DynXX::Core::Concurrent {
         return false;
     }
 }
-
-#endif
-
-#endif // DYNXX_SRC_CORE_CONCURRENT_CONCURRENTUTIL_HXX_
