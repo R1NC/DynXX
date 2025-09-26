@@ -107,6 +107,20 @@ concept IterableT = requires(T a)
     { std::end(a) } -> std::sentinel_for<decltype(std::begin(a))>;
 };
 
+template<typename R>
+concept InRangeT = 
+    std::ranges::input_range<R> &&
+    requires(R& r) { 
+        { r.size() } -> std::integral; 
+    };
+
+template<typename R>
+concept OutRangeT = 
+    std::ranges::range<R> &&
+    requires(R& r, std::size_t n) {
+        r.resize(n);
+    };
+
 template<typename F>
 concept RunnableT = requires(F&& f) {
     { std::invoke(std::forward<F>(f)) } -> std::same_as<void>;

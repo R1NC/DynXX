@@ -5,6 +5,9 @@
 #endif
 
 #include <memory>
+#if defined(__cpp_lib_ranges)
+#include <ranges>
+#endif
 
 #include "Types.hxx"
 
@@ -108,6 +111,24 @@ void freeX(T * &ptr) {
     }
     std::free(const_cast<void *>(ptr));
     ptr = nullptr;
+}
+
+template<InRangeT Src, OutRangeT Dst>
+requires std::indirectly_writable<
+    std::ranges::iterator_t<Dst>,
+    std::ranges::range_reference_t<Src>
+>
+void copyRange(const Src& src, Dst& dst, size_t len) {
+    if (len == 0) [[unlikely]] {
+        return;
+    }
+    len = std::min({len, src.size()});
+    dst.resize(len);
+#if defined(__cpp_lib_ranges)
+    std::ranges::copy(src | std::views::take(len), dst.begin());
+#else
+    std::copy_n(src.begin(), len, dst.begin());
+#endif
 }
 
 // Smart Pointers

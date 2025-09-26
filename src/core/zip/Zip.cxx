@@ -6,6 +6,7 @@
 
 #include "DynXX/C/Zip.h"
 #include <DynXX/CXX/Log.hxx>
+#include <DynXX/CXX/Memory.hxx>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -14,7 +15,6 @@
 #else
 #define SET_BINARY_MODE(file)
 #endif
-
 
 namespace {
     using enum DynXXLogLevelX;
@@ -167,8 +167,8 @@ ZBase<T>::ZBase(size_t bufferSize, DynXXZFormatX format) : bufferSize{bufferSize
     {
         throw std::invalid_argument("format invalid");
     }
-    this->inBuffer.reserve(bufferSize);
-    this->outBuffer.reserve(bufferSize);
+    this->inBuffer.resize(bufferSize, 0);
+    this->outBuffer.resize(bufferSize, 0);
 }
 
 template <typename T>
@@ -180,9 +180,8 @@ size_t ZBase<T>::input(const Bytes &bytes, bool finish)
     }
     const auto dataLen = std::min<size_t>(bytes.size(), this->bufferSize);
 
-    this->inBuffer.clear();
-    this->inBuffer.reserve(dataLen);
-    std::copy_n(bytes.data(), dataLen, this->inBuffer.data());
+    this->inBuffer.resize(dataLen, 0);
+    copyRange(bytes, this->inBuffer, dataLen);
 
     this->zs.avail_in = static_cast<unsigned int>(dataLen);
     this->zs.next_in = this->inBuffer.data();
@@ -193,8 +192,7 @@ size_t ZBase<T>::input(const Bytes &bytes, bool finish)
 template <typename T>
 Bytes ZBase<T>::processDo()
 {
-    this->outBuffer.clear();
-    this->outBuffer.reserve(this->bufferSize);
+    this->outBuffer.resize(this->bufferSize, 0);
     this->zs.avail_out = static_cast<unsigned int>(this->bufferSize);
     this->zs.next_out = this->outBuffer.data();
 
