@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined(NOMINMAX)
-#define NOMINMAX  // prevent windows redefining min/max
-#endif
-
 #include "Log.h"
 #include "Crypto.h"
 #include "Coding.h"
