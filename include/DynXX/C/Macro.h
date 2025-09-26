@@ -35,7 +35,10 @@
     #define DYNXX_DEPRECATED(msg)
 #endif
 
-
 #if !defined(DYNXX_OUT)
 #define DYNXX_OUT
+#endif
+
+#if !defined(NOMINMAX)
+#define NOMINMAX  // prevent windows redefining min/max
 #endif
