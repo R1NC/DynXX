@@ -150,7 +150,6 @@ napi_value napiValueFromCharsArray(napi_env env, const char **charsArray, size_t
     for (decltype(len) i = 0; i < len; i++) {
         status = napi_set_element(env, v, i, napiValueFromChars(env, charsArray[i]));
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_set_element() failed");
-        freeX(charsArray[i]);
     }
     freeX(charsArray);
     return v;
