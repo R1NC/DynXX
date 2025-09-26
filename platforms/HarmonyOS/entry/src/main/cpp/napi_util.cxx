@@ -1,7 +1,5 @@
 #include "napi_util.hxx"
 
-#include "../../../../../../build.HarmonyOS/output/include/DynXX/CXX/Memory.hxx"
-
 #include <cstring>
 
 // static Utils
@@ -93,7 +91,6 @@ napi_value napiValueFromChars(napi_env env, const char *c) {
     napi_value v;
     auto status = napi_create_string_utf8(env, c, std::strlen(c), &v);
     CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_create_string_utf8() failed");
-    freeX(c);
     return v;
 }
 
@@ -136,7 +133,6 @@ napi_value napiValueFromByteArray(napi_env env, const byte *byteArray, size_t le
         status = napi_set_element(env, v, i, napiValueFromInt(env, byteArray[i]));
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_set_element() failed");
     }
-    freeX(byteArray);
     return v;
 }
 
@@ -151,7 +147,6 @@ napi_value napiValueFromCharsArray(napi_env env, const char **charsArray, size_t
         status = napi_set_element(env, v, i, napiValueFromChars(env, charsArray[i]));
         CHECK_NAPI_STATUS_RETURN_NAPI_VALUE(env, status, "napi_set_element() failed");
     }
-    freeX(charsArray);
     return v;
 }
 
@@ -160,17 +155,11 @@ napi_value napiValueFromCharsArray(napi_env env, const char **charsArray, size_t
 NapiCallContext::NapiCallContext(napi_env env, napi_callback_info cbkInfo) : env(env), cbkInfo(cbkInfo) {
     auto status = napi_get_cb_info(this->env, cbkInfo, &this->argc, nullptr, nullptr, nullptr);
     this->argv = mallocX<napi_value>(this->argc);
-    status = napi_get_cb_info(this->env, cbkInfo, &this->argc, this->argv, nullptr, nullptr);
-}
-
-NapiCallContext::~NapiCallContext() {
-    if (this->argv != nullptr) {
-        for (auto ptr : this->ptrVec) {
-            freeX(ptr);
-        }
-        freeX(this->argv);
-        this->argv = nullptr;
+    this->autoFree(this->argv);
+    for (auto i = 0; i < this->argc; i ++) {
+        this->autoFree(this->argv[i]);
     }
+    status = napi_get_cb_info(this->env, cbkInfo, &this->argc, this->argv, nullptr, nullptr);
 }
 
 napi_value NapiCallContext::argAt(size_t i) {
@@ -214,7 +203,7 @@ size_t NapiCallContext::argCount() const {
 
 const char *NapiCallContext::napiValueToChars(napi_value nv) {
     auto ptr = ::napiValueToChars(this->env, nv);
-    this->ptrVec.push_back((void*)ptr);
+    this->autoFree(ptr);
     return ptr;
 }
 
@@ -236,16 +225,16 @@ double NapiCallContext::napiValueToDouble(napi_value nv) {
 
 std::tuple<const byte *, size_t> NapiCallContext::napiValueToByteArray(napi_value nv) {
     auto [ptr, len] = ::napiValueToByteArray(this->env, nv);
-    this->ptrVec.push_back((void*)ptr);
+    this->autoFree(ptr);
     return {ptr, len};
 }
 
 std::tuple<const char **, size_t> NapiCallContext::napiValueToCharsArray(napi_value nv) {
     auto [ptrV, len] = ::napiValueToCharsArray(this->env, nv);
     for (decltype(len) i = 0; i < len; i++) {
-        this->ptrVec.push_back((void*)ptrV[i]);
+        this->autoFree(ptrV[i]);
     }
-    this->ptrVec.push_back((void*)ptrV);
+    this->autoFree(ptrV);
     return {ptrV, len};
 }
 
@@ -270,9 +259,18 @@ napi_value NapiCallContext::napiValueFromDouble(double d) {
 }
 
 napi_value NapiCallContext::napiValueFromByteArray(const byte *byteArray, size_t len) {
+    if (byteArray && len > 0) {
+        this->autoFree(byteArray);
+    }
     return ::napiValueFromByteArray(this->env, byteArray, len);
 }
 
 napi_value NapiCallContext::napiValueFromCharsArray(const char **charsArray, size_t len) {
+    if (charsArray && len > 0) {
+        this->autoFree(charsArray);
+        for (size_t i = 0; i < len; i++) {
+            this->autoFree(charsArray[i]);
+        }
+    }
     return ::napiValueFromCharsArray(this->env, charsArray, len);
 }

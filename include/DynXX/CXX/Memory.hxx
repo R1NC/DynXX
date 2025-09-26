@@ -107,3 +107,12 @@ void freeX(T * &ptr) {
     std::free(const_cast<void *>(ptr));
     ptr = nullptr;
 }
+
+// Smart Pointers
+
+struct FreeDeleter {
+    void operator()(RawPtr p) const noexcept {
+        std::free(p);
+    }
+};
+using AutoFreePtr = std::unique_ptr<void, FreeDeleter>;

@@ -2,7 +2,7 @@
 
 #include <napi/native_api.h>
 
-#include "../../../../../../build.HarmonyOS/output/include/DynXX/CXX/Types.hxx"
+#include "../../../../../../build.HarmonyOS/output/include/DynXX/CXX/Memory.hxx"
 
 #define PRINT_NAPI_STATUS_ERR(env, status, errMsg)                                                                     \
     do {                                                                                                               \
@@ -69,7 +69,7 @@ napi_value napiValueFromDouble(napi_env env, double d);
 napi_value napiValueFromByteArray(napi_env env, const byte *byteArray, size_t len);
 napi_value napiValueFromCharsArray(napi_env env, const char **charsArray, size_t len);
 
-class NapiCallContext {
+class NapiCallContext final {
 public:
     NapiCallContext() = delete;
     NapiCallContext(napi_env env, napi_callback_info info);
@@ -77,7 +77,7 @@ public:
     NapiCallContext & operator = (const NapiCallContext &) = delete;
     NapiCallContext(NapiCallContext &&) = delete;
     NapiCallContext & operator = (NapiCallContext &&) = delete;
-    ~NapiCallContext();
+    ~NapiCallContext() = default;
 
     napi_value argAt(size_t i);
     size_t argCount() const;
@@ -111,5 +111,11 @@ private:
     napi_callback_info cbkInfo;
     size_t argc{0};
     napi_value *argv{nullptr};
-    std::vector<void*> ptrVec;
+    std::vector<AutoFreePtr> ptrVec;
+    
+    template<typename T>
+    void autoFree(T *p) {
+        if (!p) return;
+        this->ptrVec.emplace_back((void*)p);
+    }
 };
