@@ -31,7 +31,7 @@ namespace DynXX::Core::Z {
 
         ZBase &operator=(ZBase &&) = delete;
 
-        virtual ~ZBase();
+        virtual ~ZBase() = default;
 
         size_t input(const Bytes &bytes, bool finish);
 
@@ -47,8 +47,8 @@ namespace DynXX::Core::Z {
         int windowBits() const;
 
     private:
-        byte *inBuffer{nullptr};
-        byte *outBuffer{nullptr};
+        Bytes inBuffer;
+        Bytes outBuffer;
         const size_t bufferSize;
         const DynXXZFormatX format;
     };

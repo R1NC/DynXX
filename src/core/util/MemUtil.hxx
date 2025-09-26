@@ -36,11 +36,7 @@ class PtrCache final {
         PtrCache &operator=(const PtrCache &) = delete;
         PtrCache(PtrCache &&) = delete;
         PtrCache &operator=(PtrCache &&) = delete;
-
-        ~PtrCache() {
-            const auto lock = std::scoped_lock(mutex);
-            this->cache.clear();
-        }
+        ~PtrCache() = default;
 
         address add(std::unique_ptr<T> ptr) {
             const auto lock = std::scoped_lock(mutex);

@@ -169,7 +169,6 @@ NapiCallContext::~NapiCallContext() {
         for (auto ptr : this->ptrVec) {
             freeX(ptr);
         }
-        this->ptrVec.clear();
         freeX(this->argv);
         this->argv = nullptr;
     }

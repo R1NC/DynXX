@@ -6,7 +6,6 @@
 
 #include "DynXX/C/Zip.h"
 #include <DynXX/CXX/Log.hxx>
-#include <DynXX/CXX/Memory.hxx>
 
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #include <fcntl.h>
@@ -168,8 +167,8 @@ ZBase<T>::ZBase(size_t bufferSize, DynXXZFormatX format) : bufferSize{bufferSize
     {
         throw std::invalid_argument("format invalid");
     }
-    this->inBuffer = mallocX<byte>(bufferSize);
-    this->outBuffer = mallocX<byte>(bufferSize);
+    this->inBuffer.reserve(bufferSize);
+    this->outBuffer.reserve(bufferSize);
 }
 
 template <typename T>
@@ -179,13 +178,14 @@ size_t ZBase<T>::input(const Bytes &bytes, bool finish)
     {
         return 0;
     }
-    auto dataLen = std::min<size_t>(bytes.size(), this->bufferSize);
+    const auto dataLen = std::min<size_t>(bytes.size(), this->bufferSize);
 
-    std::memset(this->inBuffer, 0, this->bufferSize);
-    std::memcpy(this->inBuffer, bytes.data(), dataLen);
+    this->inBuffer.clear();
+    this->inBuffer.reserve(dataLen);
+    std::copy_n(bytes.data(), dataLen, this->inBuffer.data());
 
     this->zs.avail_in = static_cast<unsigned int>(dataLen);
-    this->zs.next_in = this->inBuffer;
+    this->zs.next_in = this->inBuffer.data();
     this->inFinish = finish;
     return dataLen;
 }
@@ -193,33 +193,27 @@ size_t ZBase<T>::input(const Bytes &bytes, bool finish)
 template <typename T>
 Bytes ZBase<T>::processDo()
 {
-    std::memset(this->outBuffer, 0, this->bufferSize);
+    this->outBuffer.clear();
+    this->outBuffer.reserve(this->bufferSize);
     this->zs.avail_out = static_cast<unsigned int>(this->bufferSize);
-    this->zs.next_out = this->outBuffer;
+    this->zs.next_out = this->outBuffer.data();
 
     static_cast<T *>(this)->processImp();
 
-    if (this->ret != Z_OK && ret != Z_STREAM_END) [[unlikely]]
+    if (this->ret != Z_OK && this->ret != Z_STREAM_END) [[unlikely]]
     {
         dynxxLogPrintF(Error, "z process error:{}", this->ret);
         return {};
     }
 
-    auto outLen = this->bufferSize - (this->zs).avail_out;
-    return makeBytes(this->outBuffer, outLen);
+    const auto outLen = this->bufferSize - (this->zs).avail_out;
+    return makeBytes(this->outBuffer.data(), outLen);
 }
 
 template <typename T>
 bool ZBase<T>::processFinished() const
 {
     return this->zs.avail_out != 0;
-}
-
-template <typename T>
-ZBase<T>::~ZBase()
-{
-    freeX(inBuffer);
-    freeX(outBuffer);
 }
 
 // Explicit template instantiation

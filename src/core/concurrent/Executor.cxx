@@ -61,11 +61,6 @@ Executor::Executor(size_t workerPoolCapacity) : workerPoolCapacity{workerPoolCap
     this->workerPool.reserve(this->workerPoolCapacity);
 }
 
-Executor::~Executor()
-{
-    this->workerPool.clear();
-}
-
 Executor& Executor::operator>>(TaskT&& task)
 {
     auto lock = std::scoped_lock(this->mutex);

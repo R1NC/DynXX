@@ -498,7 +498,6 @@ JSVM::~JSVM()
         }
         JS_FreeValue(this->context.get(), jv);
     }
-    this->jValueCache.clear();
 
     JS_FreeValue(this->context.get(), jGlobal);
     this->context.reset();

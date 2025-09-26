@@ -43,7 +43,7 @@ namespace DynXX::Core::Concurrent {
 
         Executor &operator=(Executor &&) = delete;
 
-        ~Executor();
+        ~Executor() = default;
 
         Executor &operator>>(TaskT &&task);
 
