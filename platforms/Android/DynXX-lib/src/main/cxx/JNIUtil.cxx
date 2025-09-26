@@ -9,7 +9,18 @@ namespace {
     std::mutex sJClassCacheMutex;
 }
 
-JNIEnv *currentEnv(JavaVM *vm) {
+JNIEnv *getEnv(JavaVM *vm, int ver) {
+    JNIEnv *env = nullptr;
+    if (vm == nullptr) {
+        return env;
+    }
+    if (auto ret = vm->GetEnv(reinterpret_cast<void **>(&env), ver); ret != JNI_OK) {
+        return env;
+    }
+    return env;
+}
+
+JNIEnv *attachEnv(JavaVM *vm) {
     JNIEnv *env = nullptr;
     if (vm != nullptr) {
         vm->AttachCurrentThread(&env, nullptr);
@@ -36,25 +47,46 @@ void releaseCachedClass(JNIEnv *env) {
     sJClassCache.clear();
 }
 
-std::tuple<byte*, size_t> readJBytes(JNIEnv *env, jbyteArray jbArr) {
-    if (!jbArr) return {};
-    const auto jo = env->GetByteArrayElements(jbArr, nullptr);
-    auto cBytes = reinterpret_cast<byte *>(jo);
-    const auto len = env->GetArrayLength(jbArr);
-    return std::make_tuple(cBytes, len);
-}
-
-void releaseJBytes(JNIEnv *env, jbyteArray jbArr, byte *cBytes) {
-    env->ReleaseByteArrayElements(jbArr, reinterpret_cast<jbyte*>(cBytes), JNI_ABORT);
-}
-
 const char* readJString(JNIEnv *env, jobject jStr) {
-    if (!jStr) return nullptr;
+    if (!env || !jStr) return nullptr;
     return env->GetStringUTFChars(reinterpret_cast<jstring>(jStr), nullptr);
 }
 
 void releaseJString(JNIEnv *env, jobject jStr, const char* cStr) {
+    if (!env || !jStr || !cStr) return;
     env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jStr), cStr);
+}
+
+std::tuple<byte*, size_t> readJByteArray(JNIEnv *env, jbyteArray jbArr) {
+    if (!env || !jbArr) return {};
+    const auto len = env->GetArrayLength(jbArr);
+    const auto jo = env->GetByteArrayElements(jbArr, nullptr);
+    auto cBytes = reinterpret_cast<byte *>(jo);
+    return std::make_tuple(cBytes, len);
+}
+
+void releaseJByteArray(JNIEnv *env, jbyteArray jbArr, byte *cBytes) {
+    if (!env || !jbArr || !cBytes) return;
+    env->ReleaseByteArrayElements(jbArr, reinterpret_cast<jbyte*>(cBytes), JNI_ABORT);
+}
+
+std::tuple<const char**, size_t> readJStringArray(JNIEnv *env, jobjectArray jStrArr) {
+    if (!env || !jStrArr) return {};
+    const auto size = env->GetArrayLength(jStrArr);
+    const auto cStrArr = new const char*[size];
+    for (size_t i = 0; i < size; i++) {
+        cStrArr[i] = readJString(env, env->GetObjectArrayElement(jStrArr, i));
+    }
+    return std::make_tuple(cStrArr, size);
+}
+
+void releaseJStringArray(JNIEnv *env, jobjectArray jStrArr, const char **cStrArr) {
+    if (!env || !jStrArr || !cStrArr) return;
+    const auto size = env->GetArrayLength(jStrArr);
+    for (size_t i = 0; i < size; i++) {
+        releaseJString(env, env->GetObjectArrayElement(jStrArr, i), cStrArr[i]);
+    }
+    delete[] cStrArr;
 }
 
 jobject boxJNum(JNIEnv *env, const char *cls, const char *sig, ...) {

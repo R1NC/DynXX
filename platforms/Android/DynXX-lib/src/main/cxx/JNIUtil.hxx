@@ -24,24 +24,87 @@
 #define LKF1_ LKF1 _
 #define LKF2_ LKF2 _
 
-JNIEnv *currentEnv(JavaVM *vm);
+JNIEnv *getEnv(JavaVM *vm, int ver);
+
+JNIEnv *attachEnv(JavaVM *vm);
 
 jclass findClassInCache(JNIEnv *env, const char *cls);
 
 void releaseCachedClass(JNIEnv *env);
 
-std::tuple<byte*, size_t> readJBytes(JNIEnv *env, jbyteArray jbArr);
-
-void releaseJBytes(JNIEnv *env, jbyteArray jbArr, byte *cBytes);
+// read c types from jni object
 
 const char* readJString(JNIEnv *env, jobject jStr);
 
 void releaseJString(JNIEnv *env, jobject jStr, const char* cStr);
 
-template<typename JT>
-JT readJObjectArrayItem(JNIEnv *env, jobjectArray joArr, jsize idx) {
-    return reinterpret_cast<JT>(env->GetObjectArrayElement(joArr, idx));
-}
+struct JArg {
+    JNIEnv *env;
+    JArg() = delete;
+    JArg(JNIEnv *env) : env(env) {}
+    virtual ~JArg() = default;
+    JArg(const JArg&) = delete;
+    JArg& operator=(const JArg&) = delete;
+    JArg(JArg&&) = delete;
+    JArg& operator=(JArg&&) = delete;
+};
+
+struct JStringArg final : public JArg {
+public:
+    const char *data;
+
+    explicit JStringArg(JNIEnv *env, jobject jStr) : JArg(env), jStr(jStr) {
+        data = readJString(env, jStr);
+    }
+    ~JStringArg() override {
+        releaseJString(this->env, this->jStr, this->data);
+    }
+
+private:
+    jobject jStr;
+};
+
+std::tuple<byte*, size_t> readJByteArray(JNIEnv *env, jbyteArray jbArr);
+
+void releaseJByteArray(JNIEnv *env, jbyteArray jbArr, byte *cBytes);
+
+struct JByteArrayArg final : public JArg {
+public:
+    byte *data{nullptr};
+    size_t size{0};
+
+    explicit JByteArrayArg(JNIEnv *env, jbyteArray jbArr) : JArg(env), jbArr(jbArr) {
+        std::tie(data, size) = readJByteArray(env, jbArr);
+    }
+    ~JByteArrayArg() override {
+        releaseJByteArray(this->env, this->jbArr, this->data);
+    }
+
+private:
+    jbyteArray jbArr;
+};
+
+std::tuple<const char**, size_t> readJStringArray(JNIEnv *env, jobjectArray jStrArr);
+
+void releaseJStringArray(JNIEnv *env, jobjectArray jStrArr, const char **cStrArr);
+
+struct JStringArrayArg final : public JArg {
+public:
+    const char **data{nullptr};
+    size_t size{0};
+    
+    explicit JStringArrayArg(JNIEnv *env, jobjectArray jStrArr) : JArg(env), jStrArr(jStrArr) {
+        std::tie(data, size) = readJStringArray(env, jStrArr);
+    }
+    ~JStringArrayArg() override {
+        releaseJStringArray(this->env, this->jStrArr, this->data);
+    }
+
+private:
+    jobjectArray jStrArr;
+};
+
+// wrap jni object with C types
 
 jobject boxJNum(JNIEnv *env, const char *cls, const char *sig, ...);
 
