@@ -54,14 +54,6 @@ namespace DynXX::Core::Store::KV {
 
         explicit KVStore(const std::string &root);
 
-        KVStore(const KVStore &) = delete;
-
-        KVStore &operator=(const KVStore &) = delete;
-
-        KVStore(KVStore &&) = delete;
-
-        KVStore &operator=(KVStore &&) = delete;
-
         std::weak_ptr<KV::Connection> open(const std::string &_id);
 
         ~KVStore();

@@ -12,14 +12,6 @@ namespace DynXX::Core::Concurrent {
     public:
         Worker();
 
-        Worker(const Worker &) = delete;
-
-        Worker &operator=(const Worker &) = delete;
-
-        Worker(Worker &&) = delete;
-
-        Worker &operator=(Worker &&) = delete;
-
         ~Worker() override = default;
 
         Worker &operator>>(TaskT &&task);
@@ -35,17 +27,14 @@ namespace DynXX::Core::Concurrent {
 
         explicit Executor(size_t workerPoolCapacity);
 
-        Executor(const Executor &) = delete;
-
-        Executor &operator=(const Executor &) = delete;
-
-        Executor(Executor &&) = delete;
-
-        Executor &operator=(Executor &&) = delete;
-
         ~Executor() = default;
 
         Executor &operator>>(TaskT &&task);
+
+        Executor(const Executor &) = delete;
+        Executor &operator=(const Executor &) = delete;
+        Executor(Executor &&) = delete;
+        Executor &operator=(Executor &&) = delete;
 
     private:
         size_t workerPoolCapacity{0uz};

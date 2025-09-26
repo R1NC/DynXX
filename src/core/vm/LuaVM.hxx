@@ -64,14 +64,6 @@ namespace DynXX::Core::VM {
          */
         LuaVM();
 
-        LuaVM(const LuaVM &) = delete;
-
-        LuaVM &operator=(const LuaVM &) = delete;
-
-        LuaVM(LuaVM &&) = delete;
-
-        LuaVM &operator=(LuaVM &&) = delete;
-
         /**
          * @brief Load Lua file
          * @warning Will alert a prompt window in WebAssembly!

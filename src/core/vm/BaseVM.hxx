@@ -9,15 +9,12 @@ namespace DynXX::Core::VM {
     public:
         BaseVM();
 
-        BaseVM(const BaseVM &) = delete;
-
-        BaseVM &operator=(const BaseVM &) = delete;
-
-        BaseVM(BaseVM &&) = delete;
-
-        BaseVM &operator=(BaseVM &&) = delete;
-
         virtual ~BaseVM();
+
+        BaseVM(const BaseVM &) = delete;
+        BaseVM &operator=(const BaseVM &) = delete;
+        BaseVM(BaseVM &&) = delete;
+        BaseVM &operator=(BaseVM &&) = delete;
 
     protected:
         mutable std::recursive_timed_mutex vmMutex;

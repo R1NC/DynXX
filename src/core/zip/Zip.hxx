@@ -19,19 +19,14 @@ namespace DynXX::Core::Z {
     template<typename T>
     class ZBase {
     public:
-        ZBase() = delete;
-
         explicit ZBase(size_t bufferSize, DynXXZFormatX format);
-
-        ZBase(const ZBase &) = delete;
-
-        ZBase &operator=(const ZBase &) = delete;
-
-        ZBase(ZBase &&) = delete;
-
-        ZBase &operator=(ZBase &&) = delete;
-
         virtual ~ZBase() = default;
+
+        ZBase() = delete;
+        ZBase(const ZBase &) = delete;
+        ZBase &operator=(const ZBase &) = delete;
+        ZBase(ZBase &&) = delete;
+        ZBase &operator=(ZBase &&) = delete;
 
         size_t input(const Bytes &bytes, bool finish);
 
@@ -55,18 +50,8 @@ namespace DynXX::Core::Z {
 
     class Zip final : public ZBase<Zip> {
     public:
-        Zip() = delete;
-
         /// @throws `std::invalid_argument` & `ZException`
         explicit Zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format) noexcept(false);
-
-        Zip(const Zip &) = delete;
-
-        Zip &operator=(const Zip &) = delete;
-
-        Zip(Zip &&) = delete;
-
-        Zip &operator=(Zip &&) = delete;
 
         ~Zip() override;
 
@@ -78,18 +63,8 @@ namespace DynXX::Core::Z {
 
     class UnZip final : public ZBase<UnZip> {
     public:
-        UnZip() = delete;
-
         /// @throws `std::invalid_argument` & `ZException`
         explicit UnZip(size_t bufferSize, DynXXZFormatX format) noexcept(false);
-
-        UnZip(const UnZip &) = delete;
-
-        UnZip &operator=(const UnZip &) = delete;
-
-        UnZip(UnZip &&) = delete;
-
-        UnZip &operator=(UnZip &&) = delete;
 
         ~UnZip() override;
 

@@ -20,14 +20,6 @@ namespace DynXX::Core::Store {
     public:
         ConnPool() = default;
 
-        ConnPool(const ConnPool &) = delete;
-
-        ConnPool &operator=(const ConnPool &) = delete;
-
-        ConnPool(ConnPool &&) = delete;
-
-        ConnPool &operator=(ConnPool &&) = delete;
-
         void close(const CidT cid) {
             auto lock = std::scoped_lock(this->mutex);
             auto it = this->conns.find(cid);
@@ -49,6 +41,11 @@ namespace DynXX::Core::Store {
         ~ConnPool() {
             this->closeAll();
         }
+
+        ConnPool(const ConnPool &) = delete;
+        ConnPool &operator=(const ConnPool &) = delete;
+        ConnPool(ConnPool &&) = delete;
+        ConnPool &operator=(ConnPool &&) = delete;
 
     protected:
         std::weak_ptr<ConnT> open(const CidT cid, std::function<std::shared_ptr<ConnT>()> &&creatorF) {

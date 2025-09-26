@@ -125,14 +125,6 @@ namespace DynXX::Core::VM {
          */
         JSVM();
 
-        JSVM(const JSVM &) = delete;
-
-        JSVM &operator=(const JSVM &) = delete;
-
-        JSVM(JSVM &&) = delete;
-
-        JSVM &operator=(JSVM &&) = delete;
-
         /**
          * @brief Export C func for JS
          * @param funcJ func name

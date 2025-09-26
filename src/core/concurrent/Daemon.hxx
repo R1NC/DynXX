@@ -26,17 +26,7 @@ namespace DynXX::Core::Concurrent {
 #endif
         Daemon {
     protected:
-        Daemon() = delete;
-
         explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; }, const size_t timeoutMicroSecs = 100);
-
-        Daemon(const Daemon &) = delete;
-
-        Daemon &operator=(const Daemon &) = delete;
-
-        Daemon(Daemon &&) = delete;
-
-        Daemon &operator=(Daemon &&) = delete;
 
         template<RunnableT T>
         void update(T &&f) {
@@ -46,6 +36,12 @@ namespace DynXX::Core::Concurrent {
             }
             this->loopCondition.notify_one();
         }
+
+        Daemon() = delete;
+        Daemon(const Daemon &) = delete;
+        Daemon &operator=(const Daemon &) = delete;
+        Daemon(Daemon &&) = delete;
+        Daemon &operator=(Daemon &&) = delete;
 
     public:
 
