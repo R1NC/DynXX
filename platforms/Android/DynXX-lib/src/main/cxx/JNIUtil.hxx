@@ -41,7 +41,7 @@ void releaseJString(JNIEnv *env, jobject jStr, const char* cStr);
 struct JArg {
     JNIEnv *env;
     JArg() = delete;
-    JArg(JNIEnv *env) : env(env) {}
+    explicit JArg(JNIEnv *env) : env(env) {}
     virtual ~JArg() = default;
     JArg(const JArg&) = delete;
     JArg& operator=(const JArg&) = delete;
@@ -84,24 +84,25 @@ private:
     jbyteArray jbArr;
 };
 
-std::tuple<const char**, size_t> readJStringArray(JNIEnv *env, jobjectArray jStrArr);
+std::tuple<const jobject*, const char**, size_t> readJStringArray(JNIEnv *env, jobjectArray joArr);
 
-void releaseJStringArray(JNIEnv *env, jobjectArray jStrArr, const char **cStrArr);
+void releaseJStringArray(JNIEnv *env, jobjectArray joArr, const jobject *jStrArr, const char **cStrArr);
 
 struct JStringArrayArg final : public JArg {
 public:
     const char **data{nullptr};
     size_t size{0};
     
-    explicit JStringArrayArg(JNIEnv *env, jobjectArray jStrArr) : JArg(env), jStrArr(jStrArr) {
-        std::tie(data, size) = readJStringArray(env, jStrArr);
+    explicit JStringArrayArg(JNIEnv *env, jobjectArray joArr) : JArg(env), joArr(joArr) {
+        std::tie(jStrs, data, size) = readJStringArray(env, joArr);
     }
     ~JStringArrayArg() override {
-        releaseJStringArray(this->env, this->jStrArr, this->data);
+        releaseJStringArray(this->env, this->joArr, this->jStrs, this->data);
     }
 
 private:
-    jobjectArray jStrArr;
+    jobjectArray joArr;
+    const jobject *jStrs{nullptr};
 };
 
 // wrap jni object with C types

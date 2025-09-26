@@ -70,22 +70,26 @@ void releaseJByteArray(JNIEnv *env, jbyteArray jbArr, byte *cBytes) {
     env->ReleaseByteArrayElements(jbArr, reinterpret_cast<jbyte*>(cBytes), JNI_ABORT);
 }
 
-std::tuple<const char**, size_t> readJStringArray(JNIEnv *env, jobjectArray jStrArr) {
-    if (!env || !jStrArr) return {};
-    const auto size = env->GetArrayLength(jStrArr);
+std::tuple<const jobject*, const char**, size_t> readJStringArray(JNIEnv *env, jobjectArray joArr) {
+    if (!env || !joArr) return {};
+    const auto size = env->GetArrayLength(joArr);
+    const auto jStrArr = new jobject[size];
     const auto cStrArr = new const char*[size];
     for (size_t i = 0; i < size; i++) {
-        cStrArr[i] = readJString(env, env->GetObjectArrayElement(jStrArr, i));
+        jStrArr[i] = env->GetObjectArrayElement(joArr, i);
+        cStrArr[i] = readJString(env, jStrArr[i]);
     }
-    return std::make_tuple(cStrArr, size);
+    return std::make_tuple(jStrArr, cStrArr, size);
 }
 
-void releaseJStringArray(JNIEnv *env, jobjectArray jStrArr, const char **cStrArr) {
-    if (!env || !jStrArr || !cStrArr) return;
-    const auto size = env->GetArrayLength(jStrArr);
+void releaseJStringArray(JNIEnv *env, jobjectArray joArr, const jobject *jStrArr, const char **cStrArr) {
+    if (!env || !joArr || !jStrArr || !cStrArr) return;
+    const auto size = env->GetArrayLength(joArr);
     for (size_t i = 0; i < size; i++) {
-        releaseJString(env, env->GetObjectArrayElement(jStrArr, i), cStrArr[i]);
+        releaseJString(env, jStrArr[i], cStrArr[i]);
+        env->DeleteLocalRef(jStrArr[i]);
     }
+    delete[] jStrArr;
     delete[] cStrArr;
 }
 
