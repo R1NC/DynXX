@@ -4,6 +4,8 @@
 #include <malloc.h>
 #endif
 
+#include <memory>
+
 #include "Types.hxx"
 
 // C String Utils
@@ -112,7 +114,7 @@ void freeX(T * &ptr) {
 
 struct FreeDeleter {
     void operator()(RawPtr p) const noexcept {
-        std::free(p);
+        freeX(p);
     }
 };
 using AutoFreePtr = std::unique_ptr<void, FreeDeleter>;
