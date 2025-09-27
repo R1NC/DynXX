@@ -10,6 +10,24 @@ build_with_cmake() {
     cd "${root_dir}"
 }
 
+merge_libs_apple() {
+    local current_dir=$(pwd)
+    local lib_dir="$1"
+    local output_lib="$2"
+    cd "${lib_dir}"
+    
+    local a_files=(*.a)
+
+    libtool -static -o "${output_lib}" "${a_files[@]}"
+
+    for lib in "${a_files[@]}"; do
+        echo "Removing $lib..."
+        rm "$lib"
+    done
+
+    cd "${current_dir}"
+}
+
 check_artifacts() {
     local artifacts=("$@")
     echo "Checking artifacts..."

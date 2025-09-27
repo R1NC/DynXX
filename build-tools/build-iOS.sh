@@ -61,7 +61,7 @@ fi
 LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
 ARTIFACTS=(
-    "${LIB_OUTPUT_DIR}/DynXX.a"
+    "${LIB_OUTPUT_DIR}/DynXX-core.a"
     "${LIB_OUTPUT_DIR}/curl.a"
     "${LIB_OUTPUT_DIR}/ssl.a"
     "${LIB_OUTPUT_DIR}/crypto.a"
@@ -73,7 +73,7 @@ ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/mmkvcore.a"
     "${LIB_OUTPUT_DIR}/mmkv.a"
 )
-${COMMAND} ${LIB_DIR}libDynXX.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/DynXX.a
+${COMMAND} ${LIB_DIR}libDynXX.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/DynXX-core.a
 ${COMMAND} curl-build/lib/${LIB_DIR}libcurl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/curl.a
 ${COMMAND} openssl-build/ssl/${LIB_DIR}libssl.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/ssl.a
 ${COMMAND} openssl-build/crypto/${LIB_DIR}libcrypto.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/crypto.a
@@ -93,3 +93,8 @@ fi
 
 #Checking Artifacts
 check_artifacts "${ARTIFACTS[@]}"
+
+#Merge libs
+final_lib=DynXX.a
+merge_libs_apple "${LIB_OUTPUT_DIR}" "${final_lib}"
+check_artifacts "${LIB_OUTPUT_DIR}/${final_lib}"

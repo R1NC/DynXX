@@ -45,7 +45,7 @@ build4mac arm64 ${TARGET_VERSION} ${LIB_TYPE}
 LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
 ARTIFACTS=(
-    "${LIB_OUTPUT_DIR}/DynXX.a"
+    "${LIB_OUTPUT_DIR}/DynXX-core.a"
     "${LIB_OUTPUT_DIR}/curl.a"
     "${LIB_OUTPUT_DIR}/ssl.a"
     "${LIB_OUTPUT_DIR}/crypto.a"
@@ -57,7 +57,7 @@ ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/mmkvcore.a"
     "${LIB_OUTPUT_DIR}/mmkv.a"
 )
-mv libDynXX.a ${LIB_OUTPUT_DIR}/DynXX.a
+mv libDynXX.a ${LIB_OUTPUT_DIR}/DynXX-core.a
 mv curl-build/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
 mv openssl-build/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
 mv openssl-build/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
@@ -84,3 +84,8 @@ ARTIFACTS+=(${qjsc})
 
 #Checking Artifacts
 check_artifacts "${ARTIFACTS[@]}"
+
+#Merge libs
+final_lib=DynXX.a
+merge_libs_apple "${LIB_OUTPUT_DIR}" "${final_lib}"
+check_artifacts "${LIB_OUTPUT_DIR}/${final_lib}"

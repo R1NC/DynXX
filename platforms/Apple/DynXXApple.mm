@@ -1,5 +1,6 @@
 #import "DynXXApple.h"
 
+#import <DynXX/C/DynXX.h>
 #import <DynXX/CXX/DynXX.hxx>
 #include <fstream>
 
@@ -160,17 +161,17 @@ static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=
 - (void)testJsonDecoder {
     auto jsonDecoder = dynxx_json_decoder_init(cParamsJson);
     if (jsonDecoder) {
-        auto urlNode = dynxx_json_decoder_read_node(jsonDecoder, nullptr, "url");
+        auto urlNode = dynxx_json_decoder_read_node(jsonDecoder, 0, "url");
         if (urlNode) {
             auto url = dynxx_json_decoder_read_string(jsonDecoder, urlNode);
             NSLog(@"url:%s", url);
         }
-        auto methodNode = dynxx_json_decoder_read_node(jsonDecoder, nullptr, "method");
+        auto methodNode = dynxx_json_decoder_read_node(jsonDecoder, 0, "method");
         if (methodNode) {
             auto method = dynxx_json_decoder_read_integer(jsonDecoder, methodNode);
             NSLog(@"method:%f", method);
         }
-        auto headerVNode = dynxx_json_decoder_read_node(jsonDecoder, nullptr, "header_v");
+        auto headerVNode = dynxx_json_decoder_read_node(jsonDecoder, 0, "header_v");
         if (headerVNode) {
             auto headerNode = dynxx_json_decoder_read_child(jsonDecoder, headerVNode);
             while (headerNode) {
@@ -191,12 +192,12 @@ static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=
     std::ifstream zipIS(NSString2CharP(sqlPath), std::ios::in);
     NSString *zipPath = [self.root stringByAppendingPathComponent:@"xxx.zip"];
     std::ofstream zipOS(NSString2CharP(zipPath), std::ios::out);
-    auto zipRes = dynxxZCxxStreamZip(mode, kZBufferSize, format, &zipIS, &zipOS);
+    auto zipRes = dynxxZCxxStreamZip(&zipIS, &zipOS, mode, kZBufferSize, format);
     if (zipRes) {
         NSString *txtPath = [self.root stringByAppendingPathComponent:@"xxx.txt"];
         std::ifstream unzipIS(NSString2CharP(zipPath), std::ios::in);
         std::ofstream unzipOS(NSString2CharP(txtPath), std::ios::out);
-        auto unzipRes = dynxxZCxxStreamUnzip(kZBufferSize, format, &unzipIS, &unzipOS);
+        auto unzipRes = dynxxZCxxStreamUnzip(&unzipIS, &unzipOS, kZBufferSize, format);
         if (unzipRes);
     }
 }
