@@ -38,13 +38,13 @@ inline const char *dupStr(std::string_view sv) {
 // Memory Utils
 
 template<MemcpyableT T>
-void memcpyX(const T *src, T *dst, const std::size_t count) {
+void memcpyX(const T *src, T *dst, size_t count) {
     std::memcpy(dst, src, count * sizeof(T));
 }
 
 // malloc for character types
 template<CharacterT T>
-T *mallocX(const size_t count = 1) {
+T *mallocX(size_t count = 1) {
     const auto len = count * sizeof(T) + 1;
     auto ptr = std::malloc(len);
     if (!ptr) [[unlikely]] {
@@ -57,8 +57,8 @@ T *mallocX(const size_t count = 1) {
 // malloc for non-character types
 template<typename T>
     requires (!CharacterT<T>)
-T *mallocX(const size_t count = 1) {
-    size_t allocCount = count;
+T *mallocX(size_t count = 1) {
+    auto allocCount = count;
     if constexpr (std::is_pointer_v<T>) {
         allocCount = count + 1;
     }

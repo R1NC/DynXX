@@ -38,7 +38,7 @@ namespace {
     };
 
     template <typename T, ReadBytesFuncT RFT, WriteBytesFuncT WFT, FlushFuncT FFT = std::function<void()>>
-    bool process(ZBase<T> &zb, const size_t bufferSize, 
+    bool process(ZBase<T> &zb, size_t bufferSize, 
               RFT &&readF, WFT &&writeF, FFT &&flushF = [](){})
     {
         auto inputFinished = false;

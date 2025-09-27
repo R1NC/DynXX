@@ -180,7 +180,7 @@ void LuaVM::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *
 #if !defined(__EMSCRIPTEN__)
 bool LuaVM::loadFile(const std::string &file)
 {
-    auto lock = std::scoped_lock(this->vmMutex);
+    const auto lock = std::scoped_lock(this->vmMutex);
     const auto L = this->lstate.get();
     if (const auto ret = luaL_dofile(L, file.c_str()); ret != LUA_OK) [[unlikely]]
     {
@@ -193,7 +193,7 @@ bool LuaVM::loadFile(const std::string &file)
 
 bool LuaVM::loadScript(const std::string &script)
 {
-    auto lock = std::scoped_lock(this->vmMutex);
+    const auto lock = std::scoped_lock(this->vmMutex);
     const auto L = this->lstate.get();
     if (const auto ret = luaL_dostring(L, script.c_str()); ret != LUA_OK) [[unlikely]]
     {

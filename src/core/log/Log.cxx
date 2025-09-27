@@ -124,7 +124,7 @@ namespace
         spdLogSetLevel(_level);
     }
 
-    void spdLogPrint(const DynXXLogLevelX level, std::string_view content)
+    void spdLogPrint(DynXXLogLevelX level, std::string_view content)
     {
         spdLogPrepare();
         switch(level) {
@@ -210,13 +210,13 @@ void setLevel(DynXXLogLevelX level)
     spdLogPrepare();
 #endif
 
-    auto lock = std::scoped_lock(_mutex);
+    const auto lock = std::scoped_lock(_mutex);
     _level = level;
 }
 
 void setCallback(const std::function<void(int level, const char *content)> &callback)
 {
-    auto lock = std::scoped_lock(_mutex);
+    const auto lock = std::scoped_lock(_mutex);
     _callback = callback;
 }
 
@@ -227,7 +227,7 @@ void print(DynXXLogLevelX level, std::string_view content)
         prepareStdIO();
     });
 
-    auto lock = std::scoped_lock(_mutex);
+    const auto lock = std::scoped_lock(_mutex);
 
     if (level < _level || level < Debug || level >= None) [[unlikely]]
     {

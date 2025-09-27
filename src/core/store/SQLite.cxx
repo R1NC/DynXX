@@ -50,7 +50,7 @@ Connection::Connection(const CidT cid, sqlite3 *db) : _cid(cid), db{db}
 
 bool Connection::execute(std::string_view sql) const
 {
-    auto lock = std::scoped_lock(this->mutex);
+    const auto lock = std::scoped_lock(this->mutex);
     if (this->db == nullptr) [[unlikely]]
     {
         dynxxLogPrint(Error, "SQLite.execute DB nullptr");
@@ -75,7 +75,7 @@ bool Connection::execute(std::string_view sql) const
 
 std::unique_ptr<Connection::QueryResult> Connection::query(std::string_view sql) const
 {
-    auto lock = std::scoped_lock(this->mutex);
+    const auto lock = std::scoped_lock(this->mutex);
     if (this->db == nullptr) [[unlikely]]
     {
         dynxxLogPrint(Error, "SQLite.query DB nullptr");
@@ -113,7 +113,7 @@ Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) : stmt{stmt}
 
 bool Connection::QueryResult::readRow() const
 {
-    auto lock = std::unique_lock(this->mutex);
+    const auto lock = std::unique_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
     {
         dynxxLogPrint(Error, "SQLite.readRow STMT nullptr");
@@ -129,14 +129,14 @@ bool Connection::QueryResult::readRow() const
 
 std::optional<Any> Connection::QueryResult::readColumn(std::string_view column) const
 {
-    auto lock = std::shared_lock(this->mutex);
+    const auto lock = std::shared_lock(this->mutex);
     if (this->stmt == nullptr) [[unlikely]]
     {
         dynxxLogPrint(Error, "SQLite.readColumn STMT nullptr");
         return std::nullopt;
     }
-    auto colCount = sqlite3_column_count(this->stmt);
-    for (decltype(colCount) i(0); i < colCount; i++)
+    const auto colCount = sqlite3_column_count(this->stmt);
+    for (size_t i(0); i < colCount; i++)
     {
         const auto columnOp = nullTerminatedCStr(column);
         if (!columnOp.has_value()) [[unlikely]]

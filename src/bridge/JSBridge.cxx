@@ -23,28 +23,28 @@ namespace {
 
 #define BIND_API(f) vm->bindFunc(#f, f##J)
 
-    bool loadF(const std::string &file, const bool isModule) {
+    bool loadF(const std::string &file, bool isModule) {
         if (!vm || file.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadFile(file, isModule);
     }
 
-    bool loadS(const std::string &script, const std::string &name, const bool isModule) {
+    bool loadS(const std::string &script, const std::string &name, bool isModule) {
         if (!vm || script.empty() || name.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadScript(script, name, isModule);
     }
 
-    bool loadB(const Bytes &bytes, const bool isModule) {
+    bool loadB(const Bytes &bytes, bool isModule) {
         if (!vm || bytes.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadBinary(bytes, isModule);
     }
 
-    std::optional<std::string> call(std::string_view func, std::string_view params, const bool await) {
+    std::optional<std::string> call(std::string_view func, std::string_view params, bool await) {
         if (!vm || func.empty()) [[unlikely]] {
             return std::nullopt;
         }

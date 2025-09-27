@@ -10,11 +10,11 @@ namespace DynXX::Core::Net
         class WasmHttpClient {
                 public:
                 [[nodiscard]] static DynXXHttpResponse request(std::string_view url, 
-                                     const DynXXHttpMethodX method,
+                                DynXXHttpMethodX method,
                                      const std::vector<std::string> &headers,
                                      std::string_view params,
                                      BytesView rawBody,
-                                     const size_t timeout);
+                                size_t timeout);
         };
 }
 

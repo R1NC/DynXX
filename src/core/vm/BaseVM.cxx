@@ -18,12 +18,12 @@ BaseVM::BaseVM() : active(true)
 {
 }
 
-bool BaseVM::tryLockUntil(const size_t timeoutMicroSecs)
+bool BaseVM::tryLockUntil(size_t timeoutMicroSecs)
 {
     return Concurrent::tryLockUntil(this->vmMutex, timeoutMicroSecs);
 }
 
-bool BaseVM::lockAutoRetry(const size_t retryCount, const size_t sleepMicroSecs)
+bool BaseVM::lockAutoRetry(size_t retryCount, size_t sleepMicroSecs)
 {
     return Concurrent::lockAutoRetry(this->vmMutex, retryCount, sleepMicroSecs);
 }

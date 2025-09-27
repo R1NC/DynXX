@@ -8,15 +8,15 @@ namespace {
 
 namespace DynXX::Core::Concurrent {
 
-Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, const size_t timeoutMicroSecs)
+Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, size_t timeoutMicroSecs)
 {
     this->thread = 
 #if defined(__cpp_lib_jthread)
-        std::jthread(
+        std::jthread
 #else
-        std::thread(
+        std::thread
 #endif
-        [timeout = std::chrono::microseconds(timeoutMicroSecs), 
+        ([timeout = std::chrono::microseconds(timeoutMicroSecs), 
             loop = std::move(runLoop), 
             checker = std::move(runChecker),
             &mtx = this->mutex, 

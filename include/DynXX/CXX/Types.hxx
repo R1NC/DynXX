@@ -171,15 +171,15 @@ constexpr auto MaxFloat128 = MaxV<long double>();
 
 // String to Number
 
-int32_t str2int32(const std::string &str, const int32_t defaultI = MinInt32);
+int32_t str2int32(const std::string &str, int32_t defaultI = MinInt32);
 
-int64_t str2int64(const std::string &str, const int64_t defaultI = MinInt64);
+int64_t str2int64(const std::string &str, int64_t defaultI = MinInt64);
 
-float str2float32(const std::string &str, const float defaultF = MinFloat32);
+float str2float32(const std::string &str, float defaultF = MinFloat32);
 
-double str2float64(const std::string &str, const double defaultF = MinFloat64);
+double str2float64(const std::string &str, double defaultF = MinFloat64);
 
-long double str2float128(const std::string &str, const long double defaultF = MinFloat128);
+long double str2float128(const std::string &str, long double defaultF = MinFloat128);
 
 // Any Type
 
@@ -196,7 +196,7 @@ inline auto Any2String(const Any &v) {
     }, v);
 }
 
-inline auto Any2Integer(const Any &a, const int64_t defaultI = MinInt64) {
+inline auto Any2Integer(const Any &a, int64_t defaultI = MinInt64) {
     return std::visit([defaultI](const auto &x) {
         if constexpr (std::is_same_v<std::decay_t<decltype(x)>, std::string>) {
             return str2int64(x, defaultI);
@@ -206,7 +206,7 @@ inline auto Any2Integer(const Any &a, const int64_t defaultI = MinInt64) {
     }, a);
 }
 
-inline auto Any2Float(const Any &a, const double defaultF = MinFloat64) {
+inline auto Any2Float(const Any &a, double defaultF = MinFloat64) {
     return std::visit([defaultF](const auto &x) {
         if constexpr (std::is_same_v<std::decay_t<decltype(x)>, std::string>) {
             return str2float64(x, defaultF);
@@ -250,7 +250,7 @@ using DictKeyT = const std::string&;
 #endif
 
 inline std::optional<std::string> dictAnyReadString(const DictAny &dict, DictKeyT key) {
-    auto it = dict.find(key);
+    auto it = dict.find(key); 
     if (it == dict.end()) [[unlikely]] {
         return std::nullopt;
     }
@@ -269,19 +269,19 @@ inline std::optional<int64_t> dictAnyReadInteger(const DictAny &dict, DictKeyT k
     return {Any2Integer(it->second)};
 }
 
-inline auto dictAnyReadInteger(const DictAny &dict, DictKeyT key, const int64_t defaultI) {
+inline auto dictAnyReadInteger(const DictAny &dict, DictKeyT key, int64_t defaultI) {
     return dictAnyReadInteger(dict, key).value_or(defaultI);
 }
 
 inline std::optional<double> dictAnyReadFloat(const DictAny &dict, DictKeyT key) {
-    auto it = dict.find(key);
+    auto it = dict.find(key); 
     if (it == dict.end()) [[unlikely]] {
         return std::nullopt;
     }
     return {Any2Float(it->second)};
 }
 
-inline auto dictAnyReadFloat(const DictAny &dict, DictKeyT key, const double defaultF) {
+inline auto dictAnyReadFloat(const DictAny &dict, DictKeyT key, double defaultF) {
     return dictAnyReadFloat(dict, key).value_or(defaultF);
 }
 
@@ -290,14 +290,14 @@ inline auto dictAnyReadFloat(const DictAny &dict, DictKeyT key, const double def
 using BytesView = std::span<const byte>;
 using Bytes = std::vector<byte>;
 
-inline BytesView makeBytesView(const byte *data, const size_t len) {
+inline BytesView makeBytesView(const byte *data, size_t len) {
     if (data == nullptr || len == 0) [[unlikely]] {
         return {};
     }
     return {data, len};
 }
 
-inline Bytes makeBytes(const byte *data, const size_t len) {
+inline Bytes makeBytes(const byte *data, size_t len) {
     if (data == nullptr || len == 0) [[unlikely]] {
         return {};
     }
@@ -305,7 +305,7 @@ inline Bytes makeBytes(const byte *data, const size_t len) {
 }
 
 template<CharacterT T>
-std::string makeStr(const T *ptr, const size_t len = 0) {
+std::string makeStr(const T *ptr, size_t len = 0) {
     if (ptr == nullptr) [[unlikely]] {
         return {};
     }

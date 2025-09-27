@@ -44,7 +44,7 @@ DynXXZipHandle dynxx_z_zip_init(DynXXZipCompressMode mode, size_t bufferSize, Dy
  * @param inFinish Whether input is finished or not
  * @return The received data length, return `0` if error occurred
  */
-size_t dynxx_z_zip_input(const DynXXZipHandle zip, const byte *inBytes, size_t inLen, bool inFinish);
+size_t dynxx_z_zip_input(DynXXZipHandle zip, const byte *inBytes, size_t inLen, bool inFinish);
 
 /**
  * @brief process the ZIP input data
@@ -52,20 +52,20 @@ size_t dynxx_z_zip_input(const DynXXZipHandle zip, const byte *inBytes, size_t i
  * @param outLen a pointer to read the output data length
  * @return output data bytes, return `nullptr` if error occurred
  */
-const byte *dynxx_z_zip_process_do(const DynXXZipHandle zip, DYNXX_OUT size_t *outLen);
+const byte *dynxx_z_zip_process_do(DynXXZipHandle zip, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief check whether all the ZIP data inputed before are processed
  * @param zip The ZIP handle
  * @return whether finished or not
  */
-bool dynxx_z_zip_process_finished(const DynXXZipHandle zip);
+bool dynxx_z_zip_process_finished(DynXXZipHandle zip);
 
 /**
  * @brief release a ZIP process
  * @param zip The ZIP handle
  */
-void dynxx_z_zip_release(const DynXXZipHandle zip);
+void dynxx_z_zip_release(DynXXZipHandle zip);
 
 /**
  * @brief initialize a UNZIP process
@@ -83,7 +83,7 @@ DynXXUnZipHandle dynxx_z_unzip_init(size_t bufferSize, DynXXZFormat format);
  * @param inFinish Whether input is finished or not
  * @return The received data length, return `0` if error occurred
  */
-size_t dynxx_z_unzip_input(const DynXXUnZipHandle unzip, const byte *inBytes, size_t inLen, bool inFinish);
+size_t dynxx_z_unzip_input(DynXXUnZipHandle unzip, const byte *inBytes, size_t inLen, bool inFinish);
 
 /**
  * @brief process the UNZIP input data
@@ -91,20 +91,20 @@ size_t dynxx_z_unzip_input(const DynXXUnZipHandle unzip, const byte *inBytes, si
  * @param outLen a pointer to read the output data length
  * @return output data bytes, return `nullptr` if error occurred
  */
-const byte *dynxx_z_unzip_process_do(const DynXXUnZipHandle unzip, DYNXX_OUT size_t *outLen);
+const byte *dynxx_z_unzip_process_do(DynXXUnZipHandle unzip, DYNXX_OUT size_t *outLen);
 
 /**
  * @brief check whether all the ZIP data inputed before are processed
  * @param unzip The UNZIP handle
  * @return whether finished or not
  */
-bool dynxx_z_unzip_process_finished(const DynXXUnZipHandle unzip);
+bool dynxx_z_unzip_process_finished(DynXXUnZipHandle unzip);
 
 /**
  * @brief release a unzip process
  * @param unzip The unzip handle
  */
-void dynxx_z_unzip_release(const DynXXUnZipHandle unzip);
+void dynxx_z_unzip_release(DynXXUnZipHandle unzip);
 
 /**
  * @brief ZIP for C FILE

@@ -20,7 +20,7 @@ DynXXSQLiteConnHandle dynxx_sqlite_open(const char *_id);
  * @param sql SQL
  * @return Successfull or not
  */
-bool dynxx_sqlite_execute(const DynXXSQLiteConnHandle conn, const char *sql);
+bool dynxx_sqlite_execute(DynXXSQLiteConnHandle conn, const char *sql);
 
 /**
  * @brief Query with a SQL
@@ -28,14 +28,14 @@ bool dynxx_sqlite_execute(const DynXXSQLiteConnHandle conn, const char *sql);
  * @param sql SQL
  * @return Handle of query result
  */
-DynXXSQLiteQueryResultHandle dynxx_sqlite_query_do(const DynXXSQLiteConnHandle conn, const char *sql);
+DynXXSQLiteQueryResultHandle dynxx_sqlite_query_do(DynXXSQLiteConnHandle conn, const char *sql);
 
 /**
  * @brief Read a row from query result
  * @param query_result Handle of query result
  * @return Successful or not
  */
-bool dynxx_sqlite_query_read_row(const DynXXSQLiteQueryResultHandle query_result);
+bool dynxx_sqlite_query_read_row(DynXXSQLiteQueryResultHandle query_result);
 
 /**
  * @brief Read text column data from query result
@@ -43,7 +43,7 @@ bool dynxx_sqlite_query_read_row(const DynXXSQLiteQueryResultHandle query_result
  * @param column Column name
  * @return Text column data
  */
-const char *dynxx_sqlite_query_read_column_text(const DynXXSQLiteQueryResultHandle query_result, const char *column);
+const char *dynxx_sqlite_query_read_column_text(DynXXSQLiteQueryResultHandle query_result, const char *column);
 
 /**
  * @brief Read integer column data from query result
@@ -51,7 +51,7 @@ const char *dynxx_sqlite_query_read_column_text(const DynXXSQLiteQueryResultHand
  * @param column Column name
  * @return Integer column data
  */
-int64_t dynxx_sqlite_query_read_column_integer(const DynXXSQLiteQueryResultHandle query_result, const char *column);
+int64_t dynxx_sqlite_query_read_column_integer(DynXXSQLiteQueryResultHandle query_result, const char *column);
 
 /**
  * @brief Read float column data from query result
@@ -59,18 +59,18 @@ int64_t dynxx_sqlite_query_read_column_integer(const DynXXSQLiteQueryResultHandl
  * @param column Column name
  * @return Float column data
  */
-double dynxx_sqlite_query_read_column_float(const DynXXSQLiteQueryResultHandle query_result, const char *column);
+double dynxx_sqlite_query_read_column_float(DynXXSQLiteQueryResultHandle query_result, const char *column);
 
 /**
  * @brief Release query result
  * @param query_result Handle of query result
  */
-void dynxx_sqlite_query_drop(const DynXXSQLiteQueryResultHandle query_result);
+void dynxx_sqlite_query_drop(DynXXSQLiteQueryResultHandle query_result);
 
 /**
  * @brief Close DB
  * @param conn DB connection handle
  */
-void dynxx_sqlite_close(const DynXXSQLiteConnHandle conn);
+void dynxx_sqlite_close(DynXXSQLiteConnHandle conn);
 
 DYNXX_EXTERN_C_END

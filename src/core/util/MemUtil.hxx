@@ -57,7 +57,7 @@ class PtrCache final {
 
         T* get(address handle) const {
             const auto lock = std::shared_lock(mutex);
-            if (const auto it = this->cache.find(handle); it != this->cache.end()) {
+            if (auto it = this->cache.find(handle); it != this->cache.end()) {
                 return it->second.get();
             }
             return nullptr;

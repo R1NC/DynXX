@@ -14,7 +14,7 @@ Worker::Worker() :
  Daemon([this]() {
     TaskT func;
     {
-        auto lock = std::scoped_lock(this->mutex);
+        const auto lock = std::scoped_lock(this->mutex);
         if (taskQueue.empty()) [[unlikely]] 
         {
             return;
@@ -29,7 +29,7 @@ Worker::Worker() :
         func();
     }
 }, [this]() {
-    auto lock = std::scoped_lock(this->mutex);
+    const auto lock = std::scoped_lock(this->mutex);
     return !this->taskQueue.empty();
 })
 {
@@ -38,7 +38,7 @@ Worker::Worker() :
 Worker& Worker::operator>>(TaskT&& task)
 {
     this->update([&mtx = this->mutex, tsk = std::move(task), &queue = this->taskQueue, addr = reinterpret_cast<uintptr_t>(this)]() mutable {
-        auto lock = std::scoped_lock(mtx);
+        const auto lock = std::scoped_lock(mtx);
         queue.emplace(std::move(tsk));
         dynxxLogPrintF(Debug, "Worker@{} taskCount:{}", addr, queue.size());
     });
@@ -63,7 +63,7 @@ Executor::Executor(size_t workerPoolCapacity) : workerPoolCapacity{workerPoolCap
 
 Executor& Executor::operator>>(TaskT&& task)
 {
-    auto lock = std::scoped_lock(this->mutex);
+    const auto lock = std::scoped_lock(this->mutex);
 
     if (this->workerPool.size() < this->workerPoolCapacity)
     {

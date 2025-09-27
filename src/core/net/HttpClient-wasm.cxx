@@ -30,7 +30,7 @@ namespace {
         return result;
     }
 
-    void setMethod(emscripten_fetch_attr_t& attr, const DynXXHttpMethodX method) {
+    void setMethod(emscripten_fetch_attr_t& attr, DynXXHttpMethodX method) {
         if (method == Post) {
             std::copy_n(POST_METHOD, std::strlen(POST_METHOD) + 1, attr.requestMethod);
         } else {
@@ -106,11 +106,11 @@ namespace {
 namespace DynXX::Core::Net {
 
 DynXXHttpResponse WasmHttpClient::request(std::string_view url, 
-                                                 const DynXXHttpMethodX method,
+                                                DynXXHttpMethodX method,
                                                  const std::vector<std::string> &headers,
                                                  std::string_view params,
                                                  BytesView rawBody,
-                                                 const size_t timeout) {
+                                                size_t timeout) {
     DynXXHttpResponse response;
 
     auto const fullUrl = buildUrl(url, params);

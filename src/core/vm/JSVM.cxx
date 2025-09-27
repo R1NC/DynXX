@@ -57,7 +57,7 @@ namespace
 
 // JSVM Internal
 
-    bool _loadScript(JSContext *ctx, const std::string &script, const std::string &name, const bool isModule)
+    bool _loadScript(JSContext *ctx, const std::string &script, const std::string &name, bool isModule)
     {
         const auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
         const auto jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
@@ -181,7 +181,7 @@ JSValue JSVM::jAwait(const JSValue obj)
         return obj;
     }
 
-    auto beginTime = Time::nowInMicroSecs();
+    const auto beginTime = Time::nowInMicroSecs();
 
     auto ret = JS_UNDEFINED;
     auto needWait = true;
@@ -224,12 +224,12 @@ JSValue JSVM::jAwait(const JSValue obj)
 
 // JSValueHash and JSValueEqual
 
-std::size_t JSVM::JSValueHash::operator()(const JSValue &jv) const 
+std::size_t JSVM::JSValueHash::operator()(const JSValue &jv) const noexcept
 {
     return std::hash<void *>()(JS_VALUE_GET_PTR(jv));
 }
 
-bool JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) const 
+bool JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) const noexcept
 {
     if (JS_VALUE_GET_TAG(left) != JS_VALUE_GET_TAG(right)) 
     {
@@ -410,7 +410,7 @@ JSValue JSVM::newPromise(std::function<JSValue()> &&jf)
         return JS_UNDEFINED;
     }
     const auto handle = promiseCache->add(std::make_unique<JSPromise>(this->context));
-    auto result = promiseCache->get(handle)->jsObj();
+    const auto result = promiseCache->get(handle)->jsObj();
     this->unlock();
 
     this->submitTask([handle, cbk = std::move(jf), this] {

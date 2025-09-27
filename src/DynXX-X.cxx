@@ -144,7 +144,7 @@ namespace {
     }
 }
 
-int32_t str2int32(const std::string &str, const int32_t defaultI) {
+int32_t str2int32(const std::string &str, int32_t defaultI) {
 #if defined(USE_STD_CHAR_CONV_INT)
     return fromChars<int32_t>(str, defaultI);
 #else
@@ -152,7 +152,7 @@ int32_t str2int32(const std::string &str, const int32_t defaultI) {
 #endif
 }
 
-int64_t str2int64(const std::string &str, const int64_t defaultI) {
+int64_t str2int64(const std::string &str, int64_t defaultI) {
 #if defined(USE_STD_CHAR_CONV_INT)
     return fromChars<int64_t>(str, defaultI);
 #else
@@ -160,7 +160,7 @@ int64_t str2int64(const std::string &str, const int64_t defaultI) {
 #endif
 }
 
-float str2float32(const std::string &str, const float defaultF) {
+float str2float32(const std::string &str, float defaultF) {
 #if defined(USE_STD_CHAR_CONV_FLOAT)
     return fromChars<float>(str, defaultF);
 #else
@@ -168,7 +168,7 @@ float str2float32(const std::string &str, const float defaultF) {
 #endif
 }
 
-double str2float64(const std::string &str, const double defaultF) {
+double str2float64(const std::string &str, double defaultF) {
 #if defined(USE_STD_CHAR_CONV_FLOAT)
     return fromChars<double>(str, defaultF);
 #else
@@ -176,7 +176,7 @@ double str2float64(const std::string &str, const double defaultF) {
 #endif
 }
 
-long double str2float128(const std::string &str, const long double defaultF) {
+long double str2float128(const std::string &str, long double defaultF) {
 #if defined(USE_STD_CHAR_CONV_FLOAT)
     return fromChars<long double>(str, defaultF);
 #else
@@ -558,7 +558,7 @@ DynXXSQLiteConnHandle dynxxSQLiteOpen(const std::string &_id) {
     return 0;
 }
 
-bool dynxxSQLiteExecute(const DynXXSQLiteConnHandle conn, std::string_view sql) {
+bool dynxxSQLiteExecute(DynXXSQLiteConnHandle conn, std::string_view sql) {
     if (conn == 0 || sql.empty()) {
         return false;
     }
@@ -566,7 +566,7 @@ bool dynxxSQLiteExecute(const DynXXSQLiteConnHandle conn, std::string_view sql) 
     return xconn->execute(sql);
 }
 
-DynXXSQLiteQueryResultHandle dynxxSQLiteQueryDo(const DynXXSQLiteConnHandle conn, std::string_view sql) {
+DynXXSQLiteQueryResultHandle dynxxSQLiteQueryDo(DynXXSQLiteConnHandle conn, std::string_view sql) {
     if (conn == 0 || sql.empty()) {
         return 0;
     }
@@ -574,7 +574,7 @@ DynXXSQLiteQueryResultHandle dynxxSQLiteQueryDo(const DynXXSQLiteConnHandle conn
     return sqlQRCache->add(xconn->query(sql));
 }
 
-bool dynxxSQLiteQueryReadRow(const DynXXSQLiteQueryResultHandle query_result) {
+bool dynxxSQLiteQueryReadRow(DynXXSQLiteQueryResultHandle query_result) {
     if (query_result == 0) {
         return false;
     }
@@ -582,7 +582,7 @@ bool dynxxSQLiteQueryReadRow(const DynXXSQLiteQueryResultHandle query_result) {
     return xqr->readRow();
 }
 
-std::optional<std::string> dynxxSQLiteQueryReadColumnText(const DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
+std::optional<std::string> dynxxSQLiteQueryReadColumnText(DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
     if (query_result == 0 || column.empty()) {
         return std::nullopt;
     }
@@ -594,7 +594,7 @@ std::optional<std::string> dynxxSQLiteQueryReadColumnText(const DynXXSQLiteQuery
     return {*std::get_if<std::string>(&v.value())};
 }
 
-std::optional<int64_t> dynxxSQLiteQueryReadColumnInteger(const DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
+std::optional<int64_t> dynxxSQLiteQueryReadColumnInteger(DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
     if (query_result == 0 || column.empty()) {
         return std::nullopt;
     }
@@ -606,7 +606,7 @@ std::optional<int64_t> dynxxSQLiteQueryReadColumnInteger(const DynXXSQLiteQueryR
     return {*std::get_if<int64_t>(&v.value())};
 }
 
-std::optional<double> dynxxSQLiteQueryReadColumnFloat(const DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
+std::optional<double> dynxxSQLiteQueryReadColumnFloat(DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
     if (query_result == 0 || column.empty()) {
         return std::nullopt;
     }
@@ -618,14 +618,14 @@ std::optional<double> dynxxSQLiteQueryReadColumnFloat(const DynXXSQLiteQueryResu
     return {*std::get_if<double>(&v.value())};
 }
 
-void dynxxSQLiteQueryDrop(const DynXXSQLiteQueryResultHandle query_result) {
+void dynxxSQLiteQueryDrop(DynXXSQLiteQueryResultHandle query_result) {
     if (query_result == 0) {
         return;
     }
     sqlQRCache->remove(query_result);
 }
 
-void dynxxSQLiteClose(const DynXXSQLiteConnHandle conn) {
+void dynxxSQLiteClose(DynXXSQLiteConnHandle conn) {
     if (conn == 0 || _sqlite == nullptr)
         return;
     const auto xconn = Mem::addr2ptr<SQLite::Connection>(conn);
@@ -648,7 +648,7 @@ DynXXKVConnHandle dynxxKVOpen(const std::string &_id) {
     return 0;
 }
 
-std::optional<std::string> dynxxKVReadString(const DynXXKVConnHandle conn, std::string_view k) {
+std::optional<std::string> dynxxKVReadString(DynXXKVConnHandle conn, std::string_view k) {
     if (conn == 0 || k.empty()) {
         return std::nullopt;
     }
@@ -656,7 +656,7 @@ std::optional<std::string> dynxxKVReadString(const DynXXKVConnHandle conn, std::
     return xconn->readString(k);
 }
 
-bool dynxxKVWriteString(const DynXXKVConnHandle conn, std::string_view k, const std::string &v) {
+bool dynxxKVWriteString(DynXXKVConnHandle conn, std::string_view k, const std::string &v) {
     if (conn == 0 || k.empty()) {
         return false;
     }
@@ -664,7 +664,7 @@ bool dynxxKVWriteString(const DynXXKVConnHandle conn, std::string_view k, const 
     return xconn->write(k, v);
 }
 
-std::optional<int64_t> dynxxKVReadInteger(const DynXXKVConnHandle conn, std::string_view k) {
+std::optional<int64_t> dynxxKVReadInteger(DynXXKVConnHandle conn, std::string_view k) {
     if (conn == 0 || k.empty()) {
         return std::nullopt;
     }
@@ -672,7 +672,7 @@ std::optional<int64_t> dynxxKVReadInteger(const DynXXKVConnHandle conn, std::str
     return xconn->readInteger(k);
 }
 
-bool dynxxKVWriteInteger(const DynXXKVConnHandle conn, std::string_view k, int64_t v) {
+bool dynxxKVWriteInteger(DynXXKVConnHandle conn, std::string_view k, int64_t v) {
     if (conn == 0 || k.empty()) {
         return false;
     }
@@ -680,7 +680,7 @@ bool dynxxKVWriteInteger(const DynXXKVConnHandle conn, std::string_view k, int64
     return xconn->write(k, v);
 }
 
-std::optional<double> dynxxKVReadFloat(const DynXXKVConnHandle conn, std::string_view k) {
+std::optional<double> dynxxKVReadFloat(DynXXKVConnHandle conn, std::string_view k) {
     if (conn == 0 || k.empty()) {
         return std::nullopt;
     }
@@ -688,7 +688,7 @@ std::optional<double> dynxxKVReadFloat(const DynXXKVConnHandle conn, std::string
     return xconn->readFloat(k);
 }
 
-bool dynxxKVWriteFloat(const DynXXKVConnHandle conn, std::string_view k, double v) {
+bool dynxxKVWriteFloat(DynXXKVConnHandle conn, std::string_view k, double v) {
     if (conn == 0 || k.empty()) {
         return false;
     }
@@ -696,7 +696,7 @@ bool dynxxKVWriteFloat(const DynXXKVConnHandle conn, std::string_view k, double 
     return xconn->write(k, v);
 }
 
-std::vector<std::string> dynxxKVAllKeys(const DynXXKVConnHandle conn) {
+std::vector<std::string> dynxxKVAllKeys(DynXXKVConnHandle conn) {
     if (conn == 0) {
         return {};
     }
@@ -704,7 +704,7 @@ std::vector<std::string> dynxxKVAllKeys(const DynXXKVConnHandle conn) {
     return xconn->allKeys();
 }
 
-bool dynxxKVContains(const DynXXKVConnHandle conn, std::string_view k) {
+bool dynxxKVContains(DynXXKVConnHandle conn, std::string_view k) {
     if (conn == 0 || k.empty()) {
         return false;
     }
@@ -712,7 +712,7 @@ bool dynxxKVContains(const DynXXKVConnHandle conn, std::string_view k) {
     return xconn->contains(k);
 }
 
-bool dynxxKVRemove(const DynXXKVConnHandle conn, std::string_view k) {
+bool dynxxKVRemove(DynXXKVConnHandle conn, std::string_view k) {
     if (conn == 0 || k.empty()) {
         return false;
     }
@@ -720,7 +720,7 @@ bool dynxxKVRemove(const DynXXKVConnHandle conn, std::string_view k) {
     return xconn->remove(k);
 }
 
-void dynxxKVClear(const DynXXKVConnHandle conn) {
+void dynxxKVClear(DynXXKVConnHandle conn) {
     if (conn == 0) {
         return;
     }
@@ -728,7 +728,7 @@ void dynxxKVClear(const DynXXKVConnHandle conn) {
     xconn->clear();
 }
 
-void dynxxKVClose(const DynXXKVConnHandle conn) {
+void dynxxKVClose(DynXXKVConnHandle conn) {
     if (conn == 0 || _kv == nullptr)
         return;
     const auto xconn = Mem::addr2ptr<KV::Connection>(conn);
@@ -739,15 +739,15 @@ void dynxxKVClose(const DynXXKVConnHandle conn) {
 
 // Json
 
-DynXXJsonNodeTypeX dynxxJsonNodeReadType(const DynXXJsonNodeHandle node) {
+DynXXJsonNodeTypeX dynxxJsonNodeReadType(DynXXJsonNodeHandle node) {
     return Json::nodeReadType(node);
 }
 
-std::optional<std::string> dynxxJsonNodeReadName(const DynXXJsonNodeHandle node) {
+std::optional<std::string> dynxxJsonNodeReadName(DynXXJsonNodeHandle node) {
     return Json::nodeReadName(node);
 }
 
-std::optional<std::string> dynxxJsonNodeToStr(const DynXXJsonNodeHandle node) {
+std::optional<std::string> dynxxJsonNodeToStr(DynXXJsonNodeHandle node) {
     return Json::nodeToStr(node);
 }
 
@@ -763,7 +763,7 @@ DynXXJsonDecoderHandle dynxxJsonDecoderInit(std::string_view json) {
     return jsonDecoderCache->add(std::make_unique<Json::Decoder>(json));
 }
 
-DynXXJsonNodeHandle dynxxJsonDecoderReadNode(const DynXXJsonDecoderHandle decoder, std::string_view k, const DynXXJsonNodeHandle node) {
+DynXXJsonNodeHandle dynxxJsonDecoderReadNode(DynXXJsonDecoderHandle decoder, std::string_view k, DynXXJsonNodeHandle node) {
     if (decoder == 0 || k.empty()) {
         return 0;
     }
@@ -774,7 +774,7 @@ DynXXJsonNodeHandle dynxxJsonDecoderReadNode(const DynXXJsonDecoderHandle decode
     return xdecoder->readNode(node, k);
 }
 
-std::optional<std::string> dynxxJsonDecoderReadString(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+std::optional<std::string> dynxxJsonDecoderReadString(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     if (decoder == 0) {
         return std::nullopt;
     }
@@ -785,7 +785,7 @@ std::optional<std::string> dynxxJsonDecoderReadString(const DynXXJsonDecoderHand
     return xdecoder->readString(node);
 }
 
-std::optional<int64_t> dynxxJsonDecoderReadInteger(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+std::optional<int64_t> dynxxJsonDecoderReadInteger(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     if (decoder == 0) {
         return std::nullopt;
     }
@@ -796,7 +796,7 @@ std::optional<int64_t> dynxxJsonDecoderReadInteger(const DynXXJsonDecoderHandle 
     return xdecoder->readNumInt<int64_t>(node);
 }
 
-std::optional<double> dynxxJsonDecoderReadFloat(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+std::optional<double> dynxxJsonDecoderReadFloat(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     if (decoder == 0) {
         return std::nullopt;
     }
@@ -807,7 +807,7 @@ std::optional<double> dynxxJsonDecoderReadFloat(const DynXXJsonDecoderHandle dec
     return xdecoder->readNumFloat<double>(node);
 }
 
-DynXXJsonNodeHandle dynxxJsonDecoderReadChild(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+DynXXJsonNodeHandle dynxxJsonDecoderReadChild(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     if (decoder == 0) {
         return 0;
     }
@@ -818,7 +818,7 @@ DynXXJsonNodeHandle dynxxJsonDecoderReadChild(const DynXXJsonDecoderHandle decod
     return xdecoder->readChild(node);
 }
 
-size_t dynxxJsonDecoderReadChildrenCount(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+size_t dynxxJsonDecoderReadChildrenCount(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     if (decoder == 0) {
         return 0;
     }
@@ -829,8 +829,8 @@ size_t dynxxJsonDecoderReadChildrenCount(const DynXXJsonDecoderHandle decoder, c
     return xdecoder->readChildrenCount(node);
 }
 
-void dynxxJsonDecoderReadChildren(const DynXXJsonDecoderHandle decoder, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback,
-                                   const DynXXJsonNodeHandle node) {
+void dynxxJsonDecoderReadChildren(DynXXJsonDecoderHandle decoder, std::function<void(size_t idx, DynXXJsonNodeHandle childNode, DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback,
+                                   DynXXJsonNodeHandle node) {
     if (decoder == 0) {
         return;
     }
@@ -841,7 +841,7 @@ void dynxxJsonDecoderReadChildren(const DynXXJsonDecoderHandle decoder, std::fun
     xdecoder->readChildren(node, std::move(callback));
 }
 
-DynXXJsonNodeHandle dynxxJsonDecoderReadNext(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+DynXXJsonNodeHandle dynxxJsonDecoderReadNext(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     if (decoder == 0) {
         return 0;
     }
@@ -852,7 +852,7 @@ DynXXJsonNodeHandle dynxxJsonDecoderReadNext(const DynXXJsonDecoderHandle decode
     return xdecoder->readNext(node);
 }
 
-void dynxxJsonDecoderRelease(const DynXXJsonDecoderHandle decoder) {
+void dynxxJsonDecoderRelease(DynXXJsonDecoderHandle decoder) {
     if (decoder == 0) {
         return;
     }
@@ -861,7 +861,7 @@ void dynxxJsonDecoderRelease(const DynXXJsonDecoderHandle decoder) {
 
 // Zip
 
-DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize, const DynXXZFormatX format) {
+DynXXZipHandle dynxxZZipInit(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format) {
     try {
         const auto zip = zipCache->add(std::make_unique<Zip>(mode, bufferSize, format));
         return zip;
@@ -873,7 +873,7 @@ DynXXZipHandle dynxxZZipInit(const DynXXZipCompressModeX mode, size_t bufferSize
     return 0;
 }
 
-size_t dynxxZZipInput(const DynXXZipHandle zip, const Bytes &inBytes, bool inFinish) {
+size_t dynxxZZipInput(DynXXZipHandle zip, const Bytes &inBytes, bool inFinish) {
     if (zip == 0) {
         return 0;
     }
@@ -884,7 +884,7 @@ size_t dynxxZZipInput(const DynXXZipHandle zip, const Bytes &inBytes, bool inFin
     return xzip->input(inBytes, inFinish);
 }
 
-Bytes dynxxZZipProcessDo(const DynXXZipHandle zip) {
+Bytes dynxxZZipProcessDo(DynXXZipHandle zip) {
     if (zip == 0) {
         return {};
     }
@@ -895,7 +895,7 @@ Bytes dynxxZZipProcessDo(const DynXXZipHandle zip) {
     return xzip->processDo();
 }
 
-bool dynxxZZipProcessFinished(const DynXXZipHandle zip) {
+bool dynxxZZipProcessFinished(DynXXZipHandle zip) {
     if (zip == 0) {
         return false;
     }
@@ -906,14 +906,14 @@ bool dynxxZZipProcessFinished(const DynXXZipHandle zip) {
     return xzip->processFinished();
 }
 
-void dynxxZZipRelease(const DynXXZipHandle zip) {
+void dynxxZZipRelease(DynXXZipHandle zip) {
     if (zip == 0) {
         return;
     }
     zipCache->remove(zip);
 }
 
-DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) {
+DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, DynXXZFormatX format) {
     try {
         const auto unzip = unzipCache->add(std::make_unique<UnZip>(bufferSize, format));
         return unzip;
@@ -925,7 +925,7 @@ DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, const DynXXZFormatX format) 
     return 0;
 }
 
-size_t dynxxZUnzipInput(const DynXXUnZipHandle unzip, const Bytes &inBytes, bool inFinish) {
+size_t dynxxZUnzipInput(DynXXUnZipHandle unzip, const Bytes &inBytes, bool inFinish) {
     if (unzip == 0) {
         return 0;
     }
@@ -936,7 +936,7 @@ size_t dynxxZUnzipInput(const DynXXUnZipHandle unzip, const Bytes &inBytes, bool
     return xunzip->input(inBytes, inFinish);
 }
 
-Bytes dynxxZUnzipProcessDo(const DynXXUnZipHandle unzip) {
+Bytes dynxxZUnzipProcessDo(DynXXUnZipHandle unzip) {
     if (unzip == 0) {
         return {};
     }
@@ -947,7 +947,7 @@ Bytes dynxxZUnzipProcessDo(const DynXXUnZipHandle unzip) {
     return xunzip->processDo();
 }
 
-bool dynxxZUnzipProcessFinished(const DynXXUnZipHandle unzip) {
+bool dynxxZUnzipProcessFinished(DynXXUnZipHandle unzip) {
     if (unzip == 0) {
         return false;
     }
@@ -958,7 +958,7 @@ bool dynxxZUnzipProcessFinished(const DynXXUnZipHandle unzip) {
     return xunzip->processFinished();
 }
 
-void dynxxZUnzipRelease(const DynXXUnZipHandle unzip) {
+void dynxxZUnzipRelease(DynXXUnZipHandle unzip) {
     if (unzip == 0) {
         return;
     }
@@ -967,8 +967,8 @@ void dynxxZUnzipRelease(const DynXXUnZipHandle unzip) {
 
 #if !defined(__EMSCRIPTEN__)
 
-bool dynxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut, const DynXXZipCompressModeX mode, size_t bufferSize,
-                     const DynXXZFormatX format) {
+bool dynxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut, DynXXZipCompressModeX mode, size_t bufferSize,
+                     DynXXZFormatX format) {
     if (bufferSize == 0) {
         return false;
     }
@@ -978,7 +978,7 @@ bool dynxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut, const DynXXZipCompr
     return zip(mode, bufferSize, format, cFILEIn, cFILEOut);
 }
 
-bool dynxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut, size_t bufferSize, const DynXXZFormatX format) {
+bool dynxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut, size_t bufferSize, DynXXZFormatX format) {
     if (bufferSize == 0) {
         return false;
     }
@@ -988,8 +988,8 @@ bool dynxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut, size_t bufferSize
     return unzip(bufferSize, format, cFILEIn, cFILEOut);
 }
 
-bool dynxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, const DynXXZipCompressModeX mode,
-                         size_t bufferSize, const DynXXZFormatX format) {
+bool dynxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, DynXXZipCompressModeX mode,
+                         size_t bufferSize, DynXXZFormatX format) {
     if (bufferSize == 0) {
         return false;
     }
@@ -1000,7 +1000,7 @@ bool dynxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, c
 }
 
 bool dynxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut, size_t bufferSize,
-                           const DynXXZFormatX format) {
+                           DynXXZFormatX format) {
     if (bufferSize == 0) {
         return false;
     }
@@ -1012,8 +1012,8 @@ bool dynxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut,
 
 #endif
 
-Bytes dynxxZBytesZip(const Bytes &inBytes, const DynXXZipCompressModeX mode, size_t bufferSize,
-                      const DynXXZFormatX format) {
+Bytes dynxxZBytesZip(const Bytes &inBytes, DynXXZipCompressModeX mode, size_t bufferSize,
+                      DynXXZFormatX format) {
     if (bufferSize == 0) {
         return {};
     }
@@ -1023,7 +1023,7 @@ Bytes dynxxZBytesZip(const Bytes &inBytes, const DynXXZipCompressModeX mode, siz
     return zip(mode, bufferSize, format, inBytes);
 }
 
-Bytes dynxxZBytesUnzip(const Bytes &inBytes, size_t bufferSize, const DynXXZFormatX format) {
+Bytes dynxxZBytesUnzip(const Bytes &inBytes, size_t bufferSize, DynXXZFormatX format) {
     if (bufferSize == 0) {
         return {};
     }

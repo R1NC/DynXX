@@ -47,7 +47,7 @@ Connection::Connection(const CidT cid, MMKV *kv) : _cid(cid), kv(kv)
 
 std::optional<std::string> Connection::readString(std::string_view k) const
 {
-    auto lock = std::shared_lock(this->mutex);
+    const auto lock = std::shared_lock(this->mutex);
     if (!this->kv->containsKey(k)) [[unlikely]]
     {
         return std::nullopt;
@@ -59,7 +59,7 @@ std::optional<std::string> Connection::readString(std::string_view k) const
 
 std::optional<int64_t> Connection::readInteger(std::string_view k) const
 {
-    auto lock = std::shared_lock(this->mutex);
+    const auto lock = std::shared_lock(this->mutex);
     if (!this->kv->containsKey(k)) [[unlikely]]
     {
         return std::nullopt;
@@ -69,7 +69,7 @@ std::optional<int64_t> Connection::readInteger(std::string_view k) const
 
 std::optional<double> Connection::readFloat(std::string_view k) const
 {
-    auto lock = std::shared_lock(this->mutex);
+    const auto lock = std::shared_lock(this->mutex);
     if (!this->kv->containsKey(k)) [[unlikely]]
     {
         return std::nullopt;
@@ -79,7 +79,7 @@ std::optional<double> Connection::readFloat(std::string_view k) const
 
 bool Connection::write(std::string_view k, const Any &v) const
 {
-    auto lock = std::unique_lock(this->mutex);
+    const auto lock = std::unique_lock(this->mutex);
     return std::visit(
         [k, kv = this->kv](const auto &x)
         { 
@@ -91,25 +91,25 @@ bool Connection::write(std::string_view k, const Any &v) const
 
 std::vector<std::string> Connection::allKeys() const
 {
-    auto lock = std::shared_lock(this->mutex);
+    const auto lock = std::shared_lock(this->mutex);
     return this->kv->allKeys(false);
 }
 
 bool Connection::contains(std::string_view k) const
 {
-    auto lock = std::shared_lock(this->mutex);
+    const auto lock = std::shared_lock(this->mutex);
     return this->kv->containsKey(k);
 }
 
 bool Connection::remove(std::string_view k) const
 {
-    auto lock = std::unique_lock(this->mutex);
+    const auto lock = std::unique_lock(this->mutex);
     return this->kv->removeValueForKey(k);
 }
 
 void Connection::clear() const
 {
-    auto lock = std::unique_lock(this->mutex);
+    const auto lock = std::unique_lock(this->mutex);
     this->kv->clearAll();
     this->kv->clearMemoryCache();
 }

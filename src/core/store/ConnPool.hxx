@@ -21,16 +21,15 @@ namespace DynXX::Core::Store {
         ConnPool() = default;
 
         void close(const CidT cid) {
-            auto lock = std::scoped_lock(this->mutex);
-            auto it = this->conns.find(cid);
-            if (it != this->conns.end()) {
+            const auto lock = std::scoped_lock(this->mutex);
+            if (auto it = this->conns.find(cid); it != this->conns.end()) {
                 it->second.reset();
                 this->conns.erase(it);
             }
         }
 
         void closeAll() {
-            auto lock = std::scoped_lock(this->mutex);
+            const auto lock = std::scoped_lock(this->mutex);
             for (auto &[_, v] : this->conns) 
             {
                 v.reset();
@@ -49,13 +48,13 @@ namespace DynXX::Core::Store {
 
     protected:
         std::weak_ptr<ConnT> open(const CidT cid, std::function<std::shared_ptr<ConnT>()> &&creatorF) {
-            auto lock = std::scoped_lock(this->mutex);
+            const auto lock = std::scoped_lock(this->mutex);
             
             if (auto it = this->conns.find(cid); it != this->conns.end() && it->second) {
                 return it->second;
             }
             
-            if (auto conn = std::move(creatorF)(); conn) {
+            if (const auto conn = std::move(creatorF)(); conn) {
                 this->conns.emplace(cid, conn);
                 return conn;
             }

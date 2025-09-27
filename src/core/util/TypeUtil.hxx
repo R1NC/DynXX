@@ -5,7 +5,7 @@
 
 namespace DynXX::Core::Util::Type {
 
-    inline const char **dupCharsArray(const std::vector<std::string> &sv, const size_t strMaxLen) {
+    inline const char **dupCharsArray(const std::vector<std::string> &sv, size_t strMaxLen) {
         auto size = sv.size();
         const auto sArr = mallocX<char *>(size);
         for (decltype(size) i = 0; i < size; i++) {

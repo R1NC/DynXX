@@ -101,7 +101,7 @@ namespace
             return curl_mime_addpart(this->mime);
         }
 
-        bool addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, const size_t dataLen) const {
+        bool addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, size_t dataLen) const {
             if (!part || !name || !type || !dataP || dataLen == 0) [[unlikely]] {
                 dynxxLogPrint(Error, "HttpClient addMime invalid params");
                 return false;
@@ -192,7 +192,7 @@ namespace
         }
     };
 
-    size_t on_post_read(char *buffer, const size_t size, size_t nmemb, RawPtr userp)
+    size_t on_post_read(char *buffer, size_t size, size_t nmemb, RawPtr userp)
     {
         if (!buffer || !userp) [[unlikely]]
         {
@@ -208,7 +208,7 @@ namespace
         return len;
     }
 
-    size_t on_upload_read(char *buffer, const size_t size, size_t nmemb, RawPtr userp)
+    size_t on_upload_read(char *buffer, size_t size, size_t nmemb, RawPtr userp)
     {
         if (!buffer || !userp) [[unlikely]]
         {
@@ -219,7 +219,7 @@ namespace
         return ret;
     }
 
-    size_t on_download_write(const char *buffer, const size_t size, const size_t nmemb, RawPtr userp) {
+    size_t on_download_write(const char *buffer, size_t size, size_t nmemb, RawPtr userp) {
         if (!buffer || !userp) [[unlikely]]
         {
             return 0;
@@ -231,7 +231,7 @@ namespace
         return ret;
     }
 
-    size_t on_write_rsp_data(const char *buffer, const size_t size, size_t nmemb, RawPtr userp)
+    size_t on_write_rsp_data(const char *buffer, size_t size, size_t nmemb, RawPtr userp)
     {
         if (!buffer || !userp) [[unlikely]]
         {
@@ -242,7 +242,7 @@ namespace
         return size * nmemb;
     }
 
-    size_t on_write_rsp_headers(const char *buffer, const size_t size, size_t nitems, RawPtr userp)
+    size_t on_write_rsp_headers(const char *buffer, size_t size, size_t nitems, RawPtr userp)
     {
         if (!buffer || !userp) [[unlikely]]
         {

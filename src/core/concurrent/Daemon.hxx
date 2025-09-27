@@ -26,12 +26,12 @@ namespace DynXX::Core::Concurrent {
 #endif
         Daemon {
     protected:
-        explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; }, const size_t timeoutMicroSecs = 100);
+        explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; }, size_t timeoutMicroSecs = 100);
 
         template<RunnableT T>
         void update(T &&f) {
             {
-                auto lock = std::scoped_lock(this->mutex);
+                const auto lock = std::scoped_lock(this->mutex);
                 std::invoke(std::forward<T>(f));
             }
             this->loopCondition.notify_one();

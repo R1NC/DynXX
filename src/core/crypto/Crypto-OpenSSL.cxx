@@ -44,7 +44,7 @@ namespace
         return {};
     }
 
-    const EVP_CIPHER* aesGcmCipher(const int keyLen)
+    const EVP_CIPHER* aesGcmCipher(int keyLen)
     {
         switch (keyLen)
         {
@@ -85,7 +85,7 @@ namespace
             return EVP_CIPHER_CTX_ctrl(this->ctx, type, arg, ptr);
         }
 
-        int init(const bool encrypt, const EVP_CIPHER *type, const unsigned char *key, const unsigned char *iv, ENGINE *impl = nullptr)
+        int init(bool encrypt, const EVP_CIPHER *type, const unsigned char *key, const unsigned char *iv, ENGINE *impl = nullptr)
         {
             if (!valid()) [[unlikely]]
             {
@@ -94,7 +94,7 @@ namespace
             return encrypt ? EVP_EncryptInit_ex(this->ctx, type, impl, key, iv) : EVP_DecryptInit_ex(this->ctx, type, impl, key, iv);
         }
 
-        int update(const bool encrypt, unsigned char *out, int *outl, const unsigned char *in, int inl)
+        int update(bool encrypt, unsigned char *out, int *outl, const unsigned char *in, int inl)
         {
             if (!valid()) [[unlikely]]
             {
@@ -103,7 +103,7 @@ namespace
             return encrypt ? EVP_EncryptUpdate(this->ctx, out, outl, in, inl) : EVP_DecryptUpdate(this->ctx, out, outl, in, inl);
         }
 
-        int finish(const bool encrypt, unsigned char *out, int *outl)
+        int finish(bool encrypt, unsigned char *out, int *outl)
         {
             if (!valid()) [[unlikely]]
             {
@@ -160,7 +160,7 @@ namespace
             return EVP_DigestInit_ex(this->ctx, type, impl);
         }
 
-        int update(const void *d, const size_t cnt)
+        int update(const void *d, size_t cnt)
         {
             if (!valid()) [[unlikely]]
             {
@@ -194,8 +194,7 @@ namespace
         return true;
     }
 
-    bool checkAesGcmParams(BytesView in, BytesView key, BytesView initVector,
-                                             BytesView aad, const size_t tagBits) {
+    bool checkAesGcmParams(BytesView in, BytesView key, BytesView initVector, BytesView aad, size_t tagBits) {
         if (!checkAesParams(in, key)) [[unlikely]] {
             return false;
         }

@@ -29,9 +29,8 @@ JNIEnv *attachEnv(JavaVM *vm) {
 }
 
 jclass findClassInCache(JNIEnv *env, const char *cls) {
-    auto lock = std::scoped_lock(sJClassCacheMutex);
-    auto it = sJClassCache.find(cls);
-    if (it != sJClassCache.end()) {
+    const auto lock = std::scoped_lock(sJClassCacheMutex);
+    if (const auto it = sJClassCache.find(cls); it != sJClassCache.end()) {
         return it->second;
     }
     const auto jcls = env->FindClass(cls);
@@ -40,7 +39,7 @@ jclass findClassInCache(JNIEnv *env, const char *cls) {
 }
 
 void releaseCachedClass(JNIEnv *env) {
-    auto lock = std::scoped_lock(sJClassCacheMutex);
+    const auto lock = std::scoped_lock(sJClassCacheMutex);
     for (auto &it : sJClassCache) {
         env->DeleteGlobalRef(it.second);
     }

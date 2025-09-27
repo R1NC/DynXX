@@ -24,21 +24,21 @@ typedef address DynXXJsonDecoderHandle;
  * @param node JSON node
  * @return `DynXXJsonNodeType`
  */
-DynXXJsonNodeType dynxx_json_node_read_type(const DynXXJsonNodeHandle node);
+DynXXJsonNodeType dynxx_json_node_read_type(DynXXJsonNodeHandle node);
 
 /**
  * @brief Read json node name
  * @param node JSON node
  * @return Formatted String
  */
-const char *dynxx_json_node_read_name(const DynXXJsonNodeHandle node);
+const char *dynxx_json_node_read_name(DynXXJsonNodeHandle node);
 
 /**
 * @brief Read json node type
 * @param node JSON node
 * @return Formatted String
 */
-const char *dynxx_json_node_to_str(const DynXXJsonNodeHandle node);
+const char *dynxx_json_node_to_str(DynXXJsonNodeHandle node);
 
 /**
  * @brief initialize JSON decoder
@@ -54,7 +54,7 @@ DynXXJsonDecoderHandle dynxx_json_decoder_init(const char *json);
  * @param k JSON node name
  * @return JSON node
  */
-DynXXJsonNodeHandle dynxx_json_decoder_read_node(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node, const char *k);
+DynXXJsonNodeHandle dynxx_json_decoder_read_node(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node, const char *k);
 
 /**
  * @brief Read string from the JSON node
@@ -62,7 +62,7 @@ DynXXJsonNodeHandle dynxx_json_decoder_read_node(const DynXXJsonDecoderHandle de
  * @param node JSON node, `nullptr` represents the root
  * @return String
  */
-const char *dynxx_json_decoder_read_string(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
+const char *dynxx_json_decoder_read_string(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node);
 
 /**
  * @brief Read integer number from the JOSON node
@@ -70,7 +70,7 @@ const char *dynxx_json_decoder_read_string(const DynXXJsonDecoderHandle decoder,
  * @param node JSON node, `nullptr` represents the root
  * @return Number
  */
-int64_t dynxx_json_decoder_read_integer(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
+int64_t dynxx_json_decoder_read_integer(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node);
 
 /**
  * @brief Read float number from the JOSON node
@@ -78,7 +78,7 @@ int64_t dynxx_json_decoder_read_integer(const DynXXJsonDecoderHandle decoder, co
  * @param node JSON node, `nullptr` represents the root
  * @return Number
  */
-double dynxx_json_decoder_read_float(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
+double dynxx_json_decoder_read_float(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node);
 
 /**
  * @brief Read first child node of the Object/Array node
@@ -86,7 +86,7 @@ double dynxx_json_decoder_read_float(const DynXXJsonDecoderHandle decoder, const
  * @param node JSON node, `nullptr` represents the root
  * @return First child node
  */
-DynXXJsonNodeHandle dynxx_json_decoder_read_child(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
+DynXXJsonNodeHandle dynxx_json_decoder_read_child(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node);
 
 /**
  * @brief Read children count of the Object/Array node
@@ -94,7 +94,7 @@ DynXXJsonNodeHandle dynxx_json_decoder_read_child(const DynXXJsonDecoderHandle d
  * @param node JSON node, `nullptr` represents the root
  * @return Children count
  */
-int dynxx_json_decoder_read_children_count(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
+int dynxx_json_decoder_read_children_count(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node);
 
 /**
  * @brief Read next node
@@ -102,12 +102,12 @@ int dynxx_json_decoder_read_children_count(const DynXXJsonDecoderHandle decoder,
  * @param node JSON node, `nullptr` represents the root
  * @return Next node
  */
-DynXXJsonNodeHandle dynxx_json_decoder_read_next(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node);
+DynXXJsonNodeHandle dynxx_json_decoder_read_next(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node);
 
 /**
  * @brief Release JSON decoder
  * @param decoder JSON decoder
  */
-void dynxx_json_decoder_release(const DynXXJsonDecoderHandle decoder);
+void dynxx_json_decoder_release(DynXXJsonDecoderHandle decoder);
 
 DYNXX_EXTERN_C_END

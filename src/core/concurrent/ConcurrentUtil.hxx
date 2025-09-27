@@ -30,7 +30,7 @@ namespace DynXX::Core::Concurrent {
         return cachedCurrentThreadId;
     }
 
-    inline void sleep(const size_t microSecs) {
+    inline void sleep(size_t microSecs) {
         std::this_thread::sleep_for(std::chrono::microseconds(microSecs));
     }
 
@@ -41,7 +41,7 @@ namespace DynXX::Core::Concurrent {
     };
 
     template<TimedLockableT T>
-    [[nodiscard]] bool tryLockUntil(T &mtx, const size_t timeoutMicroSecs) {
+    [[nodiscard]] bool tryLockUntil(T &mtx, size_t timeoutMicroSecs) {
         if (timeoutMicroSecs == 0) {
             return mtx.try_lock();
         }
@@ -50,8 +50,8 @@ namespace DynXX::Core::Concurrent {
     }
 
     template<TimedLockableT T>
-    [[nodiscard]] bool lockAutoRetry(T &mtx, const size_t retryCount, const size_t sleepMicroSecs = 1uz) {
-        bool locked = false;
+    [[nodiscard]] bool lockAutoRetry(T &mtx, size_t retryCount, size_t sleepMicroSecs = 1uz) {
+        auto locked = false;
         size_t count = 0;
         do {
             locked = mtx.try_lock();

@@ -42,7 +42,7 @@ std::string Hex::bytes2str(BytesView bytes)
     std::string str;
     str.resize(bytes.size() * 2);
 
-    auto transF = [](const byte b, char *buf) {
+    const auto transF = [](const byte b, char *buf) {
         if (auto [ptr, errCode] = std::to_chars(buf, buf + 2, static_cast<int>(b), 16); errCode != std::errc()) [[unlikely]]
         {
             buf[0] = '0';
@@ -103,9 +103,9 @@ Bytes Hex::str2bytes(const std::string_view str)
     {
         filteredStr.insert(0, "0");
     }
-    auto sLen = filteredStr.length();
+    const auto sLen = filteredStr.length();
       
-    auto transF = [](const auto& chunk) { 
+    const auto transF = [](const auto& chunk) { 
         std::string s(chunk.begin(), chunk.end());
         auto hex = 0;
         if (auto [_, errCode] = std::from_chars(s.data(), s.data() + s.size(), hex, 16); errCode != std::errc()) [[unlikely]]
@@ -115,14 +115,14 @@ Bytes Hex::str2bytes(const std::string_view str)
         return static_cast<byte>(hex);
     };
 #if defined(__cpp_lib_ranges_chunk)
-    auto byteView = filteredStr 
+    const auto byteView = filteredStr 
         | std::ranges::views::chunk(2) 
         | std::ranges::views::transform(transF);
     return Bytes(byteView.begin(), byteView.end());
 #else
     Bytes bytes;
     bytes.reserve(sLen / 2);
-    for (decltype(sLen) i(0); i < sLen; i += 2)
+    for (size_t i = 0; i < sLen; i += 2)
     {
         auto s = filteredStr.substr(i, 2);
         bytes.emplace_back(transF(s));
@@ -144,7 +144,7 @@ Bytes str2bytes(std::string_view str)
 std::string strTrim(std::string_view str) 
 {
 #if defined(__cpp_lib_ranges)
-    auto findSpaceF = [](char c) { return std::isspace(static_cast<int>(c)); };
+    const auto findSpaceF = [](char c) { return std::isspace(static_cast<int>(c)); };
     auto trimmed = str 
         | std::ranges::views::drop_while(findSpaceF)
         | std::ranges::views::reverse
@@ -167,7 +167,7 @@ std::string strEscapeQuotes(std::string_view str)
 {
     std::string result;
     result.reserve(str.size() * 2);
-    static std::string_view escapeChars = R"("\\")";
+    static const std::string_view escapeChars = R"("\\")";
     
 #if defined(__cpp_lib_ranges)
     std::ranges::for_each(str, [&result](char c) 

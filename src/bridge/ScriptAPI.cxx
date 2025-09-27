@@ -119,7 +119,7 @@ namespace
             const auto len = decoder.readChildrenCount(byte_vNode);
             data.reserve(len);
             decoder.readChildren(byte_vNode, 
-                            [&data, &decoder](size_t, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX, std::string_view)
+                            [&data, &decoder](size_t, DynXXJsonNodeHandle childNode, DynXXJsonNodeTypeX, std::string_view)
                             {
                                 if (const auto n = decoder.readNumInt<byte>(childNode); n.has_value())
                                 {
@@ -138,7 +138,7 @@ namespace
             const auto len = decoder.readChildrenCount(str_vNode);
             v.reserve(len);
             decoder.readChildren(str_vNode,
-                             [&v, &decoder](size_t, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX, std::string_view)
+                             [&v, &decoder](size_t, DynXXJsonNodeHandle childNode, DynXXJsonNodeTypeX, std::string_view)
                              {
                                  v.emplace_back(decoder.readString(childNode).value_or(""));
                              });

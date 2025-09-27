@@ -334,7 +334,7 @@ DynXXSQLiteConnHandle dynxx_sqlite_open(const char *_id) {
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_sqlite_execute(const DynXXSQLiteConnHandle conn, const char *sql) {
+bool dynxx_sqlite_execute(DynXXSQLiteConnHandle conn, const char *sql) {
     if (conn == 0 || sql == nullptr) {
         return false;
     }
@@ -342,7 +342,7 @@ bool dynxx_sqlite_execute(const DynXXSQLiteConnHandle conn, const char *sql) {
 }
 
 DYNXX_EXPORT_AUTO
-DynXXSQLiteQueryResultHandle dynxx_sqlite_query_do(const DynXXSQLiteConnHandle conn, const char *sql) {
+DynXXSQLiteQueryResultHandle dynxx_sqlite_query_do(DynXXSQLiteConnHandle conn, const char *sql) {
     if (conn == 0 || sql == nullptr) {
         return 0;
     }
@@ -350,12 +350,12 @@ DynXXSQLiteQueryResultHandle dynxx_sqlite_query_do(const DynXXSQLiteConnHandle c
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_sqlite_query_read_row(const DynXXSQLiteQueryResultHandle query_result) {
+bool dynxx_sqlite_query_read_row(DynXXSQLiteQueryResultHandle query_result) {
     return dynxxSQLiteQueryReadRow(query_result);
 }
 
 DYNXX_EXPORT_AUTO
-const char *dynxx_sqlite_query_read_column_text(const DynXXSQLiteQueryResultHandle query_result, const char *column) {
+const char *dynxx_sqlite_query_read_column_text(DynXXSQLiteQueryResultHandle query_result, const char *column) {
     if (query_result == 0 || column == nullptr) {
         return "";
     }
@@ -364,7 +364,7 @@ const char *dynxx_sqlite_query_read_column_text(const DynXXSQLiteQueryResultHand
 }
 
 DYNXX_EXPORT_AUTO
-int64_t dynxx_sqlite_query_read_column_integer(const DynXXSQLiteQueryResultHandle query_result, const char *column) {
+int64_t dynxx_sqlite_query_read_column_integer(DynXXSQLiteQueryResultHandle query_result, const char *column) {
     if (query_result == 0 || column == nullptr) {
         return 0;
     }
@@ -373,7 +373,7 @@ int64_t dynxx_sqlite_query_read_column_integer(const DynXXSQLiteQueryResultHandl
 }
 
 DYNXX_EXPORT_AUTO
-double dynxx_sqlite_query_read_column_float(const DynXXSQLiteQueryResultHandle query_result, const char *column) {
+double dynxx_sqlite_query_read_column_float(DynXXSQLiteQueryResultHandle query_result, const char *column) {
     if (query_result == 0 || column == nullptr) {
         return 0.0;
     }
@@ -382,12 +382,12 @@ double dynxx_sqlite_query_read_column_float(const DynXXSQLiteQueryResultHandle q
 }
 
 DYNXX_EXPORT_AUTO
-void dynxx_sqlite_query_drop(const DynXXSQLiteQueryResultHandle query_result) {
+void dynxx_sqlite_query_drop(DynXXSQLiteQueryResultHandle query_result) {
     dynxxSQLiteQueryDrop(query_result);
 }
 
 DYNXX_EXPORT_AUTO
-void dynxx_sqlite_close(const DynXXSQLiteConnHandle conn) {
+void dynxx_sqlite_close(DynXXSQLiteConnHandle conn) {
     dynxxSQLiteClose(conn);
 }
 
@@ -403,7 +403,7 @@ DynXXKVConnHandle dynxx_kv_open(const char *_id) {
 }
 
 DYNXX_EXPORT_AUTO
-const char *dynxx_kv_read_string(const DynXXKVConnHandle conn, const char *k) {
+const char *dynxx_kv_read_string(DynXXKVConnHandle conn, const char *k) {
     if (conn == 0 || k == nullptr) {
         return nullptr;
     }
@@ -412,7 +412,7 @@ const char *dynxx_kv_read_string(const DynXXKVConnHandle conn, const char *k) {
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_kv_write_string(const DynXXKVConnHandle conn, const char *k, const char *v) {
+bool dynxx_kv_write_string(DynXXKVConnHandle conn, const char *k, const char *v) {
     if (conn == 0 || k == nullptr) {
         return false;
     }
@@ -420,7 +420,7 @@ bool dynxx_kv_write_string(const DynXXKVConnHandle conn, const char *k, const ch
 }
 
 DYNXX_EXPORT_AUTO
-int64_t dynxx_kv_read_integer(const DynXXKVConnHandle conn, const char *k) {
+int64_t dynxx_kv_read_integer(DynXXKVConnHandle conn, const char *k) {
     if (conn == 0 || k == nullptr) {
         return 0;
     }
@@ -429,7 +429,7 @@ int64_t dynxx_kv_read_integer(const DynXXKVConnHandle conn, const char *k) {
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_kv_write_integer(const DynXXKVConnHandle conn, const char *k, int64_t v) {
+bool dynxx_kv_write_integer(DynXXKVConnHandle conn, const char *k, int64_t v) {
     if (conn == 0 || k == nullptr) {
         return false;
     }
@@ -437,7 +437,7 @@ bool dynxx_kv_write_integer(const DynXXKVConnHandle conn, const char *k, int64_t
 }
 
 DYNXX_EXPORT_AUTO
-double dynxx_kv_read_float(const DynXXKVConnHandle conn, const char *k) {
+double dynxx_kv_read_float(DynXXKVConnHandle conn, const char *k) {
     if (conn == 0 || k == nullptr) {
         return 0.0;
     }
@@ -446,7 +446,7 @@ double dynxx_kv_read_float(const DynXXKVConnHandle conn, const char *k) {
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_kv_write_float(const DynXXKVConnHandle conn, const char *k, double v) {
+bool dynxx_kv_write_float(DynXXKVConnHandle conn, const char *k, double v) {
     if (conn == 0 || k == nullptr) {
         return false;
     }
@@ -454,13 +454,13 @@ bool dynxx_kv_write_float(const DynXXKVConnHandle conn, const char *k, double v)
 }
 
 DYNXX_EXPORT_AUTO
-const char **dynxx_kv_all_keys(const DynXXKVConnHandle conn, size_t *outLen) {
+const char **dynxx_kv_all_keys(DynXXKVConnHandle conn, size_t *outLen) {
     const auto t = dynxxKVAllKeys(conn);
     return handleOutCharsArray(t, DYNXX_STORE_KV_KEY_MAX_LENGTH, outLen);
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_kv_contains(const DynXXKVConnHandle conn, const char *k) {
+bool dynxx_kv_contains(DynXXKVConnHandle conn, const char *k) {
     if (conn == 0 || k == nullptr) {
         return false;
     }
@@ -468,7 +468,7 @@ bool dynxx_kv_contains(const DynXXKVConnHandle conn, const char *k) {
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_kv_remove(const DynXXKVConnHandle conn, const char *k) {
+bool dynxx_kv_remove(DynXXKVConnHandle conn, const char *k) {
     if (conn == 0 || k == nullptr) {
         return false;
     }
@@ -476,12 +476,12 @@ bool dynxx_kv_remove(const DynXXKVConnHandle conn, const char *k) {
 }
 
 DYNXX_EXPORT_AUTO
-void dynxx_kv_clear(const DynXXKVConnHandle conn) {
+void dynxx_kv_clear(DynXXKVConnHandle conn) {
     dynxxKVClear(conn);
 }
 
 DYNXX_EXPORT_AUTO
-void dynxx_kv_close(const DynXXKVConnHandle conn) {
+void dynxx_kv_close(DynXXKVConnHandle conn) {
     dynxxKVClose(conn);
 }
 
@@ -490,18 +490,18 @@ void dynxx_kv_close(const DynXXKVConnHandle conn) {
 // Json.Decoder
 
 DYNXX_EXPORT_AUTO
-DynXXJsonNodeType dynxx_json_node_read_type(const DynXXJsonNodeHandle node) {
+DynXXJsonNodeType dynxx_json_node_read_type(DynXXJsonNodeHandle node) {
     return static_cast<DynXXJsonNodeType>(dynxxJsonNodeReadType(node));
 }
 
 DYNXX_EXPORT_AUTO
-const char *dynxx_json_node_read_name(const DynXXJsonNodeHandle node) {
+const char *dynxx_json_node_read_name(DynXXJsonNodeHandle node) {
     const auto s = dynxxJsonNodeReadName(node);
     return dupStr(s.value_or(""));
 }
 
 DYNXX_EXPORT_AUTO
-const char *dynxx_json_node_to_str(const DynXXJsonNodeHandle node) {
+const char *dynxx_json_node_to_str(DynXXJsonNodeHandle node) {
     const auto s = dynxxJsonNodeToStr(node);
     return dupStr(s.value_or(""));
 }
@@ -512,7 +512,7 @@ DynXXJsonDecoderHandle dynxx_json_decoder_init(const char *json) {
 }
 
 DYNXX_EXPORT_AUTO
-DynXXJsonNodeHandle dynxx_json_decoder_read_node(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node, const char *k) {
+DynXXJsonNodeHandle dynxx_json_decoder_read_node(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node, const char *k) {
     if (decoder == 0 || k == nullptr) {
         return 0;
     }
@@ -520,38 +520,38 @@ DynXXJsonNodeHandle dynxx_json_decoder_read_node(const DynXXJsonDecoderHandle de
 }
 
 DYNXX_EXPORT_AUTO
-const char *dynxx_json_decoder_read_string(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+const char *dynxx_json_decoder_read_string(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     const auto s = dynxxJsonDecoderReadString(decoder, node);
     return dupStr(s.value_or(""));
 }
 
 DYNXX_EXPORT_AUTO
-int64_t dynxx_json_decoder_read_integer(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+int64_t dynxx_json_decoder_read_integer(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadInteger(decoder, node).value_or(0);
 }
 
 DYNXX_EXPORT_AUTO
-double dynxx_json_decoder_read_float(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+double dynxx_json_decoder_read_float(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadFloat(decoder, node).value_or(0.0);
 }
 
 DYNXX_EXPORT_AUTO
-DynXXJsonNodeHandle dynxx_json_decoder_read_child(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+DynXXJsonNodeHandle dynxx_json_decoder_read_child(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadChild(decoder, node);
 }
 
 DYNXX_EXPORT_AUTO
-int dynxx_json_decoder_read_children_count(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+int dynxx_json_decoder_read_children_count(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadChildrenCount(decoder, node);
 }
 
 DYNXX_EXPORT_AUTO
-DynXXJsonNodeHandle dynxx_json_decoder_read_next(const DynXXJsonDecoderHandle decoder, const DynXXJsonNodeHandle node) {
+DynXXJsonNodeHandle dynxx_json_decoder_read_next(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadNext(decoder, node);
 }
 
 DYNXX_EXPORT_AUTO
-void dynxx_json_decoder_release(const DynXXJsonDecoderHandle decoder) {
+void dynxx_json_decoder_release(DynXXJsonDecoderHandle decoder) {
     dynxxJsonDecoderRelease(decoder);
 }
 
@@ -563,23 +563,23 @@ DynXXZipHandle dynxx_z_zip_init(DynXXZipCompressMode mode, size_t bufferSize, Dy
 }
 
 DYNXX_EXPORT_AUTO
-size_t dynxx_z_zip_input(const DynXXZipHandle zip, const byte *inBytes, size_t inLen, bool inFinish) {
+size_t dynxx_z_zip_input(DynXXZipHandle zip, const byte *inBytes, size_t inLen, bool inFinish) {
     return dynxxZZipInput(zip, makeBytes(inBytes, inLen), inFinish);
 }
 
 DYNXX_EXPORT_AUTO
-const byte *dynxx_z_zip_process_do(const DynXXZipHandle zip, size_t *outLen) {
+const byte *dynxx_z_zip_process_do(DynXXZipHandle zip, size_t *outLen) {
     const auto bytes = dynxxZZipProcessDo(zip);
     return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_z_zip_process_finished(const DynXXZipHandle zip) {
+bool dynxx_z_zip_process_finished(DynXXZipHandle zip) {
     return dynxxZZipProcessFinished(zip);
 }
 
 DYNXX_EXPORT_AUTO
-void dynxx_z_zip_release(const DynXXZipHandle zip) {
+void dynxx_z_zip_release(DynXXZipHandle zip) {
     dynxxZZipRelease(zip);
 }
 
@@ -589,23 +589,23 @@ DynXXUnZipHandle dynxx_z_unzip_init(size_t bufferSize, DynXXZFormat format) {
 }
 
 DYNXX_EXPORT_AUTO
-size_t dynxx_z_unzip_input(const DynXXUnZipHandle unzip, const byte *inBytes, size_t inLen, bool inFinish) {
+size_t dynxx_z_unzip_input(DynXXUnZipHandle unzip, const byte *inBytes, size_t inLen, bool inFinish) {
     return dynxxZUnzipInput(unzip, makeBytes(inBytes, inLen), inFinish);
 }
 
 DYNXX_EXPORT_AUTO
-const byte *dynxx_z_unzip_process_do(const DynXXUnZipHandle unzip, size_t *outLen) {
+const byte *dynxx_z_unzip_process_do(DynXXUnZipHandle unzip, size_t *outLen) {
     const auto bytes = dynxxZUnzipProcessDo(unzip);
     return handleOutBytes(bytes, outLen);
 }
 
 DYNXX_EXPORT_AUTO
-bool dynxx_z_unzip_process_finished(const DynXXUnZipHandle unzip) {
+bool dynxx_z_unzip_process_finished(DynXXUnZipHandle unzip) {
     return dynxxZUnzipProcessFinished(unzip);
 }
 
 DYNXX_EXPORT_AUTO
-void dynxx_z_unzip_release(const DynXXUnZipHandle unzip) {
+void dynxx_z_unzip_release(DynXXUnZipHandle unzip) {
     dynxxZUnzipRelease(unzip);
 }
 

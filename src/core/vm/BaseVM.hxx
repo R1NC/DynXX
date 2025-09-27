@@ -19,8 +19,8 @@ namespace DynXX::Core::VM {
     protected:
         mutable std::recursive_timed_mutex vmMutex;
 
-        [[nodiscard]] bool tryLockUntil(const size_t timeoutMicroSecs);
-        [[nodiscard]] bool lockAutoRetry(const size_t retryCount, const size_t sleepMicroSecs);
+        [[nodiscard]] bool tryLockUntil(size_t timeoutMicroSecs);
+        [[nodiscard]] bool lockAutoRetry(size_t retryCount, size_t sleepMicroSecs);
 
         void unlock();
 

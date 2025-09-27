@@ -7,11 +7,11 @@
 #include <DynXX/CXX/Json.hxx>
 
 namespace DynXX::Core::Json {
-    DynXXJsonNodeTypeX nodeReadType(const DynXXJsonNodeHandle node);
+    DynXXJsonNodeTypeX nodeReadType(DynXXJsonNodeHandle node);
 
-    std::optional<std::string> nodeReadName(const DynXXJsonNodeHandle node);
+    std::optional<std::string> nodeReadName(DynXXJsonNodeHandle node);
 
-    std::optional<std::string> nodeToStr(const DynXXJsonNodeHandle node);
+    std::optional<std::string> nodeToStr(DynXXJsonNodeHandle node);
 
     std::optional<std::string> jsonFromDictAny(const DictAny &dict);
 
@@ -33,25 +33,25 @@ namespace DynXX::Core::Json {
 
         bool valid() const;
 
-        DynXXJsonNodeHandle readChild(const DynXXJsonNodeHandle node) const;
+        DynXXJsonNodeHandle readChild(DynXXJsonNodeHandle node) const;
 
-        DynXXJsonNodeHandle readNext(const DynXXJsonNodeHandle node) const;
+        DynXXJsonNodeHandle readNext(DynXXJsonNodeHandle node) const;
 
-        size_t readChildrenCount(const DynXXJsonNodeHandle node) const;
+        size_t readChildrenCount(DynXXJsonNodeHandle node) const;
 
-        void readChildren(const DynXXJsonNodeHandle node, std::function<void(size_t idx, const DynXXJsonNodeHandle childNode, const DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback) const;
+        void readChildren(DynXXJsonNodeHandle node, std::function<void(size_t idx, DynXXJsonNodeHandle childNode, DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback) const;
 
-        DynXXJsonNodeHandle readNode(const DynXXJsonNodeHandle node, std::string_view k) const;
+        DynXXJsonNodeHandle readNode(DynXXJsonNodeHandle node, std::string_view k) const;
 
         DynXXJsonNodeHandle operator[](std::string_view k) const;
 
-        std::optional<std::string> readString(const DynXXJsonNodeHandle node) const;
+        std::optional<std::string> readString(DynXXJsonNodeHandle node) const;
 
-        std::optional<Num> readNumber(const DynXXJsonNodeHandle node) const;
+        std::optional<Num> readNumber(DynXXJsonNodeHandle node) const;
 
         template <typename T> 
         requires (IntegerT<T> || EnumT<T>)
-        std::optional<T> readNumInt(const DynXXJsonNodeHandle node) const {
+        std::optional<T> readNumInt(DynXXJsonNodeHandle node) const {
             const auto v = this->readNumber(node);
             if (v == std::nullopt) [[unlikely]] {
                 return std::nullopt;
@@ -62,7 +62,7 @@ namespace DynXX::Core::Json {
 
         template <typename T> 
         requires FloatT<T>
-        std::optional<T> readNumFloat(const DynXXJsonNodeHandle node) const {
+        std::optional<T> readNumFloat(DynXXJsonNodeHandle node) const {
             const auto v = this->readNumber(node);
             if (v == std::nullopt) [[unlikely]] {
                 return std::nullopt;
@@ -80,6 +80,6 @@ namespace DynXX::Core::Json {
 
         void cleanup() noexcept;
 
-        const cJSON *reinterpretNode(const DynXXJsonNodeHandle node) const;
+        const cJSON *reinterpretNode(DynXXJsonNodeHandle node) const;
     };
 }
