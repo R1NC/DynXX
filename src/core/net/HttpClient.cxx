@@ -47,7 +47,7 @@ namespace
                 dynxxLogPrint(Error, "HttpClient.Req init failed");
                 return;
             }
-            this->setOpt(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
+            //this->setOpt(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
             this->setOpt(CURLOPT_USERAGENT, "DynXX");
             this->setOpt(CURLOPT_FOLLOWLOCATION, 1L);//allow redirect
         };
@@ -277,12 +277,7 @@ namespace
 
     bool checkUrlHasSearch(std::string_view url)
     {
-#if defined(USE_ADA)
-        auto aUrl = ada::parse(url);
-        return aUrl && !aUrl->get_search().empty();
-#else
         return url.find('?', 0) != std::string::npos;
-#endif
     }
 
     bool handleSSL(Req &req, std::string_view url)

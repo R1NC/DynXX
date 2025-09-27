@@ -11,10 +11,10 @@ enum class DynXXHttpMethodX : int {
 };
 
 struct DynXXHttpResponse {
-    int code{0};
     std::string contentType;
-    Dict headers;
     std::string data;
+    Dict headers;
+    int code{0};
 
     std::optional<std::string> toJson() const;
 };
