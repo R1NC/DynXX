@@ -8,7 +8,9 @@
 #include "ScriptAPI.hxx"
 
 namespace {
-    std::unique_ptr<DynXX::Core::VM::LuaVM> vm = nullptr;
+    using namespace DynXX::Core::VM;
+
+    std::unique_ptr<LuaVM> vm = nullptr;
 
 #define DEF_API(f, T) DEF_LUA_FUNC_##T(f##L, f##S)
 
@@ -241,7 +243,7 @@ void dynxx_lua_init() {
     if (vm) [[unlikely]] {
         return;
     }
-    vm = std::make_unique<DynXX::Core::VM::LuaVM>();
+    vm = std::make_unique<LuaVM>();
     registerFuncs();
 }
 
