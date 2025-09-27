@@ -192,12 +192,12 @@ namespace DynXX::Core::VM {
 
         // Custom hash function for JSValue
         struct JSValueHash {
-            std::size_t operator()(const JSValue &jv) const;
+            std::size_t operator()(const JSValue &jv) const noexcept;
         };
 
         // Custom equality function for JSValue
         struct JSValueEqual {
-            bool operator()(const JSValue &left, const JSValue &right) const;
+            bool operator()(const JSValue &left, const JSValue &right) const noexcept;
         };
 
         std::unordered_set<JSValue, JSValueHash, JSValueEqual> jValueCache;
