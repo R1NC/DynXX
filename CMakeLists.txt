@@ -100,7 +100,19 @@ endif()
 
 ## Source & Output:
 
-file(GLOB_RECURSE SRC_FILES "src/*.cxx" "src/*.mm")
+set(SRC_FILES "")
+
+file(GLOB_RECURSE CPP_FILES "src/*.cxx")
+list(APPEND SRC_FILES ${CPP_FILES})
+
+if(APPLE)
+    file(GLOB_RECURSE OBJCXX_FILES "src/*.mm")
+    list(APPEND SRC_FILES ${OBJCXX_FILES})
+    set_source_files_properties(${OBJCXX_FILES} PROPERTIES
+        COMPILE_FLAGS "-fobjc-arc"
+    )
+endif()
+
 if(ANDROID) # Android can not find built-in `ifaddrs.h`;
     set(ANDROID_IFADDRS_ROOT third_party/android-ifaddrs)
     list(APPEND SRC_FILES ${ANDROID_IFADDRS_ROOT}/ifaddrs.c)
