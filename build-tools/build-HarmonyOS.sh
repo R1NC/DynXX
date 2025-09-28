@@ -4,6 +4,7 @@ source "$(dirname "$0")/build-utils.sh"
 
 # TODO
 OHOS_ROOT=${OHOS_ROOT:-"$HOME/Library/OpenHarmony/Sdk/20/native"}
+AR_PATH=$OHOS_ROOT/toolchains/llvm/bin
 ARCH=arm64-v8a
 
 BUILD_DIR=../build.HarmonyOS
