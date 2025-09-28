@@ -2,7 +2,7 @@
 
 source "$(dirname "$0")/build-utils.sh"
 
-NDK_ROOT=${NDK_ROOT:-"~/Library/Android/sdk/ndk/29.0.14033849/"}
+NDK_ROOT=${NDK_ROOT:-"$HOME/Library/Android/sdk/ndk/29.0.14033849/"}
 ARCH=arm64-v8a
 VER=24
 
