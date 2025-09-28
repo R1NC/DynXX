@@ -2,7 +2,7 @@
 
 source "$(dirname "$0")/build-utils.sh"
 
-EMSCRIPTEN_ROOT=${EMSCRIPTEN_ROOT:-"~/dev/emsdk/upstream/emscripten"}
+EMSCRIPTEN_ROOT=${EMSCRIPTEN_ROOT:-"$HOME/dev/emsdk/upstream/emscripten"}
 DEBUG=0
 
 BUILD_DIR=../build.WebAssembly
