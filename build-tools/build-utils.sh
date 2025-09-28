@@ -28,6 +28,25 @@ merge_libs_apple() {
     cd "${current_dir}"
 }
 
+merge_libs_posix() {
+    local current_dir=$(pwd)
+    local lib_dir="$1"
+    local output_lib="$2"
+    local ar_tool="${3:-ar}"
+    cd "${lib_dir}"
+    
+    for lib in *.a; do
+        echo "Extracting $lib..."
+        "${ar_tool}" x "$lib"
+    done
+
+    rm *.a
+    "${ar_tool}" rcs "${output_lib}" *.o
+    rm *.o
+    find . -maxdepth 1 ! -name "*.a" -type f -delete
+    cd "${current_dir}"
+}
+
 check_artifacts() {
     local artifacts=("$@")
     echo "Checking artifacts..."
