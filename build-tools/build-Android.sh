@@ -3,6 +3,9 @@
 source "$(dirname "$0")/build-utils.sh"
 
 NDK_ROOT=${NDK_ROOT:-"$HOME/Library/Android/sdk/ndk/29.0.14033849/"}
+VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
+VCPKG_TARGET=arm64-android
+
 AR_PATH=$NDK_ROOT/toolchains/llvm/prebuilt/darwin-x86_64/bin
 ARCH=arm64-v8a
 VER=24
@@ -27,7 +30,9 @@ build4android() {
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     -DCMAKE_SYSTEM_NAME=Android \
     -DCMAKE_ANDROID_NDK=$NDK_ROOT \
-    -DCMAKE_TOOLCHAIN_FILE=$NDK_ROOT/build/cmake/android.toolchain.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+    -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$NDK_ROOT/build/cmake/android.toolchain.cmake \
+    -DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET \
     -DANDROID_TOOLCHAIN=clang \
     -DCMAKE_INSTALL_PREFIX=. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
@@ -60,14 +65,7 @@ fi
 LIB_OUTPUT_DIR=output/libs/${ARCH}
 ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/libDynXX.a"
-    "${LIB_OUTPUT_DIR}/libcurl.a"
-    "${LIB_OUTPUT_DIR}/libssl.a"
-    "${LIB_OUTPUT_DIR}/libcrypto.a"
-    "${LIB_OUTPUT_DIR}/liblua.a"
     "${LIB_OUTPUT_DIR}/libqjs.a"
-    "${LIB_OUTPUT_DIR}/libspdlog.a"
-    "${LIB_OUTPUT_DIR}/libuv.a"
-    "${LIB_OUTPUT_DIR}/libcjson.a"
     "${LIB_OUTPUT_DIR}/libmmkvcore.a"
     "${LIB_OUTPUT_DIR}/libmmkv.a"
 )

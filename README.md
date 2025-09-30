@@ -7,7 +7,7 @@
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Android-macOS.yml?branch=main&label=CI%20-%20Android&logo=android&logoColor=3DDC84"/>][26]
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-iOS.yml?branch=main&label=CI%20-%20iOS&logo=Apple&logoColor=white"/>][33]
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-HarmonyOS-macOS.yml?branch=main&label=CI%20-%20HarmonyOS&logo=Huawei&logoColor=FF0000"/>][24]       
-[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Windows-MSVC.yml?branch=main&label=CI%20-%20Windows&logo=gitforwindows&logoColor=0078D4"/>][35]
+[<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Windows.yml?branch=main&label=CI%20-%20Windows&logo=gitforwindows&logoColor=0078D4"/>][35]
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-macOS.yml?branch=main&label=CI%20-%20macOS&logo=Apple&logoColor=white"/>][34]
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Linux-Ubuntu.yml?branch=main&label=CI%20-%20Linux&logo=Linux&logoColor=FBB726"/>][30]      
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-WASM-macOS.yml?branch=main&label=CI%20-%20WASM&logo=WebAssembly&logoColor=654FF0"/>][29] 
@@ -128,6 +128,6 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [32]: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0919r3.html
 [33]: ../../actions/workflows/CI-iOS.yml
 [34]: ../../actions/workflows/CI-macOS.yml
-[35]: ../../actions/workflows/CI-Windows-MSVC.yml
+[35]: ../../actions/workflows/CI-Windows.yml
 [36]: https://sonarcloud.io/project/overview?id=R1NC_DynXX
 [37]: ../../actions/workflows/CodeQL.yml

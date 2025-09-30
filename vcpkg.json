@@ -1,0 +1,37 @@
+{
+  "name": "dynxx",
+  "version": "1.0.0",
+  "dependencies": [
+    {
+      "name": "ada-url"
+    },
+    {
+      "name": "cjson"
+    },
+    {
+      "name": "curl"
+    },
+    {
+      "name": "lua"
+    },
+    {
+      "name": "openssl"
+    },
+    {
+      "name": "spdlog"
+    },
+    {
+      "name": "zlib",
+      "platform": "windows | emscripten"
+    },
+    {
+      "name": "sqlite3",
+      "platform": "!ios & !osx"
+    },
+    {
+      "name": "libuv",
+      "platform": "!emscripten"
+    }
+  ],
+  "default-features": []
+}

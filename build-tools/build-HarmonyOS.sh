@@ -4,6 +4,7 @@ source "$(dirname "$0")/build-utils.sh"
 
 # TODO
 OHOS_ROOT=${OHOS_ROOT:-"$HOME/Library/OpenHarmony/Sdk/20/native"}
+
 AR_PATH=$OHOS_ROOT/toolchains/llvm/bin
 ARCH=arm64-v8a
 
@@ -42,13 +43,7 @@ build4harmony ${ARCH} Release
 LIB_OUTPUT_DIR=output/libs/${ARCH}
 ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/libDynXX.a"
-    "${LIB_OUTPUT_DIR}/libcurl.a"
-    "${LIB_OUTPUT_DIR}/libssl.a"
-    "${LIB_OUTPUT_DIR}/libcrypto.a"
-    "${LIB_OUTPUT_DIR}/liblua.a"
     "${LIB_OUTPUT_DIR}/libqjs.a"
-    "${LIB_OUTPUT_DIR}/libspdlog.a"
-    "${LIB_OUTPUT_DIR}/libcjson.a"
     "${LIB_OUTPUT_DIR}/libmmkvcore.a"
     "${LIB_OUTPUT_DIR}/libmmkv.a"
 )

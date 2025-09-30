@@ -386,7 +386,7 @@ std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_vie
                 jRes = this->jAwait(jRes); // Handle promise if needed
             }
             const auto cS = JS_ToCString(ctx, jRes);
-            s = std::move(makeStr(cS));
+            s = makeStr(cS);
             JS_FreeCString(ctx, cS);
         }
         JS_FreeValue(ctx, jRes);

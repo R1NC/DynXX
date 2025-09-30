@@ -17,3 +17,4 @@ scripts/JS/dist
 build
 .cache/clangd/index
 .idea
+vcpkg_installed

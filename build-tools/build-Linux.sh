@@ -3,6 +3,8 @@
 source "$(dirname "$0")/build-utils.sh"
 
 #TODO
+VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
+VCPKG_TARGET=x64-linux
 DEBUG=0
 
 BUILD_DIR=../build.Linux
@@ -17,6 +19,8 @@ fi
 
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=. \
+    -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+    -DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET \
     -DCMAKE_BUILD_TYPE=${LIB_TYPE}
 
 build_with_cmake . ${BUILD_DIR} ${LIB_TYPE}
@@ -26,14 +30,7 @@ LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
 ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/DynXX.a"
-    "${LIB_OUTPUT_DIR}/curl.a"
-    "${LIB_OUTPUT_DIR}/ssl.a"
-    "${LIB_OUTPUT_DIR}/crypto.a"
-    "${LIB_OUTPUT_DIR}/lua.a"
     "${LIB_OUTPUT_DIR}/qjs.a"
-    "${LIB_OUTPUT_DIR}/spdlog.a"
-    "${LIB_OUTPUT_DIR}/uv.a"
-    "${LIB_OUTPUT_DIR}/cjson.a"
     "${LIB_OUTPUT_DIR}/mmkvcore.a"
     "${LIB_OUTPUT_DIR}/mmkv.a"
 )

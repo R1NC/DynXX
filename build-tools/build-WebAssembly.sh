@@ -2,6 +2,8 @@
 
 source "$(dirname "$0")/build-utils.sh"
 
+VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
+VCPKG_TARGET=wasm32-emscripten
 EMSCRIPTEN_ROOT=${EMSCRIPTEN_ROOT:-"$HOME/dev/emsdk/upstream/emscripten"}
 DEBUG=0
 
@@ -16,9 +18,12 @@ build4wasm() {
 
     cmake .. \
     -DEMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_ROOT} \
-    -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT}/cmake/Modules/Platform/Emscripten.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+    -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT}/cmake/Modules/Platform/Emscripten.cmake \
+    -DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DEMSCRIPTEN_SYSTEM_PROCESSOR=${ABI}
+    -DEMSCRIPTEN_SYSTEM_PROCESSOR=${ABI} \
+    -G Ninja
 
     cmake --build . --config ${BUILD_TYPE}
 

@@ -6,9 +6,11 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
-      - 'build-tools/**'
+      - 'build-tools/build-utils.sh'
+      - 'build-tools/build-HarmonyOS.sh'
       - 'third-party/**'
       - 'CMakeLists.txt'
+      - 'vcpkg.json'
   workflow_dispatch:
 
 permissions:

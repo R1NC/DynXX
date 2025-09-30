@@ -1,0 +1,53 @@
+name: CI for Windows
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'include/**'
+      - 'src/**'
+      - 'build-tools/build-utils.sh'
+      - 'build-tools/build-Windows.sh'
+      - 'third-party/**'
+      - 'CMakeLists.txt'
+      - 'vcpkg.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Setup Visual Studio
+        uses: microsoft/setup-msbuild@v1.3.1
+        with:
+          vs-version: '17.0'
+
+      - name: Setup vcpkg & dependencies
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg install --triplet=x64-windows
+        shell: pwsh
+
+      - name: Build
+        env:
+          VCPKG_ROOT: ${{ github.workspace }}\vcpkg
+        run: |
+          cd build-tools
+          .\build-Windows.bat
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-build
+          path: |
+            build.Windows/output/
+          if-no-files-found: error

@@ -3,6 +3,8 @@
 source "$(dirname "$0")/build-utils.sh"
 
 #TODO
+VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
+VCPKG_TARGET=arm64-osx
 DEBUG=0
 TARGET_VERSION=14.0
 
@@ -22,7 +24,9 @@ build4mac() {
     fi
     
     cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/Apple/ios.toolchain.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+    -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=cmake/toolchains/Apple/ios.toolchain.cmake \
+    -DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET \
     -DCMAKE_INSTALL_PREFIX=. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DARCHS=${ARCHS} \
@@ -46,14 +50,7 @@ LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
 ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/DynXX-core.a"
-    "${LIB_OUTPUT_DIR}/curl.a"
-    "${LIB_OUTPUT_DIR}/ssl.a"
-    "${LIB_OUTPUT_DIR}/crypto.a"
-    "${LIB_OUTPUT_DIR}/lua.a"
     "${LIB_OUTPUT_DIR}/qjs.a"
-    "${LIB_OUTPUT_DIR}/spdlog.a"
-    "${LIB_OUTPUT_DIR}/uv.a"
-    "${LIB_OUTPUT_DIR}/cjson.a"
     "${LIB_OUTPUT_DIR}/mmkvcore.a"
     "${LIB_OUTPUT_DIR}/mmkv.a"
 )
