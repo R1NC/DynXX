@@ -1,6 +1,0 @@
-paths-ignore:
-  - "third_party/"
-
-queries:
-  - uses: security-and-quality
-  - uses: experimental/security

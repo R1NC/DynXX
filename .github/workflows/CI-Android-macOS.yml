@@ -45,12 +45,12 @@ jobs:
           ndk-version: r29-beta2
           local-cache: true
 
-      - name: Setup vcpkg & dependencies
-        run: |
-          git clone https://github.com/Microsoft/vcpkg.git
-          ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/vcpkg install --triplet=arm64-android
-
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+          runVcpkgInstall: false
+    
       - name: Build
         env:
           VCPKG_ROOT: ${{ github.workspace }}/vcpkg

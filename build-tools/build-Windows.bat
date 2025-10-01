@@ -3,10 +3,15 @@ if not defined VCPKG_ROOT (
 )
 
 set "GENERATOR=Visual Studio 17 2022"
-set "BUILD_TARGET=x64-windows"
+set "VCPKG_TARGET=x64-windows"
+
 set "BUILD_TYPE=Release"
 
-set "BUILD_DIR=%CD%\..\build.Windows"
+cd ..
+set "VCPKG_BINARY_SOURCES=clear;default,readwrite"
+%VCPKG_ROOT%/vcpkg install --triplet=%VCPKG_TARGET%
+
+set "BUILD_DIR=%CD%\build.Windows"
 set "OUTPUT_DIR=%BUILD_DIR%\output"
 set "HEADER_OUTPUT_DIR=%OUTPUT_DIR%\include"
 set "LIB_OUTPUT_DIR=%OUTPUT_DIR%\libs\%BUILD_TYPE%"
@@ -19,7 +24,7 @@ cd "%BUILD_DIR%"
 cmake .. ^
     -G "%GENERATOR%" ^
     -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
-    -DVCPKG_TARGET_TRIPLET="%BUILD_TARGET%" ^
+    -DVCPKG_TARGET_TRIPLET="%VCPKG_TARGET%" ^
     -DCMAKE_C_COMPILER=clang-cl ^
     -DCMAKE_CXX_COMPILER=clang-cl ^
     -DCMAKE_BUILD_TYPE="%BUILD_TYPE%" ^

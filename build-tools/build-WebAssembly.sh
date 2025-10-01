@@ -4,10 +4,19 @@ source "$(dirname "$0")/build-utils.sh"
 
 VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
 VCPKG_TARGET=wasm32-emscripten
-EMSCRIPTEN_ROOT=${EMSCRIPTEN_ROOT:-"$HOME/dev/emsdk/upstream/emscripten"}
+
+EMSDK_ROOT=${EMSDK_ROOT:-"$HOME/dev/emsdk"}
+EMSCRIPTEN_ROOT=${EMSCRIPTEN_ROOT:-"$EMSDK_ROOT/upstream/emscripten"}
+export EMSDK="$EMSDK_ROOT"
+export EMSCRIPTEN="$EMSCRIPTEN_ROOT"
+
 DEBUG=0
 
-BUILD_DIR=../build.WebAssembly
+cd ..
+export VCPKG_BINARY_SOURCES="clear;default,readwrite"
+$VCPKG_ROOT/vcpkg install --triplet=${VCPKG_TARGET}
+
+BUILD_DIR=build.WebAssembly
 rm -rf ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}

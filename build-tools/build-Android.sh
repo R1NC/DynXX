@@ -2,15 +2,22 @@
 
 source "$(dirname "$0")/build-utils.sh"
 
-NDK_ROOT=${NDK_ROOT:-"$HOME/Library/Android/sdk/ndk/29.0.14033849/"}
 VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
 VCPKG_TARGET=arm64-android
 
+NDK_ROOT=${NDK_ROOT:-"$HOME/Library/Android/sdk/ndk/29.0.14033849/"}
+export ANDROID_NDK=$NDK_ROOT
+export ANDROID_NDK_HOME=$NDK_ROOT
 AR_PATH=$NDK_ROOT/toolchains/llvm/prebuilt/darwin-x86_64/bin
+
 ARCH=arm64-v8a
 VER=24
 
-BUILD_DIR=../build.Android
+cd ..
+export VCPKG_BINARY_SOURCES="clear;default,readwrite"
+$VCPKG_ROOT/vcpkg install --triplet=${VCPKG_TARGET}
+
+BUILD_DIR=build.Android
 rm -rf ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}

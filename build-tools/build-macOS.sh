@@ -5,10 +5,15 @@ source "$(dirname "$0")/build-utils.sh"
 #TODO
 VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
 VCPKG_TARGET=arm64-osx
+
 DEBUG=0
 TARGET_VERSION=14.0
 
-BUILD_DIR=../build.macOS
+cd ..
+export VCPKG_BINARY_SOURCES="clear;default,readwrite"
+$VCPKG_ROOT/vcpkg install --triplet=${VCPKG_TARGET}
+
+BUILD_DIR=build.macOS
 rm -rf ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
@@ -55,22 +60,9 @@ ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/mmkv.a"
 )
 mv libDynXX.a ${LIB_OUTPUT_DIR}/DynXX-core.a
-mv curl-build/lib/libcurl.a ${LIB_OUTPUT_DIR}/curl.a
-mv openssl-build/ssl/libssl.a ${LIB_OUTPUT_DIR}/ssl.a
-mv openssl-build/crypto/libcrypto.a ${LIB_OUTPUT_DIR}/crypto.a
-mv lua-build/liblua.a ${LIB_OUTPUT_DIR}/lua.a
 mv quickjs-build/libqjs.a ${LIB_OUTPUT_DIR}/qjs.a
-mv spdlog-build/libspdlog.a ${LIB_OUTPUT_DIR}/spdlog.a
-mv libuv-build/libuv.a ${LIB_OUTPUT_DIR}/uv.a
-mv cjson-build/libcjson.a ${LIB_OUTPUT_DIR}/cjson.a
 mv mmkv-build/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
 mv mmkv-build/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
-ADA_OUT_FILE=AdaURL-build/src/libada.a
-if [ -f "$ADA_OUT_FILE" ]; then
-    libAda=${LIB_OUTPUT_DIR}/ada.a
-    mv ${ADA_OUT_FILE} ${libAda}
-    ARTIFACTS+=(${libAda})
-fi
 
 #Copy executables
 TOOLS_OUTPUT_DIR=output/tools

@@ -30,11 +30,11 @@ jobs:
       run: |
         brew install cmake ninja | true
 
-    - name: Setup vcpkg & dependencies
-      run: |
-        git clone https://github.com/Microsoft/vcpkg.git
-        ./vcpkg/bootstrap-vcpkg.sh
-        ./vcpkg/vcpkg install --triplet=arm64-osx
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+        runVcpkgInstall: false
 
     - name: Build
       env:

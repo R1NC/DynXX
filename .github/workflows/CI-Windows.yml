@@ -7,7 +7,7 @@ on:
       - 'include/**'
       - 'src/**'
       - 'build-tools/build-utils.sh'
-      - 'build-tools/build-Windows.sh'
+      - 'build-tools/build-Windows.bat'
       - 'third-party/**'
       - 'CMakeLists.txt'
       - 'vcpkg.json'
@@ -30,12 +30,11 @@ jobs:
         with:
           vs-version: '17.0'
 
-      - name: Setup vcpkg & dependencies
-        run: |
-          git clone https://github.com/Microsoft/vcpkg.git
-          .\vcpkg\bootstrap-vcpkg.bat
-          .\vcpkg\vcpkg install --triplet=x64-windows
-        shell: pwsh
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+          runVcpkgInstall: false
 
       - name: Build
         env:
