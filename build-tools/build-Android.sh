@@ -5,7 +5,7 @@ source "$(dirname "$0")/build-utils.sh"
 VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
 VCPKG_TARGET=arm64-android
 
-NDK_ROOT=${NDK_ROOT:-"$HOME/Library/Android/sdk/ndk/29.0.14033849/"}
+NDK_ROOT=${NDK_ROOT:-"$HOME/Library/Android/sdk/ndk/29.0.14206865/"}
 export ANDROID_NDK=$NDK_ROOT
 export ANDROID_NDK_HOME=$NDK_ROOT
 AR_PATH=$NDK_ROOT/toolchains/llvm/prebuilt/darwin-x86_64/bin
