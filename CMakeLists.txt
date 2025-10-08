@@ -189,7 +189,7 @@ endif()
 
 if(USE_LUA)
     if(USE_VCPKG)
-        find_package(lua CONFIG REQUIRED)
+        find_package(Lua REQUIRED)
     else()
         set(LUA_ROOT third_party/lua)
         add_subdirectory(${LUA_ROOT} lua-build)
