@@ -103,6 +103,9 @@ option(USE_VCPKG "Use vcpkg" ON)
 if(OHOS)
     set(USE_VCPKG OFF)
 endif()
+if(USE_VCPKG)
+    add_definitions(-DUSE_VCPKG)
+endif()
 
 ## Source & Output:
 
@@ -141,30 +144,39 @@ endif()
 
 ## Include Directories:
 
-list(APPEND INC_DIRS include)
-if(OHOS)
-    list(APPEND INC_DIRS third_party)
-endif()
+target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 ## Find dependencies:
 
 if(USE_VCPKG)
     find_package(cJSON CONFIG REQUIRED)
 else()
-    set(CJSON_ROOT third_party/cjson)
-    add_subdirectory(${CJSON_ROOT} cjson-build)
-    list(APPEND INC_DIRS ${CJSON_ROOT})
+    addGitLib(
+        cjson
+        https://github.com/R1NC/cJSON
+        dev
+        ""
+        ""
+        ${PROJECT_NAME}
+        FALSE
+    )
 endif()
 
 if(USE_VCPKG)
     find_package(OpenSSL REQUIRED)
 else()
-    set(OPENSSL_ROOT third_party/openssl)
-    add_subdirectory(${OPENSSL_ROOT} openssl-build)
-    list(APPEND INC_DIRS ${OPENSSL_ROOT}/include)
+    addGitLib(
+        openssl
+        https://github.com/R1NC/openssl
+        dev
+        ""
+        "include"
+        ${PROJECT_NAME}
+        FALSE
+    )
     ## Config OpenSSL for libcurl to find libssl and libcrypto
-    set(OPENSSL_ROOT_DIR ${OPENSSL_ROOT})
-    set(OPENSSL_INCLUDE_DIR ${OPENSSL_ROOT_DIR}/include)
+    set(OPENSSL_ROOT_DIR ${openssl_SRC_PATH})
+    set(OPENSSL_INCLUDE_DIR ${openssl_INC_PATH})
     add_library(OpenSSL::SSL ALIAS ssl)
     add_library(OpenSSL::Crypto ALIAS crypto)
     set(OPENSSL_SSL_LIBRARY ssl)
@@ -172,18 +184,30 @@ else()
 endif()
 
 if(USE_KV)
-    set(MMKV_ROOT third_party/MMKV)
-    add_subdirectory(${MMKV_ROOT}/POSIX/src mmkv-build)
-    list(APPEND INC_DIRS ${MMKV_ROOT}/Core)
+    addGitLib(
+        mmkv
+        https://github.com/R1NC/MMKV
+        dev
+        "POSIX/src"
+        "Core"
+        ${PROJECT_NAME}
+        TRUE
+    )
 endif()
 
 if(USE_CURL)
     if(USE_VCPKG)
         find_package(CURL REQUIRED)
     else()
-        set(CURL_ROOT third_party/curl)
-        add_subdirectory(${CURL_ROOT} curl-build)
-        list(APPEND INC_DIRS ${CURL_ROOT}/include)
+        addGitLib(
+            curl
+            https://github.com/R1NC/curl
+            dev
+            ""
+            "include"
+            ${PROJECT_NAME}
+            FALSE
+        )
     endif()
 endif()
 
@@ -191,15 +215,28 @@ if(USE_LUA)
     if(USE_VCPKG)
         find_package(Lua REQUIRED)
     else()
-        set(LUA_ROOT third_party/lua)
-        add_subdirectory(${LUA_ROOT} lua-build)
-        list(APPEND INC_DIRS ${LUA_ROOT})
+        addGitLib(
+            lua
+            https://github.com/R1NC/lua
+            dev
+            ""
+            ""
+            ${PROJECT_NAME}
+            FALSE
+        )
     endif()
 endif()
 
 if(USE_QJS)
-    set(QJS_ROOT third_party/quickjs)
-    add_subdirectory(${QJS_ROOT} quickjs-build)
+    addGitLib(
+        quickjs
+        https://github.com/R1NC/quickjs-ng
+        dev
+        ""
+        ""
+        ${PROJECT_NAME}
+        FALSE
+    )
 
     if(TARGET quickjs)
         target_compile_options(quickjs PRIVATE
@@ -208,17 +245,21 @@ if(USE_QJS)
             -Wno-shorten-64-to-32
         )
     endif()
-    
-    list(APPEND INC_DIRS ${QJS_ROOT})
 endif()
 
 if(USE_SPDLOG)
     if(USE_VCPKG)
         find_package(spdlog REQUIRED)
     else()
-        set(SPDLOG_ROOT third_party/spdlog)
-        add_subdirectory(${SPDLOG_ROOT} spdlog-build)
-        list(APPEND INC_DIRS ${SPDLOG_ROOT}/include)
+        addGitLib(
+            spdlog
+            https://github.com/R1NC/spdlog
+            dev
+            ""
+            "include"
+            ${PROJECT_NAME}
+            FALSE
+        )
     endif()
 endif()
 
@@ -228,9 +269,15 @@ if(USE_DB AND NOT APPLE)
     if(USE_VCPKG)
         find_package(unofficial-sqlite3 CONFIG REQUIRED)
     else()
-        set(SQLITE_ROOT third_party/sqlite)
-        add_subdirectory(${SQLITE_ROOT} sqlite-build)
-        list(APPEND INC_DIRS ${SQLITE_ROOT})
+        addGitLib(
+            sqlite
+            https://github.com/R1NC/sqlite
+            dev
+            ""
+            ""
+            ${PROJECT_NAME}
+            FALSE
+        )
     endif()
 endif()
 
@@ -239,9 +286,15 @@ if(WIN32 OR EMSCRIPTEN)
     if(USE_VCPKG)
         find_package(ZLIB REQUIRED)
     else()
-        set(Z_ROOT third_party/zlib)
-        add_subdirectory(${Z_ROOT} zlib-build)
-        list(APPEND INC_DIRS ${Z_ROOT})
+        addGitLib(
+            zlib
+            https://github.com/R1NC/zlib
+            dev
+            ""
+            ""
+            ${PROJECT_NAME}
+            FALSE
+        )
     endif()
 endif()
 
@@ -250,9 +303,15 @@ if(USE_LIBUV AND NOT OHOS)
     if(USE_VCPKG)
         find_package(libuv REQUIRED)
     else()
-        set(UV_ROOT third_party/libuv)
-        add_subdirectory(${UV_ROOT} libuv-build)
-        list(APPEND INC_DIRS ${UV_ROOT}/include)
+        addGitLib(
+            libuv
+            https://github.com/R1NC/libuv
+            dev
+            ""
+            "include"
+            ${PROJECT_NAME}
+            FALSE
+        )
     endif()
 endif()
 
@@ -260,17 +319,17 @@ if(USE_ADA)
     if(USE_VCPKG)
         find_package(ada REQUIRED)
     else()
-        set(ADAURL_ROOT third_party/AdaURL)
-        add_subdirectory(${ADAURL_ROOT} AdaURL-build)
-        list(APPEND INC_DIRS ${ADAURL_ROOT}/include)
+        addGitLib(
+            ada
+            https://github.com/R1NC/AdaURL
+            dev
+            ""
+            "include"
+            ${PROJECT_NAME}
+            FALSE
+        )
     endif()
 endif()
-
-if(ANDROID)
-    list(APPEND INC_DIRS ${ANDROID_IFADDRS_ROOT})
-endif()
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${INC_DIRS})
 
 ## Link Libraries:
 

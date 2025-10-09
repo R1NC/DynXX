@@ -9,6 +9,7 @@ on:
       - 'build-tools/build-utils.sh'
       - 'build-tools/build-WebAssembly.sh'
       - 'third-party/**'
+      - 'cmake/**'
       - 'CMakeLists.txt'
       - 'vcpkg.json'
   workflow_dispatch:

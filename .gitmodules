@@ -3,57 +3,8 @@
 	url = git@github.com:R1NC/apple.cmake.git
 	branch = dev
 	shallow = true
-[submodule "third_party/curl"]
-	path = third_party/curl
-	url = git@github.com:R1NC/curl.git
-	branch = dev
-	shallow = true
-[submodule "third_party/openssl"]
-	path = third_party/openssl
-	url = git@github.com:R1NC/openssl.git
-	branch = dev
-	shallow = true
-[submodule "third_party/sqlite"]
-	path = third_party/sqlite
-	url = git@github.com:R1NC/sqlite.git
-	branch = dev
-	shallow = true
-[submodule "third_party/MMKV"]
-	path = third_party/MMKV
-	url = git@github.com:R1NC/MMKV.git
-	branch = dev
-	shallow = true
-[submodule "third_party/zlib"]
-	path = third_party/zlib
-	url = git@github.com:R1NC/zlib.git
-	branch = dev
-	shallow = true
-[submodule "third_party/lua"]
-	path = third_party/lua
-	url = git@github.com:R1NC/lua.git
-	branch = dev
-	shallow = true
-[submodule "third_party/quickjs"]
-	path = third_party/quickjs
-	url = git@github.com:R1NC/quickjs-ng.git
-	branch = dev
-	shallow = true
-[submodule "third_party/AdaURL"]
-	path = third_party/AdaURL
-	url = git@github.com:R1NC/AdaURL.git
-	branch = dev
-	shallow = true
-[submodule "third_party/spdlog"]
-	path = third_party/spdlog
-	url = git@github.com:R1NC/spdlog.git
-	branch = dev
-	shallow = true
 [submodule "third_party/android-ifaddrs"]
 	path = third_party/android-ifaddrs
 	url = git@github.com:R1NC/android-ifaddrs.git
 	branch = dev
 	shallow = true
-[submodule "third_party/cjson"]
-	path = third_party/cjson
-	url = git@github.com:R1NC/cJSON.git
-	branch = dev

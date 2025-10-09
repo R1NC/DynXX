@@ -24,6 +24,10 @@ function(initAfterProject)
     if(NOT N EQUAL 0)
         set(CMAKE_BUILD_PARALLEL_LEVEL ${N} PARENT_SCOPE)
     endif()
+
+    # Enable FetchContent
+    include(FetchContent)
+    set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 endfunction()
 
 ## Check Apple Version for C++ new features
@@ -34,6 +38,32 @@ function(checkAppleVersionLimit iosV macV RESULT_VAR)
     else()
         set(${RESULT_VAR} TRUE PARENT_SCOPE)
     endif()
+endfunction()
+
+## Add lib from Git
+function(addGitLib name url tag src_dir inc_dir _target manual_add)
+    FetchContent_Declare(
+        ${name}
+        GIT_REPOSITORY ${url}
+        GIT_TAG        ${tag}
+    )
+    FetchContent_MakeAvailable(${name})
+
+    set(inc_path ${${name}_SOURCE_DIR}/${inc_dir})
+    set(src_path ${${name}_SOURCE_DIR}/${src_dir})
+    
+    if(manual_add)
+        if(TARGET ${name})
+            message(WARNING "${name} already exists, skip add_subdirectory")
+        else()
+            add_subdirectory(${src_path})
+        endif()
+    endif()
+    
+    target_include_directories(${_target} PRIVATE ${inc_path})
+
+    set(${name}_INC_PATH ${inc_path} PARENT_SCOPE)
+    set(${name}_SRC_PATH ${src_path} PARENT_SCOPE)
 endfunction()
 
 ## Add WebAssembly Executable

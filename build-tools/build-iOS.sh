@@ -71,14 +71,8 @@ LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
 ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/DynXX-core.a"
-    "${LIB_OUTPUT_DIR}/qjs.a"
-    "${LIB_OUTPUT_DIR}/mmkvcore.a"
-    "${LIB_OUTPUT_DIR}/mmkv.a"
 )
 ${COMMAND} ${LIB_DIR}libDynXX.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/DynXX-core.a
-${COMMAND} quickjs-build/${LIB_DIR}libqjs.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/qjs.a
-${COMMAND} mmkv-build/Core/${LIB_DIR}/libmmkvcore.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkvcore.a
-${COMMAND} mmkv-build/${LIB_DIR}libmmkv.a ${COMMAND_ARG} ${LIB_OUTPUT_DIR}/mmkv.a
 
 #Checking Artifacts
 check_artifacts "${ARTIFACTS[@]}"

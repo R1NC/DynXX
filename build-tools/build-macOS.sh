@@ -55,21 +55,15 @@ LIB_OUTPUT_DIR=output/libs
 mkdir -p ${LIB_OUTPUT_DIR}
 ARTIFACTS=(
     "${LIB_OUTPUT_DIR}/DynXX-core.a"
-    "${LIB_OUTPUT_DIR}/qjs.a"
-    "${LIB_OUTPUT_DIR}/mmkvcore.a"
-    "${LIB_OUTPUT_DIR}/mmkv.a"
 )
 mv libDynXX.a ${LIB_OUTPUT_DIR}/DynXX-core.a
-mv quickjs-build/libqjs.a ${LIB_OUTPUT_DIR}/qjs.a
-mv mmkv-build/Core/libmmkvcore.a ${LIB_OUTPUT_DIR}/mmkvcore.a
-mv mmkv-build/libmmkv.a ${LIB_OUTPUT_DIR}/mmkv.a
 
 #Copy executables
 TOOLS_OUTPUT_DIR=output/tools
 mkdir -p ${TOOLS_OUTPUT_DIR}
 qjsc=${TOOLS_OUTPUT_DIR}/qjsc
-mv quickjs-build/qjsc.app/Contents/MacOS/qjsc ${qjsc}
-ARTIFACTS+=(${qjsc})
+#mv quickjs-build/qjsc.app/Contents/MacOS/qjsc ${qjsc}
+#ARTIFACTS+=(${qjsc})
 
 #Checking Artifacts
 check_artifacts "${ARTIFACTS[@]}"
