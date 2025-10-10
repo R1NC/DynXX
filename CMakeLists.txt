@@ -151,28 +151,21 @@ target_include_directories(${PROJECT_NAME} PRIVATE include)
 if(USE_VCPKG)
     find_package(cJSON CONFIG REQUIRED)
 else()
-    addGitLib(
+    addGitLib(${PROJECT_NAME}
         cjson
         https://github.com/R1NC/cJSON
         dev
-        ""
-        ""
-        ${PROJECT_NAME}
-        FALSE
     )
 endif()
 
 if(USE_VCPKG)
     find_package(OpenSSL REQUIRED)
 else()
-    addGitLib(
+    addGitLib(${PROJECT_NAME}
         openssl
         https://github.com/R1NC/openssl
         dev
-        ""
         "include"
-        ${PROJECT_NAME}
-        FALSE
     )
     ## Config OpenSSL for libcurl to find libssl and libcrypto
     set(OPENSSL_ROOT_DIR ${openssl_SRC_PATH})
@@ -184,14 +177,13 @@ else()
 endif()
 
 if(USE_KV)
-    addGitLib(
+    addGitLib(${PROJECT_NAME}
         mmkv
         https://github.com/R1NC/MMKV
         dev
-        "POSIX/src"
         "Core"
-        ${PROJECT_NAME}
-        TRUE
+        "POSIX/src"
+        ON
     )
 endif()
 
@@ -199,14 +191,11 @@ if(USE_CURL)
     if(USE_VCPKG)
         find_package(CURL REQUIRED)
     else()
-        addGitLib(
+        addGitLib(${PROJECT_NAME}
             curl
             https://github.com/R1NC/curl
             dev
-            ""
             "include"
-            ${PROJECT_NAME}
-            FALSE
         )
     endif()
 endif()
@@ -215,27 +204,19 @@ if(USE_LUA)
     if(USE_VCPKG)
         find_package(Lua REQUIRED)
     else()
-        addGitLib(
+        addGitLib(${PROJECT_NAME}
             lua
             https://github.com/R1NC/lua
             dev
-            ""
-            ""
-            ${PROJECT_NAME}
-            FALSE
         )
     endif()
 endif()
 
 if(USE_QJS)
-    addGitLib(
+    addGitLib(${PROJECT_NAME}
         quickjs
         https://github.com/R1NC/quickjs-ng
         dev
-        ""
-        ""
-        ${PROJECT_NAME}
-        FALSE
     )
 
     if(TARGET quickjs)
@@ -251,14 +232,11 @@ if(USE_SPDLOG)
     if(USE_VCPKG)
         find_package(spdlog REQUIRED)
     else()
-        addGitLib(
+        addGitLib(${PROJECT_NAME}
             spdlog
             https://github.com/R1NC/spdlog
             dev
-            ""
             "include"
-            ${PROJECT_NAME}
-            FALSE
         )
     endif()
 endif()
@@ -269,14 +247,10 @@ if(USE_DB AND NOT APPLE)
     if(USE_VCPKG)
         find_package(unofficial-sqlite3 CONFIG REQUIRED)
     else()
-        addGitLib(
+        addGitLib(${PROJECT_NAME}
             sqlite
             https://github.com/R1NC/sqlite
             dev
-            ""
-            ""
-            ${PROJECT_NAME}
-            FALSE
         )
     endif()
 endif()
@@ -286,14 +260,10 @@ if(WIN32 OR EMSCRIPTEN)
     if(USE_VCPKG)
         find_package(ZLIB REQUIRED)
     else()
-        addGitLib(
+        addGitLib(${PROJECT_NAME}
             zlib
             https://github.com/R1NC/zlib
             dev
-            ""
-            ""
-            ${PROJECT_NAME}
-            FALSE
         )
     endif()
 endif()
@@ -303,14 +273,11 @@ if(USE_LIBUV AND NOT OHOS)
     if(USE_VCPKG)
         find_package(libuv REQUIRED)
     else()
-        addGitLib(
+        addGitLib(${PROJECT_NAME}
             libuv
             https://github.com/R1NC/libuv
             dev
-            ""
             "include"
-            ${PROJECT_NAME}
-            FALSE
         )
     endif()
 endif()
@@ -319,14 +286,11 @@ if(USE_ADA)
     if(USE_VCPKG)
         find_package(ada REQUIRED)
     else()
-        addGitLib(
+        addGitLib(${PROJECT_NAME}
             ada
             https://github.com/R1NC/AdaURL
             dev
-            ""
             "include"
-            ${PROJECT_NAME}
-            FALSE
         )
     endif()
 endif()

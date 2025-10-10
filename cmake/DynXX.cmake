@@ -34,36 +34,59 @@ endfunction()
 function(checkAppleVersionLimit iosV macV RESULT_VAR)
     if(APPLE AND ((CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "${iosV}") OR 
                   (CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "${macV}")))
-        set(${RESULT_VAR} FALSE PARENT_SCOPE)
+        set(${RESULT_VAR} OFF PARENT_SCOPE)
     else()
-        set(${RESULT_VAR} TRUE PARENT_SCOPE)
+        set(${RESULT_VAR} ON PARENT_SCOPE)
     endif()
 endfunction()
 
 ## Add lib from Git
-function(addGitLib name url tag src_dir inc_dir _target manual_add)
+## optional params: `inc_dir`, `src_dir`, `manual_add`.
+function(addGitLib _target lib url tag)
+    if(NOT _target OR NOT lib OR NOT url OR NOT tag)
+        message(FATAL_ERROR "`addGitLib()`: `_target`, `lib`, `url`, `tag` are required!")
+    endif()
+    set(inc_dir ${ARGV4})
+    set(src_dir ${ARGV5})
+    set(manual_add ${ARGV6})
+    if(NOT src_dir)
+        set(src_dir "")
+    endif()
+    if(NOT inc_dir)
+        set(inc_dir "")
+    endif()
+    if(NOT DEFINED manual_add)
+        set(manual_add OFF)
+    endif()
+    
     FetchContent_Declare(
-        ${name}
+        ${lib}
         GIT_REPOSITORY ${url}
         GIT_TAG        ${tag}
+        GIT_SHALLOW    ON
+        GIT_PROGRESS   ON
     )
-    FetchContent_MakeAvailable(${name})
+    FetchContent_MakeAvailable(${lib})
 
-    set(inc_path ${${name}_SOURCE_DIR}/${inc_dir})
-    set(src_path ${${name}_SOURCE_DIR}/${src_dir})
+    set(inc_path ${${lib}_SOURCE_DIR}/${inc_dir})
+    set(src_path ${${lib}_SOURCE_DIR}/${src_dir})
     
     if(manual_add)
-        if(TARGET ${name})
-            message(WARNING "${name} already exists, skip add_subdirectory")
+        if(TARGET ${lib})
+            message(WARNING "${lib} already exists, skip `add_subdirectory()`")
         else()
             add_subdirectory(${src_path})
         endif()
     endif()
-    
-    target_include_directories(${_target} PRIVATE ${inc_path})
 
-    set(${name}_INC_PATH ${inc_path} PARENT_SCOPE)
-    set(${name}_SRC_PATH ${src_path} PARENT_SCOPE)
+    if(EXISTS ${inc_path})
+        target_include_directories(${_target} PRIVATE ${inc_path})
+    else()
+        message(WARNING "${inc_path} not exists, skip `target_include_directories()`")
+    endif()
+
+    set(${lib}_INC_PATH ${inc_path} PARENT_SCOPE)
+    set(${lib}_SRC_PATH ${src_path} PARENT_SCOPE)
 endfunction()
 
 ## Add WebAssembly Executable
