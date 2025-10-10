@@ -1,25 +1,38 @@
 {
   "name": "dynxx",
   "version": "1.0.0",
-  "builtin-baseline": "0d9d4684352ba8de70bdf251c6fc9a3c464fa12b",
   "dependencies": [
     {
-      "name": "ada-url"
+      "name": "ada-url",
+      "features": []
     },
     {
       "name": "cjson"
     },
     {
-      "name": "curl"
+      "name": "curl",
+      "platform": "!emscripten",
+      "features": [
+        "http2",
+        "http3",
+        "openssl"
+      ]
     },
     {
-      "name": "lua"
+      "name": "lua",
+      "features": [
+        "cpp"
+      ]
     },
     {
-      "name": "openssl"
+      "name": "openssl",
+      "features": [
+        "weak-ssl-ciphers"
+      ]
     },
     {
-      "name": "spdlog"
+      "name": "spdlog",
+      "features": []
     },
     {
       "name": "zlib",
@@ -27,12 +40,18 @@
     },
     {
       "name": "sqlite3",
-      "platform": "!ios & !osx"
+      "platform": "!ios & !osx",
+      "features": [
+        "json1",
+        "fts5",
+        "limit",
+        "math"
+      ]
     },
     {
       "name": "libuv",
       "platform": "!emscripten"
     }
   ],
-  "default-features": []
+  "builtin-baseline": "4334d8b4c8916018600212ab4dd4bbdc343065d1"
 }
