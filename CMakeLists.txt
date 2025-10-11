@@ -218,14 +218,6 @@ if(USE_QJS)
         https://github.com/R1NC/quickjs-ng
         dev
     )
-
-    if(TARGET quickjs)
-        target_compile_options(quickjs PRIVATE
-            -Wno-error=conversion
-            -Wno-error=old-style-cast
-            -Wno-shorten-64-to-32
-        )
-    endif()
 endif()
 
 if(USE_SPDLOG)
