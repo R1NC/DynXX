@@ -25,6 +25,10 @@ JNIEnv *attachEnv(JavaVM *vm) {
     if (vm != nullptr) {
         vm->AttachCurrentThread(&env, nullptr);
     }
+    if (env != nullptr && env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        return nullptr;
+    }
     return env;
 }
 
