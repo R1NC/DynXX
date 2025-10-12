@@ -81,7 +81,7 @@ std::string Hex::bytes2str(BytesView bytes)
 #endif
 }
 
-Bytes Hex::str2bytes(const std::string_view str)
+Bytes Hex::str2bytes(std::string_view str)
 {
     std::string filteredStr;
     filteredStr.reserve(str.size());

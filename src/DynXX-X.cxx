@@ -332,7 +332,7 @@ std::string dynxxCodingHexBytes2str(BytesView bytes) {
     return Coding::Hex::bytes2str(bytes);
 }
 
-Bytes dynxxCodingHexStr2bytes(const std::string_view str) {
+Bytes dynxxCodingHexStr2bytes(std::string_view str) {
     return Coding::Hex::str2bytes(str);
 }
 
