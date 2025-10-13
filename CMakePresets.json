@@ -1,0 +1,87 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "common-debug",
+      "hidden": true,
+      "displayName": "Common Debug Settings",
+      "description": "Shared settings for Debug builds across all platforms",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "common-release",
+      "hidden": true,
+      "displayName": "Common Release Settings",
+      "description": "Shared settings for Release builds across all platforms",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "vcpkg-default",
+      "hidden": true,
+      "displayName": "Vcpkg default Settings",
+      "description": "Shared settings for vcpkg",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "$env{VCPKG_TARGET}"
+      },
+      "environment": {
+        "VCPKG_BINARY_SOURCES": "default,read"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "displayName": "Linux Debug",
+      "description": "Debug build",
+      "inherits": ["common-debug", "vcpkg-default"],
+      "binaryDir": "${sourceDir}/$env{BUILD_FOLDER}",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "$env{OUTPUT_EXE_PATH}"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux Release",
+      "description": "Release build for Linux",
+      "inherits": ["common-release", "vcpkg-default"],
+      "binaryDir": "${sourceDir}/$env{BUILD_FOLDER}",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "$env{OUTPUT_EXE_PATH}"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "linux-debug",
+      "configurePreset": "linux-debug"
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release"
+    }
+  ]
+}

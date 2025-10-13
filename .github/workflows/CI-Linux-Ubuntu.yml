@@ -12,6 +12,7 @@ on:
       - 'cmake/**'
       - 'CMakeLists.txt'
       - 'vcpkg.json'
+      - 'CMakePresets.json'
   workflow_dispatch:
 
 permissions:
