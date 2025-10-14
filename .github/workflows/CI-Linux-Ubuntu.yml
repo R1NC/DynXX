@@ -6,13 +6,13 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
-      - 'build-tools/build-utils.sh'
-      - 'build-tools/build-Linux.sh'
       - 'third-party/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
-      - 'vcpkg.json'
       - 'CMakePresets.json'
+      - 'vcpkg.json'
+      - 'build-tools/build-utils.sh'
+      - 'build-tools/build-Linux.sh'
   workflow_dispatch:
 
 permissions:
@@ -52,6 +52,6 @@ jobs:
       with:
         name: Linux-build
         path: |
-          build.*/output/libs/
-          build.*/output/include/
+          build.Linux/output/libs/
+          build.Linux/output/include/
         if-no-files-found: error

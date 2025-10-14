@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 23,
@@ -7,81 +7,265 @@
   },
   "configurePresets": [
     {
-      "name": "common-debug",
+      "name": "Common",
       "hidden": true,
-      "displayName": "Common Debug Settings",
-      "description": "Shared settings for Debug builds across all platforms",
+      "displayName": "Common Settings",
+      "description": "Shared settings for builds across all platforms",
+      "binaryDir": "${sourceDir}/$env{BUILD_FOLDER}",
+      "cacheVariables": {
+        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "$env{OUTPUT_EXE_PATH}"
+      }
+    },
+    {
+      "name": "Debug-Default",
+      "hidden": true,
+      "displayName": "Default Debug Settings",
+      "description": "Default settings for Debug builds across all platforms",
+      "inherits": ["Common"],
+      "generator": "Unix Makefiles",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "common-release",
+      "name": "Release-Default",
       "hidden": true,
-      "displayName": "Common Release Settings",
-      "description": "Shared settings for Release builds across all platforms",
+      "displayName": "Default Release Settings",
+      "description": "Default settings for Release builds across all platforms",
+      "inherits": ["Common"],
+      "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
-      "name": "vcpkg-default",
+      "name": "Vcpkg-Default",
       "hidden": true,
       "displayName": "Vcpkg default Settings",
       "description": "Shared settings for vcpkg",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_TARGET_TRIPLET": "$env{VCPKG_TARGET}"
-      },
-      "environment": {
-        "VCPKG_BINARY_SOURCES": "default,read"
       }
     },
     {
-      "name": "linux-debug",
-      "displayName": "Linux Debug",
-      "description": "Debug build",
-      "inherits": ["common-debug", "vcpkg-default"],
-      "binaryDir": "${sourceDir}/$env{BUILD_FOLDER}",
-      "generator": "Unix Makefiles",
-      "cacheVariables": {
-        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "$env{OUTPUT_EXE_PATH}"
-      },
+      "name": "Linux-Debug",
+      "displayName": "Linux Debug Config",
+      "description": "Debug build for Linux",
+      "inherits": ["Debug-Default", "Vcpkg-Default"],
       "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux"
+        "type": "allOf",
+        "conditions": [
+          {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Linux"
+          },
+          {
+            "type": "matches",
+            "string": "$env{BUILD_FOLDER}",
+            "regex": ".*[Ll]inux.*"
+          }
+        ]
       }
     },
     {
-      "name": "linux-release",
-      "displayName": "Linux Release",
+      "name": "Linux-Release",
+      "displayName": "Linux Release Config",
       "description": "Release build for Linux",
-      "inherits": ["common-release", "vcpkg-default"],
-      "binaryDir": "${sourceDir}/$env{BUILD_FOLDER}",
-      "generator": "Ninja",
-      "cacheVariables": {
-        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "$env{OUTPUT_EXE_PATH}"
-      },
+      "inherits": ["Release-Default", "Vcpkg-Default"],
       "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux"
+        "type": "allOf",
+        "conditions": [
+          {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Linux"
+          },
+          {
+            "type": "matches",
+            "string": "$env{BUILD_FOLDER}",
+            "regex": ".*[Ll]inux.*"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Wasm-Default",
+      "hidden": true,
+      "displayName": "Wasm Default Config",
+      "description": "Default build for Wasm",
+      "cacheVariables": {
+        "EMSCRIPTEN_ROOT_PATH": "$env{WASM_SDK_ROOT}",
+        "EMSCRIPTEN_SYSTEM_PROCESSOR": "$env{WASM_ABI}",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{WASM_SDK_ROOT}/cmake/Modules/Platform/Emscripten.cmake"
+      }
+    },
+    {
+      "name": "Wasm-Debug",
+      "displayName": "Wasm Debug Config",
+      "description": "Debug build for Wasm",
+      "inherits": ["Debug-Default", "Vcpkg-Default", "Wasm-Default"],
+      "condition": {
+        "type": "matches",
+        "string": "$env{BUILD_FOLDER}",
+        "regex": ".*[Ww]asm.*"
+      }
+    },
+    {
+      "name": "Wasm-Release",
+      "displayName": "Wasm Release Config",
+      "description": "Release build for Wasm",
+      "inherits": ["Release-Default", "Vcpkg-Default", "Wasm-Default"],
+      "condition": {
+        "type": "matches",
+        "string": "$env{BUILD_FOLDER}",
+        "regex": ".*[Ww]asm.*"
+      }
+    },
+    {
+      "name": "Darwin-Default",
+      "hidden": true,
+      "displayName": "Apple Darwin Default Config",
+      "description": "Default build for Apple Darwin",
+      "cacheVariables": {
+        "PLATFORM": "$env{DARWIN_PLATFORM}",
+        "ARCHS": "$env{DARWIN_ARCHS}",
+        "DEPLOYMENT_TARGET": "$env{DARWIN_SYSTEM_VERSION}",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{DARWIN_TOOLCHAIN_PATH}"
+      }
+    },
+    {
+      "name": "iOS-Default",
+      "hidden": true,
+      "displayName": "Apple iOS Default Config",
+      "description": "Default build for Apple iOS",
+      "inherits": ["Darwin-Default"],
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME": "iOS"
+      }
+    },
+    {
+      "name": "iOS-Debug",
+      "displayName": "iOS Debug Config",
+      "description": "Debug build for iOS",
+      "inherits": ["Debug-Default", "Vcpkg-Default", "iOS-Default"],
+      "generator": "Xcode",
+      "condition": {
+        "type": "allOf",
+        "conditions": [
+          {
+            "type": "matches",
+            "string": "${hostSystemName}",
+            "regex": ".*[Dd]arwin.*"
+          },
+          {
+            "type": "matches",
+            "string": "$env{BUILD_FOLDER}",
+            "regex": ".*[Ii][Oo][Ss].*"
+          }
+        ]
+      }
+    },
+    {
+      "name": "iOS-Release",
+      "displayName": "iOS Release Config",
+      "description": "Release build for iOS",
+      "inherits": ["Release-Default", "Vcpkg-Default", "iOS-Default"],
+      "condition": {
+        "type": "allOf",
+        "conditions": [
+          {
+            "type": "matches",
+            "string": "${hostSystemName}",
+            "regex": ".*[Dd]arwin.*"
+          },
+          {
+            "type": "matches",
+            "string": "$env{BUILD_FOLDER}",
+            "regex": ".*[Ii][Oo][Ss].*"
+          }
+        ]
+      }
+    },
+    {
+      "name": "macOS-Debug",
+      "displayName": "macOS Debug Config",
+      "description": "Debug build for macOS",
+      "inherits": ["Debug-Default", "Vcpkg-Default", "Darwin-Default"],
+      "generator": "Xcode",
+      "condition": {
+        "type": "allOf",
+        "conditions": [
+          {
+            "type": "matches",
+            "string": "${hostSystemName}",
+            "regex": ".*[Dd]arwin.*"
+          },
+          {
+            "type": "matches",
+            "string": "$env{BUILD_FOLDER}",
+            "regex": ".*[Mm][Aa][Cc][Oo][Ss].*"
+          }
+        ]
+      }
+    },
+    {
+      "name": "macOS-Release",
+      "displayName": "macOS Release Config",
+      "description": "Release build for macOS",
+      "inherits": ["Release-Default", "Vcpkg-Default", "Darwin-Default"],
+      "condition": {
+        "type": "allOf",
+        "conditions": [
+          {
+            "type": "matches",
+            "string": "${hostSystemName}",
+            "regex": ".*[Dd]arwin.*"
+          },
+          {
+            "type": "matches",
+            "string": "$env{BUILD_FOLDER}",
+            "regex": ".*[Mm][Aa][Cc][Oo][Ss].*"
+          }
+        ]
       }
     }
   ],
   "buildPresets": [
     {
-      "name": "linux-debug",
-      "configurePreset": "linux-debug"
+      "name": "Linux-Debug",
+      "configurePreset": "Linux-Debug"
     },
     {
-      "name": "linux-release",
-      "configurePreset": "linux-release"
+      "name": "Linux-Release",
+      "configurePreset": "Linux-Release"
+    },
+    {
+      "name": "Wasm-Debug",
+      "configurePreset": "Wasm-Debug"
+    },
+    {
+      "name": "Wasm-Release",
+      "configurePreset": "Wasm-Release"
+    },
+    {
+      "name": "iOS-Debug",
+      "configurePreset": "iOS-Debug"
+    },
+    {
+      "name": "iOS-Release",
+      "configurePreset": "iOS-Release"
+    },
+    {
+      "name": "macOS-Debug",
+      "configurePreset": "macOS-Debug"
+    },
+    {
+      "name": "macOS-Release",
+      "configurePreset": "macOS-Release"
     }
   ]
 }

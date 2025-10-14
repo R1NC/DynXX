@@ -1,60 +1,44 @@
 #!/bin/bash
-
 source "$(dirname "$0")/build-utils.sh"
 
-VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
-VCPKG_TARGET=wasm32-emscripten
+cd ..
+
+DEBUG=0
+BUILD_TYPE="Release"
+if [ $DEBUG == 1 ]; then
+    BUILD_TYPE="Debug"
+fi
+
+PLATFORM=Wasm
+PRESET=${PLATFORM}-${BUILD_TYPE}
+
+export BUILD_FOLDER=build.${PLATFORM}
+OUTPUT_FOLDER=${BUILD_FOLDER}/output
+export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/libs
+export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/exe
 
 EMSDK_ROOT=${EMSDK_ROOT:-"$HOME/dev/emsdk"}
 EMSCRIPTEN_ROOT=${EMSCRIPTEN_ROOT:-"$EMSDK_ROOT/upstream/emscripten"}
-export EMSDK="$EMSDK_ROOT"
-export EMSCRIPTEN="$EMSCRIPTEN_ROOT"
+export EMSDK="${EMSDK_ROOT}"
+export EMSCRIPTEN="${EMSCRIPTEN_ROOT}"
+export WASM_SDK_ROOT="${EMSCRIPTEN_ROOT}"
+export WASM_ABI=arm
 
-DEBUG=0
+export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
+export VCPKG_BINARY_SOURCES="default,read"
+export VCPKG_TARGET=wasm32-emscripten
 
-cd ..
-export VCPKG_BINARY_SOURCES="clear;default,readwrite"
+rm -rf ${BUILD_FOLDER}
+
+cmake --preset ${PRESET}
+
 $VCPKG_ROOT/vcpkg install --triplet=${VCPKG_TARGET}
 
-BUILD_DIR=build.WebAssembly
-rm -rf ${BUILD_DIR}
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
+cmake --build --preset ${PRESET}
 
-build4wasm() {
-    BUILD_TYPE=$1
-    ABI=$2
-
-    cmake .. \
-    -DEMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_ROOT} \
-    -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
-    -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${EMSCRIPTEN_ROOT}/cmake/Modules/Platform/Emscripten.cmake \
-    -DVCPKG_TARGET_TRIPLET=$VCPKG_TARGET \
-    -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DEMSCRIPTEN_SYSTEM_PROCESSOR=${ABI} \
-    -G Ninja
-
-    cmake --build . --config ${BUILD_TYPE}
-
-    OUTPUT_DIR=output/${ABI}
-    mkdir -p ${OUTPUT_DIR}
-    cp DynXX.wasm ${OUTPUT_DIR}
-    cp DynXX.js ${OUTPUT_DIR}
-    cp DynXX.html ${OUTPUT_DIR}
-
-    #Checking Artifacts
-    ARTIFACTS=(
-        "${OUTPUT_DIR}/DynXX.wasm"
-        "${OUTPUT_DIR}/DynXX.js"
-        "${OUTPUT_DIR}/DynXX.html"
-    )
-    check_artifacts "${ARTIFACTS[@]}"
-}
-
-# Debug|RelWithDebInfo|Release|MinSizeRel
-LIB_TYPE="MinSizeRel"
-if [ $DEBUG == 1 ]; then
-    LIB_TYPE="Debug"
-fi
-
-build4wasm $LIB_TYPE arm
+ARTIFACTS=(
+    "${OUTPUT_EXE_PATH}/DynXX.wasm"
+    "${OUTPUT_EXE_PATH}/DynXX.js"
+    "${OUTPUT_EXE_PATH}/DynXX.html"
+)
+check_artifacts "${ARTIFACTS[@]}"

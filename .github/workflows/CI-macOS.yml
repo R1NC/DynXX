@@ -6,12 +6,13 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
-      - 'build-tools/build-utils.sh'
-      - 'build-tools/build-macOS.sh'
       - 'third-party/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
+      - 'CMakePresets.json'
       - 'vcpkg.json'
+      - 'build-tools/build-utils.sh'
+      - 'build-tools/build-macOS.sh'
   workflow_dispatch:
 
 permissions:
@@ -50,6 +51,6 @@ jobs:
       with:
         name: macOS-build
         path: |
-          build.*/output/libs/
-          build.*/output/include/
+          build.macOS/output/libs/
+          build.macOS/output/include/
         if-no-files-found: error
