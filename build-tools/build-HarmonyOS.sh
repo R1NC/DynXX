@@ -1,50 +1,36 @@
 #!/bin/bash
-
 source "$(dirname "$0")/build-utils.sh"
 
-# TODO
-OHOS_ROOT=${OHOS_ROOT:-"$HOME/Library/OpenHarmony/Sdk/20/native"}
+cd ..
 
-AR_PATH=$OHOS_ROOT/toolchains/llvm/bin
-ARCH=arm64-v8a
+DEBUG=0
+BUILD_TYPE="Release"
+if [ $DEBUG == 1 ]; then
+    BUILD_TYPE="Debug"
+fi
 
-BUILD_DIR=../build.HarmonyOS
-rm -rf ${BUILD_DIR}
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
+PLATFORM=HarmonyOS
+PRESET=${PLATFORM}-${BUILD_TYPE}
 
-build4harmony() {
-  ABI=$1
-  BUILD_TYPE=$2
+export OHOS_ROOT=${OHOS_ROOT:-"$HOME/Library/OpenHarmony/Sdk/20/native"}
+export OHOS_ABI=arm64-v8a
 
-  ROOT_DIR=$(pwd)
-  ABI_BUILD_DIR=${ROOT_DIR}/${ABI}
-  OUTPUT_DIR=${ROOT_DIR}/output/libs/${ABI}
-  mkdir -p ${ABI_BUILD_DIR}
-  mkdir -p ${OUTPUT_DIR}
+export BUILD_FOLDER=build.${PLATFORM}
+OUTPUT_FOLDER=${BUILD_FOLDER}/output
+export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/${OHOS_ABI}/libs
+export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/${OHOS_ABI}/exe
+rm -rf ${BUILD_FOLDER}
 
-  cmake .. \
-    -DOHOS_PLATFORM=OHOS \
-    -DOHOS_ARCH=${ABI} \
-    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${OUTPUT_DIR} \
-    -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${OUTPUT_DIR} \
-    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${OUTPUT_DIR} \
-    -B${ABI_BUILD_DIR} \
-    -DCMAKE_TOOLCHAIN_FILE=$OHOS_ROOT/build/cmake/ohos.toolchain.cmake
+cmake --preset ${PRESET}
+cmake --build --preset ${PRESET}
+cmake --install ${BUILD_FOLDER} --prefix ${OUTPUT_FOLDER} --component headers
 
-  build_with_cmake ${ABI_BUILD_DIR} ${ROOT_DIR} ${BUILD_TYPE}
+# AR_PATH=$OHOS_ROOT/toolchains/llvm/bin
 
-  rm -rf ${ABI_BUILD_DIR}
-}
-
-build4harmony ${ARCH} Release
-
-#Checking Artifacts
-LIB_OUTPUT_DIR=output/libs/${ARCH}
 ARTIFACTS=(
-    "${LIB_OUTPUT_DIR}/libDynXX.a"
-    "${LIB_OUTPUT_DIR}/libqjs.a"
-    "${LIB_OUTPUT_DIR}/libmmkvcore.a"
-    "${LIB_OUTPUT_DIR}/libmmkv.a"
+    "${OUTPUT_LIB_PATH}/libDynXX.a"
+    "${OUTPUT_LIB_PATH}/libqjs.a"
+    "${OUTPUT_LIB_PATH}/libmmkvcore.a"
+    "${OUTPUT_LIB_PATH}/libmmkv.a"
 )
 check_artifacts "${ARTIFACTS[@]}"

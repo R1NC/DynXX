@@ -268,6 +268,39 @@
         "string": "$env{BUILD_FOLDER}",
         "regex": ".*[Aa]ndroid.*"
       }
+    },
+    {
+      "name": "HarmonyOS-Default",
+      "hidden": true,
+      "displayName": "HarmonyOS Default Config",
+      "description": "Default build for HarmonyOS",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{OHOS_ROOT}/build/cmake/ohos.toolchain.cmake",
+        "OHOS_PLATFORM": "OHOS",
+        "OHOS_ARCH": "$env{OHOS_ABI}"
+      }
+    },
+    {
+      "name": "HarmonyOS-Debug",
+      "displayName": "HarmonyOS Debug Config",
+      "description": "Debug build for HarmonyOS",
+      "inherits": ["Debug-Default", "HarmonyOS-Default"],
+      "condition": {
+        "type": "matches",
+        "string": "$env{BUILD_FOLDER}",
+        "regex": ".*[Hh]armonyOS.*"
+      }
+    },
+    {
+      "name": "HarmonyOS-Release",
+      "displayName": "HarmonyOS Release Config",
+      "description": "Release build for HarmonyOS",
+      "inherits": ["Release-Default", "HarmonyOS-Default"],
+      "condition": {
+        "type": "matches",
+        "string": "$env{BUILD_FOLDER}",
+        "regex": ".*[Hh]armonyOS.*"
+      }
     }
   ],
   "buildPresets": [
@@ -310,6 +343,14 @@
     {
       "name": "Android-Release",
       "configurePreset": "Android-Release"
+    },
+    {
+      "name": "HarmonyOS-Debug",
+      "configurePreset": "HarmonyOS-Debug"
+    },
+    {
+      "name": "HarmonyOS-Release",
+      "configurePreset": "HarmonyOS-Release"
     }
   ]
 }
