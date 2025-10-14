@@ -12,26 +12,23 @@ fi
 PLATFORM=iOS
 PRESET=${PLATFORM}-${BUILD_TYPE}
 
+export APPLE_TOOLCHAIN_FILE=$PWD/cmake/toolchains/Apple/ios.toolchain.cmake
+export APPLE_PLATFORM="OS64" # "SIMULATOR64"
+export APPLE_ABI="arm64"
+export APPLE_VER="15.0"
+
 export BUILD_FOLDER=build.${PLATFORM}
 OUTPUT_FOLDER=${BUILD_FOLDER}/output
-export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/libs
-export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/exe
-
-export DARWIN_TOOLCHAIN_PATH=$PWD/cmake/toolchains/Apple/ios.toolchain.cmake
-export DARWIN_PLATFORM="OS64" # "SIMULATOR64"
-export DARWIN_ARCHS="arm64"
-export DARWIN_SYSTEM_VERSION="15.0"
+export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/${APPLE_ABI}/libs
+export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/${APPLE_ABI}/exe
+rm -rf ${BUILD_FOLDER}
 
 export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
 export VCPKG_BINARY_SOURCES="default,read"
-export VCPKG_TARGET=arm64-ios
-
-rm -rf ${BUILD_FOLDER}
-
-cmake --preset ${PRESET}
-
+export VCPKG_TARGET=${APPLE_ABI}-ios
 $VCPKG_ROOT/vcpkg install --triplet=${VCPKG_TARGET}
 
+cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
 cmake --install ${BUILD_FOLDER} --prefix ${OUTPUT_FOLDER} --component headers
 

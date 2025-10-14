@@ -9,6 +9,7 @@ on:
       - 'third-party/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
+      - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/build-utils.sh'
       - 'build-tools/build-Android.sh'
@@ -66,6 +67,5 @@ jobs:
         with:
           name: Android-macOS-build
           path: |
-            build.Android/output/libs/
-            build.Android/output/include/
+            build.Android/output/
           if-no-files-found: error

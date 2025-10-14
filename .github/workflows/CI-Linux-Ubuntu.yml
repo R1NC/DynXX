@@ -52,6 +52,5 @@ jobs:
       with:
         name: Linux-build
         path: |
-          build.Linux/output/libs/
-          build.Linux/output/include/
+          build.Linux/output/
         if-no-files-found: error

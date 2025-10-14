@@ -57,5 +57,5 @@ jobs:
       with:
         name: WebAssembly-build
         path: |
-          build.Wasm/output/exe/*
+          build.Wasm/output/
         if-no-files-found: error

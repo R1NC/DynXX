@@ -131,10 +131,10 @@
       "displayName": "Apple Darwin Default Config",
       "description": "Default build for Apple Darwin",
       "cacheVariables": {
-        "PLATFORM": "$env{DARWIN_PLATFORM}",
-        "ARCHS": "$env{DARWIN_ARCHS}",
-        "DEPLOYMENT_TARGET": "$env{DARWIN_SYSTEM_VERSION}",
-        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{DARWIN_TOOLCHAIN_PATH}"
+        "PLATFORM": "$env{APPLE_PLATFORM}",
+        "ARCHS": "$env{APPLE_ABI}",
+        "DEPLOYMENT_TARGET": "$env{APPLE_VER}",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{APPLE_TOOLCHAIN_FILE}"
       }
     },
     {
@@ -232,6 +232,42 @@
           }
         ]
       }
+    },
+    {
+      "name": "Android-Default",
+      "hidden": true,
+      "displayName": "Android Default Config",
+      "description": "Default build for Android",
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME": "Android",
+        "ANDROID_TOOLCHAIN": "clang",
+        "CMAKE_ANDROID_NDK": "$env{ANDROID_NDK_HOME}",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake",
+        "ANDROID_ABI": "$env{ANDROID_ABI}",
+        "ANDROID_PLATFORM": "$env{ANDROID_VER}"
+      }
+    },
+    {
+      "name": "Android-Debug",
+      "displayName": "Android Debug Config",
+      "description": "Debug build for Android",
+      "inherits": ["Debug-Default", "Vcpkg-Default", "Android-Default"],
+      "condition": {
+        "type": "matches",
+        "string": "$env{BUILD_FOLDER}",
+        "regex": ".*[Aa]ndroid.*"
+      }
+    },
+    {
+      "name": "Android-Release",
+      "displayName": "Android Release Config",
+      "description": "Release build for Android",
+      "inherits": ["Release-Default", "Vcpkg-Default", "Android-Default"],
+      "condition": {
+        "type": "matches",
+        "string": "$env{BUILD_FOLDER}",
+        "regex": ".*[Aa]ndroid.*"
+      }
     }
   ],
   "buildPresets": [
@@ -266,6 +302,14 @@
     {
       "name": "macOS-Release",
       "configurePreset": "macOS-Release"
+    },
+    {
+      "name": "Android-Debug",
+      "configurePreset": "Android-Debug"
+    },
+    {
+      "name": "Android-Release",
+      "configurePreset": "Android-Release"
     }
   ]
 }

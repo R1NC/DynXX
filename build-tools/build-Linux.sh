@@ -12,21 +12,20 @@ fi
 PLATFORM=Linux
 PRESET=${PLATFORM}-${BUILD_TYPE}
 
+LINUX_ABI=x64
+
 export BUILD_FOLDER=build.${PLATFORM}
 OUTPUT_FOLDER=${BUILD_FOLDER}/output
-export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/libs
-export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/exe
+export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/${LINUX_ABI}/libs
+export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/${LINUX_ABI}/exe
+rm -rf ${BUILD_FOLDER}
 
 export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
 export VCPKG_BINARY_SOURCES="default,read"
-export VCPKG_TARGET=x64-linux
-
-rm -rf ${BUILD_FOLDER}
-
-cmake --preset ${PRESET}
-
+export VCPKG_TARGET=${LINUX_ABI}-linux
 $VCPKG_ROOT/vcpkg install --triplet=${VCPKG_TARGET}
 
+cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
 cmake --install ${BUILD_FOLDER} --prefix ${OUTPUT_FOLDER} --component headers
 
