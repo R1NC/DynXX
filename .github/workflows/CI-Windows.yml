@@ -9,6 +9,7 @@ on:
       - 'third-party/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
+      - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/build-utils.sh'
       - 'build-tools/build-Windows.bat'
@@ -49,5 +50,5 @@ jobs:
         with:
           name: Windows-build
           path: |
-            build.Windows/output/
+            build.Windows/Release/output/
           if-no-files-found: error

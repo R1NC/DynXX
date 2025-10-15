@@ -301,6 +301,54 @@
         "string": "$env{BUILD_FOLDER}",
         "regex": ".*[Hh]armonyOS.*"
       }
+    },
+    {
+      "name": "Windows-Debug",
+      "displayName": "Windows Debug Config",
+      "description": "Debug build for Windows",
+      "inherits": ["Debug-Default", "Vcpkg-Default"],
+      "toolset": "ClangCL",
+      "generator": "Visual Studio 17 2022",
+      "condition": {
+        "type": "allOf",
+        "conditions": [
+          {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Windows"
+          },
+          {
+            "type": "matches",
+            "string": "$env{BUILD_FOLDER}",
+            "regex": ".*[Ww]indows.*"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Windows-Release",
+      "displayName": "Windows Release Config",
+      "description": "Release build for Windows",
+      "inherits": ["Release-Default", "Vcpkg-Default"],
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl"
+      },
+      "condition": {
+        "type": "allOf",
+        "conditions": [
+          {
+            "type": "equals",
+            "lhs": "${hostSystemName}",
+            "rhs": "Windows"
+          },
+          {
+            "type": "matches",
+            "string": "$env{BUILD_FOLDER}",
+            "regex": ".*[Ww]indows.*"
+          }
+        ]
+      }
     }
   ],
   "buildPresets": [
@@ -351,6 +399,14 @@
     {
       "name": "HarmonyOS-Release",
       "configurePreset": "HarmonyOS-Release"
+    },
+    {
+      "name": "Windows-Debug",
+      "configurePreset": "Windows-Debug"
+    },
+    {
+      "name": "Windows-Release",
+      "configurePreset": "Windows-Release"
     }
   ]
 }

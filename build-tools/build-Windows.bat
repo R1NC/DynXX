@@ -1,61 +1,39 @@
+cd ..
+
 if not defined VCPKG_ROOT (
     set "VCPKG_ROOT=C:/Users/rinc/vcpkg"
 )
 
-set "VCPKG_TARGET=x64-windows-static"
+set "PLATFORM=Windows"
 set "BUILD_TYPE=Release"
+set "WINDOWS_ABI=x64"
+set "PRESET=%PLATFORM%-%BUILD_TYPE%"
 
-cd ..
-set "VCPKG_BINARY_SOURCES=clear;default,readwrite"
+set "VCPKG_BINARY_SOURCES=default,read"
+set "VCPKG_TARGET=%WINDOWS_ABI%-windows-static"
 %VCPKG_ROOT%/vcpkg install --triplet=%VCPKG_TARGET%
 
-set "BUILD_DIR=%CD%\build.Windows"
-set "OUTPUT_DIR=%BUILD_DIR%\output"
-set "HEADER_OUTPUT_DIR=%OUTPUT_DIR%\include"
-set "LIB_OUTPUT_DIR=%OUTPUT_DIR%\libs\%BUILD_TYPE%"
+set "BUILD_FOLDER=build.%PLATFORM%\%BUILD_TYPE%"
+set "OUTPUT_FOLDER=%BUILD_FOLDER%\output"
+set "OUTPUT_LIB_PATH=%CD%\%OUTPUT_FOLDER%\%WINDOWS_ABI%\libs"
+set "OUTPUT_EXE_PATH=%CD%\%OUTPUT_FOLDER%\%WINDOWS_ABI%\exe"
+rd /s /q %BUILD_FOLDER% 2>nul
 
-rd /s /q %BUILD_DIR% 2>nul
-md "%HEADER_OUTPUT_DIR%" 2>nul
-md "%LIB_OUTPUT_DIR%" 2>nul
-cd "%BUILD_DIR%"
-
-if /i "%BUILD_TYPE%"=="Debug" (
-    set "GENERATOR=Visual Studio 17 2022"
-    set "CMAKE_CONFIG_C_COMPILER="
-    set "CMAKE_CONFIG_CXX_COMPILER="
-    set "CMAKE_CONFIG_EXTRA=-T ClangCL"
-) else (
-    set "GENERATOR=Ninja"
-    set "CMAKE_CONFIG_C_COMPILER=-DCMAKE_C_COMPILER=clang-cl"
-    set "CMAKE_CONFIG_CXX_COMPILER=-DCMAKE_CXX_COMPILER=clang-cl"
-    set "CMAKE_CONFIG_EXTRA="
-)
-
-cmake .. ^
-    -G "%GENERATOR%" ^
-    -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
-    -DVCPKG_TARGET_TRIPLET="%VCPKG_TARGET%" ^
-    %CMAKE_CONFIG_C_COMPILER% ^
-    %CMAKE_CONFIG_CXX_COMPILER% ^
-    -DCMAKE_BUILD_TYPE="%BUILD_TYPE%" ^
-    -DCMAKE_INSTALL_PREFIX=. ^
-    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE="%LIB_OUTPUT_DIR%" ^
-    -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="%LIB_OUTPUT_DIR%" ^
-    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE="%LIB_OUTPUT_DIR%" ^
-    %CMAKE_CONFIG_EXTRA%
-
-cmake --build . --config "%BUILD_TYPE%"
-cmake --install . --prefix "%OUTPUT_DIR%" --component headers
+cmake --preset "%PRESET%"
+cmake --build --preset "%PRESET%"
+cmake --install . --prefix "%OUTPUT_FOLDER%" --component headers
 
 for %%f in (
-    "%LIB_OUTPUT_DIR%\DynXX.lib"
-    "%LIB_OUTPUT_DIR%\qjs.lib"
-    "%LIB_OUTPUT_DIR%\mmkvcore.lib"
-    "%LIB_OUTPUT_DIR%\mmkv.lib"
-    "%LIB_OUTPUT_DIR%\qjsc.exe"
+    "%OUTPUT_LIB_PATH%\DynXX.lib"
+    "%OUTPUT_LIB_PATH%\qjs.lib"
+    "%OUTPUT_LIB_PATH%\mmkvcore.lib"
+    "%OUTPUT_LIB_PATH%\mmkv.lib"
+    "%OUTPUT_EXE_PATH%\qjsc.exe"
 ) do (
     if not exist "%%~f" (
         echo ARTIFACT NOT FOUND: %%~f
         exit /b 1
     )
 )
+
+
