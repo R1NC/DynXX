@@ -19,8 +19,10 @@ export APPLE_VER="14.0"
 
 export BUILD_FOLDER=build.${PLATFORM}/${BUILD_TYPE}
 OUTPUT_FOLDER=${BUILD_FOLDER}/output
-export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/${APPLE_ABI}/libs
-export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/${APPLE_ABI}/exe
+OUTPUT_PATH=$PWD/${OUTPUT_FOLDER}/${APPLE_ABI}
+export OUTPUT_LIB_PATH=${OUTPUT_PATH}/lib
+export OUTPUT_DLL_PATH=${OUTPUT_PATH}/share
+export OUTPUT_EXE_PATH=${OUTPUT_PATH}/bin
 rm -rf ${BUILD_FOLDER}
 
 export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
@@ -45,6 +47,6 @@ ARTIFACTS=(
 check_artifacts "${ARTIFACTS[@]}"
 
 AR_TOOL=libtool
-FINAL_LIB=DynXX.a
+FINAL_LIB=libDynXX-All.a
 merge_libs "${OUTPUT_LIB_PATH}" "${FINAL_LIB}" "${AR_TOOL}"
 check_artifacts "${OUTPUT_LIB_PATH}/${FINAL_LIB}"

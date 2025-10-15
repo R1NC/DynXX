@@ -14,7 +14,7 @@
       "binaryDir": "${sourceDir}/$env{BUILD_FOLDER}",
       "cacheVariables": {
         "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "$env{OUTPUT_LIB_PATH}",
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "$env{OUTPUT_DLL_PATH}",
         "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "$env{OUTPUT_EXE_PATH}"
       }
     },
