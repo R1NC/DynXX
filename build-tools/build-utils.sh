@@ -1,49 +1,36 @@
 #!/bin/bash
 
-build_with_cmake() {
-    local build_dir="$1"
-    local root_dir="$2"
-    local build_type="$3"
-    cd "${build_dir}"
-    cmake --build . --config ${build_type}
-    cmake --install . --prefix "${root_dir}/output" --component headers
-    cd "${root_dir}"
-}
-
-merge_libs_apple() {
+merge_libs() {
     local current_dir=$(pwd)
     local lib_dir="$1"
     local output_lib="$2"
-    cd "${lib_dir}"
+    local ar_tool="$3"
     
+    cd "${lib_dir}"
     local a_files=(*.a)
 
-    libtool -static -o "${output_lib}" "${a_files[@]}"
+    if [[ "${ar_tool}" == *"libtool"* ]]; then
+        echo "Using libtool for merging ${#a_files[@]} libraries..."
+        "${ar_tool}" -static -o "${output_lib}" "${a_files[@]}"
+    else
+        echo "Using ar tool for merging ${#a_files[@]} libraries..."
+        for lib in "${a_files[@]}"; do
+            echo "Extracting $lib..."
+            "${ar_tool}" x "$lib"
+        done
+        
+        echo "Creating merged library ${output_lib}..."
+        "${ar_tool}" rcs "${output_lib}" *.o
+        rm -f *.o
+    fi
 
     for lib in "${a_files[@]}"; do
-        echo "Removing $lib..."
-        rm "$lib"
+        if [[ "$lib" != "${output_lib}" ]]; then
+            echo "Removing $lib..."
+            rm -f "$lib"
+        fi
     done
 
-    cd "${current_dir}"
-}
-
-merge_libs_posix() {
-    local current_dir=$(pwd)
-    local lib_dir="$1"
-    local output_lib="$2"
-    local ar_tool="${3:-ar}"
-    cd "${lib_dir}"
-    
-    for lib in *.a; do
-        echo "Extracting $lib..."
-        "${ar_tool}" x "$lib"
-    done
-
-    rm *.a
-    "${ar_tool}" rcs "${output_lib}" *.o
-    rm *.o
-    find . -maxdepth 1 ! -name "*.a" -type f -delete
     cd "${current_dir}"
 }
 

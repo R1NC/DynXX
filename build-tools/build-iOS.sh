@@ -17,7 +17,7 @@ export APPLE_PLATFORM="OS64" # "SIMULATOR64"
 export APPLE_ABI="arm64"
 export APPLE_VER="15.0"
 
-export BUILD_FOLDER=build.${PLATFORM}
+export BUILD_FOLDER=build.${PLATFORM}/${BUILD_TYPE}
 OUTPUT_FOLDER=${BUILD_FOLDER}/output
 export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/${APPLE_ABI}/libs
 export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/${APPLE_ABI}/exe
@@ -26,11 +26,14 @@ rm -rf ${BUILD_FOLDER}
 export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
 export VCPKG_BINARY_SOURCES="default,read"
 export VCPKG_TARGET=${APPLE_ABI}-ios
+VCPKG_LIB_PATH=$PWD/${BUILD_FOLDER}/vcpkg_installed/${VCPKG_TARGET}/lib
 $VCPKG_ROOT/vcpkg install --triplet=${VCPKG_TARGET}
 
 cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
 cmake --install ${BUILD_FOLDER} --prefix ${OUTPUT_FOLDER} --component headers
+
+cp "${VCPKG_LIB_PATH}"/*.a "${OUTPUT_LIB_PATH}/"
 
 ARTIFACTS=(
     "${OUTPUT_LIB_PATH}/libDynXX.a"
@@ -41,5 +44,5 @@ ARTIFACTS=(
 check_artifacts "${ARTIFACTS[@]}"
 
 final_lib=DynXX.a
-merge_libs_apple "${OUTPUT_LIB_PATH}" "${final_lib}"
+merge_libs "${OUTPUT_LIB_PATH}" "${final_lib}" "libtool"
 check_artifacts "${OUTPUT_LIB_PATH}/${final_lib}"

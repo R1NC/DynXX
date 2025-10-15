@@ -15,7 +15,7 @@ PRESET=${PLATFORM}-${BUILD_TYPE}
 export OHOS_ROOT=${OHOS_ROOT:-"$HOME/Library/OpenHarmony/Sdk/20/native"}
 export OHOS_ABI=arm64-v8a
 
-export BUILD_FOLDER=build.${PLATFORM}
+export BUILD_FOLDER=build.${PLATFORM}/${BUILD_TYPE}
 OUTPUT_FOLDER=${BUILD_FOLDER}/output
 export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/${OHOS_ABI}/libs
 export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/${OHOS_ABI}/exe
@@ -25,8 +25,6 @@ cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
 cmake --install ${BUILD_FOLDER} --prefix ${OUTPUT_FOLDER} --component headers
 
-# AR_PATH=$OHOS_ROOT/toolchains/llvm/bin
-
 ARTIFACTS=(
     "${OUTPUT_LIB_PATH}/libDynXX.a"
     "${OUTPUT_LIB_PATH}/libqjs.a"
@@ -34,3 +32,8 @@ ARTIFACTS=(
     "${OUTPUT_LIB_PATH}/libmmkv.a"
 )
 check_artifacts "${ARTIFACTS[@]}"
+
+AR_TOOL=$OHOS_ROOT/llvm/bin/llvm-ar
+final_lib=DynXX.a
+merge_libs "${OUTPUT_LIB_PATH}" "${final_lib}" "${AR_TOOL}"
+check_artifacts "${OUTPUT_LIB_PATH}/${final_lib}"

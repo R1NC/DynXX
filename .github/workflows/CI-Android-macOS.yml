@@ -67,5 +67,5 @@ jobs:
         with:
           name: Android-macOS-build
           path: |
-            build.Android/output/
+            build.Android/Release/output/
           if-no-files-found: error

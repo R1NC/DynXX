@@ -18,7 +18,7 @@ export ANDROID_NDK_HOME=$NDK_ROOT
 export ANDROID_ABI=arm64-v8a
 export ANDROID_VER=android-24
 
-export BUILD_FOLDER=build.${PLATFORM}
+export BUILD_FOLDER=build.${PLATFORM}/${BUILD_TYPE}
 OUTPUT_FOLDER=${BUILD_FOLDER}/output
 export OUTPUT_LIB_PATH=$PWD/${OUTPUT_FOLDER}/${ANDROID_ABI}/libs
 export OUTPUT_EXE_PATH=$PWD/${OUTPUT_FOLDER}/${ANDROID_ABI}/exe
@@ -27,13 +27,14 @@ rm -rf ${BUILD_FOLDER}
 export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
 export VCPKG_BINARY_SOURCES="default,read"
 export VCPKG_TARGET=arm64-android
+VCPKG_LIB_PATH=$PWD/${BUILD_FOLDER}/vcpkg_installed/${VCPKG_TARGET}/lib
 $VCPKG_ROOT/vcpkg install --triplet=${VCPKG_TARGET}
 
 cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
 cmake --install ${BUILD_FOLDER} --prefix ${OUTPUT_FOLDER} --component headers
 
-# AR_PATH=$NDK_ROOT/toolchains/llvm/prebuilt/darwin-x86_64/bin
+cp "${VCPKG_LIB_PATH}"/*.a "${OUTPUT_LIB_PATH}/"
 
 ARTIFACTS=(
     "${OUTPUT_LIB_PATH}/libDynXX.a"
@@ -42,3 +43,8 @@ ARTIFACTS=(
     "${OUTPUT_LIB_PATH}/libmmkv.a"
 )
 check_artifacts "${ARTIFACTS[@]}"
+
+AR_TOOL=${NDK_ROOT}/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar
+final_lib=DynXX.a
+merge_libs "${OUTPUT_LIB_PATH}" "${final_lib}" "${AR_TOOL}"
+check_artifacts "${OUTPUT_LIB_PATH}/${final_lib}"

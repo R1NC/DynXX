@@ -50,5 +50,5 @@ jobs:
       with:
         name: iOS-build
         path: |
-          build.iOS/output/
+          build.iOS/Release/output/
         if-no-files-found: error

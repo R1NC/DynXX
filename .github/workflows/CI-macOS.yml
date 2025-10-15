@@ -51,5 +51,5 @@ jobs:
       with:
         name: macOS-build
         path: |
-          build.macOS/output/
+          build.macOS/Release/output/
         if-no-files-found: error

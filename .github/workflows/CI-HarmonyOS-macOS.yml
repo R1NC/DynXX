@@ -52,5 +52,5 @@ jobs:
       with:
         name: HarmonyOS-build
         path: |
-          build.HarmonyOS/output/
+          build.HarmonyOS/Release/output/
         if-no-files-found: error
