@@ -11,7 +11,7 @@ set "PRESET=%PLATFORM%-%BUILD_TYPE%"
 
 set "VCPKG_BINARY_SOURCES=default,read"
 set "VCPKG_TARGET=%WINDOWS_ABI%-windows-static"
-%VCPKG_ROOT%/vcpkg install --triplet=%VCPKG_TARGET%
+"%VCPKG_ROOT%/vcpkg" --vcpkg-root "%VCPKG_ROOT%" install --triplet="%VCPKG_TARGET%"
 
 set "BUILD_FOLDER=build.%PLATFORM%\%BUILD_TYPE%"
 set "OUTPUT_FOLDER=%BUILD_FOLDER%\output"
