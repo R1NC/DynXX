@@ -24,13 +24,6 @@ merge_libs() {
         rm -f *.o
     fi
 
-    for lib in "${a_files[@]}"; do
-        if [[ "$lib" != "${output_lib}" ]]; then
-            echo "Removing $lib..."
-            rm -f "$lib"
-        fi
-    done
-
     cd "${current_dir}"
 }
 

@@ -45,6 +45,6 @@ ARTIFACTS=(
 check_artifacts "${ARTIFACTS[@]}"
 
 AR_TOOL=${NDK_ROOT}/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar
-final_lib=DynXX.a
-merge_libs "${OUTPUT_LIB_PATH}" "${final_lib}" "${AR_TOOL}"
-check_artifacts "${OUTPUT_LIB_PATH}/${final_lib}"
+FINAL_LIB=libDynXX-All.a
+merge_libs "${OUTPUT_LIB_PATH}" "${FINAL_LIB}" "${AR_TOOL}"
+check_artifacts "${OUTPUT_LIB_PATH}/${FINAL_LIB}"

@@ -35,5 +35,3 @@ for %%f in (
         exit /b 1
     )
 )
-
-

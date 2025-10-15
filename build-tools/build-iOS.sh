@@ -43,6 +43,7 @@ ARTIFACTS=(
 )
 check_artifacts "${ARTIFACTS[@]}"
 
-final_lib=DynXX.a
-merge_libs "${OUTPUT_LIB_PATH}" "${final_lib}" "libtool"
-check_artifacts "${OUTPUT_LIB_PATH}/${final_lib}"
+AR_TOOL=libtool
+FINAL_LIB=libDynXX-All.a
+merge_libs "${OUTPUT_LIB_PATH}" "${FINAL_LIB}" "${AR_TOOL}"
+check_artifacts "${OUTPUT_LIB_PATH}/${FINAL_LIB}"
