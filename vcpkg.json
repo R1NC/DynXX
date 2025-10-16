@@ -4,6 +4,7 @@
   "dependencies": [
     {
       "name": "ada-url",
+      "platform": "!emscripten",
       "features": []
     },
     {
@@ -14,15 +15,12 @@
       "platform": "!emscripten",
       "features": [
         "http2",
-        "http3",
         "openssl"
       ]
     },
     {
       "name": "lua",
-      "features": [
-        "cpp"
-      ]
+      "features": []
     },
     {
       "name": "openssl",
@@ -32,6 +30,7 @@
     },
     {
       "name": "spdlog",
+      "platform": "!emscripten",
       "features": []
     },
     {

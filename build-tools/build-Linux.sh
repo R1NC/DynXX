@@ -22,7 +22,7 @@ export OUTPUT_DLL_PATH=${OUTPUT_PATH}/share
 export OUTPUT_EXE_PATH=${OUTPUT_PATH}/bin
 rm -rf ${BUILD_FOLDER}
 
-export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg/"}
+export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg"}
 export VCPKG_BINARY_SOURCES="default,read"
 export VCPKG_TARGET=${LINUX_ABI}-linux
 VCPKG_LIB_PATH=$PWD/${BUILD_FOLDER}/vcpkg_installed/${VCPKG_TARGET}/lib
@@ -32,15 +32,12 @@ cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
 cmake --install ${BUILD_FOLDER} --prefix ${OUTPUT_FOLDER} --component headers
 
-cp "${VCPKG_LIB_PATH}"/*.a "${OUTPUT_LIB_PATH}/"
-
 ARTIFACTS=(
     "${OUTPUT_LIB_PATH}/libDynXX.a"
-    "${OUTPUT_LIB_PATH}/libqjs.a"
-    "${OUTPUT_LIB_PATH}/libmmkvcore.a"
-    "${OUTPUT_LIB_PATH}/libmmkv.a"
 )
 check_artifacts "${ARTIFACTS[@]}"
+
+cp "${VCPKG_LIB_PATH}"/*.a "${OUTPUT_LIB_PATH}/"
 
 AR_TOOL=ar
 FINAL_LIB=libDynXX-All.a

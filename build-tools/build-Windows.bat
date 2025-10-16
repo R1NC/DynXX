@@ -27,9 +27,6 @@ cmake --install . --prefix "%OUTPUT_FOLDER%" --component headers
 
 for %%f in (
     "%OUTPUT_LIB_PATH%\DynXX.lib"
-    "%OUTPUT_LIB_PATH%\qjs.lib"
-    "%OUTPUT_LIB_PATH%\mmkvcore.lib"
-    "%OUTPUT_LIB_PATH%\mmkv.lib"
     "%OUTPUT_EXE_PATH%\qjsc.exe"
 ) do (
     if not exist "%%~f" (

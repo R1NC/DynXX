@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.20)
 
 include(cmake/DynXX.cmake)
 
@@ -91,7 +91,7 @@ endif()
 # ada uses `std::ranges` in C++20
 set(USE_ADA OFF)
 checkAppleVersionLimit("16.3" "13.3" USE_ADA)
-if(OHOS)
+if(OHOS OR EMSCRIPTEN)
     set(USE_ADA OFF)
 endif()
 if(USE_ADA)
