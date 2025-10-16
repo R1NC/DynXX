@@ -2,7 +2,7 @@
 
 #include <mutex>
 
-#include "../../../../../../build.Android/output/include/DynXX/CXX/Memory.hxx"
+#include "../../../../../../build.Android/Release/output/include/DynXX/CXX/Memory.hxx"
 
 namespace {
     std::unordered_map<std::string, jclass> sJClassCache;

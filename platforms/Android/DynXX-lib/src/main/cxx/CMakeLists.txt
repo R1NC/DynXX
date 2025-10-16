@@ -5,12 +5,10 @@ project("DynXXJNI")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(${CMAKE_PROJECT_NAME} SHARED
-        DynXXJNI.cxx
-        JNIUtil.cxx
-)
+file(GLOB CXX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx")
+add_library(${CMAKE_PROJECT_NAME} SHARED ${CXX_SOURCES})
 
-set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.Android/output/libs/${ANDROID_ABI})
+set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.Android/Release/output/${ANDROID_ABI}/lib)
 
 #Find libcrypto
 set(libcryptoPath ${libDir}/libcrypto.a)
@@ -77,6 +75,16 @@ set(libDynXXPath ${libDir}/libDynXX.a)
 add_library(libDynXX STATIC IMPORTED)
 set_property(TARGET libDynXX PROPERTY IMPORTED_LOCATION ${libDynXXPath})
 
+#Find libNghttp
+set(libNghttpPath ${libDir}/libnghttp2.a)
+add_library(libNghttp STATIC IMPORTED)
+set_property(TARGET libNghttp PROPERTY IMPORTED_LOCATION ${libNghttpPath})
+
+#Find libFmt
+set(libFmtPath ${libDir}/libfmt.a)
+add_library(libFmt STATIC IMPORTED)
+set_property(TARGET libFmt PROPERTY IMPORTED_LOCATION ${libFmtPath})
+
 target_link_libraries(${CMAKE_PROJECT_NAME}
         libcrypto
         libssl
@@ -91,6 +99,8 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         libmmkvcore
         libmmkv
         libDynXX
+        libNghttp
+        libFmt
         z
         android
         log

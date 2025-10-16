@@ -14,86 +14,20 @@ endif()
 include_directories(${NATIVERENDER_ROOT_PATH}
                     ${NATIVERENDER_ROOT_PATH}/include)
 
-add_library(${CMAKE_PROJECT_NAME} SHARED
-    napi_util.cxx
-    napi_init.cxx
-)
+file(GLOB CXX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx")
+add_library(${CMAKE_PROJECT_NAME} SHARED ${CXX_SOURCES})
 
-set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.HarmonyOS/output/libs/arm64-v8a)
-
-#Find crypto
-set(cryptoPath ${libDir}/libcrypto.a)
-add_library(libcrypto STATIC IMPORTED)
-set_property(TARGET libcrypto PROPERTY IMPORTED_LOCATION ${cryptoPath})
-
-#Find ssl
-set(sslPath ${libDir}/libssl.a)
-add_library(libssl STATIC IMPORTED)
-set_property(TARGET libssl PROPERTY IMPORTED_LOCATION ${sslPath})
-
-#Find curl
-set(curlPath ${libDir}/libcurl.a)
-add_library(libcurl STATIC IMPORTED)
-set_property(TARGET libcurl PROPERTY IMPORTED_LOCATION ${curlPath})
-
-#Find lua
-set(luaPath ${libDir}/liblua.a)
-add_library(liblua STATIC IMPORTED)
-set_property(TARGET liblua PROPERTY IMPORTED_LOCATION ${luaPath})
-
-#Find quickjs
-set(quickjsPath ${libDir}/libqjs.a)
-add_library(libquickjs STATIC IMPORTED)
-set_property(TARGET libquickjs PROPERTY IMPORTED_LOCATION ${quickjsPath})
-
-#Find spdlog
-set(spdlogPath ${libDir}/libspdlog.a)
-add_library(libspdlog STATIC IMPORTED)
-set_property(TARGET libspdlog PROPERTY IMPORTED_LOCATION ${spdlogPath})
-
-#Find cjson
-set(cjsonPath ${libDir}/libcjson.a)
-add_library(libcjson STATIC IMPORTED)
-set_property(TARGET libcjson PROPERTY IMPORTED_LOCATION ${cjsonPath})
-
-#Find sqlite
-set(sqlitePath ${libDir}/libsqlite3.a)
-add_library(libsqlite STATIC IMPORTED)
-set_property(TARGET libsqlite PROPERTY IMPORTED_LOCATION ${sqlitePath})
-
-#Find AdaURL
-# set(adaurlPath ${libDir}/libada.a)
-# add_library(libadaurl STATIC IMPORTED)
-# set_property(TARGET libadaurl PROPERTY IMPORTED_LOCATION ${adaurlPath})
-
-#Find libmmkvcore
-set(libmmkvcorePath ${libDir}/libmmkvcore.a)
-add_library(libmmkvcore STATIC IMPORTED)
-set_property(TARGET libmmkvcore PROPERTY IMPORTED_LOCATION ${libmmkvcorePath})
-
-#Find libmmkv
-set(libmmkvPath ${libDir}/libmmkv.a)
-add_library(libmmkv STATIC IMPORTED)
-set_property(TARGET libmmkv PROPERTY IMPORTED_LOCATION ${libmmkvPath})
+set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.HarmonyOS/Release/output/arm64-v8a/lib)
 
 #Find DynXX
-set(DynXXPath ${libDir}/libDynXX.a)
+set(DynXXPath ${libDir}/libDynXX-All.a)
 add_library(libDynXX STATIC IMPORTED)
 set_property(TARGET libDynXX PROPERTY IMPORTED_LOCATION ${DynXXPath})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
-    libcrypto
-    libssl
-    libcurl
-    liblua
-    libquickjs
-    libcjson
-    libsqlite
-    libspdlog
-    #libadaurl
-    libmmkvcore
-    libmmkv
+    -Wl,--whole-archive
     libDynXX
+    -Wl,--no-whole-archive
     z
     uv
     libace_napi.z.so
