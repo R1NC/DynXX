@@ -1,6 +1,6 @@
 # DynXX
 
-[<img src="https://img.shields.io/sonar/quality_gate/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&logo=sonar&label=Sonar%20-%20Quality%20Gate"/>][36]
+[<img src="https://img.shields.io/sonar/quality_gate/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&logo=sonar&label=Sonar%20-%20Quality%20Gate"/>][16]
 [<img src="https://img.shields.io/sonar/violations/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&format=long&logo=sonar&label=Sonar%20-%20Violations"/>][25]
  
 [<img src="https://img.shields.io/github/actions/workflow/status/R1NC/DynXX/CI-Android-macOS.yml?branch=main&label=CI%20-%20Android&logo=android&logoColor=3DDC84"/>][26]
@@ -63,8 +63,9 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | [std::ranges][13]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
 | [std::jthread][28]                           | C++20    | Apple;                             |
 | [Heterogeneous lookup for hash map/set][32]  | C++20    | HarmonyOS;                         |
-| [std::ranges::views::enumerate][20]          | C++23    | Clang, Apple & HarmonyOS;          |
 | [std::ranges::views::chunk][14]              | C++23    | Clang, Apple & HarmonyOS;          |
+| [std::ranges::views::enumerate][20]          | C++23    | Clang, Apple & HarmonyOS;          |
+| [std::ranges::to][36]                        | C++23    | Clang, Apple & HarmonyOS;          |
 | [std::move_only_function][23]                | C++23    | Clang, Apple & HarmonyOS;          |
 
 <details>
@@ -79,7 +80,6 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 ## Dependencies
 
 * [ada-url][3]: URL parser;(Requires `std::ranges` in C++20)
-* [android-ifaddrs][16]: The missing `ifaddrs` for Android;
 * [curl][4]: Networking;
 * [cJSON][5]: JSON codec;
 * [iOS-cmake][18]: CMake toolchain for Apple platforms;
@@ -108,7 +108,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [13]: https://en.cppreference.com/w/cpp/ranges
 [14]: https://en.cppreference.com/w/cpp/ranges/chunk_view
 [15]: https://github.com/gabime/spdlog
-[16]: https://github.com/morristech/android-ifaddrs
+[16]: https://sonarcloud.io/project/overview?id=R1NC_DynXX
 [17]: https://github.com/madler/zlib
 [18]: https://github.com/leetal/ios-cmake
 [19]: https://en.cppreference.com/w/cpp/utility/from_chars
@@ -128,4 +128,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [33]: ../../actions/workflows/CI-iOS.yml
 [34]: ../../actions/workflows/CI-macOS.yml
 [35]: ../../actions/workflows/CI-Windows.yml
-[36]: https://sonarcloud.io/project/overview?id=R1NC_DynXX
+[36]: https://en.cppreference.com/w/cpp/ranges/to.html

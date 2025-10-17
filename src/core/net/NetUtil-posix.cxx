@@ -1,5 +1,12 @@
 #if !defined(_WIN32) && !defined(__EMSCRIPTEN__)
 
+#if !defined(__ANDROID__) || __ANDROID_API__ >= 24
+    #define HAVE_IFADDRS 1
+    #endif
+    #if defined(__OHOS__) || defined(__linux__)
+    #define HAVE_IF_PACKET 1
+#endif
+
 #include "NetUtil.hxx"
 
 #include <cstring>
@@ -9,8 +16,10 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <net/if.h>
+#if defined(HAVE_IFADDRS)
 #include <ifaddrs.h>
-#if defined(__ANDROID__) || defined(__OHOS__) || defined(__linux__)
+#endif
+#if defined(HAVE_IF_PACKET)
 #include <linux/if_packet.h>
 #else
 #include <net/if_dl.h>
@@ -18,6 +27,7 @@
 
 namespace 
 {
+#if defined(HAVE_IFADDRS)
     bool checkIfaName(const ifaddrs *ifa, std::string_view name)
     {
         if (!ifa || !ifa->ifa_name) [[unlikely]]
@@ -26,17 +36,23 @@ namespace
         }
         return strncmp(ifa->ifa_name, name.data(), name.size()) == 0;
     }
+#endif
 }
 
 namespace DynXX::Core::Net::Util {
 
 std::string macAddress()
 {
-    ifaddrs *ifaddr = nullptr;
     std::string macAddress;
+
+#if !defined(HAVE_IFADDRS)
+    return macAddress;
+#else
     
+    ifaddrs *ifaddr = nullptr;
     if (getifaddrs(&ifaddr) == -1) 
     {
+
         return macAddress;
     }
 
@@ -44,7 +60,7 @@ std::string macAddress()
     {
         if (!ifa->ifa_addr) continue;
 
-#if defined(__ANDROID__) || defined(__OHOS__) || defined(__linux__)
+#if defined(HAVE_IF_PACKET)
         if (ifa->ifa_addr->sa_family == AF_PACKET) 
         {
             sockaddr_ll *s = reinterpret_cast<sockaddr_ll*>(ifa->ifa_addr);
@@ -56,7 +72,7 @@ std::string macAddress()
 #else
         if (ifa->ifa_addr->sa_family == AF_LINK) 
         {
-            if (auto* sdl = reinterpret_cast<sockaddr_dl *>(ifa->ifa_addr); sdl->sdl_alen == 6)
+            if (auto sdl = reinterpret_cast<sockaddr_dl *>(ifa->ifa_addr); sdl->sdl_alen == 6)
             {
                 macAddress = formatMacAddress(reinterpret_cast<unsigned char *>(LLADDR(sdl)));
             }
@@ -70,23 +86,29 @@ std::string macAddress()
     
     freeifaddrs(ifaddr);
     return macAddress;
+
+#endif
 }
 
 NetType netType() 
 {
-    ifaddrs *ifaddr = nullptr;
-    auto result = NetType::Offline;
+    auto result = NetType::Unknown;
+
+#if !defined(HAVE_IFADDRS)
+    return result;
+#else
     
+    ifaddrs *ifaddr = nullptr;
     if (getifaddrs(&ifaddr) == -1) 
     {
-        return NetType::Unknown;
+        return result;
     }
 
     for (ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next)
     {
         if (ifa->ifa_addr == nullptr) continue;
 
-        if (const int family = ifa->ifa_addr->sa_family; family == AF_INET || family == AF_INET6)
+        if (const auto family = ifa->ifa_addr->sa_family; family == AF_INET || family == AF_INET6)
         {
             if (
             #if defined(__ANDROID__) || defined(__OHOS__)
@@ -133,6 +155,8 @@ NetType netType()
     
     freeifaddrs(ifaddr);
     return result;
+
+#endif
 }
 
 std::string publicIpV4()

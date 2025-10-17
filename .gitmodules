@@ -3,8 +3,3 @@
 	url = git@github.com:R1NC/apple.cmake.git
 	branch = dev
 	shallow = true
-[submodule "third_party/android-ifaddrs"]
-	path = third_party/android-ifaddrs
-	url = git@github.com:R1NC/android-ifaddrs.git
-	branch = dev
-	shallow = true

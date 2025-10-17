@@ -122,11 +122,6 @@ if(APPLE)
     )
 endif()
 
-if(ANDROID) # Android can not find built-in `ifaddrs.h`;
-    set(ANDROID_IFADDRS_ROOT third_party/android-ifaddrs)
-    list(APPEND SRC_FILES ${ANDROID_IFADDRS_ROOT}/ifaddrs.c)
-endif()
-
 if(EMSCRIPTEN)
     set(EXPORT_FUNCS "'_dynxx_init','_dynxx_release'")
     if(USE_LUA)
