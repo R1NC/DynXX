@@ -6,28 +6,34 @@ function(initBeforeProject)
         set(CMAKE_C_COMPILER_LAUNCHER ccache PARENT_SCOPE)
         set(CMAKE_CXX_COMPILER_LAUNCHER ccache PARENT_SCOPE)
     endif()
-    
-    # Check if this is the root project
-    string(
-        COMPARE EQUAL
-        "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"
-        IS_ROOT
-    )
-    set(IS_ROOT ${IS_ROOT} PARENT_SCOPE)
 endfunction()
 
 ## Initialize after project() call
 function(initAfterProject)
+    # Set C/C++ Standard for the target
+    set(CMAKE_C_STANDARD 99 PARENT_SCOPE)
+    set(CMAKE_C_STANDARD_REQUIRED ON PARENT_SCOPE)
+    set(CMAKE_CXX_STANDARD 23 PARENT_SCOPE)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON PARENT_SCOPE)
+    
+    # Disable C++ extensions for better portability
+    set(CXX_EXTENSIONS_SETTING OFF PARENT_SCOPE)
+    # Enable extensions for CYGWIN/MSYS/MinGW (Windows POSIX compatibility layers)
+    if(CMAKE_SYSTEM_NAME MATCHES "CYGWIN" OR CMAKE_SYSTEM_NAME MATCHES "MSYS" OR CMAKE_SYSTEM_NAME MATCHES "MINGW")
+        set(CXX_EXTENSIONS_SETTING ON PARENT_SCOPE)
+    endif()
+    set(CMAKE_CXX_EXTENSIONS ${CXX_EXTENSIONS_SETTING} PARENT_SCOPE)
+
     # Enable Parallel Build
     include(ProcessorCount)
-    ProcessorCount(N)
+    ProcessorCount(N PARENT_SCOPE)
     if(NOT N EQUAL 0)
         set(CMAKE_BUILD_PARALLEL_LEVEL ${N} PARENT_SCOPE)
     endif()
 
     # Enable FetchContent
     include(FetchContent)
-    set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+    set(FETCHCONTENT_UPDATES_DISCONNECTED ON PARENT_SCOPE)
 endfunction()
 
 ## Check Apple Version for C++ new features
