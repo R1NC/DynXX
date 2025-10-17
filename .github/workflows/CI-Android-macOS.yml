@@ -33,7 +33,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Cmake
+      - name: Setup CMake & Ninja
         run: |
           brew install cmake ninja | true
 
@@ -41,21 +41,25 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Setup Android NDK
-        uses: nttld/setup-ndk@v1
-        id: setup-ndk
+        uses: android-actions/setup-android@v3
         with:
-          ndk-version: r29-beta2
-          local-cache: true
+          packages: 'ndk;29.0.14206865'
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          vcpkgJsonGlob: 'vcpkg.json'
           runVcpkgInstall: false
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: android-ccache-${{ runner.os }}
+          max-size: 888M
     
       - name: Build
         env:
           VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+          VCPKG_BINARY_SOURCES: "default;x-gha,readwrite"
           NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           cd build-tools

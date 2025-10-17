@@ -33,19 +33,25 @@ jobs:
       with:
         version: 3.1.65
 
-    - name: Setup Cmake
+    - name: Setup CMake & Ninja
       run: |
         brew install cmake ninja | true
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
       with:
-        vcpkgJsonGlob: 'vcpkg.json'
         runVcpkgInstall: false
+
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: wasm-ccache-${{ runner.os }}
+        max-size: 888M
 
     - name: Build
       env:
         VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+        VCPKG_BINARY_SOURCES: "default;x-gha,readwrite"
         EMSCRIPTEN_ROOT: ${{ env.EMSDK }}/upstream/emscripten
       run: |
         cd build-tools

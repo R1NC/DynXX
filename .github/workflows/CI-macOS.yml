@@ -28,19 +28,25 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Setup Cmake
+    - name: Setup CMake & Ninja
       run: |
         brew install cmake ninja | true
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
       with:
-        vcpkgJsonGlob: 'vcpkg.json'
         runVcpkgInstall: false
+
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: macos-ccache-${{ runner.os }}
+        max-size: 888M
 
     - name: Build
       env:
         VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+        VCPKG_BINARY_SOURCES: "default;x-gha,readwrite"
       run: |
         cd build-tools
         chmod +x build-macOS.sh
