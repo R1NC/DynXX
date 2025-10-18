@@ -32,6 +32,12 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake clang ninja-build
+    
+    - name: Cache vcpkg binaries
+      uses: actions/cache@v4
+      with:
+        path: ${{ runner.workspace }}/vcpkg/buildtrees
+        key: vcpkg-binaries-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
@@ -47,7 +53,7 @@ jobs:
     - name: Build
       env:
         VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-        VCPKG_BINARY_SOURCES: "default;x-gha,readwrite"
+        VCPKG_BINARY_SOURCES: "clear;files,${{ runner.workspace }}/vcpkg/buildtrees,readwrite"
       run: |
         cd build-tools
         chmod +x build-Linux.sh

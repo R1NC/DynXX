@@ -30,6 +30,12 @@ jobs:
       - name: Setup Visual Studio
         uses: microsoft/setup-msbuild@v2
 
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.workspace }}/vcpkg/buildtrees
+          key: vcpkg-binaries-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
+
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
@@ -44,7 +50,7 @@ jobs:
       - name: Build
         env:
           VCPKG_ROOT: ${{ github.workspace }}\vcpkg
-          VCPKG_BINARY_SOURCES: "default;x-gha,readwrite"
+          VCPKG_BINARY_SOURCES: "clear;files,${{ runner.workspace }}/vcpkg/buildtrees,readwrite"
         run: |
           cd build-tools
           .\build-Windows.bat

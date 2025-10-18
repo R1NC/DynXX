@@ -60,13 +60,13 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | [std::from_chars][19] for integer            | C++17    | iOS 16.5-, macOS 13.4-;            |
 | [std::from_chars][19] for float              | C++17    | All;                               |
 | [std::format][12]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
-| [std::ranges][13]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
 | [std::jthread][28]                           | C++20    | Apple;                             |
+| [std::ranges][13]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
 | [Heterogeneous lookup for hash map/set][32]  | C++20    | HarmonyOS;                         |
+| [std::move_only_function][23]                | C++23    | Clang, Apple & HarmonyOS;          |
+| [std::ranges::to][36]                        | C++23    | Clang, Apple & HarmonyOS;          |
 | [std::ranges::views::chunk][14]              | C++23    | Clang, Apple & HarmonyOS;          |
 | [std::ranges::views::enumerate][20]          | C++23    | Clang, Apple & HarmonyOS;          |
-| [std::ranges::to][36]                        | C++23    | Clang, Apple & HarmonyOS;          |
-| [std::move_only_function][23]                | C++23    | Clang, Apple & HarmonyOS;          |
 
 <details>
 
