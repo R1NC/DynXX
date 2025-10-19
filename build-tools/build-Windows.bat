@@ -3,7 +3,7 @@
 cd ..
 
 if not defined VCPKG_ROOT (
-    set "VCPKG_ROOT=C:/Users/rinc/vcpkg"
+    set "VCPKG_ROOT=%USERPROFILE%/vcpkg"
 )
 
 set "PLATFORM=Windows"
@@ -12,7 +12,7 @@ set "WINDOWS_ABI=x64"
 set "PRESET=%PLATFORM%-%BUILD_TYPE%"
 
 if not defined VCPKG_BINARY_SOURCES (
-    set "VCPKG_BINARY_SOURCES=default;readwrite"
+    set "VCPKG_BINARY_SOURCES=clear;files,%USERPROFILE%/vcpkg-binary-cache,readwrite"
 )
 set "VCPKG_TARGET=%WINDOWS_ABI%-windows-static"
 "%VCPKG_ROOT%/vcpkg" --vcpkg-root "%VCPKG_ROOT%" install --triplet="%VCPKG_TARGET%"
