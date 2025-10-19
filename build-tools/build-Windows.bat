@@ -1,3 +1,5 @@
+@echo off
+
 cd ..
 
 if not defined VCPKG_ROOT (
@@ -9,7 +11,9 @@ set "BUILD_TYPE=Release"
 set "WINDOWS_ABI=x64"
 set "PRESET=%PLATFORM%-%BUILD_TYPE%"
 
-set "VCPKG_BINARY_SOURCES=default,read"
+if not defined VCPKG_BINARY_SOURCES (
+    set "VCPKG_BINARY_SOURCES=default;readwrite"
+)
 set "VCPKG_TARGET=%WINDOWS_ABI%-windows-static"
 "%VCPKG_ROOT%/vcpkg" --vcpkg-root "%VCPKG_ROOT%" install --triplet="%VCPKG_TARGET%"
 
@@ -23,7 +27,7 @@ rd /s /q %BUILD_FOLDER% 2>nul
 
 cmake --preset "%PRESET%"
 cmake --build --preset "%PRESET%"
-cmake --install . --prefix "%OUTPUT_FOLDER%" --component headers
+cmake --install "%BUILD_FOLDER%" --prefix "%OUTPUT_FOLDER%" --component headers
 
 for %%f in (
     "%OUTPUT_LIB_PATH%\DynXX.lib"
@@ -32,5 +36,7 @@ for %%f in (
     if not exist "%%~f" (
         echo ARTIFACT NOT FOUND: %%~f
         exit /b 1
+    ) else (
+        echo FOUND: %%~f
     )
 )

@@ -33,29 +33,47 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Cmake
+      - name: Setup CMake & Ninja
         run: |
           brew install cmake ninja | true
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup Android NDK
-        uses: nttld/setup-ndk@v1
-        id: setup-ndk
+      - name: Cache Android NDK
+        id: cache-ndk
+        uses: actions/cache@v4
         with:
-          ndk-version: r29-beta2
-          local-cache: true
+          path: ${{ env.ANDROID_HOME }}/ndk/29.0.14206865
+          key: android-ndk-29.0.14206865-${{ runner.os }}
+
+      - name: Setup Android NDK
+        if: steps.cache-ndk.outputs.cache-hit != 'true'
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'ndk;29.0.14206865'
+
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.workspace }}/vcpkg-binary-cache
+          key: vcpkg-binaries-android-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          vcpkgJsonGlob: 'vcpkg.json'
           runVcpkgInstall: false
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: android-ccache-${{ runner.os }}
+          max-size: 888M
     
       - name: Build
         env:
           VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+          VCPKG_BINARY_SOURCES: "clear;files,${{ runner.workspace }}/vcpkg-binary-cache,readwrite"
           NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           cd build-tools

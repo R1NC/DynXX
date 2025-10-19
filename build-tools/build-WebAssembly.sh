@@ -28,7 +28,7 @@ export OUTPUT_EXE_PATH=${OUTPUT_PATH}/bin
 rm -rf ${BUILD_FOLDER}
 
 export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg"}
-export VCPKG_BINARY_SOURCES="default,read"
+export VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES:-"default;readwrite"}
 export VCPKG_TARGET=wasm32-emscripten
 "${VCPKG_ROOT}/vcpkg" --vcpkg-root "${VCPKG_ROOT}" install --triplet="${VCPKG_TARGET}"
 

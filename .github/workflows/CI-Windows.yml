@@ -28,19 +28,29 @@ jobs:
           submodules: 'recursive'
 
       - name: Setup Visual Studio
-        uses: microsoft/setup-msbuild@v1.3.1
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
         with:
-          vs-version: '17.0'
+          path: ${{ runner.workspace }}/vcpkg-binary-cache
+          key: vcpkg-binaries-windows-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          vcpkgJsonGlob: 'vcpkg.json'
           runVcpkgInstall: false
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: windows-ccache-${{ runner.os }}
+          max-size: 888M
 
       - name: Build
         env:
           VCPKG_ROOT: ${{ github.workspace }}\vcpkg
+          VCPKG_BINARY_SOURCES: "clear;files,${{ runner.workspace }}/vcpkg-binary-cache,readwrite"
         run: |
           cd build-tools
           .\build-Windows.bat
