@@ -2,6 +2,8 @@
 
 #include <MMKV.h>
 
+#include <shared_mutex>
+
 #include <DynXX/CXX/Types.hxx>
 
 #include "ConnPool.hxx"

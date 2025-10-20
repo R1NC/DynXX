@@ -1,4 +1,5 @@
 #include <memory>
+#include <sstream>
 
 #include <DynXX/CXX/DynXX.hxx>
 #include "core/json/JsonCodec.hxx"

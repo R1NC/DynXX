@@ -1,5 +1,3 @@
-#include <utility>
-
 #include <DynXX/C/DynXX.h>
 #include <DynXX/CXX/DynXX.hxx>
 

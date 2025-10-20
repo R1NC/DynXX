@@ -2,6 +2,8 @@
 
 #include <DynXX/CXX/Log.hxx>
 
+#include "ConcurrentUtil.hxx"
+
 namespace {
     using enum DynXXLogLevelX;
 }

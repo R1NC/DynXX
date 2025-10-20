@@ -2,15 +2,12 @@
 
 #include <random>
 #include <mutex>
-#include <functional>
 
 #include <openssl/bio.h>
 #include <openssl/rsa.h>
 
 #include <DynXX/CXX/Types.hxx>
 #include <DynXX/CXX/Crypto.hxx>
-
-#include "../concurrent/ConcurrentUtil.hxx"
 
 namespace DynXX::Core::Crypto {
     Bytes rand(size_t len);

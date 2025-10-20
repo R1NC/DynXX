@@ -24,15 +24,12 @@
 #include <DynXX/CXX/DynXX.hxx>
 #endif
 
-#include "../concurrent/ConcurrentUtil.hxx"
-
 #if defined(__APPLE__)
 void _dynxx_log_apple(const char*);
 #endif
 
 namespace
 {
-    using namespace DynXX::Core::Concurrent;
     using enum DynXXLogLevelX;
 
     DynXXLogLevelX _level = None;

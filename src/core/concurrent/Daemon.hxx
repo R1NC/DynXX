@@ -1,13 +1,16 @@
 #pragma once
 
-#include <atomic>
+#include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <functional>
 
-#include <DynXX/CXX/Types.hxx>
-
+#if !defined(__cpp_lib_jthread)
+#include <atomic>
 #include "ConcurrentUtil.hxx"
+#endif
+
+#include <DynXX/CXX/Types.hxx>
 
 namespace DynXX::Core::Concurrent {
     using TaskT = std::

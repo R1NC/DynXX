@@ -3,7 +3,6 @@
 #include <queue>
 #include <vector>
 
-#include "ConcurrentUtil.hxx"
 #include "Daemon.hxx"
 
 namespace DynXX::Core::Concurrent {

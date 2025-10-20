@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DynXX/CXX/Types.hxx>
+#include <DynXX/CXX/Memory.hxx>
 #include <algorithm>
 
 namespace DynXX::Core::Util::Type {

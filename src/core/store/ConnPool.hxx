@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <mutex>
-#include <shared_mutex>
 #include <functional>
 
 #include <DynXX/CXX/Types.hxx>

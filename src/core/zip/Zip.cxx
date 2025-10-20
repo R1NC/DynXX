@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <functional>
 
-#include "DynXX/C/Zip.h"
 #include <DynXX/CXX/Log.hxx>
 #include <DynXX/CXX/Memory.hxx>
 

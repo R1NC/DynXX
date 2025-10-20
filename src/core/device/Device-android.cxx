@@ -2,7 +2,6 @@
 #include "Device.hxx"
 
 #include <cstddef>
-#include <cstdint>
 
 #include <sys/system_properties.h>
 #include <android/api-level.h>

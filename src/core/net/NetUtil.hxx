@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <array>
 
 #if defined(USE_STD_FORMAT)
 #include <format>
