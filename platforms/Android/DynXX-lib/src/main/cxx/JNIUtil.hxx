@@ -3,7 +3,7 @@
 #include <jni.h>
 #include <string>
 
-#include "../../../../../../build.Android/Release/output/include/DynXX/CXX/Types.hxx"
+#include <DynXX/CXX/Types.hxx>
 
 #define L "L"
 #define _ ";"

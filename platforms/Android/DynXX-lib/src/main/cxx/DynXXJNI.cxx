@@ -1,8 +1,8 @@
 #include <cstring>
 
 #include "JNIUtil.hxx"
-#include "../../../../../../build.Android/Release/output/include/DynXX/C/DynXX.h"
-#include "../../../../../../build.Android/Release/output/include/DynXX/CXX/Memory.hxx"
+#include <DynXX/C/DynXX.h>
+#include <DynXX/CXX/Memory.hxx>
 
 namespace {
     JavaVM *sVM;

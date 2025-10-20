@@ -8,7 +8,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB CXX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx")
 add_library(${CMAKE_PROJECT_NAME} SHARED ${CXX_SOURCES})
 
-set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.Android/Release/output/${ANDROID_ABI}/lib)
+set(outputDir ${PROJECT_SOURCE_DIR}/../../../../../../build.Android/Release/output)
+set(libDir ${outputDir}/${ANDROID_ABI}/lib)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${outputDir}/include)
 
 #Find libcrypto
 set(libcryptoPath ${libDir}/libcrypto.a)

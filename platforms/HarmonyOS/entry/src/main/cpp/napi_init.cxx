@@ -4,7 +4,7 @@
 
 #include <napi_util.hxx>
 
-#include "../../../../../../build.HarmonyOS/Release/output/include/DynXX/C/DynXX.h"
+#include <DynXX/C/DynXX.h>
 
 namespace {
 

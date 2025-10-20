@@ -2,7 +2,7 @@
 
 #include <napi/native_api.h>
 
-#include "../../../../../../build.HarmonyOS/Release/output/include/DynXX/CXX/Memory.hxx"
+#include <DynXX/CXX/Memory.hxx>
 
 #define PRINT_NAPI_STATUS_ERR(env, status, errMsg)                                                                     \
     do {                                                                                                               \

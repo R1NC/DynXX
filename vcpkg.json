@@ -13,6 +13,7 @@
     {
       "name": "curl",
       "platform": "!emscripten",
+      "default-features": false,
       "features": [
         "http2",
         "openssl"
@@ -50,6 +51,12 @@
     {
       "name": "libuv",
       "platform": "!emscripten"
+    }
+  ],
+  "overrides": [
+    {
+      "name": "libuv",
+      "version": "1.48.0"
     }
   ],
   "builtin-baseline": "4334d8b4c8916018600212ab4dd4bbdc343065d1"

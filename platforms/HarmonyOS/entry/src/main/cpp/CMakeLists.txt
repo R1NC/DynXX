@@ -17,7 +17,10 @@ include_directories(${NATIVERENDER_ROOT_PATH}
 file(GLOB CXX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx")
 add_library(${CMAKE_PROJECT_NAME} SHARED ${CXX_SOURCES})
 
-set(libDir ${PROJECT_SOURCE_DIR}/../../../../../../build.HarmonyOS/Release/output/arm64-v8a/lib)
+set(outputDir ${PROJECT_SOURCE_DIR}/../../../../../../build.HarmonyOS/Release/output)
+set(libDir ${outputDir}/arm64-v8a/lib)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${outputDir}/include)
 
 #Find DynXX
 set(DynXXPath ${libDir}/libDynXX-All.a)
