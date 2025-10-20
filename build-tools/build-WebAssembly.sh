@@ -1,6 +1,11 @@
 #!/bin/bash
 source "$(dirname "$0")/build-utils.sh"
 
+CI_MODE=false
+if [ -n "${VCPKG_BINARY_SOURCES}" ]; then
+    CI_MODE=true
+fi
+
 cd ..
 
 DEBUG=0
@@ -34,6 +39,10 @@ export VCPKG_TARGET=wasm32-emscripten
 
 cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
+
+if [ "$CI_MODE" = false ]; then
+    config_ide ${BUILD_FOLDER}
+fi
 
 ARTIFACTS=(
     "${OUTPUT_EXE_PATH}/DynXX.wasm"

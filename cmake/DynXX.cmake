@@ -34,6 +34,8 @@ function(initAfterProject)
     # Enable FetchContent
     include(FetchContent)
     set(FETCHCONTENT_UPDATES_DISCONNECTED ON PARENT_SCOPE)
+
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON PARENT_SCOPE)
 endfunction()
 
 ## Check Apple Version for C++ new features

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+config_ide() {
+    local BUILD_FOLDER="$1"
+    ln -sf ${BUILD_FOLDER}/compile_commands.json compile_commands.json
+}
+
 merge_libs() {
     local current_dir=$(pwd)
     local lib_dir="$1"
