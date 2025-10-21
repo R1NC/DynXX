@@ -294,9 +294,9 @@ if(USE_QJS)
     list(APPEND LINK_LIBS quickjs)
 endif()
 
-if(USE_SPDLOG)
-    list(APPEND LINK_LIBS spdlog::spdlog)
-endif()
+#if(USE_SPDLOG)
+#    list(APPEND LINK_LIBS spdlog::spdlog)
+#endif()
 
 if(USE_KV)
     list(APPEND LINK_LIBS mmkv)

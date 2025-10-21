@@ -14,15 +14,15 @@
 #endif
 
 #if defined(USE_SPDLOG)
+#define SPDLOG_HEADER_ONLY
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/daily_file_sink.h>
+#include <DynXX/CXX/DynXX.hxx>
+#else
+#include <DynXX/CXX/Types.hxx>
 #endif
 
 #include <DynXX/C/Log.h>
-#include <DynXX/CXX/Types.hxx>
-#if defined(USE_SPDLOG)
-#include <DynXX/CXX/DynXX.hxx>
-#endif
 
 #if defined(__APPLE__)
 void _dynxx_log_apple(const char*);

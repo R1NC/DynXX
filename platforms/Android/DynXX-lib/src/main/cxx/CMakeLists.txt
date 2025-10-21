@@ -91,10 +91,12 @@ set_property(TARGET libFmt PROPERTY IMPORTED_LOCATION ${libFmtPath})
 target_link_libraries(${CMAKE_PROJECT_NAME}
         libcrypto
         libssl
+        libNghttp
         libcurl
         liblua
         libquickjs
-        libspdlog
+        libFmt
+        #libspdlog
         libuv
         libcjson
         libsqlite
@@ -102,8 +104,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         libmmkvcore
         libmmkv
         libDynXX
-        libNghttp
-        libFmt
         z
         android
         log
