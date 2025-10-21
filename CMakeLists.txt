@@ -8,76 +8,54 @@ project(DynXX)
 
 initAfterProject()
 
-## Definitions:
+## Declare Options:
 
-set(USE_STD_TO_CHARS OFF)
-checkAppleVersionLimit("16.5" "13.4" USE_STD_TO_CHARS)
-if(USE_STD_TO_CHARS)
-    add_definitions(-DUSE_STD_TO_CHARS)
+option(USE_VCPKG "Use vcpkg" ON)
+if(OHOS)
+    set(USE_VCPKG OFF)
 endif()
+
+set(USE_STD_TO_CHARS ON)
+checkAppleVersionLimit("16.5" "13.4" USE_STD_TO_CHARS)
 
 option(USE_CURL "Use CURL" ON)
 if(EMSCRIPTEN)
     set(USE_CURL OFF)
-endif()
-if(USE_CURL)
-    add_definitions(-DUSE_CURL)
 endif()
 
 option(USE_LUA "Use Lua" ON)
 if(EMSCRIPTEN)
     set(USE_LUA OFF)
 endif()
-if(USE_LUA)
-    add_definitions(-DUSE_LUA)
-endif()
 
 option(USE_QJS "Use QuickJS" ON)
 if(EMSCRIPTEN)
     set(USE_QJS OFF)
-endif()
-if(USE_QJS)
-    add_definitions(-DUSE_QJS -DCONFIG_BIGNUM)
 endif()
 
 option(USE_LIBUV "Use LibUV" ON)
 if(EMSCRIPTEN)
     set(USE_LIBUV OFF)
 endif()
-if(USE_LIBUV)
-    add_definitions(-DUSE_LIBUV)
-endif()
 
 option(USE_KV "Use MMKV" ON)
 if(EMSCRIPTEN)
     set(USE_KV OFF)
-endif()
-if(USE_KV)
-    add_definitions(-DUSE_KV)
 endif()
 
 option(USE_DB "Use SQLite" ON)
 if(EMSCRIPTEN)
     set(USE_DB OFF)
 endif()
-if(USE_DB)
-    add_definitions(-DUSE_DB)
-endif()
 
 option(USE_DEVICE "Use Device" ON)
 if(EMSCRIPTEN)
     set(USE_DEVICE OFF)
 endif()
-if(USE_DEVICE)
-    add_definitions(-DUSE_DEVICE)
-endif()
 
 option(USE_SPDLOG "Use SpdLog" ON)
 if(EMSCRIPTEN)
     set(USE_SPDLOG OFF)
-endif()
-if(USE_SPDLOG)
-    add_definitions(-DUSE_SPDLOG)
 endif()
 
 # ada uses `std::ranges` in C++20
@@ -85,18 +63,6 @@ set(USE_ADA OFF)
 checkAppleVersionLimit("16.3" "13.3" USE_ADA)
 if(OHOS OR EMSCRIPTEN)
     set(USE_ADA OFF)
-endif()
-if(USE_ADA)
-    add_definitions(-DUSE_ADA)
-endif()
-
-# vcpkg doesn't support ohos
-option(USE_VCPKG "Use vcpkg" ON)
-if(OHOS)
-    set(USE_VCPKG OFF)
-endif()
-if(USE_VCPKG)
-    add_definitions(-DUSE_VCPKG)
 endif()
 
 ## Source & Output:
@@ -128,6 +94,22 @@ if(EMSCRIPTEN)
 else()
     add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 endif()
+
+## Add Definitions for target:
+
+addFeatureDefinitions(${PROJECT_NAME}
+    USE_VCPKG
+    USE_STD_TO_CHARS
+    USE_CURL
+    USE_LUA
+    USE_QJS
+    USE_LIBUV
+    USE_KV
+    USE_DB
+    USE_DEVICE
+    USE_SPDLOG
+    USE_ADA
+)
 
 ## Include Directories:
 

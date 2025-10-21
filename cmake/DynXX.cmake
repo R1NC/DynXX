@@ -50,9 +50,9 @@ endfunction()
 
 ## Add lib from Git
 ## optional params: `inc_dir`, `src_dir`, `manual_add`.
-function(addGitLib _target lib url tag)
-    if(NOT _target OR NOT lib OR NOT url OR NOT tag)
-        message(FATAL_ERROR "`addGitLib()`: `_target`, `lib`, `url`, `tag` are required!")
+function(addGitLib TARGET_NAME lib url tag)
+    if(NOT TARGET_NAME OR NOT lib OR NOT url OR NOT tag)
+        message(FATAL_ERROR "`addGitLib()`: `TARGET_NAME`, `lib`, `url`, `tag` are required!")
     endif()
     set(inc_dir ${ARGV4})
     set(src_dir ${ARGV5})
@@ -88,7 +88,7 @@ function(addGitLib _target lib url tag)
     endif()
 
     if(EXISTS ${inc_path})
-        target_include_directories(${_target} PRIVATE ${inc_path})
+        target_include_directories(${TARGET_NAME} PRIVATE ${inc_path})
     else()
         message(WARNING "${inc_path} not exists, skip `target_include_directories()`")
     endif()
@@ -125,6 +125,14 @@ function(addWasmExe TARGET_NAME)
     
     set_target_properties(${TARGET_NAME} PROPERTIES 
         LINK_FLAGS "${FINAL_LINK_FLAGS} -s EXPORTED_RUNTIME_METHODS=[${FINAL_RUNTIME_METHODS}] -s EXPORTED_FUNCTIONS=[${FINAL_FUNCS}]")
+endfunction()
+
+function(addFeatureDefinitions TARGET_NAME)
+    foreach(FEATURE ${ARGN})
+        if(${FEATURE})
+            target_compile_definitions(${TARGET_NAME} PRIVATE ${FEATURE})
+        endif()
+    endforeach()
 endfunction()
 
 ## Install Headers
