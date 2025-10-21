@@ -173,16 +173,16 @@ LuaVM::~LuaVM()
 #endif
 }
 
-void LuaVM::bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const {
-    lua_register(this->lstate.get(), funcName.c_str(), funcPointer);
+void LuaVM::bindFunc(std::string_view funcName, int (*funcPointer)(lua_State *)) const {
+    lua_register(this->lstate.get(), funcName.data(), funcPointer);
 }
 
 #if !defined(__EMSCRIPTEN__)
-bool LuaVM::loadFile(const std::string &file)
+bool LuaVM::loadFile(std::string_view file)
 {
     const auto lock = std::scoped_lock(this->vmMutex);
     const auto L = this->lstate.get();
-    if (const auto ret = luaL_dofile(L, file.c_str()); ret != LUA_OK) [[unlikely]]
+    if (const auto ret = luaL_dofile(L, file.data()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`luaL_dofile` error:");
         return false;
@@ -191,11 +191,11 @@ bool LuaVM::loadFile(const std::string &file)
 }
 #endif
 
-bool LuaVM::loadScript(const std::string &script)
+bool LuaVM::loadScript(std::string_view script)
 {
     const auto lock = std::scoped_lock(this->vmMutex);
     const auto L = this->lstate.get();
-    if (const auto ret = luaL_dostring(L, script.c_str()); ret != LUA_OK) [[unlikely]]
+    if (const auto ret = luaL_dostring(L, script.data()); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`luaL_dostring` error:");
         return false;

@@ -23,21 +23,21 @@ namespace {
 
 #define BIND_API(f) vm->bindFunc(#f, f##J)
 
-    bool loadF(const std::string &file, bool isModule) {
+    bool loadF(std::string_view file, bool isModule) {
         if (!vm || file.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadFile(file, isModule);
     }
 
-    bool loadS(const std::string &script, const std::string &name, bool isModule) {
+    bool loadS(std::string_view script, std::string_view name, bool isModule) {
         if (!vm || script.empty() || name.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadScript(script, name, isModule);
     }
 
-    bool loadB(const Bytes &bytes, bool isModule) {
+    bool loadB(BytesView bytes, bool isModule) {
         if (!vm || bytes.empty()) [[unlikely]] {
             return false;
         }
@@ -70,19 +70,19 @@ namespace {
 
 // C++ API
 
-bool dynxxJsLoadF(const std::string &file, bool isModule) {
+bool dynxxJsLoadF(std::string_view file, bool isModule) {
     return loadF(file, isModule);
 }
 
-bool dynxxJsLoadS(const std::string &script, const std::string &name, bool isModule) {
+bool dynxxJsLoadS(std::string_view script, std::string_view name, bool isModule) {
     return loadS(script, name, isModule);
 }
 
-bool dynxxJsLoadB(const Bytes &bytes, bool isModule) {
+bool dynxxJsLoadB(BytesView bytes, bool isModule) {
     return loadB(bytes, isModule);
 }
 
-std::optional<std::string> dynxxJsCall(const std::string &func, const std::string &params, bool await) {
+std::optional<std::string> dynxxJsCall(std::string_view func, std::string_view params, bool await) {
     return call(func, params, await);
 }
 
@@ -94,17 +94,17 @@ void dynxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &c
 
 DYNXX_EXPORT_AUTO
 bool dynxx_js_loadF(const char *file, bool is_module) {
-    return dynxxJsLoadF(makeStr(file), is_module);
+    return dynxxJsLoadF(file, is_module);
 }
 
 DYNXX_EXPORT_AUTO
 bool dynxx_js_loadS(const char *script, const char *name, bool is_module) {
-    return dynxxJsLoadS(makeStr(script), makeStr(name), is_module);
+    return dynxxJsLoadS(script, name, is_module);
 }
 
 DYNXX_EXPORT_AUTO
 bool dynxx_js_loadB(const byte *bytes, size_t len, bool is_module) {
-    return dynxxJsLoadB(makeBytes(bytes, len), is_module);
+    return dynxxJsLoadB(makeBytesView(bytes, len), is_module);
 }
 
 DYNXX_EXPORT_AUTO

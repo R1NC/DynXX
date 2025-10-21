@@ -57,10 +57,10 @@ namespace
 
 // JSVM Internal
 
-    bool _loadScript(JSContext *ctx, const std::string &script, const std::string &name, bool isModule)
+    bool _loadScript(JSContext *ctx, std::string_view script, std::string_view name, bool isModule)
     {
         const auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
-        const auto jEvalRet = JS_Eval(ctx, script.c_str(), script.length(), name.c_str(), flags);
+        const auto jEvalRet = JS_Eval(ctx, script.data(), script.size(), name.data(), flags);
         if (JS_IsException(jEvalRet)) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_Eval failed ->");
@@ -265,11 +265,11 @@ JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
     promiseCache = std::make_unique<Mem::PtrCache<JSPromise>>();
 }
 
-bool JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
+bool JSVM::bindFunc(std::string_view funcJ, JSCFunction *funcC)
 {
     auto res = true;
     const auto ctx = this->context.get();
-    const auto jFunc = JS_NewCFunction(ctx, funcC, funcJ.c_str(), 1);
+    const auto jFunc = JS_NewCFunction(ctx, funcC, funcJ.data(), 1);
     if (JS_IsException(jFunc)) [[unlikely]]
     {
         dynxxLogPrint(Error, "JS_NewCFunction failed ->");
@@ -278,7 +278,7 @@ bool JSVM::bindFunc(const std::string &funcJ, JSCFunction *funcC)
     }
     else [[likely]]
     {
-        if (!JS_DefinePropertyValueStr(ctx, this->jGlobal, funcJ.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE)) [[unlikely]]
+        if (!JS_DefinePropertyValueStr(ctx, this->jGlobal, funcJ.data(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE)) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_DefinePropertyValueStr failed ->");
             dumpJsErr(ctx);
@@ -318,14 +318,14 @@ void JSVM::beforeLoad()
     }, JSLoopTimeoutMicroSecs);
 }
 
-bool JSVM::loadFile(const std::string &file, bool isModule)
+bool JSVM::loadFile(std::string_view file, bool isModule)
 {
     try {
-        std::ifstream ifs(file.c_str());
+        std::ifstream ifs(file.data());
         ifs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         if (!ifs.is_open()) [[unlikely]]
         {
-            dynxxLogPrintF(Error, "JSVM::loadFile {} open failed", file.c_str());
+            dynxxLogPrintF(Error, "JSVM::loadFile {} open failed", file.data());
             return false;
         }
         std::ostringstream ss;
@@ -333,22 +333,22 @@ bool JSVM::loadFile(const std::string &file, bool isModule)
         return this->loadScript(ss.str(), file, isModule);
     }
     catch (const std::ios_base::failure& e) {
-        dynxxLogPrintF(Error, "JSVM::loadFile {} IO error: {}", file.c_str(), e.what());
+        dynxxLogPrintF(Error, "JSVM::loadFile {} IO error: {}", file.data(), e.what());
         return false;
     }
     catch (const std::exception& e) {
-        dynxxLogPrintF(Error, "JSVM::loadFile {} error: {}", file.c_str(), e.what());
+        dynxxLogPrintF(Error, "JSVM::loadFile {} error: {}", file.data(), e.what());
         return false;
     }
 }
 
-bool JSVM::loadScript(const std::string &script, const std::string &name, bool isModule) {
+bool JSVM::loadScript(std::string_view script, std::string_view name, bool isModule) {
     const auto lock = std::scoped_lock(this->vmMutex);
     this->beforeLoad();
     return _loadScript(this->context.get(), script, name, isModule);
 }
 
-bool JSVM::loadBinary(const Bytes &bytes, bool isModule) {
+bool JSVM::loadBinary(BytesView bytes, bool isModule) {
     const auto lock = std::scoped_lock(this->vmMutex);
     this->beforeLoad();
     return js_std_eval_binary(this->context.get(), bytes.data(), bytes.size(), 0);

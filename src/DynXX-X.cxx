@@ -198,7 +198,7 @@ std::optional<std::string> dynxxRootPath() {
 }
 #endif
 
-bool dynxxInit(const std::string &root) {
+bool dynxxInit(std::string_view root) {
     jsonDecoderCache = std::make_unique<Mem::PtrCache<Json::Decoder>>();
     zipCache = std::make_unique<Mem::PtrCache<Zip>>();
     unzipCache = std::make_unique<Mem::PtrCache<UnZip>>();

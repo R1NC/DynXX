@@ -70,21 +70,21 @@ namespace DynXX::Core::VM {
          * @param file Lua file path
          * @return success or not
          */
-        [[nodiscard]] bool loadFile(const std::string &file);
+        [[nodiscard]] bool loadFile(std::string_view file);
 
         /**
          * @brief Load Lua script content
          * @param script Lua script content
          * @return success or not
          */
-        [[nodiscard]] bool loadScript(const std::string &script);
+        [[nodiscard]] bool loadScript(std::string_view script);
 
         /**
          * @brief export C function to Lua environment
          * @param funcName the exported function name
          * @param funcPointer the C function pointer
          */
-        void bindFunc(const std::string &funcName, int (*funcPointer)(lua_State *)) const;
+        void bindFunc(std::string_view funcName, int (*funcPointer)(lua_State *)) const;
 
         /**
          * @brief Call Lua function

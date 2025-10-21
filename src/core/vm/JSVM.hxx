@@ -131,14 +131,14 @@ namespace DynXX::Core::VM {
          * @param funcC func implemention
          * @return success or not
          */
-        bool bindFunc(const std::string &funcJ, JSCFunction *funcC);
+        bool bindFunc(std::string_view funcJ, JSCFunction *funcC);
 
         /**
          * @brief Load JS file
          * @param file JS file path
          * @return success or not
          */
-        [[nodiscard]] bool loadFile(const std::string &file, bool isModule);
+        [[nodiscard]] bool loadFile(std::string_view file, bool isModule);
 
         /**
          * @brief Load JS script
@@ -146,13 +146,13 @@ namespace DynXX::Core::VM {
          * @param name JS file name
          * @return success or not
          */
-        [[nodiscard]] bool loadScript(const std::string &script, const std::string &name, bool isModule);
+        [[nodiscard]] bool loadScript(std::string_view script, std::string_view name, bool isModule);
 
         /**
          * @brief Load JS ByteCode
          * @param bytes JS ByteCode
          */
-        [[nodiscard]] bool loadBinary(const Bytes &bytes, bool isModule);
+        [[nodiscard]] bool loadBinary(BytesView bytes, bool isModule);
 
         /**
          * @brief call JS func

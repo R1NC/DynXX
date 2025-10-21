@@ -4,11 +4,11 @@
 
 #include <functional>
 
-bool dynxxJsLoadF(const std::string &file, bool isModule);
+bool dynxxJsLoadF(std::string_view file, bool isModule);
 
-bool dynxxJsLoadS(const std::string &script, const std::string &name, bool isModule);
+bool dynxxJsLoadS(std::string_view script, std::string_view name, bool isModule);
 
-bool dynxxJsLoadB(const Bytes &bytes, bool isModule);
+bool dynxxJsLoadB(BytesView bytes, bool isModule);
 
 std::optional<std::string> dynxxJsCall(std::string_view func, std::string_view params, bool await);
 

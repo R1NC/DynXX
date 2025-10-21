@@ -16,14 +16,14 @@ namespace {
 
 #define BIND_API(f) vm->bindFunc(#f, f##L)
 
-    bool loadF(const std::string &f) {
+    bool loadF(std::string_view f) {
         if (!vm || f.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadFile(f);
     }
 
-    bool loadS(const std::string &s) {
+    bool loadS(std::string_view s) {
         if (!vm || s.empty()) [[unlikely]] {
             return false;
         }
@@ -40,11 +40,11 @@ namespace {
 
 // C++ API
 
-bool dynxxLuaLoadF(const std::string &f) {
+bool dynxxLuaLoadF(std::string_view f) {
     return loadF(f);
 }
 
-bool dynxxLuaLoadS(const std::string &s) {
+bool dynxxLuaLoadS(std::string_view s) {
     return loadS(s);
 }
 
@@ -57,22 +57,18 @@ std::optional<std::string> dynxxLuaCall(std::string_view f, std::string_view ps)
 #if !defined(__EMSCRIPTEN__)
 DYNXX_EXPORT
 bool dynxx_lua_loadF(const char *file) {
-    return dynxxLuaLoadF(makeStr(file));
+    return dynxxLuaLoadF(file);
 }
 #endif
 
 DYNXX_EXPORT
 bool dynxx_lua_loadS(const char *script) {
-    return dynxxLuaLoadS(makeStr(script));
+    return dynxxLuaLoadS(script);
 }
 
 DYNXX_EXPORT
 const char *dynxx_lua_call(const char *f, const char *ps) {
-    if (f == nullptr) [[unlikely]] 
-    {
-        return nullptr;
-    }
-    const auto s = dynxxLuaCall(f, ps ? ps : "").value_or("");
+    const auto s = dynxxLuaCall(f, ps).value_or("");
     return dupStr(s);
 }
 

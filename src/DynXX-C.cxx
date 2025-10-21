@@ -37,7 +37,7 @@ const char *dynxx_root_path() {
 
 DYNXX_EXPORT
 bool dynxx_init(const char *root) {
-    return dynxxInit(makeStr(root));
+    return dynxxInit(root);
 }
 
 DYNXX_EXPORT

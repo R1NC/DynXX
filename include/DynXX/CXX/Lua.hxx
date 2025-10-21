@@ -2,8 +2,8 @@
 
 #include "Types.hxx"
 
-bool dynxxLuaLoadF(const std::string &f);
+bool dynxxLuaLoadF(std::string_view f);
 
-bool dynxxLuaLoadS(const std::string &s);
+bool dynxxLuaLoadS(std::string_view s);
 
 std::optional<std::string> dynxxLuaCall(std::string_view f, std::string_view ps);
