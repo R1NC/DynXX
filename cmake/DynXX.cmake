@@ -149,8 +149,6 @@ endfunction()
 
 ## Print Common Build Information
 function(printBaseBuildInfo)
-    message("${PROJECT_NAME}")
-    message(" └─ IS_ROOT: ${IS_ROOT}")
     message(" └─ CCACHE: ${CCACHE_FOUND}")
     message(" └─ CMAKE:")
     message("     └─ VERSION: ${CMAKE_VERSION}")

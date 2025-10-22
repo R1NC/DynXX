@@ -33,11 +33,6 @@ if(EMSCRIPTEN)
     set(USE_QJS OFF)
 endif()
 
-option(USE_LIBUV "Use LibUV" ON)
-if(EMSCRIPTEN)
-    set(USE_LIBUV OFF)
-endif()
-
 option(USE_KV "Use MMKV" ON)
 if(EMSCRIPTEN)
     set(USE_KV OFF)
@@ -51,6 +46,11 @@ endif()
 option(USE_DEVICE "Use Device" ON)
 if(EMSCRIPTEN)
     set(USE_DEVICE OFF)
+endif()
+
+option(USE_LIBUV "Use LibUV" ON)
+if(EMSCRIPTEN)
+    set(USE_LIBUV OFF)
 endif()
 
 option(USE_SPDLOG "Use SpdLog" ON)
@@ -103,19 +103,19 @@ addFeatureDefinitions(${PROJECT_NAME}
     USE_CURL
     USE_LUA
     USE_QJS
-    USE_LIBUV
     USE_KV
     USE_DB
     USE_DEVICE
-    USE_SPDLOG
     USE_ADA
+    USE_LIBUV
+    USE_SPDLOG
 )
 
 ## Include Directories:
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
-## Find dependencies:
+## Setup dependencies:
 
 if(USE_VCPKG)
     find_package(cJSON CONFIG REQUIRED)
@@ -126,6 +126,7 @@ else()
         dev
     )
 endif()
+list(APPEND LINK_LIBS cjson)
 
 if(USE_VCPKG)
     find_package(OpenSSL REQUIRED)
@@ -144,17 +145,7 @@ else()
     set(OPENSSL_SSL_LIBRARY ssl)
     set(OPENSSL_CRYPTO_LIBRARY crypto)
 endif()
-
-if(USE_KV)
-    addGitLib(${PROJECT_NAME}
-        mmkv
-        https://github.com/R1NC/MMKV
-        dev
-        "Core"
-        "POSIX/src"
-        ON
-    )
-endif()
+list(APPEND LINK_LIBS OpenSSL::SSL OpenSSL::Crypto)
 
 if(USE_CURL)
     if(USE_VCPKG)
@@ -167,6 +158,22 @@ if(USE_CURL)
             "include"
         )
     endif()
+    list(APPEND LINK_LIBS CURL::libcurl)
+endif()
+
+# Windows & WASM have no built-in zlib;
+if(WIN32 OR EMSCRIPTEN)
+    if(USE_VCPKG)
+        find_package(ZLIB REQUIRED)
+        add_library(zlib ALIAS ZLIB::ZLIB)
+    else()
+        addGitLib(${PROJECT_NAME}
+            zlib
+            https://github.com/R1NC/zlib
+            dev
+        )
+    endif()
+    list(APPEND LINK_LIBS zlib)
 endif()
 
 if(USE_LUA)
@@ -179,6 +186,7 @@ if(USE_LUA)
             dev
         )
     endif()
+    list(APPEND LINK_LIBS lua)
 endif()
 
 if(USE_QJS)
@@ -187,6 +195,68 @@ if(USE_QJS)
         https://github.com/R1NC/quickjs-ng
         dev
     )
+    list(APPEND LINK_LIBS quickjs)
+endif()
+
+if(USE_KV)
+    addGitLib(${PROJECT_NAME}
+        mmkv
+        https://github.com/R1NC/MMKV
+        dev
+        "Core"
+        "POSIX/src"
+        ON
+    )
+    list(APPEND LINK_LIBS mmkv)
+endif()
+
+# The buillt-in sqlite in iOS/macOS is available，no need to compile；
+# For Android, it's only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
+if(USE_DB)
+    if(NOT APPLE)
+        if(USE_VCPKG)
+            find_package(unofficial-sqlite3 CONFIG REQUIRED)
+            add_library(sqlite3 ALIAS unofficial::sqlite3::sqlite3)
+        else()
+            addGitLib(${PROJECT_NAME}
+                sqlite
+                https://github.com/R1NC/sqlite
+                dev
+            )
+            add_library(sqlite3 ALIAS sqlite3-static)
+        endif()
+    endif()
+    list(APPEND LINK_LIBS sqlite3)
+endif()
+
+# HarmonyOS has built-in libuv;
+if(USE_LIBUV AND NOT OHOS)
+    if(USE_VCPKG)
+        find_package(libuv REQUIRED)
+    else()
+        addGitLib(${PROJECT_NAME}
+            libuv
+            https://github.com/R1NC/libuv
+            dev
+            "include"
+        )
+        add_library(uv ALIAS libuv)
+    endif()
+    list(APPEND LINK_LIBS $<IF:$<TARGET_EXISTS:uv>,uv,uv_a>)
+endif()
+
+if(USE_ADA)
+    if(USE_VCPKG)
+        find_package(ada REQUIRED)
+    else()
+        addGitLib(${PROJECT_NAME}
+            ada
+            https://github.com/R1NC/AdaURL
+            dev
+            "include"
+        )
+    endif()
+    list(APPEND LINK_LIBS ada::ada)
 endif()
 
 if(USE_SPDLOG)
@@ -202,119 +272,7 @@ if(USE_SPDLOG)
     endif()
 endif()
 
-# The buillt-in sqlite in iOS/macOS is available，no need to compile；
-# For Android, it's only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
-if(USE_DB AND NOT APPLE)
-    if(USE_VCPKG)
-        find_package(unofficial-sqlite3 CONFIG REQUIRED)
-    else()
-        addGitLib(${PROJECT_NAME}
-            sqlite
-            https://github.com/R1NC/sqlite
-            dev
-        )
-    endif()
-endif()
-
-# Windows & WASM have no built-in zlib;
-if(WIN32 OR EMSCRIPTEN)
-    if(USE_VCPKG)
-        find_package(ZLIB REQUIRED)
-    else()
-        addGitLib(${PROJECT_NAME}
-            zlib
-            https://github.com/R1NC/zlib
-            dev
-        )
-    endif()
-endif()
-
-# HarmonyOS has built-in libuv;
-if(USE_LIBUV AND NOT OHOS)
-    if(USE_VCPKG)
-        find_package(libuv REQUIRED)
-    else()
-        addGitLib(${PROJECT_NAME}
-            libuv
-            https://github.com/R1NC/libuv
-            dev
-            "include"
-        )
-    endif()
-endif()
-
-if(USE_ADA)
-    if(USE_VCPKG)
-        find_package(ada REQUIRED)
-    else()
-        addGitLib(${PROJECT_NAME}
-            ada
-            https://github.com/R1NC/AdaURL
-            dev
-            "include"
-        )
-    endif()
-endif()
-
-## Link Libraries:
-
-list(APPEND LINK_LIBS
-    OpenSSL::SSL 
-    OpenSSL::Crypto
-    cjson
-)
-
-if(USE_CURL)
-    list(APPEND LINK_LIBS CURL::libcurl)
-endif()
-
-if(USE_LUA)
-    list(APPEND LINK_LIBS lua)
-endif()
-
-if(USE_QJS)
-    list(APPEND LINK_LIBS quickjs)
-endif()
-
-#if(USE_SPDLOG)
-#    list(APPEND LINK_LIBS spdlog::spdlog)
-#endif()
-
-if(USE_KV)
-    list(APPEND LINK_LIBS mmkv)
-endif()
-
-if(USE_DB)
-    if(APPLE)
-        list(APPEND LINK_LIBS sqlite3)
-    elseif(USE_VCPKG)
-        list(APPEND LINK_LIBS unofficial::sqlite3::sqlite3)
-    else()
-        list(APPEND LINK_LIBS sqlite3-static)
-    endif()
-endif()
-
-if(WIN32 OR EMSCRIPTEN)
-    if(USE_VCPKG)
-        list(APPEND LINK_LIBS ZLIB::ZLIB)
-    else()
-        list(APPEND LINK_LIBS zlib)
-    endif()
-endif()
-
-if(USE_LIBUV AND NOT OHOS)
-    if(USE_VCPKG)
-        list(APPEND LINK_LIBS $<IF:$<TARGET_EXISTS:uv>,uv,uv_a>)
-    else()
-        list(APPEND LINK_LIBS libuv)
-    endif()
-endif()
-
-if(USE_ADA)
-    list(APPEND LINK_LIBS ada::ada)
-endif()
-
-target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
 
 ## install headers
 
@@ -336,6 +294,7 @@ execute_process(
 
 ## Print Messages:
 message("")
+message("${PROJECT_NAME}")
 printBaseBuildInfo()
 message(" └─ OPTIONS:")
 message("     └─ USE_STD_TO_CHARS: ${USE_STD_TO_CHARS}")
