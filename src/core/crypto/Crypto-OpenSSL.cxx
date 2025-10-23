@@ -633,6 +633,7 @@ RSA::Codec::Codec(BytesView key, DynXXCryptoRSAPaddingX padding) : padding(paddi
     }
 }
 
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 void RSA::Codec::moveImp(Codec &&other) noexcept
 {
     this->padding = other.padding;

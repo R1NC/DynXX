@@ -220,8 +220,7 @@ std::optional<DictAny> jsonToDictAny(const std::string &json)
     return {dict};
 }
 
-// Decoder
-
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 void Decoder::moveImp(Decoder&& other) noexcept
 {
     this->cjson = std::exchange(other.cjson, nullptr);
