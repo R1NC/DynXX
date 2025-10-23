@@ -27,6 +27,8 @@ cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
 cmake --install ${BUILD_FOLDER} --prefix ${OUTPUT_FOLDER} --component headers
 
+export_compile_commands ${BUILD_FOLDER}
+
 ARTIFACTS=(
     "${OUTPUT_LIB_PATH}/libDynXX.a"
 )

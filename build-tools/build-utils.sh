@@ -1,6 +1,6 @@
 #!/bin/bash
 
-config_ide() {
+export_compile_commands() {
     local BUILD_FOLDER="$1"
     ln -sf ${BUILD_FOLDER}/compile_commands.json compile_commands.json
 }

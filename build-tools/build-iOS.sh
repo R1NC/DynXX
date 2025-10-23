@@ -1,11 +1,6 @@
 #!/bin/bash
 source "$(dirname "$0")/build-utils.sh"
 
-CI_MODE=false
-if [ -n "${VCPKG_BINARY_SOURCES}" ]; then
-    CI_MODE=true
-fi
-
 cd ..
 
 DEBUG=0
@@ -40,9 +35,7 @@ cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
 cmake --install ${BUILD_FOLDER} --prefix ${OUTPUT_FOLDER} --component headers
 
-if [ "$CI_MODE" = false ]; then
-    config_ide ${BUILD_FOLDER}
-fi
+export_compile_commands ${BUILD_FOLDER}
 
 ARTIFACTS=(
     "${OUTPUT_LIB_PATH}/libDynXX.a"
