@@ -23,7 +23,6 @@ set "OUTPUT_PATH=%CD%\%OUTPUT_FOLDER%\%WINDOWS_ABI%"
 set "OUTPUT_LIB_PATH=%OUTPUT_PATH%\lib"
 set "OUTPUT_DLL_PATH=%OUTPUT_PATH%\share"
 set "OUTPUT_EXE_PATH=%OUTPUT_PATH%\bin"
-rd /s /q %BUILD_FOLDER% 2>nul
 
 cmake --preset "%PRESET%"
 cmake --build --preset "%PRESET%"

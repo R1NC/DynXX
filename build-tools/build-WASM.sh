@@ -25,7 +25,6 @@ OUTPUT_PATH=$PWD/${OUTPUT_FOLDER}/${WASM_ABI}
 export OUTPUT_LIB_PATH=${OUTPUT_PATH}/lib
 export OUTPUT_DLL_PATH=${OUTPUT_PATH}/share
 export OUTPUT_EXE_PATH=${OUTPUT_PATH}/bin
-rm -rf ${BUILD_FOLDER}
 
 export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg"}
 export VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES:-"clear;files,$HOME/vcpkg-binary-cache,readwrite"}

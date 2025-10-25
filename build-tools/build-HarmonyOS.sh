@@ -21,7 +21,6 @@ OUTPUT_PATH=$PWD/${OUTPUT_FOLDER}/${OHOS_ABI}
 export OUTPUT_LIB_PATH=${OUTPUT_PATH}/lib
 export OUTPUT_DLL_PATH=${OUTPUT_PATH}/share
 export OUTPUT_EXE_PATH=${OUTPUT_PATH}/bin
-rm -rf ${BUILD_FOLDER}
 
 cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}

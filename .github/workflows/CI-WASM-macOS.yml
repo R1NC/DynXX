@@ -59,13 +59,13 @@ jobs:
         EMSCRIPTEN_ROOT: ${{ env.EMSDK }}/upstream/emscripten
       run: |
         cd build-tools
-        chmod +x build-WebAssembly.sh
-        ./build-WebAssembly.sh
+        chmod +x build-WASM.sh
+        ./build-WASM.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: WebAssembly-build
+        name: WASM-build
         path: |
           build.Wasm/Release/output/
         if-no-files-found: error

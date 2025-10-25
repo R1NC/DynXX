@@ -34,7 +34,11 @@ function(initAfterProject)
     # Enable FetchContent
     include(FetchContent)
     set(FETCHCONTENT_UPDATES_DISCONNECTED ON PARENT_SCOPE)
+    set(FETCHCONTENT_QUIET OFF PARENT_SCOPE)
+    set(FETCHCONTENT_TIMEOUT 600 PARENT_SCOPE)
+    set(FETCHCONTENT_DOWNLOAD_TIMEOUT_SEC 600 PARENT_SCOPE)
 
+    # Enable Compile Commands for better IDE support
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON PARENT_SCOPE)
 endfunction()
 
@@ -73,6 +77,7 @@ function(addGitLib TARGET_NAME lib url tag)
         GIT_TAG        ${tag}
         GIT_SHALLOW    ON
         GIT_PROGRESS   ON
+        GIT_REMOTE_UPDATE_STRATEGY REBASE_CHECKOUT
     )
     FetchContent_MakeAvailable(${lib})
 
