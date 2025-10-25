@@ -20,16 +20,19 @@ permissions:
   actions: write
 
 jobs:
+  baseSetup:
+    uses: ./.github/workflows/Base-Setup.yml
+    with:
+      host: macOS
+      target: ios
+
   build:
+    needs: baseSetup
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-
-    - name: Setup CMake & Ninja
-      run: |
-        brew install cmake ninja | true
 
     - name: Cache vcpkg binaries
       uses: actions/cache@v4
@@ -41,12 +44,7 @@ jobs:
       uses: lukka/run-vcpkg@v11
       with:
         runVcpkgInstall: false
-
-    - name: Setup ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ios-ccache-${{ runner.os }}
-        max-size: 888M
+        vcpkgJsonGlob: '**/vcpkg.json'
 
     - name: Build
       env:

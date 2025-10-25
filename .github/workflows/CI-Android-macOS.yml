@@ -20,25 +20,31 @@ permissions:
   actions: write
 
 jobs:
-  build:
+  baseSetup:
+    uses: ./.github/workflows/Base-Setup.yml
+    with:
+      host: macOS
+      target: android
+
+  setupAndroidEnv:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup CMake & Ninja
-        run: |
-          brew install cmake ninja | true
-
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+  build:
+    needs: [baseSetup, setupAndroidEnv]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
 
       - name: Cache Android NDK
         id: cache-ndk
@@ -63,13 +69,8 @@ jobs:
         uses: lukka/run-vcpkg@v11
         with:
           runVcpkgInstall: false
+          vcpkgJsonGlob: '**/vcpkg.json'
 
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: android-ccache-${{ runner.os }}
-          max-size: 888M
-    
       - name: Build
         env:
           VCPKG_ROOT: ${{ github.workspace }}/vcpkg

@@ -4,7 +4,7 @@ build.iOS
 build.macOS
 build.HarmonyOS
 build.Linux
-build.WebAssembly
+build.Wasm
 build.Windows
 *.DS_Store
 CMakeCache.txt
@@ -18,3 +18,4 @@ build
 .cache/clangd/index
 .idea
 vcpkg_installed
+compile_commands.json

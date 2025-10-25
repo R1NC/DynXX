@@ -1,0 +1,39 @@
+name: Base Setup
+
+on:
+  workflow_call:
+    inputs:
+      host:
+        required: true
+        type: string
+      target:
+        required: true
+        type: string
+
+jobs:
+  BuildTools:
+    runs-on: ${{ inputs.host == 'macOS' && 'macos-latest' || inputs.host == 'Windows' && 'windows-latest' || 'ubuntu-latest' }}
+    steps:
+      - name: Setup CMake & Ninja for macOS
+        if: inputs.host == 'macOS'
+        run: |
+          brew install cmake ninja | true
+
+      - name: Setup CMake & Ninja for Linux
+        if: inputs.host == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake clang ninja-build
+
+      - name: Setup Visual Studio for Windows
+        if: inputs.host == 'Windows'
+        uses: microsoft/setup-msbuild@v2
+
+  BuildCache:
+    runs-on: ${{ inputs.host == 'macOS' && 'macos-latest' || inputs.host == 'Windows' && 'windows-latest' || 'ubuntu-latest' }}
+    steps:
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ inputs.target }}-ccache-${{ runner.os }}
+          max-size: 999M

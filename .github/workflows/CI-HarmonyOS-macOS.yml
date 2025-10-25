@@ -20,17 +20,20 @@ permissions:
   actions: write
 
 jobs:
+  baseSetup:
+    uses: ./.github/workflows/Base-Setup.yml
+    with:
+      host: macOS
+      target: harmonyos
+
   build:
+    needs: baseSetup
     runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-
-    - name: Setup CMake & Ninja
-      run: |
-        brew install cmake ninja | true
 
     - name: Cache HarmonyOS SDK
       id: cache-ohos-sdk
@@ -53,12 +56,6 @@ jobs:
     - name: Set HarmonyOS Environment
       run: |
         echo "OHOS_ROOT=${{ github.workspace }}/sdk/packages/ohos-sdk/darwin/native" >> $GITHUB_ENV
-
-    - name: Setup ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: harmonyos-ccache-${{ runner.os }}
-        max-size: 500M
 
     - name: Build
       run: |
