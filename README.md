@@ -18,7 +18,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 ## Architecture
 
-![Arch](/res/arch.svg)
+<img src="/res/arch.svg" width="555px"/>
 
 ## Progress
 
