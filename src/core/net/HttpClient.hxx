@@ -40,4 +40,4 @@ namespace DynXX::Core::Net {
 
         ~HttpClient();
     };
-}
+}  // namespace DynXX::Core::Net

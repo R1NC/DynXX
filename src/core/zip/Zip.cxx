@@ -98,16 +98,19 @@ namespace {
             [bufferSize, inFile]
             {
                 Bytes in;
-                std::fread(in.data(), sizeof(byte), bufferSize, inFile);
+                const auto ret = std::fread(in.data(), sizeof(byte), bufferSize, inFile);
+                dynxxLogPrintF(Debug, "Z read ret: {}", ret);
                 return in;
             },
             [outFile](const Bytes &bytes)
             {
-                std::fwrite(bytes.data(), sizeof(byte), bytes.size(), outFile);
+                const auto ret = std::fwrite(bytes.data(), sizeof(byte), bytes.size(), outFile);
+                dynxxLogPrintF(Debug, "Z write ret: {}", ret);
             },
             [outFile]
             {
-                std::fflush(outFile);
+                const auto ret = std::fflush(outFile);
+                dynxxLogPrintF(Debug, "Z fflush ret: {}", ret); 
             }
         );
     }
@@ -117,12 +120,12 @@ namespace {
     template <typename T>
     Bytes processBytes(size_t bufferSize, const Bytes &in, ZBase<T> &zb)
     {
-        long pos(0);
+        int64_t pos(0);
         Bytes outBytes;
         if (!process(zb, bufferSize,
             [bufferSize, &in, &pos]
             {
-                const auto len = static_cast<long>(std::min<size_t>(bufferSize, in.size() - pos));
+                const auto len = static_cast<int64_t>(std::min<size_t>(bufferSize, in.size() - pos));
                 Bytes bytes(in.begin() + pos, in.begin() + pos + len);
                 pos += len;
                 return bytes;

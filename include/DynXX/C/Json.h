@@ -94,7 +94,7 @@ DynXXJsonNodeHandle dynxx_json_decoder_read_child(DynXXJsonDecoderHandle decoder
  * @param node JSON node, `nullptr` represents the root
  * @return Children count
  */
-int dynxx_json_decoder_read_children_count(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node);
+size_t dynxx_json_decoder_read_children_count(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node);
 
 /**
  * @brief Read next node

@@ -17,7 +17,7 @@ namespace DynXX::Core::Store::SQLite {
              */
             Connection() = delete;
 
-            explicit Connection(const CidT cid, sqlite3 *db);
+            explicit Connection(CidT cid, sqlite3 *db);
 
             Connection(const Connection &) = delete;
 
@@ -102,6 +102,10 @@ namespace DynXX::Core::Store::SQLite {
          * @brief Initialize SQLite process
          */
         SQLiteStore();
+        SQLiteStore(const SQLiteStore &) = delete;
+        SQLiteStore &operator=(const SQLiteStore &) = delete;
+        SQLiteStore(SQLiteStore &&) = delete;
+        SQLiteStore &operator=(SQLiteStore &&) = delete;
 
         std::weak_ptr<SQLite::Connection> open(const std::string &file);
 
@@ -110,4 +114,4 @@ namespace DynXX::Core::Store::SQLite {
          */
         ~SQLiteStore();
     };
-}
+}  // namespace DynXX::Core::Store::SQLite

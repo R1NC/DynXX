@@ -65,4 +65,4 @@ namespace DynXX::Core::Store {
         std::mutex mutex;
         std::unordered_map<CidT, std::shared_ptr<ConnT>> conns;
     };
-}
+}  // namespace DynXX::Core::Store

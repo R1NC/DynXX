@@ -14,8 +14,8 @@ namespace {
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Concurrent;
 
-    constexpr auto LuaCallRetryCount = 10uz;
-    constexpr auto LuaCallSleepMicroSecs = 100 * 1000uz;
+    constexpr auto LuaCallRetryCount = 10UZ;
+    constexpr auto LuaCallSleepMicroSecs = 100 * 1000UZ;
     
 #if defined(USE_LIBUV)
     struct LuaTimer
@@ -58,7 +58,7 @@ namespace {
 
     void _loop_stop()
     {
-        if (!uv_loop_alive(uv_default_loop())) [[unlikely]]
+        if (uv_loop_alive(uv_default_loop()) == 0) [[unlikely]]
         {
             return;
         }
@@ -181,8 +181,7 @@ void LuaVM::bindFunc(std::string_view funcName, int (*funcPointer)(lua_State *))
 bool LuaVM::loadFile(std::string_view file)
 {
     const auto lock = std::scoped_lock(this->vmMutex);
-    const auto L = this->lstate.get();
-    if (const auto ret = luaL_dofile(L, file.data()); ret != LUA_OK) [[unlikely]]
+    if (const auto L = this->lstate.get(); !luaL_dofile(L, file.data())) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`luaL_dofile` error:");
         return false;
@@ -194,8 +193,7 @@ bool LuaVM::loadFile(std::string_view file)
 bool LuaVM::loadScript(std::string_view script)
 {
     const auto lock = std::scoped_lock(this->vmMutex);
-    const auto L = this->lstate.get();
-    if (const auto ret = luaL_dostring(L, script.data()); ret != LUA_OK) [[unlikely]]
+    if (const auto L = this->lstate.get(); !luaL_dostring(L, script.data())) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`luaL_dostring` error:");
         return false;

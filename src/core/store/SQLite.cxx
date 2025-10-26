@@ -8,7 +8,7 @@ namespace
 {
     using enum DynXXLogLevelX;
     
-    #define PRINT_ERR(rc, db) dynxxLogPrint(Error, std::string(db ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
+    #define PRINT_ERR(rc, db) dynxxLogPrint(Error, std::string(db != nullptr ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
 
     constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
 }
@@ -25,10 +25,12 @@ std::weak_ptr<Connection> SQLiteStore::open(const std::string &file)
 {
     const auto cid = genCid(file);
     return ConnPool<Connection>::open(cid, [cid, &file]() {
-        sqlite3 *db;
+        sqlite3 *db{nullptr};
         if (const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK || db == nullptr) [[unlikely]] {
             PRINT_ERR(rc, db);
-            if (db) sqlite3_close(db);
+            if (db != nullptr) {
+                sqlite3_close(db);
+            }
             return std::shared_ptr<Connection>(nullptr);
         }
         return std::make_shared<Connection>(cid, db);
@@ -40,7 +42,7 @@ SQLiteStore::~SQLiteStore()
     sqlite3_shutdown();
 }
 
-Connection::Connection(const CidT cid, sqlite3 *db) : _cid(cid), db{db}
+Connection::Connection(CidT cid, sqlite3 *db) : _cid(cid), db{db}
 {
     if (!this->execute(sEnableWAL)) [[unlikely]]
     {
@@ -81,7 +83,7 @@ std::unique_ptr<Connection::QueryResult> Connection::query(std::string_view sql)
         dynxxLogPrint(Error, "SQLite.query DB nullptr");
         return nullptr;
     }
-    sqlite3_stmt *stmt;
+    sqlite3_stmt *stmt{nullptr};
 
     const auto sqlOp = nullTerminatedCStr(sql);
     if (!sqlOp.has_value()) [[unlikely]]
@@ -136,7 +138,7 @@ std::optional<Any> Connection::QueryResult::readColumn(std::string_view column) 
         return std::nullopt;
     }
     const auto colCount = sqlite3_column_count(this->stmt);
-    for (size_t i(0); i < colCount; i++)
+    for (int i(0); i < colCount; i++)
     {
         const auto columnOp = nullTerminatedCStr(column);
         if (!columnOp.has_value()) [[unlikely]]

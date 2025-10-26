@@ -6,6 +6,8 @@
 #include <utility>
 #include <array>
 
+#include "quickjs.h"
+
 #include <DynXX/CXX/Log.hxx>
 #include "../util/MemUtil.hxx"
 #include "../util/TimeUtil.hxx"
@@ -17,10 +19,10 @@ namespace
                                          "globalThis.std = std;\n"
                                          "globalThis.os = os;\n";
 
-    constexpr auto JSLoopTimeoutMicroSecs = 1 * 1000uz;
-    constexpr auto JSCallRetryCount = 10uz;
-    constexpr auto JSCallSleepMicroSecs = 100 * 1000uz;
-    constexpr auto JSAwaitMaxTimeMicroSecs = 15 * 1000 * 1000uz;
+    constexpr auto JSLoopTimeoutMicroSecs = 1UZ * 1000UZ;
+    constexpr auto JSCallRetryCount = 10UZ;
+    constexpr auto JSCallSleepMicroSecs = 100UZ * 1000UZ;
+    constexpr auto JSAwaitMaxTimeMicroSecs = 15UZ * 1000UZ * 1000UZ;
 
     using enum DynXXLogLevelX;
     using namespace DynXX::Core::Util;
@@ -42,10 +44,10 @@ namespace
         const auto exception_val = JS_GetException(ctx);
 
         printJsErr(ctx, exception_val);
-        if (JS_IsError(ctx, exception_val))
+        if (JS_IsError(ctx, exception_val) == 1)
         {
             const auto val = JS_GetPropertyStr(ctx, exception_val, "stack");
-            if (!JS_IsUndefined(val))
+            if (JS_IsUndefined(val) == 0)
             {
                 printJsErr(ctx, val);
             }
@@ -61,7 +63,7 @@ namespace
     {
         const auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
         const auto jEvalRet = JS_Eval(ctx, script.data(), script.size(), name.data(), flags);
-        if (JS_IsException(jEvalRet)) [[unlikely]]
+        if (JS_IsException(jEvalRet) == 1) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_Eval failed ->");
             dumpJsErr(ctx);
@@ -76,7 +78,7 @@ namespace
                 JS_FreeValue(ctx, jEvalRet);
                 return false;
             }
-            js_module_set_import_meta(ctx, jEvalRet, false, true);
+            js_module_set_import_meta(ctx, jEvalRet, 0, 1);
             const auto jEvalFuncRet = JS_EvalFunction(ctx, jEvalRet);
             JS_FreeValue(ctx, jEvalFuncRet);
             // this->jValueCache.insert(std::move(jEvalRet));//Can not free here, or QJS may crash
@@ -94,7 +96,7 @@ namespace
     JSContext *_newContext(JSRuntime *rt)
     {
         const auto ctx = JS_NewContext(rt);
-        if (!ctx) [[unlikely]]
+        if (ctx == nullptr) [[unlikely]]
         {
             return nullptr;
         }
@@ -113,7 +115,7 @@ namespace
     class JSPromise
     {
     private:
-        std::weak_ptr<JSContext> ctx{};
+        std::weak_ptr<JSContext> ctx;
         JSValue p{JS_UNDEFINED};
         std::array<JSValue, 2> f{JS_UNDEFINED, JS_UNDEFINED};
     
@@ -130,7 +132,7 @@ namespace
                 return;
             }
             this->p = JS_NewPromiseCapability(weakCtx.get(), this->f.data());
-            if (JS_IsException(this->p)) [[unlikely]] {
+            if (JS_IsException(this->p) == 1) [[unlikely]] {
                 dynxxLogPrint(Error, "JSVM_NewPromise failed ->");
                 dumpJsErr(weakCtx.get());
                 JS_FreeValue(weakCtx.get(), this->p);
@@ -144,7 +146,7 @@ namespace
                 return;
             }
             const auto jCallRet = JS_Call(weakCtx.get(), this->f[0], JS_UNDEFINED, 1, &ret);
-            if (JS_IsException(jCallRet)) [[unlikely]] {
+            if (JS_IsException(jCallRet) == 1) [[unlikely]] {
                 dynxxLogPrint(Error, "JSVM_CallPromise failed ->");
                 dumpJsErr(weakCtx.get());
             }
@@ -175,7 +177,7 @@ namespace DynXX::Core::VM {
 
 // JSVM Internal
 
-JSValue JSVM::jAwait(const JSValue obj)
+JSValue JSVM::jAwait(JSValue obj)
 {
     if (JS_VALUE_GET_TAG(obj) != JS_TAG_OBJECT) [[unlikely]] {
         return obj;
@@ -270,7 +272,7 @@ bool JSVM::bindFunc(std::string_view funcJ, JSCFunction *funcC)
     auto res = true;
     const auto ctx = this->context.get();
     const auto jFunc = JS_NewCFunction(ctx, funcC, funcJ.data(), 1);
-    if (JS_IsException(jFunc)) [[unlikely]]
+    if (JS_IsException(jFunc) == 1) [[unlikely]]
     {
         dynxxLogPrint(Error, "JS_NewCFunction failed ->");
         dumpJsErr(ctx);
@@ -278,7 +280,7 @@ bool JSVM::bindFunc(std::string_view funcJ, JSCFunction *funcC)
     }
     else [[likely]]
     {
-        if (!JS_DefinePropertyValueStr(ctx, this->jGlobal, funcJ.data(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE)) [[unlikely]]
+        if (JS_DefinePropertyValueStr(ctx, this->jGlobal, funcJ.data(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE) == 0) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_DefinePropertyValueStr failed ->");
             dumpJsErr(ctx);
@@ -348,7 +350,7 @@ bool JSVM::loadScript(std::string_view script, std::string_view name, bool isMod
     return _loadScript(this->context.get(), script, name, isModule);
 }
 
-bool JSVM::loadBinary(BytesView bytes, bool isModule) {
+bool JSVM::loadBinary(BytesView bytes, [[maybe_unused]] bool isModule) {
     const auto lock = std::scoped_lock(this->vmMutex);
     this->beforeLoad();
     return js_std_eval_binary(this->context.get(), bytes.data(), bytes.size(), 0);
@@ -373,7 +375,7 @@ std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_vie
 
         auto jRes = JS_Call(ctx, jFunc, this->jGlobal, argv.size(), argv.data());
 
-        if (JS_IsException(jRes)) [[unlikely]]
+        if (JS_IsException(jRes) == 0) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_Call failed ->");
             dumpJsErr(ctx);

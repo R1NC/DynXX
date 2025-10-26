@@ -26,4 +26,4 @@ namespace DynXX::Core::Util::Type {
         std::memcpy(ncs, cs, len);
         return ncs;
     }
-}
+}  // namespace DynXX::Core::Util::Type

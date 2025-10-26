@@ -4,7 +4,7 @@ namespace DynXX::Core::Concurrent {
 
 void SpinLock::lock() 
 {
-    while (lockFlag.exchange(true, std::memory_order_acquire));
+    while (lockFlag.exchange(true, std::memory_order_acquire)) {};
 }
 
 void SpinLock::unlock() 

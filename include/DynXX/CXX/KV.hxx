@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../C/KV.h"
+#include "Types.hxx"
 
 DynXXKVConnHandle dynxxKVOpen(const std::string &_id);
 

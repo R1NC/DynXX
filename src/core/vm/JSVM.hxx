@@ -124,6 +124,10 @@ namespace DynXX::Core::VM {
          * Create JS VM
          */
         JSVM();
+        JSVM(const JSVM &) = delete;
+        JSVM &operator=(const JSVM &) = delete;
+        JSVM(JSVM &&) = delete;
+        JSVM &&operator=(JSVM &&) = delete;
 
         /**
          * @brief Export C func for JS
@@ -204,8 +208,8 @@ namespace DynXX::Core::VM {
 
         JSValue newPromise(std::function<JSValue()> &&jf);
 
-        JSValue jAwait(const JSValue obj);
+        JSValue jAwait(JSValue obj);
 
         void beforeLoad();
     };
-}
+}  // namespace DynXX::Core::VM

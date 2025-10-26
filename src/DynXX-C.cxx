@@ -7,14 +7,14 @@ namespace {
     using namespace DynXX::Core::Util::Type;
 
     byte *handleOutBytes(BytesView bytes, size_t *outLen = nullptr) {
-        if (outLen) [[likely]] {
+        if (outLen != nullptr) [[likely]] {
             *outLen = bytes.size();
         }
         return dupBytes(bytes);
     }
 
     const char **handleOutCharsArray(const std::vector<std::string> &sv, size_t maxLen, size_t *outLen = nullptr) {
-        if (outLen) [[likely]] {
+        if (outLen != nullptr) [[likely]] {
             *outLen = sv.size();
         }
         return dupCharsArray(sv, maxLen);
@@ -302,7 +302,7 @@ const char *dynxx_net_http_request(const char *url, const char *params, DynXXHtt
 
     const auto t = dynxxNetHttpRequest(url,
                                          static_cast<DynXXHttpMethodX>(method),
-                                         params ? params : "",
+                                         params != nullptr ? params : "",
                                          {},
                                          vHeaders, vFormFieldName, vFormFieldMime, vFormFieldData,
                                          cFILE, file_size, timeout);
@@ -539,7 +539,7 @@ DynXXJsonNodeHandle dynxx_json_decoder_read_child(DynXXJsonDecoderHandle decoder
 }
 
 DYNXX_EXPORT_AUTO
-int dynxx_json_decoder_read_children_count(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
+size_t dynxx_json_decoder_read_children_count(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node) {
     return dynxxJsonDecoderReadChildrenCount(decoder, node);
 }
 

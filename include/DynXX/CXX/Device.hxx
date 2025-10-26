@@ -2,7 +2,7 @@
 
 #include "Types.hxx"
 
-enum class DynXXDeviceTypeX: int {
+enum class DynXXDeviceTypeX: uint8_t {
     Unknown,
     Android,
     ApplePhone,
@@ -15,7 +15,7 @@ enum class DynXXDeviceTypeX: int {
     Linux
 };
 
-enum class DynXXDeviceCpuArchX: int {
+enum class DynXXDeviceCpuArchX: uint8_t {
     Unknown,
     X86,
     X86_64,

@@ -68,4 +68,4 @@ class PtrCache final {
         mutable std::shared_mutex mutex;
 };
 
-}
+}  // namespace DynXX::Core::Util::Mem

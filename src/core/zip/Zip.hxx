@@ -12,7 +12,7 @@ namespace DynXX::Core::Z {
     
     class ZException : public std::runtime_error {
     public:
-        const int ret{Z_OK};
+        int ret{Z_OK};
         explicit ZException(int ret, const std::string& msg): std::runtime_error(msg), ret(ret) {}
     };
     
@@ -53,6 +53,11 @@ namespace DynXX::Core::Z {
         /// @throws `std::invalid_argument` & `ZException`
         explicit Zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format) noexcept(false);
 
+        Zip() = delete;
+        Zip(const Zip &) = delete;
+        Zip &operator=(const Zip &) = delete;
+        Zip(Zip &&) = delete;
+        Zip &operator=(Zip &&) = delete;
         ~Zip() override;
 
     private:
@@ -66,6 +71,11 @@ namespace DynXX::Core::Z {
         /// @throws `std::invalid_argument` & `ZException`
         explicit UnZip(size_t bufferSize, DynXXZFormatX format) noexcept(false);
 
+        UnZip() = delete;
+        UnZip(const UnZip &) = delete;
+        UnZip &operator=(const UnZip &) = delete;
+        UnZip(UnZip &&) = delete;
+        UnZip &operator=(UnZip &&) = delete;
         ~UnZip() override;
 
     private:
@@ -89,4 +99,4 @@ namespace DynXX::Core::Z {
     Bytes zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, const Bytes &bytes);
 
     Bytes unzip(size_t bufferSize, DynXXZFormatX format, const Bytes &bytes);
-}
+}  // namespace DynXX::Core::Z

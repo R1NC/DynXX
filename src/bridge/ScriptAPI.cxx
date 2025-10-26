@@ -632,7 +632,7 @@ double dynxx_kv_read_floatS(std::string_view json)
     const auto k = parser.str("k");
     if (conn == 0 || k == std::nullopt)
     {
-        return false;
+        return 0;
     }
 
     const auto f = dynxxKVReadFloat(conn, k.value());

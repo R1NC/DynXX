@@ -14,4 +14,4 @@ namespace DynXX::Core::Device {
     std::string osVersion();
 
     DynXXDeviceCpuArchX cpuArch();
-}
+}  // namespace DynXX::Core::Device

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Types.hxx"
+#include <cstdio>
 
 Bytes dynxxCryptoRand(size_t len);
 
@@ -14,7 +15,7 @@ Bytes dynxxCryptoAesGcmEncrypt(BytesView in, BytesView key, BytesView initVector
 Bytes dynxxCryptoAesGcmDecrypt(BytesView in, BytesView key, BytesView initVector, size_t tagBits,
                                 BytesView aad = {});
 
-enum class DynXXCryptoRSAPaddingX : int {
+enum class DynXXCryptoRSAPaddingX : uint8_t {
     PKCS1 = 1,
     SSLV23 = 2,
     NONE = 3,

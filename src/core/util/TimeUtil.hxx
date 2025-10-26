@@ -26,4 +26,4 @@ inline uint64_t nowInNanoSecs()
     return castNow<std::chrono::high_resolution_clock, std::chrono::nanoseconds>();
 }
 
-}
+}  // namespace DynXX::Core::Util::Time

@@ -29,7 +29,7 @@ namespace DynXX::Core::Concurrent {
 #endif
         Daemon {
     protected:
-        explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; }, size_t timeoutMicroSecs = 100);
+        explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; }, size_t timeoutMicroSecs = 100UZ);
 
         template<RunnableT T>
         void update(T &&f) {
@@ -40,14 +40,12 @@ namespace DynXX::Core::Concurrent {
             this->loopCondition.notify_one();
         }
 
+    public:
         Daemon() = delete;
         Daemon(const Daemon &) = delete;
         Daemon &operator=(const Daemon &) = delete;
         Daemon(Daemon &&) = delete;
         Daemon &operator=(Daemon &&) = delete;
-
-    public:
-
         virtual ~Daemon();
 
     private:
@@ -61,4 +59,4 @@ namespace DynXX::Core::Concurrent {
         std::atomic<bool> shouldStop{false};
 #endif
     };
-}
+}  // namespace DynXX::Core::Concurrent

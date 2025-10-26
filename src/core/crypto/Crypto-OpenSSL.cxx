@@ -257,13 +257,14 @@ namespace
     }
 
     struct Base64CharValidator {
+        static constexpr auto validTableSize = 256;
         static constexpr size_t charIdx(char c) noexcept {
             //The range of byte(unsigned char) is just [0, 255], same as the size of validTable!
             return static_cast<byte>(c);
         }
         
-        static constexpr std::array<bool, 256> createValidTable() noexcept {
-            std::array<bool, 256> table{};
+        static constexpr std::array<bool, validTableSize> createValidTable() noexcept {
+            std::array<bool, validTableSize> table{};
             constexpr std::string_view validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
             for (const auto c : validChars) {
                 table[charIdx(c)] = true;
@@ -330,13 +331,13 @@ Bytes AES::encrypt(BytesView inBytes, BytesView keyBytes)
 
     AES_KEY aes_key;
 
-    if (const auto ret = AES_set_encrypt_key(keyBytes.data(), keyBytes.size() * 8, &aes_key); ret != 0) [[unlikely]]
+    if (const auto ret = AES_set_encrypt_key(keyBytes.data(), static_cast<int>(keyBytes.size() * 8), &aes_key); ret != 0) [[unlikely]]
     {
         dynxxLogPrintF(Error, "AES_set_encrypt_key failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
     
-    for (auto offset(0z); offset < outLen; offset += AES_BLOCK_SIZE)
+    for (auto offset(0UZ); offset < outLen; offset += AES_BLOCK_SIZE)
     {
         AES_encrypt(fixedIn.data() + offset, out.data() + offset, &aes_key);
     }
@@ -358,13 +359,13 @@ Bytes AES::decrypt(BytesView inBytes, BytesView keyBytes)
     Bytes out(inLen, 0);
 
     AES_KEY aes_key;
-    if (const auto ret = AES_set_decrypt_key(keyBytes.data(), keyBytes.size() * 8, &aes_key); ret != 0) [[unlikely]]
+    if (const auto ret = AES_set_decrypt_key(keyBytes.data(), static_cast<int>(keyBytes.size() * 8), &aes_key); ret != 0) [[unlikely]]
     {
         dynxxLogPrintF(Error, "AES_set_decrypt_key failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    for (auto offset(0z); offset < inLen; offset += AES_BLOCK_SIZE)
+    for (auto offset(0UZ); offset < inLen; offset += AES_BLOCK_SIZE)
     {
         AES_decrypt(fixedIn.data() + offset, out.data() + offset, &aes_key);
     }
@@ -411,7 +412,7 @@ Bytes AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVecto
         return {};
     }
 
-    auto ret = cipher.init(true, aesGcmCipher(keyBytes.size()), nullptr, nullptr);
+    auto ret = cipher.init(true, aesGcmCipher(static_cast<int>(keyBytes.size())), nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmEncrypt EVP_EncryptInit_ex cipher failed, ret: {}, err: {}", ret, errMsg());
@@ -432,7 +433,7 @@ Bytes AES::gcmEncrypt(BytesView inBytes, BytesView keyBytes, BytesView initVecto
         return {};
     }
 
-    int len;
+    int len = 0;
 
     if (const auto aadLen = aadBytes.size(); aadLen > 0) [[likely]]
     {
@@ -491,7 +492,7 @@ Bytes AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes, BytesView initVecto
         return {};
     }
 
-    auto ret = cipher.init(false, aesGcmCipher(keyBytes.size()), nullptr, nullptr);
+    auto ret = cipher.init(false, aesGcmCipher(static_cast<int>(keyBytes.size())), nullptr, nullptr);
     if (ret != OK) [[unlikely]]
     {
         dynxxLogPrintF(Error, "aesGcmDecrypt EVP_DecryptInit_ex cipher failed, ret: {}, err: {}", ret, errMsg());
@@ -512,7 +513,7 @@ Bytes AES::gcmDecrypt(BytesView inBytes, BytesView keyBytes, BytesView initVecto
         return {};
     }
 
-    int len;
+    int len = 0;
 
     if (const auto aadLen = aadBytes.size(); aadLen > 0) [[likely]]
     {
@@ -592,7 +593,7 @@ std::string RSA::genKey(std::string_view base64, bool isPublic)
     
     using namespace std::string_view_literals;
     
-    constexpr auto ChunkSize = 64uz; 
+    constexpr auto ChunkSize = 64UZ; 
     constexpr auto DividerS = "-----"sv;
     constexpr auto BeginS = "BEGIN "sv;
     constexpr auto EndS = "END "sv;
@@ -627,7 +628,7 @@ std::string RSA::genKey(std::string_view base64, bool isPublic)
 RSA::Codec::Codec(BytesView key, DynXXCryptoRSAPaddingX padding) : padding(padding)
 {
     this->bmem = BIO_new_mem_buf(key.data(), static_cast<int>(key.size()));
-    if (!this->bmem) [[unlikely]]
+    if (this->bmem == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "Failed to create BIO mem buffer for RSA, err: {}", errMsg());
     }
@@ -692,7 +693,7 @@ RSA::Encrypt::Encrypt(BytesView key, DynXXCryptoRSAPaddingX padding) : Codec(key
         return;
     }
     this->rsa = PEM_read_bio_RSA_PUBKEY(this->bmem, nullptr, nullptr, nullptr);
-    if (!this->rsa) [[unlikely]]
+    if (this->rsa == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "RSA Failed to create public key, err: {}", errMsg());
     }
@@ -720,7 +721,7 @@ RSA::Decrypt::Decrypt(BytesView key, DynXXCryptoRSAPaddingX padding) : Codec(key
         return;
     }
     this->rsa = PEM_read_bio_RSAPrivateKey(this->bmem, nullptr, nullptr, nullptr);
-    if (!this->rsa) [[unlikely]]
+    if (this->rsa == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "RSA Failed to create private key, err: {}", errMsg());
     }
@@ -776,14 +777,14 @@ Bytes Base64::encode(BytesView inBytes, bool noNewLines)
     }
 
     const auto b64 = BIO_new(BIO_f_base64());
-    if (!b64) [[unlikely]]
+    if (b64 == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "Failed to create BIO for Base64, err: {}", errMsg());
         return {};
     }
 
     const auto bsmem = BIO_new(BIO_s_mem());
-    if (!bsmem) [[unlikely]]
+    if (bsmem == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "Failed to create BIO mem for Base64, err: {}", errMsg());
         BIO_free(b64);
@@ -796,7 +797,7 @@ Bytes Base64::encode(BytesView inBytes, bool noNewLines)
     }
     
     const auto bpush = BIO_push(b64, bsmem);
-    if (!bpush) [[unlikely]]
+    if (bpush == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "Failed to push BIO mem for Base64, err: {}", errMsg());
         BIO_free_all(b64);
@@ -857,14 +858,14 @@ Bytes Base64::decode(BytesView inBytes, bool noNewLines)
 
     // Create memory BIO with explicit length
     const auto bmem = BIO_new_mem_buf(in, static_cast<int>(inLen));
-    if (!bmem) [[unlikely]]
+    if (bmem == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "Failed to create BIO mem buffer for Base64, err: {}", errMsg());
         return {};
     }
 
     const auto b64 = BIO_new(BIO_f_base64());
-    if (!b64) [[unlikely]]
+    if (b64 == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "Failed to create BIO for Base64, err: {}", errMsg());
         BIO_free_all(bmem);
@@ -872,7 +873,7 @@ Bytes Base64::decode(BytesView inBytes, bool noNewLines)
     }
 
     const auto bpush = BIO_push(b64, bmem);
-    if (!bpush) [[unlikely]]
+    if (bpush == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "Failed to push BIO mem for Base64, err: {}", errMsg());
         BIO_free_all(b64);

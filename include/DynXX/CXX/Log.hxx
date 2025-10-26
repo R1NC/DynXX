@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include <functional>
 
 #include "Macro.hxx"
@@ -12,7 +13,7 @@
 #include <sstream>
 #endif
 
-enum class DynXXLogLevelX : int {
+enum class DynXXLogLevelX : uint8_t {
     Debug = 3,
     Info,
     Warn,

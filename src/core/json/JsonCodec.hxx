@@ -86,4 +86,4 @@ namespace DynXX::Core::Json {
 
         const cJSON *reinterpretNode(DynXXJsonNodeHandle node) const;
     };
-}
+}  // namespace DynXX::Core::Json

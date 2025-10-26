@@ -17,21 +17,21 @@ namespace {
 #define BIND_API(f) vm->bindFunc(#f, f##L)
 
     bool loadF(std::string_view f) {
-        if (!vm || f.empty()) [[unlikely]] {
+        if (vm == nullptr || f.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadFile(f);
     }
 
     bool loadS(std::string_view s) {
-        if (!vm || s.empty()) [[unlikely]] {
+        if (vm == nullptr || s.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadScript(s);
     }
 
     std::optional<std::string> call(std::string_view f, std::string_view ps) {
-        if (!vm || f.empty()) [[unlikely]] {
+        if (vm == nullptr || f.empty()) [[unlikely]] {
             return std::nullopt;
         }
         return vm->callFunc(f, ps);
@@ -154,7 +154,7 @@ DEF_API(dynxx_z_bytes_unzip, STRING)
 // Lua API - Binding
 
 static void registerFuncs() {
-    if (!vm) [[unlikely]] return;
+    if (vm == nullptr) [[unlikely]] return;
     BIND_API(dynxx_get_version);
     BIND_API(dynxx_root_path);
 
@@ -236,7 +236,7 @@ static void registerFuncs() {
 // Inner API
 
 void dynxx_lua_init() {
-    if (vm) [[unlikely]] {
+    if (vm != nullptr) [[unlikely]] {
         return;
     }
     vm = std::make_unique<LuaVM>();
@@ -244,7 +244,7 @@ void dynxx_lua_init() {
 }
 
 void dynxx_lua_release() {
-    if (!vm) [[unlikely]] {
+    if (vm == nullptr) [[unlikely]] {
         return;
     }
     vm.reset();

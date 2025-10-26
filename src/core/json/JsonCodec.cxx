@@ -95,12 +95,12 @@ std::optional<std::string> nodeReadName(DynXXJsonNodeHandle node)
 
 std::optional<std::string> nodeToStr(DynXXJsonNodeHandle node)
 {
-    if (!node) [[unlikely]]
+    if (node == 0) [[unlikely]]
     {
         return std::nullopt;
     }
     auto jsonChars = cJSON_PrintUnformatted(addr2ptr<cJSON>(node));
-    if (!jsonChars) [[unlikely]]
+    if (jsonChars == nullptr) [[unlikely]]
     {
         return std::nullopt;
     }
@@ -126,16 +126,10 @@ std::optional<std::string> jsonFromDictAny(const DictAny &dict)
             {
                 return cjsonNodes;
             }
-            else [[unlikely]]
-            {
-                dynxxLogPrintF(Error, "FAILED TO PARSE JSON VALUE: {}", s);
-                return nullptr;
-            }
+            dynxxLogPrintF(Error, "FAILED TO PARSE JSON VALUE: {}", s);
+            return nullptr;
         }
-        else
-        {
-            return cJSON_CreateString(s.c_str());
-        }
+        return cJSON_CreateString(s.c_str());
     };
 
     for (const auto &[k, v] : dict) 
@@ -148,7 +142,7 @@ std::optional<std::string> jsonFromDictAny(const DictAny &dict)
             }
         }, v)) [[likely]]
         {
-            if (!cJSON_AddItemToObject(cjson, k.c_str(), node)) [[unlikely]]
+            if (cJSON_AddItemToObject(cjson, k.c_str(), node) == 0) [[unlikely]]
             {
                 dynxxLogPrintF(Error, "FAILED TO ADD JSON VALUE: {}", k);
                 cJSON_Delete(node);
@@ -167,7 +161,7 @@ std::optional<DictAny> jsonToDictAny(const std::string &json)
         return std::nullopt;
     }
     const auto cjson = cJSON_Parse(json.c_str());
-    if (!cjson) [[unlikely]]
+    if (cjson == nullptr) [[unlikely]]
     {
         return std::nullopt;
     }

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Types.hxx"
+#include <cstdio>
 
-constexpr size_t DynXXHttpDefaultTimeout = 15 * 1000;
+constexpr auto DynXXHttpDefaultTimeout = 15 * 1000;
 
-enum class DynXXHttpMethodX : int {
+enum class DynXXHttpMethodX : uint8_t {
     Get,
     Post,
     Put,

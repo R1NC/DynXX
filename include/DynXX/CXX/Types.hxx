@@ -4,6 +4,7 @@
 
 #include <string.h>
 
+#include <cstdint>
 #include <cstring>
 #include <string_view>
 #include <string>
@@ -318,9 +319,9 @@ std::string makeStr(const T *ptr, size_t len = 0) {
 
 // C String Utils
 
-inline std::optional<const char*> nullTerminatedCStr(std::string_view sv) {
-    if (sv.empty() || !sv.back()) [[unlikely]] {
+inline std::optional<const char*> nullTerminatedCStr(std::string_view str) {
+    if (str.empty()) [[unlikely]] {
         return std::nullopt;
     }
-    return sv.data();
+    return str.data();
 }

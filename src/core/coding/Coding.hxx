@@ -22,4 +22,4 @@ namespace DynXX::Core::Coding {
     std::string strTrim(std::string_view str);
 
     std::string strEscapeQuotes(std::string_view str);
-}
+}  // namespace DynXX::Core::Coding

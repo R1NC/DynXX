@@ -37,7 +37,7 @@ namespace
     std::mutex _mutex;
 
     constexpr auto TAG = "DYNXX";
-    constexpr auto MAX_LEN = 1023uz;
+    constexpr auto MAX_LEN = 1023UZ;
 
     bool isDebug() {
         return _level == Debug;

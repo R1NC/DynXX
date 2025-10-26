@@ -24,28 +24,28 @@ namespace {
 #define BIND_API(f) vm->bindFunc(#f, f##J)
 
     bool loadF(std::string_view file, bool isModule) {
-        if (!vm || file.empty()) [[unlikely]] {
+        if (vm == nullptr || file.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadFile(file, isModule);
     }
 
     bool loadS(std::string_view script, std::string_view name, bool isModule) {
-        if (!vm || script.empty() || name.empty()) [[unlikely]] {
+        if (vm == nullptr || script.empty() || name.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadScript(script, name, isModule);
     }
 
     bool loadB(BytesView bytes, bool isModule) {
-        if (!vm || bytes.empty()) [[unlikely]] {
+        if (vm == nullptr || bytes.empty()) [[unlikely]] {
             return false;
         }
         return vm->loadBinary(bytes, isModule);
     }
 
     std::optional<std::string> call(std::string_view func, std::string_view params, bool await) {
-        if (!vm || func.empty()) [[unlikely]] {
+        if (vm == nullptr || func.empty()) [[unlikely]] {
             return std::nullopt;
         }
         return vm->callFunc(func, params, await);
@@ -112,7 +112,7 @@ const char *dynxx_js_call(const char *func, const char *params, bool await) {
     if (func == nullptr) [[unlikely]] {
         return "";
     }
-    const auto s = dynxxJsCall(func, params ? params : "", await).value_or("");
+    const auto s = dynxxJsCall(func, params != nullptr ? params : "", await).value_or("");
     return dupStr(s);
 }
 
@@ -205,7 +205,7 @@ DEF_API_ASYNC(dynxx_z_bytes_unzip, STRING)
 // JS API - Binding
 
 static void registerFuncs() {
-    if (!vm) [[unlikely]] return;
+    if (vm == nullptr) [[unlikely]] return;
     BIND_API(dynxx_call_platform);
 
     BIND_API(dynxx_get_version);
@@ -289,7 +289,7 @@ static void registerFuncs() {
 // Inner API
 
 void dynxx_js_init() {
-    if (vm) [[unlikely]] {
+    if (vm != nullptr) [[unlikely]] {
         return;
     }
     vm = std::make_shared<JSVM>();
@@ -297,7 +297,7 @@ void dynxx_js_init() {
 }
 
 void dynxx_js_release() {
-    if (!vm) [[unlikely]] {
+    if (vm == nullptr) [[unlikely]] {
         return;
     }
     vm.reset();

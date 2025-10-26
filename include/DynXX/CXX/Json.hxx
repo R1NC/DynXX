@@ -5,7 +5,7 @@
 #include "Types.hxx"
 #include "../C/Json.h"
 
-enum class DynXXJsonNodeTypeX : int {
+enum class DynXXJsonNodeTypeX : uint8_t {
     Unknown,
     Object,
     Array,

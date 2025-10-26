@@ -40,7 +40,7 @@ KVStore::~KVStore()
     MMKV::onExit();
 }
 
-Connection::Connection(const CidT cid, MMKV *kv) : _cid(cid), kv(kv)
+Connection::Connection(CidT cid, MMKV *kv) : _cid(cid), kv(kv)
 {
     MMKV::setLogLevel(MMKVLogNone);
 }

@@ -30,7 +30,7 @@ namespace
 #if defined(HAVE_IFADDRS)
     bool checkIfaName(const ifaddrs *ifa, std::string_view name)
     {
-        if (!ifa || !ifa->ifa_name) [[unlikely]]
+        if (ifa == nullptr || ifa->ifa_name == nullptr) [[unlikely]]
         {
             return false;
         }
@@ -58,7 +58,7 @@ std::string macAddress()
 
     for (ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next)
     {
-        if (!ifa->ifa_addr) continue;
+        if (ifa->ifa_addr == nullptr) continue;
 
 #if defined(HAVE_IF_PACKET)
         if (ifa->ifa_addr->sa_family == AF_PACKET) 

@@ -14,7 +14,7 @@ namespace DynXX::Core::Store::KV {
         public:
             Connection() = default;
 
-            explicit Connection(const CidT cid, MMKV *kv);
+            explicit Connection(CidT cid, MMKV *kv);
 
             Connection(const Connection &) = delete;
 
@@ -53,6 +53,10 @@ namespace DynXX::Core::Store::KV {
     class KVStore : public ConnPool<KV::Connection> {
     public:
         KVStore() = delete;
+        KVStore(const KVStore &) = delete;
+        KVStore &operator=(const KVStore &) = delete;
+        KVStore(KVStore &&) = delete;
+        KVStore &operator=(KVStore &&) = delete;
 
         explicit KVStore(const std::string &root);
 
@@ -60,4 +64,4 @@ namespace DynXX::Core::Store::KV {
 
         ~KVStore();
     };
-}
+}  // namespace DynXX::Core::Store::KV

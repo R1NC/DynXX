@@ -63,6 +63,10 @@ namespace DynXX::Core::VM {
          * @brief Create Lua environment
          */
         LuaVM();
+        LuaVM(const LuaVM &) = delete;
+        LuaVM &operator=(const LuaVM &) = delete;
+        LuaVM(LuaVM &&) = delete;
+        LuaVM &&operator=(LuaVM &&) = delete;
 
         /**
          * @brief Load Lua file
@@ -102,4 +106,4 @@ namespace DynXX::Core::VM {
     private:
         std::unique_ptr<lua_State, void(*)(lua_State*)> lstate;
     };
-}
+}  // namespace DynXX::Core::VM

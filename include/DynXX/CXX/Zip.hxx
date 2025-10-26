@@ -2,16 +2,17 @@
 
 #include "Types.hxx"
 #include "../C/Zip.h"
+#include <cstdio>
 
-constexpr auto DynXXZDefaultBufferSize = 16 * 1024uz;
+constexpr auto DynXXZDefaultBufferSize = 16 * 1024UZ;
 
-enum class DynXXZipCompressModeX : int {
+enum class DynXXZipCompressModeX : int8_t {
     Default = -1,
     PreferSpeed = 1,
     PreferSize = 9,
 };
 
-enum class DynXXZFormatX : int {
+enum class DynXXZFormatX : uint8_t {
     ZLib = 0,
     GZip = 1,
     Raw = 2,

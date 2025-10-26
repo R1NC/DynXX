@@ -1,3 +1,4 @@
+#include <cstdint>
 #if defined(USE_CURL)
 
 #include "HttpClient.hxx"
@@ -43,7 +44,7 @@ namespace
     public:
         Req() {
             this->curl = curl_easy_init();
-            if (!this->curl) [[unlikely]] {
+            if (this->curl == nullptr) [[unlikely]] {
                 dynxxLogPrint(Error, "HttpClient.Req init failed");
                 return;
             }
@@ -72,7 +73,7 @@ namespace
         }
         
         bool appendHeader(const char *string) {
-            if (!string) [[unlikely]] {
+            if (string == nullptr) [[unlikely]] {
                 dynxxLogPrint(Error, "HttpClient appendHeader invalid params");
                 return false;
             }
@@ -80,19 +81,18 @@ namespace
                 this->headers = newHeaders;
                 this->setOpt(CURLOPT_HTTPHEADER, this->headers);
                 return true;
-            } else [[unlikely]] {
-                dynxxLogPrintF(Error, "HttpClient appendHeader failed: {}", string);
-                return false;
             }
+            dynxxLogPrintF(Error, "HttpClient appendHeader failed: {}", string);
+            return false;
         }
 
         curl_mimepart *addMimePart() {
-            if (!this->mime) [[unlikely]] {
+            if (this->mime == nullptr) [[unlikely]] {
                 return nullptr;
             }
-            if (!this->mime) {
+            if (this->mime == nullptr) {
                 this->mime = curl_mime_init(this->curl);
-                if (!this->mime) [[unlikely]] {
+                if (this->mime == nullptr) [[unlikely]] {
                     dynxxLogPrint(Error, "HttpClient addMimePart init failed");
                     return nullptr;
                 }
@@ -102,7 +102,7 @@ namespace
         }
 
         bool addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, size_t dataLen) const {
-            if (!part || !name || !type || !dataP || dataLen == 0) [[unlikely]] {
+            if (part == nullptr || name == nullptr || type == nullptr || dataP == nullptr || dataLen == 0) [[unlikely]] {
                 dynxxLogPrint(Error, "HttpClient addMime invalid params");
                 return false;
             }
@@ -126,7 +126,7 @@ namespace
 
         template <typename T>
         bool setOpt(CURLoption option, T value) {
-            if (!this->curl) [[unlikely]]
+            if (this->curl == nullptr) [[unlikely]]
             {
                 dynxxLogPrint(Error, "HttpClient setOpt invalid curl");
                 return false;
@@ -139,7 +139,7 @@ namespace
         }
 
         bool perform() {
-            if (!this->curl) [[unlikely]]
+            if (this->curl == nullptr) [[unlikely]]
             {
                 dynxxLogPrint(Error, "HttpClient perform invalid curl");
                 return false;
@@ -153,7 +153,7 @@ namespace
 
         template <typename T>
         bool getInfo(CURLINFO info, T value) {
-            if (!this->curl) [[unlikely]]
+            if (this->curl == nullptr) [[unlikely]]
             {
                 dynxxLogPrint(Error, "HttpClient getInfo invalid curl");
                 return false;
@@ -170,6 +170,7 @@ namespace
         }
         
     private:
+        // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
         void moveImp(Req&& other) noexcept {
             this->curl = std::exchange(other.curl, nullptr);
             this->headers = std::exchange(other.headers, nullptr);
@@ -177,15 +178,15 @@ namespace
         }
 
         void cleanup() {
-            if (this->headers) {
+            if (this->headers != nullptr) {
                 curl_slist_free_all(this->headers);
                 this->headers = nullptr;
             }
-            if (this->mime) {
+            if (this->mime != nullptr) {
                 curl_mime_free(this->mime);
                 this->mime = nullptr;
             }
-            if (this->curl) [[likely]] {
+            if (this->curl != nullptr) {
                 curl_easy_cleanup(this->curl);
                 this->curl = nullptr;
             }
@@ -194,12 +195,12 @@ namespace
 
     size_t on_post_read(char *buffer, size_t size, size_t nmemb, RawPtr userp)
     {
-        if (!buffer || !userp) [[unlikely]]
+        if (buffer == nullptr || userp == nullptr) [[unlikely]]
         {
             return 0;
         }
         const auto pBytes = static_cast<Bytes *>(userp);
-        const auto len = static_cast<long>(std::min<size_t>(size * nmemb, pBytes->size()));
+        const auto len = static_cast<int64_t>(std::min<size_t>(size * nmemb, pBytes->size()));
         if (len > 0) [[likely]]
         {
             std::memcpy(buffer, pBytes->data(), len);
@@ -210,7 +211,7 @@ namespace
 
     size_t on_upload_read(char *buffer, size_t size, size_t nmemb, RawPtr userp)
     {
-        if (!buffer || !userp) [[unlikely]]
+        if (buffer == nullptr || userp == nullptr) [[unlikely]]
         {
             return 0;
         }
@@ -220,12 +221,12 @@ namespace
     }
 
     size_t on_download_write(const char *buffer, size_t size, size_t nmemb, RawPtr userp) {
-        if (!buffer || !userp) [[unlikely]]
+        if (buffer == nullptr || userp == nullptr) [[unlikely]]
         {
             return 0;
         }
         auto& file = *static_cast<std::ofstream*>(userp);
-        file.write(buffer, size * nmemb);
+        file.write(buffer, static_cast<int64_t>(size * nmemb));
         const auto ret = file.good() ? size * nmemb : 0;
         dynxxLogPrintF(Debug, "HttpClient write {} bytes to file", ret);
         return ret;
@@ -233,7 +234,7 @@ namespace
 
     size_t on_write_rsp_data(const char *buffer, size_t size, size_t nmemb, RawPtr userp)
     {
-        if (!buffer || !userp) [[unlikely]]
+        if (buffer == nullptr || userp == nullptr) [[unlikely]]
         {
             return 0;
         }
@@ -244,7 +245,7 @@ namespace
 
     size_t on_write_rsp_headers(const char *buffer, size_t size, size_t nitems, RawPtr userp)
     {
-        if (!buffer || !userp) [[unlikely]]
+        if (buffer == nullptr || userp == nullptr) [[unlikely]]
         {
             return 0;
         }
@@ -367,7 +368,7 @@ namespace
         {
             return false;
         } 
-        if (contentType) [[likely]]
+        if (contentType != nullptr) [[likely]]
         {
             rsp.contentType = contentType;
         }

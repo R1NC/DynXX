@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <memory>
 #include <sstream>
 
@@ -454,12 +455,12 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
 std::optional<std::string> DynXXHttpResponse::toJson() const {
     const auto cj = cJSON_CreateObject();
 
-    if (!cJSON_AddNumberToObject(cj, "code", this->code)) [[unlikely]] {
+    if (cJSON_AddNumberToObject(cj, "code", this->code) == 0) [[unlikely]] {
         cJSON_Delete(cj);
         return std::nullopt;
     }
 
-    if (!cJSON_AddStringToObject(cj, "contentType", this->contentType.c_str())) [[unlikely]] {
+    if (cJSON_AddStringToObject(cj, "contentType", this->contentType.c_str()) == 0) [[unlikely]] {
         cJSON_Delete(cj);
         return std::nullopt;
     }
@@ -469,20 +470,20 @@ std::optional<std::string> DynXXHttpResponse::toJson() const {
         if (k.empty() || v.empty()) [[unlikely]] {
             continue;
         }
-        if (!cJSON_AddStringToObject(cjHeaders, k.c_str(), v.c_str())) [[unlikely]] {
+        if (cJSON_AddStringToObject(cjHeaders, k.c_str(), v.c_str()) == 0) [[unlikely]] {
             cJSON_Delete(cjHeaders);
             cJSON_Delete(cj);
             return std::nullopt;
         }
     }
 
-    if (!cJSON_AddItemToObject(cj, "headers", cjHeaders)) [[unlikely]] {
+    if (cJSON_AddItemToObject(cj, "headers", cjHeaders) == 0) [[unlikely]] {
         cJSON_Delete(cjHeaders);
         cJSON_Delete(cj);
         return std::nullopt;
     }
 
-    if (!cJSON_AddStringToObject(cj, "data", this->data.empty() ? "" : this->data.c_str())) [[unlikely]] {
+    if (cJSON_AddStringToObject(cj, "data", this->data.empty() ? "" : this->data.c_str()) == 0) [[unlikely]] {
         cJSON_Delete(cj);
         return std::nullopt;
     }
@@ -627,8 +628,9 @@ void dynxxSQLiteQueryDrop(DynXXSQLiteQueryResultHandle query_result) {
 }
 
 void dynxxSQLiteClose(DynXXSQLiteConnHandle conn) {
-    if (conn == 0 || _sqlite == nullptr)
+    if (conn == 0 || _sqlite == nullptr) {
         return;
+    }
     const auto xconn = Mem::addr2ptr<SQLite::Connection>(conn);
     _sqlite->close(xconn->cid());
 }
@@ -730,8 +732,9 @@ void dynxxKVClear(DynXXKVConnHandle conn) {
 }
 
 void dynxxKVClose(DynXXKVConnHandle conn) {
-    if (conn == 0 || _kv == nullptr)
+    if (conn == 0 || _kv == nullptr) {
         return;
+    }
     const auto xconn = Mem::addr2ptr<KV::Connection>(conn);
     _kv->close(xconn->cid());
 }

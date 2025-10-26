@@ -1,14 +1,17 @@
 #pragma once
 
+#include <cstdio>
 #include <string>
 
 #if defined(USE_STD_FORMAT)
 #include <format>
 #endif
 
+#include <DynXX/CXX/Types.hxx>
+
 namespace DynXX::Core::Net::Util
         {
-            enum class NetType : int 
+            enum class NetType : uint8_t 
             {
                 Unknown,
                 Offline,
@@ -23,7 +26,7 @@ namespace DynXX::Core::Net::Util
 
             inline std::string formatMacAddress(const unsigned char* mac)
             {
-                if (!mac) [[unlikely]]
+                if (mac == nullptr) [[unlikely]]
                 {
                     return {};
                 }
@@ -51,4 +54,4 @@ namespace DynXX::Core::Net::Util
             std::string publicIpV4();
 
             std::string publicIpV6();
-}
+} // namespace DynXX::Core::Net::Util

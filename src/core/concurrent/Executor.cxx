@@ -50,7 +50,7 @@ Worker& Worker::operator>>(TaskT&& task)
 
 // - Executor
 
-Executor::Executor() : Executor(0uz)
+Executor::Executor() : Executor(0UZ)
 {
 }
 

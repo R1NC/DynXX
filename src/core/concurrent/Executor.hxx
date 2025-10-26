@@ -10,7 +10,10 @@ namespace DynXX::Core::Concurrent {
     class Worker final : public Daemon {
     public:
         Worker();
-
+        Worker(const Worker &) = delete;
+        Worker &operator=(const Worker &) = delete;
+        Worker(Worker &&) = delete;
+        Worker &operator=(Worker &&) = delete;
         ~Worker() override = default;
 
         Worker &operator>>(TaskT &&task);
@@ -36,9 +39,9 @@ namespace DynXX::Core::Concurrent {
         Executor &operator=(Executor &&) = delete;
 
     private:
-        size_t workerPoolCapacity{0uz};
+        size_t workerPoolCapacity{0UZ};
         std::vector<std::unique_ptr<Worker>> workerPool;
         mutable std::mutex mutex;
-        size_t workerIndex{0uz};
+        size_t workerIndex{0UZ};
     };
-}
+}  // namespace DynXX::Core::Concurrent

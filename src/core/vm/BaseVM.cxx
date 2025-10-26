@@ -7,7 +7,7 @@
 
 namespace
 {
-    constexpr auto SleepMicroSecs = 1000uz;
+    constexpr auto SleepMicroSecs = 1000UZ;
 
     using namespace DynXX::Core;
 }

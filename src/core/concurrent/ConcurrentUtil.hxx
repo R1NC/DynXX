@@ -12,7 +12,7 @@ namespace DynXX::Core::Concurrent {
 #if defined(__cpp_lib_hardware_interference_size)
             std::hardware_destructive_interference_size
 #else
-    64uz
+    64UZ
 #endif
     ;
 
@@ -50,7 +50,7 @@ namespace DynXX::Core::Concurrent {
     }
 
     template<TimedLockableT T>
-    [[nodiscard]] bool lockAutoRetry(T &mtx, size_t retryCount, size_t sleepMicroSecs = 1uz) {
+    [[nodiscard]] bool lockAutoRetry(T &mtx, size_t retryCount, size_t sleepMicroSecs = 1UZ) {
         auto locked = false;
         size_t count = 0;
         do {
@@ -68,4 +68,4 @@ namespace DynXX::Core::Concurrent {
         } while (count < retryCount);
         return false;
     }
-}
+}  // namespace DynXX::Core::Concurrent

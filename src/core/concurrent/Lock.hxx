@@ -24,4 +24,4 @@ private:
     std::atomic<bool> lockFlag = {false};
 };
 
-}
+}  // namespace DynXX::Core::Concurrent

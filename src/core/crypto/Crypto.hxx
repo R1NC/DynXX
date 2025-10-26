@@ -97,7 +97,7 @@ namespace DynXX::Core::Crypto {
         
             std::optional<Bytes> process(BytesView in) const override;
         };
-    }
+    }  // namespace RSA
 
     namespace Hash {
         Bytes md5(BytesView in);
@@ -114,4 +114,4 @@ namespace DynXX::Core::Crypto {
 
         Bytes decode(BytesView in, bool noNewLines = true);
     }
-}
+}  // namespace DynXX::Core::Crypto

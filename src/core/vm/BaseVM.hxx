@@ -32,4 +32,4 @@ namespace DynXX::Core::VM {
         std::atomic<bool> active{false};
         Concurrent::Executor executor;
     };
-}
+}  // namespace DynXX::Core::VM
