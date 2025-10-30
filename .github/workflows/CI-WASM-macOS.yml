@@ -12,7 +12,7 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/build-utils.sh'
-      - 'build-tools/build-WebAssembly.sh'
+      - 'build-tools/build-WASM.sh'
   workflow_dispatch:
 
 permissions:
@@ -44,13 +44,12 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ runner.workspace }}/vcpkg-binary-cache
-        key: vcpkg-binaries-wasm-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
+        key: vcpkg-binaries-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
       with:
         runVcpkgInstall: false
-        vcpkgJsonGlob: '**/vcpkg.json'
 
     - name: Build
       env:

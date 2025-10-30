@@ -23,9 +23,8 @@ export OUTPUT_EXE_PATH=${OUTPUT_PATH}/bin
 
 export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg"}
 export VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES:-"clear;files,$HOME/vcpkg-binary-cache,readwrite"}
-export VCPKG_TARGET=${LINUX_ABI}-linux
+export VCPKG_TARGET_TRIPLET=${LINUX_ABI}-linux
 VCPKG_LIB_PATH=$PWD/${BUILD_FOLDER}/vcpkg_installed/${VCPKG_TARGET}/lib
-"${VCPKG_ROOT}/vcpkg" --vcpkg-root "${VCPKG_ROOT}" install --triplet="${VCPKG_TARGET}"
 
 cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
