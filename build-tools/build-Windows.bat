@@ -2,17 +2,20 @@
 
 cd ..
 
-if not defined VCPKG_ROOT (
-    set "VCPKG_ROOT=%USERPROFILE%/vcpkg"
-)
-
 set "PLATFORM=Windows"
 set "BUILD_TYPE=Release"
 set "WINDOWS_ABI=x64"
 set "PRESET=%PLATFORM%-%BUILD_TYPE%"
 
-if not defined VCPKG_BINARY_SOURCES (
-    set "VCPKG_BINARY_SOURCES=clear;files,%USERPROFILE%/vcpkg-binary-cache,readwrite"
+if defined CI_VCPKG_ROOT (
+    set "VCPKG_ROOT=%CI_VCPKG_ROOT%"
+) else (
+    set "VCPKG_ROOT=%USERPROFILE%/vcpkg"
+)
+if defined CI_VCPKG_BINARY_SOURCES (
+    set "VCPKG_BINARY_SOURCES=%CI_VCPKG_BINARY_SOURCES%"
+) else (
+    set "VCPKG_BINARY_SOURCES=files,%USERPROFILE%/vcpkg-binary-cache,readwrite"
 )
 set "VCPKG_TARGET_TRIPLET=%WINDOWS_ABI%-windows-static"
 

@@ -12,7 +12,7 @@ fi
 PLATFORM=Android
 PRESET=${PLATFORM}-${BUILD_TYPE}
 
-NDK_ROOT=${NDK_ROOT:-"$HOME/Library/Android/sdk/ndk/29.0.14206865"}
+NDK_ROOT=${CI_NDK_ROOT:-"$HOME/Library/Android/sdk/ndk/29.0.14206865"}
 export ANDROID_NDK=$NDK_ROOT
 export ANDROID_NDK_HOME=$NDK_ROOT
 export ANDROID_ABI=arm64-v8a
@@ -25,8 +25,8 @@ export OUTPUT_LIB_PATH=${OUTPUT_PATH}/lib
 export OUTPUT_DLL_PATH=${OUTPUT_PATH}/share
 export OUTPUT_EXE_PATH=${OUTPUT_PATH}/bin
 
-export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg"}
-export VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES:-"clear;files,$HOME/vcpkg-binary-cache,readwrite"}
+export VCPKG_ROOT=${CI_VCPKG_ROOT:-"$HOME/dev/vcpkg"}
+export VCPKG_BINARY_SOURCES=${CI_VCPKG_BINARY_SOURCES:-"files,$HOME/vcpkg-binary-cache,readwrite"}
 export VCPKG_TARGET_TRIPLET=arm64-android
 VCPKG_LIB_PATH=$PWD/${BUILD_FOLDER}/vcpkg_installed/${VCPKG_TARGET}/lib
 

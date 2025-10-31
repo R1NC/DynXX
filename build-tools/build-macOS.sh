@@ -24,8 +24,8 @@ export OUTPUT_LIB_PATH=${OUTPUT_PATH}/lib
 export OUTPUT_DLL_PATH=${OUTPUT_PATH}/share
 export OUTPUT_EXE_PATH=${OUTPUT_PATH}/bin
 
-export VCPKG_ROOT=${VCPKG_ROOT:-"$HOME/dev/vcpkg"}
-export VCPKG_BINARY_SOURCES=${VCPKG_BINARY_SOURCES:-"clear;files,$HOME/vcpkg-binary-cache,readwrite"}
+export VCPKG_ROOT=${CI_VCPKG_ROOT:-"$HOME/dev/vcpkg"}
+export VCPKG_BINARY_SOURCES=${CI_VCPKG_BINARY_SOURCES:-"files,$HOME/vcpkg-binary-cache,readwrite"}
 export VCPKG_TARGET_TRIPLET=${APPLE_ABI}-osx
 VCPKG_LIB_PATH=$PWD/${BUILD_FOLDER}/vcpkg_installed/${VCPKG_TARGET}/lib
 

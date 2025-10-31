@@ -40,22 +40,23 @@ jobs:
       with:
         version: 3.1.65
 
-    - name: Cache vcpkg binaries
-      uses: actions/cache@v4
-      with:
-        path: ${{ runner.workspace }}/vcpkg-binary-cache
-        key: vcpkg-binaries-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
-
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
       with:
         runVcpkgInstall: false
 
+    - name: Cache vcpkg binary
+      id: cache-vcpkg
+      uses: actions/cache@v4
+      with:
+        path: ${{ github.workspace }}/vcpkg-binary-cache
+        key: vcpkg-binary-cache-wasm-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+
     - name: Build
       env:
-        VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-        VCPKG_BINARY_SOURCES: "clear;files,${{ runner.workspace }}/vcpkg-binary-cache,readwrite"
-        EMSCRIPTEN_ROOT: ${{ env.EMSDK }}/upstream/emscripten
+        CI_VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+        CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
+        CI_EMSCRIPTEN_ROOT: ${{ env.EMSDK }}/upstream/emscripten
       run: |
         cd build-tools
         chmod +x build-WASM.sh

@@ -12,7 +12,7 @@ fi
 PLATFORM=HarmonyOS
 PRESET=${PLATFORM}-${BUILD_TYPE}
 
-export OHOS_ROOT=${OHOS_ROOT:-"$HOME/Library/OpenHarmony/Sdk/20/native"}
+export OHOS_ROOT=${CI_OHOS_ROOT:-"$HOME/Library/OpenHarmony/Sdk/20/native"}
 export OHOS_ABI=arm64-v8a
 
 export BUILD_FOLDER=build.${PLATFORM}/${BUILD_TYPE}

@@ -34,22 +34,23 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-    
-    - name: Cache vcpkg binaries
-      uses: actions/cache@v4
-      with:
-        path: ${{ runner.workspace }}/vcpkg-binary-cache
-        key: vcpkg-binaries-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
       with:
         runVcpkgInstall: false
 
+    - name: Cache vcpkg binary
+      id: cache-vcpkg
+      uses: actions/cache@v4
+      with:
+        path: ${{ github.workspace }}/vcpkg-binary-cache
+        key: vcpkg-binary-cache-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+
     - name: Build
       env:
-        VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-        VCPKG_BINARY_SOURCES: "clear;files,${{ runner.workspace }}/vcpkg-binary-cache,readwrite"
+        CI_VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+        CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
       run: |
         cd build-tools
         chmod +x build-Linux.sh

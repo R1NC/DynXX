@@ -55,7 +55,7 @@ jobs:
 
     - name: Set HarmonyOS Environment
       run: |
-        echo "OHOS_ROOT=${{ github.workspace }}/sdk/packages/ohos-sdk/darwin/native" >> $GITHUB_ENV
+        echo "CI_OHOS_ROOT=${{ github.workspace }}/sdk/packages/ohos-sdk/darwin/native" >> $GITHUB_ENV
 
     - name: Build
       run: |
