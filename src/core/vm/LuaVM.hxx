@@ -12,6 +12,7 @@ DYNXX_EXTERN_C_END
 
 #include "BaseVM.hxx"
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DEF_LUA_FUNC_VOID(fL, fS)           \
     int fL(lua_State *L)                    \
     {                                       \
@@ -20,6 +21,7 @@ DYNXX_EXTERN_C_END
         return 1;                           \
     }
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DEF_LUA_FUNC_STRING(fL, fS)         \
     int fL(lua_State *L)                    \
     {                                       \
@@ -29,6 +31,7 @@ DYNXX_EXTERN_C_END
         return 1;                           \
     }
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DEF_LUA_FUNC_INTEGER(fL, fS)        \
     int fL(lua_State *L)                    \
     {                                       \
@@ -38,6 +41,7 @@ DYNXX_EXTERN_C_END
         return 1;                           \
     }
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DEF_LUA_FUNC_BOOL(fL, fS)           \
     int fL(lua_State *L)                    \
     {                                       \
@@ -47,6 +51,7 @@ DYNXX_EXTERN_C_END
         return 1;                           \
     }
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DEF_LUA_FUNC_FLOAT(fL, fS)          \
     int fL(lua_State *L)                    \
     {                                       \

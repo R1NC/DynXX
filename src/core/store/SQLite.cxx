@@ -7,10 +7,12 @@
 namespace
 {
     using enum DynXXLogLevelX;
-    
-    #define PRINT_ERR(rc, db) dynxxLogPrint(Error, std::string(db != nullptr ? sqlite3_errmsg(db) : sqlite3_errstr(rc)))
 
     constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
+
+    constexpr auto PRINT_ERR = [](auto rc, auto db) {
+        dynxxLogPrint(Error, std::string(db != nullptr ? sqlite3_errmsg(db) : sqlite3_errstr(rc)));
+    };
 }
 
 namespace DynXX::Core::Store::SQLite {

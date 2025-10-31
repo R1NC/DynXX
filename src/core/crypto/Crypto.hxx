@@ -1,7 +1,6 @@
 #pragma once
 
 #include <random>
-#include <mutex>
 
 #include <openssl/bio.h>
 #include <openssl/rsa.h>
@@ -18,15 +17,18 @@ namespace DynXX::Core::Crypto {
             return std::nullopt;
         }
 
-        static std::mt19937 generator;
-        static std::once_flag flag;
-        std::call_once(flag, []() {
+        static std::mt19937 gen = []() {
             std::random_device rd;
-            generator.seed(rd());
-        });
+            std::seed_seq seed{
+                rd(), rd(), rd(), rd(),
+                rd(), rd(), rd(), rd(), 
+                rd(), rd(), rd(), rd()
+            };
+            return std::mt19937{seed};
+        }();
 
-        std::uniform_int_distribution<T> distribution(min, max);
-        return {distribution(generator)};
+        std::uniform_int_distribution<T> dist(min, max);
+        return dist(gen);
     }
 
     namespace AES {

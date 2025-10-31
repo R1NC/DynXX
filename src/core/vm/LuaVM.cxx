@@ -128,6 +128,7 @@ namespace {
         return LUA_OK;
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays)
     constexpr luaL_Reg lib_timer_funcs[] = {
         {"add", _util_timer_add},
         {"remove", _util_timer_remove},
@@ -135,21 +136,16 @@ namespace {
     };
 #endif
 
-    #define lua_register_lib(L, lib, funcs)    \
-    {                                          \
-        luaL_newlib(L, funcs);                 \
-        lua_setglobal(L, lib);                 \
-    }
+    constexpr auto lua_register_lib = [](auto L, auto lib, auto funcs) {
+        luaL_newlib(L, funcs);
+        lua_setglobal(L, lib);
+    };
 
-    #define PRINT_L_ERROR(L, prefix)                                            \
-    do                                                                          \
-    {                                                                           \
-        const char *luaErrMsg = lua_tostring(L, -1);                            \
-        if (luaErrMsg != nullptr)                                               \
-        {                                                                       \
-            dynxxLogPrintF(Error, "{}{}", prefix, luaErrMsg); \
-        }                                                                       \
-    } while (0)
+    constexpr auto PRINT_L_ERROR = [](auto L, auto prefix) {
+        if (const auto luaErrMsg = lua_tostring(L, -1); luaErrMsg != nullptr) {
+            dynxxLogPrintF(Error, "{}{}", prefix, luaErrMsg);
+        }
+    };
 }
 
 namespace DynXX::Core::VM {
@@ -181,7 +177,8 @@ void LuaVM::bindFunc(std::string_view funcName, int (*funcPointer)(lua_State *))
 bool LuaVM::loadFile(std::string_view file)
 {
     const auto lock = std::scoped_lock(this->vmMutex);
-    if (const auto L = this->lstate.get(); !luaL_dofile(L, file.data())) [[unlikely]]
+    const auto fileS = std::string{file.data(), file.size()};
+    if (const auto L = this->lstate.get(); !luaL_dofile(L, fileS.c_str())) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`luaL_dofile` error:");
         return false;
@@ -193,7 +190,8 @@ bool LuaVM::loadFile(std::string_view file)
 bool LuaVM::loadScript(std::string_view script)
 {
     const auto lock = std::scoped_lock(this->vmMutex);
-    if (const auto L = this->lstate.get(); !luaL_dostring(L, script.data())) [[unlikely]]
+    const auto scriptS = std::string{script.data(), script.size()};
+    if (const auto L = this->lstate.get(); !luaL_dostring(L, scriptS.c_str())) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`luaL_dostring` error:");
         return false;
@@ -210,8 +208,10 @@ std::optional<std::string> LuaVM::callFunc(std::string_view func, std::string_vi
         return std::nullopt;
     }
     const auto L = this->lstate.get();
-    lua_getglobal(L, func.data());
-    lua_pushstring(L, params.data());
+    const auto funcS = std::string{func.data(), func.size()};
+    const auto paramsS = std::string{params.data(), params.size()};
+    lua_getglobal(L, funcS.c_str());
+    lua_pushstring(L, paramsS.c_str());
     if (const auto ret = lua_pcall(L, 1, 1, 0); ret != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`lua_pcall` error:");

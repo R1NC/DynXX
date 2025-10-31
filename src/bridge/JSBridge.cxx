@@ -205,7 +205,10 @@ DEF_API_ASYNC(dynxx_z_bytes_unzip, STRING)
 // JS API - Binding
 
 static void registerFuncs() {
-    if (vm == nullptr) [[unlikely]] return;
+    if (vm == nullptr) {
+        [[unlikely]] return;
+    }
+    
     BIND_API(dynxx_call_platform);
 
     BIND_API(dynxx_get_version);

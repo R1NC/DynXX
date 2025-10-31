@@ -29,9 +29,13 @@ Checks:
   -readability-qualified-auto,
   -readability-identifier-length,
   -readability-math-missing-parentheses,
+  -readability-convert-member-functions-to-static,
   google-*,
   -google-build-using-namespace,
+  -google-readability-namespace-comments,
   misc-*,
   -misc-non-private-member-variables-in-classes,
+  -misc-use-internal-linkage,
+  -misc-use-anonymous-namespace,
 
 FormatStyle: llvm

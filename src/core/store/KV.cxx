@@ -14,11 +14,13 @@ KVStore::KVStore(const std::string &root)
 {
     decltype(root) sRoot(root);
     auto logLevel = MMKVLogNone;
+    MMKV::initializeMMKV(
 #if defined(_WIN32)
-    MMKV::initializeMMKV(string2MMKVPath_t(sRoot), logLevel);
+        string2MMKVPath_t(sRoot)
 #else
-    MMKV::initializeMMKV(sRoot, logLevel);
+        sRoot
 #endif
+        , logLevel);
 }
 
 std::weak_ptr<Connection> KVStore::open(const std::string &_id)

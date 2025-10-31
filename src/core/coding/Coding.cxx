@@ -7,6 +7,10 @@
 #include <numeric>
 #endif
 
+namespace {
+    constexpr auto HEX = 16;
+}
+
 namespace DynXX::Core::Coding {
 
 std::string Case::upper(std::string_view str)
@@ -43,7 +47,7 @@ std::string Hex::bytes2str(BytesView bytes)
     str.resize(bytes.size() * 2);
 
     const auto transF = [](const byte b, char *buf) {
-        if (auto [ptr, errCode] = std::to_chars(buf, buf + 2, static_cast<int>(b), 16); errCode != std::errc()) [[unlikely]]
+        if (auto [ptr, errCode] = std::to_chars(buf, buf + 2, static_cast<int>(b), HEX); errCode != std::errc()) [[unlikely]]
         {
             buf[0] = '0';
             buf[1] = '0';
@@ -108,7 +112,7 @@ Bytes Hex::str2bytes(std::string_view str)
     const auto transF = [](const auto& chunk) { 
         std::string s(chunk.begin(), chunk.end());
         auto hex = 0;
-        if (auto [_, errCode] = std::from_chars(s.data(), s.data() + s.size(), hex, 16); errCode != std::errc()) [[unlikely]]
+        if (auto [_, errCode] = std::from_chars(s.data(), s.data() + s.size(), hex, HEX); errCode != std::errc()) [[unlikely]]
         {
             return static_cast<byte>(0);
         }
@@ -150,7 +154,7 @@ std::string strTrim(std::string_view str)
         | std::ranges::views::reverse
         | std::ranges::views::drop_while(findSpaceF)
         | std::ranges::views::reverse;
-    return std::string(trimmed.begin(), trimmed.end());
+    return {trimmed.begin(), trimmed.end()};
 #else
     constexpr auto invalidChars = " \t\n\r\f\v";
     const auto begin = str.find_first_not_of(invalidChars);

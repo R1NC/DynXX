@@ -98,14 +98,19 @@ namespace {
     constexpr auto stox() {
         if constexpr (std::is_same_v<T, int>) {
             return [](const std::string& s, size_t* idx, int base) { return std::stoi(s, idx, base); };
+            // NOLINTNEXTLINE(google-runtime-int)
         } else if constexpr (std::is_same_v<T, long>) {
             return [](const std::string& s, size_t* idx, int base) { return std::stol(s, idx, base); };
+            // NOLINTNEXTLINE(google-runtime-int)
         } else if constexpr (std::is_same_v<T, long long>) {
             return [](const std::string& s, size_t* idx, int base) { return std::stoll(s, idx, base); };
+            // NOLINTNEXTLINE(google-runtime-int)
         } else if constexpr (std::is_same_v<T, unsigned long long>) {
             return [](const std::string& s, size_t* idx, int base) { return std::stoull(s, idx, base); };
+            // NOLINTNEXTLINE(google-runtime-int)
         } else if constexpr (std::is_same_v<T, unsigned long>) {
             return [](const std::string& s, size_t* idx, int base) { return std::stoul(s, idx, base); };
+            // NOLINTNEXTLINE(google-runtime-int)
         } else if constexpr (std::is_same_v<T, unsigned long long>) {
             return [](const std::string& s, size_t* idx, int base) { return std::stoull(s, idx, base); };
         } else if constexpr (std::is_same_v<T, float>) {
@@ -122,7 +127,8 @@ namespace {
     template<IntegerT T>
     T s2n(const std::string &str, T defaultValue, T (*f)(const std::string &, size_t *, int)) {
         try {
-            return f(str, nullptr, 10);
+            constexpr auto base = 10;
+            return f(str, nullptr, base);
         } catch (const std::invalid_argument &e) {
             dynxxLogPrintF(Error, "s2n<i> invalid_argument err: {}", e.what());
             return defaultValue;
@@ -158,6 +164,7 @@ int64_t str2int64(const std::string &str, int64_t defaultI) {
 #if defined(USE_STD_CHAR_CONV_INT)
     return fromChars<int64_t>(str, defaultI);
 #else
+    // NOLINTNEXTLINE(google-runtime-int)
     return s2n<long long>(str, defaultI, stox<long long>());
 #endif
 }

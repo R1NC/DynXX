@@ -32,7 +32,7 @@ namespace
 
     void printJsErr(JSContext *ctx, const JSValueConst val)
     {
-        if (const auto str = JS_ToCString(ctx, val))
+        if (const auto str = JS_ToCString(ctx, val); str != nullptr)
         {
             dynxxLogPrint(Error, str);
             JS_FreeCString(ctx, str);
@@ -62,7 +62,8 @@ namespace
     bool _loadScript(JSContext *ctx, std::string_view script, std::string_view name, bool isModule)
     {
         const auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
-        const auto jEvalRet = JS_Eval(ctx, script.data(), script.size(), name.data(), flags);
+        const auto nameS = std::string{name.data(), name.size()};
+        const auto jEvalRet = JS_Eval(ctx, script.data(), script.size(), nameS.c_str(), flags);
         if (JS_IsException(jEvalRet) == 1) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_Eval failed ->");
@@ -269,9 +270,10 @@ JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
 
 bool JSVM::bindFunc(std::string_view funcJ, JSCFunction *funcC)
 {
+    const auto funcS = std::string{funcJ.data(), funcJ.size()}; 
     auto res = true;
     const auto ctx = this->context.get();
-    const auto jFunc = JS_NewCFunction(ctx, funcC, funcJ.data(), 1);
+    const auto jFunc = JS_NewCFunction(ctx, funcC, funcS.c_str(), 1);
     if (JS_IsException(jFunc) == 1) [[unlikely]]
     {
         dynxxLogPrint(Error, "JS_NewCFunction failed ->");
@@ -280,7 +282,7 @@ bool JSVM::bindFunc(std::string_view funcJ, JSCFunction *funcC)
     }
     else [[likely]]
     {
-        if (JS_DefinePropertyValueStr(ctx, this->jGlobal, funcJ.data(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE) == 0) [[unlikely]]
+        if (JS_DefinePropertyValueStr(ctx, this->jGlobal, funcS.c_str(), jFunc, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE) == 0) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_DefinePropertyValueStr failed ->");
             dumpJsErr(ctx);
@@ -322,12 +324,13 @@ void JSVM::beforeLoad()
 
 bool JSVM::loadFile(std::string_view file, bool isModule)
 {
+    const auto fileS = std::string{file.data(), file.size()};
     try {
-        std::ifstream ifs(file.data());
+        std::ifstream ifs(fileS.c_str());
         ifs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         if (!ifs.is_open()) [[unlikely]]
         {
-            dynxxLogPrintF(Error, "JSVM::loadFile {} open failed", file.data());
+            dynxxLogPrintF(Error, "JSVM::loadFile {} open failed", fileS.c_str());
             return false;
         }
         std::ostringstream ss;
@@ -335,11 +338,11 @@ bool JSVM::loadFile(std::string_view file, bool isModule)
         return this->loadScript(ss.str(), file, isModule);
     }
     catch (const std::ios_base::failure& e) {
-        dynxxLogPrintF(Error, "JSVM::loadFile {} IO error: {}", file.data(), e.what());
+        dynxxLogPrintF(Error, "JSVM::loadFile {} IO error: {}", fileS.c_str(), e.what());
         return false;
     }
     catch (const std::exception& e) {
-        dynxxLogPrintF(Error, "JSVM::loadFile {} error: {}", file.data(), e.what());
+        dynxxLogPrintF(Error, "JSVM::loadFile {} error: {}", fileS.c_str(), e.what());
         return false;
     }
 }
@@ -367,10 +370,11 @@ std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_vie
     auto success = false;
 
     const auto ctx = this->context.get();
-
-    if (const auto jFunc = JS_GetPropertyStr(ctx, this->jGlobal, func.data()); JS_IsFunction(ctx, jFunc)) [[likely]]
+    const auto funcS = std::string{func.data(), func.size()};
+    const auto paramsS = std::string{params.data(), params.size()};
+    if (const auto jFunc = JS_GetPropertyStr(ctx, this->jGlobal, funcS.c_str()); JS_IsFunction(ctx, jFunc)) [[likely]]
     {
-        const auto jParams = JS_NewString(ctx, params.data());
+        const auto jParams = JS_NewString(ctx, paramsS.c_str());
         std::array<JSValue, 1> argv{jParams};
 
         auto jRes = JS_Call(ctx, jFunc, this->jGlobal, argv.size(), argv.data());

@@ -232,7 +232,8 @@ void Decoder::cleanup() noexcept
 
 Decoder::Decoder(std::string_view json)
 {
-    this->cjson = cJSON_Parse(json.data());
+    const auto jsonS = std::string{json.data(), json.size()};
+    this->cjson = cJSON_Parse(jsonS.c_str());
     if (this->cjson == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "FAILED TO PARSE JSON: {}", json);
@@ -284,7 +285,8 @@ DynXXJsonNodeHandle Decoder::readNode(DynXXJsonNodeHandle node, std::string_view
         return 0;
     }
     const auto cj = this->reinterpretNode(node); 
-    return ptr2addr(cJSON_GetObjectItemCaseSensitive(cj, k.data()));
+    const auto kS = std::string{k.data(), k.size()};
+    return ptr2addr(cJSON_GetObjectItemCaseSensitive(cj, kS.c_str()));
 }
 
 DynXXJsonNodeHandle Decoder::operator[](std::string_view k) const
@@ -325,7 +327,7 @@ std::optional<std::string> Decoder::readString(DynXXJsonNodeHandle node) const
         }
         case Boolean:
         {
-            return {cj->valueint? "true" : "false"};
+            return {cj->valueint == 0 ? "false" : "true"};
         }
         default:
         {

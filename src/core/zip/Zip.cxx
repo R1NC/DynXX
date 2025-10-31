@@ -147,9 +147,10 @@ namespace DynXX::Core::Z {
 template <typename T>
 int ZBase<T>::windowBits() const
 {
+    constexpr auto HEX = 16;
     if (this->format == GZip)
     {
-        return 16 | MAX_WBITS;
+        return HEX | MAX_WBITS;
     }
     if (this->format == Raw)
     {

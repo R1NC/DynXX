@@ -19,6 +19,8 @@ namespace
     using enum DynXXLogLevelX;
     using enum DynXXHttpMethodX;
 
+    constexpr auto HTTP_STATUS_OK = 200;
+
     const char *errMsg(CURLcode code) {
         return curl_easy_strerror(code);
     }
@@ -425,8 +427,9 @@ DynXXHttpResponse HttpClient::request(std::string_view url, DynXXHttpMethodX met
         req.setOpt(CURLOPT_POST, 1L);
         if (rawBody.empty())
         {
-            req.setOpt(CURLOPT_POSTFIELDS, params.data());
-            req.setOpt(CURLOPT_POSTFIELDSIZE, params.size());
+            const auto paramsS = std::string{params.data(), params.size()};
+            req.setOpt(CURLOPT_POSTFIELDS, paramsS.c_str());
+            req.setOpt(CURLOPT_POSTFIELDSIZE, paramsS.size());
         }
         else
         {
@@ -457,7 +460,8 @@ bool HttpClient::download(std::string_view url, std::string_view filePath, size_
         return false;
     }
 
-    std::ofstream file(filePath.data(), std::ios::binary);
+    const auto filePathS = std::string{filePath.data(), filePath.size()};
+    std::ofstream file(filePathS.c_str(), std::ios::binary);
     if (!file) [[unlikely]]
     {
         dynxxLogPrintF(Error, "HttpClient.download fopen error:{}", filePath);
@@ -473,7 +477,7 @@ bool HttpClient::download(std::string_view url, std::string_view filePath, size_
 
     file.close();
 
-    return rsp.code == 200;
+    return rsp.code == HTTP_STATUS_OK;
 }
 
 } // namespace DynXX::Core::Net

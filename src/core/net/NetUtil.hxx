@@ -36,10 +36,13 @@ namespace DynXX::Core::Net::Util
                     mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 #else
                 static constexpr auto hexTab = "0123456789abcdef";
+                constexpr auto hexTabLen = std::char_traits<char>::length(hexTab) + 1;
                 std::string result;
-                result.reserve(17);
+                result.reserve(hexTabLen);
                 for (size_t i = 0; i < 6; ++i) {
-                    if (i > 0) result += ':';
+                    if (i > 0) {
+                        result += ':';
+                    }
                     result += hexTab[mac[i] >> 4];
                     result += hexTab[mac[i] & 0x0F];
                 }

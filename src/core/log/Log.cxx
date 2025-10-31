@@ -25,7 +25,7 @@
 #include <DynXX/C/Log.h>
 
 #if defined(__APPLE__)
-void _dynxx_log_apple(const char*);
+void DYNXXLogApple(const char* tag, int level, const char*);
 #endif
 
 namespace
@@ -51,12 +51,13 @@ namespace
     void stdLogPrint(DynXXLogLevelX level, std::string_view content)
     {
         const auto iLevel = underlying(level);
+        const auto contentS = std::string{content.data(), content.size()};
 #if defined(__ANDROID__)
-        __android_log_print(iLevel, TAG, "%.*s", static_cast<int>(content.length()), content.data());
+        __android_log_print(iLevel, TAG, "%.*s", static_cast<int>(contentS.length()), contentS.c_str());
 #elif defined(__OHOS__)
-        OH_LOG_Print(LOG_APP, static_cast<LogLevel>(iLevel), 0xC0DE, TAG, "%{public}.*s", static_cast<int>(content.length()), content.data());
+        OH_LOG_Print(LOG_APP, static_cast<LogLevel>(iLevel), 0xC0DE, TAG, "%{public}.*s", static_cast<int>(contentS.length()), contentS.c_str());
 #elif defined(__APPLE__)
-        _dynxx_log_apple(content.data());
+        DYNXXLogApple(TAG, iLevel, contentS.c_str());
 #elif defined(__EMSCRIPTEN__)
         EM_ASM({
             var tag = UTF8ToString($0);
@@ -64,7 +65,7 @@ namespace
             var msg = UTF8ToString($2);
             var txt = tag + "_" + level + " -> " + msg;
             console.log(txt);
-        }, TAG, iLevel, content.data());
+        }, TAG, iLevel, contentS.c_str());
 #else
         std::cout << TAG << "_" << iLevel << " -> " << content << std::endl;
 #endif
@@ -114,7 +115,7 @@ namespace
             }
             catch (const spdlog::spdlog_ex& ex) 
             {
-                std::cerr << "SpdLog init failed: " << ex.what() << std::endl;
+                std::cerr << "SpdLog init failed: " << ex.what() << '\n';
             }
         });
 
@@ -172,7 +173,8 @@ namespace
             const auto blockCountStr = std::to_string(blockCount);
 
             std::string blockBuffer;
-            blockBuffer.reserve(MAX_LEN + 50);
+            constexpr auto overhead = 50;
+            blockBuffer.reserve(MAX_LEN + overhead);
             
             for (size_t i = 0; i < blockCount; ++i)
             {

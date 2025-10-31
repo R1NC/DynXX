@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <algorithm>
+#include <mutex>
 #include <array>
 #if defined(__cpp_lib_ranges)
 #include <ranges>
@@ -46,12 +47,15 @@ namespace
 
     const EVP_CIPHER* aesGcmCipher(int keyLen)
     {
+        constexpr auto KeyLen16 = 16;
+        constexpr auto KeyLen24 = 24;
+        constexpr auto KeyLen32 = 32;
         switch (keyLen)
         {
-        case 16:
+        case KeyLen16:
             return EVP_aes_128_gcm();
-        case 24:
-        case 32:
+        case KeyLen24:
+        case KeyLen32:
             return EVP_aes_256_gcm();
         default:
             return nullptr;
@@ -187,7 +191,10 @@ namespace
             dynxxLogPrint(Error, "aes invalid inBytes");
             return false;
         }
-        if (const auto keyLen = key.size(); keyLen % 8 != 0 || keyLen < 16 || keyLen > 32) [[unlikely]] {
+        constexpr auto KeyLenUnit = 8;
+        constexpr auto KeyLenMin = 16;
+        constexpr auto KeyLenMax = 32;
+        if (const auto keyLen = key.size(); keyLen % KeyLenUnit != 0 || keyLen < KeyLenMin || keyLen > KeyLenMax) [[unlikely]] {
             dynxxLogPrint(Error, "aes invalid keyBytes");
             return false;
         }
@@ -199,15 +206,20 @@ namespace
             return false;
         }
         const auto inLen = in.size();
-        if (const auto initVectorLen = initVector.size(); initVectorLen != 12) [[unlikely]] {
+        constexpr auto IVLen = 12;
+        if (const auto initVectorLen = initVector.size(); initVectorLen != IVLen) [[unlikely]] {
             dynxxLogPrint(Error, "aesGcm invalid initVectorBytes");
             return false;
         }
-        if (const auto aadLen = aad.size(); aadLen > 16) [[unlikely]] {
+        constexpr auto MaxAadLen = 16;
+        if (const auto aadLen = aad.size(); aadLen > MaxAadLen) [[unlikely]] {
             dynxxLogPrint(Error, "aesGcm invalid aadBytes");
             return false;
         }
-        if (tagBits % 8 != 0 || tagBits / 8 >= inLen || tagBits < 96 || tagBits > 128) [[unlikely]] {
+        constexpr auto TagBitsUnit = 8;
+        constexpr auto TagBitsMin = 96;
+        constexpr auto TagBitsMax = 128;
+        if (tagBits % TagBitsUnit != 0 || tagBits / TagBitsUnit >= inLen || tagBits < TagBitsMin || tagBits > TagBitsMax) [[unlikely]] {
             dynxxLogPrint(Error, "aesGcm invalid tagBits");
             return false;
         }
@@ -848,7 +860,7 @@ Bytes Base64::decode(BytesView inBytes, bool noNewLines)
     // Validate Base64 characters
     for (size_t i = 0; i < inLen; i++)
     {
-        if (std::isalnum(in[i]) || in[i] == '+' || in[i] == '/' || in[i] == '=')
+        if (std::isalnum(in[i]) != 0 || in[i] == '+' || in[i] == '/' || in[i] == '=')
         {
             continue;
         }

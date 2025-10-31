@@ -12,7 +12,7 @@ namespace DynXX::Core::Net {
         std::string data;
 
         HttpFormField() = delete;
-        explicit HttpFormField(const std::string& name, const std::string& mime, const std::string& data)
+        explicit HttpFormField(std::string_view name, std::string_view mime, std::string_view data)
             : name(name), mime(mime), data(data) {}
     };
 

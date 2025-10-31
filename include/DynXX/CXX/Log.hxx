@@ -30,7 +30,7 @@ void dynxxLogPrint(DynXXLogLevelX level, std::string_view content);
 
 #if !defined(USE_STD_FORMAT)
 template <typename... Args>
-std::string _dynxxLogFormat(std::string_view format, Args... args)
+std::string dynxxLogFormatT(std::string_view format, Args... args)
 {
     std::ostringstream oss;
     
@@ -50,7 +50,7 @@ template<typename... Args>
 void dynxxLogPrintF(DynXXLogLevelX level, std::string_view format, Args... args) {
     auto fContent =
 #if !defined(USE_STD_FORMAT)
-    _dynxxLogFormat(format, args...)
+    dynxxLogFormatT(format, args...)
 #else
     std::vformat(std::string{format}, std::make_format_args(args...))
 #endif

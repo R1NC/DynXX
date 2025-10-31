@@ -19,12 +19,14 @@ namespace DynXX::Core::Z {
     template<typename T>
     class ZBase {
     public:
-        explicit ZBase(size_t bufferSize, DynXXZFormatX format);
         virtual ~ZBase() = default;
 
+        // NOLINTNEXTLINE(bugprone-crtp-constructor-accessibility)
         ZBase() = delete;
+        // NOLINTNEXTLINE(bugprone-crtp-constructor-accessibility)
         ZBase(const ZBase &) = delete;
         ZBase &operator=(const ZBase &) = delete;
+        // NOLINTNEXTLINE(bugprone-crtp-constructor-accessibility)
         ZBase(ZBase &&) = delete;
         ZBase &operator=(ZBase &&) = delete;
 
@@ -35,7 +37,7 @@ namespace DynXX::Core::Z {
         [[nodiscard]] bool processFinished() const;
 
     protected:
-        z_stream zs{Z_NULL, Z_NULL, Z_NULL};
+        z_stream zs{};
         int ret{Z_OK};
         bool inFinish{false};
 
@@ -46,6 +48,9 @@ namespace DynXX::Core::Z {
         Bytes outBuffer;
         const size_t bufferSize;
         const DynXXZFormatX format;
+
+        friend T;
+        explicit ZBase(size_t bufferSize, DynXXZFormatX format);
     };
 
     class Zip final : public ZBase<Zip> {

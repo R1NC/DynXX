@@ -10,7 +10,7 @@
 #include "../concurrent/TimerTask.hxx"
 
 #define JS_FUNC_PARAMS                                                         \
-  JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv
+  JSContext *ctx, [[maybe_unused]] JSValueConst this_val, [[maybe_unused]] int argc, JSValueConst *argv
 
 #define JS_FUNC_READ_JSON JS_ToCString(ctx, argv[0])
 

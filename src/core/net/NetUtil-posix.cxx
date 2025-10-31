@@ -37,6 +37,12 @@ namespace
         return strncmp(ifa->ifa_name, name.data(), name.size()) == 0;
     }
 #endif
+
+    constexpr auto socketFlags = SOCK_DGRAM
+#if !defined(__APPLE__)
+            | SOCK_CLOEXEC
+#endif
+            ;
 }
 
 namespace DynXX::Core::Net::Util {
@@ -58,13 +64,14 @@ std::string macAddress()
 
     for (ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next)
     {
-        if (ifa->ifa_addr == nullptr) continue;
+        if (ifa->ifa_addr == nullptr) {
+            continue;
+        }
 
 #if defined(HAVE_IF_PACKET)
         if (ifa->ifa_addr->sa_family == AF_PACKET) 
         {
-            sockaddr_ll *s = reinterpret_cast<sockaddr_ll*>(ifa->ifa_addr);
-            if (s->sll_halen == 6)
+            if (const auto s = reinterpret_cast<sockaddr_ll*>(ifa->ifa_addr); s->sll_halen == 6)
             {
                 macAddress = formatMacAddress(s->sll_addr);
             }
@@ -106,7 +113,9 @@ NetType netType()
 
     for (ifaddrs *ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next)
     {
-        if (ifa->ifa_addr == nullptr) continue;
+        if (ifa->ifa_addr == nullptr) {
+            continue;
+        }
 
         if (const auto family = ifa->ifa_addr->sa_family; family == AF_INET || family == AF_INET6)
         {
@@ -161,7 +170,7 @@ NetType netType()
 
 std::string publicIpV4()
 {
-    const int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    const auto sock = socket(AF_INET, socketFlags, 0);
     if (sock < 0) 
     {
         return {};
@@ -187,16 +196,16 @@ std::string publicIpV4()
         return {};
     }
 
-    char ipStr[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &name.sin_addr, ipStr, INET_ADDRSTRLEN);
+    std::array<char, INET_ADDRSTRLEN> ipStr{};
+    inet_ntop(AF_INET, &name.sin_addr, ipStr.data(), INET_ADDRSTRLEN);
     close(sock);
 
-    return {ipStr};
+    return {ipStr.data()};
 }
 
 std::string publicIpV6()
 {
-    const int sock = socket(AF_INET6, SOCK_DGRAM, 0);
+    const auto sock = socket(AF_INET6, socketFlags, 0);
     if (sock < 0) 
     {
         return {};
@@ -223,11 +232,11 @@ std::string publicIpV6()
         return {};
     }
 
-    char ipStr[INET6_ADDRSTRLEN];
-    inet_ntop(AF_INET6, &name.sin6_addr, ipStr, INET6_ADDRSTRLEN);
+    std::array<char, INET6_ADDRSTRLEN> ipStr{};
+    inet_ntop(AF_INET6, &name.sin6_addr, ipStr.data(), INET6_ADDRSTRLEN);
     close(sock);
 
-    return {ipStr};
+    return {ipStr.data()};
 }
 
 } // namespace DynXX::Core::Net::Util

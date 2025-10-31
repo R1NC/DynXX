@@ -154,7 +154,10 @@ DEF_API(dynxx_z_bytes_unzip, STRING)
 // Lua API - Binding
 
 static void registerFuncs() {
-    if (vm == nullptr) [[unlikely]] return;
+    if (vm == nullptr) {
+        [[unlikely]] return;
+    }
+    
     BIND_API(dynxx_get_version);
     BIND_API(dynxx_root_path);
 

@@ -68,7 +68,8 @@ std::string osVersion()
         int minor = static_cast<int32_t>(ver.minorVersion);
         int patch = static_cast<int32_t>(ver.patchVersion);
         std::string result;
-        result.reserve(16);
+        constexpr auto maxLen = 16;
+        result.reserve(maxLen);
         result += std::to_string(major);
         result += '.';
         result += std::to_string(minor);
