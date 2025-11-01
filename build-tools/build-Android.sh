@@ -28,7 +28,7 @@ export OUTPUT_EXE_PATH=${OUTPUT_PATH}/bin
 export VCPKG_ROOT=${CI_VCPKG_ROOT:-"$HOME/dev/vcpkg"}
 export VCPKG_BINARY_SOURCES=${CI_VCPKG_BINARY_SOURCES:-"files,$HOME/vcpkg-binary-cache,readwrite"}
 export VCPKG_TARGET_TRIPLET=arm64-android
-VCPKG_LIB_PATH=$PWD/${BUILD_FOLDER}/vcpkg_installed/${VCPKG_TARGET}/lib
+VCPKG_LIB_PATH=$PWD/${BUILD_FOLDER}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}/lib
 
 cmake --preset ${PRESET}
 cmake --build --preset ${PRESET}
