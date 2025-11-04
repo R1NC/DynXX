@@ -110,7 +110,7 @@ std::string publicIpV4()
         return {};
     }
 
-    std::array<char, INET_ADDRSTRLEN> ipStr;
+    std::array<char, INET_ADDRSTRLEN> ipStr{};
     InetNtopA(AF_INET, &name.sin_addr, ipStr.data(), INET_ADDRSTRLEN);
     closesocket(sock);
     WSACleanup();
@@ -153,7 +153,7 @@ std::string publicIpV6()
         return {};
     }
 
-    std::array<char, INET6_ADDRSTRLEN> ipStr;
+    std::array<char, INET6_ADDRSTRLEN> ipStr{};
     InetNtopA(AF_INET6, &name.sin6_addr, ipStr.data(), INET6_ADDRSTRLEN);
     closesocket(sock);
     WSACleanup();
