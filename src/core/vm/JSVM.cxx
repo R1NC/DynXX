@@ -61,6 +61,9 @@ namespace
 
     bool _loadScript(JSContext *ctx, std::string_view script, std::string_view name, bool isModule)
     {
+        if (ctx == nullptr || script.empty() || name.empty()) [[unlikely]] {
+            return false;
+        }
         const auto flags = isModule ? (JS_EVAL_TYPE_MODULE | JS_EVAL_FLAG_COMPILE_ONLY) : JS_EVAL_TYPE_GLOBAL;
         const auto nameS = std::string{name.data(), name.size()};
         const auto jEvalRet = JS_Eval(ctx, script.data(), script.size(), nameS.c_str(), flags);
