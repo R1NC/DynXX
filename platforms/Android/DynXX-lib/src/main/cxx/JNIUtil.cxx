@@ -27,6 +27,7 @@ JNIEnv *attachEnv(JavaVM *vm) {
     }
     if (env != nullptr && env->ExceptionCheck()) {
         env->ExceptionDescribe();
+        env->ExceptionClear();
         return nullptr;
     }
     return env;
