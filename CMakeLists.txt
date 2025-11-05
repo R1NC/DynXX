@@ -233,6 +233,7 @@ endif()
 if(USE_LIBUV AND NOT OHOS)
     if(USE_VCPKG)
         find_package(libuv REQUIRED)
+        list(APPEND LINK_LIBS $<IF:$<TARGET_EXISTS:libuv::uv_a>,libuv::uv_a,libuv::uv>)
     else()
         addGitLib(${PROJECT_NAME}
             libuv
@@ -240,9 +241,8 @@ if(USE_LIBUV AND NOT OHOS)
             dev
             "include"
         )
-        add_library(uv ALIAS libuv)
+        list(APPEND LINK_LIBS libuv)
     endif()
-    list(APPEND LINK_LIBS $<IF:$<TARGET_EXISTS:uv>,uv,uv_a>)
 endif()
 
 if(USE_ADA)
