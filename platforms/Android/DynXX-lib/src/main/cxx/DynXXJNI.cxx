@@ -2,7 +2,7 @@
 
 #include "JNIUtil.hxx"
 #include <DynXX/C/DynXX.h>
-#include <DynXX/CXX/Memory.hxx>
+#include <DynXX/CXX/DynXX.hxx>
 
 namespace {
     JavaVM *sVM;
@@ -32,7 +32,7 @@ namespace {
         //env->CallVoidMethod(sLogCallback, sLogCallbackMethodId, level, jContent);
         auto jLevel = boxJInt(env, static_cast<jint>(level));
         auto jRet = env->CallObjectMethod(sLogCallback, sLogCallbackMethodId, jLevel, jContent);
-        if (jRet) {
+        if (jRet != nullptr) {
             env->DeleteLocalRef(jRet);
         }
         env->DeleteLocalRef(jLevel);
@@ -52,7 +52,7 @@ namespace {
         auto jRes = env->CallObjectMethod(sJsMsgCallback, sJsMsgCallbackMethodId, jMsg);
         auto cRes = readJString(env, jRes);
         auto newRes = dupStr(cRes);
-        if (cRes) {
+        if (cRes != nullptr) {
            releaseJString(env, jRes, cRes);
         }
         env->DeleteLocalRef(jMsg);
@@ -70,7 +70,7 @@ namespace {
     jboolean init(JNIEnv *env, [[maybe_unused]] jobject thiz,
                   jstring root) {
         auto cRoot = JStringArg(env, root);
-        return dynxx_init(cRoot.data);
+        return static_cast<jboolean>(dynxx_init(cRoot.data));
     }
 
     void release([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz) {
@@ -86,7 +86,7 @@ namespace {
 
     void logSetCallback(JNIEnv *env, [[maybe_unused]] jobject thiz,
                         jobject callback) {
-        if (callback) {
+        if (callback != nullptr) {
             dynxx_log_set_callback(log_callback);
             sLogCallback = env->NewGlobalRef(callback);
             /*auto jCallbackClass = env->GetObjectClass(callback);
@@ -119,8 +119,8 @@ namespace {
         const auto cFormFieldMimeV = JStringArrayArg(env, formFieldMimeV);
         const auto cFormFieldDataV = JStringArrayArg(env, formFieldDataV);
 
-        const auto cFilePath = filePath ? JStringArg(env, filePath).data : "";
-        auto cFILE = cFilePath ? std::fopen(cFilePath, "r") : nullptr;
+        const auto cFilePath = filePath != nullptr ? JStringArg(env, filePath).data : "";
+        auto cFILE = cFilePath != nullptr ? std::fopen(cFilePath, "r") : nullptr;
 
         auto cRsp = dynxx_net_http_request(cUrl.data, cParams.data, static_cast<DynXXHttpMethod>(method),
                                             cHeaders.data, cHeaders.size,
@@ -129,8 +129,10 @@ namespace {
                                             static_cast<const size_t>(timeout));
         auto jStr = boxJString(env, cRsp);
 
-        if (cFILE) {
-            std::fclose(cFILE);
+        if (cFILE != nullptr) {
+            if (const auto ret = std::fclose(cFILE); ret != 0) {
+                dynxxLogPrintF(DynXXLogLevelX::Error, "Failed to close file: {}", ret);
+            }
         }
 
         return jStr;
@@ -141,13 +143,13 @@ namespace {
     jboolean lLoadF(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jstring file) {
         const auto cFile = JStringArg(env, file);
-        return dynxx_lua_loadF(cFile.data);
+        return static_cast<jboolean>(dynxx_lua_loadF(cFile.data));
     }
 
     jboolean lLoadS(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jstring script) {
         const auto cScript = JStringArg(env, script);
-        return dynxx_lua_loadS(cScript.data);
+        return static_cast<jboolean>(dynxx_lua_loadS(cScript.data));
     }
 
     jstring lCall(JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -163,33 +165,33 @@ namespace {
     jboolean jLoadF(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jstring file, jboolean is_module) {
         const auto cFile = JStringArg(env, file);
-        return dynxx_js_loadF(cFile.data, is_module);
+        return static_cast<jboolean>(dynxx_js_loadF(cFile.data, is_module == JNI_TRUE));
     }
 
     jboolean jLoadS(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jstring script, jstring name, jboolean is_module) {
         const auto cScript = JStringArg(env, script);
         const auto cName = JStringArg(env, name);
-        return dynxx_js_loadS(cScript.data, cName.data, is_module);
+        return static_cast<jboolean>(dynxx_js_loadS(cScript.data, cName.data, is_module == JNI_TRUE));
     }
 
     jboolean jLoadB(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jbyteArray bytes, jboolean is_module) {
         const auto cIn = JByteArrayArg(env, bytes);
-        return dynxx_js_loadB(cIn.data, cIn.size, is_module);
+        return static_cast<jboolean>(dynxx_js_loadB(cIn.data, cIn.size, is_module == JNI_TRUE));
     }
 
     jstring jCall(JNIEnv *env, [[maybe_unused]] jobject thiz,
                   jstring func, jstring params, jboolean await) {
         const auto cFunc = JStringArg(env, func);
         const auto cParams = JStringArg(env, params);
-        auto cRes = dynxx_js_call(cFunc.data, cParams.data, await);
+        auto cRes = dynxx_js_call(cFunc.data, cParams.data, await == JNI_TRUE);
         return boxJString(env, cRes);
     }
 
     void jSetMsgCallback(JNIEnv *env, [[maybe_unused]] jobject thiz,
                          jobject callback) {
-        if (callback) {
+        if (callback != nullptr) {
             dynxx_js_set_msg_callback(js_msg_callback);
             sJsMsgCallback = env->NewGlobalRef(callback);
             /*if (auto jCallbackClass = env->GetObjectClass(callback))
@@ -211,7 +213,7 @@ namespace {
     jboolean sqliteExecute(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                 jlong conn, jstring sql) {
         const auto cSql = JStringArg(env, sql);
-        return dynxx_sqlite_execute(conn, cSql.data);
+        return static_cast<jboolean>(dynxx_sqlite_execute(conn, cSql.data));
     }
 
     jlong sqliteQueryDo(JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -222,7 +224,7 @@ namespace {
 
     jboolean sqliteQueryReadRow([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                                      jlong query_result) {
-        return dynxx_sqlite_query_read_row(query_result);
+        return static_cast<jboolean>(dynxx_sqlite_query_read_row(query_result));
     }
 
     jstring sqliteQueryReadColumnText(JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -273,7 +275,7 @@ namespace {
                                 jlong conn, jstring k, jstring v) {
         const auto cK = JStringArg(env, k);
         const auto cV = JStringArg(env, v);
-        return dynxx_kv_write_string(conn, cK.data, cV.data);
+        return static_cast<jboolean>(dynxx_kv_write_string(conn, cK.data, cV.data));
     }
 
     jlong kvReadInteger(JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -285,7 +287,7 @@ namespace {
     jboolean kvWriteInteger(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                  jlong conn, jstring k, jlong v) {
         const auto cK = JStringArg(env, k);
-        return dynxx_kv_write_integer(conn, cK.data, v);
+        return static_cast<jboolean>(dynxx_kv_write_integer(conn, cK.data, v));
     }
 
     jdouble kvReadFloat(JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -297,12 +299,12 @@ namespace {
     jboolean kvWriteFloat(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                jlong conn, jstring k, jdouble v) {
         const auto cK = JStringArg(env, k);
-        return dynxx_kv_write_float(conn, cK.data, v);
+        return static_cast<jboolean>(dynxx_kv_write_float(conn, cK.data, v));
     }
 
     jobjectArray kvAllKeys(JNIEnv *env, [[maybe_unused]] jobject thiz,
                              jlong conn) {
-        size_t len;
+        size_t len{0};
         auto cRes = dynxx_kv_all_keys(conn, &len);
         return moveToJStringArray(env, cRes, len);
     }
@@ -310,13 +312,13 @@ namespace {
     jboolean kvContains(JNIEnv *env, [[maybe_unused]] jobject thiz,
                              jlong conn, jstring k) {
         const auto cK = JStringArg(env, k);
-        return dynxx_kv_contains(conn, cK.data);
+        return static_cast<jboolean>(dynxx_kv_contains(conn, cK.data));
     }
 
     jboolean kvRemove(JNIEnv *env, [[maybe_unused]] jobject thiz,
                            jlong conn, jstring k) {
         const auto cK = JStringArg(env, k);
-        return dynxx_kv_remove(conn, cK.data);
+        return static_cast<jboolean>(dynxx_kv_remove(conn, cK.data));
     }
 
     void kvClear([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -366,7 +368,7 @@ namespace {
     jbyteArray codingHexStr2Bytes(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                   jstring str) {
         const auto cStr = JStringArg(env, str);
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_coding_hex_str2bytes(cStr.data, &outLen);
         return moveToJByteArray(env, cRes, outLen);
     }
@@ -384,7 +386,7 @@ namespace {
         const auto cIn = JByteArrayArg(env, input);
         const auto cKey = JByteArrayArg(env, key);
 
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_crypto_aes_encrypt(cIn.data, cIn.size,
                                                     cKey.data, cKey.size,
                                                     &outLen);
@@ -396,7 +398,7 @@ namespace {
         const auto cIn = JByteArrayArg(env, input);
         const auto cKey = JByteArrayArg(env, key);
 
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_crypto_aes_decrypt(cIn.data, cIn.size,
                                                     cKey.data, cKey.size,
                                                     &outLen);
@@ -410,7 +412,7 @@ namespace {
         const auto cIv = JByteArrayArg(env, init_vector);
         const auto cAad = JByteArrayArg(env, aad);
 
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_crypto_aes_gcm_encrypt(cIn.data, cIn.size,
                                                         cKey.data, cKey.size,
                                                         cIv.data, cIv.size,
@@ -426,7 +428,7 @@ namespace {
         const auto cIv = JByteArrayArg(env, init_vector);
         const auto cAad = JByteArrayArg(env, aad);
 
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_crypto_aes_gcm_decrypt(cIn.data, cIn.size,
                                                         cKey.data, cKey.size,
                                                         cIv.data, cIv.size,
@@ -438,7 +440,7 @@ namespace {
     jstring cryptoRsaGenKey(JNIEnv *env, [[maybe_unused]] jobject thiz,
                             jstring base64, jboolean is_public) {
         const auto cBase64 = JStringArg(env, base64);
-        auto cRes = dynxx_crypto_rsa_gen_key(cBase64.data, is_public);
+        auto cRes = dynxx_crypto_rsa_gen_key(cBase64.data, is_public == JNI_TRUE);
         return boxJString(env, cRes);
     }
 
@@ -447,7 +449,7 @@ namespace {
         const auto cIn = JByteArrayArg(env, input);
         const auto cKey = JByteArrayArg(env, key);
 
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_crypto_rsa_encrypt(cIn.data, cIn.size,
                                                     cKey.data, cKey.size,
                                                     static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
@@ -459,7 +461,7 @@ namespace {
         const auto cIn = JByteArrayArg(env, input);
         const auto cKey = JByteArrayArg(env, key);
 
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_crypto_rsa_decrypt(cIn.data, cIn.size,
                                                     cKey.data, cKey.size,
                                                     static_cast<DynXXCryptoRSAPadding>(padding), &outLen);
@@ -469,7 +471,7 @@ namespace {
     jbyteArray cryptoHashMd5(JNIEnv *env, [[maybe_unused]] jobject thiz,
                              jbyteArray input) {
         const auto cIn = JByteArrayArg(env, input);
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_crypto_hash_md5(cIn.data, cIn.size, &outLen);
         return moveToJByteArray(env, cRes, outLen);
     }
@@ -477,7 +479,7 @@ namespace {
     jbyteArray cryptoHashSha1(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                 jbyteArray input) {
         const auto cIn = JByteArrayArg(env, input);
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_crypto_hash_sha1(cIn.data, cIn.size, &outLen);
         return moveToJByteArray(env, cRes, outLen);
     }
@@ -485,7 +487,7 @@ namespace {
     jbyteArray cryptoHashSha256(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                 jbyteArray input) {
         const auto cIn = JByteArrayArg(env, input);
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_crypto_hash_sha256(cIn.data, cIn.size, &outLen);
         return moveToJByteArray(env, cRes, outLen);
     }
@@ -493,16 +495,16 @@ namespace {
     jbyteArray cryptoBase64Encode(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                   jbyteArray input, jboolean noNewLines) {
         const auto cIn = JByteArrayArg(env, input);
-        size_t outLen;
-        const auto cRes = dynxx_crypto_base64_encode(cIn.data, cIn.size, noNewLines, &outLen);
+        size_t outLen{0};
+        const auto cRes = dynxx_crypto_base64_encode(cIn.data, cIn.size, noNewLines == JNI_TRUE, &outLen);
         return moveToJByteArray(env, cRes, outLen);
     }
 
     jbyteArray cryptoBase64Decode(JNIEnv *env, [[maybe_unused]] jobject thiz,
                                   jbyteArray input, jboolean noNewLines) {
         const auto cIn = JByteArrayArg(env, input);
-        size_t outLen;
-        const auto cRes = dynxx_crypto_base64_decode(cIn.data, cIn.size, noNewLines, &outLen);
+        size_t outLen{0};
+        const auto cRes = dynxx_crypto_base64_decode(cIn.data, cIn.size, noNewLines == JNI_TRUE, &outLen);
         return moveToJByteArray(env, cRes, outLen);
     }
 
@@ -566,7 +568,7 @@ namespace {
     jlong zZipInput(JNIEnv *env, [[maybe_unused]] jobject thiz,
                     jlong zip, jbyteArray inBytes, jboolean inFinish) {
         const auto cIn = JByteArrayArg(env, inBytes);
-        auto ret = dynxx_z_zip_input(zip, cIn.data, cIn.size, inFinish);
+        auto ret = dynxx_z_zip_input(zip, cIn.data, cIn.size, inFinish == JNI_TRUE);
         return static_cast<jlong>(ret);
     }
 
@@ -579,7 +581,7 @@ namespace {
 
     jboolean zZipProcessFinished([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                                  jlong zip) {
-        return dynxx_z_zip_process_finished(zip);
+        return static_cast<jboolean>(dynxx_z_zip_process_finished(zip));
     }
 
     void zZipRelease([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -595,7 +597,7 @@ namespace {
     jlong zUnZipInput(JNIEnv *env, [[maybe_unused]] jobject thiz,
                       jlong unzip, jbyteArray inBytes, jboolean inFinish) {
         const auto cIn = JByteArrayArg(env, inBytes);
-        auto ret = dynxx_z_unzip_input(unzip, cIn.data, cIn.size, inFinish);
+        auto ret = dynxx_z_unzip_input(unzip, cIn.data, cIn.size, inFinish == JNI_TRUE);
         return static_cast<jlong>(ret);
     }
 
@@ -608,7 +610,7 @@ namespace {
 
     jboolean zUnZipProcessFinished([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
                                    jlong unzip) {
-        return dynxx_z_unzip_process_finished(unzip);
+        return static_cast<jboolean>(dynxx_z_unzip_process_finished(unzip));
     }
 
     void zUnZipRelease([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
@@ -619,7 +621,7 @@ namespace {
     jbyteArray zZipBytes(JNIEnv *env, [[maybe_unused]] jobject thiz,
                          jint mode, jlong buffer_size, jint format, jbyteArray bytes) {
         const auto cIn = JByteArrayArg(env, bytes);
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_z_bytes_zip(static_cast<DynXXZipCompressMode>(mode), buffer_size, static_cast<DynXXZFormat>(format),
                                              cIn.data, cIn.size, &outLen);
         return moveToJByteArray(env, cRes, outLen);
@@ -628,12 +630,13 @@ namespace {
     jbyteArray zUnZipBytes(JNIEnv *env, [[maybe_unused]] jobject thiz,
                            jlong buffer_size, jint format, jbyteArray bytes) {
         const auto cIn = JByteArrayArg(env, bytes);
-        size_t outLen;
+        size_t outLen{0};
         const auto cRes = dynxx_z_bytes_unzip(buffer_size, static_cast<DynXXZFormat>(format),
                                                cIn.data, cIn.size, &outLen);
         return moveToJByteArray(env, cRes, outLen);
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays)
     const JNINativeMethod JCFuncList[] = {
             DECLARE_JNI_FUNC(getVersion, "()" LJLS_),
             DECLARE_JNI_FUNC(init, "(" LJLS_ ")Z"),

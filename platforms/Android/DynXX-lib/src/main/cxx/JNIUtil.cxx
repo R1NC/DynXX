@@ -25,7 +25,7 @@ JNIEnv *attachEnv(JavaVM *vm) {
     if (vm != nullptr) {
         vm->AttachCurrentThread(&env, nullptr);
     }
-    if (env != nullptr && env->ExceptionCheck()) {
+    if (env != nullptr && env->ExceptionCheck() == JNI_TRUE) {
         env->ExceptionDescribe();
         env->ExceptionClear();
         return nullptr;
@@ -39,7 +39,7 @@ jclass findClassInCache(JNIEnv *env, const char *cls) {
         return it->second;
     }
     const auto jcls = env->FindClass(cls);
-    sJClassCache[cls] = (jclass)env->NewGlobalRef(jcls);
+    sJClassCache[cls] = reinterpret_cast<jclass>(env->NewGlobalRef(jcls));
     return sJClassCache.at(cls);
 }
 
@@ -52,17 +52,23 @@ void releaseCachedClass(JNIEnv *env) {
 }
 
 const char* readJString(JNIEnv *env, jobject jStr) {
-    if (!env || !jStr) return nullptr;
+    if (env == nullptr || jStr == nullptr) {
+        return nullptr;
+    }
     return env->GetStringUTFChars(reinterpret_cast<jstring>(jStr), nullptr);
 }
 
 void releaseJString(JNIEnv *env, jobject jStr, const char* cStr) {
-    if (!env || !jStr || !cStr) return;
+    if (env == nullptr || jStr == nullptr || cStr == nullptr) {
+        return;
+    }
     env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jStr), cStr);
 }
 
 std::tuple<byte*, size_t> readJByteArray(JNIEnv *env, jbyteArray jbArr) {
-    if (!env || !jbArr) return {};
+    if (env == nullptr || jbArr == nullptr) {
+        return {};
+    }
     const auto len = env->GetArrayLength(jbArr);
     const auto jo = env->GetByteArrayElements(jbArr, nullptr);
     auto cBytes = reinterpret_cast<byte *>(jo);
@@ -70,16 +76,20 @@ std::tuple<byte*, size_t> readJByteArray(JNIEnv *env, jbyteArray jbArr) {
 }
 
 void releaseJByteArray(JNIEnv *env, jbyteArray jbArr, byte *cBytes) {
-    if (!env || !jbArr || !cBytes) return;
+    if (env == nullptr || jbArr == nullptr || cBytes == nullptr) {
+        return;
+    }
     env->ReleaseByteArrayElements(jbArr, reinterpret_cast<jbyte*>(cBytes), JNI_ABORT);
 }
 
 std::tuple<const jobject*, const char**, size_t> readJStringArray(JNIEnv *env, jobjectArray joArr) {
-    if (!env || !joArr) return {};
+    if (env == nullptr || joArr == nullptr) {
+        return {};
+    }
     const auto size = env->GetArrayLength(joArr);
     const auto jStrArr = new jobject[size];
     const auto cStrArr = new const char*[size];
-    for (size_t i = 0; i < size; i++) {
+    for (jsize i = 0; i < size; i++) {
         jStrArr[i] = env->GetObjectArrayElement(joArr, i);
         cStrArr[i] = readJString(env, jStrArr[i]);
     }
@@ -87,9 +97,11 @@ std::tuple<const jobject*, const char**, size_t> readJStringArray(JNIEnv *env, j
 }
 
 void releaseJStringArray(JNIEnv *env, jobjectArray joArr, const jobject *jStrArr, const char **cStrArr) {
-    if (!env || !joArr || !jStrArr || !cStrArr) return;
+    if (env == nullptr || joArr == nullptr || jStrArr == nullptr || cStrArr == nullptr) {
+        return;
+    }
     const auto size = env->GetArrayLength(joArr);
-    for (size_t i = 0; i < size; i++) {
+    for (jsize i = 0; i < size; i++) {
         releaseJString(env, jStrArr[i], cStrArr[i]);
         env->DeleteLocalRef(jStrArr[i]);
     }
@@ -133,13 +145,13 @@ jstring boxJString(JNIEnv *env, const char *str) {
     if (str == nullptr) {
         str = "";
     }
-    auto sLen = static_cast<jsize>(strlen(str));
+    const auto sLen = static_cast<jsize>(strlen(str));
     auto p = reinterpret_cast<const unsigned char *>(str);
     
     std::string fixedStr;
     fixedStr.reserve(sLen);
     
-    size_t i = 0;
+    jsize i = 0;
     while (i < sLen) {
         if (p[i] < 0x80) {
             // 1-byte character

@@ -53,9 +53,14 @@ struct JStringArg final : public JArg {
 public:
     const char *data;
 
+    JStringArg() = delete;
     explicit JStringArg(JNIEnv *env, jobject jStr) : JArg(env), jStr(jStr) {
         data = readJString(env, jStr);
     }
+    JStringArg(const JStringArg&) = delete;
+    JStringArg& operator=(const JStringArg&) = delete;
+    JStringArg(JStringArg&&) = delete;
+    JStringArg& operator=(JStringArg&&) = delete;
     ~JStringArg() override {
         releaseJString(this->env, this->jStr, this->data);
     }
@@ -73,9 +78,14 @@ public:
     byte *data{nullptr};
     size_t size{0};
 
+    JByteArrayArg() = delete;
     explicit JByteArrayArg(JNIEnv *env, jbyteArray jbArr) : JArg(env), jbArr(jbArr) {
         std::tie(data, size) = readJByteArray(env, jbArr);
     }
+    JByteArrayArg(const JByteArrayArg&) = delete;
+    JByteArrayArg& operator=(const JByteArrayArg&) = delete;
+    JByteArrayArg(JByteArrayArg&&) = delete;
+    JByteArrayArg& operator=(JByteArrayArg&&) = delete;
     ~JByteArrayArg() override {
         releaseJByteArray(this->env, this->jbArr, this->data);
     }
@@ -92,10 +102,15 @@ struct JStringArrayArg final : public JArg {
 public:
     const char **data{nullptr};
     size_t size{0};
-    
+
+    JStringArrayArg() = delete;
     explicit JStringArrayArg(JNIEnv *env, jobjectArray joArr) : JArg(env), joArr(joArr) {
         std::tie(jStrs, data, size) = readJStringArray(env, joArr);
     }
+    JStringArrayArg(const JStringArrayArg&) = delete;
+    JStringArrayArg& operator=(const JStringArrayArg&) = delete;
+    JStringArrayArg(JStringArrayArg&&) = delete;
+    JStringArrayArg& operator=(JStringArrayArg&&) = delete;
     ~JStringArrayArg() override {
         releaseJStringArray(this->env, this->joArr, this->jStrs, this->data);
     }
