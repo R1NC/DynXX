@@ -74,7 +74,7 @@ namespace DynXX::Core::Concurrent {
     template<RunnableT... Callbacks>
     void postDelay(size_t microSecs, Callbacks&&... callbacks) {
         std::thread([cbks = std::make_tuple(std::forward<Callbacks>(callbacks)...), delay = microSecs]() {
-            std::apply([=](auto&&... cbk) {
+            std::apply([delay](auto&&... cbk) {
                 (..., (sleep(delay), cbk()));
             }, cbks);
         }).detach();
