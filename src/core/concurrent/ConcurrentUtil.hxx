@@ -6,6 +6,8 @@
 #include <chrono>
 #include <functional>
 
+#include <DynXX/CXX/Types.hxx>
+
 namespace DynXX::Core::Concurrent {
 
     static constexpr auto CacheLineSize =
@@ -67,5 +69,14 @@ namespace DynXX::Core::Concurrent {
             count++;
         } while (count < retryCount);
         return false;
+    }
+
+    template<RunnableT... Callbacks>
+    void postDelay(size_t microSecs, Callbacks&&... callbacks) {
+        std::thread([cbks = std::make_tuple(std::forward<Callbacks>(callbacks)...), delay = microSecs]() {
+            std::apply([=](auto&&... cbk) {
+                (..., (sleep(delay), cbk()));
+            }, cbks);
+        }).detach();
     }
 }  // namespace DynXX::Core::Concurrent
