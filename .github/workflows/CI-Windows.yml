@@ -6,7 +6,6 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
-      - 'third-party/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
