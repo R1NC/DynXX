@@ -95,9 +95,9 @@ else()
     add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 endif()
 
-## Add Definitions for target:
+## Add Common Definitions:
 
-addFeatureDefinitions(${PROJECT_NAME}
+addDefinitions(${PROJECT_NAME} ON
     USE_VCPKG
     USE_STD_TO_CHARS
     USE_CURL
@@ -110,6 +110,26 @@ addFeatureDefinitions(${PROJECT_NAME}
     USE_LIBUV
     USE_SPDLOG
 )
+
+## Add Definitions for Windows:
+
+if(WIN32)
+    addDefinitions(${PROJECT_NAME} OFF
+        NOMINMAX
+        WIN32_LEAN_AND_MEAN
+    )
+endif()
+
+## Add Compile Options:
+
+if(WIN32)
+    # force UTF-8
+    if(MSVC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC"))
+        target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        target_compile_options(${PROJECT_NAME} PRIVATE -finput-charset=UTF-8)
+    endif()
+endif()
 
 ## Include Directories:
 
