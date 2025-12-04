@@ -840,8 +840,7 @@ size_t dynxxJsonDecoderReadChildrenCount(DynXXJsonDecoderHandle decoder, DynXXJs
     return xdecoder->readChildrenCount(node);
 }
 
-void dynxxJsonDecoderReadChildren(DynXXJsonDecoderHandle decoder, std::function<void(size_t idx, DynXXJsonNodeHandle childNode, DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback,
-                                   DynXXJsonNodeHandle node) {
+void dynxxJsonDecoderReadChildren(DynXXJsonDecoderHandle decoder, DynXXJsonDecoderReadChildrenCallback &&callback, DynXXJsonNodeHandle node) {
     if (decoder == 0) {
         return;
     }
