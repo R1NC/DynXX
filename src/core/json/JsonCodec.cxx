@@ -412,7 +412,7 @@ size_t Decoder::readChildrenCount(DynXXJsonNodeHandle node) const
     return count;
 }
 
-void Decoder::readChildren(DynXXJsonNodeHandle node, std::function<void(size_t idx, DynXXJsonNodeHandle childNode, DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback) const
+void Decoder::readChildren(DynXXJsonNodeHandle node, DynXXJsonDecoderReadChildrenCallback &&callback) const
 {
     if (!this->valid()) [[unlikely]]
     {

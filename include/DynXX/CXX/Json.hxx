@@ -17,6 +17,8 @@ enum class DynXXJsonNodeTypeX : uint8_t {
     Null,
 };
 
+using DynXXJsonDecoderReadChildrenCallback = std::function<void(size_t idx, DynXXJsonNodeHandle childNode, DynXXJsonNodeTypeX childType, std::string_view childName)>;
+
 DynXXJsonNodeTypeX dynxxJsonNodeReadType(DynXXJsonNodeHandle node);
 
 std::optional<std::string> dynxxJsonNodeReadName(DynXXJsonNodeHandle node);
@@ -41,8 +43,7 @@ DynXXJsonNodeHandle dynxxJsonDecoderReadChild(DynXXJsonDecoderHandle decoder, Dy
 
 size_t dynxxJsonDecoderReadChildrenCount(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node = 0);
 
-void dynxxJsonDecoderReadChildren(DynXXJsonDecoderHandle decoder, std::function<void(size_t idx, DynXXJsonNodeHandle childNode, DynXXJsonNodeTypeX childType, std::string_view childName)> &&callback,
-                                   DynXXJsonNodeHandle node = 0);
+void dynxxJsonDecoderReadChildren(DynXXJsonDecoderHandle decoder, DynXXJsonDecoderReadChildrenCallback &&callback, DynXXJsonNodeHandle node = 0);
 
 DynXXJsonNodeHandle dynxxJsonDecoderReadNext(DynXXJsonDecoderHandle decoder, DynXXJsonNodeHandle node = 0);
 
