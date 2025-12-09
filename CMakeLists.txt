@@ -292,6 +292,37 @@ if(USE_SPDLOG)
     endif()
 endif()
 
+if(ANDROID)
+    list(APPEND LINK_LIBS 
+        android
+        log
+        z
+    )
+elseif(APPLE)
+    list(APPEND LINK_LIBS 
+        apple_nghttp2
+        z
+    )
+    if(USE_DB)
+        list(APPEND LINK_LIBS 
+            sqlite3
+        )
+    endif()
+elseif(WIN32)
+    list(APPEND LINK_LIBS 
+        ws2_32 
+        Wldap32
+    )
+elseif(OHOS)
+    list(APPEND LINK_LIBS
+        libace_napi.z.so
+        libhilog_ndk.z.so
+        libdeviceinfo_ndk.z.so
+        z
+        uv
+    )
+endif()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
 
 ## install headers
