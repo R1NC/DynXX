@@ -215,7 +215,7 @@ if(USE_QJS)
         https://github.com/R1NC/quickjs-ng
         dev
     )
-    list(APPEND LINK_LIBS quickjs)
+    list(APPEND LINK_LIBS qjs)
 endif()
 
 if(USE_KV)
