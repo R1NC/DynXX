@@ -2,8 +2,6 @@
 
 #include "../C/Types.h"
 
-#include <string.h>
-
 #include <cstdint>
 #include <cstring>
 #include <string_view>

@@ -325,6 +325,44 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
 
+## Setup Sanitizers
+
+set(SANITIZERS "")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    if(ANDROID AND "${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "arm64-v8a")
+        list(APPEND SANITIZERS "hwaddress")
+    else()
+        list(APPEND SANITIZERS "address")
+    endif()
+
+    if(NOT WIN32)
+        list(APPEND SANITIZERS "undefined")
+    endif()
+
+    if(NOT WIN32 AND NOT EMSCRIPTEN AND NOT ANDROID AND NOT OHOS AND NOT APPLE)
+        list(APPEND SANITIZERS "leak")
+    endif()
+
+    # TSan is mutually exclusive with ASan and LSan. 
+    # Enable it only if you strictly need to check for race conditions.
+    if(NOT WIN32 AND NOT EMSCRIPTEN AND NOT ANDROID AND NOT OHOS)
+        # list(APPEND SANITIZERS "thread")
+    endif()
+
+    if(SANITIZERS)
+        list(JOIN SANITIZERS "," SANITIZERS_STR)
+        if(MSVC)
+            set(SANITIZER_FLAGS "/fsanitize=${SANITIZERS_STR}")
+        else()
+            set(SANITIZER_FLAGS "-fsanitize=${SANITIZERS_STR}")
+        endif()
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+            COMPILE_FLAGS "${SANITIZER_FLAGS}"
+            LINK_FLAGS "${SANITIZER_FLAGS}"
+        )
+    endif()
+endif()
+
 ## install headers
 
 installHeaders(include/DynXX include)
@@ -360,6 +398,10 @@ message("     └─ USE_SPDLOG: ${USE_SPDLOG}")
 message("     └─ USE_ADA: ${USE_ADA}")
 message(" └─ LINK_LIBS:")
 foreach(x IN LISTS LINK_LIBS)
+    message("     └─ ${x}")
+endforeach()
+message(" └─ SANITIZERS:")
+foreach(x IN LISTS SANITIZERS)
     message("     └─ ${x}")
 endforeach()
 message("")
