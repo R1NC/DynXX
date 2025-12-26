@@ -357,7 +357,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
             set(SANITIZER_FLAGS "-fsanitize=${SANITIZERS_STR}")
         endif()
         set_target_properties(${PROJECT_NAME} PROPERTIES
-            COMPILE_FLAGS "${SANITIZER_FLAGS}"
+            COMPILE_FLAGS "${SANITIZER_FLAGS} -fno-omit-frame-pointer -g"
             LINK_FLAGS "${SANITIZER_FLAGS}"
         )
     endif()
