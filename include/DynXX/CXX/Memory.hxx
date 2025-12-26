@@ -139,3 +139,71 @@ struct FreeDeleter {
     }
 };
 using AutoFreePtr = std::unique_ptr<void, FreeDeleter>;
+
+// Classes
+
+class DynXXStaticOnly {
+    public:
+        DynXXStaticOnly() = delete;
+        DynXXStaticOnly(const DynXXStaticOnly& other) = delete;
+        DynXXStaticOnly& operator=(const DynXXStaticOnly& other) = delete;
+        DynXXStaticOnly(DynXXStaticOnly&& other) = delete;
+        DynXXStaticOnly& operator=(DynXXStaticOnly&& other) = delete;
+        void* operator new(std::size_t) = delete;
+        void* operator new[](std::size_t) = delete;
+        void operator delete(void*) noexcept = delete;
+        void operator delete[](void*) noexcept = delete;
+        ~DynXXStaticOnly() = delete;
+};
+
+class DynXXStackOnly {
+public:
+    DynXXStackOnly() = default;
+    DynXXStackOnly(const DynXXStackOnly& other) = default;
+    DynXXStackOnly& operator=(const DynXXStackOnly& other) = default;
+    DynXXStackOnly(DynXXStackOnly&& other) noexcept = default;
+    DynXXStackOnly& operator=(DynXXStackOnly&& other) noexcept = default;
+    //virtual ~DynXXStackOnly() = delete;
+    void* operator new(size_t) = delete;
+    void* operator new[](size_t) = delete;
+    void operator delete(void*) = delete;
+    void operator delete[](void*) = delete;
+};
+
+class DynXXHeapOnly {
+public:
+    DynXXHeapOnly(const DynXXHeapOnly& other) = delete;
+    DynXXHeapOnly& operator=(const DynXXHeapOnly& other) = delete;
+    DynXXHeapOnly(DynXXHeapOnly&& other) = delete;
+    DynXXHeapOnly& operator=(DynXXHeapOnly&& other) = delete;
+
+protected:
+    explicit DynXXHeapOnly() = default;
+    virtual ~DynXXHeapOnly() = default;
+};
+
+template <typename Derived>
+class DynXXSmartHeapOnly : public DynXXHeapOnly {
+public:
+    DynXXSmartHeapOnly(const DynXXSmartHeapOnly&) = delete;
+    DynXXSmartHeapOnly& operator=(const DynXXSmartHeapOnly&) = delete;
+    DynXXSmartHeapOnly(DynXXSmartHeapOnly&&) = delete;
+    DynXXSmartHeapOnly& operator=(DynXXSmartHeapOnly&&) = delete;
+
+    template<typename... Args>
+    static std::shared_ptr<Derived> makeUnique(Args&&... args) {
+        return std::make_unique<Derived>(Token{}, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    static std::shared_ptr<Derived> makeShared(Args&&... args) {
+        return std::make_shared<Derived>(Token{}, std::forward<Args>(args)...);
+    }
+
+protected:
+    struct Token {
+        explicit Token() = default;
+    };
+    explicit DynXXSmartHeapOnly(Token) : DynXXHeapOnly() {}
+    virtual ~DynXXSmartHeapOnly() = default;
+};
