@@ -18,7 +18,7 @@ namespace {
 
     std::string buildUrl(std::string_view baseUrl, std::string_view params) {
         if (params.empty()) [[unlikely]] {
-            return {baseUrl};
+            return std::string(baseUrl);
         }
         const auto separator = (baseUrl.find('?') == std::string_view::npos) ? '?' : '&';
         std::string result;
