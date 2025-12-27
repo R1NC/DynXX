@@ -12,6 +12,8 @@
 #include <WS2tcpip.h>
 #include <iphlpapi.h>
 
+#include <DynXX/CXX/Memory.hxx>
+
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "iphlpapi.lib")
 
@@ -24,7 +26,7 @@ std::string macAddress()
     std::string macAddress;
 
     GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, nullptr, &outBufLen);
-    pAddresses = (PIP_ADAPTER_ADDRESSES)std::malloc(outBufLen);
+    pAddresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(std::malloc(outBufLen));
     
     if (GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, pAddresses, &outBufLen) == NO_ERROR)
     {
@@ -41,7 +43,7 @@ std::string macAddress()
         }
     }
 
-    std::free(pAddresses);
+    freeX(pAddresses);
     return macAddress;
 }
 
@@ -74,7 +76,7 @@ NetType netType()
         }
     }
         
-    std::free(pAddresses);
+    freeX(pAddresses);
     return result;
 }
 

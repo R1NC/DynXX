@@ -562,7 +562,7 @@ DynXXZipHandle dynxx_z_zip_init(DynXXZipCompressMode mode, size_t bufferSize, Dy
 
 DYNXX_EXPORT_AUTO
 size_t dynxx_z_zip_input(DynXXZipHandle zip, const byte *inBytes, size_t inLen, bool inFinish) {
-    return dynxxZZipInput(zip, makeBytes(inBytes, inLen), inFinish);
+    return dynxxZZipInput(zip, makeBytesView(inBytes, inLen), inFinish);
 }
 
 DYNXX_EXPORT_AUTO
@@ -588,7 +588,7 @@ DynXXUnZipHandle dynxx_z_unzip_init(size_t bufferSize, DynXXZFormat format) {
 
 DYNXX_EXPORT_AUTO
 size_t dynxx_z_unzip_input(DynXXUnZipHandle unzip, const byte *inBytes, size_t inLen, bool inFinish) {
-    return dynxxZUnzipInput(unzip, makeBytes(inBytes, inLen), inFinish);
+    return dynxxZUnzipInput(unzip, makeBytesView(inBytes, inLen), inFinish);
 }
 
 DYNXX_EXPORT_AUTO
@@ -625,7 +625,7 @@ bool dynxx_z_cfile_unzip(size_t bufferSize, DynXXZFormat format, FILE *cFILEIn, 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_z_bytes_zip(DynXXZipCompressMode mode, size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen,
                                size_t *outLen) {
-    const auto bytes = dynxxZBytesZip(makeBytes(inBytes, inLen),
+    const auto bytes = dynxxZBytesZip(makeBytesView(inBytes, inLen),
                                         static_cast<DynXXZipCompressModeX>(mode), bufferSize,
                                         static_cast<DynXXZFormatX>(format));
     return handleOutBytes(bytes, outLen);
@@ -633,7 +633,7 @@ const byte *dynxx_z_bytes_zip(DynXXZipCompressMode mode, size_t bufferSize, DynX
 
 DYNXX_EXPORT_AUTO
 const byte *dynxx_z_bytes_unzip(size_t bufferSize, DynXXZFormat format, const byte *inBytes, size_t inLen, size_t *outLen) {
-    const auto bytes = dynxxZBytesUnzip(makeBytes(inBytes, inLen),
+    const auto bytes = dynxxZBytesUnzip(makeBytesView(inBytes, inLen),
                                           bufferSize, static_cast<DynXXZFormatX>(format));
     return handleOutBytes(bytes, outLen);
 }

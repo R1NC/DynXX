@@ -118,15 +118,19 @@ namespace {
 #endif
 
     template <typename T>
-    Bytes processBytes(size_t bufferSize, const Bytes &in, ZBase<T> &zb)
+    Bytes processBytes(size_t bufferSize, BytesView inBytesView, ZBase<T> &zb)
     {
+        if (inBytesView.empty()) [[unlikely]]
+        {
+            return {};
+        }
         int64_t pos(0);
         Bytes outBytes;
         if (!process(zb, bufferSize,
-            [bufferSize, &in, &pos]
+            [bufferSize, inBytes = Bytes(inBytesView.begin(), inBytesView.end()), &pos]
             {
-                const auto len = static_cast<int64_t>(std::min<size_t>(bufferSize, in.size() - pos));
-                Bytes bytes(in.begin() + pos, in.begin() + pos + len);
+                const auto len = static_cast<int64_t>(std::min<size_t>(bufferSize, inBytes.size() - pos));
+                Bytes bytes(inBytes.data() + pos, inBytes.data() + pos + len);
                 pos += len;
                 return bytes;
             },
@@ -175,7 +179,7 @@ ZBase<T>::ZBase(size_t bufferSize, DynXXZFormatX format) : bufferSize{bufferSize
 }
 
 template <typename T>
-size_t ZBase<T>::input(const Bytes &bytes, bool finish)
+size_t ZBase<T>::input(BytesView bytes, bool finish)
 {
     if (bytes.empty()) [[unlikely]]
     {
@@ -299,13 +303,13 @@ bool unzip(size_t bufferSize, DynXXZFormatX format, std::FILE *inFile, std::FILE
 
 // Bytes
 
-Bytes zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, const Bytes &bytes)
+Bytes zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, BytesView bytes)
 {
     Zip zip(mode, bufferSize, format);
     return processBytes(bufferSize, bytes, zip);
 }
 
-Bytes unzip(size_t bufferSize, DynXXZFormatX format, const Bytes &bytes)
+Bytes unzip(size_t bufferSize, DynXXZFormatX format, BytesView bytes)
 {
     UnZip unzip(bufferSize, format);
     return processBytes(bufferSize, bytes, unzip);

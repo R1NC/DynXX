@@ -30,7 +30,7 @@ namespace DynXX::Core::Z {
         ZBase(ZBase &&) = delete;
         ZBase &operator=(ZBase &&) = delete;
 
-        size_t input(const Bytes &bytes, bool finish);
+        size_t input(BytesView bytes, bool finish);
 
         Bytes processDo();
 
@@ -101,7 +101,7 @@ namespace DynXX::Core::Z {
 
 #endif
 
-    Bytes zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, const Bytes &bytes);
+    Bytes zip(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format, BytesView bytes);
 
-    Bytes unzip(size_t bufferSize, DynXXZFormatX format, const Bytes &bytes);
+    Bytes unzip(size_t bufferSize, DynXXZFormatX format, BytesView bytes);
 }  // namespace DynXX::Core::Z

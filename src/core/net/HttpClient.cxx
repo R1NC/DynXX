@@ -69,11 +69,11 @@ namespace
             return *this;
         }
 
-        bool valid() const {
+        [[nodiscard]] bool valid() const {
             return this->curl != nullptr;
         }
         
-        bool appendHeader(const char *string) {
+        [[nodiscard]] bool appendHeader(const char *string) {
             if (string == nullptr) [[unlikely]] {
                 dynxxLogPrint(Error, "HttpClient appendHeader invalid params");
                 return false;
@@ -87,7 +87,7 @@ namespace
             return false;
         }
 
-        curl_mimepart *addMimePart() {
+        [[nodiscard]] curl_mimepart *addMimePart() {
             if (this->mime == nullptr) [[unlikely]] {
                 return nullptr;
             }
@@ -102,7 +102,7 @@ namespace
             return curl_mime_addpart(this->mime);
         }
 
-        bool addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, size_t dataLen) const {
+        [[nodiscard]] bool addMimeData(curl_mimepart *part, const char *name, const char *type, const char *dataP, size_t dataLen) const {
             if (part == nullptr || name == nullptr || type == nullptr || dataP == nullptr || dataLen == 0) [[unlikely]] {
                 dynxxLogPrint(Error, "HttpClient addMime invalid params");
                 return false;
@@ -139,7 +139,7 @@ namespace
             return true;
         }
 
-        bool perform() {
+        [[nodiscard]] bool perform() {
             if (this->curl == nullptr) [[unlikely]]
             {
                 dynxxLogPrint(Error, "HttpClient perform invalid curl");
@@ -153,7 +153,7 @@ namespace
         }
 
         template <typename T>
-        bool getInfo(CURLINFO info, T value) {
+        [[nodiscard]] bool getInfo(CURLINFO info, T value) {
             if (this->curl == nullptr) [[unlikely]]
             {
                 dynxxLogPrint(Error, "HttpClient getInfo invalid curl");
@@ -261,7 +261,7 @@ namespace
         return size * nitems;
     }
 
-    bool checkUrlValid(std::string_view url)
+    [[nodiscard]] bool checkUrlValid(std::string_view url)
     {
         if (url.empty()) [[unlikely]]
         {
@@ -277,12 +277,12 @@ namespace
         return true;
     }
 
-    bool checkUrlHasSearch(std::string_view url)
+    [[nodiscard]] bool checkUrlHasSearch(std::string_view url)
     {
         return url.find('?', 0) != std::string::npos;
     }
 
-    bool handleSSL(Req &req, std::string_view url)
+    [[nodiscard]] bool handleSSL(Req &req, std::string_view url)
     {
 #if defined(USE_ADA)
         const auto aUrl = ada::parse(url);
@@ -331,7 +331,9 @@ namespace
         for (const auto &it : headers)
         {
             dynxxLogPrintF(Debug, "HttpClient.req header: {}", it);
-            req.appendHeader(it.c_str());
+            if (!req.appendHeader(it.c_str())) [[unlikely]] {
+                return req;
+            }
         }
 
         std::string fixedUrl;
@@ -352,7 +354,7 @@ namespace
         return req;
     }
 
-    bool submitReq(Req &req, DynXXHttpResponse &rsp)
+    [[nodiscard]] bool submitReq(Req &req, DynXXHttpResponse &rsp)
     {
         if (!req.perform()) [[unlikely]]
         {
@@ -418,7 +420,9 @@ DynXXHttpResponse HttpClient::request(std::string_view url, DynXXHttpMethodX met
         const auto part = req.addMimePart();
         for (const auto &[name, mime, data] : formFields)
         {
-            req.addMimeData(part, name.c_str(), mime.c_str(), data.c_str(), data.size());
+            if (!req.addMimeData(part, name.c_str(), mime.c_str(), data.c_str(), data.size())) [[unlikely]] {
+                return {};
+            }
         }
     }
     else if (method == Post)
@@ -447,7 +451,9 @@ DynXXHttpResponse HttpClient::request(std::string_view url, DynXXHttpMethodX met
     req.setOpt(CURLOPT_HEADERFUNCTION, on_write_rsp_headers);
     req.setOpt(CURLOPT_HEADERDATA, &rsp.headers);
 
-    submitReq(req, rsp);
+    if (!submitReq(req, rsp)) [[unlikely]] {
+        return {};
+    }
     
     return rsp;
 }
@@ -472,7 +478,10 @@ bool HttpClient::download(std::string_view url, std::string_view filePath, size_
     req.setOpt(CURLOPT_WRITEDATA, &file);
 
     DynXXHttpResponse rsp;
-    submitReq(req, rsp);
+    if (!submitReq(req, rsp)) [[unlikely]] {
+        file.close();
+        return false;
+    }
 
     file.close();
 

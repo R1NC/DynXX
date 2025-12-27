@@ -46,6 +46,7 @@ void memcpyX(const T *src, T *dst, size_t count) {
 template<CharacterT T>
 T *mallocX(size_t count = 1) {
     const auto len = count * sizeof(T) + 1;
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
     auto ptr = std::malloc(len);
     if (ptr == nullptr) [[unlikely]] {
         return nullptr;
@@ -62,6 +63,7 @@ T *mallocX(size_t count = 1) {
     if constexpr (std::is_pointer_v<T>) {
         allocCount = count + 1;
     }
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
     auto ptr = std::calloc(allocCount, sizeof(T));
     if (ptr == nullptr) [[unlikely]] {
         return nullptr;
@@ -76,6 +78,7 @@ void freeX(T * &ptr) {
     if (ptr == nullptr) [[unlikely]] {
         return;
     }
+    // NOLINTNEXTLINE(cppcoreguidelines-no-malloc)
     std::free(static_cast<RawPtr>(ptr));
     ptr = nullptr;
 }
@@ -87,6 +90,7 @@ void freeX(T * &ptr) {
     if (ptr == nullptr) [[unlikely]] {
         return;
     }
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
     std::free(ptr);
     ptr = nullptr;
 }
@@ -98,6 +102,7 @@ void freeX(T * &ptr) {
     if (ptr == nullptr) [[unlikely]] {
         return;
     }
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc,cppcoreguidelines-pro-type-const-cast)
     std::free(const_cast<void *>(static_cast<const void *>(ptr)));
     ptr = nullptr;
 }
@@ -109,6 +114,7 @@ void freeX(T * &ptr) {
     if (ptr == nullptr) [[unlikely]] {
         return;
     }
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
     std::free(const_cast<void *>(ptr));
     ptr = nullptr;
 }
@@ -163,7 +169,7 @@ public:
     DynXXStackOnly& operator=(const DynXXStackOnly& other) = default;
     DynXXStackOnly(DynXXStackOnly&& other) noexcept = default;
     DynXXStackOnly& operator=(DynXXStackOnly&& other) noexcept = default;
-    //virtual ~DynXXStackOnly() = delete;
+    virtual ~DynXXStackOnly() = delete;
     void* operator new(size_t) = delete;
     void* operator new[](size_t) = delete;
     void operator delete(void*) = delete;
@@ -176,10 +182,10 @@ public:
     DynXXHeapOnly& operator=(const DynXXHeapOnly& other) = delete;
     DynXXHeapOnly(DynXXHeapOnly&& other) = delete;
     DynXXHeapOnly& operator=(DynXXHeapOnly&& other) = delete;
+    virtual ~DynXXHeapOnly() = default;
 
 protected:
     explicit DynXXHeapOnly() = default;
-    virtual ~DynXXHeapOnly() = default;
 };
 
 template <typename Derived>
@@ -204,6 +210,8 @@ protected:
     struct Token {
         explicit Token() = default;
     };
-    explicit DynXXSmartHeapOnly(Token) : DynXXHeapOnly() {}
+    explicit DynXXSmartHeapOnly(Token token) : DynXXHeapOnly(), token(token) {}
     virtual ~DynXXSmartHeapOnly() = default;
+private:
+    Token token;
 };
