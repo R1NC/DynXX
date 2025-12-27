@@ -163,7 +163,7 @@ std::string strTrim(std::string_view str)
         return {};
     }
     const auto end = str.find_last_not_of(invalidChars);
-    return str.substr(begin, end - begin + 1);
+    return {str.substr(begin, end - begin + 1)};
 #endif
 }
 
