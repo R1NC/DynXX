@@ -14,7 +14,9 @@
 namespace
 {
     std::string sysCtlByName(const char* key) {
-        if (!key) return {};
+        if (key == nullptr) [[unlikely]] {
+            return {};
+        }
         size_t size = 0;
         
         if (const auto ret = sysctlbyname(key, nullptr, &size, nullptr, 0); ret != 0 || size == 0) [[unlikely]] {
@@ -64,11 +66,11 @@ std::string osVersion()
     static const auto version = []() -> std::string {
         @autoreleasepool {
             NSString *nsVersion = UIDevice.currentDevice.systemVersion;
-            if (!nsVersion) [[unlikely]] {
+            if (nsVersion == nullptr) [[unlikely]] {
                 return "Unknown";
             }
             const auto cstr = NSString2CharP(nsVersion);
-            if (!cstr) [[unlikely]] {
+            if (cstr == nullptr) [[unlikely]] {
                 return "Unknown";
             }
             return {cstr};

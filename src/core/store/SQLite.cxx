@@ -23,12 +23,17 @@ SQLiteStore::SQLiteStore()
     sqlite3_initialize();
 }
 
-std::weak_ptr<Connection> SQLiteStore::open(const std::string &file)
+std::weak_ptr<Connection> SQLiteStore::open(std::string_view file)
 {
+    if (file.empty()) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "SQLite.open file empty");
+        return {};
+    }
     const auto cid = genCid(file);
-    return ConnPool<Connection>::open(cid, [cid, &file]() {
+    return ConnPool<Connection>::open(cid, [cid, fileStr = std::string(file)]() {
         sqlite3 *db{nullptr};
-        if (const auto rc = sqlite3_open_v2(file.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK || db == nullptr) [[unlikely]] {
+        if (const auto rc = sqlite3_open_v2(fileStr.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK || db == nullptr) [[unlikely]] {
             PRINT_ERR(rc, db);
             if (db != nullptr) {
                 sqlite3_close(db);

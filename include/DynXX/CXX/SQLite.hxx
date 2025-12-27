@@ -3,7 +3,7 @@
 #include "Types.hxx"
 #include "../C/SQLite.h"
 
-DynXXSQLiteConnHandle dynxxSQLiteOpen(const std::string &_id);
+DynXXSQLiteConnHandle dynxxSQLiteOpen(std::string_view _id);
 
 bool dynxxSQLiteExecute(DynXXSQLiteConnHandle conn, std::string_view sql);
 

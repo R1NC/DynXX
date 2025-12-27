@@ -199,7 +199,7 @@ std::string dynxxGetVersion() {
 
 #if defined(USE_KV) || defined(USE_DB)
 std::optional<std::string> dynxxRootPath() {
-    if (!_root) {
+    if (_root == nullptr) {
         return std::nullopt;
     }
     return std::make_optional(*_root);
@@ -212,7 +212,7 @@ bool dynxxInit(std::string_view root) {
     unzipCache = std::make_unique<Mem::PtrCache<UnZip>>();
 
 #if defined(USE_KV) || defined(USE_DB)
-    if (_root) {
+    if (_root != nullptr) {
         return true;
     }
     if (root.empty()) {
@@ -251,7 +251,7 @@ void dynxxRelease() {
     unzipCache.reset();
 
 #if defined(USE_KV) || defined(USE_DB)
-    if (!_root) {
+    if (_root == nullptr) [[unlikely]] {
         return;
     }
     _root.reset();
@@ -429,11 +429,11 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         size_t timeout) {
     DynXXHttpResponse rsp;
 #if defined(USE_CURL)
-    if (!_http_client) {
+    if (_http_client == nullptr) [[unlikely]] {
         return rsp;
     }
 #endif
-    if (url.empty()) {
+    if (url.empty()) [[unlikely]] {
         return rsp;
     }
 
@@ -541,7 +541,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
 
 #if defined(USE_CURL)
 bool dynxxNetHttpDownload(std::string_view url, std::string_view filePath, size_t timeout) {
-    if (!_http_client || url.empty() || filePath.empty()) {
+    if (_http_client == nullptr || url.empty() || filePath.empty()) [[unlikely]] {
         return false;
     }
     return _http_client->download(url, filePath, timeout);
@@ -552,15 +552,15 @@ bool dynxxNetHttpDownload(std::string_view url, std::string_view filePath, size_
 
 #if defined(USE_DB)
 
-DynXXSQLiteConnHandle dynxxSQLiteOpen(const std::string &_id) {
-    if (!_sqlite || !_root || _id.empty()) {
+DynXXSQLiteConnHandle dynxxSQLiteOpen(std::string_view _id) {
+    if (_sqlite == nullptr || _root == nullptr || _id.empty()) [[unlikely]] {
         return 0;
     }
     const auto rootPath = dynxxRootPath();
     if (!rootPath.has_value()) [[unlikely]] {
         return 0;
     }
-    std::string dbPath = rootPath.value() + "/" + _id + ".db";
+    const auto dbPath = rootPath.value() + "/" + std::string(_id) + ".db";
     if (const auto ptr = _sqlite->open(dbPath).lock()) [[likely]] {
         return Mem::ptr2addr(ptr.get());
     }
@@ -648,8 +648,8 @@ void dynxxSQLiteClose(DynXXSQLiteConnHandle conn) {
 
 #if defined(USE_KV)
 
-DynXXKVConnHandle dynxxKVOpen(const std::string &_id) {
-    if (!_kv || _id.empty()) {
+DynXXKVConnHandle dynxxKVOpen(std::string_view _id) {
+    if (_kv == nullptr || _id.empty()) [[unlikely]] {
         return 0;
     }
     if (const auto ptr = _kv->open(_id).lock()) [[likely]] {

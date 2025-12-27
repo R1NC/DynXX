@@ -55,9 +55,9 @@ namespace DynXX::Core::Crypto {
         
             explicit Codec(BytesView key, DynXXCryptoRSAPaddingX padding);
         
-            virtual std::optional<Bytes> process(BytesView in) const = 0;
+            [[nodiscard]] virtual std::optional<Bytes> process(BytesView in) const = 0;
         
-            size_t outLen() const;
+            [[nodiscard]] size_t outLen() const;
         
             virtual ~Codec();
         
@@ -82,7 +82,7 @@ namespace DynXX::Core::Crypto {
         
             explicit Encrypt(BytesView key, DynXXCryptoRSAPaddingX padding);
         
-            std::optional<Bytes> process(BytesView in) const override;
+            [[nodiscard]] std::optional<Bytes> process(BytesView in) const override;
         };
     
         class Decrypt final : public Codec
@@ -97,7 +97,7 @@ namespace DynXX::Core::Crypto {
         
             explicit Decrypt(BytesView key, DynXXCryptoRSAPaddingX padding);
         
-            std::optional<Bytes> process(BytesView in) const override;
+            [[nodiscard]] std::optional<Bytes> process(BytesView in) const override;
         };
     }  // namespace RSA
 

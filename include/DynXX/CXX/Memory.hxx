@@ -47,7 +47,7 @@ template<CharacterT T>
 T *mallocX(size_t count = 1) {
     const auto len = count * sizeof(T) + 1;
     auto ptr = std::malloc(len);
-    if (!ptr) [[unlikely]] {
+    if (ptr == nullptr) [[unlikely]] {
         return nullptr;
     }
     std::memset(ptr, 0, len);
@@ -63,7 +63,7 @@ T *mallocX(size_t count = 1) {
         allocCount = count + 1;
     }
     auto ptr = std::calloc(allocCount, sizeof(T));
-    if (!ptr) [[unlikely]] {
+    if (ptr == nullptr) [[unlikely]] {
         return nullptr;
     }
     return static_cast<T *>(ptr);
@@ -73,7 +73,7 @@ T *mallocX(size_t count = 1) {
 template<typename T>
     requires (!ConstT<T> && !VoidT<T>)
 void freeX(T * &ptr) {
-    if (!ptr) [[unlikely]] {
+    if (ptr == nullptr) [[unlikely]] {
         return;
     }
     std::free(static_cast<RawPtr>(ptr));
@@ -84,7 +84,7 @@ void freeX(T * &ptr) {
 template<typename T>
     requires (!ConstT<T> && VoidT<T>)
 void freeX(T * &ptr) {
-    if (!ptr) [[unlikely]] {
+    if (ptr == nullptr) [[unlikely]] {
         return;
     }
     std::free(ptr);
@@ -95,7 +95,7 @@ void freeX(T * &ptr) {
 template<typename T>
     requires (ConstT<T> && !VoidT<T>)
 void freeX(T * &ptr) {
-    if (!ptr) [[unlikely]] {
+    if (ptr == nullptr) [[unlikely]] {
         return;
     }
     std::free(const_cast<void *>(static_cast<const void *>(ptr)));
@@ -106,7 +106,7 @@ void freeX(T * &ptr) {
 template<typename T>
     requires (ConstT<T> && VoidT<T>)
 void freeX(T * &ptr) {
-    if (!ptr) [[unlikely]] {
+    if (ptr == nullptr) [[unlikely]] {
         return;
     }
     std::free(const_cast<void *>(ptr));

@@ -5,9 +5,6 @@
 #else
 #include <cJSON.h>
 #endif
-
-#include <functional>
-
 #include <DynXX/CXX/Json.hxx>
 
 namespace DynXX::Core::Json {
@@ -45,7 +42,7 @@ namespace DynXX::Core::Json {
 
         void readChildren(DynXXJsonNodeHandle node, DynXXJsonDecoderReadChildrenCallback &&callback) const;
 
-        DynXXJsonNodeHandle readNode(DynXXJsonNodeHandle node, std::string_view k) const;
+        [[nodiscard]] DynXXJsonNodeHandle readNode(DynXXJsonNodeHandle node, std::string_view k) const;
 
         DynXXJsonNodeHandle operator[](std::string_view k) const;
 

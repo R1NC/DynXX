@@ -115,7 +115,9 @@ private:
     
     template<typename T>
     void autoFree(T *p) {
-        if (!p) return;
+        if (p == nullptr) {
+            return;
+        }
         this->ptrVec.emplace_back((void*)p);
     }
 };

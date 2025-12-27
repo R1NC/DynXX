@@ -1,4 +1,3 @@
-#include <cstdint>
 #if defined(USE_CURL)
 
 #include "HttpClient.hxx"

@@ -233,7 +233,7 @@ static void registerFuncs() {
     BIND_API(dynxx_sqlite_query_do);
     BIND_API(dynxx_sqlite_query_read_row);
     BIND_API(dynxx_sqlite_query_read_column_text);
-   BIND_API(dynxx_sqlite_query_read_column_integer);
+    BIND_API(dynxx_sqlite_query_read_column_integer);
     BIND_API(dynxx_sqlite_query_read_column_float);
     BIND_API(dynxx_sqlite_query_drop);
     BIND_API(dynxx_sqlite_close);
