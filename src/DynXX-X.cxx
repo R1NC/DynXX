@@ -883,7 +883,7 @@ DynXXZipHandle dynxxZZipInit(DynXXZipCompressModeX mode, size_t bufferSize, DynX
     return 0;
 }
 
-size_t dynxxZZipInput(DynXXZipHandle zip, const Bytes &inBytes, bool inFinish) {
+size_t dynxxZZipInput(DynXXZipHandle zip, BytesView inBytes, bool inFinish) {
     if (zip == 0) {
         return 0;
     }
@@ -935,7 +935,7 @@ DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, DynXXZFormatX format) {
     return 0;
 }
 
-size_t dynxxZUnzipInput(DynXXUnZipHandle unzip, const Bytes &inBytes, bool inFinish) {
+size_t dynxxZUnzipInput(DynXXUnZipHandle unzip, BytesView inBytes, bool inFinish) {
     if (unzip == 0) {
         return 0;
     }
@@ -1022,7 +1022,7 @@ bool dynxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut,
 
 #endif
 
-Bytes dynxxZBytesZip(const Bytes &inBytes, DynXXZipCompressModeX mode, size_t bufferSize,
+Bytes dynxxZBytesZip(BytesView inBytes, DynXXZipCompressModeX mode, size_t bufferSize,
                       DynXXZFormatX format) {
     if (bufferSize == 0) {
         return {};
@@ -1033,7 +1033,7 @@ Bytes dynxxZBytesZip(const Bytes &inBytes, DynXXZipCompressModeX mode, size_t bu
     return zip(mode, bufferSize, format, inBytes);
 }
 
-Bytes dynxxZBytesUnzip(const Bytes &inBytes, size_t bufferSize, DynXXZFormatX format) {
+Bytes dynxxZBytesUnzip(BytesView inBytes, size_t bufferSize, DynXXZFormatX format) {
     if (bufferSize == 0) {
         return {};
     }

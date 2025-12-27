@@ -4,12 +4,12 @@
 
 #include <functional>
 
-bool dynxxJsLoadF(std::string_view file, bool isModule);
+[[nodiscard]] bool dynxxJsLoadF(std::string_view file, bool isModule = false);
 
-bool dynxxJsLoadS(std::string_view script, std::string_view name, bool isModule);
+[[nodiscard]] bool dynxxJsLoadS(std::string_view script, std::string_view name, bool isModule = false);
 
-bool dynxxJsLoadB(BytesView bytes, bool isModule);
+[[nodiscard]] bool dynxxJsLoadB(BytesView bytes, bool isModule = false);
 
-std::optional<std::string> dynxxJsCall(std::string_view func, std::string_view params, bool await);
+[[nodiscard]] std::optional<std::string> dynxxJsCall(std::string_view func, std::string_view params, bool await = false);
 
 void dynxxJsSetMsgCallback(const std::function<const char *(const char *msg)> &callback);

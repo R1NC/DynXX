@@ -63,7 +63,9 @@ namespace {
                 headers.emplace(std::move(key), std::move(value));
             }
             
-            if (lineEnd == std::string_view::npos) break;
+            if (lineEnd == std::string_view::npos) {
+                break;
+            }
             remaining.remove_prefix(lineEnd + 1);
         }
     }
@@ -148,7 +150,7 @@ DynXXHttpResponse WasmHttpClient::request(std::string_view url,
         return response;
     }
             
-    while (!fetch->userData) {
+    while (fetch->userData == nullptr) {
         emscripten_sleep(SLEEP_MS);
     }
 

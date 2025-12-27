@@ -59,7 +59,7 @@ namespace
 
 // JSVM Internal
 
-    bool _loadScript(JSContext *ctx, std::string_view script, std::string_view name, bool isModule)
+    [[nodiscard]] bool _loadScript(JSContext *ctx, std::string_view script, std::string_view name, bool isModule)
     {
         if (ctx == nullptr || script.empty() || name.empty()) [[unlikely]] {
             return false;
@@ -109,7 +109,9 @@ namespace
         js_init_module_std(ctx, "qjs:std");
         js_init_module_os(ctx, "qjs:os");
 
-        _loadScript(ctx, IMPORT_STD_OS_JS, "import-std-os.js", true);
+        if (!_loadScript(ctx, IMPORT_STD_OS_JS, "import-std-os.js", true)) [[unlikely]] {
+            return ctx;
+        }
 
         return ctx;
     }

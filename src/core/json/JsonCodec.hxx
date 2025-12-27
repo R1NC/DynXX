@@ -32,13 +32,13 @@ namespace DynXX::Core::Json {
 
         Decoder &operator=(Decoder &&) noexcept;
 
-        bool valid() const;
+        [[nodiscard]] bool valid() const;
 
-        DynXXJsonNodeHandle readChild(DynXXJsonNodeHandle node) const;
+        [[nodiscard]] DynXXJsonNodeHandle readChild(DynXXJsonNodeHandle node) const;
 
-        DynXXJsonNodeHandle readNext(DynXXJsonNodeHandle node) const;
+        [[nodiscard]] DynXXJsonNodeHandle readNext(DynXXJsonNodeHandle node) const;
 
-        size_t readChildrenCount(DynXXJsonNodeHandle node) const;
+        [[nodiscard]] size_t readChildrenCount(DynXXJsonNodeHandle node) const;
 
         void readChildren(DynXXJsonNodeHandle node, DynXXJsonDecoderReadChildrenCallback &&callback) const;
 
@@ -46,13 +46,13 @@ namespace DynXX::Core::Json {
 
         DynXXJsonNodeHandle operator[](std::string_view k) const;
 
-        std::optional<std::string> readString(DynXXJsonNodeHandle node) const;
+        [[nodiscard]] std::optional<std::string> readString(DynXXJsonNodeHandle node) const;
 
-        std::optional<Num> readNumber(DynXXJsonNodeHandle node) const;
+        [[nodiscard]] std::optional<Num> readNumber(DynXXJsonNodeHandle node) const;
 
         template <typename T> 
         requires (IntegerT<T> || EnumT<T>)
-        std::optional<T> readNumInt(DynXXJsonNodeHandle node) const {
+        [[nodiscard]] std::optional<T> readNumInt(DynXXJsonNodeHandle node) const {
             const auto v = this->readNumber(node);
             if (v == std::nullopt) [[unlikely]] {
                 return std::nullopt;
@@ -63,7 +63,7 @@ namespace DynXX::Core::Json {
 
         template <typename T> 
         requires FloatT<T>
-        std::optional<T> readNumFloat(DynXXJsonNodeHandle node) const {
+        [[nodiscard]] std::optional<T> readNumFloat(DynXXJsonNodeHandle node) const {
             const auto v = this->readNumber(node);
             if (v == std::nullopt) [[unlikely]] {
                 return std::nullopt;
@@ -81,6 +81,6 @@ namespace DynXX::Core::Json {
 
         void cleanup() noexcept;
 
-        const cJSON *reinterpretNode(DynXXJsonNodeHandle node) const;
+        [[nodiscard]] const cJSON *reinterpretNode(DynXXJsonNodeHandle node) const;
     };
 }  // namespace DynXX::Core::Json

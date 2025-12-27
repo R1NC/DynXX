@@ -2,7 +2,6 @@
 
 #include "ScriptAPI.hxx"
 
-#include <functional>
 #if defined(__cpp_lib_ranges)
 #include <ranges>
 #endif

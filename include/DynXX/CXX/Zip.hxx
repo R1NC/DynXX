@@ -22,7 +22,7 @@ DynXXZipHandle dynxxZZipInit(DynXXZipCompressModeX mode = DynXXZipCompressModeX:
                      size_t bufferSize = DynXXZDefaultBufferSize,
                      DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-size_t dynxxZZipInput(DynXXZipHandle zip, const Bytes &inBytes, bool inFinish);
+[[nodiscard]] size_t dynxxZZipInput(DynXXZipHandle zip, BytesView inBytes, bool inFinish);
 
 Bytes dynxxZZipProcessDo(DynXXZipHandle zip);
 
@@ -33,7 +33,7 @@ void dynxxZZipRelease(DynXXZipHandle zip);
 DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize = DynXXZDefaultBufferSize,
                        DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-size_t dynxxZUnzipInput(DynXXUnZipHandle unzip, const Bytes &inBytes, bool inFinish);
+[[nodiscard]] size_t dynxxZUnzipInput(DynXXUnZipHandle unzip, BytesView inBytes, bool inFinish);
 
 Bytes dynxxZUnzipProcessDo(DynXXUnZipHandle unzip);
 
@@ -41,29 +41,29 @@ bool dynxxZUnzipProcessFinished(DynXXUnZipHandle unzip);
 
 void dynxxZUnzipRelease(DynXXUnZipHandle unzip);
 
-bool dynxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut,
+[[nodiscard]] bool dynxxZCFileZip(std::FILE *cFILEIn, std::FILE *cFILEOut,
                      DynXXZipCompressModeX mode = DynXXZipCompressModeX::Default,
                      size_t bufferSize = DynXXZDefaultBufferSize,
                      DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-bool dynxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut,
+[[nodiscard]] bool dynxxZCFileUnzip(std::FILE *cFILEIn, std::FILE *cFILEOut,
                        size_t bufferSize = DynXXZDefaultBufferSize,
                        DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-bool dynxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut,
+[[nodiscard]] bool dynxxZCxxStreamZip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut,
                          DynXXZipCompressModeX mode = DynXXZipCompressModeX::Default,
                          size_t bufferSize = DynXXZDefaultBufferSize,
                          DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-bool dynxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut,
+ [[nodiscard]] bool dynxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut,
                            size_t bufferSize = DynXXZDefaultBufferSize,
                            DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-Bytes dynxxZBytesZip(const Bytes &inBytes,
+Bytes dynxxZBytesZip(BytesView inBytes,
                       DynXXZipCompressModeX mode = DynXXZipCompressModeX::Default,
                       size_t bufferSize = DynXXZDefaultBufferSize,
                       DynXXZFormatX format = DynXXZFormatX::ZLib);
 
-Bytes dynxxZBytesUnzip(const Bytes &inBytes,
+Bytes dynxxZBytesUnzip(BytesView inBytes,
                         size_t bufferSize = DynXXZDefaultBufferSize,
                         DynXXZFormatX format = DynXXZFormatX::ZLib);
