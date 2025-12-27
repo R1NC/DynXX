@@ -328,7 +328,7 @@ bool dynxx_net_http_download(const char *url, const char *file_path, size_t time
 
 DYNXX_EXPORT_AUTO
 DynXXSQLiteConnHandle dynxx_sqlite_open(const char *_id) {
-    return dynxxSQLiteOpen(makeStr(_id));
+    return dynxxSQLiteOpen(_id);
 }
 
 DYNXX_EXPORT_AUTO
@@ -397,7 +397,7 @@ void dynxx_sqlite_close(DynXXSQLiteConnHandle conn) {
 
 DYNXX_EXPORT_AUTO
 DynXXKVConnHandle dynxx_kv_open(const char *_id) {
-    return dynxxKVOpen(makeStr(_id));
+    return dynxxKVOpen(_id);
 }
 
 DYNXX_EXPORT_AUTO

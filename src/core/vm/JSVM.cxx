@@ -132,7 +132,7 @@ namespace
 
         explicit JSPromise(const std::shared_ptr<JSContext> &ctx) : ctx(ctx) {
             const auto weakCtx = this->ctx.lock();
-            if (!weakCtx) [[unlikely]] {
+            if (weakCtx == nullptr) [[unlikely]] {
                 return;
             }
             this->p = JS_NewPromiseCapability(weakCtx.get(), this->f.data());
@@ -146,7 +146,7 @@ namespace
 
         void callbackJS(JSValue &ret) {
             const auto weakCtx = this->ctx.lock();
-            if (!weakCtx) [[unlikely]] {
+            if (weakCtx == nullptr) [[unlikely]] {
                 return;
             }
             const auto jCallRet = JS_Call(weakCtx.get(), this->f[0], JS_UNDEFINED, 1, &ret);
@@ -165,7 +165,7 @@ namespace
         ~JSPromise()
         {
             const auto weakCtx = this->ctx.lock();
-            if (!weakCtx) [[unlikely]] {
+            if (weakCtx == nullptr) [[unlikely]] {
                 return;
             }
             JS_FreeValue(weakCtx.get(), this->f[0]);
@@ -302,7 +302,7 @@ void JSVM::beforeLoad()
 {
     this->timerLooperTask = std::make_unique<TimerTask>([weakSelf = std::weak_ptr<BaseVM>(this->shared_from_this())]() {
         const auto self = std::dynamic_pointer_cast<JSVM>(weakSelf.lock());
-        if (!self) [[unlikely]] {
+        if (self == nullptr) [[unlikely]] {
             return;
         }
         if (self->tryLockUntil(JSLoopTimeoutMicroSecs))
@@ -314,7 +314,7 @@ void JSVM::beforeLoad()
 
     this->promiseLooperTask = std::make_unique<TimerTask>([weakSelf = std::weak_ptr<BaseVM>(this->shared_from_this())]() {
         const auto self = std::dynamic_pointer_cast<JSVM>(weakSelf.lock());
-        if (!self) [[unlikely]] {
+        if (self == nullptr) [[unlikely]] {
             return;
         }
         if (self->tryLockUntil(JSLoopTimeoutMicroSecs))

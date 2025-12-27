@@ -3,7 +3,7 @@
 #include "../C/KV.h"
 #include "Types.hxx"
 
-DynXXKVConnHandle dynxxKVOpen(const std::string &_id);
+DynXXKVConnHandle dynxxKVOpen(std::string_view _id);
 
 std::optional<std::string> dynxxKVReadString(DynXXKVConnHandle conn, std::string_view k);
 

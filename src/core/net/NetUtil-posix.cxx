@@ -212,7 +212,7 @@ std::string publicIpV6()
     }
 
     sockaddr_in6 serv{};
-    memset(&serv, 0, sizeof(serv));
+    std::memset(&serv, 0, sizeof(serv));
     serv.sin6_family = AF_INET6;
     serv.sin6_port = htons(kDefaultDnsPort);
     

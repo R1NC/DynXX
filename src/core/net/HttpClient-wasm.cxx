@@ -18,7 +18,7 @@ namespace {
 
     std::string buildUrl(std::string_view baseUrl, std::string_view params) {
         if (params.empty()) [[unlikely]] {
-            return std::string(baseUrl);
+            return {baseUrl};
         }
         const auto separator = (baseUrl.find('?') == std::string_view::npos) ? '?' : '&';
         std::string result;
@@ -143,7 +143,7 @@ DynXXHttpResponse WasmHttpClient::request(std::string_view url,
     attr.onerror = parseResponse;
             
     auto const fetch = emscripten_fetch(&attr, fullUrl.c_str());
-    if (!fetch) [[unlikely]] {
+    if (fetch == nullptr) [[unlikely]] {
         dynxxLogPrint(Error, "WasmHttpClient.request failed");
         return response;
     }

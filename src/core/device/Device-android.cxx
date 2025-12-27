@@ -37,7 +37,7 @@ namespace
 
     std::string sysProperty(const char *k)
     {
-        if (!k) [[unlikely]] {
+        if (k == nullptr) [[unlikely]] {
             return {};
         }
         std::string buffer(PROP_VALUE_MAX - 1, '\0');
@@ -48,7 +48,7 @@ namespace
         return {buffer.data(), static_cast<size_t>(len)};
     }
 
-    int apiLevel()
+    [[maybe_unused]] int apiLevel()
     {
         return android_get_device_api_level();
     }

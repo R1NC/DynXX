@@ -41,7 +41,7 @@ namespace DynXX::Core::Z {
         int ret{Z_OK};
         bool inFinish{false};
 
-        int windowBits() const;
+        [[nodiscard]] int windowBits() const;
 
     private:
         Bytes inBuffer;

@@ -107,7 +107,7 @@ namespace DynXX::Core::Store::SQLite {
         SQLiteStore(SQLiteStore &&) = delete;
         SQLiteStore &operator=(SQLiteStore &&) = delete;
 
-        std::weak_ptr<SQLite::Connection> open(const std::string &file);
+        std::weak_ptr<SQLite::Connection> open(std::string_view file);
 
         /**
          * @brief Release SQLite process

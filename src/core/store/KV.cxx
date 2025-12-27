@@ -10,9 +10,14 @@ namespace {
 
 namespace DynXX::Core::Store::KV {
 
-KVStore::KVStore(const std::string &root)
+KVStore::KVStore(std::string_view root)
 {
-    decltype(root) sRoot(root);
+    if (root.empty()) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "KVStore root empty");
+        return;
+    }
+    const auto sRoot = std::string(root);
     auto logLevel = MMKVLogNone;
     MMKV::initializeMMKV(
 #if defined(_WIN32)
@@ -23,12 +28,17 @@ KVStore::KVStore(const std::string &root)
         , logLevel);
 }
 
-std::weak_ptr<Connection> KVStore::open(const std::string &_id)
+std::weak_ptr<Connection> KVStore::open(std::string_view _id)
 {
+    if (_id.empty()) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "KVStore.open _id empty");
+        return {};
+    }
     const auto cid = genCid(_id);
-    return ConnPool<Connection>::open(cid, [cid, &_id]() { 
-        const auto kv = MMKV::mmkvWithID(_id, MMKV_MULTI_PROCESS);
-        if (!kv) [[unlikely]]
+    return ConnPool<Connection>::open(cid, [cid, _idStr = std::string(_id)]() { 
+        const auto kv = MMKV::mmkvWithID(_idStr, MMKV_MULTI_PROCESS);
+        if (kv == nullptr) [[unlikely]]
         {
             dynxxLogPrint(Error, "MMKV mmkvWithID failed");
             return std::shared_ptr<Connection>(nullptr);

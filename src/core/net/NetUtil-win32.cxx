@@ -52,13 +52,15 @@ NetType netType()
     NetType result = NetType::Offline;
     
     GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, nullptr, &outBufLen);
-    pAddresses = (PIP_ADAPTER_ADDRESSES)std::malloc(outBufLen);
+    pAddresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(std::malloc(outBufLen));
         
     if (const auto ret = GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, pAddresses, &outBufLen); ret == NO_ERROR) 
     {
         for (PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses; pCurrAddresses; pCurrAddresses = pCurrAddresses->Next) 
         {
-            if (pCurrAddresses->OperStatus != IfOperStatusUp) continue;
+            if (pCurrAddresses->OperStatus != IfOperStatusUp) {
+                continue;
+            }
             if (pCurrAddresses->IfType == IF_TYPE_ETHERNET_CSMACD) 
             {
                 result = NetType::Ethernet;
@@ -95,7 +97,7 @@ std::string publicIpV4()
     
     InetPtonA(AF_INET, kDefaultDnsIpV4, &serv.sin_addr);
 
-    if (connect(sock, (struct sockaddr*)&serv, sizeof(serv)) < 0) 
+    if (connect(sock, reinterpret_cast<struct sockaddr*>(&serv), sizeof(serv)) < 0) 
     {
         closesocket(sock);
         WSACleanup();
@@ -103,7 +105,7 @@ std::string publicIpV4()
     }
 
     struct sockaddr_in name;
-    if (socklen_t namelen = sizeof(name); getsockname(sock, (struct sockaddr*)&name, &namelen) < 0) 
+    if (socklen_t namelen = sizeof(name); getsockname(sock, reinterpret_cast<struct sockaddr*>(&name), &namelen) < 0) 
     {
         closesocket(sock);
         WSACleanup();
@@ -115,7 +117,7 @@ std::string publicIpV4()
     closesocket(sock);
     WSACleanup();
 
-    return std::string(ipStr.data());
+    return {ipStr.data()};
 }
 
 std::string publicIpV6()
@@ -132,13 +134,13 @@ std::string publicIpV6()
     }
 
     struct sockaddr_in6 serv;
-    memset(&serv, 0, sizeof(serv));
+    std::memset(&serv, 0, sizeof(serv));
     serv.sin6_family = AF_INET6;
     serv.sin6_port = htons(kDefaultDnsPort);
     
     InetPtonA(AF_INET6, kDefaultDnsIpV6, &serv.sin6_addr);
 
-    if (connect(sock, (struct sockaddr*)&serv, sizeof(serv)) < 0) 
+    if (connect(sock, reinterpret_cast<struct sockaddr*>(&serv), sizeof(serv)) < 0) 
     {
         closesocket(sock);
         WSACleanup();
@@ -146,7 +148,7 @@ std::string publicIpV6()
     }
 
     struct sockaddr_in6 name;
-    if (socklen_t namelen = sizeof(name); getsockname(sock, (struct sockaddr*)&name, &namelen) < 0) 
+    if (socklen_t namelen = sizeof(name); getsockname(sock, reinterpret_cast<struct sockaddr*>(&name), &namelen) < 0) 
     {
         closesocket(sock);
         WSACleanup();
@@ -158,7 +160,7 @@ std::string publicIpV6()
     closesocket(sock);
     WSACleanup();
 
-    return std::string(ipStr.data());
+    return {ipStr.data()};
 }
 
 } // namespace DynXX::Core::Net::Util
