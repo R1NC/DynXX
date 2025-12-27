@@ -15,7 +15,7 @@
 
 std::string dynxxGetVersion();
 
-bool dynxxInit(std::string_view root);
+[[nodiscard]] bool dynxxInit(std::string_view root);
 
 std::optional<std::string> dynxxRootPath();
 

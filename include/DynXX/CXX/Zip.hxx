@@ -55,7 +55,7 @@ void dynxxZUnzipRelease(DynXXUnZipHandle unzip);
                          size_t bufferSize = DynXXZDefaultBufferSize,
                          DynXXZFormatX format = DynXXZFormatX::ZLib);
 
- [[nodiscard]] bool dynxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut,
+[[nodiscard]] bool dynxxZCxxStreamUnzip(std::istream *cxxStreamIn, std::ostream *cxxStreamOut,
                            size_t bufferSize = DynXXZDefaultBufferSize,
                            DynXXZFormatX format = DynXXZFormatX::ZLib);
 
