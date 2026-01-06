@@ -7,6 +7,8 @@
 #endif
 #include <DynXX/CXX/Json.hxx>
 
+#include <memory>
+
 namespace DynXX::Core::Json {
     DynXXJsonNodeTypeX nodeReadType(DynXXJsonNodeHandle node);
 
@@ -72,14 +74,10 @@ namespace DynXX::Core::Json {
             return {static_cast<T>(f)};
         }
 
-        ~Decoder();
+        ~Decoder() = default;
 
     private:
-        cJSON *cjson{nullptr};
-
-        void moveImp(Decoder &&other) noexcept;
-
-        void cleanup() noexcept;
+        std::unique_ptr<cJSON, void(*)(cJSON *)> cjson;
 
         [[nodiscard]] const cJSON *reinterpretNode(DynXXJsonNodeHandle node) const;
     };
