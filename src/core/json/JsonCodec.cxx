@@ -214,48 +214,24 @@ std::optional<DictAny> jsonToDictAny(const std::string &json)
     return {dict};
 }
 
-// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
-void Decoder::moveImp(Decoder&& other) noexcept
+Decoder::Decoder(std::string_view json) : cjson(cJSON_Parse(std::string(json).c_str()), cJSON_Delete)
 {
-    this->cjson = std::exchange(other.cjson, nullptr);
-}
-
-void Decoder::cleanup() noexcept
-{
-    if (this->cjson == nullptr) [[unlikely]]
-    {
-        return;
-    }
-    cJSON_Delete(this->cjson);
-    this->cjson = nullptr;
-}
-
-Decoder::Decoder(std::string_view json)
-{
-    const auto jsonS = std::string{json.data(), json.size()};
-    this->cjson = cJSON_Parse(jsonS.c_str());
     if (this->cjson == nullptr) [[unlikely]]
     {
         dynxxLogPrintF(Error, "FAILED TO PARSE JSON: {}", json);
     }
 }
 
-Decoder::~Decoder()
+Decoder::Decoder(Decoder &&other) noexcept : cjson(std::move(other.cjson))
 {
-    this->cleanup();
-}
-
-Decoder::Decoder(Decoder &&other) noexcept
-{
-    this->moveImp(std::move(other));
 }
 
 Decoder &Decoder::operator=(Decoder &&other) noexcept
 {
     if (this != &other) [[likely]]
     {
-        this->cleanup();
-        this->moveImp(std::move(other));
+        this->cjson = std::move(other.cjson);
+        other.cjson.reset();
     }
     return *this;
 }
@@ -273,7 +249,7 @@ const cJSON *Decoder::reinterpretNode(DynXXJsonNodeHandle node) const
     }
     if (node == 0) [[likely]]
     {
-        return this->cjson;
+        return this->cjson.get();
     }
     return addr2ptr<cJSON>(node);
 }
