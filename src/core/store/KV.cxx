@@ -36,14 +36,8 @@ std::weak_ptr<Connection> KVStore::open(std::string_view _id)
         return {};
     }
     const auto cid = genCid(_id);
-    return ConnPool<Connection>::open(cid, [cid, _idStr = std::string(_id)]() { 
-        const auto kv = MMKV::mmkvWithID(_idStr, MMKV_MULTI_PROCESS);
-        if (kv == nullptr) [[unlikely]]
-        {
-            dynxxLogPrint(Error, "MMKV mmkvWithID failed");
-            return std::shared_ptr<Connection>(nullptr);
-        }
-        return std::make_shared<Connection>(cid, kv); 
+    return ConnPool<Connection>::open(cid, [cid, _id]() { 
+        return std::make_shared<Connection>(cid, _id); 
     });
 }
 
@@ -52,8 +46,13 @@ KVStore::~KVStore()
     MMKV::onExit();
 }
 
-Connection::Connection(CidT cid, MMKV *kv) : _cid(cid), kv(kv)
+Connection::Connection(CidT cid, std::string_view _id) : 
+_cid(cid), kv(MMKV::mmkvWithID(std::string(_id), MMKV_MULTI_PROCESS), KVDeleter())
 {
+    if (kv == nullptr) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "MMKV mmkvWithID failed");
+    }
     MMKV::setLogLevel(MMKVLogNone);
 }
 
@@ -93,7 +92,7 @@ bool Connection::write(std::string_view k, const Any &v) const
 {
     const auto lock = std::unique_lock(this->mutex);
     return std::visit(
-        [k, kv = this->kv](const auto &x)
+        [k, kv = this->kv.get()](const auto &x)
         { 
             return kv->set(x, k); 
         },
@@ -124,12 +123,6 @@ void Connection::clear() const
     const auto lock = std::unique_lock(this->mutex);
     this->kv->clearAll();
     this->kv->clearMemoryCache();
-}
-
-Connection::~Connection()
-{
-    this->kv->close();
-    this->kv = nullptr;
 }
 
 } // namespace DynXX::Core::Store::KV
