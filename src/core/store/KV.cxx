@@ -6,6 +6,18 @@
 
 namespace {
     using enum DynXXLogLevelX;
+
+    MMKV* allocKV(std::string_view _id)
+    {
+        return MMKV::mmkvWithID(std::string(_id), MMKV_MULTI_PROCESS);
+    }
+
+    void deallocKV(MMKV *kv)
+    {
+        if (kv != nullptr) {
+            kv->close();
+        }
+    }
 }
 
 namespace DynXX::Core::Store::KV {
@@ -46,8 +58,7 @@ KVStore::~KVStore()
     MMKV::onExit();
 }
 
-Connection::Connection(CidT cid, std::string_view _id) : 
-_cid(cid), kv(MMKV::mmkvWithID(std::string(_id), MMKV_MULTI_PROCESS), KVDeleter())
+Connection::Connection(CidT cid, std::string_view _id) : _cid(cid), kv(allocKV(_id), deallocKV)
 {
     if (kv == nullptr) [[unlikely]]
     {
