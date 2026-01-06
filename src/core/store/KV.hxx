@@ -3,6 +3,7 @@
 #include <MMKV.h>
 
 #include <shared_mutex>
+#include <memory>
 
 #include <DynXX/CXX/Types.hxx>
 
@@ -12,9 +13,9 @@ namespace DynXX::Core::Store::KV {
 
     class Connection {
         public:
-            Connection() = default;
+            Connection() = delete;
 
-            explicit Connection(CidT cid, MMKV *kv);
+            explicit Connection(CidT cid, std::string_view _id);
 
             Connection(const Connection &) = delete;
 
@@ -42,11 +43,15 @@ namespace DynXX::Core::Store::KV {
 
             CidT cid() const { return this->_cid; }
 
-            ~Connection();
+            ~Connection() = default;
 
         private:
             const CidT _cid{0};
-            MMKV *kv{nullptr};
+            struct KVDeleter {
+                MMKV *kv{nullptr};
+                void operator()(MMKV *kv) const { kv->close(); }
+            };
+            std::unique_ptr<MMKV, KVDeleter> kv;
             mutable std::shared_mutex mutex;
     };
 
