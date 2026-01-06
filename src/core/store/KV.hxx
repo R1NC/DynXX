@@ -47,11 +47,7 @@ namespace DynXX::Core::Store::KV {
 
         private:
             const CidT _cid{0};
-            struct KVDeleter {
-                MMKV *kv{nullptr};
-                void operator()(MMKV *kv) const { kv->close(); }
-            };
-            std::unique_ptr<MMKV, KVDeleter> kv;
+            std::unique_ptr<MMKV, void(*)(MMKV*)> kv;
             mutable std::shared_mutex mutex;
     };
 

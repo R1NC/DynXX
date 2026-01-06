@@ -8,6 +8,8 @@
 
 #include "ConnPool.hxx"
 
+#include <memory>
+
 namespace DynXX::Core::Store::SQLite {
 
     class Connection {
@@ -17,7 +19,7 @@ namespace DynXX::Core::Store::SQLite {
              */
             Connection() = delete;
 
-            explicit Connection(CidT cid, sqlite3 *db);
+            explicit Connection(CidT cid, std::string_view file);
 
             Connection(const Connection &) = delete;
 
@@ -88,12 +90,12 @@ namespace DynXX::Core::Store::SQLite {
             /**
              * @brief Release DB resource
              */
-            ~Connection();
+            ~Connection() = default;
 
         private:
             const CidT _cid{0};
-            sqlite3 *db{nullptr};
-            mutable std::mutex mutex;
+            std::unique_ptr<sqlite3, void(*)(sqlite3*)> db;
+            mutable std::shared_mutex mutex;
         };
 
     class SQLiteStore : public ConnPool<SQLite::Connection> {

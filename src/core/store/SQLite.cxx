@@ -13,6 +13,26 @@ namespace
     constexpr auto PRINT_ERR = [](auto rc, auto db) {
         dynxxLogPrint(Error, std::string(db != nullptr ? sqlite3_errmsg(db) : sqlite3_errstr(rc)));
     };
+
+    sqlite3* allocDB(std::string_view file)
+    {
+        sqlite3 *db{nullptr};
+        if (const auto rc = sqlite3_open_v2(std::string(file).c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK || db == nullptr) [[unlikely]] {
+            PRINT_ERR(rc, db);
+            if (db != nullptr) {
+                sqlite3_close(db);
+            }
+            return nullptr;
+        }
+        return db;
+    }
+
+    void deallocDB(sqlite3 *db)
+    {
+        if (db != nullptr) {
+            sqlite3_close(db);
+        }
+    }
 }
 
 namespace DynXX::Core::Store::SQLite {
@@ -31,16 +51,8 @@ std::weak_ptr<Connection> SQLiteStore::open(std::string_view file)
         return {};
     }
     const auto cid = genCid(file);
-    return ConnPool<Connection>::open(cid, [cid, fileStr = std::string(file)]() {
-        sqlite3 *db{nullptr};
-        if (const auto rc = sqlite3_open_v2(fileStr.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK || db == nullptr) [[unlikely]] {
-            PRINT_ERR(rc, db);
-            if (db != nullptr) {
-                sqlite3_close(db);
-            }
-            return std::shared_ptr<Connection>(nullptr);
-        }
-        return std::make_shared<Connection>(cid, db);
+    return ConnPool<Connection>::open(cid, [cid, file]() {
+        return std::make_shared<Connection>(cid, file);
     });
 }
 
@@ -49,7 +61,7 @@ SQLiteStore::~SQLiteStore()
     sqlite3_shutdown();
 }
 
-Connection::Connection(CidT cid, sqlite3 *db) : _cid(cid), db{db}
+Connection::Connection(CidT cid, std::string_view file) : _cid(cid), db{allocDB(file), deallocDB}
 {
     if (!this->execute(sEnableWAL)) [[unlikely]]
     {
@@ -73,10 +85,10 @@ bool Connection::execute(std::string_view sql) const
         return false;
     }
     
-    const auto rc = sqlite3_exec(this->db, sqlOp.value(), nullptr, nullptr, nullptr);
+    const auto rc = sqlite3_exec(this->db.get(), sqlOp.value(), nullptr, nullptr, nullptr);
     if (rc != SQLITE_OK)
     {
-        PRINT_ERR(rc, this->db);
+        PRINT_ERR(rc, this->db.get());
     }
     
     return rc == SQLITE_OK;
@@ -99,21 +111,13 @@ std::unique_ptr<Connection::QueryResult> Connection::query(std::string_view sql)
         return nullptr;
     }
 
-    if (const auto rc = sqlite3_prepare_v2(this->db, sqlOp.value(), static_cast<int>(sql.size()), &stmt, nullptr); rc != SQLITE_OK)
+    if (const auto rc = sqlite3_prepare_v2(this->db.get(), sqlOp.value(), static_cast<int>(sql.size()), &stmt, nullptr); rc != SQLITE_OK)
     {
-        PRINT_ERR(rc, this->db);
+        PRINT_ERR(rc, this->db.get());
         return nullptr;
     }
 
     return std::make_unique<Connection::QueryResult>(stmt);
-}
-
-Connection::~Connection()
-{
-    if (this->db != nullptr) [[likely]]
-    {
-        sqlite3_close_v2(this->db);
-    }
 }
 
 Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) : stmt{stmt}
