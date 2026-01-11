@@ -261,7 +261,7 @@ bool JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) c
 
 // JSVM API
 
-JSVM::JSVM() : context{std::make_shared<JSContext>(_newContext(this->runtime.get()), JSContextDeleter{})}
+JSVM::JSVM() : context{std::shared_ptr<JSContext>(_newContext(this->runtime.get()), JSContextDeleter{})}
 {
     js_std_init_handlers(this->runtime.get());
     JS_SetModuleLoaderFunc(this->runtime.get(), nullptr, js_module_loader, nullptr);
