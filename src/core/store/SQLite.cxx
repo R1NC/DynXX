@@ -15,14 +15,14 @@ namespace
         dynxxLogPrint(Error, std::string(db != nullptr ? sqlite3_errmsg(db) : sqlite3_errstr(rc)));
     };
 
-    std::unique_ptr<sqlite3, Connection::DBDeleter> createDB(std::string_view file) {
-        std::unique_ptr<sqlite3, Connection::DBDeleter> db{nullptr};
+    std::shared_ptr<sqlite3> createDB(std::string_view file) {
+        std::shared_ptr<sqlite3> db{nullptr};
         const auto flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
         const auto fileS = std::string(file);
         const auto filename = fileS.c_str();
 
 #if defined(__cpp_lib_out_ptr)
-        int rc = sqlite3_open_v2(filename, std::out_ptr(db), flags, nullptr);
+        int rc = sqlite3_open_v2(filename, std::out_ptr(db, Connection::DBDeleter{}), flags, nullptr);
 #else
         sqlite3* raw{nullptr};
         int rc = sqlite3_open_v2(filename, &raw, flags, nullptr);
