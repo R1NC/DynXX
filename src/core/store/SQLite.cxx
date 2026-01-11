@@ -16,7 +16,7 @@ namespace
     };
 
     std::shared_ptr<sqlite3> createDB(std::string_view file) {
-        std::shared_ptr<sqlite3> db{nullptr};
+        std::shared_ptr<sqlite3> db{nullptr, Connection::DBDeleter{}};
         const auto flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
         const auto fileS = std::string(file);
         const auto filename = fileS.c_str();
@@ -26,7 +26,7 @@ namespace
 #else
         sqlite3* raw{nullptr};
         int rc = sqlite3_open_v2(filename, &raw, flags, nullptr);
-        db.reset(raw);
+        db.reset(raw, Connection::DBDeleter{});
 #endif
 
         if (rc != SQLITE_OK) [[unlikely]] {
@@ -36,7 +36,7 @@ namespace
     }
 
     std::unique_ptr<sqlite3_stmt, Connection::QueryResult::StatementDeleter> createStatement(const std::shared_ptr<sqlite3> &db, std::string_view sql) {
-        std::unique_ptr<sqlite3_stmt, Connection::QueryResult::StatementDeleter> stmt{nullptr};
+        std::unique_ptr<sqlite3_stmt, Connection::QueryResult::StatementDeleter> stmt{nullptr, {}};
         const auto sqlOp = nullTerminatedCStr(sql);
         if (!sqlOp.has_value()) [[unlikely]] {
             dynxxLogPrint(Error, "SQLite.createStmt SQL not null terminated");
@@ -52,7 +52,7 @@ namespace
 #else
         sqlite3_stmt *raw{nullptr};
         const auto rc = sqlite3_prepare_v2(dbPtr, zSql, nByte, &raw, nullptr);
-        stmt.reset(raw);
+        stmt.reset(raw, {});
 #endif
 
         if (rc != SQLITE_OK) [[unlikely]] {
@@ -90,7 +90,7 @@ SQLiteStore::~SQLiteStore()
     sqlite3_shutdown();
 }
 
-Connection::Connection(CidT cid, std::string_view file) : _cid(cid), db(std::make_shared<sqlite3>(createDB(file), Connection::DBDeleter()))
+Connection::Connection(CidT cid, std::string_view file) : _cid(cid), db(createDB(file))
 {
     if (!this->execute(sEnableWAL)) [[unlikely]]
     {
