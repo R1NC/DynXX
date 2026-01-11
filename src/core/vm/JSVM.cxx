@@ -261,13 +261,12 @@ bool JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) c
 
 // JSVM API
 
-JSVM::JSVM() : runtime(JS_NewRuntime(), JS_FreeRuntime)
+JSVM::JSVM() : context{std::make_shared<JSContext>(_newContext(this->runtime.get()), JSContextDeleter{})}
 {
     js_std_init_handlers(this->runtime.get());
     JS_SetModuleLoaderFunc(this->runtime.get(), nullptr, js_module_loader, nullptr);
     js_std_set_worker_new_context_func(_newContext);
 
-    this->context = std::shared_ptr<JSContext>(_newContext(this->runtime.get()), JS_FreeContext);
     this->jGlobal = JS_GetGlobalObject(this->context.get());// Can not free here, will be called in future
 
     promiseCache = std::make_unique<Mem::PtrCache<JSPromise>>();

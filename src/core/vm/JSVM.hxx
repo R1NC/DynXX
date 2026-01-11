@@ -187,20 +187,34 @@ namespace DynXX::Core::VM {
         ~JSVM() override;
 
     private:
-        std::unique_ptr<JSRuntime, void(*)(JSRuntime*)> runtime;
-        std::shared_ptr<JSContext> context{nullptr};
+        struct JSRuntimeDeleter final {
+            void operator()(JSRuntime *rt) const noexcept {
+                if (rt != nullptr) {
+                    JS_FreeRuntime(rt);
+                }
+            }
+        };
+        std::unique_ptr<JSRuntime, JSRuntimeDeleter> runtime{JS_NewRuntime(), {}};
+        struct JSContextDeleter final {
+            void operator()(JSContext *ctx) const noexcept {
+                if (ctx != nullptr) {
+                    JS_FreeContext(ctx);
+                }
+            }
+        };
+        std::shared_ptr<JSContext> context;
         JSValue jGlobal{JS_UNDEFINED};
 
         std::unique_ptr<Concurrent::TimerTask> timerLooperTask{nullptr};
         std::unique_ptr<Concurrent::TimerTask> promiseLooperTask{nullptr};
 
         // Custom hash function for JSValue
-        struct JSValueHash {
+        struct JSValueHash final {
             std::size_t operator()(const JSValue &jv) const noexcept;
         };
 
         // Custom equality function for JSValue
-        struct JSValueEqual {
+        struct JSValueEqual final {
             bool operator()(const JSValue &left, const JSValue &right) const noexcept;
         };
 

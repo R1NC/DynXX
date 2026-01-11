@@ -92,10 +92,18 @@ namespace DynXX::Core::Store::SQLite {
              */
             ~Connection() = default;
 
+            struct DBDeleter final {
+                void operator()(sqlite3* db) const noexcept {
+                    if (db != nullptr) [[likely]] {
+                        sqlite3_close(db);
+                    }
+                }
+            };
+
         private:
             const CidT _cid{0};
-            std::unique_ptr<sqlite3, void(*)(sqlite3*)> db;
             mutable std::shared_mutex mutex;
+            std::unique_ptr<sqlite3, DBDeleter> db;
         };
 
     class SQLiteStore : public ConnPool<SQLite::Connection> {

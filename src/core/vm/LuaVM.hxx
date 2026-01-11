@@ -109,6 +109,13 @@ namespace DynXX::Core::VM {
         ~LuaVM() override;
 
     private:
-        std::unique_ptr<lua_State, void(*)(lua_State*)> lstate;
+        struct LuaStateDeleter final {
+            void operator()(lua_State *ls) const noexcept {
+                if (ls != nullptr) {
+                    lua_close(ls);
+                }
+            }
+        };
+        std::unique_ptr<lua_State, LuaStateDeleter> lstate{luaL_newstate(), {}};
     };
 }  // namespace DynXX::Core::VM

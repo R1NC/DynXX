@@ -47,8 +47,16 @@ namespace DynXX::Core::Store::KV {
 
         private:
             const CidT _cid{0};
-            std::unique_ptr<MMKV, void(*)(MMKV*)> kv;
             mutable std::shared_mutex mutex;
+
+            struct KVDeleter final {
+                void operator()(MMKV *kv) const noexcept {
+                    if (kv != nullptr) {
+                        kv->close();
+                    }
+                }
+            };
+            std::unique_ptr<MMKV, KVDeleter> kv;
     };
 
     class KVStore : public ConnPool<KV::Connection> {
