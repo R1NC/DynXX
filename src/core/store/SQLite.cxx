@@ -7,6 +7,7 @@
 namespace
 {
     using enum DynXXLogLevelX;
+    using namespace DynXX::Core::Store::SQLite;
 
     constexpr auto sEnableWAL = "PRAGMA journal_mode=WAL;";
 
@@ -14,24 +15,52 @@ namespace
         dynxxLogPrint(Error, std::string(db != nullptr ? sqlite3_errmsg(db) : sqlite3_errstr(rc)));
     };
 
-    sqlite3* allocDB(std::string_view file)
-    {
-        sqlite3 *db{nullptr};
-        if (const auto rc = sqlite3_open_v2(std::string(file).c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr); rc != SQLITE_OK || db == nullptr) [[unlikely]] {
-            PRINT_ERR(rc, db);
-            if (db != nullptr) {
-                sqlite3_close(db);
-            }
-            return nullptr;
+    std::unique_ptr<sqlite3, Connection::DBDeleter> createDB(std::string_view file) {
+        std::unique_ptr<sqlite3, Connection::DBDeleter> db{nullptr};
+        const auto flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+        const auto fileS = std::string(file);
+        const auto filename = fileS.c_str();
+
+#if defined(__cpp_lib_out_ptr)
+        int rc = sqlite3_open_v2(filename, std::out_ptr(db), flags, nullptr);
+#else
+        sqlite3* raw{nullptr};
+        int rc = sqlite3_open_v2(filename, &raw, flags, nullptr);
+        db.reset(raw);
+#endif
+
+        if (rc != SQLITE_OK) [[unlikely]] {
+            PRINT_ERR(rc, db.get());
         }
         return db;
     }
 
-    void deallocDB(sqlite3 *db)
-    {
-        if (db != nullptr) {
-            sqlite3_close(db);
+    std::unique_ptr<sqlite3_stmt, Connection::QueryResult::StatementDeleter> createStatement(const std::shared_ptr<sqlite3> &db, std::string_view sql) {
+        std::unique_ptr<sqlite3_stmt, Connection::QueryResult::StatementDeleter> stmt{nullptr};
+        const auto sqlOp = nullTerminatedCStr(sql);
+        if (!sqlOp.has_value()) [[unlikely]] {
+            dynxxLogPrint(Error, "SQLite.createStmt SQL not null terminated");
+            return stmt;
         }
+
+        const auto dbPtr = db.get();
+        const auto zSql = sqlOp.value();
+        const auto nByte = static_cast<int>(sql.size());
+
+#if defined(__cpp_lib_out_ptr)
+        const auto rc = sqlite3_prepare_v2(dbPtr, zSql, nByte, std::out_ptr(stmt), nullptr);
+#else
+        sqlite3_stmt *raw{nullptr};
+        const auto rc = sqlite3_prepare_v2(dbPtr, zSql, nByte, &raw, nullptr);
+        stmt.reset(raw);
+#endif
+
+        if (rc != SQLITE_OK) [[unlikely]] {
+            PRINT_ERR(rc, db.get());
+            return nullptr;
+        }
+
+        return stmt;
     }
 }
 
@@ -61,7 +90,7 @@ SQLiteStore::~SQLiteStore()
     sqlite3_shutdown();
 }
 
-Connection::Connection(CidT cid, std::string_view file) : _cid(cid), db{allocDB(file), deallocDB}
+Connection::Connection(CidT cid, std::string_view file) : _cid(cid), db(std::make_shared<sqlite3>(createDB(file), Connection::DBDeleter()))
 {
     if (!this->execute(sEnableWAL)) [[unlikely]]
     {
@@ -97,42 +126,23 @@ bool Connection::execute(std::string_view sql) const
 std::unique_ptr<Connection::QueryResult> Connection::query(std::string_view sql) const
 {
     const auto lock = std::scoped_lock(this->mutex);
-    if (this->db == nullptr) [[unlikely]]
-    {
-        dynxxLogPrint(Error, "SQLite.query DB nullptr");
-        return nullptr;
-    }
-    sqlite3_stmt *stmt{nullptr};
-
-    const auto sqlOp = nullTerminatedCStr(sql);
-    if (!sqlOp.has_value()) [[unlikely]]
-    {
-        dynxxLogPrint(Error, "SQLite.query SQL not null terminated");
-        return nullptr;
-    }
-
-    if (const auto rc = sqlite3_prepare_v2(this->db.get(), sqlOp.value(), static_cast<int>(sql.size()), &stmt, nullptr); rc != SQLITE_OK)
-    {
-        PRINT_ERR(rc, this->db.get());
-        return nullptr;
-    }
-
-    return std::make_unique<Connection::QueryResult>(stmt);
+    return std::make_unique<Connection::QueryResult>(createStatement(this->db, sql));
 }
 
-Connection::QueryResult::QueryResult(sqlite3_stmt *stmt) : stmt{stmt}
+Connection::QueryResult::QueryResult(std::unique_ptr<sqlite3_stmt, StatementDeleter> stmt) : stmt{std::move(stmt)}
 {
 }
 
 bool Connection::QueryResult::readRow() const
 {
     const auto lock = std::unique_lock(this->mutex);
-    if (this->stmt == nullptr) [[unlikely]]
+    const auto stmt = this->stmt.get();
+    if (stmt == nullptr) [[unlikely]]
     {
         dynxxLogPrint(Error, "SQLite.readRow STMT nullptr");
         return false;
     }
-    const auto rc = sqlite3_step(this->stmt);
+    const auto rc = sqlite3_step(stmt);
     if (rc != SQLITE_ROW && rc != SQLITE_DONE)
     {
         PRINT_ERR(rc, nullptr);
@@ -143,12 +153,13 @@ bool Connection::QueryResult::readRow() const
 std::optional<Any> Connection::QueryResult::readColumn(std::string_view column) const
 {
     const auto lock = std::shared_lock(this->mutex);
-    if (this->stmt == nullptr) [[unlikely]]
+    const auto stmt = this->stmt.get();
+    if (stmt == nullptr) [[unlikely]]
     {
         dynxxLogPrint(Error, "SQLite.readColumn STMT nullptr");
         return std::nullopt;
     }
-    const auto colCount = sqlite3_column_count(this->stmt);
+    const auto colCount = sqlite3_column_count(stmt);
     for (int i(0); i < colCount; i++)
     {
         const auto columnOp = nullTerminatedCStr(column);
@@ -157,22 +168,22 @@ std::optional<Any> Connection::QueryResult::readColumn(std::string_view column) 
             dynxxLogPrint(Error, "SQLite.readColumn column not null terminated");
             return std::nullopt;
         }
-        if (strcmp(sqlite3_column_name(this->stmt, i), columnOp.value()) != 0)
+        if (strcmp(sqlite3_column_name(stmt, i), columnOp.value()) != 0)
         {
             continue;
         }
-        switch(sqlite3_column_type(this->stmt, i))
+        switch(sqlite3_column_type(stmt, i))
         {
             case SQLITE_TEXT:
                 {
-                    const auto data = sqlite3_column_text(this->stmt, i);
-                    const auto len = sqlite3_column_bytes(this->stmt, i);
+                    const auto data = sqlite3_column_text(stmt, i);
+                    const auto len = sqlite3_column_bytes(stmt, i);
                     return {makeStr(data, len)};
                 }
             case SQLITE_INTEGER:
-                return {sqlite3_column_int64(this->stmt, i)};
+                return {sqlite3_column_int64(stmt, i)};
             case SQLITE_FLOAT:
-                return {sqlite3_column_double(this->stmt, i)};
+                return {sqlite3_column_double(stmt, i)};
             default:
                 return std::nullopt;
         }
@@ -182,14 +193,6 @@ std::optional<Any> Connection::QueryResult::readColumn(std::string_view column) 
 
 std::optional<Any> Connection::QueryResult::operator[](std::string_view column) const {
     return this->readColumn(column);
-}
-
-Connection::QueryResult::~QueryResult()
-{
-    if (this->stmt != nullptr) [[likely]]
-    {
-        sqlite3_finalize(this->stmt);
-    }
 }
 
 } // namespace DynXX::Core::Store::SQLite

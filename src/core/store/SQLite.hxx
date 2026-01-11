@@ -38,7 +38,15 @@ namespace DynXX::Core::Store::SQLite {
                  */
                 QueryResult() = delete;
 
-                explicit QueryResult(sqlite3_stmt *stmt);
+                struct StatementDeleter final {
+                    void operator()(sqlite3_stmt *stmt) const noexcept {
+                        if (stmt != nullptr) [[likely]] {
+                            sqlite3_finalize(stmt);
+                        }
+                    }
+                };
+
+                explicit QueryResult(std::unique_ptr<sqlite3_stmt, StatementDeleter> stmt);
 
                 QueryResult(const QueryResult &) = delete;
 
@@ -66,10 +74,10 @@ namespace DynXX::Core::Store::SQLite {
                 /**
                  * @brief Release QueryResult
                  */
-                ~QueryResult();
+                ~QueryResult() = default;
 
             private:
-                sqlite3_stmt *stmt{nullptr};
+                std::unique_ptr<sqlite3_stmt, StatementDeleter> stmt;
                 mutable std::shared_mutex mutex;
             };
 
@@ -103,7 +111,7 @@ namespace DynXX::Core::Store::SQLite {
         private:
             const CidT _cid{0};
             mutable std::shared_mutex mutex;
-            std::unique_ptr<sqlite3, DBDeleter> db;
+            std::shared_ptr<sqlite3> db;
         };
 
     class SQLiteStore : public ConnPool<SQLite::Connection> {

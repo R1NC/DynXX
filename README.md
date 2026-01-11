@@ -67,6 +67,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | [std::ranges::to][36]                        | C++23    | Clang, Apple & HarmonyOS;          |
 | [std::ranges::views::chunk][14]              | C++23    | Clang, Apple & HarmonyOS;          |
 | [std::ranges::views::enumerate][20]          | C++23    | Clang, Apple & HarmonyOS;          |
+| [std::out_ptr][37]                           | C++23    | HarmonyOS;                         |
 
 <details>
 
@@ -129,3 +130,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [34]: ../../actions/workflows/CI-macOS.yml
 [35]: ../../actions/workflows/CI-Windows.yml
 [36]: https://en.cppreference.com/w/cpp/ranges/to.html
+[37]: https://en.cppreference.com/w/cpp/memory/out_ptr_t/out_ptr
