@@ -36,7 +36,7 @@ namespace
     }
 
     std::unique_ptr<sqlite3_stmt, Connection::QueryResult::StatementDeleter> createStatement(const std::shared_ptr<sqlite3> &db, std::string_view sql) {
-        std::unique_ptr<sqlite3_stmt, Connection::QueryResult::StatementDeleter> stmt{nullptr, {}};
+        std::unique_ptr<sqlite3_stmt, Connection::QueryResult::StatementDeleter> stmt{nullptr};
         const auto sqlOp = nullTerminatedCStr(sql);
         if (!sqlOp.has_value()) [[unlikely]] {
             dynxxLogPrint(Error, "SQLite.createStmt SQL not null terminated");
@@ -52,7 +52,7 @@ namespace
 #else
         sqlite3_stmt *raw{nullptr};
         const auto rc = sqlite3_prepare_v2(dbPtr, zSql, nByte, &raw, nullptr);
-        stmt.reset(raw, {});
+        stmt.reset(raw);
 #endif
 
         if (rc != SQLITE_OK) [[unlikely]] {
