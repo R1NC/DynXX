@@ -29,6 +29,7 @@ gradlew linguist-vendored=true
 ​*.vcproj.filters linguist-vendored=true
 *.pbxproj linguist-vendored=true
 *.bat linguist-vendored=true
+*.ps1 linguist-vendored=true
 *.sh linguist-vendored=true
 hvigorfile.ts linguist-vendored=true
 *.ets linguist-vendored=false
