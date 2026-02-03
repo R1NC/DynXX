@@ -11,7 +11,7 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/build-utils.sh'
-      - 'build-tools/build-Windows.bat'
+      - 'build-tools/build-Windows.ps1'
   workflow_dispatch:
 
 permissions:
@@ -51,7 +51,7 @@ jobs:
           CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
         run: |
           cd build-tools
-          .\build-Windows.bat
+          .\build-Windows.ps1
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
