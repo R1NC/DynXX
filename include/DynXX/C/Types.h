@@ -8,7 +8,7 @@
 
 DYNXX_EXTERN_C_BEGIN
 typedef unsigned char byte;
-typedef intptr_t address;
+typedef uintptr_t address;
 typedef void* RawPtr;
 
 DYNXX_EXTERN_C_END
