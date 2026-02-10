@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bit>
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
@@ -15,7 +16,7 @@ T *addr2ptr(const address addr) {
     if (addr == 0) [[unlikely]] {
         return nullptr;
     }
-    return reinterpret_cast<T *>(addr);
+    return std::bit_cast<T *>(addr);
 }
 
 template<typename T = void>
@@ -23,7 +24,7 @@ address ptr2addr(const T *ptr) {
     if (ptr == nullptr) [[unlikely]] {
         return 0;
     }
-    return reinterpret_cast<address>(ptr);
+    return std::bit_cast<address>(ptr);
 }
 
 // Pointer cache
