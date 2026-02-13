@@ -60,20 +60,6 @@ namespace {
             case PRODUCT_MULTIPOINT_STANDARD_SERVER:
             case PRODUCT_MULTIPOINT_PREMIUM_SERVER:
                 return true;
-            case PRODUCT_STANDARD_SERVER_VISTA:
-            case PRODUCT_STANDARD_SERVER_CORE_VISTA:
-            case PRODUCT_ENTERPRISE_SERVER_VISTA:
-            case PRODUCT_ENTERPRISE_SERVER_CORE_VISTA:
-            case PRODUCT_DATACENTER_SERVER_VISTA:
-            case PRODUCT_DATACENTER_SERVER_CORE_VISTA:
-            case PRODUCT_CLUSTER_SERVER_VISTA:
-            case PRODUCT_SMALLBUSINESS_SERVER:
-            case PRODUCT_SMALLBUSINESS_SERVER_PREMIUM:
-            case PRODUCT_ESSENTIALBUSINESS_SERVER_ADDL:
-            case PRODUCT_ESSENTIALBUSINESS_SERVER_MGMT:
-            case PRODUCT_ESSENTIALBUSINESS_SERVER_MGMTSVC:
-            case PRODUCT_ESSENTIALBUSINESS_SERVER_ADDLSVC:
-                return true;
             default:
                 return false;
         }
