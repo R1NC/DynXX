@@ -18,15 +18,6 @@ extern "C" NTSYSAPI NTSTATUS NTAPI RtlGetVersion(PRTL_OSVERSIONINFOW lpVersionIn
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000)
 #endif
 
-#if !defined(NT_PRODUCT_TYPE_DEFINED)
-typedef enum _NT_PRODUCT_TYPE {
-    NtProductWinNt = 1,
-    NtProductLanManNt,
-    NtProductServer
-} NT_PRODUCT_TYPE;
-#define NT_PRODUCT_TYPE_DEFINED
-#endif
-
 namespace {
     struct WindowsVersion {
         DWORD major{0};
@@ -44,12 +35,48 @@ namespace {
         const char* server{""};
     };
 
+    #include <windows.h>
+
     bool isWindowsServer() {
-        NT_PRODUCT_TYPE type = NtProductWinNt;
-        if (NT_SUCCESS(RtlGetNtProductType(&type))) {
-            return type != NtProductWinNt;
+        DWORD productType = 0;
+        if (!GetProductInfo(0, 0, 0, 0, &productType)) [[unlikely]] {
+            return false;
         }
-        return false;
+
+        switch (productType) {
+            case PRODUCT_STANDARD_SERVER:
+            case PRODUCT_STANDARD_SERVER_CORE:
+            case PRODUCT_ENTERPRISE_SERVER:
+            case PRODUCT_ENTERPRISE_SERVER_CORE:
+            case PRODUCT_DATACENTER_SERVER:
+            case PRODUCT_DATACENTER_SERVER_CORE:
+            case PRODUCT_WEB_SERVER:
+            case PRODUCT_WEB_SERVER_CORE:
+            case PRODUCT_CLUSTER_SERVER:
+            case PRODUCT_STORAGE_STANDARD_SERVER:
+            case PRODUCT_STORAGE_WORKGROUP_SERVER:
+            case PRODUCT_STORAGE_ENTERPRISE_SERVER:
+            case PRODUCT_COMPUTE_CLUSTER:
+            case PRODUCT_MULTIPOINT_STANDARD_SERVER:
+            case PRODUCT_MULTIPOINT_PREMIUM_SERVER:
+                return true;
+            case PRODUCT_STANDARD_SERVER_VISTA:
+            case PRODUCT_STANDARD_SERVER_CORE_VISTA:
+            case PRODUCT_ENTERPRISE_SERVER_VISTA:
+            case PRODUCT_ENTERPRISE_SERVER_CORE_VISTA:
+            case PRODUCT_DATACENTER_SERVER_VISTA:
+            case PRODUCT_DATACENTER_SERVER_CORE_VISTA:
+            case PRODUCT_CLUSTER_SERVER_VISTA:
+            case PRODUCT_SMALLBUSINESS_SERVER:
+            case PRODUCT_SMALLBUSINESS_SERVER_PREMIUM:
+            case PRODUCT_ESSENTIALBUSINESS_SERVER_ADDL:
+            case PRODUCT_ESSENTIALBUSINESS_SERVER_MGMT:
+            case PRODUCT_ESSENTIALBUSINESS_SERVER_MGMTSVC:
+            case PRODUCT_ESSENTIALBUSINESS_SERVER_ADDLSVC:
+                return true;
+            default:
+                return false;
+        }
     }
 
     std::string getWindowsVersionName(ULONG major, ULONG minor, ULONG build) {
