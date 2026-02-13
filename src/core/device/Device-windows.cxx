@@ -8,6 +8,8 @@
 #include <winreg.h>
 #include <winternl.h>
 
+#include <array>
+
 #include <DynXX/C/Device.h>
 
 extern "C" NTSYSAPI NTSTATUS NTAPI RtlGetVersion(PRTL_OSVERSIONINFOW lpVersionInformation);
@@ -42,24 +44,27 @@ namespace {
 
     std::string getWindowsVersionName(ULONG major, ULONG minor, ULONG build) {
         const auto isServer = isWindowsServer();
-        const WindowsVersionEntry table[] = {
-            {10, 0, 22000, ULONG_MAX, "Windows 11",     "Windows Server 2022"},
-            {10, 0, 17763, 21999,     "Windows 10",     "Windows Server 2019"},
-            {10, 0, 14393, 17762,     "Windows 10",     "Windows Server 2016"},
-            {10, 0,     0, 14392,     "Windows 10",     "Windows 10"},
-            { 6, 3,     0, ULONG_MAX, "Windows 8.1",    "Windows Server 2012 R2"},
-            { 6, 2,     0, ULONG_MAX, "Windows 8",      "Windows Server 2012"},
-            { 6, 1,     0, ULONG_MAX, "Windows 7",      "Windows Server 2008 R2"},
-            { 6, 0,     0, ULONG_MAX, "Windows Vista",  "Windows Server 2008"},
-            { 5, 2,     0, ULONG_MAX, "Windows XP x64", "Windows Server 2003"},
-            { 5, 1,     0, ULONG_MAX, "Windows XP",     "Windows XP"},
-            { 5, 0,     0, ULONG_MAX, "Windows 2000",   "Windows 2000"},
-        };
+        
+        static constexpr std::array<WindowsVersionEntry, 11> table = {{
+            {10, 0, 22000, ULONG_MAX, "Windows 11",         "Windows Server 2022"},
+            {10, 0, 17763, 21999,     "Windows 10",         "Windows Server 2019"},
+            {10, 0, 14393, 17762,     "Windows 10",         "Windows Server 2016"},
+            {10, 0,     0, 14392,     "Windows 10",         "Windows 10"},
+            { 6, 3,     0, ULONG_MAX, "Windows 8.1",        "Windows Server 2012 R2"},
+            { 6, 2,     0, ULONG_MAX, "Windows 8",          "Windows Server 2012"},
+            { 6, 1,     0, ULONG_MAX, "Windows 7",          "Windows Server 2008 R2"},
+            { 6, 0,     0, ULONG_MAX, "Windows Vista",      "Windows Server 2008"},
+            { 5, 2,     0, ULONG_MAX, "Windows XP x64",     "Windows Server 2003"},
+            { 5, 1,     0, ULONG_MAX, "Windows XP",         "Windows XP"},
+            { 5, 0,     0, ULONG_MAX, "Windows 2000",       "Windows 2000"},
+        }};
+        
         for (const auto& e : table) {
             if (major == e.major && minor == e.minor && build >= e.buildMin && build <= e.buildMax) {
                 return isServer ? e.server : e.client;
             }
         }
+        
         return "Windows " + std::to_string(major) + "." + std::to_string(minor) + " (Build " + std::to_string(build) + ")";
     }
 
@@ -96,7 +101,7 @@ namespace {
         }
 
         std::vector<wchar_t> buffer((size + sizeof(wchar_t) - 1) / sizeof(wchar_t) + 1, 0);
-        DWORD bufSize = static_cast<DWORD>(buffer.size() * sizeof(wchar_t));
+        auto bufSize = static_cast<DWORD>(buffer.size() * sizeof(wchar_t));
         status = RegQueryValueExW(key, valueName, nullptr, nullptr,  reinterpret_cast<LPBYTE>(buffer.data()), &bufSize);
         if (status != ERROR_SUCCESS) [[unlikely]] {
             RegCloseKey(key);
@@ -120,13 +125,7 @@ namespace {
 
     std::wstring readDeviceName() {
         DWORD size = 0;
-
-        if (!GetComputerNameW(nullptr, &size)) {
-            if (GetLastError() != ERROR_BUFFER_OVERFLOW) [[unlikely]] {
-                return {};
-            }
-        }
-
+        GetComputerNameW(nullptr, &size);
         if (size == 0) [[unlikely]] {
             return {};
         }
@@ -162,6 +161,7 @@ namespace {
         return utf8;
     }
 
+    [[maybe_unused]]
     std::wstring utf8_to_wstr(const std::string& utf8) {
         if (utf8.empty()) [[unlikely]] {
             return {};
