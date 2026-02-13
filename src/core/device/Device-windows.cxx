@@ -23,38 +23,59 @@ namespace {
         std::string name;
     };
 
+    struct WindowsVersionEntry {
+        ULONG major{0};
+        ULONG minor{0};
+        ULONG buildMin{0};
+        ULONG buildMax{0};
+        const char* client{""};
+        const char* server{""};
+    };
+
+    bool isWindowsServer() {
+        NT_PRODUCT_TYPE type = NtProductWinNt;
+        if (NT_SUCCESS(RtlGetNtProductType(&type))) {
+            return type != NtProductWinNt;
+        }
+        return false;
+    }
+
+    std::string getWindowsVersionName(ULONG major, ULONG minor, ULONG build) {
+        const auto isServer = isWindowsServer();
+        const WindowsVersionEntry table[] = {
+            {10, 0, 22000, ULONG_MAX, "Windows 11",     "Windows Server 2022"},
+            {10, 0, 17763, 21999,     "Windows 10",     "Windows Server 2019"},
+            {10, 0, 14393, 17762,     "Windows 10",     "Windows Server 2016"},
+            {10, 0,     0, 14392,     "Windows 10",     "Windows 10"},
+            { 6, 3,     0, ULONG_MAX, "Windows 8.1",    "Windows Server 2012 R2"},
+            { 6, 2,     0, ULONG_MAX, "Windows 8",      "Windows Server 2012"},
+            { 6, 1,     0, ULONG_MAX, "Windows 7",      "Windows Server 2008 R2"},
+            { 6, 0,     0, ULONG_MAX, "Windows Vista",  "Windows Server 2008"},
+            { 5, 2,     0, ULONG_MAX, "Windows XP x64", "Windows Server 2003"},
+            { 5, 1,     0, ULONG_MAX, "Windows XP",     "Windows XP"},
+            { 5, 0,     0, ULONG_MAX, "Windows 2000",   "Windows 2000"},
+        };
+        for (const auto& e : table) {
+            if (major == e.major && minor == e.minor && build >= e.buildMin && build <= e.buildMax) {
+                return isServer ? e.server : e.client;
+            }
+        }
+        return "Windows " + std::to_string(major) + "." + std::to_string(minor) + " (Build " + std::to_string(build) + ")";
+    }
+
     WindowsVersion getWindowsVersion() {
         RTL_OSVERSIONINFOW osvi = {0};
         osvi.dwOSVersionInfoSize = sizeof(osvi);
-
         if (RtlGetVersion(&osvi) != STATUS_SUCCESS) [[unlikely]] {
             return {};
         }
 
-        WindowsVersion ver{osvi.dwMajorVersion, osvi.dwMinorVersion, osvi.dwBuildNumber, {}};
-
-        if (ver.major == 10) {
-            if (ver.build >= 22000) {
-                ver.name = "Windows 11";
-            } else {
-                ver.name = "Windows 10";
-            }
-        } else if (ver.major == 6) {
-            if (ver.minor == 3) {
-                ver.name = "Windows 8.1";
-            } else if (ver.minor == 2) {
-                ver.name = "Windows 8";
-            } else if (ver.minor == 1) {
-                ver.name = "Windows 7";
-            } else if (ver.minor == 0) {
-                ver.name = "Windows Vista";
-            }
-        } else if (ver.major == 5) {
-            if (ver.minor == 1) {
-                ver.name = "Windows XP";
-            }
-        }
-        
+        WindowsVersion ver{
+            .major = osvi.dwMajorVersion,
+            .minor = osvi.dwMinorVersion,
+            .build = osvi.dwBuildNumber,
+            .name = getWindowsVersionName(osvi.dwMajorVersion, osvi.dwMinorVersion, osvi.dwBuildNumber)
+        };
         return ver;
     }
 
@@ -74,8 +95,9 @@ namespace {
             return L"";
         }
 
-        std::vector<wchar_t> buffer(size / sizeof(wchar_t) + 1, 0);
-        status = RegQueryValueExW(key, valueName, nullptr, nullptr, reinterpret_cast<LPBYTE>(buffer.data()), &size);
+        std::vector<wchar_t> buffer((size + sizeof(wchar_t) - 1) / sizeof(wchar_t) + 1, 0);
+        DWORD bufSize = static_cast<DWORD>(buffer.size() * sizeof(wchar_t));
+        status = RegQueryValueExW(key, valueName, nullptr, nullptr,  reinterpret_cast<LPBYTE>(buffer.data()), &bufSize);
         if (status != ERROR_SUCCESS) [[unlikely]] {
             RegCloseKey(key);
             return L"";
@@ -83,7 +105,16 @@ namespace {
 
         RegCloseKey(key);
 
-        buffer.back() = L'\0';
+        if (type == REG_EXPAND_SZ) {
+            DWORD required = ExpandEnvironmentStringsW(buffer.data(), nullptr, 0);
+            if (required != 0) {
+                std::vector<wchar_t> expanded(required, L'\0');
+                if (ExpandEnvironmentStringsW(buffer.data(), expanded.data(), required) != 0) {
+                    return std::wstring(expanded.data());
+                }
+            }
+        }
+
         return std::wstring(buffer.data());
     }
 
