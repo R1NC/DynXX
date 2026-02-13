@@ -13,8 +13,18 @@
 #include <DynXX/C/Device.h>
 
 extern "C" NTSYSAPI NTSTATUS NTAPI RtlGetVersion(PRTL_OSVERSIONINFOW lpVersionInformation);
+
 #if !defined(STATUS_SUCCESS)
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000)
+#endif
+
+#if !defined(NT_PRODUCT_TYPE_DEFINED)
+typedef enum _NT_PRODUCT_TYPE {
+    NtProductWinNt = 1,
+    NtProductLanManNt,
+    NtProductServer
+} NT_PRODUCT_TYPE;
+#define NT_PRODUCT_TYPE_DEFINED
 #endif
 
 namespace {
