@@ -212,7 +212,6 @@ protected:
         explicit Token() = default;
     };
     explicit DynXXSmartHeapOnly(Token token) : DynXXHeapOnly(), token(token) {}
-    virtual ~DynXXSmartHeapOnly() = default;
 private:
     NO_UNIQUE_ADDRESS Token token;
 };
