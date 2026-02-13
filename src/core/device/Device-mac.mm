@@ -1,11 +1,11 @@
 #if defined(__APPLE__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 #include "Device.hxx"
+#include "Device-posix.hxx"
 
 #include <mach/mach_host.h>
 #include <mach/mach_init.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
-#include <sys/utsname.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -44,9 +44,8 @@ DynXXDeviceTypeX deviceType()
 
 std::string deviceName()
 {
-    struct utsname systemInfo{};
-    uname(&systemInfo);
-    return makeStr(systemInfo.machine);
+    static const auto ui = POSIX::readUnameInfo();
+    return ui.nodeName;
 }
 
 std::string deviceManufacturer()
@@ -56,26 +55,35 @@ std::string deviceManufacturer()
 
 std::string deviceModel()
 {
-    //TODO
-    return {};
+    static const auto model = []() -> std::string {
+        char m[256] = {0};
+        auto len = sizeof(m);
+        if (sysctlbyname("hw.model", m, &len, nullptr, 0) != 0) [[unlikely]] {
+            return {};
+        }
+        return m;
+    }();
+    return model;
 }
 
 std::string osVersion()
 {
     static const auto version = []() -> std::string {
-        NSOperatingSystemVersion ver = NSProcessInfo.processInfo.operatingSystemVersion;
-        int major = static_cast<int32_t>(ver.majorVersion);
-        int minor = static_cast<int32_t>(ver.minorVersion);
-        int patch = static_cast<int32_t>(ver.patchVersion);
-        std::string result;
-        constexpr auto maxLen = 16;
-        result.reserve(maxLen);
-        result += std::to_string(major);
-        result += '.';
-        result += std::to_string(minor);
-        result += '.';
-        result += std::to_string(patch);
-        return result;
+        @autoreleasepool {
+            NSOperatingSystemVersion ver = NSProcessInfo.processInfo.operatingSystemVersion;
+            const auto major = static_cast<int32_t>(ver.majorVersion);
+            const auto minor = static_cast<int32_t>(ver.minorVersion);
+            const auto patch = static_cast<int32_t>(ver.patchVersion);
+            std::string result;
+            constexpr auto maxLen = 16;
+            result.reserve(maxLen);
+            result += std::to_string(major);
+            result += '.';
+            result += std::to_string(minor);
+            result += '.';
+            result += std::to_string(patch);
+            return result;
+        }
     }();
     return version;
 }

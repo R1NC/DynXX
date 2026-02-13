@@ -10,6 +10,7 @@
 #endif
 
 #include "Types.hxx"
+#include "Macro.hxx"
 
 // C String Utils
 
@@ -213,5 +214,5 @@ protected:
     explicit DynXXSmartHeapOnly(Token token) : DynXXHeapOnly(), token(token) {}
     virtual ~DynXXSmartHeapOnly() = default;
 private:
-    Token token;
+    NO_UNIQUE_ADDRESS Token token;
 };

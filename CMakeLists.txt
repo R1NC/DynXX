@@ -312,6 +312,7 @@ elseif(WIN32)
     list(APPEND LINK_LIBS 
         ws2_32 
         Wldap32
+        ntdll
     )
 elseif(OHOS)
     list(APPEND LINK_LIBS
