@@ -8,11 +8,33 @@
 #include <winreg.h>
 #include <winternl.h>
 
+#include <array>
+
 #include <DynXX/C/Device.h>
 
 extern "C" NTSYSAPI NTSTATUS NTAPI RtlGetVersion(PRTL_OSVERSIONINFOW lpVersionInformation);
-#if !defined(STATUS_SUCCESS)
+
+#ifndef STATUS_SUCCESS
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000)
+#endif
+
+#ifndef PRODUCT_COMPUTE_CLUSTER
+#define PRODUCT_COMPUTE_CLUSTER 0x00000031
+#endif
+#ifndef PRODUCT_STORAGE_STANDARD_SERVER
+#define PRODUCT_STORAGE_STANDARD_SERVER 0x00000034
+#endif
+#ifndef PRODUCT_STORAGE_WORKGROUP_SERVER
+#define PRODUCT_STORAGE_WORKGROUP_SERVER 0x00000035
+#endif
+#ifndef PRODUCT_STORAGE_ENTERPRISE_SERVER
+#define PRODUCT_STORAGE_ENTERPRISE_SERVER 0x00000036
+#endif
+#ifndef PRODUCT_MULTIPOINT_STANDARD_SERVER
+#define PRODUCT_MULTIPOINT_STANDARD_SERVER 0x0000005A
+#endif
+#ifndef PRODUCT_MULTIPOINT_PREMIUM_SERVER
+#define PRODUCT_MULTIPOINT_PREMIUM_SERVER 0x0000005B
 #endif
 
 namespace {
@@ -32,34 +54,59 @@ namespace {
         const char* server{""};
     };
 
+    #include <windows.h>
+
     bool isWindowsServer() {
-        NT_PRODUCT_TYPE type = NtProductWinNt;
-        if (NT_SUCCESS(RtlGetNtProductType(&type))) {
-            return type != NtProductWinNt;
+        DWORD productType = 0;
+        if (!GetProductInfo(0, 0, 0, 0, &productType)) [[unlikely]] {
+            return false;
         }
-        return false;
+
+        switch (productType) {
+            case PRODUCT_STANDARD_SERVER:
+            case PRODUCT_STANDARD_SERVER_CORE:
+            case PRODUCT_ENTERPRISE_SERVER:
+            case PRODUCT_ENTERPRISE_SERVER_CORE:
+            case PRODUCT_DATACENTER_SERVER:
+            case PRODUCT_DATACENTER_SERVER_CORE:
+            case PRODUCT_WEB_SERVER:
+            case PRODUCT_WEB_SERVER_CORE:
+            case PRODUCT_CLUSTER_SERVER:
+            case PRODUCT_STORAGE_STANDARD_SERVER:
+            case PRODUCT_STORAGE_WORKGROUP_SERVER:
+            case PRODUCT_STORAGE_ENTERPRISE_SERVER:
+            case PRODUCT_COMPUTE_CLUSTER:
+            case PRODUCT_MULTIPOINT_STANDARD_SERVER:
+            case PRODUCT_MULTIPOINT_PREMIUM_SERVER:
+                return true;
+            default:
+                return false;
+        }
     }
 
     std::string getWindowsVersionName(ULONG major, ULONG minor, ULONG build) {
         const auto isServer = isWindowsServer();
-        const WindowsVersionEntry table[] = {
-            {10, 0, 22000, ULONG_MAX, "Windows 11",     "Windows Server 2022"},
-            {10, 0, 17763, 21999,     "Windows 10",     "Windows Server 2019"},
-            {10, 0, 14393, 17762,     "Windows 10",     "Windows Server 2016"},
-            {10, 0,     0, 14392,     "Windows 10",     "Windows 10"},
-            { 6, 3,     0, ULONG_MAX, "Windows 8.1",    "Windows Server 2012 R2"},
-            { 6, 2,     0, ULONG_MAX, "Windows 8",      "Windows Server 2012"},
-            { 6, 1,     0, ULONG_MAX, "Windows 7",      "Windows Server 2008 R2"},
-            { 6, 0,     0, ULONG_MAX, "Windows Vista",  "Windows Server 2008"},
-            { 5, 2,     0, ULONG_MAX, "Windows XP x64", "Windows Server 2003"},
-            { 5, 1,     0, ULONG_MAX, "Windows XP",     "Windows XP"},
-            { 5, 0,     0, ULONG_MAX, "Windows 2000",   "Windows 2000"},
-        };
+        
+        static constexpr std::array<WindowsVersionEntry, 11> table = {{
+            {10, 0, 22000, ULONG_MAX, "Windows 11",         "Windows Server 2022"},
+            {10, 0, 17763, 21999,     "Windows 10",         "Windows Server 2019"},
+            {10, 0, 14393, 17762,     "Windows 10",         "Windows Server 2016"},
+            {10, 0,     0, 14392,     "Windows 10",         "Windows 10"},
+            { 6, 3,     0, ULONG_MAX, "Windows 8.1",        "Windows Server 2012 R2"},
+            { 6, 2,     0, ULONG_MAX, "Windows 8",          "Windows Server 2012"},
+            { 6, 1,     0, ULONG_MAX, "Windows 7",          "Windows Server 2008 R2"},
+            { 6, 0,     0, ULONG_MAX, "Windows Vista",      "Windows Server 2008"},
+            { 5, 2,     0, ULONG_MAX, "Windows XP x64",     "Windows Server 2003"},
+            { 5, 1,     0, ULONG_MAX, "Windows XP",         "Windows XP"},
+            { 5, 0,     0, ULONG_MAX, "Windows 2000",       "Windows 2000"},
+        }};
+        
         for (const auto& e : table) {
             if (major == e.major && minor == e.minor && build >= e.buildMin && build <= e.buildMax) {
                 return isServer ? e.server : e.client;
             }
         }
+        
         return "Windows " + std::to_string(major) + "." + std::to_string(minor) + " (Build " + std::to_string(build) + ")";
     }
 
@@ -96,7 +143,7 @@ namespace {
         }
 
         std::vector<wchar_t> buffer((size + sizeof(wchar_t) - 1) / sizeof(wchar_t) + 1, 0);
-        DWORD bufSize = static_cast<DWORD>(buffer.size() * sizeof(wchar_t));
+        auto bufSize = static_cast<DWORD>(buffer.size() * sizeof(wchar_t));
         status = RegQueryValueExW(key, valueName, nullptr, nullptr,  reinterpret_cast<LPBYTE>(buffer.data()), &bufSize);
         if (status != ERROR_SUCCESS) [[unlikely]] {
             RegCloseKey(key);
@@ -120,13 +167,7 @@ namespace {
 
     std::wstring readDeviceName() {
         DWORD size = 0;
-
-        if (!GetComputerNameW(nullptr, &size)) {
-            if (GetLastError() != ERROR_BUFFER_OVERFLOW) [[unlikely]] {
-                return {};
-            }
-        }
-
+        GetComputerNameW(nullptr, &size);
         if (size == 0) [[unlikely]] {
             return {};
         }
@@ -162,6 +203,7 @@ namespace {
         return utf8;
     }
 
+    [[maybe_unused]]
     std::wstring utf8_to_wstr(const std::string& utf8) {
         if (utf8.empty()) [[unlikely]] {
             return {};
