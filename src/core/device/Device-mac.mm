@@ -55,20 +55,20 @@ std::string deviceManufacturer()
 
 std::string deviceModel()
 {
-    static const auto model = []() -> std::string {
+    static const auto model = []() {
         char m[256] = {0};
         auto len = sizeof(m);
         if (sysctlbyname("hw.model", m, &len, nullptr, 0) != 0) [[unlikely]] {
-            return {};
+            return std::string{};
         }
-        return m;
+        return std::string{m};
     }();
     return model;
 }
 
 std::string osVersion()
 {
-    static const auto version = []() -> std::string {
+    static const auto version = []() {
         @autoreleasepool {
             NSOperatingSystemVersion ver = NSProcessInfo.processInfo.operatingSystemVersion;
             const auto major = static_cast<int32_t>(ver.majorVersion);

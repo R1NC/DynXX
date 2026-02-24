@@ -37,6 +37,55 @@ namespace {
             if (handler(p)) break;
         }
     }
+
+    struct WSA {
+        WSA() {
+            ret = WSAStartup(MAKEWORD(2, 2), &data);
+        }
+
+        bool valid() const {
+            return ret == 0;
+        }
+        
+        ~WSA() {
+            if (valid()) {
+                WSACleanup();
+            }
+        }
+
+        WSA(const WSA&) = delete;
+        WSA& operator=(const WSA&) = delete;
+        WSA(WSA&&) = delete;
+        WSA&& operator=(WSA&&) = delete;
+
+        int ret;
+        WSADATA data;
+    };
+
+    struct UDPSocket {
+        explicit UDPSocket(bool v6) {
+            sock = socket(v6 ? AF_INET6 : AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        }
+        UDPSocket() : UDPSocket(false) {
+        }
+
+        bool valid() const {
+            return sock != INVALID_SOCKET;
+        }
+        
+        ~UDPSocket() {
+            if (valid()) {
+                closesocket(sock);
+            }
+        }
+
+        UDPSocket(const UDPSocket&) = delete;
+        UDPSocket& operator=(const UDPSocket&) = delete;
+        UDPSocket(UDPSocket&&) = delete;
+        UDPSocket&& operator=(UDPSocket&&) = delete;
+
+        SOCKET sock;
+    };
 }
 
 namespace DynXX::Core::Net::Util {
@@ -82,14 +131,13 @@ NetType netType()
 
 std::string publicIpV4()
 {
-    if (WSADATA wsaData; WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
-    {
+    WSA wsa;
+    if (!wsa.valid()) [[unlikely]] {
         return {};
     }
-    SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sock == INVALID_SOCKET) 
-    {
-        WSACleanup();
+    
+    UDPSocket us{};
+    if (!us.valid()) [[unlikely]] {
         return {};
     }
 
@@ -99,39 +147,30 @@ std::string publicIpV4()
     
     InetPtonA(AF_INET, kDefaultDnsIpV4, &serv.sin_addr);
 
-    if (connect(sock, reinterpret_cast<struct sockaddr*>(&serv), sizeof(serv)) < 0) 
-    {
-        closesocket(sock);
-        WSACleanup();
+    if (connect(us.sock, reinterpret_cast<struct sockaddr*>(&serv), sizeof(serv)) < 0) [[unlikely]] {
         return {};
     }
 
     struct sockaddr_in name;
-    if (socklen_t namelen = sizeof(name); getsockname(sock, reinterpret_cast<struct sockaddr*>(&name), &namelen) < 0) 
-    {
-        closesocket(sock);
-        WSACleanup();
+    if (socklen_t namelen = sizeof(name); getsockname(us.sock, reinterpret_cast<struct sockaddr*>(&name), &namelen) < 0) [[unlikely]] {
         return {};
     }
 
     std::array<char, INET_ADDRSTRLEN> ipStr{};
     InetNtopA(AF_INET, &name.sin_addr, ipStr.data(), INET_ADDRSTRLEN);
-    closesocket(sock);
-    WSACleanup();
 
     return {ipStr.data()};
 }
 
 std::string publicIpV6()
 {
-    if (WSADATA wsaData; WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
-    {
+    WSA wsa;
+    if (!wsa.valid()) [[unlikely]] {
         return {};
     }
-    SOCKET sock = socket(AF_INET6, SOCK_DGRAM, 0);
-    if (sock == INVALID_SOCKET) 
-    {
-        WSACleanup();
+    
+    UDPSocket us{true};
+    if (!us.valid()) [[unlikely]] {
         return {};
     }
 
@@ -142,25 +181,17 @@ std::string publicIpV6()
     
     InetPtonA(AF_INET6, kDefaultDnsIpV6, &serv.sin6_addr);
 
-    if (connect(sock, reinterpret_cast<struct sockaddr*>(&serv), sizeof(serv)) < 0) 
-    {
-        closesocket(sock);
-        WSACleanup();
+    if (connect(us.sock, reinterpret_cast<struct sockaddr*>(&serv), sizeof(serv)) < 0) [[unlikely]] {
         return {};
     }
 
     struct sockaddr_in6 name;
-    if (socklen_t namelen = sizeof(name); getsockname(sock, reinterpret_cast<struct sockaddr*>(&name), &namelen) < 0) 
-    {
-        closesocket(sock);
-        WSACleanup();
+    if (socklen_t namelen = sizeof(name); getsockname(us.sock, reinterpret_cast<struct sockaddr*>(&name), &namelen) < 0) [[unlikely]] {
         return {};
     }
 
     std::array<char, INET6_ADDRSTRLEN> ipStr{};
     InetNtopA(AF_INET6, &name.sin6_addr, ipStr.data(), INET6_ADDRSTRLEN);
-    closesocket(sock);
-    WSACleanup();
 
     return {ipStr.data()};
 }

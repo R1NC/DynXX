@@ -10,7 +10,12 @@
 
 #include <array>
 
+#include <DynXX/CXX/Macro.hxx>
 #include <DynXX/C/Device.h>
+
+#if defined(USE_STD_FORMAT)
+#include <format>
+#endif
 
 extern "C" NTSYSAPI NTSTATUS NTAPI RtlGetVersion(PRTL_OSVERSIONINFOW lpVersionInformation);
 
@@ -19,22 +24,22 @@ extern "C" NTSYSAPI NTSTATUS NTAPI RtlGetVersion(PRTL_OSVERSIONINFOW lpVersionIn
 #endif
 
 #ifndef PRODUCT_COMPUTE_CLUSTER
-#define PRODUCT_COMPUTE_CLUSTER 0x00000031
+constexpr auto PRODUCT_COMPUTE_CLUSTER = 0x00000031;
 #endif
 #ifndef PRODUCT_STORAGE_STANDARD_SERVER
-#define PRODUCT_STORAGE_STANDARD_SERVER 0x00000034
+constexpr auto PRODUCT_STORAGE_STANDARD_SERVER = 0x00000034;
 #endif
 #ifndef PRODUCT_STORAGE_WORKGROUP_SERVER
-#define PRODUCT_STORAGE_WORKGROUP_SERVER 0x00000035
+constexpr auto PRODUCT_STORAGE_WORKGROUP_SERVER = 0x00000035;
 #endif
 #ifndef PRODUCT_STORAGE_ENTERPRISE_SERVER
-#define PRODUCT_STORAGE_ENTERPRISE_SERVER 0x00000036
+constexpr auto PRODUCT_STORAGE_ENTERPRISE_SERVER = 0x00000036;
 #endif
 #ifndef PRODUCT_MULTIPOINT_STANDARD_SERVER
-#define PRODUCT_MULTIPOINT_STANDARD_SERVER 0x0000005A
+constexpr auto PRODUCT_MULTIPOINT_STANDARD_SERVER = 0x0000005A;
 #endif
 #ifndef PRODUCT_MULTIPOINT_PREMIUM_SERVER
-#define PRODUCT_MULTIPOINT_PREMIUM_SERVER 0x0000005B
+constexpr auto PRODUCT_MULTIPOINT_PREMIUM_SERVER = 0x0000005B;
 #endif
 
 namespace {
@@ -53,8 +58,6 @@ namespace {
         const char* client{""};
         const char* server{""};
     };
-
-    #include <windows.h>
 
     bool isWindowsServer() {
         DWORD productType = 0;
@@ -106,8 +109,12 @@ namespace {
                 return isServer ? e.server : e.client;
             }
         }
-        
-        return "Windows " + std::to_string(major) + "." + std::to_string(minor) + " (Build " + std::to_string(build) + ")";
+
+#if defined(USE_STD_FORMAT)
+        return std::format("Windows {}.{}", major, minor);
+#else
+        return "Windows " + std::to_string(major) + "." + std::to_string(minor);
+#endif
     }
 
     WindowsVersion getWindowsVersion() {
@@ -238,10 +245,10 @@ DynXXDeviceTypeX deviceType()
 
 std::string deviceName()
 {
-    static const auto name = []() -> std::string {
+    static const auto name = []() {
         const auto device = readDeviceName();
         if (device.empty()) {
-            return "Unknown";
+            return std::string{"Unknown"};
         }
         return wstr_to_utf8(device);
     }();
@@ -250,14 +257,14 @@ std::string deviceName()
 
 std::string deviceManufacturer()
 {
-    static const auto manufacturer = []() -> std::string {
+    static const auto manufacturer = []() {
         const auto wstr = readRegString(
             HKEY_LOCAL_MACHINE,
             L"HARDWARE\\DESCRIPTION\\System\\BIOS",
             L"SystemManufacturer"
         );
         if (wstr.empty()) {
-            return "Unknown";
+            return std::string{"Unknown"};
         }
         return wstr_to_utf8(wstr);
     }();
@@ -266,14 +273,14 @@ std::string deviceManufacturer()
 
 std::string deviceModel()
 {
-    static const auto model = []() -> std::string {
+    static const auto model = []() {
         const auto wstr = readRegString(
             HKEY_LOCAL_MACHINE,
             L"HARDWARE\\DESCRIPTION\\System\\BIOS",
             L"SystemProductName"
         );
         if (wstr.empty()) {
-            return "Unknown";
+            return std::string{"Unknown"};
         }
         return wstr_to_utf8(wstr);
     }();
@@ -282,12 +289,20 @@ std::string deviceModel()
 
 std::string osVersion()
 {
-    static const auto ver = []() -> std::string {
+    static const auto ver = []() {
         const auto wv = getWindowsVersion();
         if (wv.name.empty()) [[unlikely]] {
+#if defined(USE_STD_FORMAT)
+            return std::format("Windows {}.{}", wv.major, wv.minor);
+#else
             return "Windows " + std::to_string(wv.major) + "." + std::to_string(wv.minor);
+#endif
         }
+#if defined(USE_STD_FORMAT)
+        return std::format("{} ({})", wv.name, wv.build);
+#else
         return wv.name + "(" + std::to_string(wv.build) + ")";
+#endif
     }();
     return ver;
 }

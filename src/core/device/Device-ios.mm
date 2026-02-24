@@ -63,17 +63,18 @@ std::string deviceModel()
 
 std::string osVersion()
 {
-    static const auto version = []() -> std::string {
+    static const auto version = []() {
         @autoreleasepool {
             NSString *nsVersion = UIDevice.currentDevice.systemVersion;
+            std::string defaultVersion = "Unknown";
             if (nsVersion == nullptr) [[unlikely]] {
-                return "Unknown";
+                return defaultVersion;
             }
             const auto cstr = NSString2CharP(nsVersion);
             if (cstr == nullptr) [[unlikely]] {
-                return "Unknown";
+                return defaultVersion;
             }
-            return {cstr};
+            return std::string{cstr};
         }
     }();
     return version;

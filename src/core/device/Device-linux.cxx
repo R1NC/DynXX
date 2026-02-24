@@ -107,7 +107,7 @@ namespace {
     }
 
     DmiInfo readDmiInfo() {
-        static const auto dmi = []() -> DmiInfo {
+        static const auto dmi = []() {
             DmiInfo info;
             info.manufacturer  = readDmiField("sys_vendor");
             info.model         = readDmiField("product_name");
