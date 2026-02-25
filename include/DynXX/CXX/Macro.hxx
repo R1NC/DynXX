@@ -14,18 +14,10 @@
 #endif
 
 #ifndef NO_UNIQUE_ADDRESS
-#  if defined(_MSC_VER)
-#    if _MSC_VER >= 1929
-#      define NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
-#    else
-#      define NO_UNIQUE_ADDRESS
-#    endif
-#  elif defined(__has_cpp_attribute)
-#    if __has_cpp_attribute(no_unique_address)
-#      define NO_UNIQUE_ADDRESS [[no_unique_address]]
-#    else
-#      define NO_UNIQUE_ADDRESS
-#    endif
+#  if defined(_MSC_VER) && _MSC_VER >= 1929
+#    define NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#  elif defined(__has_cpp_attribute) && __has_cpp_attribute(no_unique_address)
+#    define NO_UNIQUE_ADDRESS [[no_unique_address]]
 #  else
 #    define NO_UNIQUE_ADDRESS
 #  endif
