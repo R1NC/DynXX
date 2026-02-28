@@ -157,7 +157,7 @@ function(installHeaders SOURCE_DIR DESTINATION_DIR)
 endfunction()
 
 ## Install Sanitizers Runtime
-function(install_asan_runtime dest_dir)
+function(installAsanRuntime dest_dir)
 	if(APPLE)
 		if(CMAKE_OSX_SYSROOT MATCHES "Simulator|iPhoneSimulator")
 			set(_asan_lib_name "libclang_rt.asan_iossim_dynamic.dylib")
