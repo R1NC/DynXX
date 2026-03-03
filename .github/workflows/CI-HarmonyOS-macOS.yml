@@ -10,8 +10,8 @@ on:
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
       - 'vcpkg.json'
-      - 'build-tools/build-utils.sh'
-      - 'build-tools/build-HarmonyOS.sh'
+      - 'build-tools/build_utils.py'
+      - 'build-tools/build-HarmonyOS.py'
   workflow_dispatch:
 
 permissions:
@@ -40,17 +40,17 @@ jobs:
       with:
         path: |
           sdk/packages/ohos-sdk/darwin/native
-        key: ohos-sdk-darwin-5.1.0.107-${{ runner.os }}
+        key: ohos-sdk-darwin-6.0.0.48-${{ runner.os }}
         restore-keys: |
-          ohos-sdk-darwin-5.1.0-
+          ohos-sdk-darwin-6.0.0.48-
 
     - name: Setup HarmonyOS SDK
       if: steps.cache-ohos-sdk.outputs.cache-hit != 'true'
       run: |
-        curl -L -o ohos-sdk-mac-public.tar.gz "https://mirrors.huaweicloud.com/harmonyos/os/5.1.0-Release/ohos-sdk-mac-public.tar.gz"
+        curl -L -o ohos-sdk-mac-public.tar.gz "https://mirrors.huaweicloud.com/harmonyos/os/6.0.0.1-Release/ohos-sdk-mac-public.tar.gz"
         tar -xzf ohos-sdk-mac-public.tar.gz
         cd sdk/packages/ohos-sdk/darwin
-        unzip native-darwin-x64-5.1.0.107-Release.zip
+        unzip native-darwin-x64-6.0.0.48-Release.zip
 
     - name: Set HarmonyOS Environment
       run: |
@@ -59,8 +59,7 @@ jobs:
     - name: Build
       run: |
         cd build-tools
-        chmod +x build-HarmonyOS.sh
-        ./build-HarmonyOS.sh
+        python3 build-HarmonyOS.py
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4

@@ -9,6 +9,7 @@ compile_commands.json
 .idea
 .vscode
 vcpkg_installed
+__pycache__
 build
 build.Android
 build.iOS

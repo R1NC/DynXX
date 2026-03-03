@@ -10,8 +10,8 @@ on:
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
       - 'vcpkg.json'
-      - 'build-tools/build-utils.sh'
-      - 'build-tools/build-WASM.sh'
+      - 'build-tools/build_utils.py'
+      - 'build-tools/build-WASM.py'
   workflow_dispatch:
 
 permissions:
@@ -58,8 +58,7 @@ jobs:
         CI_EMSCRIPTEN_ROOT: ${{ env.EMSDK }}/upstream/emscripten
       run: |
         cd build-tools
-        chmod +x build-WASM.sh
-        ./build-WASM.sh
+        python3 build-WASM.py
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
