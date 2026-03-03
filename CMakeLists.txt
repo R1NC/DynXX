@@ -135,6 +135,10 @@ endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
+if(NOT APPLE)
+    target_precompile_headers(${PROJECT_NAME} PRIVATE include/pch)
+endif()
+
 ## Setup dependencies:
 
 if(USE_VCPKG)

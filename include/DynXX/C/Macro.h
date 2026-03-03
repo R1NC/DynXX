@@ -5,7 +5,6 @@
 #define DYNXX_EXTERN_C_END }
 #define DYNXX_EXPORT extern "C"
 #if defined(__EMSCRIPTEN__)
-    #include <emscripten/emscripten.h>
     #define DYNXX_EXPORT_AUTO DYNXX_EXPORT EMSCRIPTEN_KEEPALIVE
 #else
     #define DYNXX_EXPORT_AUTO DYNXX_EXPORT
@@ -37,8 +36,4 @@
 
 #if !defined(DYNXX_OUT)
 #define DYNXX_OUT
-#endif
-
-#if !defined(NOMINMAX)
-#define NOMINMAX  // prevent windows redefining min/max
 #endif

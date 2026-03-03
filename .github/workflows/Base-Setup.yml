@@ -29,6 +29,11 @@ jobs:
         if: inputs.host == 'Windows'
         uses: microsoft/setup-msbuild@v2
 
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
   BuildCache:
     runs-on: ${{ inputs.host == 'macOS' && 'macos-latest' || inputs.host == 'Windows' && 'windows-latest' || 'ubuntu-latest' }}
     steps:
