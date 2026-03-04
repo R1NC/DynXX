@@ -5,24 +5,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from build_utils import check_artifacts, copy_static_libs, export_compile_commands, merge_libs, run, win_local_app_data_dir
+from build_utils import check_artifacts, copy_static_libs, export_compile_commands, merge_libs, run
 
 
-def default_ndk_root():
-    sysname = platform.system().lower()
-    home = Path.home()
-    ver = "29.0.14206865"
-    if sysname == "darwin":
-        return home / "Library/Android/sdk/ndk/" + ver
-    if sysname == "linux":
-        return home / "Android/Sdk/ndk/" + ver
-    if sysname == "windows":
-        local_app_data = win_local_app_data_dir()
-        return local_app_data / "Android/sdk/ndk/" + ver
-    return home / "Android/sdk/ndk/" + ver
-
-
-def ndk_llvm_root(ndk_root: str) -> Path:
+def ndk_llvm_root(ndk_home: str) -> Path:
     sysname = platform.system().lower()
     candidates = []
     if sysname == "darwin":
@@ -32,7 +18,7 @@ def ndk_llvm_root(ndk_root: str) -> Path:
     elif sysname == "windows":
         candidates = ["windows-x86_64"]
 
-    prebuilt_dir = Path(ndk_root) / "toolchains/llvm/prebuilt"
+    prebuilt_dir = Path(ndk_home) / "toolchains/llvm/prebuilt"
     for tag in candidates:
         candidate_dir = prebuilt_dir / tag / "bin"
         if candidate_dir.is_dir():
@@ -60,15 +46,11 @@ def main():
     platform_name = "Android"
     preset = f"{platform_name}-{build_type}"
 
-    ndk_root = (
-        os.environ.get("CI_NDK_ROOT")
-        or os.environ.get("ANDROID_NDK_HOME")
-        or os.environ.get("ANDROID_NDK")
-        or str(default_ndk_root())
-    )
+    ci_ndk_home = os.environ.get("CI_ANDROID_NDK_HOME")
+    if ci_ndk_home and not os.environ.get("ANDROID_NDK_HOME"):
+        os.environ["ANDROID_NDK_HOME"] = ci_ndk_home
+    ndk_home = os.environ["ANDROID_NDK_HOME"]
 
-    os.environ["ANDROID_NDK"] = ndk_root
-    os.environ["ANDROID_NDK_HOME"] = ndk_root
     os.environ["ANDROID_ABI"] = os.environ.get("ANDROID_ABI", "arm64-v8a")
     os.environ["ANDROID_VER"] = os.environ.get("ANDROID_VER", "android-24")
 
@@ -82,7 +64,9 @@ def main():
     os.environ["OUTPUT_EXE_PATH"] = f"{output_path}/bin"
 
     home = Path.home().as_posix()
-    os.environ["VCPKG_ROOT"] = os.environ.get("CI_VCPKG_ROOT", f"{home}/dev/vcpkg")
+    ci_vcpkg_home = os.environ.get("CI_VCPKG_HOME")
+    if ci_vcpkg_home and not os.environ.get("VCPKG_HOME"):
+        os.environ["VCPKG_HOME"] = ci_vcpkg_home
     os.environ["VCPKG_BINARY_SOURCES"] = os.environ.get(
         "CI_VCPKG_BINARY_SOURCES",
         f"files,{home}/vcpkg-binary-cache,readwrite",
@@ -102,7 +86,7 @@ def main():
 
     copy_static_libs(vcpkg_lib_path, output_lib_path)
 
-    llvm_root = ndk_llvm_root(ndk_root)
+    llvm_root = ndk_llvm_root(ndk_home)
     ar_tool = llvm_root / "llvm-ar"
     merge_libs(output_lib_path, "libDynXX-All.a", str(ar_tool))
     check_artifacts([f"{output_lib_path}/libDynXX-All.a"])

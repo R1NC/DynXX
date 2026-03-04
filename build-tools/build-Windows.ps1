@@ -5,10 +5,10 @@ $BUILD_TYPE = "Release"
 $WINDOWS_ABI = "x64"
 $PRESET = "$PLATFORM-$BUILD_TYPE"
 
-if ($env:CI_VCPKG_ROOT) {
-    $env:VCPKG_ROOT = $env:CI_VCPKG_ROOT
+if ($env:CI_VCPKG_HOME) {
+    $env:VCPKG_HOME = $env:CI_VCPKG_HOME
 } else {
-    $env:VCPKG_ROOT = "$env:USERPROFILE/vcpkg"
+    $env:VCPKG_HOME = "$env:USERPROFILE/vcpkg"
 }
 if ($env:CI_VCPKG_BINARY_SOURCES) {
     $env:VCPKG_BINARY_SOURCES = $env:CI_VCPKG_BINARY_SOURCES

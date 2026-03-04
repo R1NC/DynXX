@@ -46,7 +46,7 @@
       "displayName": "Vcpkg default Settings",
       "description": "Shared settings for vcpkg",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_HOME}/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_TARGET_TRIPLET": "$env{VCPKG_TARGET_TRIPLET}"
       }
     },
@@ -98,9 +98,9 @@
       "displayName": "Wasm Default Config",
       "description": "Default build for Wasm",
       "cacheVariables": {
-        "EMSCRIPTEN_ROOT_PATH": "$env{WASM_SDK_ROOT}",
+        "EMSCRIPTEN_ROOT_PATH": "$env{WASM_SDK_HOME}",
         "EMSCRIPTEN_SYSTEM_PROCESSOR": "$env{WASM_ABI}",
-        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{WASM_SDK_ROOT}/cmake/Modules/Platform/Emscripten.cmake"
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{WASM_SDK_HOME}/cmake/Modules/Platform/Emscripten.cmake"
       }
     },
     {
@@ -275,7 +275,7 @@
       "displayName": "HarmonyOS Default Config",
       "description": "Default build for HarmonyOS",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{OHOS_ROOT}/build/cmake/ohos.toolchain.cmake",
+        "CMAKE_TOOLCHAIN_FILE": "$env{OHOS_NDK_HOME}/build/cmake/ohos.toolchain.cmake",
         "OHOS_PLATFORM": "OHOS",
         "OHOS_ARCH": "$env{OHOS_ABI}"
       }

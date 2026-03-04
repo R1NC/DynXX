@@ -34,7 +34,9 @@ def main():
     os.environ["OUTPUT_EXE_PATH"] = f"{output_path}/bin"
 
     home = Path.home().as_posix()
-    os.environ["VCPKG_ROOT"] = os.environ.get("CI_VCPKG_ROOT", f"{home}/dev/vcpkg")
+    ci_vcpkg_home = os.environ.get("CI_VCPKG_HOME")
+    if ci_vcpkg_home and not os.environ.get("VCPKG_HOME"):
+        os.environ["VCPKG_HOME"] = ci_vcpkg_home
     os.environ["VCPKG_BINARY_SOURCES"] = os.environ.get(
         "CI_VCPKG_BINARY_SOURCES",
         f"files,{home}/vcpkg-binary-cache,readwrite",

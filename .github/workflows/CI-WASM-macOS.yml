@@ -53,7 +53,7 @@ jobs:
 
     - name: Build
       env:
-        CI_VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+        CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
         CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
         CI_EMSCRIPTEN_ROOT: ${{ env.EMSDK }}/upstream/emscripten
       run: |
