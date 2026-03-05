@@ -58,10 +58,12 @@ jobs:
 
     - name: Setup custom vcpkg from zip
       run: |
-        curl -L -o vcpkg-dev.zip "https://github.com/R1NC/vcpkg/archive/refs/heads/dev.zip"
-        unzip -q vcpkg-dev.zip
-        mv vcpkg-dev vcpkg
-        ./vcpkg/bootstrap-vcpkg.sh
+        VCPKG_ROOT="${RUNNER_TEMP}/vcpkg"
+        curl -L -o "${RUNNER_TEMP}/vcpkg-dev.zip" "https://github.com/R1NC/vcpkg/archive/refs/heads/dev.zip"
+        unzip -q "${RUNNER_TEMP}/vcpkg-dev.zip" -d "${RUNNER_TEMP}"
+        rm -rf "${VCPKG_ROOT}"
+        mv "${RUNNER_TEMP}/vcpkg-dev" "${VCPKG_ROOT}"
+        "${VCPKG_ROOT}/bootstrap-vcpkg.sh"
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
@@ -72,7 +74,7 @@ jobs:
 
     - name: Build
       env:
-        CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
+        CI_VCPKG_HOME: ${{ runner.temp }}/vcpkg
         CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
       run: |
         cd build-tools
