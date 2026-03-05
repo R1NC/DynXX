@@ -275,7 +275,7 @@
       "displayName": "HarmonyOS Default Config",
       "description": "Default build for HarmonyOS",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{OHOS_NDK_HOME}/build/cmake/ohos.toolchain.cmake",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{OHOS_NDK_HOME}/build/cmake/ohos.toolchain.cmake",
         "OHOS_PLATFORM": "OHOS",
         "OHOS_ARCH": "$env{OHOS_ABI}"
       }
@@ -284,7 +284,7 @@
       "name": "HarmonyOS-Debug",
       "displayName": "HarmonyOS Debug Config",
       "description": "Debug build for HarmonyOS",
-      "inherits": ["Debug-Default", "HarmonyOS-Default"],
+      "inherits": ["Debug-Default", "Vcpkg-Default", "HarmonyOS-Default"],
       "condition": {
         "type": "matches",
         "string": "$env{BUILD_FOLDER}",
@@ -295,7 +295,7 @@
       "name": "HarmonyOS-Release",
       "displayName": "HarmonyOS Release Config",
       "description": "Release build for HarmonyOS",
-      "inherits": ["Release-Default", "HarmonyOS-Default"],
+      "inherits": ["Release-Default", "Vcpkg-Default", "HarmonyOS-Default"],
       "condition": {
         "type": "matches",
         "string": "$env{BUILD_FOLDER}",

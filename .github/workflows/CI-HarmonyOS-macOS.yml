@@ -56,10 +56,12 @@ jobs:
       run: |
         echo "CI_OHOS_NDK_HOME=${{ github.workspace }}/sdk/packages/ohos-sdk/darwin/native" >> $GITHUB_ENV
 
-    - name: Setup vcpkg
-      uses: lukka/run-vcpkg@v11
-      with:
-        runVcpkgInstall: false
+    - name: Setup custom vcpkg from zip
+      run: |
+        curl -L -o vcpkg-dev.zip "https://github.com/R1NC/vcpkg/archive/refs/heads/dev.zip"
+        unzip -q vcpkg-dev.zip
+        mv vcpkg-dev vcpkg
+        ./vcpkg/bootstrap-vcpkg.sh
 
     - name: Cache vcpkg binary
       id: cache-vcpkg

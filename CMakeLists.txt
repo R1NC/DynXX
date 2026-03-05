@@ -11,9 +11,9 @@ initAfterProject()
 ## Declare Options:
 
 option(USE_VCPKG "Use vcpkg" ON)
-if(OHOS)
-    set(USE_VCPKG OFF)
-endif()
+# if(OHOS)
+#     set(USE_VCPKG OFF)
+# endif()
 
 set(USE_STD_TO_CHARS ON)
 checkAppleVersionLimit("16.5" "13.4" USE_STD_TO_CHARS)
