@@ -63,6 +63,21 @@ jobs:
         unzip -q "${RUNNER_TEMP}/vcpkg-dev.zip" -d "${RUNNER_TEMP}"
         rm -rf "${VCPKG_ROOT}"
         mv "${RUNNER_TEMP}/vcpkg-dev" "${VCPKG_ROOT}"
+        git -C "${VCPKG_ROOT}" init
+        git -C "${VCPKG_ROOT}" config user.email "ci@local"
+        git -C "${VCPKG_ROOT}" config user.name "ci"
+        git -C "${VCPKG_ROOT}" add -A
+        git -C "${VCPKG_ROOT}" commit -m "init vcpkg snapshot"
+        export BASELINE="$(git -C "${VCPKG_ROOT}" rev-parse HEAD)"
+        python3 - <<'PY'
+        import json
+        import os
+        from pathlib import Path
+        vcpkg_json = Path(os.environ["GITHUB_WORKSPACE"]) / "vcpkg.json"
+        data = json.loads(vcpkg_json.read_text(encoding="utf-8"))
+        data["builtin-baseline"] = os.environ["BASELINE"]
+        vcpkg_json.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+        PY
         "${VCPKG_ROOT}/bootstrap-vcpkg.sh"
 
     - name: Cache vcpkg binary
