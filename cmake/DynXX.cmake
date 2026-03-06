@@ -10,12 +10,6 @@ endfunction()
 
 ## Initialize after project() call
 function(initAfterProject)
-    # Set C/C++ Standard for the target
-    set(CMAKE_C_STANDARD 99 PARENT_SCOPE)
-    set(CMAKE_C_STANDARD_REQUIRED ON PARENT_SCOPE)
-    set(CMAKE_CXX_STANDARD 23 PARENT_SCOPE)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON PARENT_SCOPE)
-    
     # Disable C++ extensions for better portability
     set(CXX_EXTENSIONS_SETTING OFF PARENT_SCOPE)
     # Enable extensions for CYGWIN/MSYS/MinGW (Windows POSIX compatibility layers)
@@ -37,9 +31,6 @@ function(initAfterProject)
     set(FETCHCONTENT_QUIET OFF PARENT_SCOPE)
     set(FETCHCONTENT_TIMEOUT 600 PARENT_SCOPE)
     set(FETCHCONTENT_DOWNLOAD_TIMEOUT_SEC 600 PARENT_SCOPE)
-
-    # Enable Compile Commands for better IDE support
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON PARENT_SCOPE)
 endfunction()
 
 ## Check Apple Version for C++ new features
