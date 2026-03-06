@@ -10,11 +10,6 @@ initAfterProject()
 
 ## Declare Options:
 
-option(USE_VCPKG "Use vcpkg" ON)
-if(OHOS)
-    set(USE_VCPKG OFF)
-endif()
-
 set(USE_STD_TO_CHARS ON)
 checkAppleVersionLimit("16.5" "13.4" USE_STD_TO_CHARS)
 
@@ -98,7 +93,6 @@ endif()
 ## Add Common Definitions:
 
 addDefinitions(${PROJECT_NAME} ON
-    USE_VCPKG
     USE_STD_TO_CHARS
     USE_CURL
     USE_LUA
@@ -141,75 +135,26 @@ endif()
 
 ## Setup dependencies:
 
-if(USE_VCPKG)
-    find_package(cJSON CONFIG REQUIRED)
-else()
-    addGitLib(${PROJECT_NAME}
-        cjson
-        https://github.com/R1NC/cJSON
-        dev
-    )
-endif()
+find_package(cJSON CONFIG REQUIRED)
 list(APPEND LINK_LIBS cjson)
 
-if(USE_VCPKG)
-    find_package(OpenSSL REQUIRED)
-else()
-    addGitLib(${PROJECT_NAME}
-        openssl
-        https://github.com/R1NC/openssl
-        dev
-        "include"
-    )
-    ## Config OpenSSL for libcurl to find libssl and libcrypto
-    set(OPENSSL_ROOT_DIR ${openssl_SRC_PATH})
-    set(OPENSSL_INCLUDE_DIR ${openssl_INC_PATH})
-    add_library(OpenSSL::SSL ALIAS ssl)
-    add_library(OpenSSL::Crypto ALIAS crypto)
-    set(OPENSSL_SSL_LIBRARY ssl)
-    set(OPENSSL_CRYPTO_LIBRARY crypto)
-endif()
+find_package(OpenSSL REQUIRED)
 list(APPEND LINK_LIBS OpenSSL::SSL OpenSSL::Crypto)
 
 if(USE_CURL)
-    if(USE_VCPKG)
-        find_package(CURL REQUIRED)
-    else()
-        addGitLib(${PROJECT_NAME}
-            curl
-            https://github.com/R1NC/curl
-            dev
-            "include"
-        )
-    endif()
+    find_package(CURL REQUIRED)
     list(APPEND LINK_LIBS CURL::libcurl)
 endif()
 
 # Windows & WASM have no built-in zlib;
 if(WIN32 OR EMSCRIPTEN)
-    if(USE_VCPKG)
-        find_package(ZLIB REQUIRED)
-        add_library(zlib ALIAS ZLIB::ZLIB)
-    else()
-        addGitLib(${PROJECT_NAME}
-            zlib
-            https://github.com/R1NC/zlib
-            dev
-        )
-    endif()
+    find_package(ZLIB REQUIRED)
+    add_library(zlib ALIAS ZLIB::ZLIB)
     list(APPEND LINK_LIBS zlib)
 endif()
 
 if(USE_LUA)
-    if(USE_VCPKG)
-        find_package(Lua REQUIRED)
-    else()
-        addGitLib(${PROJECT_NAME}
-            lua
-            https://github.com/R1NC/lua
-            dev
-        )
-    endif()
+    find_package(Lua REQUIRED)
     list(APPEND LINK_LIBS lua)
 endif()
 
@@ -238,62 +183,25 @@ endif()
 # For Android, it's only accessible in Java/kotlin: https://stackoverflow.com/questions/5523067/sqlite-with-android-ndk；
 if(USE_DB)
     if(NOT APPLE)
-        if(USE_VCPKG)
-            find_package(unofficial-sqlite3 CONFIG REQUIRED)
-            add_library(sqlite3 ALIAS unofficial::sqlite3::sqlite3)
-        else()
-            addGitLib(${PROJECT_NAME}
-                sqlite
-                https://github.com/R1NC/sqlite
-                dev
-            )
-            add_library(sqlite3 ALIAS sqlite3-static)
-        endif()
+        find_package(unofficial-sqlite3 CONFIG REQUIRED)
+        add_library(sqlite3 ALIAS unofficial::sqlite3::sqlite3)
     endif()
     list(APPEND LINK_LIBS sqlite3)
 endif()
 
 # HarmonyOS has built-in libuv;
 if(USE_LIBUV AND NOT OHOS)
-    if(USE_VCPKG)
-        find_package(libuv REQUIRED)
-        list(APPEND LINK_LIBS $<IF:$<TARGET_EXISTS:libuv::uv_a>,libuv::uv_a,libuv::uv>)
-    else()
-        addGitLib(${PROJECT_NAME}
-            libuv
-            https://github.com/R1NC/libuv
-            dev
-            "include"
-        )
-        list(APPEND LINK_LIBS libuv)
-    endif()
+    find_package(libuv REQUIRED)
+    list(APPEND LINK_LIBS $<IF:$<TARGET_EXISTS:libuv::uv_a>,libuv::uv_a,libuv::uv>)
 endif()
 
 if(USE_ADA)
-    if(USE_VCPKG)
-        find_package(ada REQUIRED)
-    else()
-        addGitLib(${PROJECT_NAME}
-            ada
-            https://github.com/R1NC/AdaURL
-            dev
-            "include"
-        )
-    endif()
+    find_package(ada REQUIRED)
     list(APPEND LINK_LIBS ada::ada)
 endif()
 
 if(USE_SPDLOG)
-    if(USE_VCPKG)
-        find_package(spdlog REQUIRED)
-    else()
-        addGitLib(${PROJECT_NAME}
-            spdlog
-            https://github.com/R1NC/spdlog
-            dev
-            "include"
-        )
-    endif()
+    find_package(spdlog REQUIRED)
 endif()
 
 if(ANDROID)

@@ -1,10 +1,6 @@
 #pragma once
 
-#if defined(USE_VCPKG)
 #include <cjson/cJSON.h>
-#else
-#include <cJSON.h>
-#endif
 #include <DynXX/CXX/Json.hxx>
 
 #include <memory>

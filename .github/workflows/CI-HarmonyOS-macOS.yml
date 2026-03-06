@@ -56,10 +56,29 @@ jobs:
       run: |
         echo "CI_OHOS_NDK_HOME=${{ github.workspace }}/sdk/packages/ohos-sdk/darwin/native" >> $GITHUB_ENV
 
-    - name: Setup vcpkg
-      uses: lukka/run-vcpkg@v11
-      with:
-        runVcpkgInstall: false
+    - name: Setup custom vcpkg from zip
+      run: |
+        VCPKG_ROOT="${RUNNER_TEMP}/vcpkg"
+        curl -L -o "${RUNNER_TEMP}/vcpkg-dev.zip" "https://github.com/R1NC/vcpkg/archive/refs/heads/dev.zip"
+        unzip -q "${RUNNER_TEMP}/vcpkg-dev.zip" -d "${RUNNER_TEMP}"
+        rm -rf "${VCPKG_ROOT}"
+        mv "${RUNNER_TEMP}/vcpkg-dev" "${VCPKG_ROOT}"
+        git -C "${VCPKG_ROOT}" init
+        git -C "${VCPKG_ROOT}" config user.email "ci@local"
+        git -C "${VCPKG_ROOT}" config user.name "ci"
+        git -C "${VCPKG_ROOT}" add -A
+        git -C "${VCPKG_ROOT}" commit -m "init vcpkg snapshot"
+        export BASELINE="$(git -C "${VCPKG_ROOT}" rev-parse HEAD)"
+        python3 - <<'PY'
+        import json
+        import os
+        from pathlib import Path
+        vcpkg_json = Path(os.environ["GITHUB_WORKSPACE"]) / "vcpkg.json"
+        data = json.loads(vcpkg_json.read_text(encoding="utf-8"))
+        data["builtin-baseline"] = os.environ["BASELINE"]
+        vcpkg_json.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+        PY
+        "${VCPKG_ROOT}/bootstrap-vcpkg.sh"
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
@@ -70,7 +89,7 @@ jobs:
 
     - name: Build
       env:
-        CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
+        CI_VCPKG_HOME: ${{ runner.temp }}/vcpkg
         CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
       run: |
         cd build-tools

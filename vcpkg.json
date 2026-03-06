@@ -4,7 +4,7 @@
   "dependencies": [
     {
       "name": "ada-url",
-      "platform": "!emscripten",
+      "platform": "!emscripten & !ohos",
       "features": []
     },
     {
@@ -50,7 +50,7 @@
     },
     {
       "name": "libuv",
-      "platform": "!emscripten"
+      "platform": "!emscripten & !ohos"
     }
   ],
   "overrides": [
