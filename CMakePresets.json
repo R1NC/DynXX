@@ -26,7 +26,9 @@
       "inherits": ["Common"],
       "generator": "Unix Makefiles",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_SKIP_RPATH": "FALSE",
+        "CMAKE_SKIP_INSTALL_RPATH": "FALSE"
       }
     },
     {
@@ -37,7 +39,10 @@
       "inherits": ["Common"],
       "generator": "Ninja",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_SKIP_INSTALL_RPATH": "TRUE",
+        "CMAKE_INSTALL_RPATH": "",
+        "CMAKE_BUILD_WITH_INSTALL_RPATH": "TRUE"
       }
     },
     {
