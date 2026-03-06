@@ -29,6 +29,14 @@ jobs:
         if: inputs.host == 'Windows'
         uses: microsoft/setup-msbuild@v2
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24' 
+
+      - name: Setup tsx
+        run: npm install -g tsx
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
