@@ -10,6 +10,8 @@ initAfterProject()
 
 ## Declare Options:
 
+set(USE_SANITIZERS OFF)
+
 set(USE_STD_TO_CHARS ON)
 checkAppleVersionLimit("16.5" "13.4" USE_STD_TO_CHARS)
 
@@ -241,12 +243,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
 ## Setup Sanitizers
 
 set(SANITIZERS "")
-if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    if(ANDROID AND "${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "arm64-v8a")
-        list(APPEND SANITIZERS "hwaddress")
-    else()
+if(USE_SANITIZERS AND ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+#    if(ANDROID AND "${CMAKE_ANDROID_ARCH_ABI}" STREQUAL "arm64-v8a")
+#        list(APPEND SANITIZERS "hwaddress")
+#    else()
         list(APPEND SANITIZERS "address")
-    endif()
+#    endif()
 
     if(NOT WIN32)
         list(APPEND SANITIZERS "undefined")
@@ -259,7 +261,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     # TSan is mutually exclusive with ASan and LSan. 
     # Enable it only if you strictly need to check for race conditions.
     if(NOT WIN32 AND NOT EMSCRIPTEN AND NOT ANDROID AND NOT OHOS)
-        # list(APPEND SANITIZERS "thread")
+#        list(APPEND SANITIZERS "thread")
     endif()
 
     if(SANITIZERS)
