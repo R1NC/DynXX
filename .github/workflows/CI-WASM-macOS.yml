@@ -10,8 +10,8 @@ on:
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
       - 'vcpkg.json'
-      - 'build-tools/build_utils.py'
-      - 'build-tools/build-WASM.py'
+      - 'build-tools/utils.ts'
+      - 'build-tools/build-WASM.ts'
   workflow_dispatch:
 
 permissions:
@@ -55,10 +55,10 @@ jobs:
       env:
         CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
         CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
-        CI_EMSCRIPTEN_ROOT: ${{ env.EMSDK }}/upstream/emscripten
+        CI_WASM_SDK_HOME: ${{ env.EMSDK }}/upstream/emscripten
       run: |
         cd build-tools
-        python3 build-WASM.py
+        npx tsx build-WASM.ts
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4

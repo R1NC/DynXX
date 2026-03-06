@@ -10,8 +10,8 @@ on:
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
       - 'vcpkg.json'
-      - 'build-tools/build_utils.py'
-      - 'build-tools/build-Linux.py'
+      - 'build-tools/utils.ts'
+      - 'build-tools/build-Linux.ts'
   workflow_dispatch:
 
 permissions:
@@ -52,7 +52,7 @@ jobs:
         CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
       run: |
         cd build-tools
-        python3 build-Linux.py
+        npx tsx build-Linux.ts
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
