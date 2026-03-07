@@ -55,19 +55,65 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 ## C++ New Features Compatibility
 
-| Feature                                      | Standard | Unsupported Platforms              |
-| :------------------------------------------- | :------: | :--------------------------------- |
-| [std::from_chars][19] for integer            | C++17    | iOS 16.5-, macOS 13.4-;            |
-| [std::from_chars][19] for float              | C++17    | All;                               |
-| [std::format][12]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
-| [std::jthread][28]                           | C++20    | Apple;                             |
-| [std::ranges][13]                            | C++20    | iOS 16.3-, macOS 13.3-, HarmonyOS; |
-| [Heterogeneous lookup for hash map/set][32]  | C++20    | HarmonyOS;                         |
-| [std::move_only_function][23]                | C++23    | Clang, Apple & HarmonyOS;          |
-| [std::ranges::to][36]                        | C++23    | Clang, Apple & HarmonyOS;          |
-| [std::ranges::views::chunk][14]              | C++23    | Clang, Apple & HarmonyOS;          |
-| [std::ranges::views::enumerate][20]          | C++23    | Clang, Apple & HarmonyOS;          |
-| [std::out_ptr][37]                           | C++23    | HarmonyOS;                         |
+<table>
+  <caption>C++ New Features Compatibility</caption>
+  <thead>
+    <tr>
+      <th>Standard</th>
+      <th>Feature</th>
+      <th>Unsupported Platforms</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">C++17</td>
+      <td><a href="https://en.cppreference.com/w/cpp/utility/from_chars">std::from_chars</a> for integer</td>
+      <td>iOS 16.5-, macOS 13.4-;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/utility/from_chars">std::from_chars</a> for float</td>
+      <td>All;</td>
+    </tr>
+    <tr>
+      <td rowspan="4">C++20</td>
+      <td><a href="https://en.cppreference.com/w/cpp/utility/format/format">std::format</a></td>
+      <td>iOS 16.3-, macOS 13.3-, HarmonyOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/thread/jthread.html">std::jthread</a></td>
+      <td>Apple;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/ranges">std::ranges</a></td>
+      <td>iOS 16.3-, macOS 13.3-, HarmonyOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0919r3.html">Heterogeneous lookup for hash map/set</a></td>
+      <td>HarmonyOS;</td>
+    </tr>
+    <tr>
+      <td rowspan="5">C++23</td>
+      <td><a href="https://en.cppreference.com/w/cpp/utility/functional/move_only_function.html">std::move_only_function</a></td>
+      <td>Clang, Apple &amp; HarmonyOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/ranges/to.html">std::ranges::to</a></td>
+      <td>Clang, Apple &amp; HarmonyOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/ranges/chunk_view">std::ranges::views::chunk</a></td>
+      <td>Clang, Apple &amp; HarmonyOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/ranges/enumerate_view">std::ranges::views::enumerate</a></td>
+      <td>Clang, Apple &amp; HarmonyOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/memory/out_ptr_t/out_ptr">std::out_ptr</a></td>
+      <td>HarmonyOS;</td>
+    </tr>
+  </tbody>
+</table>
 
 <details>
 
@@ -80,19 +126,82 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 ## Dependencies
 
-* [ada-url][3]: URL parser;(Requires `std::ranges` in C++20)
-* [curl][4]: Networking;
-* [cJSON][5]: JSON codec;
-* [iOS-cmake][18]: CMake toolchain for Apple platforms;
-* [json.lua][27]: JSON codec for Lua;
-* [libuv][6]: Asynchronous I/O;
-* [lua][7]: Lua runtime;
-* [MMKV][8]: Key-value storage;
-* [openssl][9]: Crypto;
-* [quickjs][10]: JS runtime;
-* [spdlog][15]: File logging;
-* [sqlite][11]: DB storage;
-* [zlib][17]: Compression.
+<table>
+  <thead>
+    <tr>
+      <th>Repo</th>
+      <th>Desc</th>
+      <th>Remark</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="https://github.com/ada-url/ada">ada-url</a></td>
+      <td>URL parser;</td>
+      <td>Requires <code>std::ranges</code> in C++20</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/curl/curl">curl</a></td>
+      <td>Networking;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/DaveGamble/cJSON">cJSON</a></td>
+      <td>JSON codec;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/leetal/ios-cmake">iOS-cmake</a></td>
+      <td>CMake toolchain for Apple platforms;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://gist.github.com/tylerneylon/59f4bcf316be525b30ab">json.lua</a></td>
+      <td>JSON codec for Lua;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/libuv/libuv">libuv</a></td>
+      <td>Asynchronous I/O;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/lua/lua">lua</a></td>
+      <td>Lua runtime;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/Tencent/MMKV">MMKV</a></td>
+      <td>Key-value storage;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/openssl/openssl">openssl</a></td>
+      <td>Crypto;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/bellard/quickjs">quickjs</a></td>
+      <td>JS runtime;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/gabime/spdlog">spdlog</a></td>
+      <td>File logging;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/sqlite/sqlite">sqlite</a></td>
+      <td>DB storage;</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/madler/zlib">zlib</a></td>
+      <td>Compression.</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
 
 [1]: https://emscripten.org/docs/getting_started/downloads.html#sdk-download-and-install
 [2]: https://github.com/emscripten-core/emscripten/issues/16567
