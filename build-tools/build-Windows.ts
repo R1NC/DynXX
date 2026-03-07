@@ -1,19 +1,15 @@
-import { dirname, resolve, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
 import { 
   checkArtifacts, 
   exportCompileCommands, 
   setupVcpkgEnv,
   runCMake,
+  gotoParentPath,
 } from './utils.js';
 
 function main() {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  const root = resolve(__dirname, '..');
-
-  process.chdir(root);
+  const root = gotoParentPath();
 
   const debug = process.env.DEBUG || "0";
   let buildType = process.env.BUILD_TYPE || "Release";

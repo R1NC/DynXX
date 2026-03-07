@@ -10,8 +10,9 @@ import {
   statSync,
   mkdtempSync
 } from 'node:fs';
-import { join, resolve, basename } from 'node:path';
+import { dirname, join, resolve, basename } from 'node:path';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 
 function run(cmd: string, args: string[], cwd?: string) {
   const result = spawnSync(cmd, args, {
@@ -169,4 +170,12 @@ function mergeLibs(libDir: string, outputLib: string, arTool: string) {
   console.log(`FOUND: ${outputPath} (${sizeBytes} Bytes)`);
 }
 
-export { run, exportCompileCommands, setBuildOutputEnv, setupVcpkgEnv, getVcpkgLibPath, runCMake, checkArtifacts, copyStaticLibs, mergeLibs };
+function gotoParentPath(): string {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const path = resolve(__dirname, '..');
+  process.chdir(path);
+  return path;
+}
+
+export { run, exportCompileCommands, setBuildOutputEnv, setupVcpkgEnv, getVcpkgLibPath, runCMake, checkArtifacts, copyStaticLibs, mergeLibs, gotoParentPath };
