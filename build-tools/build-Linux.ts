@@ -5,8 +5,11 @@ import {
   checkArtifacts, 
   copyStaticLibs, 
   exportCompileCommands, 
-  mergeLibs, 
-  run 
+  setBuildOutputEnv,
+  setupVcpkgEnv,
+  getVcpkgLibPath,
+  runCMake,
+  mergeLibs,  
 } from './utils.js';
 
 function main() {
@@ -31,30 +34,15 @@ function main() {
   const outputFolder = `${buildFolder}/output`;
   const outputPath = join(root, outputFolder, linuxAbi);
 
-  process.env.BUILD_FOLDER = buildFolder;
-  process.env.OUTPUT_LIB_PATH = join(outputPath, "lib");
-  process.env.OUTPUT_DLL_PATH = join(outputPath, "share");
-  process.env.OUTPUT_EXE_PATH = join(outputPath, "bin");
+  setBuildOutputEnv(buildFolder, outputPath);
 
   const home = process.env.HOME || process.env.USERPROFILE || "";
-  const ciVcpkgHome = process.env.CI_VCPKG_HOME;
-  
-  if (ciVcpkgHome && !process.env.VCPKG_HOME) {
-    process.env.VCPKG_HOME = ciVcpkgHome;
-  }
-  
-  process.env.VCPKG_BINARY_SOURCES = process.env.CI_VCPKG_BINARY_SOURCES || 
-    `files,${home}/vcpkg-binary-cache,readwrite`;
-    
-  process.env.VCPKG_TARGET_TRIPLET = process.env.VCPKG_TARGET_TRIPLET || 
-    `${linuxAbi}-linux`;
+  setupVcpkgEnv(`${linuxAbi}-linux`, home);
 
-  const vcpkgLibPath = join(root, buildFolder, "vcpkg_installed", process.env.VCPKG_TARGET_TRIPLET!, "lib");
+  const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = process.env.OUTPUT_LIB_PATH!;
 
-  run("cmake", ["--preset", preset]);
-  run("cmake", ["--build", "--preset", preset]);
-  run("cmake", ["--install", buildFolder, "--prefix", outputFolder, "--component", "headers"]);
+  runCMake(preset, buildFolder, outputFolder, true);
 
   exportCompileCommands(buildFolder, root);
 

@@ -4,7 +4,9 @@ import { fileURLToPath } from 'node:url';
 import { 
   checkArtifacts, 
   exportCompileCommands, 
-  run 
+  setBuildOutputEnv,
+  setupVcpkgEnv,
+  runCMake,
 } from './utils.js';
 
 function main() {
@@ -38,25 +40,12 @@ function main() {
   const outputFolder = `${buildFolder}/output`;
   const outputPath = join(root, outputFolder, process.env.WASM_ABI!);
 
-  process.env.BUILD_FOLDER = buildFolder;
-  process.env.OUTPUT_LIB_PATH = join(outputPath, "lib");
-  process.env.OUTPUT_DLL_PATH = join(outputPath, "share");
-  process.env.OUTPUT_EXE_PATH = join(outputPath, "bin");
+  setBuildOutputEnv(buildFolder, outputPath);
 
   const home = process.env.HOME || process.env.USERPROFILE || "";
-  const ciVcpkgHome = process.env.CI_VCPKG_HOME;
-  
-  if (ciVcpkgHome && !process.env.VCPKG_HOME) {
-    process.env.VCPKG_HOME = ciVcpkgHome;
-  }
-  
-  process.env.VCPKG_BINARY_SOURCES = process.env.CI_VCPKG_BINARY_SOURCES || 
-    `files,${home}/vcpkg-binary-cache,readwrite`;
-    
-  process.env.VCPKG_TARGET_TRIPLET = process.env.VCPKG_TARGET_TRIPLET || "wasm32-emscripten";
+  setupVcpkgEnv("wasm32-emscripten", home);
 
-  run("cmake", ["--preset", preset]);
-  run("cmake", ["--build", "--preset", preset]);
+  runCMake(preset, buildFolder, outputFolder, false);
 
   exportCompileCommands(buildFolder, root);
 

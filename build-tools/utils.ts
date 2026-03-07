@@ -46,6 +46,38 @@ function exportCompileCommands(buildFolder: string, root: string) {
   }
 }
 
+function setBuildOutputEnv(buildFolder: string, outputPath: string) {
+  process.env.BUILD_FOLDER = buildFolder;
+  process.env.OUTPUT_LIB_PATH = join(outputPath, "lib");
+  process.env.OUTPUT_DLL_PATH = join(outputPath, "share");
+  process.env.OUTPUT_EXE_PATH = join(outputPath, "bin");
+}
+
+function setupVcpkgEnv(triplet: string, home: string) {
+  const ciVcpkgHome = process.env.CI_VCPKG_HOME;
+
+  if (ciVcpkgHome && !process.env.VCPKG_HOME) {
+    process.env.VCPKG_HOME = ciVcpkgHome;
+  }
+
+  process.env.VCPKG_BINARY_SOURCES = process.env.CI_VCPKG_BINARY_SOURCES ||
+    `files,${join(home, "vcpkg-binary-cache")},readwrite`;
+
+  process.env.VCPKG_TARGET_TRIPLET = process.env.VCPKG_TARGET_TRIPLET || triplet;
+}
+
+function getVcpkgLibPath(root: string, buildFolder: string): string {
+  return join(root, buildFolder, "vcpkg_installed", process.env.VCPKG_TARGET_TRIPLET!, "lib");
+}
+
+function runCMake(preset: string, buildFolder: string, outputFolder: string, needInstall: boolean) {
+  run("cmake", ["--preset", preset]);
+  run("cmake", ["--build", "--preset", preset]);
+  if (needInstall) {
+    run("cmake", ["--install", buildFolder, "--prefix", outputFolder, "--component", "headers"]);
+  }
+}
+
 function checkArtifacts(paths: string[]) {
   const missing: string[] = [];
   for (const path of paths) {
@@ -85,7 +117,7 @@ function mergeLibs(libDir: string, outputLib: string, arTool: string) {
   const arName = basename(arTool);
 
   const files = readdirSync(libDirPath);
-  const aFiles = files.filter(f => f.endsWith(".a")).sort();
+  const aFiles = files.filter((f: string) => f.endsWith(".a")).sort();
 
   if (aFiles.length === 0) {
     console.log(`ERROR: No static libraries found in ${libDirPath}`);
@@ -137,4 +169,4 @@ function mergeLibs(libDir: string, outputLib: string, arTool: string) {
   console.log(`FOUND: ${outputPath} (${sizeBytes} Bytes)`);
 }
 
-export { run, exportCompileCommands, checkArtifacts, copyStaticLibs, mergeLibs };
+export { run, exportCompileCommands, setBuildOutputEnv, setupVcpkgEnv, getVcpkgLibPath, runCMake, checkArtifacts, copyStaticLibs, mergeLibs };

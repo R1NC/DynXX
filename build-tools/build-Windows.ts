@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { 
   checkArtifacts, 
   exportCompileCommands, 
-  run 
+  setupVcpkgEnv,
+  runCMake,
 } from './utils.js';
 
 function main() {
@@ -26,19 +27,7 @@ function main() {
   const windowsAbi = process.env.WINDOWS_ABI || "x64";
 
   const home = process.env.USERPROFILE || process.env.HOME || "";
-  const ciVcpkgHome = process.env.CI_VCPKG_HOME;
-
-  if (ciVcpkgHome && !process.env.VCPKG_HOME) {
-    process.env.VCPKG_HOME = ciVcpkgHome;
-  } else if (!process.env.VCPKG_HOME) {
-    process.env.VCPKG_HOME = join(home, "vcpkg");
-  }
-
-  process.env.VCPKG_BINARY_SOURCES = process.env.CI_VCPKG_BINARY_SOURCES || 
-    `files,${join(home, "vcpkg-binary-cache")},readwrite`;
-
-  process.env.VCPKG_TARGET_TRIPLET = process.env.VCPKG_TARGET_TRIPLET || 
-    `${windowsAbi}-windows-static`;
+  setupVcpkgEnv(`${windowsAbi}-windows-static`, home);
 
   const buildFolder = `build.${platformName}/${buildType}`;
   const outputFolder = `${buildFolder}/output`;
@@ -49,9 +38,7 @@ function main() {
   process.env.OUTPUT_DLL_PATH = join(outputPath, "share");
   process.env.OUTPUT_EXE_PATH = join(outputPath, "bin");
 
-  run("cmake", ["--preset", preset]);
-  run("cmake", ["--build", "--preset", preset]);
-  run("cmake", ["--install", buildFolder, "--prefix", outputFolder, "--component", "headers"]);
+  runCMake(preset, buildFolder, outputFolder, true);
 
   exportCompileCommands(buildFolder, root);
 
