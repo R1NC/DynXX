@@ -7,6 +7,7 @@ import {
   getOutputLibPath,
   runCMake,
   gotoParentPath,
+  setBuildOutputEnv
 } from './utils.js';
 
 function main() {
@@ -29,10 +30,7 @@ function main() {
   const outputFolder = `${buildFolder}/output`;
   const outputPath = join(root, outputFolder, windowsAbi);
 
-  process.env.BUILD_FOLDER = buildFolder;
-  process.env.OUTPUT_LIB_PATH = join(outputPath, "lib");
-  process.env.OUTPUT_DLL_PATH = join(outputPath, "share");
-  process.env.OUTPUT_EXE_PATH = join(outputPath, "bin");
+  setBuildOutputEnv(buildFolder, outputPath);
 
   runCMake(preset, buildFolder, outputFolder, true);
 
