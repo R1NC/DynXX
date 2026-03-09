@@ -7,6 +7,7 @@ import {
   setBuildOutputEnv,
   setupVcpkgEnv,
   getVcpkgLibPath,
+  getOutputLibPath,
   runCMake,
   mergeLibs, 
   gotoParentPath,
@@ -38,7 +39,7 @@ function main() {
   setupVcpkgEnv(`${process.env.APPLE_ABI!}-osx`);
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
-  const outputLibPath = process.env.OUTPUT_LIB_PATH!;
+  const outputLibPath = getOutputLibPath();
   const outputExePath = process.env.OUTPUT_EXE_PATH!;
 
   runCMake(preset, buildFolder, outputFolder, true);

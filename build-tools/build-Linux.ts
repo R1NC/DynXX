@@ -7,6 +7,7 @@ import {
   setBuildOutputEnv,
   setupVcpkgEnv,
   getVcpkgLibPath,
+  getOutputLibPath,
   runCMake,
   mergeLibs,  
   gotoParentPath,
@@ -35,7 +36,7 @@ function main() {
   setupVcpkgEnv(`${linuxAbi}-linux`);
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
-  const outputLibPath = process.env.OUTPUT_LIB_PATH!;
+  const outputLibPath = getOutputLibPath();
 
   runCMake(preset, buildFolder, outputFolder, true);
 

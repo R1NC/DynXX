@@ -9,6 +9,7 @@ import {
   readCIEnv,
   setupVcpkgEnv,
   getVcpkgLibPath,
+  getOutputLibPath,
   runCMake,
   mergeLibs, 
   gotoParentPath,
@@ -49,7 +50,7 @@ function main() {
   setupVcpkgEnv("arm64-ohos");
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
-  const outputLibPath = process.env.OUTPUT_LIB_PATH!;
+  const outputLibPath = getOutputLibPath();
 
   runCMake(preset, buildFolder, outputFolder, true);
 

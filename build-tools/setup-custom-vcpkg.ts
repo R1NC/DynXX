@@ -1,7 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as https from 'node:https';
-import * as zlib from 'node:zlib';
 import { execSync } from 'node:child_process';
 import { pipeline } from 'node:stream';
 import { promisify } from 'node:util';

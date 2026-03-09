@@ -80,6 +80,10 @@ function getVcpkgLibPath(root: string, buildFolder: string): string {
   return join(root, buildFolder, "vcpkg_installed", process.env.VCPKG_TARGET_TRIPLET!, "lib");
 }
 
+function getOutputLibPath(): string {
+  return process.env.OUTPUT_LIB_PATH!;
+}
+
 function runCMake(preset: string, buildFolder: string, outputFolder: string, needInstall: boolean) {
   run("cmake", ["--preset", preset]);
   run("cmake", ["--build", "--preset", preset]);
@@ -187,4 +191,4 @@ function gotoParentPath(): string {
   return path;
 }
 
-export { run, exportCompileCommands, setBuildOutputEnv, getHomeDir, readCIEnv, setupVcpkgEnv, getVcpkgLibPath, runCMake, checkArtifacts, copyStaticLibs, mergeLibs, gotoParentPath };
+export { run, exportCompileCommands, setBuildOutputEnv, getHomeDir, readCIEnv, setupVcpkgEnv, getVcpkgLibPath, getOutputLibPath, runCMake, checkArtifacts, copyStaticLibs, mergeLibs, gotoParentPath };

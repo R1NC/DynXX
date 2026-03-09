@@ -4,6 +4,7 @@ import {
   checkArtifacts, 
   exportCompileCommands, 
   setupVcpkgEnv,
+  getOutputLibPath,
   runCMake,
   gotoParentPath,
 } from './utils.js';
@@ -38,7 +39,7 @@ function main() {
   exportCompileCommands(buildFolder, root);
 
   checkArtifacts([
-    join(process.env.OUTPUT_LIB_PATH!, "DynXX.lib"),
+    join(getOutputLibPath(), "DynXX.lib"),
     join(process.env.OUTPUT_EXE_PATH!, "qjsc.exe")
   ]);
 }
