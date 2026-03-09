@@ -6,6 +6,7 @@ import {
   copyStaticLibs, 
   exportCompileCommands, 
   setBuildOutputEnv,
+  readCIEnv,
   setupVcpkgEnv,
   getVcpkgLibPath,
   runCMake,
@@ -35,15 +36,7 @@ function main() {
   const platformName = "HarmonyOS";
   const preset = `${platformName}-${buildType}`;
 
-  const ciNdkHome = process.env.CI_OHOS_NDK_HOME;
-  if (ciNdkHome && !process.env.OHOS_NDK_HOME) {
-    process.env.OHOS_NDK_HOME = ciNdkHome;
-  }
-  
-  const ndkHome = process.env.OHOS_NDK_HOME;
-  if (!ndkHome) {
-    throw new Error("OHOS_NDK_HOME is not set. Please set it or provide CI_OHOS_NDK_HOME");
-  }
+  const ndkHome = readCIEnv("CI_OHOS_NDK_HOME", "OHOS_NDK_HOME");
 
   process.env.OHOS_ABI = process.env.OHOS_ABI || "arm64-v8a";
 
@@ -53,8 +46,7 @@ function main() {
 
   setBuildOutputEnv(buildFolder, outputPath);
 
-  const home = process.env.HOME || process.env.USERPROFILE || "";
-  setupVcpkgEnv("arm64-ohos", home);
+  setupVcpkgEnv("arm64-ohos");
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = process.env.OUTPUT_LIB_PATH!;

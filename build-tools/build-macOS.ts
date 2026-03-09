@@ -35,8 +35,7 @@ function main() {
 
   setBuildOutputEnv(buildFolder, outputPath);
 
-  const home = process.env.HOME || process.env.USERPROFILE || "";
-  setupVcpkgEnv(`${process.env.APPLE_ABI!}-osx`, home);
+  setupVcpkgEnv(`${process.env.APPLE_ABI!}-osx`);
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = process.env.OUTPUT_LIB_PATH!;

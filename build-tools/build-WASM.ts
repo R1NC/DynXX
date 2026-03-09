@@ -4,6 +4,7 @@ import {
   checkArtifacts, 
   exportCompileCommands, 
   setBuildOutputEnv,
+  readCIEnv,
   setupVcpkgEnv,
   runCMake,
   gotoParentPath,
@@ -21,15 +22,8 @@ function main() {
   const platformName = "Wasm";
   const preset = `${platformName}-${buildType}`;
 
-  let wasmSdkHome = process.env.CI_WASM_SDK_HOME;
-  if (!wasmSdkHome) {
-    wasmSdkHome = process.env.WASM_SDK_HOME;
-  }
-  if (!wasmSdkHome) {
-    throw new Error("WASM_SDK_HOME is not set. Please set CI_WASM_SDK_HOME or WASM_SDK_HOME environment variable.");
-  }
+  readCIEnv("CI_WASM_SDK_HOME", "WASM_SDK_HOME");
 
-  process.env.WASM_SDK_HOME = wasmSdkHome;
   process.env.WASM_ABI = process.env.WASM_ABI || "arm";
 
   const buildFolder = `build.${platformName}/${buildType}`;
@@ -38,8 +32,7 @@ function main() {
 
   setBuildOutputEnv(buildFolder, outputPath);
 
-  const home = process.env.HOME || process.env.USERPROFILE || "";
-  setupVcpkgEnv("wasm32-emscripten", home);
+  setupVcpkgEnv("wasm32-emscripten");
 
   runCMake(preset, buildFolder, outputFolder, false);
 

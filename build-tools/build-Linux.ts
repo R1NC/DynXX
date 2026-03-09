@@ -32,8 +32,7 @@ function main() {
 
   setBuildOutputEnv(buildFolder, outputPath);
 
-  const home = process.env.HOME || process.env.USERPROFILE || "";
-  setupVcpkgEnv(`${linuxAbi}-linux`, home);
+  setupVcpkgEnv(`${linuxAbi}-linux`);
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = process.env.OUTPUT_LIB_PATH!;

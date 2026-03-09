@@ -11,7 +11,7 @@ import {
   mkdtempSync
 } from 'node:fs';
 import { dirname, join, resolve, basename } from 'node:path';
-import { tmpdir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 function run(cmd: string, args: string[], cwd?: string) {
@@ -54,13 +54,22 @@ function setBuildOutputEnv(buildFolder: string, outputPath: string) {
   process.env.OUTPUT_EXE_PATH = join(outputPath, "bin");
 }
 
-function setupVcpkgEnv(triplet: string, home: string) {
-  const ciVcpkgHome = process.env.CI_VCPKG_HOME;
+function getHomeDir(): string {
+  return homedir() || process.env.HOME || process.env.USERPROFILE || "";
+}
 
-  if (ciVcpkgHome && !process.env.VCPKG_HOME) {
-    process.env.VCPKG_HOME = ciVcpkgHome;
+function readCIEnv(ciEnvName: string, localEnvName: string): string {
+  const ciValue = process.env[ciEnvName];
+  if (ciValue && !process.env[localEnvName]) {
+    process.env[localEnvName] = ciValue;
   }
+  return process.env[localEnvName] || "";
+}
 
+function setupVcpkgEnv(triplet: string) {
+  readCIEnv("CI_VCPKG_HOME", "VCPKG_HOME");
+
+  const home = getHomeDir();
   process.env.VCPKG_BINARY_SOURCES = process.env.CI_VCPKG_BINARY_SOURCES ||
     `files,${join(home, "vcpkg-binary-cache")},readwrite`;
 
@@ -178,4 +187,4 @@ function gotoParentPath(): string {
   return path;
 }
 
-export { run, exportCompileCommands, setBuildOutputEnv, setupVcpkgEnv, getVcpkgLibPath, runCMake, checkArtifacts, copyStaticLibs, mergeLibs, gotoParentPath };
+export { run, exportCompileCommands, setBuildOutputEnv, getHomeDir, readCIEnv, setupVcpkgEnv, getVcpkgLibPath, runCMake, checkArtifacts, copyStaticLibs, mergeLibs, gotoParentPath };

@@ -22,8 +22,7 @@ function main() {
 
   const windowsAbi = process.env.WINDOWS_ABI || "x64";
 
-  const home = process.env.USERPROFILE || process.env.HOME || "";
-  setupVcpkgEnv(`${windowsAbi}-windows-static`, home);
+  setupVcpkgEnv(`${windowsAbi}-windows-static`);
 
   const buildFolder = `build.${platformName}/${buildType}`;
   const outputFolder = `${buildFolder}/output`;

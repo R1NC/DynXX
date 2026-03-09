@@ -7,6 +7,7 @@ import {
   copyStaticLibs, 
   exportCompileCommands, 
   setBuildOutputEnv,
+  readCIEnv,
   setupVcpkgEnv,
   getVcpkgLibPath,
   runCMake,
@@ -65,15 +66,7 @@ function main() {
   const platformName = "Android";
   const preset = `${platformName}-${buildType}`;
 
-  const ciNdkHome = process.env.CI_ANDROID_NDK_HOME;
-  if (ciNdkHome && !process.env.ANDROID_NDK_HOME) {
-    process.env.ANDROID_NDK_HOME = ciNdkHome;
-  }
-  
-  const ndkHome = process.env.ANDROID_NDK_HOME;
-  if (!ndkHome) {
-    throw new Error("ANDROID_NDK_HOME is not set. Please set it or provide CI_ANDROID_NDK_HOME");
-  }
+  const ndkHome = readCIEnv("CI_ANDROID_NDK_HOME", "ANDROID_NDK_HOME");
 
   process.env.ANDROID_ABI = process.env.ANDROID_ABI || "arm64-v8a";
   process.env.ANDROID_VER = process.env.ANDROID_VER || "android-24";
@@ -84,8 +77,7 @@ function main() {
 
   setBuildOutputEnv(buildFolder, outputPath);
 
-  const home = os.homedir();
-  setupVcpkgEnv("arm64-android", home);
+  setupVcpkgEnv("arm64-android");
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = process.env.OUTPUT_LIB_PATH!;
