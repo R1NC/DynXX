@@ -25,7 +25,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake clang ninja-build
 
-      - name: Setup Visual Studio for Windows
+      - name: Setup msbuild for Windows
         if: inputs.host == 'Windows'
         uses: microsoft/setup-msbuild@v2
 

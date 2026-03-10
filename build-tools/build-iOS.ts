@@ -49,7 +49,7 @@ function main() {
 
   copyStaticLibs(vcpkgLibPath, outputLibPath);
 
-  mergeLibs(outputLibPath, "libDynXX-All.a", "libtool");
+  mergeLibs(outputLibPath, "libDynXX-All.a");
   
   checkArtifacts([join(outputLibPath, "libDynXX-All.a")]);
 }

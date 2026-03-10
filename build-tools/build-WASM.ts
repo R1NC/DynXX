@@ -8,6 +8,7 @@ import {
   setupVcpkgEnv,
   runCMake,
   gotoParentPath,
+  getOutputExePath
 } from './utils.js';
 
 function main() {
@@ -38,7 +39,7 @@ function main() {
 
   exportCompileCommands(buildFolder, root);
 
-  const outputExePath = process.env.OUTPUT_EXE_PATH!;
+  const outputExePath = getOutputExePath();
   
   checkArtifacts([
     join(outputExePath, "DynXX.wasm"),

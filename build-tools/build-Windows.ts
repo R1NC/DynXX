@@ -4,10 +4,15 @@ import {
   checkArtifacts, 
   exportCompileCommands, 
   setupVcpkgEnv,
-  getOutputLibPath,
   runCMake,
   gotoParentPath,
-  setBuildOutputEnv
+  setBuildOutputEnv,
+  getOutputLibPath,
+  getOutputExePath,
+  copyStaticLibs,
+  mergeLibs,
+  getVcpkgLibPath,
+  readCIEnv
 } from './utils.js';
 
 function main() {
@@ -21,10 +26,7 @@ function main() {
 
   const platformName = "Windows";
   const preset = `${platformName}-${buildType}`;
-
   const windowsAbi = process.env.WINDOWS_ABI || "x64";
-
-  setupVcpkgEnv(`${windowsAbi}-windows-static`);
 
   const buildFolder = `build.${platformName}/${buildType}`;
   const outputFolder = `${buildFolder}/output`;
@@ -32,13 +34,27 @@ function main() {
 
   setBuildOutputEnv(buildFolder, outputPath);
 
+  setupVcpkgEnv(`${windowsAbi}-windows-static`);
+
+  const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
+  const outputLibPath = getOutputLibPath();
+
   runCMake(preset, buildFolder, outputFolder, true);
 
   exportCompileCommands(buildFolder, root);
 
+  checkArtifacts([join(outputLibPath, "DynXX.lib")]);
+
+  copyStaticLibs(vcpkgLibPath, outputLibPath);
+
+  const msvcToolsHome = readCIEnv("CI_MSVC_TOOLS_HOME", "MSVC_TOOLS_HOME");
+  libExePath = join(msvcToolsHome, "lib.exe");
+
+  mergeLibs(outputLibPath, "DynXX-All.lib", libExePath);
+
   checkArtifacts([
-    join(getOutputLibPath(), "DynXX.lib"),
-    join(process.env.OUTPUT_EXE_PATH!, "qjsc.exe")
+    join(outputLibPath, "DynXX-All.lib"),
+    join(getOutputExePath(), "qjsc.exe")
   ]);
 }
 
