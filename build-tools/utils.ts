@@ -62,17 +62,11 @@ function getRequiredEnv(name: string): string {
   return val;
 }
 
-export function getOutputLibPath(): string {
-  return getRequiredEnv("OUTPUT_LIB_PATH");
-}
+export const getOutputLibPath = (): string => getRequiredEnv("OUTPUT_LIB_PATH");
 
-export function getOutputDllPath(): string {
-  return getRequiredEnv("OUTPUT_DLL_PATH");
-}
+export const getOutputDllPath = (): string => getRequiredEnv("OUTPUT_DLL_PATH");
 
-export function getOutputExePath(): string {
-  return getRequiredEnv("OUTPUT_EXE_PATH");
-}
+export const getOutputExePath = (): string => getRequiredEnv("OUTPUT_EXE_PATH");
 
 export function setupVcpkgEnv(triplet: string) {
   readCIEnv("CI_VCPKG_HOME", "VCPKG_HOME");
@@ -197,50 +191,17 @@ export function copyStaticLibs(srcDir: string, destDir: string) {
 
 // Merge Libs:
 
-function collectFilesRecursive(rootPath: string): string[] {
-  const files: string[] = [];
-  const entries = readdirSync(rootPath);
-  for (const entry of entries) {
-    const fullPath = join(rootPath, entry);
-    const stat = statSync(fullPath);
-    if (stat.isDirectory()) {
-      files.push(...collectFilesRecursive(fullPath));
-    } else if (stat.isFile()) {
-      files.push(fullPath);
-    }
-  }
-  return files;
-}
-
 function collectObjectFilesAuto(extractDirs: { name: string, path: string }[]): string[] {
-  const finalObjFiles: string[] = [];
-  let foundExt: string | null = null;
+  const allExtractedEntries = extractDirs.flatMap((dirInfo) =>
+    readdirSync(dirInfo.path, { recursive: true }).map((entry) => join(dirInfo.path, entry.toString()))
+  );
 
-  for (const dirInfo of extractDirs) {
-    const subFiles = collectFilesRecursive(dirInfo.path);
-    for (const f of subFiles) {
-      if (f.toLowerCase().endsWith('.o')) {
-        if (!foundExt) foundExt = '.o';
-        if (foundExt === '.o') {
-          finalObjFiles.push(f);
-        }
-      }
-    }
-  }
+  const oFiles = allExtractedEntries.filter((file) => file.toLowerCase().endsWith('.o'));
+  const finalObjFiles = oFiles.length > 0
+    ? oFiles
+    : allExtractedEntries.filter((file) => file.toLowerCase().endsWith('.obj'));
 
-  if (finalObjFiles.length === 0) {
-    for (const dirInfo of extractDirs) {
-      const subFiles = collectFilesRecursive(dirInfo.path);
-      for (const f of subFiles) {
-        if (f.toLowerCase().endsWith('.obj')) {
-          if (!foundExt) foundExt = '.obj';
-          if (foundExt === '.obj') {
-            finalObjFiles.push(f);
-          }
-        }
-      }
-    }
-  }
+  const foundExt = oFiles.length > 0 ? '.o' : finalObjFiles.length > 0 ? '.obj' : null;
 
   if (foundExt) {
     console.log(`[MergeLibs] Detected object format: ${foundExt}`);

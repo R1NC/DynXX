@@ -8,6 +8,7 @@ import {
   setupVcpkgEnv,
   getVcpkgLibPath,
   getOutputLibPath,
+  getOutputExePath,
   runCMake,
   mergeLibs, 
   gotoParentPath,
@@ -16,19 +17,18 @@ import {
 function main() {
   const root = gotoParentPath();
 
-  const debug = process.env.DEBUG || "0";
-  let buildType = process.env.BUILD_TYPE || "Release";
-  if (debug === "1") {
-    buildType = "Debug";
-  }
+  const buildType = "Release";
+  const platform = "MAC_UNIVERSAL";
+  const abi = "arm64";
+  const ver = "14.0";
 
   const platformName = "macOS";
   const preset = `${platformName}-${buildType}`;
 
   process.env.APPLE_TOOLCHAIN_FILE = join(root, "cmake/toolchains/Apple/ios.toolchain.cmake");
-  process.env.APPLE_PLATFORM = process.env.APPLE_PLATFORM || "MAC_UNIVERSAL";
-  process.env.APPLE_ABI = process.env.APPLE_ABI || "arm64";
-  process.env.APPLE_VER = process.env.APPLE_VER || "14.0";
+  process.env.APPLE_PLATFORM = platform;
+  process.env.APPLE_ABI = abi;
+  process.env.APPLE_VER = ver;
 
   const buildFolder = `build.${platformName}/${buildType}`;
   const outputFolder = `${buildFolder}/output`;
@@ -40,7 +40,7 @@ function main() {
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();
-  const outputExePath = process.env.OUTPUT_EXE_PATH!;
+  const outputExePath = getOutputExePath();
 
   runCMake(preset, buildFolder, outputFolder, true);
 

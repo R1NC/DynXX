@@ -14,22 +14,19 @@ import {
 function main() {
   const root = gotoParentPath();
 
-  const debug = process.env.DEBUG || "0";
-  let buildType = process.env.BUILD_TYPE || "Release";
-  if (debug === "1") {
-    buildType = "Debug";
-  }
+  const buildType = "Release";
+  const abi = "arm";
 
   const platformName = "Wasm";
   const preset = `${platformName}-${buildType}`;
 
   readCIEnv("CI_WASM_SDK_HOME", "WASM_SDK_HOME");
 
-  process.env.WASM_ABI = process.env.WASM_ABI || "arm";
+  process.env.WASM_ABI = abi;
 
   const buildFolder = `build.${platformName}/${buildType}`;
   const outputFolder = `${buildFolder}/output`;
-  const outputPath = join(root, outputFolder, process.env.WASM_ABI!);
+  const outputPath = join(root, outputFolder, abi);
 
   setBuildOutputEnv(buildFolder, outputPath);
 

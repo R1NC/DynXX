@@ -16,24 +16,19 @@ import {
 function main() {
   const root = gotoParentPath();
 
-  const debug = process.env.DEBUG || "0";
-  let buildType = process.env.BUILD_TYPE || "Release";
-  if (debug === "1") {
-    buildType = "Debug";
-  }
+  const buildType = "Release";
+  const abi = "x64";
 
   const platformName = "Linux";
   const preset = `${platformName}-${buildType}`;
 
-  const linuxAbi = process.env.LINUX_ABI || "x64";
-
   const buildFolder = `build.${platformName}/${buildType}`;
   const outputFolder = `${buildFolder}/output`;
-  const outputPath = join(root, outputFolder, linuxAbi);
+  const outputPath = join(root, outputFolder, abi);
 
   setBuildOutputEnv(buildFolder, outputPath);
 
-  setupVcpkgEnv(`${linuxAbi}-linux`);
+  setupVcpkgEnv(`${abi}-linux`);
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();

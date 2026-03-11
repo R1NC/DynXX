@@ -33,7 +33,24 @@ async function downloadFile(url: string, dest: string): Promise<void> {
 }
 
 function unzipFile(zipPath: string, destDir: string): void {
-  execSync(`unzip -q "${zipPath}" -d "${destDir}"`, { stdio: 'inherit' });
+  const zipAbsPath = path.resolve(zipPath);
+  const destAbsPath = path.resolve(destDir);
+
+  if (process.platform === 'win32') {
+    const psZipPath = zipAbsPath.replace(/'/g, "''");
+    const psDestPath = destAbsPath.replace(/'/g, "''");
+    execSync(
+      `powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Expand-Archive -LiteralPath '${psZipPath}' -DestinationPath '${psDestPath}' -Force"`,
+      { stdio: 'inherit' }
+    );
+    return;
+  }
+
+  try {
+    execSync(`unzip -q "${zipAbsPath}" -d "${destAbsPath}"`, { stdio: 'inherit' });
+  } catch {
+    execSync(`tar -xf "${zipAbsPath}" -C "${destAbsPath}"`, { stdio: 'inherit' });
+  }
 }
 
 function runGitCommand(cwd: string, args: string[]): void {
@@ -50,16 +67,15 @@ async function main() {
     }
     fs.mkdirSync(VCPKG_ROOT, { recursive: true });
 
-    const zipPath = path.join(path.dirname(VCPKG_ROOT), 'vcpkg-dev.zip');
+    const vcpkgParentDir = path.dirname(VCPKG_ROOT);
+    const zipPath = path.join(vcpkgParentDir, 'vcpkg-dev.zip');
     console.log(`Downloading from ${VCPKG_URL}...`);
     await downloadFile(VCPKG_URL, zipPath);
 
     console.log('Unzipping...');
-    const tempExtractDir = path.dirname(VCPKG_ROOT); 
-    unzipFile(zipPath, tempExtractDir);
-    
-    const extractedFolderName = 'vcpkg-dev';
-    const sourceDir = path.join(tempExtractDir, extractedFolderName);
+    unzipFile(zipPath, vcpkgParentDir);
+
+    const sourceDir = path.join(vcpkgParentDir, 'vcpkg-dev');
     
     if (!fs.existsSync(sourceDir)) {
       throw new Error(`Extracted folder not found: ${sourceDir}. Check zip structure.`);
@@ -82,8 +98,7 @@ async function main() {
     }).trim();
     console.log(`Baseline commit: ${baseline}`);
 
-    const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
-    const vcpkgJsonPath = path.join(workspace, 'vcpkg.json');
+    const vcpkgJsonPath = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'vcpkg.json');
 
     if (!fs.existsSync(vcpkgJsonPath)) {
       throw new Error(`vcpkg.json not found at ${vcpkgJsonPath}`);
@@ -107,9 +122,10 @@ async function main() {
     
     console.log('vcpkg setup complete!');
 
-    if (process.env.GITHUB_ENV) {
+    const githubEnv = process.env.GITHUB_ENV;
+    if (githubEnv) {
       const envContent = `CI_VCPKG_HOME=${VCPKG_ROOT}\n`;
-      fs.appendFileSync(process.env.GITHUB_ENV, envContent);
+      fs.appendFileSync(githubEnv, envContent);
       console.log(`Exported CI_VCPKG_HOME=${VCPKG_ROOT} to GITHUB_ENV`);
     } else {
       console.warn('GITHUB_ENV not found (running locally?). Set CI_VCPKG_HOME manually.');

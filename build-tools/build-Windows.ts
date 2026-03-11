@@ -18,23 +18,19 @@ import {
 function main() {
   const root = gotoParentPath();
 
-  const debug = process.env.DEBUG || "0";
-  let buildType = process.env.BUILD_TYPE || "Release";
-  if (debug === "1") {
-    buildType = "Debug";
-  }
+  const buildType = "Release";
+  const abi = "x64";
 
   const platformName = "Windows";
   const preset = `${platformName}-${buildType}`;
-  const windowsAbi = process.env.WINDOWS_ABI || "x64";
 
   const buildFolder = `build.${platformName}/${buildType}`;
   const outputFolder = `${buildFolder}/output`;
-  const outputPath = join(root, outputFolder, windowsAbi);
+  const outputPath = join(root, outputFolder, abi);
 
   setBuildOutputEnv(buildFolder, outputPath);
 
-  setupVcpkgEnv(`${windowsAbi}-windows-static`);
+  setupVcpkgEnv(`${abi}-windows-static`);
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();

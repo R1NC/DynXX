@@ -58,23 +58,21 @@ function getNdkLlvmRoot(ndkHome: string): string {
 function main() {
   const root = gotoParentPath();
 
-  const debug = process.env.DEBUG || "0";
-  let buildType = process.env.BUILD_TYPE || "Release";
-  if (debug === "1") {
-    buildType = "Debug";
-  }
+  const buildType = "Release";
+  const abi = "arm64-v8a";
+  const api = 24;
+
+  process.env.ANDROID_ABI = abi;
+  process.env.ANDROID_VER = `android-${api}`;
 
   const platformName = "Android";
   const preset = `${platformName}-${buildType}`;
 
   const ndkHome = readCIEnv("CI_ANDROID_NDK_HOME", "ANDROID_NDK_HOME");
 
-  process.env.ANDROID_ABI = process.env.ANDROID_ABI || "arm64-v8a";
-  process.env.ANDROID_VER = process.env.ANDROID_VER || "android-24";
-
   const buildFolder = `build.${platformName}/${buildType}`;
   const outputFolder = `${buildFolder}/output`;
-  const outputPath = join(root, outputFolder, process.env.ANDROID_ABI!);
+  const outputPath = join(root, outputFolder, abi);
 
   setBuildOutputEnv(buildFolder, outputPath);
 

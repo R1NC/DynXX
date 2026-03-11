@@ -28,22 +28,19 @@ function getOhosLlvmRoot(ndkHome: string): string {
 function main() {
   const root = gotoParentPath();
 
-  const debug = process.env.DEBUG || "0";
-  let buildType = process.env.BUILD_TYPE || "Release";
-  if (debug === "1") {
-    buildType = "Debug";
-  }
+  const buildType = "Release";
+  const abi = "arm64-v8a";
+  
+  process.env.OHOS_ABI = abi;
 
   const platformName = "HarmonyOS";
   const preset = `${platformName}-${buildType}`;
 
   const ndkHome = readCIEnv("CI_OHOS_NDK_HOME", "OHOS_NDK_HOME");
 
-  process.env.OHOS_ABI = process.env.OHOS_ABI || "arm64-v8a";
-
   const buildFolder = `build.${platformName}/${buildType}`;
   const outputFolder = `${buildFolder}/output`;
-  const outputPath = join(root, outputFolder, process.env.OHOS_ABI!);
+  const outputPath = join(root, outputFolder, abi);
 
   setBuildOutputEnv(buildFolder, outputPath);
 
