@@ -49,13 +49,23 @@ async function main() {
     fs.unlinkSync(zipPath);
 
     console.log('Initializing Git repository...');
-    execSafe('git', ['init'], { cwd: VCPKG_ROOT });
-    execSafe('git', ['config', 'user.email', 'ci@local'], { cwd: VCPKG_ROOT });
-    execSafe('git', ['config', 'user.name', 'ci'], { cwd: VCPKG_ROOT });
-    execSafe('git', ['add', '-A'], { cwd: VCPKG_ROOT });
-    execSafe('git', ['commit', '-m', 'init vcpkg snapshot'], { cwd: VCPKG_ROOT });
+    
+    execShell(`git init`, VCPKG_ROOT);
+    execShell(`git config user.email ci@local`, VCPKG_ROOT);
+    execShell(`git config user.name ci`, VCPKG_ROOT);
+    execShell(`git add -A`, VCPKG_ROOT);
+    execShell(`git commit -m "init vcpkg snapshot"`, VCPKG_ROOT);
 
-    const baseline = execSafe('git', ['rev-parse', 'HEAD'], { cwd: VCPKG_ROOT, captureOutput: true }).trim();
+    const output = execSafe('git', ['rev-parse', 'HEAD'], { 
+      cwd: VCPKG_ROOT, 
+      captureOutput: true 
+    });
+
+    if (!output) {
+      throw new Error('Failed to get git revision (execSafe returned null)');
+    }
+    
+    const baseline = output.toString().trim();
     console.log(`Baseline commit: ${baseline}`);
 
     const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
