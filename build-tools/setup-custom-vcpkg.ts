@@ -1,61 +1,14 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import * as https from 'node:https';
-import { execSync } from 'node:child_process';
-import { pipeline } from 'node:stream';
-import { promisify } from 'node:util';
+import { platform } from 'node:os';
+import { execSafe, execShell, getHomeDir } from './utils.js';
 
-const asyncPipeline = promisify(pipeline);
-
+const IS_WINDOWS = platform() === 'win32';
 const VCPKG_URL = "https://github.com/R1NC/vcpkg/archive/refs/heads/dev.zip";
+
 const VCPKG_ROOT = process.env.RUNNER_TEMP 
   ? path.join(process.env.RUNNER_TEMP, 'vcpkg') 
-  : path.join(process.cwd(), 'temp_vcpkg'); // Fallback for local run
-
-async function downloadFile(url: string, dest: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(dest);
-    https.get(url, (response) => {
-      if (response.statusCode === 301 || response.statusCode === 302) {
-        // Handle redirect manually for simple cases, or use a library like 'follow-redirects'
-        // For GitHub raw/release links, usually direct, but archive links might redirect
-        const redirectUrl = response.headers.location;
-        if (redirectUrl) {
-          https.get(redirectUrl, (res) => {
-             asyncPipeline(res, file).then(resolve).catch(reject);
-          }).on('error', reject);
-          return;
-        }
-      }
-      asyncPipeline(response, file).then(resolve).catch(reject);
-    }).on('error', reject);
-  });
-}
-
-function unzipFile(zipPath: string, destDir: string): void {
-  const zipAbsPath = path.resolve(zipPath);
-  const destAbsPath = path.resolve(destDir);
-
-  if (process.platform === 'win32') {
-    const psZipPath = zipAbsPath.replace(/'/g, "''");
-    const psDestPath = destAbsPath.replace(/'/g, "''");
-    execSync(
-      `powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Expand-Archive -LiteralPath '${psZipPath}' -DestinationPath '${psDestPath}' -Force"`,
-      { stdio: 'inherit' }
-    );
-    return;
-  }
-
-  try {
-    execSync(`unzip -q "${zipAbsPath}" -d "${destAbsPath}"`, { stdio: 'inherit' });
-  } catch {
-    execSync(`tar -xf "${zipAbsPath}" -C "${destAbsPath}"`, { stdio: 'inherit' });
-  }
-}
-
-function runGitCommand(cwd: string, args: string[]): void {
-  execSync(`git ${args.join(' ')}`, { cwd, stdio: 'inherit' });
-}
+  : path.join(process.cwd(), 'temp_vcpkg');
 
 async function main() {
   console.log(`Starting vcpkg setup at: ${VCPKG_ROOT}`);
@@ -65,40 +18,48 @@ async function main() {
       console.log('Cleaning existing vcpkg directory...');
       fs.rmSync(VCPKG_ROOT, { recursive: true, force: true });
     }
-    fs.mkdirSync(VCPKG_ROOT, { recursive: true });
+    const parentDir = path.dirname(VCPKG_ROOT);
+    fs.mkdirSync(parentDir, { recursive: true });
 
-    const vcpkgParentDir = path.dirname(VCPKG_ROOT);
-    const zipPath = path.join(vcpkgParentDir, 'vcpkg-dev.zip');
+    const zipPath = path.join(parentDir, 'vcpkg-dev.zip');
+    const extractDir = path.join(parentDir, 'vcpkg-dev');
+
     console.log(`Downloading from ${VCPKG_URL}...`);
-    await downloadFile(VCPKG_URL, zipPath);
+    if (IS_WINDOWS) {
+      execShell(`powershell -NoProfile -Command "Invoke-WebRequest -Uri '${VCPKG_URL}' -OutFile '${zipPath}'"`);
+    } else {
+      execShell(`curl -L -o '${zipPath}' '${VCPKG_URL}'`);
+    }
 
     console.log('Unzipping...');
-    unzipFile(zipPath, vcpkgParentDir);
-
-    const sourceDir = path.join(vcpkgParentDir, 'vcpkg-dev');
-    
-    if (!fs.existsSync(sourceDir)) {
-      throw new Error(`Extracted folder not found: ${sourceDir}. Check zip structure.`);
+    if (IS_WINDOWS) {
+      execShell(`powershell -NoProfile -Command "Expand-Archive -LiteralPath '${zipPath}' -DestinationPath '${parentDir}' -Force"`);
+    } else {
+      try {
+        execShell(`unzip -q '${zipPath}' -d '${parentDir}'`);
+      } catch {
+        execShell(`tar -xf '${zipPath}' -C '${parentDir}'`);
+      }
     }
-    
-    fs.renameSync(sourceDir, VCPKG_ROOT);
+
+    if (!fs.existsSync(extractDir)) {
+      throw new Error(`Extracted folder not found: ${extractDir}. Check zip structure.`);
+    }
+    fs.renameSync(extractDir, VCPKG_ROOT);
     fs.unlinkSync(zipPath);
-    console.log('Extracted and moved.');
 
     console.log('Initializing Git repository...');
-    runGitCommand(VCPKG_ROOT, ['init']);
-    runGitCommand(VCPKG_ROOT, ['config', 'user.email', '"ci@local"']);
-    runGitCommand(VCPKG_ROOT, ['config', 'user.name', '"ci"']);
-    runGitCommand(VCPKG_ROOT, ['add', '-A']);
-    runGitCommand(VCPKG_ROOT, ['commit', '-m', '"init vcpkg snapshot"']);
+    execSafe('git', ['init'], { cwd: VCPKG_ROOT });
+    execSafe('git', ['config', 'user.email', 'ci@local'], { cwd: VCPKG_ROOT });
+    execSafe('git', ['config', 'user.name', 'ci'], { cwd: VCPKG_ROOT });
+    execSafe('git', ['add', '-A'], { cwd: VCPKG_ROOT });
+    execSafe('git', ['commit', '-m', 'init vcpkg snapshot'], { cwd: VCPKG_ROOT });
 
-    const baseline = execSync('git rev-parse HEAD', { 
-      cwd: VCPKG_ROOT, 
-      encoding: 'utf-8' 
-    }).trim();
+    const baseline = execSafe('git', ['rev-parse', 'HEAD'], { cwd: VCPKG_ROOT, captureOutput: true }).trim();
     console.log(`Baseline commit: ${baseline}`);
 
-    const vcpkgJsonPath = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'vcpkg.json');
+    const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
+    const vcpkgJsonPath = path.join(workspace, 'vcpkg.json');
 
     if (!fs.existsSync(vcpkgJsonPath)) {
       throw new Error(`vcpkg.json not found at ${vcpkgJsonPath}`);
@@ -113,27 +74,27 @@ async function main() {
     console.log(`::set-output name=VCPKG_ROOT::${VCPKG_ROOT}`); 
 
     console.log('Bootstrapping vcpkg...');
-    const isWindows = process.platform === 'win32';
-    const bootstrapScript = isWindows 
-      ? path.join(VCPKG_ROOT, 'bootstrap-vcpkg.bat')
-      : path.join(VCPKG_ROOT, 'bootstrap-vcpkg.sh');
+    const bootstrapScript = path.join(VCPKG_ROOT, IS_WINDOWS ? 'bootstrap-vcpkg.bat' : 'bootstrap-vcpkg.sh');
     
-    execSync(`"${bootstrapScript}"`, { stdio: 'inherit' });
+    if (!IS_WINDOWS) {
+      fs.chmodSync(bootstrapScript, 0o755);
+    }
+    
+    execShell(IS_WINDOWS ? `"${bootstrapScript}"` : `"${bootstrapScript}"`, VCPKG_ROOT);
     
     console.log('vcpkg setup complete!');
 
     const githubEnv = process.env.GITHUB_ENV;
     if (githubEnv) {
-      const envContent = `CI_VCPKG_HOME=${VCPKG_ROOT}\n`;
-      fs.appendFileSync(githubEnv, envContent);
+      fs.appendFileSync(githubEnv, `CI_VCPKG_HOME=${VCPKG_ROOT}\n`);
       console.log(`Exported CI_VCPKG_HOME=${VCPKG_ROOT} to GITHUB_ENV`);
     } else {
-      console.warn('GITHUB_ENV not found (running locally?). Set CI_VCPKG_HOME manually.');
+      console.warn('GITHUB_ENV not found. Set CI_VCPKG_HOME manually.');
       console.log(`CI_VCPKG_HOME=${VCPKG_ROOT}`);
     }
 
-  } catch (error) {
-    console.error('Fatal error during vcpkg setup:', error);
+  } catch (error: any) {
+    console.error('Fatal error during vcpkg setup:', error.message);
     process.exit(1);
   }
 }
