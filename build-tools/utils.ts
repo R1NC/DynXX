@@ -1,7 +1,7 @@
-import { spawnSync, SpawnSyncOptions, SpawnSyncReturns } from 'node:child_process';
+import { spawnSync, execSync, SpawnSyncOptions, SpawnSyncReturns } from 'node:child_process';
 import { 
   existsSync, unlinkSync, symlinkSync, copyFileSync, writeFileSync,
-  mkdirSync, rmSync, readdirSync, statSync, mkdtempSync, readlinkSync
+  mkdirSync, rmSync, readdirSync, statSync, mkdtempSync, readlinkSync, chmodSync
 } from 'node:fs';
 import { dirname, join, resolve, basename, extname, isAbsolute } from 'node:path';
 import { homedir, tmpdir, platform } from 'node:os';
@@ -11,6 +11,17 @@ const IS_WINDOWS = platform() === 'win32';
 const IS_APPLE = platform() === 'darwin';
 
 // Path & Env:
+
+export function goInTmpDir<T>(operation: (tempRoot: string) => T): T {
+  const tempRoot = mkdtempSync(join(tmpdir(), "temp_tool_"));
+  try {
+    return operation(tempRoot);
+  } finally {
+    if (existsSync(tempRoot)) {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  }
+}
 
 export function gotoParentPath(): string {
   const __filename = fileURLToPath(import.meta.url);
@@ -77,7 +88,12 @@ interface ExecOptions {
   allowFailure?: boolean;
 }
 
-function exeCmd(
+/**
+ * Executes a command safely using argument arrays (spawnSync).
+ * Best for: Compilers, linkers, build tools where arguments might contain spaces.
+ * No shell interpretation, preventing injection risks.
+ */
+function execSafe(
   cmd: string, 
   args: string[], 
   options: ExecOptions = {}
@@ -129,14 +145,22 @@ function exeCmd(
   return captureOutput ? (result.stdout || null) : null;
 }
 
-function goInTmpDir<T>(operation: (tempRoot: string) => T): T {
-  const tempRoot = mkdtempSync(join(tmpdir(), "temp_tool_"));
+/**
+ * Executes a command string via the system shell (execSync).
+ * Best for: Git, package managers, shell scripts, or commands needing pipes/redirects.
+ * Requires manual escaping for arguments with spaces.
+ */
+export function execShell(command: string, cwd?: string): void {
   try {
-    return operation(tempRoot);
-  } finally {
-    if (existsSync(tempRoot)) {
-      rmSync(tempRoot, { recursive: true, force: true });
-    }
+    execSync(command, {
+      cwd,
+      stdio: 'inherit',
+      env: process.env,
+      shell: IS_WINDOWS
+    });
+  } catch (error) {
+    console.error(`[ERROR] Shell command failed: ${command}`);
+    throw error;
   }
 }
 
@@ -167,10 +191,10 @@ export function exportCompileCommands(buildFolder: string, root: string) {
 }
 
 export function runCMake(preset: string, buildFolder: string, outputFolder: string, needInstall: boolean) {
-  exeCmd("cmake", ["--preset", preset]);
-  exeCmd("cmake", ["--build", "--preset", preset]);
+  execSafe("cmake", ["--preset", preset]);
+  execSafe("cmake", ["--build", "--preset", preset]);
   if (needInstall) {
-    exeCmd("cmake", ["--install", buildFolder, "--prefix", outputFolder, "--component", "headers"]);
+    execSafe("cmake", ["--install", buildFolder, "--prefix", outputFolder, "--component", "headers"]);
   }
 }
 
@@ -237,7 +261,7 @@ function mergeLibsWithGenericAr(arTool: string, libDirPath: string, aFiles: stri
       mkdirSync(extractDir, { recursive: true });
       extractDirs.push({ path: extractDir });
       
-      exeCmd(arTool, ["x", join(libDirPath, lib)], { cwd: extractDir });
+      execSafe(arTool, ["x", join(libDirPath, lib)], { cwd: extractDir });
     }
 
     const objFiles = collectObjectFiles(extractDirs);
@@ -246,7 +270,7 @@ function mergeLibsWithGenericAr(arTool: string, libDirPath: string, aFiles: stri
       process.exit(1);
     }
 
-    exeCmd(arTool, ["rcs", outputPath, ...objFiles]);
+    execSafe(arTool, ["rcs", outputPath, ...objFiles]);
   });
 }
 
@@ -264,8 +288,8 @@ function mergeLibsWithWindowsLibExe(toolPath: string, libDirPath: string, libFil
       mkdirSync(extractDir, { recursive: true });
       extractDirs.push({ path: extractDir });
 
-      const listOutput = exeCmd(toolPath, ["/LIST", libPath], { cwd: extractDir, captureOutput: true, allowFailure: false });
-      if (!listOutput) process.exit(1); // Should not happen due to allowFailure=false logic inside exeCmd throwing
+      const listOutput = execSafe(toolPath, ["/LIST", libPath], { cwd: extractDir, captureOutput: true, allowFailure: false });
+      if (!listOutput) process.exit(1);
 
       const members = listOutput.toString()
         .split(/\r?\n/)
@@ -273,7 +297,7 @@ function mergeLibsWithWindowsLibExe(toolPath: string, libDirPath: string, libFil
         .filter(line => line.length > 0);
 
       for (const member of members) {
-        exeCmd(toolPath, [`/EXTRACT:${member}`, libPath], { cwd: extractDir });
+        execSafe(toolPath, [`/EXTRACT:${member}`, libPath], { cwd: extractDir });
       }
     }
 
@@ -287,13 +311,13 @@ function mergeLibsWithWindowsLibExe(toolPath: string, libDirPath: string, libFil
     const rspContent = [`/OUT:"${outputPath}"`, ...objFiles.map(f => `"${f}"`)].join("\n");
     writeFileSync(rspPath, rspContent, "utf8");
     
-    exeCmd(toolPath, [`@${rspPath}`], { cwd: tempRoot });
+    execSafe(toolPath, [`@${rspPath}`], { cwd: tempRoot });
   });
 }
 
 function mergeLibsWithAppleLibTool(libDirPath: string, aFiles: string[], outputPath: string) {
   const args = ["-static", "-o", outputPath, ...aFiles.map(lib => join(libDirPath, lib))];
-  exeCmd("libtool", args, { cwd: libDirPath });
+  execSafe("libtool", args, { cwd: libDirPath });
 }
 
 export function mergeLibs(libDir: string, outputLib: string, tool?: string) {
