@@ -1,49 +1,27 @@
-import { resolve, join } from 'node:path';
-import fs from 'node:fs';
+import { join } from 'node:path';
 
-import { 
-  checkArtifacts, 
-  copyStaticLibs, 
-  exportCompileCommands, 
-  setBuildOutputEnv,
-  readCIEnv,
-  setupVcpkgEnv,
-  getVcpkgLibPath,
-  getOutputLibPath,
-  runCMake,
-  mergeLibs, 
-  gotoParentPath,
+import {
+  checkArtifacts, copyStaticLibs, exportCompileCommands, getOhosLlvmHome,
+  getOutputLibPath, getVcpkgLibPath, gotoParentPath, mergeLibs, readCIEnv,
+  runCMake, setBuildOutputEnv, setEnv, setupVcpkgEnv,
 } from './utils.js';
-
-function getOhosLlvmRoot(ndkHome: string): string {
-  const llvmDir = resolve(ndkHome, 'llvm', 'bin');
-  
-  if (fs.existsSync(llvmDir) && fs.statSync(llvmDir).isDirectory()) {
-    return llvmDir;
-  }
-  
-  throw new Error(`Cannot determine HarmonyOS llvm root (bin) under ${resolve(ndkHome, 'llvm')}`);
-}
 
 function main() {
   const root = gotoParentPath();
 
-  const debug = process.env.DEBUG || "0";
-  let buildType = process.env.BUILD_TYPE || "Release";
-  if (debug === "1") {
-    buildType = "Debug";
-  }
+  const buildType = "Release";
+  const abi = "arm64-v8a";
+  
+  setEnv("OHOS_ABI", abi);
 
   const platformName = "HarmonyOS";
   const preset = `${platformName}-${buildType}`;
 
   const ndkHome = readCIEnv("CI_OHOS_NDK_HOME", "OHOS_NDK_HOME");
 
-  process.env.OHOS_ABI = process.env.OHOS_ABI || "arm64-v8a";
-
-  const buildFolder = `build.${platformName}/${buildType}`;
-  const outputFolder = `${buildFolder}/output`;
-  const outputPath = join(root, outputFolder, process.env.OHOS_ABI!);
+  const buildFolder = join(`build.${platformName}`, buildType);
+  const outputFolder = join(buildFolder, "output");
+  const outputPath = join(root, outputFolder, abi);
 
   setBuildOutputEnv(buildFolder, outputPath);
 
@@ -60,9 +38,7 @@ function main() {
 
   copyStaticLibs(vcpkgLibPath, outputLibPath);
 
-  const llvmRoot = getOhosLlvmRoot(ndkHome);
-  const arTool = join(llvmRoot, "llvm-ar");
-
+  const arTool = join(getOhosLlvmHome(ndkHome), "llvm-ar");
   mergeLibs(outputLibPath, "libDynXX-All.a", arTool);
   
   checkArtifacts([join(outputLibPath, "libDynXX-All.a")]);
