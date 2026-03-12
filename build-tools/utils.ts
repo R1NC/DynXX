@@ -85,7 +85,7 @@ export function getVcpkgLibPath(root: string, buildFolder: string): string {
  * Executes a command string via shell.
  * Use for: Scripts, pipes, redirects, or simple commands where output logging is enough.
  */
-export function runSafe(command: string, cwd?: string): void {
+export function exec(command: string, cwd?: string): void {
   try {
     execSync(command, {
       cwd,
@@ -109,7 +109,7 @@ interface ExecOptions {
  * Executes a command with args array and captures stdout.
  * Use for: Getting versions, hashes, lists, or when arguments contain spaces/special chars.
  */
-export function runOut(
+export function spawn(
   cmd: string, 
   args: string[], 
   options: ExecOptions = {}
@@ -181,11 +181,11 @@ export function exportCompileCommands(buildFolder: string, root: string) {
 }
 
 export function runCMake(preset: string, buildFolder: string, outputFolder: string, needInstall: boolean) {
-  runSafe(`cmake --preset ${preset}`);
-  runSafe(`cmake --build --preset ${preset}`);
+  exec(`cmake --preset ${preset}`);
+  exec(`cmake --build --preset ${preset}`);
   
   if (needInstall) {
-    runSafe(`cmake --install ${buildFolder} --prefix ${outputFolder} --component headers`);
+    exec(`cmake --install ${buildFolder} --prefix ${outputFolder} --component headers`);
   }
 }
 
@@ -252,7 +252,7 @@ function mergeLibsWithGenericAr(arTool: string, libDirPath: string, aFiles: stri
       mkdirSync(extractDir, { recursive: true });
       extractDirs.push({ path: extractDir });
 
-      runOut(arTool, ["x", join(libDirPath, lib)], { cwd: extractDir });
+      spawn(arTool, ["x", join(libDirPath, lib)], { cwd: extractDir });
     }
 
     const objFiles = collectObjectFiles(extractDirs);
@@ -261,7 +261,7 @@ function mergeLibsWithGenericAr(arTool: string, libDirPath: string, aFiles: stri
       process.exit(1);
     }
 
-    runOut(arTool, ["rcs", outputPath, ...objFiles]);
+    spawn(arTool, ["rcs", outputPath, ...objFiles]);
   });
 }
 
@@ -279,7 +279,7 @@ function mergeLibsWithWindowsLibExe(toolPath: string, libDirPath: string, libFil
       mkdirSync(extractDir, { recursive: true });
       extractDirs.push({ path: extractDir });
 
-      const listOutput = runOut(toolPath, ["/LIST", libPath], { cwd: extractDir, allowFailure: false });
+      const listOutput = spawn(toolPath, ["/LIST", libPath], { cwd: extractDir, allowFailure: false });
       if (!listOutput) process.exit(1);
 
       const members = listOutput.toString()
@@ -288,7 +288,7 @@ function mergeLibsWithWindowsLibExe(toolPath: string, libDirPath: string, libFil
         .filter(line => line.length > 0);
 
       for (const member of members) {
-        runOut(toolPath, [`/EXTRACT:${member}`, libPath], { cwd: extractDir });
+        spawn(toolPath, [`/EXTRACT:${member}`, libPath], { cwd: extractDir });
       }
     }
 
@@ -302,13 +302,13 @@ function mergeLibsWithWindowsLibExe(toolPath: string, libDirPath: string, libFil
     const rspContent = [`/OUT:"${outputPath}"`, ...objFiles.map(f => `"${f}"`)].join("\n");
     writeFileSync(rspPath, rspContent, "utf8");
     
-    runOut(toolPath, [`@${rspPath}`], { cwd: tempRoot });
+    spawn(toolPath, [`@${rspPath}`], { cwd: tempRoot });
   });
 }
 
 function mergeLibsWithAppleLibTool(libDirPath: string, aFiles: string[], outputPath: string) {
   const args = ["-static", "-o", outputPath, ...aFiles.map(lib => join(libDirPath, lib))];
-  runOut("libtool", args, { cwd: libDirPath });
+  spawn("libtool", args, { cwd: libDirPath });
 }
 
 export function mergeLibs(libDir: string, outputLib: string, tool?: string) {
