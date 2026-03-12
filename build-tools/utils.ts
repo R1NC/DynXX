@@ -93,7 +93,7 @@ interface ExecOptions {
  * Best for: Compilers, linkers, build tools where arguments might contain spaces.
  * No shell interpretation, preventing injection risks.
  */
-function execSafe(
+export function execSafe(
   cmd: string, 
   args: string[], 
   options: ExecOptions = {}
