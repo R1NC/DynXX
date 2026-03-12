@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { platform } from 'node:os';
-import { execSafe, execShell, getHomeDir } from './utils.js';
+import { spawn, exec, getHomeDir } from './utils.js';
 
 const IS_WINDOWS = platform() === 'win32';
 const VCPKG_URL = "https://github.com/R1NC/vcpkg/archive/refs/heads/dev.zip";
@@ -26,19 +26,19 @@ async function main() {
 
     console.log(`Downloading from ${VCPKG_URL}...`);
     if (IS_WINDOWS) {
-      execShell(`powershell -NoProfile -Command "Invoke-WebRequest -Uri '${VCPKG_URL}' -OutFile '${zipPath}'"`);
+      exec(`powershell -NoProfile -Command "Invoke-WebRequest -Uri '${VCPKG_URL}' -OutFile '${zipPath}'"`);
     } else {
-      execShell(`curl -L -o '${zipPath}' '${VCPKG_URL}'`);
+      exec(`curl -L -o '${zipPath}' '${VCPKG_URL}'`);
     }
 
     console.log('Unzipping...');
     if (IS_WINDOWS) {
-      execShell(`powershell -NoProfile -Command "Expand-Archive -LiteralPath '${zipPath}' -DestinationPath '${parentDir}' -Force"`);
+      exec(`powershell -NoProfile -Command "Expand-Archive -LiteralPath '${zipPath}' -DestinationPath '${parentDir}' -Force"`);
     } else {
       try {
-        execShell(`unzip -q '${zipPath}' -d '${parentDir}'`);
+        exec(`unzip -q '${zipPath}' -d '${parentDir}'`);
       } catch {
-        execShell(`tar -xf '${zipPath}' -C '${parentDir}'`);
+        exec(`tar -xf '${zipPath}' -C '${parentDir}'`);
       }
     }
 
@@ -50,19 +50,19 @@ async function main() {
 
     console.log('Initializing Git repository...');
     
-    execShell(`git init`, VCPKG_ROOT);
-    execShell(`git config user.email ci@local`, VCPKG_ROOT);
-    execShell(`git config user.name ci`, VCPKG_ROOT);
-    execShell(`git add -A`, VCPKG_ROOT);
-    execShell(`git commit -m "init vcpkg snapshot"`, VCPKG_ROOT);
+    exec(`git init`, VCPKG_ROOT);
+    exec(`git config user.email ci@local`, VCPKG_ROOT);
+    exec(`git config user.name ci`, VCPKG_ROOT);
+    exec(`git add -A`, VCPKG_ROOT);
+    exec(`git commit -m "init vcpkg snapshot"`, VCPKG_ROOT);
 
-    const output = execSafe('git', ['rev-parse', 'HEAD'], { 
+    const output = spawn('git', ['rev-parse', 'HEAD'], { 
       cwd: VCPKG_ROOT, 
       captureOutput: true 
     });
 
     if (!output) {
-      throw new Error('Failed to get git revision (execSafe returned null)');
+      throw new Error('Failed to get git revision (spawn returned null)');
     }
     
     const baseline = output.toString().trim();
@@ -90,7 +90,7 @@ async function main() {
       fs.chmodSync(bootstrapScript, 0o755);
     }
     
-    execShell(IS_WINDOWS ? `"${bootstrapScript}"` : `"${bootstrapScript}"`, VCPKG_ROOT);
+    exec(IS_WINDOWS ? `"${bootstrapScript}"` : `"${bootstrapScript}"`, VCPKG_ROOT);
     
     console.log('vcpkg setup complete!');
 
