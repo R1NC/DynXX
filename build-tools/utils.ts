@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 const IS_WINDOWS = platform() === 'win32';
 const IS_APPLE = platform() === 'darwin';
 
-// Path & Env:
+// --- Path & Env Helpers ---
 
 export function goInTmpDir<T>(operation: (tempRoot: string) => T): T {
   const tempRoot = mkdtempSync(join(tmpdir(), "temp_tool_"));
@@ -79,30 +79,46 @@ export function getVcpkgLibPath(root: string, buildFolder: string): string {
   return join(root, buildFolder, "vcpkg_installed", triplet, "lib");
 }
 
-// Run tools:
+// --- Run Tools ---
+
+/**
+ * Executes a command string via shell.
+ * Use for: Scripts, pipes, redirects, or simple commands where output logging is enough.
+ */
+export function runSafe(command: string, cwd?: string): void {
+  try {
+    execSync(command, {
+      cwd,
+      stdio: 'inherit',
+      env: process.env,
+      shell: IS_WINDOWS
+    });
+  } catch (error) {
+    console.error(`[ERROR] Shell command failed: ${command}`);
+    throw error;
+  }
+}
 
 interface ExecOptions {
   cwd?: string;
-  captureOutput?: boolean;
   tempDir?: string;
   allowFailure?: boolean;
 }
 
 /**
- * Executes a command safely using argument arrays (spawnSync).
- * Best for: Compilers, linkers, build tools where arguments might contain spaces.
- * No shell interpretation, preventing injection risks.
+ * Executes a command with args array and captures stdout.
+ * Use for: Getting versions, hashes, lists, or when arguments contain spaces/special chars.
  */
-export function execSafe(
+export function runOut(
   cmd: string, 
   args: string[], 
   options: ExecOptions = {}
 ): Buffer | null {
-  const { cwd = process.cwd(), captureOutput = false, tempDir, allowFailure = false } = options;
+  const { cwd = process.cwd(), tempDir, allowFailure = false } = options;
 
   const spawnOptions: SpawnSyncOptions = {
     cwd,
-    stdio: captureOutput ? 'pipe' : 'inherit',
+    stdio: ['ignore', 'pipe', 'pipe'], // stdin:ignore, stdout:pipe, stderr:pipe
     shell: false,
     windowsHide: true
   };
@@ -117,17 +133,10 @@ export function execSafe(
 
   if (result.status !== 0) {
     const stderrMsg = result.stderr ? result.stderr.toString() : 'Unknown error';
-    
-    if (!captureOutput && stderrMsg) {
-      console.error(stderrMsg);
-    }
+    if (stderrMsg) console.error(`[ERROR] ${cmd} failed: ${stderrMsg}`);
 
     if (!allowFailure) {
-      if (!captureOutput) {
-        process.exit(result.status || 1);
-      } else {
-        throw new Error(`Command failed with exit code ${result.status}: ${cmd} ${args.join(' ')}`);
-      }
+      throw new Error(`Command failed with exit code ${result.status}: ${cmd} ${args.join(' ')}`);
     } else {
       console.warn(`[WARN] Command exited with ${result.status}: ${cmd}`);
       return null;
@@ -142,29 +151,10 @@ export function execSafe(
     }
   }
 
-  return captureOutput ? (result.stdout || null) : null;
+  return result.stdout || null;
 }
 
-/**
- * Executes a command string via the system shell (execSync).
- * Best for: Git, package managers, shell scripts, or commands needing pipes/redirects.
- * Requires manual escaping for arguments with spaces.
- */
-export function execShell(command: string, cwd?: string): void {
-  try {
-    execSync(command, {
-      cwd,
-      stdio: 'inherit',
-      env: process.env,
-      shell: IS_WINDOWS
-    });
-  } catch (error) {
-    console.error(`[ERROR] Shell command failed: ${command}`);
-    throw error;
-  }
-}
-
-// CMake operations:
+// --- CMake Operations ---
 
 export function exportCompileCommands(buildFolder: string, root: string) {
   const src = resolve(root, buildFolder, "compile_commands.json");
@@ -191,14 +181,15 @@ export function exportCompileCommands(buildFolder: string, root: string) {
 }
 
 export function runCMake(preset: string, buildFolder: string, outputFolder: string, needInstall: boolean) {
-  execSafe("cmake", ["--preset", preset]);
-  execSafe("cmake", ["--build", "--preset", preset]);
+  runSafe(`cmake --preset ${preset}`);
+  runSafe(`cmake --build --preset ${preset}`);
+  
   if (needInstall) {
-    execSafe("cmake", ["--install", buildFolder, "--prefix", outputFolder, "--component", "headers"]);
+    runSafe(`cmake --install ${buildFolder} --prefix ${outputFolder} --component headers`);
   }
 }
 
-// Handle Artifacts:
+// --- Handle Artifacts ---
 
 export function checkArtifacts(paths: string[]) {
   const missing: string[] = [];
@@ -231,7 +222,7 @@ export function copyStaticLibs(srcDir: string, destDir: string) {
   });
 }
 
-// Merge Libs:
+// --- Merge Libs ---
 
 function collectObjectFiles(extractDirs: { path: string }[]): string[] {
   const allEntries = extractDirs.flatMap((dirInfo) =>
@@ -260,8 +251,8 @@ function mergeLibsWithGenericAr(arTool: string, libDirPath: string, aFiles: stri
       const extractDir = join(tempRoot, `extract_${basename(lib, extname(lib))}`);
       mkdirSync(extractDir, { recursive: true });
       extractDirs.push({ path: extractDir });
-      
-      execSafe(arTool, ["x", join(libDirPath, lib)], { cwd: extractDir });
+
+      runOut(arTool, ["x", join(libDirPath, lib)], { cwd: extractDir });
     }
 
     const objFiles = collectObjectFiles(extractDirs);
@@ -270,7 +261,7 @@ function mergeLibsWithGenericAr(arTool: string, libDirPath: string, aFiles: stri
       process.exit(1);
     }
 
-    execSafe(arTool, ["rcs", outputPath, ...objFiles]);
+    runOut(arTool, ["rcs", outputPath, ...objFiles]);
   });
 }
 
@@ -288,7 +279,7 @@ function mergeLibsWithWindowsLibExe(toolPath: string, libDirPath: string, libFil
       mkdirSync(extractDir, { recursive: true });
       extractDirs.push({ path: extractDir });
 
-      const listOutput = execSafe(toolPath, ["/LIST", libPath], { cwd: extractDir, captureOutput: true, allowFailure: false });
+      const listOutput = runOut(toolPath, ["/LIST", libPath], { cwd: extractDir, allowFailure: false });
       if (!listOutput) process.exit(1);
 
       const members = listOutput.toString()
@@ -297,7 +288,7 @@ function mergeLibsWithWindowsLibExe(toolPath: string, libDirPath: string, libFil
         .filter(line => line.length > 0);
 
       for (const member of members) {
-        execSafe(toolPath, [`/EXTRACT:${member}`, libPath], { cwd: extractDir });
+        runOut(toolPath, [`/EXTRACT:${member}`, libPath], { cwd: extractDir });
       }
     }
 
@@ -311,13 +302,13 @@ function mergeLibsWithWindowsLibExe(toolPath: string, libDirPath: string, libFil
     const rspContent = [`/OUT:"${outputPath}"`, ...objFiles.map(f => `"${f}"`)].join("\n");
     writeFileSync(rspPath, rspContent, "utf8");
     
-    execSafe(toolPath, [`@${rspPath}`], { cwd: tempRoot });
+    runOut(toolPath, [`@${rspPath}`], { cwd: tempRoot });
   });
 }
 
 function mergeLibsWithAppleLibTool(libDirPath: string, aFiles: string[], outputPath: string) {
   const args = ["-static", "-o", outputPath, ...aFiles.map(lib => join(libDirPath, lib))];
-  execSafe("libtool", args, { cwd: libDirPath });
+  runOut("libtool", args, { cwd: libDirPath });
 }
 
 export function mergeLibs(libDir: string, outputLib: string, tool?: string) {
