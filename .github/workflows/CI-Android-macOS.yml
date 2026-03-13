@@ -12,6 +12,8 @@ on:
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
       - 'build-tools/build-Android.ts'
+      - 'Base-Setup.yml'
+      - 'CI-Android-macOS.yml'
   workflow_dispatch:
 
 permissions:
