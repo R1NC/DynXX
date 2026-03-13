@@ -12,6 +12,8 @@ on:
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
       - 'build-tools/build-iOS.ts'
+      - '.github/workflows/Base-Setup.yml'
+      - '.github/workflows/CI-iOS.yml'
   workflow_dispatch:
 
 permissions:
