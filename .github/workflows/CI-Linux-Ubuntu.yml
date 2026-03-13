@@ -12,6 +12,8 @@ on:
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
       - 'build-tools/build-Linux.ts'
+      - '.github/workflows/Base-Setup.yml'
+      - '.github/workflows/CI-Linux-Ubuntu.yml'
   workflow_dispatch:
 
 permissions:
