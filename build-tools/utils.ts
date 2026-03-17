@@ -1,8 +1,8 @@
-import { spawnSync, execSync, SpawnSyncReturns } from 'node:child_process';
+import { spawnSync, execSync } from 'node:child_process';
 import { 
   existsSync, unlinkSync, symlinkSync, copyFileSync, writeFileSync,
   mkdirSync, rmSync, readdirSync, statSync, mkdtempSync, readlinkSync} from 'node:fs';
-import { dirname, join, resolve, basename, extname, isAbsolute } from 'node:path';
+import { dirname, join, resolve, basename, extname, isAbsolute, relative } from 'node:path';
 import { homedir, tmpdir, platform } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
@@ -38,11 +38,11 @@ export function gotoParentPath(): string {
 }
 
 export function getHomeDir(): string {
-  return homedir() || getEnv("HOME") || getEnv("USERPROFILE");
+  return homedir() ?? process.env.HOME ?? process.env.USERPROFILE ?? "";
 }
 
 export function getEnv(name: string): string {
-  return process.env[name] || "";
+  return process.env[name] ?? "";
 }
 
 export function setEnv(name: string, value: string): void {
@@ -102,17 +102,15 @@ export function getMsvcToolsHome(): string {
 }
 
 export function getAndroidLlvmHome(ndkHome: string): string {
-  const sysName = platform();
-  let candidates: string[] = [];
+  const platformPaths: Record<string, string[]> = {
+    'darwin': ['darwin-arm64', 'darwin-x86_64'],
+    'linux': ['linux-x86_64'],
+    'win32': ['windows-x86_64']
+  };
 
-  if (sysName === 'darwin') {
-    candidates = ['darwin-arm64', 'darwin-x86_64'];
-  } else if (sysName === 'linux') {
-    candidates = ['linux-x86_64'];
-  } else if (sysName === 'win32') {
-    candidates = ['windows-x86_64'];
-  } else {
-    throw new Error(`Unsupported platform for NDK lookup: ${sysName}`);
+  const candidates = platformPaths[process.platform];
+  if (!candidates) {
+    throw new Error(`Unsupported platform for NDK lookup: ${process.platform}`);
   }
 
   const prebuiltDir = resolve(ndkHome, 'toolchains', 'llvm', 'prebuilt');
@@ -125,14 +123,10 @@ export function getAndroidLlvmHome(ndkHome: string): string {
   }
 
   if (isExistingDirectory(prebuiltDir)) {
-    const entries = readdirSync(prebuiltDir);
-    for (const entry of entries) {
-      const fullPath = resolve(prebuiltDir, entry);
-      if (isExistingDirectory(fullPath)) {
-        const candidateDir = resolve(fullPath, 'bin');
-        if (isExistingDirectory(candidateDir)) {
-          return candidateDir;
-        }
+    for (const entry of readdirSync(prebuiltDir)) {
+      const candidateDir = resolve(prebuiltDir, entry, 'bin');
+      if (isExistingDirectory(candidateDir)) {
+        return candidateDir;
       }
     }
   }
@@ -183,7 +177,7 @@ export function spawn(
 ): Buffer | null {
   const { cwd = process.cwd(), tempDir, allowFailure = false } = options;
 
-  const result: SpawnSyncReturns<Buffer> = spawnSync(cmd, args, {
+  const result = spawnSync(cmd, args, {
     cwd,
     stdio: ['ignore', 'pipe', 'pipe'],
     shell: false,
@@ -219,7 +213,7 @@ export function exportCompileCommands(buildFolder: string, root: string) {
     try {
       if (statSync(dst).isSymbolicLink()) {
         const target = readlinkSync(dst);
-        if (resolve(root, target) === src) return;
+        if (resolve(target) === src) return;
       }
       unlinkSync(dst);
     } catch (_) { unlinkSync(dst); }
@@ -227,9 +221,11 @@ export function exportCompileCommands(buildFolder: string, root: string) {
 
   if (existsSync(src)) {
     try {
-      const type = IS_WINDOWS ? 'junction' : 'file';
-      symlinkSync(src, dst, type);
-    } catch (_) {
+      const relativeSrc = relative(dirname(dst), src);
+      symlinkSync(relativeSrc, dst, 'file');
+      console.log(`Created symlink: ${dst} -> ${relativeSrc}`);
+    } catch (error: any) {
+      console.warn(`Failed to create symlink, falling back to copy: ${error.message}`);
       copyFileSync(src, dst);
     }
   }
@@ -286,16 +282,15 @@ function collectObjectFiles(extractDirs: { path: string }[]): string[] {
   );
 
   const oFiles = allEntries.filter((file) => file.toLowerCase().endsWith('.o'));
-  const finalObjFiles = oFiles.length > 0
-    ? oFiles
-    : allEntries.filter((file) => file.toLowerCase().endsWith('.obj'));
+  const objFiles = allEntries.filter((file) => file.toLowerCase().endsWith('.obj'));
+  const finalFiles = oFiles.length > 0 ? oFiles : objFiles;
 
-  if (finalObjFiles.length > 0) {
+  if (finalFiles.length > 0) {
     const ext = oFiles.length > 0 ? '.o' : '.obj';
-    console.log(`[MergeLibs] Detected object format: ${ext} (Count: ${finalObjFiles.length})`);
+    console.log(`[MergeLibs] Detected object format: ${ext} (Count: ${finalFiles.length})`);
   }
 
-  return finalObjFiles;
+  return finalFiles;
 }
 
 function mergeLibsWithGenericAr(arTool: string, libDirPath: string, aFiles: string[], outputPath: string) {
@@ -316,7 +311,9 @@ function mergeLibsWithGenericAr(arTool: string, libDirPath: string, aFiles: stri
       process.exit(1);
     }
 
-    spawn(arTool, ["rcs", outputPath, ...objFiles]);
+    const rspPath = join(tempRoot, "ar-merge.rsp");
+    writeFileSync(rspPath, objFiles.map(f => `"${f}"`).join("\n"), "utf8");
+    spawn(arTool, ["rcs", outputPath, `@${rspPath}`]);
   });
 }
 
@@ -368,15 +365,12 @@ function mergeLibsWithAppleLibTool(libDirPath: string, aFiles: string[], outputP
 
 export function mergeLibs(libDir: string, outputLib: string, tool?: string) {
   const libDirPath = resolve(libDir);
-  
-  let outputPath: string;
-  if (isAbsolute(outputLib)) {
-    outputPath = resolve(outputLib);
-  } else if (outputLib.includes('/') || (IS_WINDOWS && outputLib.includes('\\'))) {
-    outputPath = resolve(process.cwd(), outputLib);
-  } else {
-    outputPath = join(libDirPath, outputLib);
-  }
+
+  const outputPath = isAbsolute(outputLib) 
+    ? resolve(outputLib)
+    : outputLib.includes('/') || (IS_WINDOWS && outputLib.includes('\\'))
+      ? resolve(process.cwd(), outputLib)
+      : join(libDirPath, outputLib);
   
   if (!existsSync(libDirPath)) {
     console.error(`ERROR: No such directory: ${libDirPath}`);
