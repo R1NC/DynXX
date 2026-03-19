@@ -1,13 +1,44 @@
 import { spawnSync, execSync } from 'node:child_process';
 import { 
   existsSync, unlinkSync, symlinkSync, copyFileSync, writeFileSync,
-  mkdirSync, rmSync, readdirSync, statSync, mkdtempSync, readlinkSync} from 'node:fs';
+  mkdirSync, rmSync, readdirSync, statSync, mkdtempSync, readlinkSync, chmodSync
+} from 'node:fs';
 import { dirname, join, resolve, basename, extname, isAbsolute, relative } from 'node:path';
 import { homedir, tmpdir, platform } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const IS_WINDOWS = platform() === 'win32';
 const IS_APPLE = platform() === 'darwin';
+const IS_LINUX = platform() === 'linux';
+
+// --- Platform Detection ---
+
+export function isWindows(): boolean {
+  return IS_WINDOWS;
+}
+
+export function isMacOS(): boolean {
+  return IS_APPLE;
+}
+
+export function isLinux(): boolean {
+  return IS_LINUX;
+}
+
+export function isUnixLike(): boolean {
+  return IS_APPLE || IS_LINUX;
+}
+
+// --- File Utils ---
+
+export function copyFile(src: string, dst: string): void {
+  copyFileSync(src, dst);
+}
+
+export function makeExecutable(filePath: string): void {
+  chmodSync(filePath, '755');
+}
+
 
 // --- Path & Env Helpers ---
 

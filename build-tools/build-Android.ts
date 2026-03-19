@@ -1,9 +1,10 @@
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 
 import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getAndroidLlvmHome,
   getOutputLibPath, getVcpkgLibPath, gotoParentPath, mergeLibs, readCIEnv,
-  runCMake, setBuildOutputEnv, setEnv, setupVcpkgEnv,
+  runCMake, setBuildOutputEnv, setEnv, setupVcpkgEnv, copyFile, makeExecutable, exec,
+  isWindows,
 } from './utils.js';
 
 function main() {
@@ -44,6 +45,22 @@ function main() {
   mergeLibs(outputLibPath, "libDynXX-All.a", arTool);
   
   checkArtifacts([join(outputLibPath, "libDynXX-All.a")]);
+  
+  const androidPath = join(root, 'platforms', 'Android');
+  const gradleBuildType = buildType.toLowerCase();
+  
+  if (!isWindows()) {
+    makeExecutable(join(androidPath, 'gradlew'));
+  }
+  
+  const gradlewCmd = isWindows() ? '.\\gradlew.bat' : './gradlew';
+  exec(`${gradlewCmd} :DynXX-lib:assemble${buildType}`, androidPath);
+
+  const aarSrcPath = join(androidPath, 'DynXX-lib', 'build', 'outputs', 'aar', `DynXX-lib-${gradleBuildType}.aar`);
+  const aarDstPath = join(dirname(outputPath), `DynXX-lib-${gradleBuildType}.aar`);
+  copyFile(aarSrcPath, aarDstPath);
+  
+  checkArtifacts([aarDstPath]);
 }
 
 main();
