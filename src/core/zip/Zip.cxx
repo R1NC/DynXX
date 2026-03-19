@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <functional>
+#include <bit>
 
 #include <DynXX/CXX/Log.hxx>
 #include <DynXX/CXX/Memory.hxx>
@@ -77,12 +78,12 @@ namespace {
             [bufferSize, inStream]
             {
                 Bytes in;
-                inStream->readsome(reinterpret_cast<char *>(in.data()), static_cast<std::streamsize>(bufferSize));
+                inStream->readsome(std::bit_cast<char *>(in.data()), static_cast<std::streamsize>(bufferSize));
                 return in;
             },
             [outStream](const Bytes &bytes)
             {
-                outStream->write(reinterpret_cast<const char *>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
+                outStream->write(std::bit_cast<const char *>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
             },
             [outStream]
             {

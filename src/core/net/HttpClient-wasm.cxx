@@ -4,6 +4,7 @@
 #include <DynXX/CXX/Log.hxx>
 #include <DynXX/C/Net.h>
 #include <DynXX/CXX/Coding.hxx>
+#include <bit>
 
 #include <emscripten/emscripten.h>
 #include <emscripten/fetch.h>
@@ -137,7 +138,7 @@ DynXXHttpResponse WasmHttpClient::request(std::string_view url,
     }
             
     if (!rawBody.empty()) [[likely]] {
-        attr.requestData = reinterpret_cast<const char*>(rawBody.data());
+        attr.requestData = std::bit_cast<const char*>(rawBody.data());
         attr.requestDataSize = rawBody.size();
     }
 

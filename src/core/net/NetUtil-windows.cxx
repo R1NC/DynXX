@@ -5,6 +5,7 @@
 #include "NetUtil.hxx"
 
 #include <array>
+#include <bit>
 
 #include <WinSock2.h>
 #include <Windows.h>
@@ -19,8 +20,8 @@
 
 namespace {
     template<typename F>
-    concept NetAdapterAddrsHandler = std::invocable<F, PIP_ADAPTER_ADDRESSES> 
-        && std::convertible_to<std::invoke_result_t<F, PIP_ADAPTER_ADDRESSES>, bool>;
+    concept NetAdapterAddrsHandler = std::invocable<F, const IP_ADAPTER_ADDRESSES*> 
+        && std::convertible_to<std::invoke_result_t<F, const IP_ADAPTER_ADDRESSES*>, bool>;
 
     template<NetAdapterAddrsHandler F>
     void handleNetAdapterAddrs(F &&handler) {
@@ -28,7 +29,7 @@ namespace {
         GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, nullptr, &outBufLen);
 
         std::vector<BYTE> buffer(outBufLen);
-        auto pAddresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(buffer.data());
+        auto pAddresses = std::bit_cast<PIP_ADAPTER_ADDRESSES>(buffer.data());
     
         if (GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, pAddresses, &outBufLen) != NO_ERROR) [[unlikely]] {
             return;
@@ -94,7 +95,7 @@ std::string macAddress()
 {
     std::string macAddress;
 
-    handleNetAdapterAddrs([&macAddress](PIP_ADAPTER_ADDRESSES p) {
+    handleNetAdapterAddrs([&macAddress](const IP_ADAPTER_ADDRESSES* p) {
         if (p->OperStatus == IfOperStatusUp && p->PhysicalAddressLength == 6) {
             macAddress = formatMacAddress(p->PhysicalAddress);
             return true;
@@ -109,7 +110,7 @@ NetType netType()
 {
     auto result = NetType::Offline;
 
-    handleNetAdapterAddrs([&result](PIP_ADAPTER_ADDRESSES p) {
+    handleNetAdapterAddrs([&result](const IP_ADAPTER_ADDRESSES* p) {
         if (p->OperStatus != IfOperStatusUp) {
             return false;
         }

@@ -1,5 +1,7 @@
 #include "Executor.hxx"
 
+#include <bit>
+
 #include <DynXX/CXX/Log.hxx>
 
 #include "ConcurrentUtil.hxx"
@@ -27,7 +29,7 @@ Worker::Worker() :
 
     if (func) [[likely]] 
     {
-        dynxxLogPrintF(Debug, "Worker@{} run task on thread:{}", reinterpret_cast<uintptr_t>(this), currentThreadId());
+        dynxxLogPrintF(Debug, "Worker@{} run task on thread:{}", std::bit_cast<uintptr_t>(this), currentThreadId());
         func();
     }
 }, [this]() {
@@ -39,7 +41,7 @@ Worker::Worker() :
 
 Worker& Worker::operator>>(TaskT&& task)
 {
-    this->update([&mtx = this->mutex, tsk = std::move(task), &queue = this->taskQueue, addr = reinterpret_cast<uintptr_t>(this)]() mutable {
+    this->update([&mtx = this->mutex, tsk = std::move(task), &queue = this->taskQueue, addr = std::bit_cast<uintptr_t>(this)]() mutable {
         const auto lock = std::scoped_lock(mtx);
         queue.emplace(std::move(tsk));
         dynxxLogPrintF(Debug, "Worker@{} taskCount:{}", addr, queue.size());
