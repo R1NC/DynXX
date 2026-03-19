@@ -1,0 +1,95 @@
+name: CI-OHOS-Win
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'include/**'
+      - 'src/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - 'CMakePresets.json'
+      - 'vcpkg.json'
+      - 'build-tools/utils.ts'
+      - 'build-tools/setup-custom-vcpkg.ts'
+      - 'build-tools/build-HarmonyOS.ts'
+      - '.github/workflows/Base-Setup.yml'
+      - '.github/workflows/CI-OHOS-Win.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  baseSetup:
+    uses: ./.github/workflows/Base-Setup.yml
+    with:
+      host: Windows
+      target: harmonyos
+
+  build:
+    needs: baseSetup
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+
+    - name: Cache HarmonyOS SDK
+      id: cache-ohos-sdk
+      uses: actions/cache@v4
+      with:
+        path: |
+          ohos-sdk/windows/native
+        key: ohos-sdk-windows-6.0.0.48-${{ runner.os }}
+        restore-keys: |
+          ohos-sdk-windows-6.0.0.48-
+
+    - name: Setup HarmonyOS SDK
+      if: steps.cache-ohos-sdk.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        curl.exe -L -# -o "ohos-sdk-windows_linux-public.tar.gz" "https://mirrors.huaweicloud.com/harmonyos/os/6.0.0.1-Release/ohos-sdk-windows_linux-public.tar.gz"
+        tar -xzf ohos-sdk-windows_linux-public.tar.gz
+        Set-Location ohos-sdk/windows
+        Expand-Archive -Path "native-windows-x64-6.0.0.48-Release.zip" -DestinationPath "."
+
+    - name: Set HarmonyOS Environment
+      shell: pwsh
+      run: |
+        $ohosNdkHome = "${{ github.workspace }}/ohos-sdk/windows/native"
+        Add-Content -Path $env:GITHUB_ENV -Value "CI_OHOS_NDK_HOME=$ohosNdkHome"
+
+    - name: Setup custom vcpkg from zip
+      shell: pwsh
+      env:
+        RUNNER_TEMP: ${{ runner.temp }}
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+      run: |
+        npx tsx build-tools/setup-custom-vcpkg.ts
+
+    - name: Cache vcpkg binary
+      id: cache-vcpkg
+      uses: actions/cache@v4
+      with:
+        path: ${{ github.workspace }}/vcpkg-binary-cache
+        key: vcpkg-binary-cache-ohos-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+
+    - name: Build
+      shell: pwsh
+      env:
+        CI_VCPKG_HOME: ${{ env.CI_VCPKG_HOME }}
+        CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
+      run: |
+        Set-Location build-tools
+        npx tsx build-HarmonyOS.ts
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: OHOS-Win-build
+        path: |
+          build.HarmonyOS/Release/output/
+        if-no-files-found: error

@@ -1,4 +1,4 @@
-name: CI for HarmonyOS on macOS
+name: CI-OHOS-Mac
 
 on:
   push:
@@ -11,9 +11,10 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
+      - 'build-tools/setup-custom-vcpkg.ts'
       - 'build-tools/build-HarmonyOS.ts'
       - '.github/workflows/Base-Setup.yml'
-      - '.github/workflows/CI-HarmonyOS-macOS.yml'
+      - '.github/workflows/CI-OHOS-Mac.yml'
   workflow_dispatch:
 
 permissions:
@@ -82,7 +83,7 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: HarmonyOS-build
+        name: OHOS-Mac-build
         path: |
           build.HarmonyOS/Release/output/
         if-no-files-found: error

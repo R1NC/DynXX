@@ -1,4 +1,4 @@
-name: CI for Windows
+name: CI-Windows-Win
 
 on:
   push:
@@ -13,7 +13,7 @@ on:
       - 'build-tools/utils.ts'
       - 'build-tools/build-Windows.ts'
       - '.github/workflows/Base-Setup.yml'
-      - '.github/workflows/CI-Windows.yml'
+      - '.github/workflows/CI-Windows-Win.yml'
   workflow_dispatch:
 
 permissions:
@@ -54,7 +54,7 @@ jobs:
 
       - name: Build
         env:
-          CI_VCPKG_HOME: ${{ github.workspace }}\vcpkg
+          CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
           CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
         run: |
           cd build-tools
@@ -63,7 +63,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Windows-build
+          name: Windows-Win-build
           path: |
             build.Windows/Release/output/
           if-no-files-found: error

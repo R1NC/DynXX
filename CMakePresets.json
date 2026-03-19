@@ -108,9 +108,11 @@
       "displayName": "Wasm Default Config",
       "description": "Default build for Wasm",
       "cacheVariables": {
-        "EMSCRIPTEN_ROOT_PATH": "$env{WASM_SDK_HOME}",
-        "EMSCRIPTEN_SYSTEM_PROCESSOR": "$env{WASM_ABI}",
-        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{WASM_SDK_HOME}/cmake/Modules/Platform/Emscripten.cmake"
+        "EMSDK": "$penv{WASM_SDK_HOME}",
+        "EMSCRIPTEN": "$penv{WASM_SDK_HOME}/upstream/emscripten",
+        "EMSCRIPTEN_ROOT_PATH": "$penv{WASM_SDK_HOME}/upstream/emscripten",
+        "EMSCRIPTEN_SYSTEM_PROCESSOR": "$penv{WASM_ABI}",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$penv{WASM_SDK_HOME}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
       }
     },
     {

@@ -25,6 +25,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake clang ninja-build
 
+      - name: Setup CMake & Ninja for Windows
+        if: inputs.host == 'Windows'
+        run: |
+          choco install cmake ninja --no-progress --yes
+          refreshenv
+
       - name: Setup msbuild for Windows
         if: inputs.host == 'Windows'
         uses: microsoft/setup-msbuild@v2

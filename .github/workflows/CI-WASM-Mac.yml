@@ -1,4 +1,4 @@
-name: CI-Linux-Ubuntu
+name: CI-WASM-Mac
 
 on:
   push:
@@ -11,9 +11,9 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
-      - 'build-tools/build-Linux.ts'
+      - 'build-tools/build-WASM.ts'
       - '.github/workflows/Base-Setup.yml'
-      - '.github/workflows/CI-Linux-Ubuntu.yml'
+      - '.github/workflows/CI-WASM-Mac.yml'
   workflow_dispatch:
 
 permissions:
@@ -24,17 +24,22 @@ jobs:
   baseSetup:
     uses: ./.github/workflows/Base-Setup.yml
     with:
-      host: Linux
-      target: linux
+      host: macOS
+      target: wasm
 
   build:
     needs: baseSetup
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
+
+    - name: Setup Emscripten
+      uses: mymindstorm/setup-emsdk@v12
+      with:
+        version: 3.1.65
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
@@ -46,20 +51,21 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ github.workspace }}/vcpkg-binary-cache
-        key: vcpkg-binary-cache-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+        key: vcpkg-binary-cache-wasm-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
       env:
         CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
         CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
+        CI_WASM_SDK_HOME: ${{ env.EMSDK }}
       run: |
         cd build-tools
-        npx tsx build-Linux.ts
+        npx tsx build-WASM.ts
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Linux-Ubuntu-build
+        name: WASM-Mac-build
         path: |
-          build.Linux/Release/output/
+          build.Wasm/Release/output/
         if-no-files-found: error

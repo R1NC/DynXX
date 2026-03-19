@@ -1,4 +1,4 @@
-name: CI for WASM on macOS
+name: CI-iOS-Mac
 
 on:
   push:
@@ -11,9 +11,9 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
-      - 'build-tools/build-WASM.ts'
+      - 'build-tools/build-iOS.ts'
       - '.github/workflows/Base-Setup.yml'
-      - '.github/workflows/CI-WASM-macOS.yml'
+      - '.github/workflows/CI-iOS-Mac.yml'
   workflow_dispatch:
 
 permissions:
@@ -25,21 +25,15 @@ jobs:
     uses: ./.github/workflows/Base-Setup.yml
     with:
       host: macOS
-      target: wasm
+      target: ios
 
   build:
     needs: baseSetup
     runs-on: macos-latest
-
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-
-    - name: Setup Emscripten
-      uses: mymindstorm/setup-emsdk@v12
-      with:
-        version: 3.1.65
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
@@ -51,21 +45,20 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ github.workspace }}/vcpkg-binary-cache
-        key: vcpkg-binary-cache-wasm-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+        key: vcpkg-binary-cache-ios-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
       env:
         CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
         CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
-        CI_WASM_SDK_HOME: ${{ env.EMSDK }}/upstream/emscripten
       run: |
         cd build-tools
-        npx tsx build-WASM.ts
+        npx tsx build-iOS.ts
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: WASM-build
+        name: iOS-Mac-build
         path: |
-          build.Wasm/Release/output/
+          build.iOS/Release/output/
         if-no-files-found: error

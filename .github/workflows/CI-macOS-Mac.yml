@@ -1,4 +1,4 @@
-name: CI for iOS
+name: CI-macOS-Mac
 
 on:
   push:
@@ -11,9 +11,9 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
-      - 'build-tools/build-iOS.ts'
+      - 'build-tools/build-macOS.ts'
       - '.github/workflows/Base-Setup.yml'
-      - '.github/workflows/CI-iOS.yml'
+      - '.github/workflows/CI-macOS-Mac.yml'
   workflow_dispatch:
 
 permissions:
@@ -25,11 +25,12 @@ jobs:
     uses: ./.github/workflows/Base-Setup.yml
     with:
       host: macOS
-      target: ios
+      target: macos
 
   build:
     needs: baseSetup
     runs-on: macos-latest
+
     steps:
     - uses: actions/checkout@v4
       with:
@@ -45,7 +46,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ github.workspace }}/vcpkg-binary-cache
-        key: vcpkg-binary-cache-ios-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+        key: vcpkg-binary-cache-osx-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
       env:
@@ -53,12 +54,12 @@ jobs:
         CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
       run: |
         cd build-tools
-        npx tsx build-iOS.ts
+        npx tsx build-macOS.ts
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: iOS-build
+        name: macOS-Mac-build
         path: |
-          build.iOS/Release/output/
+          build.macOS/Release/output/
         if-no-files-found: error

@@ -77,7 +77,7 @@ async function main() {
       fs.chmodSync(bootstrapScript, 0o755);
     }
     
-    exec(IS_WINDOWS ? `"${bootstrapScript}"` : `"${bootstrapScript}"`, VCPKG_ROOT);
+    exec(`"${bootstrapScript}"`, VCPKG_ROOT);
 
     const githubEnv = getEnv("GITHUB_ENV");
     if (githubEnv) {
