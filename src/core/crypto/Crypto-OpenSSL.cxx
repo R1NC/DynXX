@@ -11,7 +11,7 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 #include <openssl/evp.h>
-#include <openssl/aes.h>
+#include <openssl/bio.h>
 #include <openssl/pem.h>
 #include <openssl/sha.h>
 #include <openssl/md5.h>
@@ -43,6 +43,24 @@ namespace
         }
 
         return {};
+    }
+
+    const EVP_CIPHER *aesEcbCipher(int keyLen)
+    {
+        constexpr auto KeyLen16 = 16;
+        constexpr auto KeyLen24 = 24;
+        constexpr auto KeyLen32 = 32;
+        switch (keyLen)
+        {
+        case KeyLen16:
+            return EVP_aes_128_ecb();
+        case KeyLen24:
+            return EVP_aes_192_ecb();
+        case KeyLen32:
+            return EVP_aes_256_ecb();
+        default:
+            return nullptr;
+        }
     }
 
     const EVP_CIPHER* aesGcmCipher(int keyLen)
@@ -289,6 +307,112 @@ namespace
             return table[charIdx(c)];
         }
     };
+
+    class RsaPkeyCodec
+    {
+    public:
+        RsaPkeyCodec() = delete;
+        RsaPkeyCodec(const RsaPkeyCodec &) = delete;
+        RsaPkeyCodec &operator=(const RsaPkeyCodec &) = delete;
+        RsaPkeyCodec(RsaPkeyCodec &&) = delete;
+        RsaPkeyCodec &operator=(RsaPkeyCodec &&) = delete;
+
+        explicit RsaPkeyCodec(BytesView key, DynXXCryptoRSAPaddingX padding, bool encrypt);
+        ~RsaPkeyCodec();
+
+        [[nodiscard]] Bytes process(BytesView in) const;
+
+    private:
+        [[nodiscard]] std::size_t outLen() const;
+
+        BIO *bmem{nullptr};
+        EVP_PKEY *rsa{nullptr};
+        EVP_PKEY_CTX *pctx{nullptr};
+        DynXXCryptoRSAPaddingX padding{};
+        bool forEncrypt{false};
+    };
+
+    RsaPkeyCodec::RsaPkeyCodec(BytesView key, DynXXCryptoRSAPaddingX pad, bool encrypt)
+        : padding(pad), forEncrypt(encrypt)
+    {
+        this->bmem = BIO_new_mem_buf(key.data(), static_cast<int>(key.size()));
+        if (this->bmem == nullptr) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "Failed to create BIO mem buffer for RSA, err: {}", errMsg());
+            return;
+        }
+        this->rsa = encrypt ? PEM_read_bio_PUBKEY(this->bmem, nullptr, nullptr, nullptr)
+                            : PEM_read_bio_PrivateKey(this->bmem, nullptr, nullptr, nullptr);
+        if (this->rsa == nullptr) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "RSA Failed to create {} key, err: {}", encrypt ? "public" : "private", errMsg());
+            return;
+        }
+        this->pctx = EVP_PKEY_CTX_new(this->rsa, nullptr);
+        if (this->pctx == nullptr) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "RSA {} EVP_PKEY context init failed, err: {}", encrypt ? "encrypt" : "decrypt", errMsg());
+            return;
+        }
+        if (const auto ret = encrypt ? EVP_PKEY_encrypt_init(this->pctx) : EVP_PKEY_decrypt_init(this->pctx); ret <= 0) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "RSA {} EVP_PKEY context init failed, err: {}", encrypt ? "encrypt" : "decrypt", errMsg());
+            EVP_PKEY_CTX_free(this->pctx);
+            this->pctx = nullptr;
+            return;
+        }
+        if (EVP_PKEY_CTX_set_rsa_padding(this->pctx, underlying(this->padding)) <= 0) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "RSA {} EVP_PKEY context init failed, err: {}", encrypt ? "encrypt" : "decrypt", errMsg());
+            EVP_PKEY_CTX_free(this->pctx);
+            this->pctx = nullptr;
+        }
+    }
+
+    RsaPkeyCodec::~RsaPkeyCodec()
+    {
+        if (this->pctx != nullptr) [[likely]]
+        {
+            EVP_PKEY_CTX_free(this->pctx);
+            this->pctx = nullptr;
+        }
+        if (this->bmem != nullptr) [[likely]]
+        {
+            BIO_free(this->bmem);
+            this->bmem = nullptr;
+        }
+        if (this->rsa != nullptr) [[likely]]
+        {
+            EVP_PKEY_free(this->rsa);
+            this->rsa = nullptr;
+        }
+    }
+
+    std::size_t RsaPkeyCodec::outLen() const
+    {
+        if (this->rsa == nullptr) [[unlikely]]
+        {
+            return 0;
+        }
+        return static_cast<std::size_t>(EVP_PKEY_size(this->rsa));
+    }
+
+    Bytes RsaPkeyCodec::process(BytesView in) const
+    {
+        if (this->pctx == nullptr) [[unlikely]]
+        {
+            return {};
+        }
+        Bytes outBytes(this->outLen(), 0);
+        size_t outLen = outBytes.size();
+        if (const auto ret = this->forEncrypt ? EVP_PKEY_encrypt(this->pctx, outBytes.data(), &outLen, in.data(), in.size()) : EVP_PKEY_decrypt(this->pctx, outBytes.data(), &outLen, in.data(), in.size()); ret <= 0) [[unlikely]]
+        {
+            dynxxLogPrintF(Error, "RSA {} EVP_PKEY_{} failed, err: {}", this->forEncrypt ? "encrypt" : "decrypt",
+                         this->forEncrypt ? "encrypt" : "decrypt", errMsg());
+            return {};
+        }
+        return outBytes;
+    }
 }
 
 namespace DynXX::Core::Crypto {
@@ -329,31 +453,44 @@ Bytes AES::encrypt(BytesView inBytes, BytesView keyBytes)
         return {};
     }
 
-    const auto inLen = inBytes.size();
-    
-    //ECB-PKCS5 Padding:
-    auto outLen = inLen;
-    const auto paddingSize = AES_BLOCK_SIZE - (inLen % AES_BLOCK_SIZE);
-    const auto paddingData = static_cast<byte>(paddingSize);
-    outLen += paddingSize;
-
-    Bytes fixedIn(outLen, paddingData);
-    std::memcpy(fixedIn.data(), inBytes.data(), inLen);
-    Bytes out(outLen, 0);
-
-    AES_KEY aes_key;
-
-    if (const auto ret = AES_set_encrypt_key(keyBytes.data(), static_cast<int>(keyBytes.size() * 8), &aes_key); ret != 0) [[unlikely]]
+    const auto *cipher = aesEcbCipher(static_cast<int>(keyBytes.size()));
+    if (cipher == nullptr) [[unlikely]]
     {
-        dynxxLogPrintF(Error, "AES_set_encrypt_key failed, ret: {}, err: {}", ret, errMsg());
+        dynxxLogPrint(Error, "AES encrypt: invalid key length for ECB");
         return {};
     }
-    
-    for (auto offset(0UZ); offset < outLen; offset += AES_BLOCK_SIZE)
+
+    auto ctx = EvpCipher();
+    if (!ctx.valid()) [[unlikely]]
     {
-        AES_encrypt(fixedIn.data() + offset, out.data() + offset, &aes_key);
+        dynxxLogPrint(Error, "AES encrypt EVP_CIPHER_CTX_new failed");
+        return {};
     }
 
+    if (const auto ret = ctx.init(true, cipher, keyBytes.data(), nullptr); ret != OK) [[unlikely]]
+    {
+        dynxxLogPrintF(Error, "AES encrypt EVP_EncryptInit_ex failed, ret: {}, err: {}", ret, errMsg());
+        return {};
+    }
+
+    const auto blockSize = EVP_CIPHER_block_size(cipher);
+    Bytes out(inBytes.size() + static_cast<size_t>(blockSize), 0);
+    int len = 0;
+    int finalLen = 0;
+
+    if (const auto ret = ctx.update(true, out.data(), &len, inBytes.data(), static_cast<int>(inBytes.size())); ret != OK) [[unlikely]]
+    {
+        dynxxLogPrintF(Error, "AES encrypt EVP_EncryptUpdate failed, ret: {}, err: {}", ret, errMsg());
+        return {};
+    }
+
+    if (const auto ret = ctx.finish(true, out.data() + len, &finalLen); ret != OK) [[unlikely]]
+    {
+        dynxxLogPrintF(Error, "AES encrypt EVP_EncryptFinal_ex failed, ret: {}, err: {}", ret, errMsg());
+        return {};
+    }
+
+    out.resize(static_cast<size_t>(len + finalLen));
     return out;
 }
 
@@ -364,41 +501,44 @@ Bytes AES::decrypt(BytesView inBytes, BytesView keyBytes)
         return {};
     }
 
+    const auto *cipher = aesEcbCipher(static_cast<int>(keyBytes.size()));
+    if (cipher == nullptr) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "AES decrypt: invalid key length for ECB");
+        return {};
+    }
+
+    auto ctx = EvpCipher();
+    if (!ctx.valid()) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "AES decrypt EVP_CIPHER_CTX_new failed");
+        return {};
+    }
+
+    if (const auto ret = ctx.init(false, cipher, keyBytes.data(), nullptr); ret != OK) [[unlikely]]
+    {
+        dynxxLogPrintF(Error, "AES decrypt EVP_DecryptInit_ex failed, ret: {}, err: {}", ret, errMsg());
+        return {};
+    }
+
     const auto inLen = inBytes.size();
-
-    Bytes fixedIn(inLen, 0);
-    std::memcpy(fixedIn.data(), inBytes.data(), inLen);
     Bytes out(inLen, 0);
+    int len = 0;
+    int finalLen = 0;
 
-    AES_KEY aes_key;
-    if (const auto ret = AES_set_decrypt_key(keyBytes.data(), static_cast<int>(keyBytes.size() * 8), &aes_key); ret != 0) [[unlikely]]
+    if (const auto ret = ctx.update(false, out.data(), &len, inBytes.data(), static_cast<int>(inLen)); ret != OK) [[unlikely]]
     {
-        dynxxLogPrintF(Error, "AES_set_decrypt_key failed, ret: {}, err: {}", ret, errMsg());
+        dynxxLogPrintF(Error, "AES decrypt EVP_DecryptUpdate failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    for (auto offset(0UZ); offset < inLen; offset += AES_BLOCK_SIZE)
+    if (const auto ret = ctx.finish(false, out.data() + len, &finalLen); ret != OK) [[unlikely]]
     {
-        AES_decrypt(fixedIn.data() + offset, out.data() + offset, &aes_key);
-    }
-
-    // Proper PKCS5/PKCS7 unpadding
-    auto paddingSize = static_cast<size_t>(out[inLen - 1]);
-    if (paddingSize == 0 || paddingSize > AES_BLOCK_SIZE) [[unlikely]]
-    {
+        dynxxLogPrintF(Error, "AES decrypt EVP_DecryptFinal_ex failed, ret: {}, err: {}", ret, errMsg());
         return {};
     }
 
-    // Verify padding bytes
-    for (decltype(paddingSize) i = 0; i < paddingSize; i++) 
-    {
-        if (out[inLen - 1 - i] != paddingSize) [[unlikely]]
-        {
-            return {};
-        }
-    }
-    
-    out.resize(inLen - paddingSize);
+    out.resize(static_cast<size_t>(len + finalLen));
     return out;
 }
 
@@ -637,121 +777,16 @@ std::string RSA::genKey(std::string_view base64, bool isPublic)
     return result; 
 }
 
-RSA::Codec::Codec(BytesView key, DynXXCryptoRSAPaddingX padding) : padding(padding)
+Bytes RSA::encrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding)
 {
-    this->bmem = BIO_new_mem_buf(key.data(), static_cast<int>(key.size()));
-    if (this->bmem == nullptr) [[unlikely]]
-    {
-        dynxxLogPrintF(Error, "Failed to create BIO mem buffer for RSA, err: {}", errMsg());
-    }
+    const RsaPkeyCodec codec(key, padding, true);
+    return codec.process(in);
 }
 
-// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
-void RSA::Codec::moveImp(Codec &&other) noexcept
+Bytes RSA::decrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding)
 {
-    this->padding = other.padding;
-    this->bmem = std::exchange(other.bmem, nullptr);
-    this->rsa = std::exchange(other.rsa, nullptr);
-}
-
-void RSA::Codec::cleanup() noexcept
-{
-    if (this->bmem != nullptr) [[likely]]
-    {
-        BIO_free(this->bmem);
-        this->bmem = nullptr;
-    }
-    if (this->rsa != nullptr) [[likely]]
-    {
-        RSA_free(this->rsa);
-        this->rsa = nullptr;
-    }
-}
-
-RSA::Codec::Codec(Codec &&other) noexcept
-    : padding(other.padding)
-{
-    this->moveImp(std::move(other));
-}
-
-RSA::Codec& RSA::Codec::operator=(Codec &&other) noexcept
-{
-    if (this != &other) [[likely]]
-    {
-        this->cleanup();
-        this->moveImp(std::move(other));
-    }
-    return *this;
-}
-
-RSA::Codec::~Codec()
-{
-    this->cleanup();
-}
-
-std::size_t RSA::Codec::outLen() const
-{
-    if (this->rsa == nullptr) [[unlikely]]
-    {
-        return 0;
-    }
-    return RSA_size(this->rsa);
-}
-
-RSA::Encrypt::Encrypt(BytesView key, DynXXCryptoRSAPaddingX padding) : Codec(key, padding)
-{
-    if (this->bmem == nullptr) [[unlikely]]
-    {
-        return;
-    }
-    this->rsa = PEM_read_bio_RSA_PUBKEY(this->bmem, nullptr, nullptr, nullptr);
-    if (this->rsa == nullptr) [[unlikely]]
-    {
-        dynxxLogPrintF(Error, "RSA Failed to create public key, err: {}", errMsg());
-    }
-}
-
-std::optional<Bytes> RSA::Encrypt::process(BytesView in) const
-{
-    if (this->rsa == nullptr) [[unlikely]]
-    {
-        return std::nullopt;
-    }
-    Bytes outBytes(this->outLen(), 0);
-    if (const auto ret = RSA_public_encrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, underlying(this->padding)); ret == -1) [[unlikely]]
-    {
-        dynxxLogPrintF(Error, "RSA encrypt failed, ret: {}, err: {}", ret, errMsg());
-        return std::nullopt;
-    }
-    return {outBytes};
-}
-
-RSA::Decrypt::Decrypt(BytesView key, DynXXCryptoRSAPaddingX padding) : Codec(key, padding)
-{
-    if (this->bmem == nullptr) [[unlikely]]
-    {
-        return;
-    }
-    this->rsa = PEM_read_bio_RSAPrivateKey(this->bmem, nullptr, nullptr, nullptr);
-    if (this->rsa == nullptr) [[unlikely]]
-    {
-        dynxxLogPrintF(Error, "RSA Failed to create private key, err: {}", errMsg());
-    }
-}
-
-std::optional<Bytes> RSA::Decrypt::process(BytesView in) const
-{
-    if (this->rsa == nullptr) [[unlikely]]
-    {
-        return std::nullopt;
-    }
-    Bytes outBytes(this->outLen(), 0);
-    if (const auto ret = RSA_private_decrypt(static_cast<int>(in.size()), in.data(), outBytes.data(), this->rsa, underlying(this->padding)); ret == -1) [[unlikely]]
-    {
-        dynxxLogPrintF(Error, "RSA decrypt failed, ret: {}, err: {}", ret, errMsg());
-        return std::nullopt;
-    }
-    return {outBytes};
+    const RsaPkeyCodec codec(key, padding, false);
+    return codec.process(in);
 }
 
 // Base64

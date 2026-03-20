@@ -386,13 +386,11 @@ std::string dynxxCryptoRsaGenKey(std::string_view base64, bool isPublic) {
 }
 
 Bytes dynxxCryptoRsaEncrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding) {
-    const auto enc = Crypto::RSA::Encrypt(key, padding);
-    return enc.process(in).value_or(Bytes{});
+    return Crypto::RSA::encrypt(in, key, padding);
 }
 
 Bytes dynxxCryptoRsaDecrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding) {
-    const auto dec = Crypto::RSA::Decrypt(key, padding);
-    return dec.process(in).value_or(Bytes{});
+    return Crypto::RSA::decrypt(in, key, padding);
 }
 
 Bytes dynxxCryptoHashMd5(BytesView in) {
