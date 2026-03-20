@@ -49,15 +49,15 @@ function main() {
   const androidPath = join(root, 'platforms', 'Android');
   const gradleBuildType = buildType.toLowerCase();
   
+  const gradlewCmd = isWindows() ? '.\\gradlew.bat' : './gradlew';
   if (!isWindows()) {
     makeExecutable(join(androidPath, 'gradlew'));
   }
-  
-  const gradlewCmd = isWindows() ? '.\\gradlew.bat' : './gradlew';
   exec(`${gradlewCmd} :DynXX-lib:assemble${buildType}`, androidPath);
 
-  const aarSrcPath = join(androidPath, 'DynXX-lib', 'build', 'outputs', 'aar', `DynXX-lib-${gradleBuildType}.aar`);
-  const aarDstPath = join(dirname(outputPath), `DynXX-lib-${gradleBuildType}.aar`);
+  const aarModule = "DynXX-lib";
+  const aarSrcPath = join(androidPath, aarModule, 'build', 'outputs', 'aar', `${aarModule}-${gradleBuildType}.aar`);
+  const aarDstPath = join(dirname(outputPath), `${aarModule}-${gradleBuildType}.aar`);
   copyFile(aarSrcPath, aarDstPath);
   
   checkArtifacts([aarDstPath]);
