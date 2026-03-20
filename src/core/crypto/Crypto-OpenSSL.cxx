@@ -362,7 +362,7 @@ namespace
             this->pctx = nullptr;
             return;
         }
-        if (EVP_PKEY_CTX_set_rsa_padding(this->pctx, DynXX::Core::Crypto::underlying(this->padding)) <= 0) [[unlikely]]
+        if (EVP_PKEY_CTX_set_rsa_padding(this->pctx, underlying(this->padding)) <= 0) [[unlikely]]
         {
             dynxxLogPrintF(Error, "RSA {} EVP_PKEY context init failed, err: {}", encrypt ? "encrypt" : "decrypt", errMsg());
             EVP_PKEY_CTX_free(this->pctx);
@@ -739,7 +739,7 @@ std::string RSA::genKey(std::string_view base64, bool isPublic)
         return {};
     }
     
-    const auto cleanedBase64 = DynXXCodingStrTrim(base64);
+    const auto cleanedBase64 = dynxxCodingStrTrim(base64);
     if (!Base64::validate(cleanedBase64)) [[unlikely]]
     {
         dynxxLogPrint(Error, "RSA genKey: invalid cleanedBase64");
