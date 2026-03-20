@@ -41,9 +41,9 @@ namespace DynXX::Core::Crypto {
     namespace RSA {
         std::string genKey(std::string_view base64, bool isPublic);
 
-        [[nodiscard]] std::optional<Bytes> encrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding);
+        Bytes encrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding);
 
-        [[nodiscard]] std::optional<Bytes> decrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding);
+        Bytes decrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding);
     }
     
     namespace Hash {
