@@ -320,7 +320,7 @@ namespace
         explicit RsaPkeyCodec(BytesView key, DynXXCryptoRSAPaddingX padding, bool encrypt);
         ~RsaPkeyCodec();
 
-        [[nodiscard]] std::optional<Bytes> process(BytesView in) const;
+        [[nodiscard]] Bytes process(BytesView in) const;
 
     private:
         [[nodiscard]] std::size_t outLen() const;
@@ -398,11 +398,11 @@ namespace
         return static_cast<std::size_t>(EVP_PKEY_size(this->rsa));
     }
 
-    std::optional<Bytes> RsaPkeyCodec::process(BytesView in) const
+    Bytes RsaPkeyCodec::process(BytesView in) const
     {
         if (this->pctx == nullptr) [[unlikely]]
         {
-            return std::nullopt;
+            return {};
         }
         Bytes outBytes(this->outLen(), 0);
         size_t outLen = outBytes.size();
@@ -412,9 +412,9 @@ namespace
         {
             dynxxLogPrintF(Error, "RSA {} EVP_PKEY_{} failed, err: {}", this->forEncrypt ? "encrypt" : "decrypt",
                          this->forEncrypt ? "encrypt" : "decrypt", errMsg());
-            return std::nullopt;
+            return {};
         }
-        return {outBytes};
+        return outBytes;
     }
 }
 
@@ -780,13 +780,13 @@ std::string RSA::genKey(std::string_view base64, bool isPublic)
     return result; 
 }
 
-std::optional<Bytes> RSA::encrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding)
+Bytes RSA::encrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding)
 {
     const RsaPkeyCodec codec(key, padding, true);
     return codec.process(in);
 }
 
-std::optional<Bytes> RSA::decrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding)
+Bytes RSA::decrypt(BytesView in, BytesView key, DynXXCryptoRSAPaddingX padding)
 {
     const RsaPkeyCodec codec(key, padding, false);
     return codec.process(in);
