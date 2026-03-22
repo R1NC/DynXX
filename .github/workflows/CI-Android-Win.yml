@@ -6,6 +6,7 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
+      - 'platforms/Android/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
