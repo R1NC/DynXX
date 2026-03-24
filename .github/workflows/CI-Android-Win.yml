@@ -79,7 +79,6 @@ jobs:
       - name: Build
         env:
           CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
-          CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
           CI_ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           cd build-tools

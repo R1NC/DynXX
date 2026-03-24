@@ -81,7 +81,6 @@ jobs:
       shell: pwsh
       env:
         CI_VCPKG_HOME: ${{ env.CI_VCPKG_HOME }}
-        CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
       run: |
         Set-Location build-tools
         npx tsx build-HarmonyOS.ts

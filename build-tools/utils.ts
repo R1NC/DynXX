@@ -104,9 +104,11 @@ export const getOutputExePath = (): string => getEnv("OUTPUT_EXE_PATH");
 export function setupVcpkgEnv(triplet: string) {
   readCIEnv("CI_VCPKG_HOME", "VCPKG_HOME");
   const home = getHomeDir();
-  if (!getEnv("VCPKG_BINARY_SOURCES")) {
-    setEnv("VCPKG_BINARY_SOURCES", `files,${join(home, "vcpkg-binary-cache")},readwrite`);
+  let cacheDir = getEnv("VCPKG_DEFAULT_BINARY_CACHE");
+  if (!cacheDir) {
+    cacheDir = join(home, "vcpkg-binary-cache");
   }
+  setEnv("VCPKG_BINARY_SOURCES", `files,${cacheDir},readwrite`);
   if (!getEnv("VCPKG_TARGET_TRIPLET")) {
     setEnv("VCPKG_TARGET_TRIPLET", triplet);
   }

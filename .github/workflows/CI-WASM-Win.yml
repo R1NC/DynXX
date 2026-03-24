@@ -57,7 +57,6 @@ jobs:
       shell: pwsh
       env:
         CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
-        CI_VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/vcpkg-binary-cache,readwrite"
         CI_WASM_SDK_HOME: "${{ env.EMSDK }}"
       run: |
         Set-Location build-tools
