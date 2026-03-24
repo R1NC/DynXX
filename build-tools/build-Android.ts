@@ -57,8 +57,9 @@ function main() {
   exec(`${gradlewCmd} --stop`, androidPath);
 
   const aarModule = "DynXX-lib";
-  const aarSrcPath = join(androidPath, aarModule, 'build', 'outputs', 'aar', `${aarModule}-${gradleBuildType}.aar`);
-  const aarDstPath = join(dirname(outputPath), `${aarModule}-${gradleBuildType}.aar`);
+  const aarName = `${aarModule}-${gradleBuildType}.aar`;
+  const aarSrcPath = join(androidPath, aarModule, 'build', 'outputs', 'aar', aarName);
+  const aarDstPath = join(dirname(outputPath), aarName);
   copyFile(aarSrcPath, aarDstPath);
   
   checkArtifacts([aarDstPath]);
