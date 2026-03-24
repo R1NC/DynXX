@@ -53,7 +53,8 @@ function main() {
   if (!isWindows()) {
     makeExecutable(join(androidPath, 'gradlew'));
   }
-  exec(`${gradlewCmd} :DynXX-lib:assemble${buildType}`, androidPath);
+  exec(`${gradlewCmd} --no-daemon :DynXX-lib:assemble${buildType}`, androidPath);
+  exec(`${gradlewCmd} --stop`, androidPath);
 
   const aarModule = "DynXX-lib";
   const aarSrcPath = join(androidPath, aarModule, 'build', 'outputs', 'aar', `${aarModule}-${gradleBuildType}.aar`);
