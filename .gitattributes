@@ -1,3 +1,4 @@
+# Documentation and config files
 *.md linguist-vendored=true
 *.txt linguist-vendored=true
 *.json linguist-vendored=true
@@ -5,33 +6,65 @@
 *.xml linguist-vendored=true
 *.yml linguist-vendored=true
 *.toml linguist-vendored=true
+*.html linguist-vendored=true
+
+# Font files
 *.ttf linguist-vendored=true
 *.otf linguist-vendored=true
+
+# Image files
 *.png linguist-vendored=true
 *.jpg linguist-vendored=true
 *.svg linguist-vendored=true
 *.webp linguist-vendored=true
-*.​xcworkspacedata linguist-vendored=true
+
+# iOS/macOS project files
+*.xcworkspacedata linguist-vendored=true
 *.storyboard linguist-vendored=true
 *.xcscheme linguist-vendored=true
-*​.entitlements linguist-vendored=true
-*​.plist linguist-vendored=true
-Podfile linguist-vendored=true
+*.entitlements linguist-vendored=true
+*.plist linguist-vendored=true
+**/Podfile linguist-vendored=true
+*.pbxproj linguist-vendored=true
+
+# Android/Java files
 *.jar linguist-vendored=true
 *.properties linguist-vendored=true
-*.mk linguist-vendored=true
-*.cmake linguist-vendored=false
-*.pro linguist-vendored=true
 *.gradle linguist-vendored=true
-gradlew linguist-vendored=true
-*​.sln linguist-vendored=true
-​*.vcproj linguist-vendored=true
-​*.vcproj.filters linguist-vendored=true
-*.pbxproj linguist-vendored=true
+**/gradlew linguist-vendored=true
+
+# Windows project files
+*.sln linguist-vendored=true
+*.vcproj linguist-vendored=true
+*.vcproj.filters linguist-vendored=true
+
+# Script files (batch, PowerShell, shell)
 *.bat linguist-vendored=true
 *.ps1 linguist-vendored=true
 *.sh linguist-vendored=true
-hvigorfile.ts linguist-vendored=true
-*.ets linguist-vendored=false
-.github/* linguist-vendored=true
-res/* linguist-vendored=true
+
+# C/C++ build files
+*.mk linguist-vendored=true
+*.cmake linguist-vendored=false
+*.pro linguist-vendored=true
+
+# HarmonyOS related
+**/hvigorfile.ts linguist-vendored=true
+
+# Lua/ts related
+scripts/Lua/biz.lua linguist-vendored=true
+scripts/JS/biz.ts linguist-vendored=true
+
+# Directories (recursive match)
+.github/** linguist-vendored=true
+res/** linguist-vendored=true
+platforms/Android/app/** linguist-vendored=true
+platforms/HarmonyOS/AppScope/** linguist-vendored=true
+platforms/Apple/** linguist-vendored=true
+platforms/Linux/** linguist-vendored=true
+platforms/POSIX/** linguist-vendored=true
+platforms/Windows/** linguist-vendored=true
+platforms/iOS/** linguist-vendored=true
+platforms/macOS/** linguist-vendored=true
+scripts/JS/module/*.js linguist-vendored=true
+scripts/JS/worker/*.js linguist-vendored=true
