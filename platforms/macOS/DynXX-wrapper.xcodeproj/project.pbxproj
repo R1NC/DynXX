@@ -21,7 +21,7 @@
 		403F9FA12CC799BC00F4ECE6 /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 403F9FA02CC799BC00F4ECE6 /* biz.js */; };
 		407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 407D2B502C8AC12C008A138C /* libsqlite3.tbd */; };
 		407D2BBA2C929CC0008A138C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 407D2BB92C929CC0008A138C /* ViewController.m */; };
-		40DC9C282CCA6DE500F264DB /* DynXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C1F2CCA6DE400F264DB /* DynXX.a */; };
+		40DC9C282CCA6DE500F264DB /* libDynXX-All.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C1F2CCA6DE400F264DB /* libDynXX-All.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,7 +44,7 @@
 		403F9FA02CC799BC00F4ECE6 /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../../scripts/JS/dist/biz.js; sourceTree = "<group>"; };
 		407D2B502C8AC12C008A138C /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		407D2BB92C929CC0008A138C /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		40DC9C1F2CCA6DE400F264DB /* DynXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DynXX.a; path = ../../build.macOS/output/libs/DynXX.a; sourceTree = "<group>"; };
+		40DC9C1F2CCA6DE400F264DB /* libDynXX-All.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DynXX.a; path = ../../build.macOS/output/libs/DynXX.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40DC9C282CCA6DE500F264DB /* DynXX.a in Frameworks */,
+				40DC9C282CCA6DE500F264DB /* libDynXX-All.a in Frameworks */,
 				407D2B512C8AC12C008A138C /* libsqlite3.tbd in Frameworks */,
 				256976F82C79A5EF002E4374 /* libapple_nghttp2.tbd in Frameworks */,
 				40348F7D2C783F540039639C /* libz.1.tbd in Frameworks */,
@@ -107,7 +107,7 @@
 				407D2B502C8AC12C008A138C /* libsqlite3.tbd */,
 				256976F72C79A5EF002E4374 /* libapple_nghttp2.tbd */,
 				40348F7C2C783F540039639C /* libz.1.tbd */,
-				40348F762C783F070039639C /* DynXX.a */,
+				40348F762C783F070039639C /* libDynXX-All.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

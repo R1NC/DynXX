@@ -24,11 +24,11 @@
 		40D5FDA52CF6F6A700D6E313 /* DynXX.lua in Resources */ = {isa = PBXBuildFile; fileRef = 40D5FDA32CF6F6A700D6E313 /* DynXX.lua */; };
 		40D5FDA62CF6F6A700D6E313 /* json.lua in Resources */ = {isa = PBXBuildFile; fileRef = 40D5FDA42CF6F6A700D6E313 /* json.lua */; };
 		40DC9C0B2CCA6CAB00F264DB /* biz.js in Resources */ = {isa = PBXBuildFile; fileRef = 40DC9C0A2CCA6CAB00F264DB /* biz.js */; };
-		40DC9C152CCA6CD300F264DB /* DynXX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C0C2CCA6CD300F264DB /* DynXX.a */; };
+		40DC9C152CCA6CD300F264DB /* libDynXX-All.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40DC9C0C2CCA6CD300F264DB /* libDynXX-All.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		253FF0462C778034006CD672 /* DynXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DynXX.a; path = ../../build.iOS/output/Release/DynXX.a; sourceTree = "<group>"; };
+		253FF0462C778034006CD672 /* libDynXX-All.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DynXX.a; path = ../../build.iOS/output/Release/DynXX.a; sourceTree = "<group>"; };
 		2569810D2C763BD2008E8472 /* libapple_nghttp2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libapple_nghttp2.tbd; path = usr/lib/libapple_nghttp2.tbd; sourceTree = SDKROOT; };
 		4015228A2C9580C00010B594 /* DynXXApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = DynXXApple.mm; path = ../../Apple/DynXXApple.mm; sourceTree = "<group>"; };
 		4015228B2C9580C00010B594 /* DynXXApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DynXXApple.h; path = ../../Apple/DynXXApple.h; sourceTree = "<group>"; };
@@ -53,7 +53,7 @@
 		40D5FDA32CF6F6A700D6E313 /* DynXX.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = DynXX.lua; path = ../../scripts/Lua/DynXX.lua; sourceTree = "<group>"; };
 		40D5FDA42CF6F6A700D6E313 /* json.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = json.lua; path = ../../scripts/Lua/json.lua; sourceTree = "<group>"; };
 		40DC9C0A2CCA6CAB00F264DB /* biz.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = biz.js; path = ../../scripts/JS/dist/biz.js; sourceTree = "<group>"; };
-		40DC9C0C2CCA6CD300F264DB /* DynXX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DynXX.a; path = ../../build.iOS/output/libs/DynXX.a; sourceTree = "<group>"; };
+		40DC9C0C2CCA6CD300F264DB /* libDynXX-All.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = DynXX.a; path = ../../build.iOS/output/libs/DynXX.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40DC9C152CCA6CD300F264DB /* DynXX.a in Frameworks */,
+				40DC9C152CCA6CD300F264DB /* libDynXX-All.a in Frameworks */,
 				407D2B3B2C897F48008A138C /* libsqlite3.tbd in Frameworks */,
 				2569810E2C763BD2008E8472 /* libapple_nghttp2.tbd in Frameworks */,
 				40596BA02C75BECB00AC552D /* libz.1.tbd in Frameworks */,
@@ -119,7 +119,7 @@
 			children = (
 				407D2B3A2C897F48008A138C /* libsqlite3.tbd */,
 				2569810D2C763BD2008E8472 /* libapple_nghttp2.tbd */,
-				40596BA52C75BEDF00AC552D /* DynXX.a */,
+				40596BA52C75BEDF00AC552D /* libDynXX-All.a */,
 				40596B9F2C75BECB00AC552D /* libz.1.tbd */,
 				40596B992C75BC5A00AC552D /* libz.tbd */,
 			);

@@ -16,17 +16,6 @@ get_filename_component(CURRENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 set(LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../build.Linux/output/libs")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${LIB_PATH}/DynXX.a
-    ${LIB_PATH}/cjson.a
-    ${LIB_PATH}/lua.a
-    ${LIB_PATH}/quickjs.a
-    ${LIB_PATH}/uv.a
-    ${LIB_PATH}/sqlite3.a
-    ${LIB_PATH}/spdlog.a
-    ${LIB_PATH}/curl.a
-    ${LIB_PATH}/ssl.a
-    ${LIB_PATH}/crypto.a
-    ${LIB_PATH}/mmkv.a
-    ${LIB_PATH}/mmkvcore.a
+    ${LIB_PATH}/libDynXX-All.a
     z
 )
