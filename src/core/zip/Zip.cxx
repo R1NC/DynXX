@@ -8,14 +8,6 @@
 #include <DynXX/CXX/Log.hxx>
 #include <DynXX/CXX/Memory.hxx>
 
-#if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
-#include <fcntl.h>
-#include <io.h>
-#define SET_BINARY_MODE(file) _setmode(_fileno(file), O_BINARY)
-#else
-#define SET_BINARY_MODE(file)
-#endif
-
 namespace {
     using enum DynXXLogLevelX;
     using enum DynXXZipCompressModeX;
