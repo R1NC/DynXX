@@ -1,70 +1,58 @@
-# Documentation and config files
-*.md linguist-vendored=true
-*.txt linguist-vendored=true
-*.json linguist-vendored=true
-*.json5 linguist-vendored=true
-*.xml linguist-vendored=true
-*.yml linguist-vendored=true
-*.toml linguist-vendored=true
-*.html linguist-vendored=true
+*.md linguist-documentation
+*.txt linguist-documentation
+*.json linguist-vendored
+*.json5 linguist-vendored
+*.xml linguist-vendored
+*.yml linguist-vendored
+*.toml linguist-vendored
+*.html linguist-vendored
 
-# Font files
-*.ttf linguist-vendored=true
-*.otf linguist-vendored=true
+*.ttf linguist-vendored
+*.otf linguist-vendored
 
-# Image files
-*.png linguist-vendored=true
-*.jpg linguist-vendored=true
-*.svg linguist-vendored=true
-*.webp linguist-vendored=true
+*.png linguist-vendored
+*.jpg linguist-vendored
+*.svg linguist-vendored
+*.webp linguist-vendored
 
-# iOS/macOS project files
-*.xcworkspacedata linguist-vendored=true
-*.storyboard linguist-vendored=true
-*.xcscheme linguist-vendored=true
-*.entitlements linguist-vendored=true
-*.plist linguist-vendored=true
-**/Podfile linguist-vendored=true
-*.pbxproj linguist-vendored=true
+*.xcworkspacedata linguist-vendored
+*.storyboard linguist-vendored
+*.xcscheme linguist-vendored
+*.entitlements linguist-vendored
+*.plist linguist-vendored
+**/Podfile linguist-vendored
+*.pbxproj linguist-vendored
 
-# Android/Java files
-*.jar linguist-vendored=true
-*.properties linguist-vendored=true
-*.gradle linguist-vendored=true
-**/gradlew linguist-vendored=true
+*.jar linguist-vendored
+*.properties linguist-vendored
+*.gradle linguist-vendored
+**/gradlew linguist-vendored
 
-# Windows project files
-*.sln linguist-vendored=true
-*.vcproj linguist-vendored=true
-*.vcproj.filters linguist-vendored=true
+*.sln linguist-vendored
+*.vcproj linguist-vendored
+*.vcproj.filters linguist-vendored
 
-# Script files (batch, PowerShell, shell)
-*.bat linguist-vendored=true
-*.ps1 linguist-vendored=true
-*.sh linguist-vendored=true
+*.bat linguist-vendored
+*.ps1 linguist-vendored
+*.sh linguist-vendored
 
-# C/C++ build files
-*.mk linguist-vendored=true
-*.cmake linguist-vendored=false
-*.pro linguist-vendored=true
+*.mk linguist-vendored
+*.pro linguist-vendored
 
-# HarmonyOS related
-**/hvigorfile.ts linguist-vendored=true
+**/hvigorfile.ts linguist-vendored
 
-# Lua/ts related
-scripts/Lua/biz.lua linguist-vendored=true
-scripts/JS/biz.ts linguist-vendored=true
+scripts/Lua/biz.lua linguist-vendored
+scripts/JS/biz.ts linguist-vendored
 
-# Directories (recursive match)
-.github/** linguist-vendored=true
-res/** linguist-vendored=true
-platforms/Android/app/** linguist-vendored=true
-platforms/HarmonyOS/AppScope/** linguist-vendored=true
-platforms/Apple/** linguist-vendored=true
-platforms/Linux/** linguist-vendored=true
-platforms/POSIX/** linguist-vendored=true
-platforms/Windows/** linguist-vendored=true
-platforms/iOS/** linguist-vendored=true
-platforms/macOS/** linguist-vendored=true
-scripts/JS/module/*.js linguist-vendored=true
-scripts/JS/worker/*.js linguist-vendored=true
+.github/** linguist-vendored
+res/** linguist-vendored
+platforms/Android/app/** linguist-vendored
+platforms/HarmonyOS/AppScope/** linguist-vendored
+platforms/Apple/** linguist-vendored
+platforms/Linux/** linguist-vendored
+platforms/POSIX/** linguist-vendored
+platforms/Windows/** linguist-vendored
+platforms/iOS/** linguist-vendored
+platforms/macOS/** linguist-vendored
+scripts/JS/module/*.js linguist-vendored
+scripts/JS/worker/*.js linguist-vendored
