@@ -45,14 +45,14 @@ scripts/Lua/biz.lua linguist-vendored
 scripts/JS/biz.ts linguist-vendored
 
 .github/** linguist-vendored
-res/** linguist-vendored
-platforms/Android/app/** linguist-vendored
-platforms/HarmonyOS/AppScope/** linguist-vendored
-platforms/Apple/** linguist-vendored
-platforms/Linux/** linguist-vendored
-platforms/POSIX/** linguist-vendored
-platforms/Windows/** linguist-vendored
-platforms/iOS/** linguist-vendored
-platforms/macOS/** linguist-vendored
+res/**/* linguist-vendored
+platforms/Android/app/**/* linguist-vendored
+platforms/HarmonyOS/AppScope/**/* linguist-vendored
+platforms/Apple/**/* linguist-vendored
+platforms/Linux/**/* linguist-vendored
+platforms/POSIX/**/* linguist-vendored
+platforms/Windows/**/* linguist-vendored
+platforms/iOS/**/* linguist-vendored
+platforms/macOS/**/* linguist-vendored
 scripts/JS/module/*.js linguist-vendored
 scripts/JS/worker/*.js linguist-vendored
