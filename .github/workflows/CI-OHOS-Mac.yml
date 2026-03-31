@@ -11,7 +11,7 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
-      - 'build-tools/setup-custom-vcpkg.ts'
+      - 'build-tools/setup-vcpkg.ts'
       - 'build-tools/build-HarmonyOS.ts'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-OHOS-Mac.yml'
@@ -59,22 +59,18 @@ jobs:
       run: |
         echo "CI_OHOS_NDK_HOME=${{ github.workspace }}/sdk/packages/ohos-sdk/darwin/native" >> $GITHUB_ENV
 
-    - name: Setup custom vcpkg from zip
+    - name: Setup custom vcpkg
       run: |
-        export RUNNER_TEMP="${RUNNER_TEMP}"
-        export GITHUB_WORKSPACE="${GITHUB_WORKSPACE}"
-        npx tsx build-tools/setup-custom-vcpkg.ts
+        npx tsx build-tools/setup-vcpkg.ts
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
       uses: actions/cache@v4
       with:
-        path: ${{ github.workspace }}/vcpkg-binary-cache
+        path: ${{ env.HOME }}/vcpkg-binary-cache
         key: vcpkg-binary-cache-ohos-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
-      env:
-        CI_VCPKG_HOME: ${{ env.CI_VCPKG_HOME }}
       run: |
         cd build-tools
         npx tsx build-HarmonyOS.ts

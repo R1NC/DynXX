@@ -11,6 +11,7 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
+      - 'build-tools/setup-vcpkg.ts'
       - 'build-tools/build-WASM.ts'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-WASM-Ubuntu.yml'
@@ -41,21 +42,20 @@ jobs:
       with:
         version: 3.1.65
 
-    - name: Setup vcpkg
-      uses: lukka/run-vcpkg@v11
-      with:
-        runVcpkgInstall: false
+    - name: Setup custom vcpkg
+      run: |
+        cd build-tools
+        npx tsx setup-vcpkg.ts
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
       uses: actions/cache@v4
       with:
-        path: ${{ github.workspace }}/vcpkg-binary-cache
+        path: ${{ env.HOME }}/vcpkg-binary-cache
         key: vcpkg-binary-cache-wasm-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
       env:
-        CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
         CI_WASM_SDK_HOME: ${{ env.EMSDK }}
       run: |
         cd build-tools

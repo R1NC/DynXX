@@ -11,6 +11,7 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
+      - 'build-tools/setup-vcpkg.ts'
       - 'build-tools/build-Linux.ts'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-Linux-Ubuntu.yml'
@@ -36,21 +37,19 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Setup vcpkg
-      uses: lukka/run-vcpkg@v11
-      with:
-        runVcpkgInstall: false
+    - name: Setup custom vcpkg
+      run: |
+        cd build-tools
+        npx tsx setup-vcpkg.ts
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
       uses: actions/cache@v4
       with:
-        path: ${{ github.workspace }}/vcpkg-binary-cache
+        path: ${{ env.HOME }}/vcpkg-binary-cache
         key: vcpkg-binary-cache-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
-      env:
-        CI_VCPKG_HOME: ${{ github.workspace }}/vcpkg
       run: |
         cd build-tools
         npx tsx build-Linux.ts

@@ -11,7 +11,7 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'build-tools/utils.ts'
-      - 'build-tools/setup-custom-vcpkg.ts'
+      - 'build-tools/setup-vcpkg.ts'
       - 'build-tools/build-HarmonyOS.ts'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-OHOS-Win.yml'
@@ -62,25 +62,20 @@ jobs:
         $ohosNdkHome = "${{ github.workspace }}/ohos-sdk/windows/native"
         Add-Content -Path $env:GITHUB_ENV -Value "CI_OHOS_NDK_HOME=$ohosNdkHome"
 
-    - name: Setup custom vcpkg from zip
+    - name: Setup custom vcpkg
       shell: pwsh
-      env:
-        RUNNER_TEMP: ${{ runner.temp }}
-        GITHUB_WORKSPACE: ${{ github.workspace }}
       run: |
-        npx tsx build-tools/setup-custom-vcpkg.ts
+        npx tsx build-tools/setup-vcpkg.ts
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
       uses: actions/cache@v4
       with:
-        path: ${{ github.workspace }}/vcpkg-binary-cache
+        path: ${{ env.USERPROFILE }}\vcpkg-binary-cache
         key: vcpkg-binary-cache-ohos-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
       shell: pwsh
-      env:
-        CI_VCPKG_HOME: ${{ env.CI_VCPKG_HOME }}
       run: |
         Set-Location build-tools
         npx tsx build-HarmonyOS.ts

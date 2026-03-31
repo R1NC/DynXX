@@ -1,7 +1,9 @@
 ## Initialize before project() call
 function(initBeforeProject)
     # Use ccache to turbo compile speed
-    find_program(CCACHE_PROGRAM ccache)
+	if (NOT (EMSCRIPTEN AND CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows"))
+    	find_program(CCACHE_PROGRAM ccache)
+	endif()
     if(CCACHE_PROGRAM)
         set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}" PARENT_SCOPE)
         set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}" PARENT_SCOPE)
