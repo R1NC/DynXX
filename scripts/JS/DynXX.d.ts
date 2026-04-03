@@ -8,7 +8,7 @@ declare function DynXXCallPlatform(msg: string): string
 
 /// Log
 
-const enum DynXXLogLevel {
+declare const enum DynXXLogLevel {
     Debug = 3,
     Info,
     Warn,
@@ -21,7 +21,7 @@ declare function DynXXLogPrint(level: DynXXLogLevel, content: string): void
 
 /// DeviceInfo
 
-const enum DynXXDeviceType {
+declare const enum DynXXDeviceType {
     Unknown = 0,
     Android,
     ApplePhone,
@@ -35,7 +35,7 @@ const enum DynXXDeviceType {
     Web
 }
 
-const enum DynXXDeviceCpuArch {
+declare const enum DynXXDeviceCpuArch {
     Unknown = 0,
     X86,
     X86_64,
@@ -56,7 +56,7 @@ declare function DynXXDeviceCPUArch(): DynXXDeviceCpuArch
 
 /// Net.Http
 
-const enum DynXXHttpMethod {
+declare const enum DynXXHttpMethod {
     Get = 0,
     Post,
     Put
@@ -193,13 +193,13 @@ declare function DynXXCryptoBase64Decode(inBytes: number[], noNewLines?: boolean
 
 /// Zip
 
-const enum DynXXZFormat {
+declare const enum DynXXZFormat {
     ZLib = 0,
     GZip,
     Raw
 }
 
-const enum DynXXZZipMode {
+declare const enum DynXXZZipMode {
     Default = -1,
     PreferSpeed = 1,
     PreferSize = 9

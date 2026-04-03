@@ -13,6 +13,8 @@ on:
       - 'build-tools/utils.ts'
       - 'build-tools/setup-vcpkg.ts'
       - 'build-tools/build-WASM.ts'
+      - 'build-tools/routes.ts'
+      - 'build-tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-WASM-Mac.yml'
   workflow_dispatch:
@@ -43,9 +45,10 @@ jobs:
         version: 3.1.65
 
     - name: Setup custom vcpkg
+      working-directory: ./build-tools
       run: |
-        cd build-tools
-        npx tsx setup-vcpkg.ts
+        npm install
+        npm run setup:vcpkg
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
@@ -55,11 +58,11 @@ jobs:
         key: vcpkg-binary-cache-wasm-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
+      working-directory: ./build-tools
       env:
         CI_WASM_SDK_HOME: ${{ env.EMSDK }}
       run: |
-        cd build-tools
-        npx tsx build-WASM.ts
+        npm run build:wasm
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4

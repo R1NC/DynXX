@@ -13,6 +13,8 @@ on:
       - 'build-tools/utils.ts'
       - 'build-tools/setup-vcpkg.ts'
       - 'build-tools/build-HarmonyOS.ts'
+      - 'build-tools/routes.ts'
+      - 'build-tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-OHOS-Win.yml'
   workflow_dispatch:
@@ -64,8 +66,10 @@ jobs:
 
     - name: Setup custom vcpkg
       shell: pwsh
+      working-directory: ./build-tools
       run: |
-        npx tsx build-tools/setup-vcpkg.ts
+        npm install
+        npm run setup:vcpkg
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
@@ -76,9 +80,9 @@ jobs:
 
     - name: Build
       shell: pwsh
+      working-directory: ./build-tools
       run: |
-        Set-Location build-tools
-        npx tsx build-HarmonyOS.ts
+        npm run build:harmonyos
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4

@@ -13,6 +13,8 @@ on:
       - 'build-tools/utils.ts'
       - 'build-tools/setup-vcpkg.ts'
       - 'build-tools/build-HarmonyOS.ts'
+      - 'build-tools/routes.ts'
+      - 'build-tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-OHOS-Mac.yml'
   workflow_dispatch:
@@ -60,8 +62,10 @@ jobs:
         echo "CI_OHOS_NDK_HOME=${{ github.workspace }}/sdk/packages/ohos-sdk/darwin/native" >> $GITHUB_ENV
 
     - name: Setup custom vcpkg
+      working-directory: ./build-tools
       run: |
-        npx tsx build-tools/setup-vcpkg.ts
+        npm install
+        npm run setup:vcpkg
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
@@ -71,9 +75,9 @@ jobs:
         key: vcpkg-binary-cache-ohos-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
+      working-directory: ./build-tools
       run: |
-        cd build-tools
-        npx tsx build-HarmonyOS.ts
+        npm run build:harmonyos
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4

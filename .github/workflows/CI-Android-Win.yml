@@ -14,6 +14,8 @@ on:
       - 'build-tools/utils.ts'
       - 'build-tools/setup-vcpkg.ts'
       - 'build-tools/build-Android.ts'
+      - 'build-tools/routes.ts'
+      - 'build-tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-Android-Win.yml'
   workflow_dispatch:
@@ -67,9 +69,10 @@ jobs:
 
       - name: Setup custom vcpkg
         shell: pwsh
+        working-directory: ./build-tools
         run: |
-          cd build-tools
-          npx tsx setup-vcpkg.ts
+          npm install
+          npm run setup:vcpkg
 
       - name: Cache vcpkg binary
         id: cache-vcpkg
@@ -79,11 +82,11 @@ jobs:
           key: vcpkg-binary-cache-android-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
       - name: Build
+        working-directory: ./build-tools
         env:
           CI_ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          cd build-tools
-          npx tsx build-Android.ts
+          npm run build:android
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

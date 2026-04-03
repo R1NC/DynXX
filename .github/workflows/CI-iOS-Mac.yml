@@ -13,6 +13,8 @@ on:
       - 'build-tools/utils.ts'
       - 'build-tools/setup-vcpkg.ts'
       - 'build-tools/build-iOS.ts'
+      - 'build-tools/routes.ts'
+      - 'build-tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-iOS-Mac.yml'
   workflow_dispatch:
@@ -37,9 +39,10 @@ jobs:
         submodules: 'recursive'
 
     - name: Setup custom vcpkg
+      working-directory: ./build-tools
       run: |
-        cd build-tools
-        npx tsx setup-vcpkg.ts
+        npm install
+        npm run setup:vcpkg
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
@@ -49,9 +52,9 @@ jobs:
         key: vcpkg-binary-cache-ios-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
+      working-directory: ./build-tools
       run: |
-        cd build-tools
-        npx tsx build-iOS.ts
+        npm run build:ios
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
