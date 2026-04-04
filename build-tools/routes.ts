@@ -4,10 +4,11 @@ import { exec } from "./utils.js";
 
 const buildTargetMap: Record<string, string> = {
     android: "android",
-    harmonyos: "harmonyos",
-    ohos: "harmonyos",
+    harmonyos: "ohos",
+    ohos: "ohos",
     linux: "linux",
     wasm: "wasm",
+    webassembly: "wasm",
     windows: "windows",
     win: "windows",
     ios: "ios",
@@ -18,7 +19,7 @@ const buildTargetMap: Record<string, string> = {
 const commandMap: Record<string, string> = {
     "setup:vcpkg": "setup-vcpkg.ts",
     "build:android": "build-Android.ts",
-    "build:harmonyos": "build-HarmonyOS.ts",
+    "build:ohos": "build-OHOS.ts",
     "build:linux": "build-Linux.ts",
     "build:wasm": "build-WASM.ts",
     "build:windows": "build-Windows.ts",
@@ -32,7 +33,7 @@ function printUsage(): void {
     console.error("  npm run setup:vcpkg");
     console.error("  npm run build:android");
     console.error("  npm run gen:doc");
-    console.error("  npm run build:<android|harmonyos|linux|wasm|windows|ios|macos>");
+    console.error("  npm run build:<android|ohos|linux|wasm|windows|ios|macos>");
 }
 
 function resolveCommand(args: string[]): string | null {
@@ -47,6 +48,12 @@ function resolveCommand(args: string[]): string | null {
 
     if (action === "build") {
         const target = buildTargetMap[value];
+        return target ? `build:${target}` : null;
+    }
+
+    if (action.startsWith("build:") || action.startsWith("build.")) {
+        const targetName = action.slice(6);
+        const target = buildTargetMap[targetName];
         return target ? `build:${target}` : null;
     }
 
@@ -72,7 +79,7 @@ if (!command) {
     process.exit(1);
 }
 
-const scriptFile = commandMap[command];
+const scriptFile = commandMap[command as string];
 if (!scriptFile) {
     printUsage();
     process.exit(1);

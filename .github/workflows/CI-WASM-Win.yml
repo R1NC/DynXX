@@ -71,5 +71,5 @@ jobs:
       with:
         name: WASM-Win-build
         path: |
-          build.Wasm/Release/output/
+          build.WASM/Release/output/
         if-no-files-found: error

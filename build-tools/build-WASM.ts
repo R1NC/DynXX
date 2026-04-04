@@ -11,7 +11,7 @@ function main() {
   const buildType = "Release";
   const abi = "arm";
 
-  const platformName = "Wasm";
+  const platformName = "WASM";
   const preset = `${platformName}-${buildType}`;
 
   readCIEnv("CI_WASM_SDK_HOME", "WASM_SDK_HOME");

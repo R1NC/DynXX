@@ -14,7 +14,7 @@ function main() {
   
   setEnv("OHOS_ABI", abi);
 
-  const platformName = "HarmonyOS";
+  const platformName = "OHOS";
   const preset = `${platformName}-${buildType}`;
 
   const ndkHome = readCIEnv("CI_OHOS_NDK_HOME", "OHOS_NDK_HOME");

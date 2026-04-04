@@ -103,10 +103,10 @@
       }
     },
     {
-      "name": "Wasm-Default",
+      "name": "WASM-Default",
       "hidden": true,
-      "displayName": "Wasm Default Config",
-      "description": "Default build for Wasm",
+      "displayName": "WASM Default Config",
+      "description": "Default build for WASM",
       "cacheVariables": {
         "EMSDK": "$penv{WASM_SDK_HOME}",
         "EMSCRIPTEN": "$penv{WASM_SDK_HOME}/upstream/emscripten",
@@ -116,25 +116,25 @@
       }
     },
     {
-      "name": "Wasm-Debug",
-      "displayName": "Wasm Debug Config",
-      "description": "Debug build for Wasm",
-      "inherits": ["Debug-Default", "Vcpkg-Default", "Wasm-Default"],
+      "name": "WASM-Debug",
+      "displayName": "WASM Debug Config",
+      "description": "Debug build for WASM",
+      "inherits": ["Debug-Default", "Vcpkg-Default", "WASM-Default"],
       "condition": {
         "type": "matches",
         "string": "$env{BUILD_FOLDER}",
-        "regex": ".*[Ww]asm.*"
+        "regex": ".*[Ww][Aa][Ss][Mm].*"
       }
     },
     {
-      "name": "Wasm-Release",
-      "displayName": "Wasm Release Config",
-      "description": "Release build for Wasm",
-      "inherits": ["Release-Default", "Vcpkg-Default", "Wasm-Default"],
+      "name": "WASM-Release",
+      "displayName": "WASM Release Config",
+      "description": "Release build for WASM",
+      "inherits": ["Release-Default", "Vcpkg-Default", "WASM-Default"],
       "condition": {
         "type": "matches",
         "string": "$env{BUILD_FOLDER}",
-        "regex": ".*[Ww]asm.*"
+        "regex": ".*[Ww][Aa][Ss][Mm].*"
       }
     },
     {
@@ -282,10 +282,10 @@
       }
     },
     {
-      "name": "HarmonyOS-Default",
+      "name": "OHOS-Default",
       "hidden": true,
-      "displayName": "HarmonyOS Default Config",
-      "description": "Default build for HarmonyOS",
+      "displayName": "OHOS Default Config",
+      "description": "Default build for OHOS",
       "cacheVariables": {
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{OHOS_NDK_HOME}/build/cmake/ohos.toolchain.cmake",
         "OHOS_PLATFORM": "OHOS",
@@ -293,25 +293,25 @@
       }
     },
     {
-      "name": "HarmonyOS-Debug",
-      "displayName": "HarmonyOS Debug Config",
-      "description": "Debug build for HarmonyOS",
-      "inherits": ["Debug-Default", "Vcpkg-Default", "HarmonyOS-Default"],
+      "name": "OHOS-Debug",
+      "displayName": "OHOS Debug Config",
+      "description": "Debug build for OHOS",
+      "inherits": ["Debug-Default", "Vcpkg-Default", "OHOS-Default"],
       "condition": {
         "type": "matches",
         "string": "$env{BUILD_FOLDER}",
-        "regex": ".*[Hh]armonyOS.*"
+        "regex": ".*[Oo][Hh][Oo][Ss].*"
       }
     },
     {
-      "name": "HarmonyOS-Release",
-      "displayName": "HarmonyOS Release Config",
-      "description": "Release build for HarmonyOS",
-      "inherits": ["Release-Default", "Vcpkg-Default", "HarmonyOS-Default"],
+      "name": "OHOS-Release",
+      "displayName": "OHOS Release Config",
+      "description": "Release build for OHOS",
+      "inherits": ["Release-Default", "Vcpkg-Default", "OHOS-Default"],
       "condition": {
         "type": "matches",
         "string": "$env{BUILD_FOLDER}",
-        "regex": ".*[Hh]armonyOS.*"
+        "regex": ".*[Oo][Hh][Oo][Ss].*"
       }
     },
     {
@@ -373,12 +373,12 @@
       "configurePreset": "Linux-Release"
     },
     {
-      "name": "Wasm-Debug",
-      "configurePreset": "Wasm-Debug"
+      "name": "WASM-Debug",
+      "configurePreset": "WASM-Debug"
     },
     {
-      "name": "Wasm-Release",
-      "configurePreset": "Wasm-Release"
+      "name": "WASM-Release",
+      "configurePreset": "WASM-Release"
     },
     {
       "name": "iOS-Debug",
@@ -405,12 +405,12 @@
       "configurePreset": "Android-Release"
     },
     {
-      "name": "HarmonyOS-Debug",
-      "configurePreset": "HarmonyOS-Debug"
+      "name": "OHOS-Debug",
+      "configurePreset": "OHOS-Debug"
     },
     {
-      "name": "HarmonyOS-Release",
-      "configurePreset": "HarmonyOS-Release"
+      "name": "OHOS-Release",
+      "configurePreset": "OHOS-Release"
     },
     {
       "name": "Windows-Debug",

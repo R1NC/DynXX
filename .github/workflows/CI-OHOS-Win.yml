@@ -89,5 +89,5 @@ jobs:
       with:
         name: OHOS-Win-build
         path: |
-          build.HarmonyOS/Release/output/
+          build.OHOS/Release/output/
         if-no-files-found: error

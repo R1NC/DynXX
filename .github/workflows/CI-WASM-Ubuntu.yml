@@ -69,5 +69,5 @@ jobs:
       with:
         name: WASM-Ubuntu-build
         path: |
-          build.Wasm/Release/output/
+          build.WASM/Release/output/
         if-no-files-found: error
