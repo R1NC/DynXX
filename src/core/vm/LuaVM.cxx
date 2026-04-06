@@ -136,7 +136,7 @@ namespace {
     };
 #endif
 
-    constexpr auto lua_register_lib = [](auto L, auto lib, auto funcs) {
+    constexpr auto lua_register_lib = [](auto L, auto lib, const auto &funcs) {
         luaL_newlib(L, funcs);
         lua_setglobal(L, lib);
     };
