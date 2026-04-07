@@ -60,6 +60,35 @@ interface DocVariant {
   outputDir: string;
 }
 
+function findSystemLDoc(root: string): string | null {
+  const fromPath = spawn('ldoc', ['--version'], { cwd: root, allowFailure: true });
+  if (fromPath) return 'ldoc';
+
+  const fromEnv = process.env.LDOC_BIN?.trim();
+  if (fromEnv && existsSync(fromEnv)) {
+    const ok = spawn(fromEnv, ['--version'], { cwd: root, allowFailure: true });
+    if (ok) return fromEnv;
+  }
+
+  const candidates = process.platform === 'win32'
+    ? [
+      'C:\\Program Files\\Lua\\bin\\ldoc.bat',
+      'C:\\Program Files\\Lua\\bin\\ldoc.exe',
+    ]
+    : [
+      '/usr/bin/ldoc',
+      '/usr/local/bin/ldoc',
+    ];
+
+  for (const candidate of candidates) {
+    if (!existsSync(candidate)) continue;
+    const ok = spawn(candidate, ['--version'], { cwd: root, allowFailure: true });
+    if (ok) return candidate;
+  }
+
+  return null;
+}
+
 function generateVariant(root: string, variant: DocVariant, systemDoxygen: string): void {
   if (!existsSync(variant.inputDir)) {
     throw new Error(`Input path does not exist: ${variant.inputDir}`);
@@ -112,6 +141,30 @@ function generateTsDocs(root: string, siteDir: string): void {
   );
 }
 
+function generateLuaDocs(root: string, siteDir: string): void {
+  const luaInput = join(root, 'scripts', 'Lua', 'DynXX.lua');
+  if (!existsSync(luaInput)) {
+    throw new Error(`Lua API file does not exist: ${luaInput}`);
+  }
+
+  const ldocBin = findSystemLDoc(root);
+  if (!ldocBin) {
+    throw new Error(
+      'ldoc is not installed. Please install ldoc manually and retry. '
+      + 'You can also set LDOC_BIN to the ldoc executable path.'
+    );
+  }
+
+  const luaOutput = join(siteDir, 'DynXX-Lua');
+  mkdirSync(luaOutput, { recursive: true });
+
+  const bin = ldocBin === 'ldoc' ? 'ldoc' : `"${ldocBin}"`;
+  exec(
+    `${bin} -a -p "DynXX-Lua" -t "DynXX Lua API" -d "${luaOutput}" "${luaInput}"`,
+    root
+  );
+}
+
 function writeLandingPage(siteDir: string): void {
   const html = [
     '<!doctype html>',
@@ -145,6 +198,10 @@ function writeLandingPage(siteDir: string): void {
     '    <a class="card" href="./DynXX-TS/index.html">',
     '      <div class="title">DynXX-TS</div>',
     '      <div>DynXX API for TypeScript</div>',
+    '    </a>',
+    '    <a class="card" href="./DynXX-Lua/index.html">',
+    '      <div class="title">DynXX-Lua</div>',
+    '      <div>DynXX API for Lua</div>',
     '    </a>',
     '  </div>',
     '</body>',
@@ -191,6 +248,8 @@ function main() {
 
   console.log('Generating docs for DynXX-TS...');
   generateTsDocs(root, siteDir);
+  console.log('Generating docs for DynXX-Lua...');
+  generateLuaDocs(root, siteDir);
 
   writeLandingPage(siteDir);
   console.log(`Done. Site root: ${siteDir}`);

@@ -6,6 +6,7 @@ on:
     paths:
       - 'include/DynXX/**'
       - 'scripts/JS/DynXX.d.ts'
+      - 'scripts/Lua/DynXX.lua'
       - 'build-tools/gen-doc.ts'
       - 'build-tools/routes.ts'
       - 'build-tools/package.json'
@@ -37,10 +38,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Doxygen
+      - name: Install Doxygen and LDoc
         run: |
           sudo apt-get update
-          sudo apt-get install -y doxygen
+          sudo apt-get install -y doxygen luarocks
+          sudo luarocks install ldoc
 
       - name: Generate Docs
         working-directory: ./build-tools
