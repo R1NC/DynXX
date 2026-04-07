@@ -160,7 +160,7 @@ function generateLuaDocs(root: string, siteDir: string): void {
 
   const bin = ldocBin === 'ldoc' ? 'ldoc' : `"${ldocBin}"`;
   exec(
-    `${bin} -a -p "DynXX-Lua" -t "DynXX Lua API" -d "${luaOutput}" "${luaInput}"`,
+    `${bin} -a -i -p "DynXX-Lua" -t "DynXX Lua API" -d "${luaOutput}" "${luaInput}"`,
     root
   );
 }
