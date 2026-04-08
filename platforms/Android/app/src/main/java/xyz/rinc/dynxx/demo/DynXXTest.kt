@@ -62,7 +62,7 @@ class DynXXTest {
             val keyBytes = keyStr.toByteArray(Charsets.UTF_8)
             val aesEncodedBytes = DynXX.cryptoAesEncrypt(inputBytes, keyBytes)
             val aesDecodedBytes = DynXX.cryptoAesDecrypt(aesEncodedBytes, keyBytes)
-            val aesDecodedStr = aesDecodedBytes.toString(Charsets.UTF_8)
+            val aesDecodedStr = aesDecodedBytes.contentToString()
             DynXXHelper.logPrint(LogLevel.Debug,"AES->$aesDecodedStr")
             val aesgcmIV = DynXX.cryptoRandom(12)
             val aesgcmAad = null
@@ -71,7 +71,7 @@ class DynXXTest {
                 aesgcmAad, aesgcmTagBits)
             val aesgcmDecodedBytes = DynXX.cryptoAesGcmDecrypt(aesgcmEncodedBytes, keyBytes, aesgcmIV,
                 aesgcmAad, aesgcmTagBits)
-            val aesgcmDecodedStr = aesgcmDecodedBytes.toString(Charsets.UTF_8)
+            val aesgcmDecodedStr = aesgcmDecodedBytes.contentToString()
             DynXXHelper.logPrint(LogLevel.Debug,"AES-GCM->$aesgcmDecodedStr")
             val md5Bytes = DynXX.cryptoHashMd5(inputBytes)
             val md5hex = DynXX.codingHexBytes2Str(md5Bytes)
@@ -81,7 +81,7 @@ class DynXXTest {
             DynXXHelper.logPrint(LogLevel.Debug,"sha256->$sha256hex")
             val base64Encoded = DynXX.cryptoBase64Encode(inputBytes, true)
             val base64Decoded = DynXX.cryptoBase64Decode(base64Encoded, true)
-            val base64DecodedStr = base64Decoded.toString(Charsets.UTF_8)
+            val base64DecodedStr = base64Decoded..contentToString()
             DynXXHelper.logPrint(LogLevel.Debug,"base64->$base64DecodedStr")
 
             val jsonParams = """{

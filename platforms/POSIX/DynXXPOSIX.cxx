@@ -6,7 +6,9 @@
 #include <fstream>
 #include <cstring>
 
-static auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=1&p1=2&p2=3\", \"method\":0, \"header_v\":[\"Cache-Control: no-cache\"], \"timeout\":6666}";
+namespace {
+   constexpr auto cParamsJson = R"({"url":"https://rinc.xyz", "params":"p0=1&p1=2&p2=3", "method":0, "header_v":["Cache-Control: no-cache"], "timeout":6666})";
+}
 
 void dynxx_posix_init(const char *root)
 {
@@ -33,30 +35,37 @@ void dynxx_posix_testHttpJ()
 
 void dynxx_posix_testDB()
 {
-    if (const auto dbConn = dynxx_sqlite_open("test"))
-    {
-        const auto insertSQL = "CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, vendor TEXT); \
-            INSERT OR IGNORE INTO TestTable (platform, vendor) \
-            VALUES \
-            ('iOS','Apple'), \
-            ('Android','Google'), \
-            ('HarmonyOS','Huawei');";
-        if (dynxx_sqlite_execute(dbConn, insertSQL))
-        {
-            const auto querySQL = "SELECT * FROM TestTable;";
-            if (const auto queryResult = dynxx_sqlite_query_do(dbConn, querySQL))
-            {
-                while (dynxx_sqlite_query_read_row(queryResult))
-                {
-                    const auto platform = dynxx_sqlite_query_read_column_text(queryResult, "platform");
-                    const auto vendor = dynxx_sqlite_query_read_column_text(queryResult, "vendor");
-                    std::cout << vendor << "->" << platform << std::endl;
-                }
-               dynxx_sqlite_query_drop(queryResult);
-            }
-        }
-       dynxx_sqlite_close(dbConn);
+    const auto dbConn = dynxx_sqlite_open("test");
+    if (!dbConn) {
+        return;
     }
+
+    const auto insertSQL = "CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT, vendor TEXT);\n"
+        "INSERT OR IGNORE INTO TestTable (platform, vendor)\n"
+        "VALUES\n"
+        "('iOS','Apple'),\n"
+        "('Android','Google'),\n"
+        "('HarmonyOS','Huawei');";
+    if (!dynxx_sqlite_execute(dbConn, insertSQL)) {
+        dynxx_sqlite_close(dbConn);
+        return;
+    }
+
+    const auto querySQL = "SELECT * FROM TestTable;";
+    const auto queryResult = dynxx_sqlite_query_do(dbConn, querySQL);
+    if (!queryResult) {
+        dynxx_sqlite_close(dbConn);
+        return;
+    }
+
+    while (dynxx_sqlite_query_read_row(queryResult))
+    {
+        const auto platform = dynxx_sqlite_query_read_column_text(queryResult, "platform");
+        const auto vendor = dynxx_sqlite_query_read_column_text(queryResult, "vendor");
+        std::cout << vendor << "->" << platform << std::endl;
+    }
+    dynxx_sqlite_query_drop(queryResult);
+    dynxx_sqlite_close(dbConn);
 }
 
 void dynxx_posix_testKV()
@@ -79,10 +88,10 @@ void dynxx_posix_testKV()
 void dynxx_posix_testCrypto()
 {
     const auto inStr = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM<>()[]{}|,;:'`~!@#$%^&*-=_+/";
-    const auto inBytes = (unsigned char *) inStr;
+    const auto inBytes = reinterpret_cast<const byte *>(inStr);
     const auto inLen = std::strlen(inStr);
     const auto keyStr = "MNBVCXZLKJHGFDSA";
-    const byte *keyBytes = (unsigned char *) keyStr;
+    const auto keyBytes = reinterpret_cast<const byte *>(keyStr);
     const auto keyLen = std::strlen(keyStr);
     
     size_t aesEncodedLen;
@@ -93,7 +102,7 @@ void dynxx_posix_testCrypto()
         const byte *aesDecodedBytes = dynxx_crypto_aes_decrypt(aesEncodedBytes, aesEncodedLen, keyBytes, keyLen, &aesDecodedLen);
         if (aesDecodedBytes && aesDecodedLen > 0)
         {
-            std::cout << "AES: " << (char *)aesDecodedBytes << std::endl;
+            std::cout << "AES: " << reinterpret_cast<const char *>(aesDecodedBytes) << std::endl;
         }
     }
     
@@ -109,7 +118,7 @@ void dynxx_posix_testCrypto()
         const auto aesgcmDecodedBytes = dynxx_crypto_aes_gcm_decrypt(aesgcmEncodedBytes, aesgcmEncodedLen, keyBytes, keyLen, ivBytes, ivLen, nullptr, 0, aesgcmTagBits, &aesgcmDecodedLen);
         if (aesgcmDecodedBytes && aesgcmDecodedLen > 0)
         {
-            std::cout << "AES-GCM: " << (char *)aesgcmDecodedBytes << std::endl;
+            std::cout << "AES-GCM: " << reinterpret_cast<const char *>(aesgcmDecodedBytes) << std::endl;
         }
     }
 }

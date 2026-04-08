@@ -249,7 +249,14 @@ export function exportCompileCommands(buildFolder: string, root: string) {
         if (resolve(target) === src) return;
       }
       unlinkSync(dst);
-    } catch (_) { unlinkSync(dst); }
+    } catch (error) {
+      console.error(`Failed to process existing file: ${dst}`, error);
+      try {
+        unlinkSync(dst);
+      } catch (unlinkError) {
+        console.error(`Failed to force unlink: ${dst}`, unlinkError);
+      }
+    }
   }
 
   if (existsSync(src)) {
@@ -396,14 +403,52 @@ function mergeLibsWithAppleLibTool(libDirPath: string, aFiles: string[], outputP
   spawn("libtool", args, { cwd: libDirPath });
 }
 
+function resolveMergeOutputPath(libDirPath: string, outputLib: string): string {
+  const shouldResolveFromCwd = outputLib.includes('/') || (IS_WINDOWS && outputLib.includes('\\'));
+  if (isAbsolute(outputLib)) {
+    return resolve(outputLib);
+  }
+  if (shouldResolveFromCwd) {
+    return resolve(process.cwd(), outputLib);
+  }
+  return join(libDirPath, outputLib);
+}
+
+function pickInputLibFiles(files: string[]): string[] {
+  const sortAlphabetically = (left: string, right: string) => left.localeCompare(right);
+  const libFiles = files.filter(f => f.toLowerCase().endsWith(".lib")).sort(sortAlphabetically);
+  if (libFiles.length > 0) {
+    return libFiles;
+  }
+  return files.filter(f => f.endsWith(".a")).sort(sortAlphabetically);
+}
+
+function mergeWithExplicitTool(tool: string, libDirPath: string, libFiles: string[], outputPath: string) {
+  console.log(`[MergeLibs] Using explicit tool path: ${tool}`);
+  if (IS_WINDOWS && tool.toLowerCase().endsWith("lib.exe")) {
+    mergeLibsWithWindowsLibExe(tool, libDirPath, libFiles, outputPath);
+    return;
+  }
+  mergeLibsWithGenericAr(tool, libDirPath, libFiles, outputPath);
+}
+
+function mergeWithPlatformDefaultTool(libDirPath: string, libFiles: string[], outputPath: string) {
+  if (IS_WINDOWS) {
+    console.error(`[MergeLibs] YOU MUST SPECIFY THE ABSOLUTE PATH OF lib.exe on Windows`);
+    process.exit(1);
+  }
+  if (IS_APPLE) {
+    console.log("[MergeLibs] Using native macOS libtool");
+    mergeLibsWithAppleLibTool(libDirPath, libFiles, outputPath);
+    return;
+  }
+  console.log("[MergeLibs] Using native Linux ar");
+  mergeLibsWithGenericAr("ar", libDirPath, libFiles, outputPath);
+}
+
 export function mergeLibs(libDir: string, outputLib: string, tool?: string) {
   const libDirPath = resolve(libDir);
-
-  const outputPath = isAbsolute(outputLib) 
-    ? resolve(outputLib)
-    : outputLib.includes('/') || (IS_WINDOWS && outputLib.includes('\\'))
-      ? resolve(process.cwd(), outputLib)
-      : join(libDirPath, outputLib);
+  const outputPath = resolveMergeOutputPath(libDirPath, outputLib);
   
   if (!existsSync(libDirPath)) {
     console.error(`ERROR: No such directory: ${libDirPath}`);
@@ -414,15 +459,7 @@ export function mergeLibs(libDir: string, outputLib: string, tool?: string) {
   if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
 
   const files = readdirSync(libDirPath);
-  const hasLib = files.some(f => f.toLowerCase().endsWith(".lib"));
-  const hasA = files.some(f => f.endsWith(".a"));
-
-  let libFiles: string[] = [];
-  if (hasLib) {
-    libFiles = files.filter(f => f.toLowerCase().endsWith(".lib")).sort();
-  } else if (hasA) {
-    libFiles = files.filter(f => f.endsWith(".a")).sort();
-  }
+  const libFiles = pickInputLibFiles(files);
 
   if (libFiles.length === 0) {
     console.error(`ERROR: No static libraries (.a or .lib) found in ${libDirPath}`);
@@ -431,23 +468,9 @@ export function mergeLibs(libDir: string, outputLib: string, tool?: string) {
 
   try {
     if (tool) {
-      console.log(`[MergeLibs] Using explicit tool path: ${tool}`);
-      if (IS_WINDOWS && tool.toLowerCase().endsWith("lib.exe")) {
-         mergeLibsWithWindowsLibExe(tool, libDirPath, libFiles, outputPath);
-      } else {
-         mergeLibsWithGenericAr(tool, libDirPath, libFiles, outputPath);
-      }
+      mergeWithExplicitTool(tool, libDirPath, libFiles, outputPath);
     } else {
-      if (IS_WINDOWS) {
-        console.error(`[MergeLibs] YOU MUST SPECIFY THE ABSOLUTE PATH OF lib.exe on Windows`);
-        process.exit(1);
-      } else if (IS_APPLE) {
-        console.log("[MergeLibs] Using native macOS libtool");
-        mergeLibsWithAppleLibTool(libDirPath, libFiles, outputPath);
-      } else {
-        console.log("[MergeLibs] Using native Linux ar");
-        mergeLibsWithGenericAr("ar", libDirPath, libFiles, outputPath);
-      }
+      mergeWithPlatformDefaultTool(libDirPath, libFiles, outputPath);
     }
 
     if (!existsSync(outputPath)) {

@@ -1,12 +1,11 @@
 function worker_client_main()
 {
-    var worker = new os.Worker("./worker_server.js");
+    const worker = new os.Worker("./worker_server.js");
 
     worker.onmessage = function (msg) {
-        var data = msg.data;
+        const data = msg.data;
         print("WorkerClient recv:", JSON.stringify(data));
-        switch(data.type) {
-        case "report":
+        if (data.type === "report") {
             DynXXLogPrint(3, `Main Thread received report request: ${data.payload}`);
             jTestNetHttpReqPro('https://qq.com')
                 .then(function (res) {
@@ -14,7 +13,6 @@ function worker_client_main()
                 }, function (err) {
                     DynXXLogPrint(6, `${err}`);
                 });
-            break;
         }
     };
 }

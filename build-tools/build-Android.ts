@@ -49,7 +49,7 @@ function main() {
   const androidPath = join(root, 'platforms', 'Android');
   const gradleBuildType = buildType.toLowerCase();
   
-  const gradlewCmd = isWindows() ? '.\\gradlew.bat' : './gradlew';
+  const gradlewCmd = isWindows() ? String.raw`.\gradlew.bat` : './gradlew';
   if (!isWindows()) {
     makeExecutable(join(androidPath, 'gradlew'));
   }

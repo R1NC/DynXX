@@ -79,7 +79,7 @@ if (!command) {
     process.exit(1);
 }
 
-const scriptFile = commandMap[command as string];
+const scriptFile = commandMap[command];
 if (!scriptFile) {
     printUsage();
     process.exit(1);

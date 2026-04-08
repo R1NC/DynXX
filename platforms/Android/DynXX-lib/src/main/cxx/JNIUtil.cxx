@@ -1,21 +1,28 @@
 #include "JNIUtil.hxx"
 
+#include <limits>
 #include <mutex>
+#include <vector>
 
 #include <DynXX/CXX/Memory.hxx>
 
 namespace {
-    std::unordered_map<std::string, jclass> sJClassCache;
+#if defined(__cpp_lib_generic_unordered_lookup)
+    using JClassCache = std::unordered_map<std::string, jclass, TransparentStringHash, TransparentEqual>;
+#else
+    using JClassCache = std::unordered_map<std::string, jclass>;
+#endif
+    JClassCache sJClassCache;
     std::mutex sJClassCacheMutex;
 }
 
 JNIEnv *getEnv(JavaVM *vm, int ver) {
-    JNIEnv *env = nullptr;
     if (vm == nullptr) {
-        return env;
+        return nullptr;
     }
+    JNIEnv *env = nullptr;
     if (auto ret = vm->GetEnv(reinterpret_cast<void **>(&env), ver); ret != JNI_OK) {
-        return env;
+        return nullptr;
     }
     return env;
 }
@@ -39,14 +46,14 @@ jclass findClassInCache(JNIEnv *env, const char *cls) {
         return it->second;
     }
     const auto jcls = env->FindClass(cls);
-    sJClassCache[cls] = reinterpret_cast<jclass>(env->NewGlobalRef(jcls));
+    sJClassCache[cls] = static_cast<jclass>(env->NewGlobalRef(jcls));
     return sJClassCache.at(cls);
 }
 
 void releaseCachedClass(JNIEnv *env) {
     const auto lock = std::scoped_lock(sJClassCacheMutex);
-    for (auto &it : sJClassCache) {
-        env->DeleteGlobalRef(it.second);
+    for (auto &[k, v] : sJClassCache) {
+        env->DeleteGlobalRef(v);
     }
     sJClassCache.clear();
 }
@@ -55,14 +62,14 @@ const char* readJString(JNIEnv *env, jobject jStr) {
     if (env == nullptr || jStr == nullptr) {
         return nullptr;
     }
-    return env->GetStringUTFChars(reinterpret_cast<jstring>(jStr), nullptr);
+    return env->GetStringUTFChars(static_cast<jstring>(jStr), nullptr);
 }
 
 void releaseJString(JNIEnv *env, jobject jStr, const char* cStr) {
     if (env == nullptr || jStr == nullptr || cStr == nullptr) {
         return;
     }
-    env->ReleaseStringUTFChars(reinterpret_cast<jstring>(jStr), cStr);
+    env->ReleaseStringUTFChars(static_cast<jstring>(jStr), cStr);
 }
 
 std::tuple<byte*, size_t> readJByteArray(JNIEnv *env, jbyteArray jbArr) {
@@ -143,10 +150,20 @@ jobject boxJDouble(JNIEnv *env, jdouble j) {
 
 jstring boxJString(JNIEnv *env, const char *str) {
     if (str == nullptr) {
-        str = "";
+        return boxJString(env, std::string_view{});
     }
-    const auto sLen = static_cast<jsize>(strlen(str));
-    auto p = reinterpret_cast<const unsigned char *>(str);
+    const auto ret = boxJString(env, std::string_view{str});
+    freeX(str);
+    return ret;
+}
+
+jstring boxJString(JNIEnv *env, std::string_view str) {
+    const auto rawLen = str.size();
+    if (rawLen > static_cast<size_t>(std::numeric_limits<jsize>::max())) {
+        return env->NewStringUTF("");
+    }
+    const auto sLen = static_cast<jsize>(rawLen);
+    auto p = reinterpret_cast<const unsigned char *>(str.data());
     
     std::string fixedStr;
     fixedStr.reserve(sLen);
@@ -197,11 +214,9 @@ jstring boxJString(JNIEnv *env, const char *str) {
     auto strClass = findClassInCache(env, JLS);
     auto strConstructor = env->GetMethodID(strClass, "<init>", "([B" LJLS_ ")V");
     auto charsetName = env->NewStringUTF("UTF-8");
-    auto jStr = reinterpret_cast<jstring>(env->NewObject(strClass, strConstructor, strBytes, charsetName));
+    auto jStr = static_cast<jstring>(env->NewObject(strClass, strConstructor, strBytes, charsetName));
     env->DeleteLocalRef(strBytes);
     env->DeleteLocalRef(charsetName);
-
-    freeX(str);
 
     return jStr;
 }
@@ -217,8 +232,12 @@ jbyteArray moveToJByteArray(JNIEnv *env, const byte *bytes, size_t len) {
         return env->NewByteArray(0);
     }
     jbyteArray jba = env->NewByteArray(static_cast<jsize>(len));
+    std::vector<jbyte> jBytes(len);
+    for (size_t i = 0; i < len; i++) {
+        jBytes[i] = static_cast<jbyte>(bytes[i]);
+    }
     env->SetByteArrayRegion(jba, 0, static_cast<jsize>(len),
-                                const_cast<jbyte *>(reinterpret_cast<const jbyte *>(bytes)));
+                                jBytes.data());
     freeX(bytes);
     return jba;
 }

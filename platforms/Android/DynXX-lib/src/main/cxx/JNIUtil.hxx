@@ -2,6 +2,7 @@
 
 #include <jni.h>
 #include <string>
+#include <string_view>
 
 #include <DynXX/CXX/Types.hxx>
 
@@ -135,6 +136,7 @@ jobject boxJFloat(JNIEnv *env, jfloat j);
 jobject boxJDouble(JNIEnv *env, jdouble j);
 
 jstring boxJString(JNIEnv *env, const char *str);
+jstring boxJString(JNIEnv *env, std::string_view str);
 
 jmethodID getLambdaMethod(JNIEnv *env, const char *cls, const char *sig);
 

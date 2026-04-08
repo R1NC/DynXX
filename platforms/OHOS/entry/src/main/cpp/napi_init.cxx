@@ -1,5 +1,6 @@
 #include "napi/native_api.h"
 
+#include <array>
 #include <cstring>
 
 #include <napi_util.hxx>
@@ -37,12 +38,12 @@ napi_value release(napi_env env, napi_callback_info info) {
 
 // Log Callback
 
-typedef struct {
+struct TSLogWorkData {
     napi_async_work tsWork;
     napi_threadsafe_function tsWorkFunc;
     int logLevel;
     const char *logContent;
-} TSLogWorkData;
+};
 
 void OnLogWorkCallTS(napi_env env, napi_value ts_callback, [[maybe_unused]] void *context, void *data) {
     if (env == nullptr || ts_callback == nullptr || data == nullptr) {
@@ -51,10 +52,10 @@ void OnLogWorkCallTS(napi_env env, napi_value ts_callback, [[maybe_unused]] void
 
     auto tSLogWorkData = static_cast<TSLogWorkData *>(data);
 
-    size_t argc = 2;
-    napi_value argv[2];
-    argv[0] = napiValueFromInt(env, tSLogWorkData->logLevel);
-    argv[1] = napiValueFromChars(env, tSLogWorkData->logContent);
+    std::array<napi_value, 2> argv{
+        napiValueFromInt(env, tSLogWorkData->logLevel),
+        napiValueFromChars(env, tSLogWorkData->logContent)
+    };
 
     napi_value vGlobal;
     auto status = napi_get_global(env, &vGlobal);
@@ -63,7 +64,7 @@ void OnLogWorkCallTS(napi_env env, napi_value ts_callback, [[maybe_unused]] void
     napi_get_reference_value(env, sTsLogCallbackRef, &ts_callback);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_get_reference_value() failed");
 
-    status = napi_call_function(env, vGlobal, ts_callback, argc, argv, nullptr);
+    status = napi_call_function(env, vGlobal, ts_callback, argv.size(), argv.data(), nullptr);
     CHECK_NAPI_STATUS_RETURN_VOID(env, status, "napi_call_function() failed");
 
     freeX(tSLogWorkData->logContent);
@@ -1018,7 +1019,7 @@ static napi_module dynxxModule = {
     .nm_filename = NULL,
     .nm_register_func = NAPI_DynXX_RegisterFuncs,
     .nm_modname = "dynxx",
-    .nm_priv = ((void *)(0)),
+    .nm_priv = nullptr,
     .reserved = {0},
 };
 

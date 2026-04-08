@@ -1,6 +1,5 @@
-function _Map2UrlStr(map) {
-    map = map || new Map();
-    var s = '';
+function _Map2UrlStr(map = new Map()) {
+    let s = '';
     map.forEach((v, k) => {
         s += s.length === 0 ? '?' : '&';
         s += `${k}=${v}`;
@@ -8,9 +7,8 @@ function _Map2UrlStr(map) {
     return s;
 }
 
-function _Map2StrArray(map) {
-    var arr = [];
-    map = map || new Map();
+function _Map2StrArray(map = new Map()) {
+    const arr = [];
     map.forEach((v, k) => {
         arr.push(`${k}=${v}`);
     });
@@ -22,7 +20,7 @@ function _json2Array(json) {
 }
 
 function _buffer2Bytes(buffer) {
-    var bytes = [];
+    const bytes = [];
     new Uint8Array(buffer).forEach((x) => {
         if (x > 0) bytes.push(x);
     });
@@ -47,8 +45,7 @@ function DynXXRootPath() {
     return dynxx_root_path();
 }
 
-function DynXXCallPlatform(msg) {
-    msg = msg || '';
+function DynXXCallPlatform(msg = '') {
     return dynxx_call_platform(msg);
 }
 
@@ -61,8 +58,7 @@ function DynXXCallPlatform(msg) {
     None: 8
 });*/
 
-function DynXXLogPrint(level, content) {
-    content = content || '';
+function DynXXLogPrint(level, content = '') {
     let inJson = JSON.stringify({
         "level": level,
         "content": content
@@ -90,14 +86,9 @@ function DynXXDeviceCPUArch() {
     return dynxx_device_cpu_arch();
 }
 
-function DynXXNetHttpRequest(url, method, paramMap,  headerMap, rawBodyBytes, formFieldNameArray, formFieldMimeArray, formFieldDataArray, timeout) {
-    paramStr = _Map2UrlStr(paramMap);
-    headerArray = _Map2StrArray(headerMap);
-    rawBodyBytes = rawBodyBytes || [];
-    formFieldNameArray = formFieldNameArray || [];
-    formFieldMimeArray = formFieldMimeArray || [];
-    formFieldDataArray = formFieldDataArray || [];
-    timeout = timeout || 15000;
+function DynXXNetHttpRequest(url, method, paramMap = new Map(),  headerMap = new Map(), rawBodyBytes = [], formFieldNameArray = [], formFieldMimeArray = [], formFieldDataArray = [], timeout = 15000) {
+    const paramStr = _Map2UrlStr(paramMap);
+    const headerArray = _Map2StrArray(headerMap);
 
     let inJson = JSON.stringify({
         "url": url,
@@ -114,8 +105,7 @@ function DynXXNetHttpRequest(url, method, paramMap,  headerMap, rawBodyBytes, fo
     return dynxx_net_http_request(inJson);
 }
 
-function DynXXNetHttpDownload(url, file, timeout) {
-    timeout = timeout || 15000;
+function DynXXNetHttpDownload(url, file, timeout = 15000) {
     let inJson = JSON.stringify({
         "url": url,
         "file": file,
@@ -290,25 +280,23 @@ function DynXXKVClose(conn) {
 }
 
 function DynXXStr2Bytes(str) {
-    return Array.from(str, char => char.charCodeAt(0))
+    return Array.from(str, char => char.codePointAt(0))
 }
 
 function DynXXBytes2Str(bytes) {
     return bytes.map((b) => {
-        return b > 0 ? String.fromCharCode(b) : '';
+        return b > 0 ? String.fromCodePoint(b) : '';
     }).join('');
 }
 
 function DynXXCodingHexBytes2Str(bytes) {
-    bytes = bytes || [];
     let inJson = JSON.stringify({
         "inBytes": bytes
     });
     return dynxx_coding_hex_bytes2str(inJson);
 }
 
-function DynXXCodingHexStr2Bytes(str) {
-    str = str || '';
+function DynXXCodingHexStr2Bytes(str = '') {
     let inJson = JSON.stringify({
         "str": str
     });
@@ -317,15 +305,13 @@ function DynXXCodingHexStr2Bytes(str) {
 }
 
 function DynXXCodingBytes2Str(bytes) {
-    bytes = bytes || [];
     let inJson = JSON.stringify({
         "inBytes": bytes
     });
     return dynxx_coding_bytes2str(inJson);
 }
 
-function DynXXCodingStr2Bytes(str) {
-    str = str || '';
+function DynXXCodingStr2Bytes(str = '') {
     let inJson = JSON.stringify({
         "str": str
     });
@@ -333,16 +319,14 @@ function DynXXCodingStr2Bytes(str) {
     return _json2Array(outJson);
 }
 
-function DynXXCodingCaseUpper(str) {
-    str = str || '';
+function DynXXCodingCaseUpper(str = '') {
     let inJson = JSON.stringify({
         "str": str
     });
     return dynxx_coding_case_upper(inJson);
 }
 
-function DynXXCodingCaseLower(str) {
-    str = str || '';
+function DynXXCodingCaseLower(str = '') {
     let inJson = JSON.stringify({
         "str": str
     });
@@ -358,8 +342,6 @@ function DynXXCryptoRand(len) {
 }
 
 function DynXXCryptoAesEncrypt(inBytes, keyBytes) {
-    inBytes = inBytes || [];
-    keyBytes = keyBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
         "keyBytes": keyBytes
@@ -369,8 +351,6 @@ function DynXXCryptoAesEncrypt(inBytes, keyBytes) {
 }
 
 function DynXXCryptoAesDecrypt(inBytes, keyBytes) {
-    inBytes = inBytes || [];
-    keyBytes = keyBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
         "keyBytes": keyBytes
@@ -380,10 +360,6 @@ function DynXXCryptoAesDecrypt(inBytes, keyBytes) {
 }
 
 function DynXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes) {
-    inBytes = inBytes || [];
-    keyBytes = keyBytes || [];
-    ivBytes = ivBytes || [];
-    aadBytes = aadBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
         "keyBytes": keyBytes,
@@ -396,10 +372,6 @@ function DynXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes)
 }
 
 function DynXXCryptoAesGcmDecrypt(inBytes, keyBytes, ivBytes, tagBits, aadBytes) {
-    inBytes = inBytes || [];
-    keyBytes = keyBytes || [];
-    ivBytes = ivBytes || [];
-    aadBytes = aadBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
         "keyBytes": keyBytes,
@@ -439,7 +411,6 @@ function DynXXCryptoRsaDecrypt(inBytes, keyBytes) {
 }
 
 function DynXXCryptoHashMD5(inBytes) {
-    inBytes = inBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes
     });
@@ -448,7 +419,6 @@ function DynXXCryptoHashMD5(inBytes) {
 }
 
 function DynXXCryptoHashSHA1(inBytes) {
-    inBytes = inBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes
     });
@@ -457,7 +427,6 @@ function DynXXCryptoHashSHA1(inBytes) {
 }
 
 function DynXXCryptoHashSHA256(inBytes) {
-    inBytes = inBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes
     });
@@ -466,7 +435,6 @@ function DynXXCryptoHashSHA256(inBytes) {
 }
 
 function DynXXCryptoBase64Encode(inBytes, noNewLines) {
-    inBytes = inBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
         "noNewLines": (noNewLines === undefined || noNewLines === 1 || noNewLines === true) ? 1 : 0
@@ -476,7 +444,6 @@ function DynXXCryptoBase64Encode(inBytes, noNewLines) {
 }
 
 function DynXXCryptoBase64Decode(inBytes, noNewLines) {
-    inBytes = inBytes || [];
     let inJson = JSON.stringify({
         "inBytes": inBytes,
         "noNewLines": (noNewLines === undefined || noNewLines === 1 || noNewLines === true) ? 1 : 0
@@ -497,7 +464,6 @@ function _DynXXZZipInit(mode, bufferSize, format) {
 }
 
 function _DynXXZZipInput(zip, bytes, finish) {
-    bytes = bytes || [];
     let inJson = JSON.stringify({
         "zip": zip,
         "inBytes": bytes,
@@ -537,7 +503,6 @@ function _DynXXZUnZipInit(bufferSize, format) {
 }
 
 function _DynXXZUnZipInput(unzip, bytes, finish) {
-    bytes = bytes || [];
     let inJson = JSON.stringify({
         "unzip": unzip,
         "inBytes": bytes,
@@ -569,7 +534,6 @@ function _DynXXZUnZipRelease(unzip) {
 }
 
 function DynXXZZipBytes(bytes, mode, bufferSize, format) {
-    bytes = bytes || [];
     let inJson = JSON.stringify({
         "mode": mode,
         "bufferSize": bufferSize,
@@ -590,8 +554,8 @@ function DynXXZUnZipBytes(bytes, bufferSize, format) {
 
 function _DynXXZStream(bufferSize, readFunc, writeFunc, flushFunc,
     z, inputFunc, processDoFunc, processFinishedFunc) {
-    var inputFinished = false;
-    var processFinished = false;
+    let inputFinished = false;
+    let processFinished = false;
     do {
         let inBytes = readFunc();
         inputFinished = inBytes.length < bufferSize;

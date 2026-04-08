@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { exec, gotoParentPath, spawn } from './utils.js';
 
 function normalizePath(path: string): string {
-  return path.replace(/\\/g, '/');
+  return path.replaceAll('\\', '/');
 }
 
 function buildDoxygenConfig(projectName: string, inputDir: string, outputDir: string): string {
@@ -37,8 +37,8 @@ function findSystemDoxygen(root: string): string | null {
 
   const candidates = process.platform === 'win32'
     ? [
-      'C:\\Program Files\\doxygen\\bin\\doxygen.exe',
-      'C:\\Program Files (x86)\\doxygen\\bin\\doxygen.exe',
+      String.raw`C:\Program Files\doxygen\bin\doxygen.exe`,
+      String.raw`C:\Program Files (x86)\doxygen\bin\doxygen.exe`,
     ]
     : [
       '/usr/bin/doxygen',
@@ -72,8 +72,8 @@ function findSystemLDoc(root: string): string | null {
 
   const candidates = process.platform === 'win32'
     ? [
-      'C:\\Program Files\\Lua\\bin\\ldoc.bat',
-      'C:\\Program Files\\Lua\\bin\\ldoc.exe',
+      String.raw`C:\Program Files\Lua\bin\ldoc.bat`,
+      String.raw`C:\Program Files\Lua\bin\ldoc.exe`,
     ]
     : [
       '/usr/bin/ldoc',
@@ -177,7 +177,7 @@ function writeLandingPage(siteDir: string): void {
     '    body{font-family:Arial,sans-serif;max-width:900px;margin:48px auto;padding:0 20px;color:#111;}',
     '    h1{margin-bottom:8px;}',
     '    p{color:#444;}',
-    '    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:24px;}',
+    '    .cards{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:16px;margin-top:24px;}',
     '    .card{display:block;padding:18px;border:1px solid #dcdcdc;border-radius:12px;text-decoration:none;color:inherit;}',
     '    .card:hover{border-color:#999;}',
     '    .title{font-size:20px;font-weight:600;margin-bottom:6px;}',
@@ -212,6 +212,11 @@ function writeLandingPage(siteDir: string): void {
   writeFileSync(join(siteDir, 'index.html'), html, 'utf8');
 }
 
+function printDocError(scope: string, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`[${scope}] ${message}`);
+}
+
 function main() {
   const root = gotoParentPath();
   const includeRoot = join(root, 'include', 'DynXX');
@@ -233,23 +238,37 @@ function main() {
   ];
 
   const systemDoxygen = findSystemDoxygen(root);
-  if (!systemDoxygen) {
-    throw new Error(
-      'doxygen is not installed. Please install doxygen manually and retry. '
+  if (systemDoxygen === null) {
+    printDocError(
+      'DynXX-C/DynXX-Cxx',
+      'doxygen is not installed. Please install doxygen manually. '
       + 'You can also set DOXYGEN_BIN to the doxygen executable path.'
     );
+  } else {
+    console.log(`Using system doxygen: ${systemDoxygen}`);
+    for (const variant of variants) {
+      console.log(`Generating docs for ${variant.name}...`);
+      try {
+        generateVariant(root, variant, systemDoxygen);
+      } catch (error) {
+        printDocError(variant.name, error);
+      }
+    }
   }
-  console.log(`Using system doxygen: ${systemDoxygen}`);
 
-  for (const variant of variants) {
-    console.log(`Generating docs for ${variant.name}...`);
-    generateVariant(root, variant, systemDoxygen);
+  try {
+    console.log('Generating docs for DynXX-TS...');
+    generateTsDocs(root, siteDir);
+  } catch (error) {
+    printDocError('DynXX-TS', error);
   }
 
-  console.log('Generating docs for DynXX-TS...');
-  generateTsDocs(root, siteDir);
-  console.log('Generating docs for DynXX-Lua...');
-  generateLuaDocs(root, siteDir);
+  try {
+    console.log('Generating docs for DynXX-Lua...');
+    generateLuaDocs(root, siteDir);
+  } catch (error) {
+    printDocError('DynXX-Lua', error);
+  }
 
   writeLandingPage(siteDir);
   console.log(`Done. Site root: ${siteDir}`);

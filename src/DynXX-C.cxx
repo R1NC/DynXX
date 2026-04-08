@@ -19,6 +19,13 @@ namespace {
         }
         return dupCharsArray(sv, maxLen);
     }
+
+    std::vector<std::string> toStringVector(const char **values, size_t count) {
+        if (values == nullptr || count == 0) {
+            return {};
+        }
+        return {values, values + count};
+    }
 }
 
 DYNXX_EXPORT_AUTO
@@ -280,25 +287,10 @@ const char *dynxx_net_http_request(const char *url, const char *params, DynXXHtt
         return "";
     }
 
-    std::vector<std::string> vHeaders;
-    if (header_v != nullptr && header_c > 0) {
-        vHeaders = std::vector<std::string>(header_v, header_v + header_c);
-    }
-
-    std::vector<std::string> vFormFieldName;
-    if (form_field_name_v != nullptr && form_field_count > 0) {
-        vFormFieldName = std::vector<std::string>(form_field_name_v, form_field_name_v + form_field_count);
-    }
-
-    std::vector<std::string> vFormFieldMime;
-    if (form_field_mime_v != nullptr && form_field_count > 0) {
-        vFormFieldMime = std::vector<std::string>(form_field_mime_v, form_field_mime_v + form_field_count);
-    }
-
-    std::vector<std::string> vFormFieldData;
-    if (form_field_data_v != nullptr && form_field_count > 0) {
-        vFormFieldData = std::vector<std::string>(form_field_data_v, form_field_data_v + form_field_count);
-    }
+    const auto vHeaders = toStringVector(header_v, header_c);
+    const auto vFormFieldName = toStringVector(form_field_name_v, form_field_count);
+    const auto vFormFieldMime = toStringVector(form_field_mime_v, form_field_count);
+    const auto vFormFieldData = toStringVector(form_field_data_v, form_field_count);
 
     const auto t = dynxxNetHttpRequest(url,
                                          static_cast<DynXXHttpMethodX>(method),

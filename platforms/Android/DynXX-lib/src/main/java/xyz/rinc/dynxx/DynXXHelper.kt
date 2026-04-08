@@ -123,7 +123,7 @@ class DynXXHelper {
             val zip = DynXX.zZipInit(mode.value, bufferSize.toLong(), format.value)
             if (zip <= 0) return false
 
-            val success = zProcess(bufferSize, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
+            val success = zProcess(bufferSize, inStream, outStream, {inBuffer: ByteArray, _: Int, inputFinished: Boolean ->
                 DynXX.zZipInput(zip, inBuffer, inputFinished)
             }, {
                 DynXX.zZipProcessDo(zip)
@@ -142,7 +142,7 @@ class DynXXHelper {
             val unzip = DynXX.zUnZipInit(bufferSize.toLong(), format.value)
             if (unzip <= 0) return false
 
-            val success = zProcess(bufferSize, inStream, outStream, {inBuffer: ByteArray, inLen: Int, inputFinished: Boolean ->
+            val success = zProcess(bufferSize, inStream, outStream, {inBuffer: ByteArray, _: Int, inputFinished: Boolean ->
                 DynXX.zUnZipInput(unzip, inBuffer, inputFinished)
             }, {
                 DynXX.zUnZipProcessDo(unzip)
