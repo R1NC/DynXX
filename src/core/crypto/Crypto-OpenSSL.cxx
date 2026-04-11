@@ -223,7 +223,6 @@ namespace
         if (!checkAesParams(in, key)) [[unlikely]] {
             return false;
         }
-        const auto inLen = in.size();
         constexpr auto IVLen = 12;
         if (const auto initVectorLen = initVector.size(); initVectorLen != IVLen) [[unlikely]] {
             dynxxLogPrint(Error, "aesGcm invalid initVectorBytes");

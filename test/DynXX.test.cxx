@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <array>
 #include <chrono>
 #include <filesystem>
 #include <iostream>
@@ -72,9 +73,9 @@ namespace {
 namespace DynXX::Test {
     int RunAll() {
         int argc = 1;
-        char arg0[] = "DynXXCxxTests";
-        char *argv[] = {arg0, nullptr};
-        ::testing::InitGoogleTest(&argc, argv);
+        std::string arg0 = "DynXXCxxTests";
+        std::array<char *, 2> argv{arg0.data(), nullptr};
+        ::testing::InitGoogleTest(&argc, argv.data());
 
         if (const auto *envFilter = std::getenv("DYNXX_GTEST_FILTER"); envFilter != nullptr && *envFilter != '\0') {
             ::testing::GTEST_FLAG(filter) = envFilter;

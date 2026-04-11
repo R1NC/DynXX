@@ -78,11 +78,17 @@ function parseJunitXml(xml: string): { total: number; failed: number; passed: nu
                     }
                 }
             }
+            let status: CaseResult["status"] = "passed";
+            if (failed) {
+                status = "failed";
+            } else if (skipped) {
+                status = "skipped";
+            }
             cases.push({
                 suite: suiteName,
                 name: caseAttrs.name ?? "UnknownCase",
                 timeMs: toMs(caseAttrs.time),
-                status: failed ? "failed" : (skipped ? "skipped" : "passed"),
+                status,
                 message
             });
         }
@@ -101,7 +107,12 @@ function buildHtml(title: string, data: { total: number; failed: number; passed:
 
     const renderedSuite = new Set<string>();
     const rows = data.cases.map(c => {
-        const statusClass = c.status === "passed" ? "ok" : (c.status === "failed" ? "fail" : "skip");
+        let statusClass = "ok";
+        if (c.status === "failed") {
+            statusClass = "fail";
+        } else if (c.status === "skipped") {
+            statusClass = "skip";
+        }
         const message = c.message ? `<pre>${escapeHtml(c.message)}</pre>` : "";
         const suiteCell = renderedSuite.has(c.suite)
             ? ""

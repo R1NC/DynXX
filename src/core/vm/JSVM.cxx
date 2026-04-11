@@ -344,7 +344,11 @@ bool JSVM::loadFile(std::string_view file, bool isModule)
     const auto fileS = std::string{file.data(), file.size()};
     {
         const auto lock = std::scoped_lock(this->vmMutex);
+#if defined(__cpp_lib_generic_unordered_lookup)
+        if (this->loadedScriptNames.contains(file)) [[likely]]
+#else
         if (this->loadedScriptNames.contains(fileS)) [[likely]]
+#endif
         {
             return true;
         }
@@ -376,16 +380,24 @@ bool JSVM::loadScript(std::string_view script, std::string_view name, bool isMod
     {
         return false;
     }
-    const auto nameS = std::string{name.data(), name.size()};
     const auto lock = std::scoped_lock(this->vmMutex);
+#if defined(__cpp_lib_generic_unordered_lookup)
+    if (this->loadedScriptNames.contains(name)) [[likely]]
+#else
+    const auto nameS = std::string{name.data(), name.size()};
     if (this->loadedScriptNames.contains(nameS)) [[likely]]
+#endif
     {
         return true;
     }
     const auto loaded = _loadScript(this->context.get(), script, name, isModule);
     if (loaded) [[likely]]
     {
+#if defined(__cpp_lib_generic_unordered_lookup)
+        this->loadedScriptNames.emplace(name);
+#else
         this->loadedScriptNames.insert(nameS);
+#endif
     }
     return loaded;
 }
