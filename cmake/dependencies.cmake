@@ -72,7 +72,7 @@ function(dynxx_find_dependencies TARGET_NAME LINK_LIBS_VAR)
 
     if(USE_LUA)
         find_package(Lua REQUIRED)
-        list(APPEND link_libs lua)
+        list(APPEND link_libs ${LUA_LIBRARIES})
     endif()
 
     if(USE_QJS)
@@ -85,6 +85,11 @@ function(dynxx_find_dependencies TARGET_NAME LINK_LIBS_VAR)
     endif()
 
     if(USE_KV)
+        if(WIN32 AND NOT TARGET pthread)
+            find_package(PThreads4W REQUIRED)
+            add_library(pthread INTERFACE IMPORTED)
+            target_link_libraries(pthread INTERFACE PThreads4W::PThreads4W)
+        endif()
         add_git_lib(${TARGET_NAME}
             mmkv
             https://github.com/R1NC/MMKV
@@ -116,6 +121,7 @@ function(dynxx_find_dependencies TARGET_NAME LINK_LIBS_VAR)
 
     if(USE_SPDLOG)
         find_package(spdlog REQUIRED)
+        list(APPEND link_libs spdlog::spdlog_header_only)
     endif()
 
     set(${LINK_LIBS_VAR} ${link_libs} PARENT_SCOPE)

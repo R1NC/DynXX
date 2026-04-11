@@ -123,7 +123,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
       <td>All;</td>
     </tr>
     <tr>
-      <td rowspan="4">C++20</td>
+      <td rowspan="5">C++20</td>
       <td><a href="https://en.cppreference.com/w/cpp/utility/format/format">std::format</a></td>
       <td>iOS 16.3-, macOS 13.3-, OHOS;</td>
     </tr>
@@ -137,6 +137,10 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
     </tr>
     <tr>
       <td><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0919r3.html">Heterogeneous lookup for hash map/set</a></td>
+      <td>OHOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/utility/source_location">std::source_location</a></td>
       <td>OHOS;</td>
     </tr>
     <tr>
@@ -222,6 +226,11 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
       <td><a href="https://github.com/Tencent/MMKV">MMKV</a></td>
       <td>Key-value storage;</td>
       <td></td>
+    </tr>
+    <tr>
+      <td><a href="https://sourceforge.net/projects/pthreads4w/">PThreads4W</a></td>
+      <td>POSIX threads implementation on Windows;</td>
+      <td>Required by MMKV on Windows.</td>
     </tr>
     <tr>
       <td><a href="https://github.com/openssl/openssl">openssl</a></td>

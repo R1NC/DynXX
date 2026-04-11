@@ -24,6 +24,9 @@ namespace {
 #define BIND_API(f) vm->bindFunc(#f, f##J)
 
     bool loadF(std::string_view file, bool isModule) {
+        if (vm == nullptr) {
+            dynxx_js_init();
+        }
         if (vm == nullptr || file.empty()) [[unlikely]] {
             return false;
         }
@@ -31,6 +34,9 @@ namespace {
     }
 
     bool loadS(std::string_view script, std::string_view name, bool isModule) {
+        if (vm == nullptr) {
+            dynxx_js_init();
+        }
         if (vm == nullptr || script.empty() || name.empty()) [[unlikely]] {
             return false;
         }
@@ -38,6 +44,9 @@ namespace {
     }
 
     bool loadB(BytesView bytes, bool isModule) {
+        if (vm == nullptr) {
+            dynxx_js_init();
+        }
         if (vm == nullptr || bytes.empty()) [[unlikely]] {
             return false;
         }
@@ -45,6 +54,9 @@ namespace {
     }
 
     std::optional<std::string> call(std::string_view func, std::string_view params, bool await) {
+        if (vm == nullptr) {
+            dynxx_js_init();
+        }
         if (vm == nullptr || func.empty()) [[unlikely]] {
             return std::nullopt;
         }

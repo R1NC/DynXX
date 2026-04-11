@@ -23,6 +23,7 @@ dynxx_declare_sanitizer_options()
 dynxx_configure_cxx_feature_options()
 dynxx_declare_feature_options()
 dynxx_declare_dependency_options()
+option(DYNXX_BUILD_TESTS "Build DynXX unit tests" OFF)
 
 set(SRC_FILES "")
 
@@ -57,7 +58,7 @@ endif()
 set(LINK_LIBS "")
 dynxx_find_dependencies(${PROJECT_NAME} LINK_LIBS)
 dynxx_append_platform_link_libraries(LINK_LIBS)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LINK_LIBS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${LINK_LIBS})
 
 set(SANITIZERS "")
 dynxx_configure_sanitizers(${PROJECT_NAME} SANITIZERS)
@@ -65,3 +66,8 @@ dynxx_configure_sanitizers(${PROJECT_NAME} SANITIZERS)
 install_headers(include/DynXX include)
 
 dynxx_print_summary(${PROJECT_NAME} LINK_LIBS SANITIZERS)
+
+if(DYNXX_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif()

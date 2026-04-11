@@ -51,6 +51,14 @@
     {
       "name": "libuv",
       "platform": "!emscripten & !ohos"
+    },
+    {
+      "name": "gtest",
+      "platform": "!emscripten"
+    },
+    {
+      "name": "pthreads",
+      "platform": "windows"
     }
   ],
   "overrides": [

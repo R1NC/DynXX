@@ -15,6 +15,14 @@
 
 #if defined(USE_SPDLOG)
 #define SPDLOG_HEADER_ONLY
+#if defined(__ANDROID__)
+#if defined(SPDLOG_FWRITE_UNLOCKED)
+#undef SPDLOG_FWRITE_UNLOCKED
+#endif
+#if !defined(SPDLOG_USE_STDIO)
+#define SPDLOG_USE_STDIO 1
+#endif
+#endif
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/daily_file_sink.h>
 #include <DynXX/CXX/DynXX.hxx>

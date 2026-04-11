@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <filesystem>
 #include <memory>
 #include <sstream>
 
@@ -218,28 +219,12 @@ bool dynxxInit(std::string_view root) {
     if (root.empty()) {
         return false;
     }
+    std::error_code ec;
+    std::filesystem::create_directories(std::filesystem::path(root), ec);
+    if (ec) {
+        return false;
+    }
     _root = std::make_unique<const std::string>(root);
-#endif
-    
-#if defined(USE_DB)
-    _sqlite = std::make_unique<SQLite::SQLiteStore>();
-    sqlQRCache = std::make_unique<Mem::PtrCache<SQLite::Connection::QueryResult>>();
-#endif
-
-#if defined(USE_KV)
-    _kv = std::make_unique<KV::KVStore>(dynxxRootPath().value());
-#endif
-
-#if defined(USE_CURL)
-    _http_client = std::make_unique<HttpClient>();
-#endif
-
-#if defined(USE_LUA)
-    dynxx_lua_init();
-#endif
-
-#if defined(USE_QJS)
-    dynxx_js_init();
 #endif
 
     return true;
@@ -263,13 +248,17 @@ void dynxxRelease() {
 
 #if defined(USE_DB)
     sqlQRCache.reset();
-    _sqlite->closeAll();
-    _sqlite.reset();
+    if (_sqlite != nullptr) {
+        _sqlite->closeAll();
+        _sqlite.reset();
+    }
 #endif
 
 #if defined(USE_KV)
-    _kv->closeAll();
-    _kv.reset();
+    if (_kv != nullptr) {
+        _kv->closeAll();
+        _kv.reset();
+    }
 #endif
 
     dynxxLogSetCallback(nullptr);
@@ -428,7 +417,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
     DynXXHttpResponse rsp;
 #if defined(USE_CURL)
     if (_http_client == nullptr) [[unlikely]] {
-        return rsp;
+        _http_client = std::make_unique<HttpClient>();
     }
 #endif
     if (url.empty()) [[unlikely]] {
@@ -539,8 +528,11 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
 
 #if defined(USE_CURL)
 bool dynxxNetHttpDownload(std::string_view url, std::string_view filePath, size_t timeout) {
-    if (_http_client == nullptr || url.empty() || filePath.empty()) [[unlikely]] {
+    if (url.empty() || filePath.empty()) [[unlikely]] {
         return false;
+    }
+    if (_http_client == nullptr) {
+        _http_client = std::make_unique<HttpClient>();
     }
     return _http_client->download(url, filePath, timeout);
 }
@@ -551,8 +543,14 @@ bool dynxxNetHttpDownload(std::string_view url, std::string_view filePath, size_
 #if defined(USE_DB)
 
 DynXXSQLiteConnHandle dynxxSQLiteOpen(std::string_view _id) {
-    if (_sqlite == nullptr || _root == nullptr || _id.empty()) [[unlikely]] {
+    if (_root == nullptr || _id.empty()) [[unlikely]] {
         return 0;
+    }
+    if (_sqlite == nullptr) {
+        _sqlite = std::make_unique<SQLite::SQLiteStore>();
+    }
+    if (sqlQRCache == nullptr) {
+        sqlQRCache = std::make_unique<Mem::PtrCache<SQLite::Connection::QueryResult>>();
     }
     const auto rootPath = dynxxRootPath();
     if (!rootPath.has_value()) [[unlikely]] {
@@ -574,7 +572,7 @@ bool dynxxSQLiteExecute(DynXXSQLiteConnHandle conn, std::string_view sql) {
 }
 
 DynXXSQLiteQueryResultHandle dynxxSQLiteQueryDo(DynXXSQLiteConnHandle conn, std::string_view sql) {
-    if (conn == 0 || sql.empty()) {
+    if (conn == 0 || sql.empty() || sqlQRCache == nullptr) {
         return 0;
     }
     const auto xconn = Mem::addr2ptr<SQLite::Connection>(conn);
@@ -647,8 +645,14 @@ void dynxxSQLiteClose(DynXXSQLiteConnHandle conn) {
 #if defined(USE_KV)
 
 DynXXKVConnHandle dynxxKVOpen(std::string_view _id) {
-    if (_kv == nullptr || _id.empty()) [[unlikely]] {
+    if (_id.empty()) [[unlikely]] {
         return 0;
+    }
+    if (_kv == nullptr) {
+        if (_root == nullptr) [[unlikely]] {
+            return 0;
+        }
+        _kv = std::make_unique<KV::KVStore>(dynxxRootPath().value());
     }
     if (const auto ptr = _kv->open(_id).lock()) [[likely]] {
         return Mem::ptr2addr(ptr.get());

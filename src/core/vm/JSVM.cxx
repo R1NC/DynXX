@@ -108,11 +108,6 @@ namespace
         js_std_add_helpers(ctx, 0, nullptr);
         js_init_module_std(ctx, "qjs:std");
         js_init_module_os(ctx, "qjs:os");
-
-        if (!_loadScript(ctx, IMPORT_STD_OS_JS, "import-std-os.js", true)) [[unlikely]] {
-            return ctx;
-        }
-
         return ctx;
     }
 
@@ -263,17 +258,37 @@ bool JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) c
 
 JSVM::JSVM() : context{std::shared_ptr<JSContext>(_newContext(this->runtime.get()), JSContextDeleter{})}
 {
+    if (this->runtime == nullptr || this->context == nullptr) [[unlikely]]
+    {
+        return;
+    }
     js_std_init_handlers(this->runtime.get());
     JS_SetModuleLoaderFunc(this->runtime.get(), nullptr, js_module_loader, nullptr);
     js_std_set_worker_new_context_func(_newContext);
 
+    if (!_loadScript(this->context.get(), IMPORT_STD_OS_JS, "import-std-os.js", true)) [[unlikely]]
+    {
+        return;
+    }
+
     this->jGlobal = JS_GetGlobalObject(this->context.get());// Can not free here, will be called in future
+    if (JS_IsException(this->jGlobal) == 1) [[unlikely]]
+    {
+        dumpJsErr(this->context.get());
+        JS_FreeValue(this->context.get(), this->jGlobal);
+        this->jGlobal = JS_UNDEFINED;
+        return;
+    }
 
     promiseCache = std::make_unique<Mem::PtrCache<JSPromise>>();
 }
 
 bool JSVM::bindFunc(std::string_view funcJ, JSCFunction *funcC)
 {
+    if (this->context == nullptr || JS_IsUndefined(this->jGlobal) == 1) [[unlikely]]
+    {
+        return false;
+    }
     const auto funcS = std::string{funcJ.data(), funcJ.size()}; 
     auto res = true;
     const auto ctx = this->context.get();
@@ -293,8 +308,6 @@ bool JSVM::bindFunc(std::string_view funcJ, JSCFunction *funcC)
             res = false;
         }
     }
-
-    this->jValueCache.insert(jFunc); // Can not free here, will be called in future
 
     return res;
 }
@@ -329,6 +342,13 @@ void JSVM::beforeLoad()
 bool JSVM::loadFile(std::string_view file, bool isModule)
 {
     const auto fileS = std::string{file.data(), file.size()};
+    {
+        const auto lock = std::scoped_lock(this->vmMutex);
+        if (this->loadedScriptNames.contains(fileS)) [[likely]]
+        {
+            return true;
+        }
+    }
     try {
         std::ifstream ifs(fileS.c_str());
         ifs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -352,19 +372,39 @@ bool JSVM::loadFile(std::string_view file, bool isModule)
 }
 
 bool JSVM::loadScript(std::string_view script, std::string_view name, bool isModule) {
+    if (this->context == nullptr) [[unlikely]]
+    {
+        return false;
+    }
+    const auto nameS = std::string{name.data(), name.size()};
     const auto lock = std::scoped_lock(this->vmMutex);
-    this->beforeLoad();
-    return _loadScript(this->context.get(), script, name, isModule);
+    if (this->loadedScriptNames.contains(nameS)) [[likely]]
+    {
+        return true;
+    }
+    const auto loaded = _loadScript(this->context.get(), script, name, isModule);
+    if (loaded) [[likely]]
+    {
+        this->loadedScriptNames.insert(nameS);
+    }
+    return loaded;
 }
 
 bool JSVM::loadBinary(BytesView bytes, [[maybe_unused]] bool isModule) {
+    if (this->context == nullptr) [[unlikely]]
+    {
+        return false;
+    }
     const auto lock = std::scoped_lock(this->vmMutex);
-    this->beforeLoad();
     return js_std_eval_binary(this->context.get(), bytes.data(), bytes.size(), 0);
 }
 
 /// WARNING: Nested call between native and JS requires a reenterable `recursive_mutex` here!
 std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_view params, bool await) {
+    if (this->context == nullptr || JS_IsUndefined(this->jGlobal) == 1) [[unlikely]]
+    {
+        return std::nullopt;
+    }
     if (!lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
     {
         dynxxLogPrint(Error, "JSVM::callFunc failed to lock");
@@ -383,7 +423,7 @@ std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_vie
 
         auto jRes = JS_Call(ctx, jFunc, this->jGlobal, argv.size(), argv.data());
 
-        if (JS_IsException(jRes) == 0) [[unlikely]]
+        if (JS_IsException(jRes) == 1) [[unlikely]]
         {
             dynxxLogPrint(Error, "JS_Call failed ->");
             dumpJsErr(ctx);
@@ -393,6 +433,7 @@ std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_vie
             success = true;
             if (await)
             {/// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
+                this->beforeLoad();
                 jRes = this->jAwait(jRes); // Handle promise if needed
             }
             const auto cS = JS_ToCString(ctx, jRes);
@@ -494,25 +535,15 @@ JSVM::~JSVM()
     promiseCache.reset();
     this->timerLooperTask.reset();
     this->promiseLooperTask.reset();
-
-    js_std_loop_cancel(this->runtime.get());
-
     js_std_set_worker_new_context_func(nullptr);
-
-    for (const auto &jv : this->jValueCache)
-    {
-        if (auto tag = JS_VALUE_GET_TAG(jv); tag == static_cast<decltype(tag)>(JS_TAG_MODULE)) [[unlikely]]
-        {
-            // Free a module will cause crash in QJS
-            continue;
-        }
-        JS_FreeValue(this->context.get(), jv);
-    }
-
-    JS_FreeValue(this->context.get(), jGlobal);
+    this->jValueCache.clear();
+    this->loadedScriptNames.clear();
+    this->jGlobal = JS_UNDEFINED;
     this->context.reset();
-
-    js_std_free_handlers(this->runtime.get());
+    if (this->runtime != nullptr) [[likely]]
+    {
+        js_std_free_handlers(this->runtime.get());
+    }
     this->runtime.reset();
 }
 

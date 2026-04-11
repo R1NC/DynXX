@@ -1,14 +1,17 @@
 import { join } from 'node:path';
 
 import {
-  checkArtifacts, exportCompileCommands, getOutputExePath, gotoParentPath,
-  readCIEnv, runCMake, setBuildOutputEnv, setEnv, setupVcpkgEnv,
-} from './utils.js';
+  gotoParentPath, readCIEnv, setEnv,
+} from '../utils.js';
+import {
+  checkArtifacts, exportCompileCommands, getOutputExePath,
+  resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv
+} from './build-utils.js';
 
 function main() {
   const root = gotoParentPath();
 
-  const buildType = "Release";
+  const buildType = resolveBuildType();
   const abi = "arm";
 
   const platformName = "WASM";
@@ -25,18 +28,18 @@ function main() {
   setBuildOutputEnv(buildFolder, outputPath);
 
   setupVcpkgEnv("wasm32-emscripten");
-
-  runCMake(preset, buildFolder, outputFolder, false);
+  runCMake(preset, buildFolder, outputFolder, true, ["-DDYNXX_BUILD_TESTS=OFF"]);
 
   exportCompileCommands(buildFolder, root);
 
   const outputExePath = getOutputExePath();
   
-  checkArtifacts([
+  const buildArtifacts = [
     join(outputExePath, "DynXX.wasm"),
     join(outputExePath, "DynXX.js"),
     join(outputExePath, "DynXX.html"),
-  ]);
+  ];
+  checkArtifacts(buildArtifacts);
 }
 
 main();

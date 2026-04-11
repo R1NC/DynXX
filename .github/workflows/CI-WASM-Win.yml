@@ -10,11 +10,12 @@ on:
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
       - 'vcpkg.json'
-      - 'build-tools/utils.ts'
-      - 'build-tools/setup-vcpkg.ts'
-      - 'build-tools/build-WASM.ts'
-      - 'build-tools/routes.ts'
-      - 'build-tools/package.json'
+      - 'tools/utils.ts'
+      - 'tools/setup-vcpkg.ts'
+      - 'tools/build/build-utils.ts'
+      - 'tools/build/build-WASM.ts'
+      - 'tools/routes.ts'
+      - 'tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-WASM-Win.yml'
   workflow_dispatch:
@@ -46,7 +47,7 @@ jobs:
 
     - name: Setup custom vcpkg
       shell: pwsh
-      working-directory: ./build-tools
+      working-directory: ./tools
       run: |
         npm install
         npm run setup:vcpkg
@@ -60,7 +61,7 @@ jobs:
 
     - name: Build
       shell: pwsh
-      working-directory: ./build-tools
+      working-directory: ./tools
       env:
         CI_WASM_SDK_HOME: "${{ env.EMSDK }}"
       run: |

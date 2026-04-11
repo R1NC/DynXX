@@ -1,17 +1,17 @@
-function jTestDeviceInfo(): void {
-    let platform: DynXXDeviceType = DynXXDevicePlatform()
+function jTestDeviceInfo() {
+    let platform = DynXXDevicePlatform()
     DynXXLogPrint(DynXXLogLevel.Debug, `Platform: ${platform}`)
-    let name: string = DynXXDeviceName()
+    let name = DynXXDeviceName()
     DynXXLogPrint(DynXXLogLevel.Debug, `Name: ${name}`)
-    let manufacturer: string = DynXXDeviceManufacturer()
+    let manufacturer = DynXXDeviceManufacturer()
     DynXXLogPrint(DynXXLogLevel.Debug, `Manufacturer: ${manufacturer}`)
-    let osVersion: string = DynXXDeviceOSVersion()
+    let osVersion = DynXXDeviceOSVersion()
     DynXXLogPrint(DynXXLogLevel.Debug, `OS Version: ${osVersion}`)
-    let cpuArch: DynXXDeviceCpuArch = DynXXDeviceCPUArch()
+    let cpuArch = DynXXDeviceCPUArch()
     DynXXLogPrint(DynXXLogLevel.Debug, `CPU Arch: ${cpuArch}`)
 }
 
-function testMicrotask(): void {
+function testMicrotask() {
     queueMicrotask(() => {
         jTestNetHttpReqPro('https://rinc.xyz').then((rsp)=>{
             DynXXLogPrint(DynXXLogLevel.Debug, `rsp: ${rsp}`)
@@ -19,19 +19,19 @@ function testMicrotask(): void {
     })
 }
 
-function jTestNetHttpReqPro(url: string): Promise<string> {
+function jTestNetHttpReqPro(url) {
     return new Promise((resolve, reject) => {
         if (url === undefined || url.trim() === "") {
             reject(new Error('invalid url'))
         }
 
-        let method: number = DynXXHttpMethod.Get
+        let method = DynXXHttpMethod.Get
 
-        let paramMap: Map<string, number | string> = new Map()
+        let paramMap = new Map()
         paramMap.set('p0', 123)
         paramMap.set('p1', 'abc')
 
-        let headerMap: Map<string, string> = new Map()
+        let headerMap = new Map()
         headerMap.set('User-Agent', 'DynXX')
         headerMap.set('Cache-Control', 'no-cache')
 
@@ -41,7 +41,7 @@ function jTestNetHttpReqPro(url: string): Promise<string> {
     })
 }
 
-function testPromise(): void {
+function testPromise() {
     jTestNetHttpReqPro('https://rinc.xyz')
         .then(res => {
             DynXXLogPrint(DynXXLogLevel.Debug, `Response: ${res}`)
@@ -60,7 +60,7 @@ function testPromise(): void {
         })
 }
 
-function testPromiseAll(): void {
+function testPromiseAll() {
     const pro0 = jTestNetHttpReqPro('https://rinc.xyz')
     const pro1 = jTestNetHttpReqPro('https://abc.xyz')
     const pro2 = jTestNetHttpReqPro('https://cn.bing.com')
@@ -69,7 +69,7 @@ function testPromiseAll(): void {
     })
 }
 
-async function testAwait(): Promise<void> {
+async function testAwait() {
     try {
         const res = await jTestNetHttpReqPro('https://rinc.xyz')
         DynXXLogPrint(DynXXLogLevel.Debug, `Response: ${res}`)
@@ -78,35 +78,35 @@ async function testAwait(): Promise<void> {
     }
 }
 
-function jTestKV(): void {
-    let kvId: string = 'test_kv'
-    let conn: string = DynXXKVOpen(kvId)
+function jTestKV() {
+    let kvId = 'test_kv'
+    let conn = DynXXKVOpen(kvId)
     if (conn) {
-        let kS: string = "kS"
+        let kS = "kS"
         if (DynXXKVContains(conn, kS)) {
             DynXXKVRemove(conn, kS)
         }
         DynXXKVWriteString(conn, kS, "DynXX")
-        let vS: string = DynXXKVReadString(conn, kS)
+        let vS = DynXXKVReadString(conn, kS)
         DynXXLogPrint(DynXXLogLevel.Debug, `KV read ${kS}: ${vS}`)
 
-        let kI: string = "kI"
+        let kI = "kI"
         if (DynXXKVContains(conn, kI)) {
             DynXXKVRemove(conn, kI)
         }
         DynXXKVWriteInteger(conn, kI, 12345678909666666)
-        let vI: number = DynXXKVReadInteger(conn, kI)
+        let vI = DynXXKVReadInteger(conn, kI)
         DynXXLogPrint(DynXXLogLevel.Debug, `KV read ${kI}: ${vI}`)
 
-        let kF: string = "kF"
+        let kF = "kF"
         if (DynXXKVContains(conn, kF)) {
             DynXXKVRemove(conn, kF)
         }
         DynXXKVWriteFloat(conn, kF, -0.12345678987654321)
-        let vF: number = DynXXKVReadFloat(conn, kF)
+        let vF = DynXXKVReadFloat(conn, kF)
         DynXXLogPrint(DynXXLogLevel.Debug, `KV read ${kF}: ${vF}`)
 
-        let keys: string[] = DynXXKVAllKeys(conn)
+        let keys = DynXXKVAllKeys(conn)
         keys.forEach((item, index, arr) => {
             DynXXLogPrint(DynXXLogLevel.Debug, `KV key${index}: ${item}`)
         })
@@ -117,7 +117,7 @@ function jTestKV(): void {
     }
 }
 
-let sqlPrepareData: string = `
+var sqlPrepareData = `
 DROP TABLE IF EXISTS TestTable;
 CREATE TABLE IF NOT EXISTS TestTable (_id INTEGER PRIMARY KEY AUTOINCREMENT, s TEXT, i INTEGER, f FLOAT);
 INSERT OR IGNORE INTO TestTable (s, i, f) VALUES
@@ -125,20 +125,20 @@ INSERT OR IGNORE INTO TestTable (s, i, f) VALUES
 ('Android', 2, 0.2222222222),
 ('HarmonyOS', 3, 0.3333333333);`
 
-let sqlQuery: string = `SELECT * FROM TestTable;`
+var sqlQuery = `SELECT * FROM TestTable;`
 
-function jTestSQLite(): void {
-    let dbId: string = 'test_db'
-    let conn: string = DynXXSQLiteOpen(dbId)
+function jTestSQLite() {
+    let dbId = 'test_db'
+    let conn = DynXXSQLiteOpen(dbId)
     if (conn) {
         DynXXSQLiteExecute(conn, sqlPrepareData).then((exeSuccess)=>{
             if (exeSuccess) {
                 DynXXSQLiteQueryDo(conn, sqlQuery).then((queryResult)=>{
                     if (queryResult) {
                         while (DynXXSQLiteQueryReadRow(queryResult)) {
-                            let s: string = DynXXSQLiteQueryReadColumnText(queryResult, 's')
-                            let i: number = DynXXSQLiteQueryReadColumnInteger(queryResult, 'i')
-                            let f: number = DynXXSQLiteQueryReadColumnFloat(queryResult, 'f')
+                            let s = DynXXSQLiteQueryReadColumnText(queryResult, 's')
+                            let i = DynXXSQLiteQueryReadColumnInteger(queryResult, 'i')
+                            let f = DynXXSQLiteQueryReadColumnFloat(queryResult, 'f')
                             DynXXLogPrint(DynXXLogLevel.Debug, `s:${s} i:${i} f:${f}`)
                         }
                         DynXXSQLiteQueryDrop(queryResult)
@@ -157,76 +157,76 @@ function jTestSQLite(): void {
     }
 }
 
-function jTestCryptoBase64(s: string): void {
-    let noNewLines: boolean = true
-    let inBytes: number[] = DynXXStr2Bytes(s)
-    let enBytes: number[] = DynXXCryptoBase64Encode(inBytes, noNewLines)
-    let enS: string = DynXXBytes2Str(enBytes)
+function jTestCryptoBase64(s) {
+    let noNewLines = true
+    let inBytes = DynXXStr2Bytes(s)
+    let enBytes = DynXXCryptoBase64Encode(inBytes, noNewLines)
+    let enS = DynXXBytes2Str(enBytes)
     DynXXLogPrint(DynXXLogLevel.Debug, `Base64 encoded: ${enS}`)
 
-    let deBytes: number[] = DynXXCryptoBase64Decode(enBytes, noNewLines)
-    let deS: string = DynXXBytes2Str(deBytes)
+    let deBytes = DynXXCryptoBase64Decode(enBytes, noNewLines)
+    let deS = DynXXBytes2Str(deBytes)
     DynXXLogPrint(DynXXLogLevel.Debug, `Base64 decoded: ${deS}`)
 }
 
-function jTestCryptoHash(s: string): void {
-    let inBytes: number[] = DynXXStr2Bytes(s)
+function jTestCryptoHash(s) {
+    let inBytes = DynXXStr2Bytes(s)
 
-    let md5Bytes: number[] = DynXXCryptoHashMD5(inBytes)
-    let md5S: string = DynXXCodingHexBytes2Str(md5Bytes)
+    let md5Bytes = DynXXCryptoHashMD5(inBytes)
+    let md5S = DynXXCodingHexBytes2Str(md5Bytes)
     DynXXLogPrint(DynXXLogLevel.Debug, `MD5: ${md5S}`)
 
-    let sha256Bytes: number[] = DynXXCryptoHashSHA256(inBytes)
-    let sha256S: string = DynXXCodingHexBytes2Str(sha256Bytes)
+    let sha256Bytes = DynXXCryptoHashSHA256(inBytes)
+    let sha256S = DynXXCodingHexBytes2Str(sha256Bytes)
     DynXXLogPrint(DynXXLogLevel.Debug, `SHA256: ${sha256S}`)
 }
 
-let AES_KEY: string = "QWERTYUIOPASDFGH"
+var AES_KEY = "QWERTYUIOPASDFGH"
 
-function jTestCryptoAes(s: string): void {
-    let inBytes: number[] = DynXXStr2Bytes(s)
-    let keyBytes: number[] = DynXXStr2Bytes(AES_KEY)
+function jTestCryptoAes(s) {
+    let inBytes = DynXXStr2Bytes(s)
+    let keyBytes = DynXXStr2Bytes(AES_KEY)
 
-    let enBytes: number[] = DynXXCryptoAesEncrypt(inBytes, keyBytes)
-    let enS: string = DynXXCodingHexBytes2Str(enBytes)
+    let enBytes = DynXXCryptoAesEncrypt(inBytes, keyBytes)
+    let enS = DynXXCodingHexBytes2Str(enBytes)
     DynXXLogPrint(DynXXLogLevel.Debug, `AES encoded: ${enS}`)
 
-    let deBytes: number[] = DynXXCryptoAesDecrypt(enBytes, keyBytes)
-    let deS: string = DynXXBytes2Str(deBytes)
+    let deBytes = DynXXCryptoAesDecrypt(enBytes, keyBytes)
+    let deS = DynXXBytes2Str(deBytes)
     DynXXLogPrint(DynXXLogLevel.Debug, `AES decoded: ${deS}`)
 }
 
-function jTestCryptoAesGcm(s: string): void {
-    let inBytes: number[] = DynXXStr2Bytes(s)
-    let keyBytes: number[] = DynXXStr2Bytes(AES_KEY)
-    let ivBytes: number[] = DynXXCryptoRand(12)
-    let tagBits: number = 96
+function jTestCryptoAesGcm(s) {
+    let inBytes = DynXXStr2Bytes(s)
+    let keyBytes = DynXXStr2Bytes(AES_KEY)
+    let ivBytes = DynXXCryptoRand(12)
+    let tagBits = 96
 
-    let enBytes: number[] = DynXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, tagBits)
-    let enS: string = DynXXCodingHexBytes2Str(enBytes)
+    let enBytes = DynXXCryptoAesGcmEncrypt(inBytes, keyBytes, ivBytes, tagBits)
+    let enS = DynXXCodingHexBytes2Str(enBytes)
     DynXXLogPrint(DynXXLogLevel.Debug, `AES-GCM encoded: ${enS}`)
 
-    let deBytes: number[] = DynXXCryptoAesGcmDecrypt(enBytes, keyBytes, ivBytes, tagBits)
-    let deS: string = DynXXBytes2Str(deBytes)
+    let deBytes = DynXXCryptoAesGcmDecrypt(enBytes, keyBytes, ivBytes, tagBits)
+    let deS = DynXXBytes2Str(deBytes)
     DynXXLogPrint(DynXXLogLevel.Debug, `AES-GCM decoded: ${deS}`)
 }
 
-function jTestZip(): void {
-    let root: string = DynXXRootPath()
-    let inFile: string = `${root}/test.js`
-    let zipFile: string = `${root}/test.gzip`
-    let zipRes: boolean = DynXXZZipFile(inFile, zipFile)
+function jTestZip() {
+    let root = DynXXRootPath()
+    let inFile = `${root}/test.js`
+    let zipFile = `${root}/test.gzip`
+    let zipRes = DynXXZZipFile(inFile, zipFile)
     if (zipRes) {
         DynXXLogPrint(DynXXLogLevel.Debug, 'ZIP succeed!')
-        let outFile: string = `${root}/test.txt`
-        let unzipRes: boolean = DynXXZUnZipFile(zipFile, outFile)
+        let outFile = `${root}/test.txt`
+        let unzipRes = DynXXZUnZipFile(zipFile, outFile)
         DynXXLogPrint(DynXXLogLevel.Debug, `UNZIP result: ${unzipRes}`)
     } else {
         DynXXLogPrint(DynXXLogLevel.Debug, 'ZIP failed')
     }
 }
 
-function jTestCallPlatform(): void {
+function jTestCallPlatform() {
     let res = DynXXCallPlatform("tsCallPlatformParam")
     DynXXLogPrint(DynXXLogLevel.Debug, `Return value from Platform: ${res}`)
 }

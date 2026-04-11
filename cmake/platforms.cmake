@@ -3,6 +3,8 @@ function(dynxx_apply_platform_definitions TARGET_NAME)
         add_definitions_if(${TARGET_NAME} OFF
             NOMINMAX
             WIN32_LEAN_AND_MEAN
+            GTEST_HAS_PTHREAD=0
+            GTEST_HAS_TR1_TUPLE=0
         )
     endif()
 endfunction()
@@ -36,8 +38,9 @@ function(dynxx_append_platform_link_libraries LINK_LIBS_VAR)
         )
     elseif(APPLE)
         list(APPEND link_libs
-            apple_nghttp2
             z
+            apple_nghttp2
+            "-framework Foundation"
         )
         if(USE_DB)
             list(APPEND link_libs sqlite3)

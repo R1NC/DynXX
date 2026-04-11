@@ -17,6 +17,9 @@ namespace {
 #define BIND_API(f) vm->bindFunc(#f, f##L)
 
     bool loadF(std::string_view f) {
+        if (vm == nullptr) {
+            dynxx_lua_init();
+        }
         if (vm == nullptr || f.empty()) [[unlikely]] {
             return false;
         }
@@ -24,6 +27,9 @@ namespace {
     }
 
     bool loadS(std::string_view s) {
+        if (vm == nullptr) {
+            dynxx_lua_init();
+        }
         if (vm == nullptr || s.empty()) [[unlikely]] {
             return false;
         }
@@ -31,6 +37,9 @@ namespace {
     }
 
     std::optional<std::string> call(std::string_view f, std::string_view ps) {
+        if (vm == nullptr) {
+            dynxx_lua_init();
+        }
         if (vm == nullptr || f.empty()) [[unlikely]] {
             return std::nullopt;
         }

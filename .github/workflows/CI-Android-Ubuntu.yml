@@ -6,16 +6,19 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
+      - 'test/**'
       - 'platforms/Android/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
       - 'vcpkg.json'
-      - 'build-tools/utils.ts'
-      - 'build-tools/setup-vcpkg.ts'
-      - 'build-tools/build-Android.ts'
-      - 'build-tools/routes.ts'
-      - 'build-tools/package.json'
+      - 'tools/utils.ts'
+      - 'tools/setup-vcpkg.ts'
+      - 'tools/test/test-utils.ts'
+      - 'tools/build/build-utils.ts'
+      - 'tools/build/build-Android.ts'
+      - 'tools/routes.ts'
+      - 'tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-Android-Ubuntu.yml'
   workflow_dispatch:
@@ -68,7 +71,7 @@ jobs:
           packages: 'ndk;${{ env.ANDROID_NDK_VERSION }}'
 
       - name: Setup custom vcpkg
-        working-directory: ./build-tools
+        working-directory: ./tools
         run: |
           npm install
           npm run setup:vcpkg
@@ -81,11 +84,11 @@ jobs:
           key: vcpkg-binary-cache-android-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
       - name: Build
-        working-directory: ./build-tools
+        working-directory: ./tools
         env:
           CI_ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          npm run build:android
+          npm run build:android -- --test
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

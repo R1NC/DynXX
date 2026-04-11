@@ -6,15 +6,18 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
+      - 'test/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
       - 'vcpkg.json'
-      - 'build-tools/utils.ts'
-      - 'build-tools/setup-vcpkg.ts'
-      - 'build-tools/build-HarmonyOS.ts'
-      - 'build-tools/routes.ts'
-      - 'build-tools/package.json'
+      - 'tools/utils.ts'
+      - 'tools/setup-vcpkg.ts'
+      - 'tools/test/test-utils.ts'
+      - 'tools/build/build-utils.ts'
+      - 'tools/build/build-OHOS.ts'
+      - 'tools/routes.ts'
+      - 'tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-OHOS-Win.yml'
   workflow_dispatch:
@@ -66,7 +69,7 @@ jobs:
 
     - name: Setup custom vcpkg
       shell: pwsh
-      working-directory: ./build-tools
+      working-directory: ./tools
       run: |
         npm install
         npm run setup:vcpkg
@@ -80,9 +83,9 @@ jobs:
 
     - name: Build
       shell: pwsh
-      working-directory: ./build-tools
+      working-directory: ./tools
       run: |
-        npm run build:harmonyos
+        npm run build:harmonyos -- --test
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4

@@ -1,15 +1,18 @@
 import { join } from 'node:path';
 
 import {
-  checkArtifacts, copyStaticLibs, exportCompileCommands, getOhosLlvmHome,
-  getOutputLibPath, getVcpkgLibPath, gotoParentPath, mergeLibs, readCIEnv,
-  runCMake, setBuildOutputEnv, setEnv, setupVcpkgEnv,
-} from './utils.js';
+  getOhosLlvmHome, gotoParentPath, readCIEnv, setEnv,
+} from '../utils.js';
+import {
+  checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputLibPath, getVcpkgLibPath,
+  mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv
+} from './build-utils.js';
+import { shouldBuildTests } from '../test/test-utils.js';
 
 function main() {
   const root = gotoParentPath();
 
-  const buildType = "Release";
+  const buildType = resolveBuildType();
   const abi = "arm64-v8a";
   
   setEnv("OHOS_ABI", abi);
@@ -29,12 +32,20 @@ function main() {
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();
+  const buildTests = shouldBuildTests();
 
-  runCMake(preset, buildFolder, outputFolder, true);
+  runCMake(preset, buildFolder, outputFolder, true, [`-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`]);
 
   exportCompileCommands(buildFolder, root);
 
-  checkArtifacts([join(outputLibPath, "libDynXX.a")]);
+  const buildArtifacts = [join(outputLibPath, "libDynXX.a")];
+  if (buildTests) {
+    buildArtifacts.push(
+      join(outputLibPath, "libDynXXTest.a"),
+      join(root, outputFolder, "include", "DynXXTest.hxx"),
+    );
+  }
+  checkArtifacts(buildArtifacts);
 
   copyStaticLibs(vcpkgLibPath, outputLibPath);
 

@@ -178,7 +178,7 @@ bool LuaVM::loadFile(std::string_view file)
 {
     const auto lock = std::scoped_lock(this->vmMutex);
     const auto fileS = std::string{file.data(), file.size()};
-    if (const auto L = this->lstate.get(); !luaL_dofile(L, fileS.c_str())) [[unlikely]]
+    if (const auto L = this->lstate.get(); luaL_dofile(L, fileS.c_str()) != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`luaL_dofile` error:");
         return false;
@@ -191,7 +191,7 @@ bool LuaVM::loadScript(std::string_view script)
 {
     const auto lock = std::scoped_lock(this->vmMutex);
     const auto scriptS = std::string{script.data(), script.size()};
-    if (const auto L = this->lstate.get(); !luaL_dostring(L, scriptS.c_str())) [[unlikely]]
+    if (const auto L = this->lstate.get(); luaL_dostring(L, scriptS.c_str()) != LUA_OK) [[unlikely]]
     {
         PRINT_L_ERROR(L, "`luaL_dostring` error:");
         return false;

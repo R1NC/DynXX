@@ -114,10 +114,10 @@ function generateTsDocs(root: string, siteDir: string): void {
     throw new Error(`TS declaration file does not exist: ${tsInput}`);
   }
 
-  const typedocCli = join(root, 'build-tools', 'node_modules', 'typedoc', 'bin', 'typedoc');
+  const typedocCli = join(root, 'tools', 'node_modules', 'typedoc', 'bin', 'typedoc');
   if (!existsSync(typedocCli)) {
     throw new Error(
-      `typedoc is not installed. Run "npm install" in build-tools first. Missing: ${typedocCli}`
+      `typedoc is not installed. Run "npm install" in tools first. Missing: ${typedocCli}`
     );
   }
 

@@ -69,8 +69,10 @@ namespace {
         return process(zb, bufferSize,
             [bufferSize, inStream]
             {
-                Bytes in;
-                inStream->readsome(std::bit_cast<char *>(in.data()), static_cast<std::streamsize>(bufferSize));
+                Bytes in(bufferSize, 0);
+                inStream->read(std::bit_cast<char *>(in.data()), static_cast<std::streamsize>(bufferSize));
+                const auto readLen = static_cast<size_t>(inStream->gcount());
+                in.resize(readLen);
                 return in;
             },
             [outStream](const Bytes &bytes)
@@ -90,8 +92,9 @@ namespace {
         return process(zb, bufferSize,
             [bufferSize, inFile]
             {
-                Bytes in;
+                Bytes in(bufferSize, 0);
                 const auto ret = std::fread(in.data(), sizeof(byte), bufferSize, inFile);
+                in.resize(ret);
                 dynxxLogPrintF(Debug, "Z read ret: {}", ret);
                 return in;
             },

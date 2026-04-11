@@ -7,9 +7,9 @@ on:
       - 'include/DynXX/**'
       - 'scripts/JS/DynXX.d.ts'
       - 'scripts/Lua/DynXX.lua'
-      - 'build-tools/gen-doc.ts'
-      - 'build-tools/routes.ts'
-      - 'build-tools/package.json'
+      - 'tools/gen-doc.ts'
+      - 'tools/routes.ts'
+      - 'tools/package.json'
       - '.github/workflows/Deploy-Docs.yml'
   workflow_dispatch:
 
@@ -45,7 +45,7 @@ jobs:
           sudo luarocks install ldoc
 
       - name: Generate Docs
-        working-directory: ./build-tools
+        working-directory: ./tools
         env:
           DOXYGEN_BIN: /usr/bin/doxygen
         run: |

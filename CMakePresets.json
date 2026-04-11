@@ -319,6 +319,9 @@
       "displayName": "Windows Debug Config",
       "description": "Debug build for Windows",
       "inherits": ["Debug-Default", "Vcpkg-Default"],
+      "cacheVariables": {
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDebug"
+      },
       "toolset": "ClangCL",
       "generator": "Visual Studio 17 2022",
       "condition": {
@@ -344,7 +347,8 @@
       "inherits": ["Release-Default", "Vcpkg-Default"],
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang-cl",
-        "CMAKE_CXX_COMPILER": "clang-cl"
+        "CMAKE_CXX_COMPILER": "clang-cl",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded"
       },
       "condition": {
         "type": "allOf",

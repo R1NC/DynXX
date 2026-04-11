@@ -1,4 +1,8 @@
 function(init_before_project)
+    if(POLICY CMP0091)
+        cmake_policy(SET CMP0091 NEW)
+    endif()
+
     if(NOT (EMSCRIPTEN AND CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows"))
         find_program(CCACHE_PROGRAM ccache)
     endif()

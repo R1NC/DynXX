@@ -6,15 +6,18 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
+      - 'test/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
       - 'vcpkg.json'
-      - 'build-tools/utils.ts'
-      - 'build-tools/setup-vcpkg.ts'
-      - 'build-tools/build-HarmonyOS.ts'
-      - 'build-tools/routes.ts'
-      - 'build-tools/package.json'
+      - 'tools/utils.ts'
+      - 'tools/setup-vcpkg.ts'
+      - 'tools/test/test-utils.ts'
+      - 'tools/build/build-utils.ts'
+      - 'tools/build/build-OHOS.ts'
+      - 'tools/routes.ts'
+      - 'tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-OHOS-Ubuntu.yml'
   workflow_dispatch:
@@ -62,7 +65,7 @@ jobs:
         echo "CI_OHOS_NDK_HOME=${{ github.workspace }}/ohos-sdk/linux/native" >> $GITHUB_ENV
 
     - name: Setup custom vcpkg
-      working-directory: ./build-tools
+      working-directory: ./tools
       run: |
         npm install
         npm run setup:vcpkg
@@ -75,9 +78,9 @@ jobs:
         key: vcpkg-binary-cache-ohos-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
-      working-directory: ./build-tools
+      working-directory: ./tools
       run: |
-        npm run build:harmonyos
+        npm run build:harmonyos -- --test
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4

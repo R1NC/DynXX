@@ -9,7 +9,6 @@ compile_commands.json
 .idea
 .vscode
 vcpkg_installed
-build
 build.*
 dist
 *.qjsb

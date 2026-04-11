@@ -237,7 +237,7 @@ namespace
         constexpr auto TagBitsUnit = 8;
         constexpr auto TagBitsMin = 96;
         constexpr auto TagBitsMax = 128;
-        if (tagBits % TagBitsUnit != 0 || tagBits / TagBitsUnit >= inLen || tagBits < TagBitsMin || tagBits > TagBitsMax) [[unlikely]] {
+        if (tagBits % TagBitsUnit != 0 || tagBits < TagBitsMin || tagBits > TagBitsMax) [[unlikely]] {
             dynxxLogPrint(Error, "aesGcm invalid tagBits");
             return false;
         }
@@ -411,6 +411,7 @@ namespace
                          this->forEncrypt ? "encrypt" : "decrypt", errMsg());
             return {};
         }
+        outBytes.resize(outLen);
         return outBytes;
     }
 }

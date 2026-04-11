@@ -219,6 +219,7 @@ namespace DynXX::Core::VM {
         };
 
         std::unordered_set<JSValue, JSValueHash, JSValueEqual> jValueCache;
+        std::unordered_set<std::string> loadedScriptNames;
 
         JSValue newPromise(std::function<JSValue()> &&jf);
 

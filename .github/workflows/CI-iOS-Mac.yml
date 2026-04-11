@@ -6,15 +6,18 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
+      - 'test/**'
       - 'cmake/**'
       - 'CMakeLists.txt'
       - 'CMakePresets.json'
       - 'vcpkg.json'
-      - 'build-tools/utils.ts'
-      - 'build-tools/setup-vcpkg.ts'
-      - 'build-tools/build-iOS.ts'
-      - 'build-tools/routes.ts'
-      - 'build-tools/package.json'
+      - 'tools/utils.ts'
+      - 'tools/setup-vcpkg.ts'
+      - 'tools/test/test-utils.ts'
+      - 'tools/build/build-utils.ts'
+      - 'tools/build/build-iOS.ts'
+      - 'tools/routes.ts'
+      - 'tools/package.json'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-iOS-Mac.yml'
   workflow_dispatch:
@@ -39,7 +42,7 @@ jobs:
         submodules: 'recursive'
 
     - name: Setup custom vcpkg
-      working-directory: ./build-tools
+      working-directory: ./tools
       run: |
         npm install
         npm run setup:vcpkg
@@ -52,9 +55,9 @@ jobs:
         key: vcpkg-binary-cache-ios-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
 
     - name: Build
-      working-directory: ./build-tools
+      working-directory: ./tools
       run: |
-        npm run build:ios
+        npm run build:ios -- --test
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
