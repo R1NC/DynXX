@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
-import { getEnv } from '../utils.js';
+import { getEnv, spawn } from '../utils.js';
 
 const COVERAGE_IGNORE_REGEX = '([/\\\\]test[/\\\\]|[/\\\\]vcpkg_installed[/\\\\]|[/\\\\]_deps[/\\\\])';
 
@@ -85,6 +85,54 @@ export function getCoverageReportPaths(buildFolder: string): {
   return { reportDir, rawDir, summaryPath, htmlDir };
 }
 
+function generateCoverageSummary(
+  llvmCov: string,
+  coverageExecutable: string,
+  profdataPath: string,
+  summaryPath: string
+): boolean {
+  const reportOutput = runLlvmCov(llvmCov, [
+    'report',
+    coverageExecutable,
+    `-instr-profile=${profdataPath}`,
+    `-ignore-filename-regex=${COVERAGE_IGNORE_REGEX}`
+  ], 'failed to generate coverage summary');
+  if (reportOutput === undefined) {
+    return false;
+  }
+  writeFileSync(summaryPath, reportOutput, 'utf8');
+  return true;
+}
+
+function generateCoverageHtml(
+  llvmCov: string,
+  coverageExecutable: string,
+  profdataPath: string,
+  htmlDir: string
+): boolean {
+  const showOutput = runLlvmCov(llvmCov, [
+    'show',
+    coverageExecutable,
+    `-instr-profile=${profdataPath}`,
+    '-format=html',
+    `-output-dir=${htmlDir}`,
+    `-ignore-filename-regex=${COVERAGE_IGNORE_REGEX}`
+  ], 'failed to generate coverage html');
+  if (showOutput === undefined) {
+    return false;
+  }
+  return true;
+}
+
+function runLlvmCov(llvmCov: string, args: string[], failureMessage: string): string | undefined {
+  const result = spawn(llvmCov, args, { allowFailure: true });
+  if (!result) {
+    console.warn(`[WARN] ${failureMessage}`);
+    return undefined;
+  }
+  return result.toString();
+}
+
 export function generateCoverageReport(buildFolder: string, testExecutable: string): void {
   const llvmProfdata = resolveLlvmToolPath('llvm-profdata');
   const llvmCov = resolveLlvmToolPath('llvm-cov');
@@ -128,36 +176,11 @@ export function generateCoverageReport(buildFolder: string, testExecutable: stri
 
   mkdirSync(reportDir, { recursive: true });
 
-  const reportResult = spawnSync(llvmCov, [
-    'report',
-    coverageExecutable,
-    `-instr-profile=${profdataPath}`,
-    `-ignore-filename-regex=${COVERAGE_IGNORE_REGEX}`
-  ], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    shell: false
-  });
-  if (reportResult.error || reportResult.status !== 0) {
-    const msg = reportResult.error?.message ?? reportResult.stderr.toString().trim();
-    console.warn(`[WARN] failed to generate coverage summary: ${msg}`);
+  if (!generateCoverageSummary(llvmCov, coverageExecutable, profdataPath, summaryPath)) {
     return;
   }
-  writeFileSync(summaryPath, reportResult.stdout.toString(), 'utf8');
 
-  const showResult = spawnSync(llvmCov, [
-    'show',
-    coverageExecutable,
-    `-instr-profile=${profdataPath}`,
-    '-format=html',
-    `-output-dir=${htmlDir}`,
-    `-ignore-filename-regex=${COVERAGE_IGNORE_REGEX}`
-  ], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    shell: false
-  });
-  if (showResult.error || showResult.status !== 0) {
-    const msg = showResult.error?.message ?? showResult.stderr.toString().trim();
-    console.warn(`[WARN] failed to generate coverage html: ${msg}`);
+  if (!generateCoverageHtml(llvmCov, coverageExecutable, profdataPath, htmlDir)) {
     return;
   }
 

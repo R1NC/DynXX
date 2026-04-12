@@ -1,8 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
 import { dirname, resolve, join } from 'node:path';
 
-import { getEnv } from '../utils.js';
+import { exec, getEnv } from '../utils.js';
 
 type AttrMap = Record<string, string>;
 
@@ -223,30 +222,27 @@ export function setupGtestEnv(): void {
 
 export function runCtest(buildFolder: string, buildType?: string): number {
   const args = [
-    '--test-dir', buildFolder,
+    '--test-dir', `"${buildFolder}"`,
     '--output-on-failure',
     '--stop-time', '300',
     '--parallel', '4',
     '--no-tests=error'
   ];
   if (buildType) {
-    args.push('-C', buildType);
+    args.push('-C', `"${buildType}"`);
   }
-
-  const result = spawnSync('ctest', args, {
-    stdio: 'inherit',
-    shell: false,
-    env: process.env
-  });
-
-  if (result.error) {
-    throw result.error;
+  try {
+    exec(`ctest ${args.join(' ')}`);
+    return 0;
+  } catch (error: unknown) {
+    const exitCode = typeof error === 'object' && error !== null && 'status' in error
+      ? Number((error as { status?: number }).status ?? 1)
+      : 1;
+    if (exitCode !== 0) {
+      console.warn(`[WARN] ctest exited with code ${exitCode}, continue to generate test report`);
+    }
+    return exitCode;
   }
-  const exitCode = result.status ?? 1;
-  if (exitCode !== 0) {
-    console.warn(`[WARN] ctest exited with code ${exitCode}, continue to generate test report`);
-  }
-  return exitCode;
 }
 
 export function renderGtestXmlToHtml(inputXmlPath: string, outputHtmlPath: string): void {
