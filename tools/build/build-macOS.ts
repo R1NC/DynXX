@@ -8,6 +8,7 @@ import {
   getVcpkgLibPath, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv
 } from './build-utils.js';
 import { getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
+import { generateCoverageReport, getCoverageCMakeConfigureArgs, setupCoverageEnv, shouldEnableCoverage } from '../test/coverage-utils.js';
 
 function main() {
   const root = gotoParentPath();
@@ -37,8 +38,15 @@ function main() {
   const outputLibPath = getOutputLibPath();
   const outputExePath = getOutputExePath();
   const buildTests = shouldBuildTests();
+  const coverageEnabled = shouldEnableCoverage();
 
-  runCMake(preset, buildFolder, outputFolder, true, [`-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`]);
+  if (coverageEnabled) {
+    setupCoverageEnv(buildFolder);
+  }
+  runCMake(preset, buildFolder, outputFolder, true, [
+    `-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`,
+    ...(coverageEnabled ? getCoverageCMakeConfigureArgs() : [])
+  ]);
 
   exportCompileCommands(buildFolder, root);
 
@@ -65,6 +73,9 @@ function main() {
     setupGtestEnv();
     runCtest(buildFolder);
     renderGtestXmlToHtml(xmlReport, htmlReport);
+    if (coverageEnabled) {
+      generateCoverageReport(buildFolder, join(outputPath, 'bin', 'DynXXCxxTests'));
+    }
     checkArtifacts([xmlReport, htmlReport]);
   }
 }

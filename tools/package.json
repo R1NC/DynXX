@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
+    "setup:llvm": "tsx routes.ts setup:llvm",
     "setup:vcpkg": "tsx routes.ts setup:vcpkg",
     "build:android": "tsx routes.ts build android",
     "build:harmonyos": "tsx routes.ts build harmonyos",

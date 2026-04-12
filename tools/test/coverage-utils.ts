@@ -1,0 +1,159 @@
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { getEnv } from '../utils.js';
+
+const COVERAGE_IGNORE_REGEX = '([/\\\\]test[/\\\\]|[/\\\\]vcpkg_installed[/\\\\]|[/\\\\]_deps[/\\\\])';
+
+type CoverageCMakeFlags = {
+  cFlags: string;
+  cxxFlags: string;
+};
+
+function resolveLlvmToolPath(toolName: string): string {
+  const llvmToolsHome = getEnv('LLVM_HOME');
+  const toolBinary = process.platform === 'win32' ? `${toolName}.exe` : toolName;
+  if (!llvmToolsHome) {
+    return toolBinary;
+  }
+  return join(llvmToolsHome, toolBinary);
+}
+
+function resolveCoverageFlagFromArgs(): boolean | undefined {
+  const args = process.argv.slice(2).map((arg) => arg.toLowerCase());
+  if (args.includes('--coverage')) {
+    return true;
+  }
+
+  const explicit = args.find((arg) => arg.startsWith('--coverage='));
+  if (!explicit) {
+    return undefined;
+  }
+
+  const value = explicit.slice('--coverage='.length);
+  if (['1', 'true', 'on', 'yes'].includes(value)) {
+    return true;
+  }
+  return undefined;
+}
+
+export function shouldEnableCoverage(): boolean {
+  const coverageFlag = resolveCoverageFlagFromArgs();
+  if (coverageFlag !== undefined) {
+    return coverageFlag;
+  }
+  return false;
+}
+
+function getCoverageCMakeFlags(): CoverageCMakeFlags {
+  if (process.platform === 'win32') {
+    return {
+      cFlags: '/clang:-fprofile-instr-generate /clang:-fcoverage-mapping',
+      cxxFlags: '/EHsc /clang:-fprofile-instr-generate /clang:-fcoverage-mapping'
+    };
+  }
+  return {
+    cFlags: '-fprofile-instr-generate -fcoverage-mapping',
+    cxxFlags: '-fprofile-instr-generate -fcoverage-mapping'
+  };
+}
+
+export function getCoverageCMakeConfigureArgs(): string[] {
+  const flags = getCoverageCMakeFlags();
+  return [
+    `-DCMAKE_C_FLAGS="${flags.cFlags}"`,
+    `-DCMAKE_CXX_FLAGS="${flags.cxxFlags}"`
+  ];
+}
+
+export function setupCoverageEnv(buildFolder: string): void {
+  const { rawDir } = getCoverageReportPaths(buildFolder);
+  mkdirSync(rawDir, { recursive: true });
+  process.env.LLVM_PROFILE_FILE = join(rawDir, 'coverage-%p-%m.profraw');
+}
+
+export function getCoverageReportPaths(buildFolder: string): {
+  reportDir: string;
+  rawDir: string;
+  summaryPath: string;
+  htmlDir: string;
+} {
+  const reportDir = resolve(buildFolder, 'output', 'test', 'coverage');
+  const rawDir = join(reportDir, 'raw');
+  const summaryPath = join(reportDir, 'coverage-summary.txt');
+  const htmlDir = join(reportDir, 'html');
+  return { reportDir, rawDir, summaryPath, htmlDir };
+}
+
+export function generateCoverageReport(buildFolder: string, testExecutable: string): void {
+  const llvmProfdata = resolveLlvmToolPath('llvm-profdata');
+  const llvmCov = resolveLlvmToolPath('llvm-cov');
+  const { reportDir, rawDir, summaryPath, htmlDir } = getCoverageReportPaths(buildFolder);
+  const coverageDir = rawDir;
+  if (!existsSync(coverageDir)) {
+    console.warn(`[WARN] coverage directory not found: ${coverageDir}`);
+    return;
+  }
+
+  const profrawFiles = readdirSync(coverageDir)
+    .filter((fileName) => fileName.endsWith('.profraw'))
+    .map((fileName) => join(coverageDir, fileName));
+  if (profrawFiles.length === 0) {
+    console.warn(`[WARN] no profraw files found in ${coverageDir}`);
+    return;
+  }
+
+  if (!existsSync(testExecutable)) {
+    console.warn(`[WARN] test executable not found for coverage: ${testExecutable}`);
+    return;
+  }
+
+  const profdataPath = join(coverageDir, 'coverage.profdata');
+  const mergeResult = spawnSync(llvmProfdata, ['merge', '-sparse', ...profrawFiles, '-o', profdataPath], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    shell: false
+  });
+  if (mergeResult.error || mergeResult.status !== 0) {
+    const msg = mergeResult.error?.message ?? mergeResult.stderr.toString().trim();
+    console.warn(`[WARN] failed to merge coverage profiles: ${msg}`);
+    return;
+  }
+
+  mkdirSync(reportDir, { recursive: true });
+
+  const reportResult = spawnSync(llvmCov, [
+    'report',
+    testExecutable,
+    `-instr-profile=${profdataPath}`,
+    `-ignore-filename-regex=${COVERAGE_IGNORE_REGEX}`
+  ], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    shell: false
+  });
+  if (reportResult.error || reportResult.status !== 0) {
+    const msg = reportResult.error?.message ?? reportResult.stderr.toString().trim();
+    console.warn(`[WARN] failed to generate coverage summary: ${msg}`);
+    return;
+  }
+  writeFileSync(summaryPath, reportResult.stdout.toString(), 'utf8');
+
+  const showResult = spawnSync(llvmCov, [
+    'show',
+    testExecutable,
+    `-instr-profile=${profdataPath}`,
+    '-format=html',
+    `-output-dir=${htmlDir}`,
+    `-ignore-filename-regex=${COVERAGE_IGNORE_REGEX}`
+  ], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    shell: false
+  });
+  if (showResult.error || showResult.status !== 0) {
+    const msg = showResult.error?.message ?? showResult.stderr.toString().trim();
+    console.warn(`[WARN] failed to generate coverage html: ${msg}`);
+    return;
+  }
+
+  console.log(`[Coverage] summary: ${summaryPath}`);
+  console.log(`[Coverage] html: ${join(htmlDir, 'index.html')}`);
+}

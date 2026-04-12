@@ -17,6 +17,7 @@ const buildTargetMap: Record<string, string> = {
 };
 
 const commandMap: Record<string, string> = {
+    "setup:llvm": "setup-llvm.ts",
     "setup:vcpkg": "setup-vcpkg.ts",
     "build:android": "build/build-Android.ts",
     "build:ohos": "build/build-OHOS.ts",
@@ -30,8 +31,9 @@ const commandMap: Record<string, string> = {
 
 function printUsage(): void {
     console.error("Usage:");
+    console.error("  npm run setup:llvm");
     console.error("  npm run setup:vcpkg");
-    console.error("  npm run build:<android|ohos|linux|wasm|windows|ios|macos> -- [--debug] [--test]");
+    console.error("  npm run build:<android|ohos|linux|wasm|windows|ios|macos> -- [--debug] [--test] [--coverage]");
     console.error("  npm run gen:doc");
 }
 
@@ -46,7 +48,18 @@ function resolveCommand(args: string[]): ResolvedCommand | null {
 
     if (!action) return null;
 
-    if (action === "setup" || action === "setup-vcpkg" || action === "setup:vcpkg") {
+    if (action === "setup") {
+        if (value === "llvm" || value === "setup-llvm" || value === "setup:llvm") {
+            return { command: "setup:llvm", scriptArgs: args.slice(2) };
+        }
+        return { command: "setup:vcpkg", scriptArgs: args.slice(1) };
+    }
+
+    if (action === "setup-llvm" || action === "setup:llvm") {
+        return { command: "setup:llvm", scriptArgs: args.slice(1) };
+    }
+
+    if (action === "setup-vcpkg" || action === "setup:vcpkg") {
         return { command: "setup:vcpkg", scriptArgs: args.slice(1) };
     }
 

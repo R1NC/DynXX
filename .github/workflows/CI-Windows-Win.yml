@@ -13,6 +13,8 @@ on:
       - 'vcpkg.json'
       - 'tools/utils.ts'
       - 'tools/test/gtest-utils.ts'
+      - 'tools/test/coverage-utils.ts'
+      - 'tools/setup-llvm.ts'
       - 'tools/setup-vcpkg.ts'
       - 'tools/build/build-utils.ts'
       - 'tools/build/build-Windows.ts'
@@ -45,12 +47,13 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-
+      
       - name: Setup custom vcpkg
         shell: pwsh
         working-directory: ./tools
         run: |
           npm install
+          npm run setup:llvm
           npm run setup:vcpkg
 
       - name: Cache vcpkg binary
@@ -63,7 +66,7 @@ jobs:
       - name: Build
         working-directory: ./tools
         run: |
-          npm run build:windows -- --test
+          npm run build:windows -- --test --coverage
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

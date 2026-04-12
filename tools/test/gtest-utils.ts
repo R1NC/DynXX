@@ -205,8 +205,8 @@ export function getGtestReportPaths(): {
   if (!buildFolder) {
     throw new Error('BUILD_FOLDER is empty; call setBuildOutputEnv() before test setup');
   }
-  const reportDir = resolve(buildFolder, 'output', 'test-reports');
-  const xmlReport = resolve(buildFolder, 'test', 'dynxx-gtest-report.xml');
+  const reportDir = resolve(buildFolder, 'output', 'test', 'gtest');
+  const xmlReport = join(reportDir, 'gtest-report.xml');
   return {
     reportDir,
     xmlReport,
@@ -217,7 +217,6 @@ export function getGtestReportPaths(): {
 export function setupGtestEnv(): void {
   const { reportDir, xmlReport } = getGtestReportPaths();
   mkdirSync(reportDir, { recursive: true });
-  mkdirSync(dirname(xmlReport), { recursive: true });
   process.env.DYNXX_GTEST_OUTPUT = `xml:${xmlReport}`;
   process.env.GTEST_OUTPUT = `xml:${xmlReport}`;
 }
