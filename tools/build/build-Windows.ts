@@ -9,7 +9,7 @@ import {
   getVcpkgLibPath, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv
 } from './build-utils.js';
 import { getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
-import { generateCoverageReport, getCoverageCMakeConfigureArgs, setupCoverageEnv, shouldEnableCoverage } from '../test/coverage-utils.js';
+import { generateCoverageReport, getCoverageCMakeConfigureArgs, getCoverageReportPaths, setupCoverageEnv, shouldEnableCoverage } from '../test/coverage-utils.js';
 
 function main() {
   if (!isWindows()) {
@@ -73,6 +73,8 @@ function main() {
     renderGtestXmlToHtml(xmlReport, htmlReport);
     if (coverageEnabled) {
       generateCoverageReport(buildFolder, join(outputPath, "bin", "DynXXCxxTests.exe"));
+      const { summaryPath, htmlDir } = getCoverageReportPaths(buildFolder);
+      checkArtifacts([summaryPath, join(htmlDir, "index.html")]);
     }
     checkArtifacts([xmlReport, htmlReport]);
   }

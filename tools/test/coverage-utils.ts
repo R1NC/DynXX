@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { basename, join, resolve } from 'node:path';
 import { getEnv } from '../utils.js';
 
 const COVERAGE_IGNORE_REGEX = '([/\\\\]test[/\\\\]|[/\\\\]vcpkg_installed[/\\\\]|[/\\\\]_deps[/\\\\])';
@@ -103,7 +103,14 @@ export function generateCoverageReport(buildFolder: string, testExecutable: stri
     return;
   }
 
-  if (!existsSync(testExecutable)) {
+  let coverageExecutable = testExecutable;
+  if (!existsSync(coverageExecutable) && process.platform === 'darwin') {
+    const appExecutable = join(`${testExecutable}.app`, 'Contents', 'MacOS', basename(testExecutable));
+    if (existsSync(appExecutable)) {
+      coverageExecutable = appExecutable;
+    }
+  }
+  if (!existsSync(coverageExecutable)) {
     console.warn(`[WARN] test executable not found for coverage: ${testExecutable}`);
     return;
   }
@@ -123,7 +130,7 @@ export function generateCoverageReport(buildFolder: string, testExecutable: stri
 
   const reportResult = spawnSync(llvmCov, [
     'report',
-    testExecutable,
+    coverageExecutable,
     `-instr-profile=${profdataPath}`,
     `-ignore-filename-regex=${COVERAGE_IGNORE_REGEX}`
   ], {
@@ -139,7 +146,7 @@ export function generateCoverageReport(buildFolder: string, testExecutable: stri
 
   const showResult = spawnSync(llvmCov, [
     'show',
-    testExecutable,
+    coverageExecutable,
     `-instr-profile=${profdataPath}`,
     '-format=html',
     `-output-dir=${htmlDir}`,
