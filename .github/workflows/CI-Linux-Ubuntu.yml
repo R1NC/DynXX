@@ -14,7 +14,7 @@ on:
       - 'tools/utils.ts'
       - 'tools/test/gtest-utils.ts'
       - 'tools/test/coverage-utils.ts'
-      - 'tools/setup-llvm.ts'
+      - 'tools/find-llvm.ts'
       - 'tools/setup-vcpkg.ts'
       - 'tools/build/build-utils.ts'
       - 'tools/build/build-Linux.ts'
@@ -43,6 +43,15 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
+
+    - name: Setup LLVM and Clang
+      run: |
+        if ! command -v llvm-cov >/dev/null 2>&1 || ! command -v llvm-profdata >/dev/null 2>&1 || ! command -v clang >/dev/null 2>&1 || ! command -v clang++ >/dev/null 2>&1; then
+          sudo apt-get update
+          sudo apt-get install -y llvm clang
+        fi
+        echo "CC=$(command -v clang)" >> "$GITHUB_ENV"
+        echo "CXX=$(command -v clang++)" >> "$GITHUB_ENV"
 
     - name: Setup custom vcpkg
       working-directory: ./tools

@@ -14,7 +14,7 @@ on:
       - 'tools/utils.ts'
       - 'tools/test/gtest-utils.ts'
       - 'tools/test/coverage-utils.ts'
-      - 'tools/setup-llvm.ts'
+      - 'tools/find-llvm.ts'
       - 'tools/setup-vcpkg.ts'
       - 'tools/build/build-utils.ts'
       - 'tools/build/build-Windows.ts'

@@ -17,7 +17,7 @@ const buildTargetMap: Record<string, string> = {
 };
 
 const commandMap: Record<string, string> = {
-    "setup:llvm": "setup-llvm.ts",
+    "setup:llvm": "find-llvm.ts",
     "setup:vcpkg": "setup-vcpkg.ts",
     "build:android": "build/build-Android.ts",
     "build:ohos": "build/build-OHOS.ts",
