@@ -8,8 +8,7 @@ import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputExePath, getOutputLibPath,
   getVcpkgLibPath, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv
 } from './build-utils.js';
-import { renderGtestXmlToHtml } from '../test/gen-test-report.js';
-import { getGtestReportPaths, runCtest, setupGtestEnv, shouldBuildTests } from '../test/test-utils.js';
+import { getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
 
 function main() {
   if (!isWindows()) {

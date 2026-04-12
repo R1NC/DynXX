@@ -14,7 +14,7 @@ on:
       - 'vcpkg.json'
       - 'tools/utils.ts'
       - 'tools/setup-vcpkg.ts'
-      - 'tools/test/test-utils.ts'
+      - 'tools/test/gtest-utils.ts'
       - 'tools/build/build-utils.ts'
       - 'tools/build/build-Android.ts'
       - 'tools/routes.ts'

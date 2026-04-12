@@ -8,7 +8,7 @@ import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputLibPath, getVcpkgLibPath,
   mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv
 } from './build-utils.js';
-import { shouldBuildTests } from '../test/test-utils.js';
+import { shouldBuildTests } from '../test/gtest-utils.js';
 
 function main() {
   const root = gotoParentPath();
