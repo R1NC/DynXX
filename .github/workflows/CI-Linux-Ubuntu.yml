@@ -73,6 +73,7 @@ jobs:
         npm run build:linux -- --test --coverage
 
     - name: Upload Coverage To Codecov
+      if: github.ref == 'refs/heads/main'
       uses: codecov/codecov-action@v5
       with:
         files: ./build.Linux/Release/output/test/coverage/lcov.info
