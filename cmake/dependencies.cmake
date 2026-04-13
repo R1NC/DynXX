@@ -85,11 +85,6 @@ function(dynxx_find_dependencies TARGET_NAME LINK_LIBS_VAR)
     endif()
 
     if(USE_KV)
-        if(WIN32 AND NOT TARGET pthread)
-            find_package(PThreads4W REQUIRED)
-            add_library(pthread INTERFACE IMPORTED)
-            target_link_libraries(pthread INTERFACE PThreads4W::PThreads4W)
-        endif()
         add_git_lib(${TARGET_NAME}
             mmkv
             https://github.com/R1NC/MMKV

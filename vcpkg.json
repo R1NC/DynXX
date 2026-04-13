@@ -55,10 +55,6 @@
     {
       "name": "gtest",
       "platform": "!emscripten"
-    },
-    {
-      "name": "pthreads",
-      "platform": "windows"
     }
   ],
   "overrides": [

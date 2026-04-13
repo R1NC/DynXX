@@ -229,11 +229,6 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
       <td></td>
     </tr>
     <tr>
-      <td><a href="https://sourceforge.net/projects/pthreads4w/">PThreads4W</a></td>
-      <td>POSIX threads implementation on Windows;</td>
-      <td>Required by MMKV on Windows.</td>
-    </tr>
-    <tr>
       <td><a href="https://github.com/openssl/openssl">openssl</a></td>
       <td>Crypto;</td>
       <td></td>
