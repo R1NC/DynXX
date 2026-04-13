@@ -4,6 +4,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 [<img src="https://img.shields.io/sonar/quality_gate/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&logo=sonar&label=Sonar%20-%20Quality%20Gate"/>][2]
 [<img src="https://img.shields.io/sonar/violations/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&format=long&logo=sonar&label=Sonar%20-%20Violations"/>][5]
+[<img src="https://img.shields.io/codecov/c/github/R1NC/DynXX/main?logo=codecov&label=Codecov"/>][6]
 [![Docs](https://img.shields.io/badge/API%20Docs-C%2FC%2B%2B%2FTS%2FLua-blue?logo=github)](https://R1NC.github.io/DynXX/)
 
 <table>
@@ -265,3 +266,4 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [3]: https://developer.apple.com/xcode/cpp/
 [4]: https://en.cppreference.com/w/cpp/compiler_support
 [5]: https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&id=R1NC_DynXX
+[6]: https://app.codecov.io/gh/R1NC/DynXX

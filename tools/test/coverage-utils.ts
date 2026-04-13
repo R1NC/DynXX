@@ -77,12 +77,14 @@ export function getCoverageReportPaths(buildFolder: string): {
   rawDir: string;
   summaryPath: string;
   htmlDir: string;
+  lcovPath: string;
 } {
   const reportDir = resolve(buildFolder, 'output', 'test', 'coverage');
   const rawDir = join(reportDir, 'raw');
   const summaryPath = join(reportDir, 'coverage-summary.txt');
   const htmlDir = join(reportDir, 'html');
-  return { reportDir, rawDir, summaryPath, htmlDir };
+  const lcovPath = join(reportDir, 'lcov.info');
+  return { reportDir, rawDir, summaryPath, htmlDir, lcovPath };
 }
 
 function generateCoverageSummary(
@@ -124,6 +126,26 @@ function generateCoverageHtml(
   return true;
 }
 
+function generateCodecovLcov(
+  llvmCov: string,
+  coverageExecutable: string,
+  profdataPath: string,
+  lcovPath: string
+): boolean {
+  const lcovOutput = runLlvmCov(llvmCov, [
+    'export',
+    coverageExecutable,
+    `-instr-profile=${profdataPath}`,
+    '-format=lcov',
+    `-ignore-filename-regex=${COVERAGE_IGNORE_REGEX}`
+  ], 'failed to generate codecov lcov');
+  if (lcovOutput === undefined) {
+    return false;
+  }
+  writeFileSync(lcovPath, lcovOutput, 'utf8');
+  return true;
+}
+
 function runLlvmCov(llvmCov: string, args: string[], failureMessage: string): string | undefined {
   const result = spawn(llvmCov, args, { allowFailure: true });
   if (!result) {
@@ -136,7 +158,7 @@ function runLlvmCov(llvmCov: string, args: string[], failureMessage: string): st
 export function generateCoverageReport(buildFolder: string, testExecutable: string): void {
   const llvmProfdata = resolveLlvmToolPath('llvm-profdata');
   const llvmCov = resolveLlvmToolPath('llvm-cov');
-  const { reportDir, rawDir, summaryPath, htmlDir } = getCoverageReportPaths(buildFolder);
+  const { reportDir, rawDir, summaryPath, htmlDir, lcovPath } = getCoverageReportPaths(buildFolder);
   const coverageDir = rawDir;
   if (!existsSync(coverageDir)) {
     console.warn(`[WARN] coverage directory not found: ${coverageDir}`);
@@ -184,6 +206,11 @@ export function generateCoverageReport(buildFolder: string, testExecutable: stri
     return;
   }
 
+  if (!generateCodecovLcov(llvmCov, coverageExecutable, profdataPath, lcovPath)) {
+    return;
+  }
+
   console.log(`[Coverage] summary: ${summaryPath}`);
   console.log(`[Coverage] html: ${join(htmlDir, 'index.html')}`);
+  console.log(`[Coverage] codecov: ${lcovPath}`);
 }

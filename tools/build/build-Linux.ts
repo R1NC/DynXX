@@ -66,8 +66,8 @@ function main() {
     renderGtestXmlToHtml(xmlReport, htmlReport);
     if (coverageEnabled) {
       generateCoverageReport(buildFolder, join(outputPath, "bin", "DynXXCxxTests"));
-      const { summaryPath, htmlDir } = getCoverageReportPaths(buildFolder);
-      checkArtifacts([summaryPath, join(htmlDir, "index.html")]);
+      const { summaryPath, htmlDir, lcovPath } = getCoverageReportPaths(buildFolder);
+      checkArtifacts([summaryPath, join(htmlDir, "index.html"), lcovPath]);
     }
     checkArtifacts([xmlReport, htmlReport]);
   }
