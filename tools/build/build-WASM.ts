@@ -5,7 +5,7 @@ import {
 } from '../utils.js';
 import {
   checkArtifacts, exportCompileCommands, getOutputExePath,
-  resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv
+  resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
 
 function main() {
@@ -26,11 +26,15 @@ function main() {
   const outputPath = join(root, outputFolder, abi);
 
   setBuildOutputEnv(buildFolder, outputPath);
+  const configureOnly = shouldConfigureOnly();
 
   setupVcpkgEnv("wasm32-emscripten");
   runCMake(preset, buildFolder, outputFolder, true, ["-DDYNXX_BUILD_TESTS=OFF"]);
 
   exportCompileCommands(buildFolder, root);
+  if (configureOnly) {
+    return;
+  }
 
   const outputExePath = getOutputExePath();
   

@@ -5,7 +5,7 @@ import {
 } from '../utils.js';
 import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputLibPath, getVcpkgLibPath,
-  mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv
+  mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
 import { shouldBuildTests } from '../test/gtest-utils.js';
 
@@ -36,10 +36,14 @@ function main() {
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();
   const buildTests = shouldBuildTests();
+  const configureOnly = shouldConfigureOnly();
 
   runCMake(preset, buildFolder, outputFolder, true, [`-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`]);
 
   exportCompileCommands(buildFolder, root);
+  if (configureOnly) {
+    return;
+  }
 
   const buildArtifacts = [join(outputLibPath, "libDynXX.a")];
   if (buildTests) {

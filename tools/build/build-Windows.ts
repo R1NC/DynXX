@@ -6,7 +6,7 @@ import {
 } from '../utils.js';
 import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputExePath, getOutputLibPath,
-  getVcpkgLibPath, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv
+  getVcpkgLibPath, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
 import { getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
 import { generateCoverageReport, getCoverageCMakeConfigureArgs, getCoverageReportPaths, setupCoverageEnv, shouldEnableCoverage } from '../test/coverage-utils.js';
@@ -35,6 +35,7 @@ function main() {
   const outputLibPath = getOutputLibPath();
   const buildTests = shouldBuildTests();
   const coverageEnabled = shouldEnableCoverage();
+  const configureOnly = shouldConfigureOnly();
 
   const configureArgs = [`-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`];
   if (coverageEnabled) {
@@ -43,6 +44,9 @@ function main() {
   runCMake(preset, buildFolder, outputFolder, true, configureArgs);
   
   exportCompileCommands(buildFolder, root);
+  if (configureOnly) {
+    return;
+  }
 
   const buildArtifacts = [join(outputLibPath, "DynXX.lib")];
   if (buildTests) {

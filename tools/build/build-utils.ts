@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readlinkSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readlinkSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
 
 import { exec, getEnv, getHomeDir, goInTmpDir, isMacOS, isWindows, readCIEnv, setEnv, spawn } from '../utils.js';
@@ -6,30 +6,58 @@ import { exec, getEnv, getHomeDir, goInTmpDir, isMacOS, isWindows, readCIEnv, se
 export function resolveBuildType(defaultValue: "Release" | "Debug" = "Release"): "Release" | "Debug" {
   const args = process.argv.slice(2);
   const lowerArgs = args.map((arg) => arg.toLowerCase());
+  const hasDebug = lowerArgs.includes("--debug") || lowerArgs.includes("-d");
+  const hasRelease = lowerArgs.includes("--release") || lowerArgs.includes("-r");
 
-  if (lowerArgs.includes("--debug") || lowerArgs.includes("-d")) {
+  if (hasDebug && hasRelease) {
+    console.error("[Args] `--debug` and `--release` cannot be used together.");
+    process.exit(1);
+  }
+
+  if (hasDebug) {
     return "Debug";
   }
-  if (lowerArgs.includes("--release") || lowerArgs.includes("-r")) {
+  if (hasRelease) {
     return "Release";
   }
 
-  for (let index = 0; index < lowerArgs.length; index += 1) {
-    const arg = lowerArgs[index];
-    if (arg === "--type" || arg === "-t") {
-      const value = (lowerArgs[index + 1] || "").trim();
-      if (value === "debug") return "Debug";
-      if (value === "release") return "Release";
-      continue;
-    }
-    if (arg.startsWith("--type=")) {
-      const value = arg.slice("--type=".length).trim();
-      if (value === "debug") return "Debug";
-      if (value === "release") return "Release";
-    }
+  return defaultValue;
+}
+
+export function shouldConfigureOnly(): boolean {
+  const lowerArgs = process.argv.slice(2).map((arg) => arg.toLowerCase());
+  if (lowerArgs.includes("--config-only") || lowerArgs.includes("--config")) {
+    return true;
   }
 
-  return defaultValue;
+  const npmConfigOnly = (process.env.npm_config_config_only || "").toLowerCase();
+  if (["1", "true", "on"].includes(npmConfigOnly)) {
+    return true;
+  }
+
+  const npmConfig = (process.env.npm_config_config || "").toLowerCase();
+  return ["1", "true", "on"].includes(npmConfig);
+}
+
+function clearCMakeCache(buildFolder: string) {
+  const buildDir = resolve(process.cwd(), buildFolder);
+  const cacheFile = join(buildDir, "CMakeCache.txt");
+  const cacheDir = join(buildDir, "CMakeFiles");
+
+  if (existsSync(cacheFile)) {
+    rmSync(cacheFile, { force: true });
+  }
+  if (existsSync(cacheDir)) {
+    rmSync(cacheDir, { recursive: true, force: true });
+  }
+}
+
+function clearOutputDir(outputFolder: string) {
+  const outputDir = resolve(process.cwd(), outputFolder);
+  if (!existsSync(outputDir)) {
+    return;
+  }
+  rmSync(outputDir, { recursive: true, force: true });
 }
 
 export function exportCompileCommands(buildFolder: string, root: string) {
@@ -73,9 +101,18 @@ export function runCMake(
   needInstall: boolean,
   configureArgs: string[] = [],
 ) {
+  const configureOnly = shouldConfigureOnly();
   const extraArgs = configureArgs.join(' ').trim();
   const extraArgsSegment = extraArgs.length > 0 ? ` ${extraArgs}` : '';
+  if (configureOnly) {
+    clearCMakeCache(buildFolder);
+  }
   exec(`cmake --preset ${preset}${extraArgsSegment}`);
+  if (configureOnly) {
+    console.log(`[CMake] Reconfigured preset ${preset} after clearing cache.`);
+    return;
+  }
+  clearOutputDir(outputFolder);
   exec(`cmake --build --preset ${preset}`);
   if (needInstall) {
     exec(`cmake --install ${buildFolder} --prefix ${outputFolder} --component headers`);
