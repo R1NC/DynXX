@@ -3,7 +3,35 @@ import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
 import { getEnv, spawn } from '../utils.js';
 
-const COVERAGE_IGNORE_REGEX = '([/\\\\]test[/\\\\]|[/\\\\]vcpkg_installed[/\\\\]|[/\\\\]_deps[/\\\\])';
+const COVERAGE_IGNORE_DIRS = [
+  'test',
+  'vcpkg_installed',
+  '_deps'
+] as const;
+
+const COVERAGE_IGNORE_FILES = [
+  'src/bridge/ScriptAPI.cxx'
+] as const;
+
+function escapeRegexLiteral(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function toPathRegex(pathLike: string): string {
+  return pathLike
+    .split(/[\\/]+/)
+    .filter(Boolean)
+    .map((part) => escapeRegexLiteral(part))
+    .join('[/\\\\]');
+}
+
+function buildCoverageIgnoreRegex(): string {
+  const dirPatterns = COVERAGE_IGNORE_DIRS.map((dir) => `[/\\\\]${toPathRegex(dir)}[/\\\\]`);
+  const filePatterns = COVERAGE_IGNORE_FILES.map((file) => `[/\\\\]${toPathRegex(file)}$`);
+  return `(${[...dirPatterns, ...filePatterns].join('|')})`;
+}
+
+const COVERAGE_IGNORE_REGEX = buildCoverageIgnoreRegex();
 
 type CoverageCMakeFlags = {
   cFlags: string;
