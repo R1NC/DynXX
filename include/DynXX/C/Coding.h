@@ -57,4 +57,11 @@ const byte *dynxx_coding_str2bytes(const char *str, DYNXX_OUT size_t *outLen);
  */
 const char *dynxx_coding_str_trim(const char *str);
 
+/**
+ * @brief escape all quote characters with backslash
+ * @param str string
+ * @return escaped string
+ */
+const char *dynxx_coding_str_escape_quotes(const char *str);
+
 DYNXX_EXTERN_C_END

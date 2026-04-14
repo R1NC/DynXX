@@ -346,6 +346,10 @@ std::string dynxxCodingStrTrim(std::string_view str) {
     return Coding::strTrim(str);
 }
 
+std::string dynxxCodingStrEscapeQuotes(std::string_view str) {
+    return Coding::strEscapeQuotes(str);
+}
+
 // Crypto
 
 Bytes dynxxCryptoRand(size_t len) {

@@ -49,3 +49,8 @@ TEST(Coding, CaseRoundTrip) {
     const std::string in = "aBc123_XyZ";
     EXPECT_EQ(dynxxCodingCaseLower(dynxxCodingCaseUpper(in)), dynxxCodingCaseLower(in));
 }
+
+TEST(Coding, StrEscapeQuotes) {
+    EXPECT_EQ(dynxxCodingStrEscapeQuotes(R"(a"b"c)"), R"(a\"b\"c)");
+    EXPECT_EQ(dynxxCodingStrEscapeQuotes("no-quotes"), "no-quotes");
+}

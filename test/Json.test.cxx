@@ -102,6 +102,15 @@ TEST(Json, DynxxJsonDecoderReadChildrenCount) {
     dynxxJsonDecoderRelease(decoder);
 }
 
+TEST(Json, DynxxJsonDecoderReadChildrenCount_ObjectField) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"obj":{"a":1,"b":2}})");
+    ASSERT_NE(decoder, 0U);
+    const auto obj = dynxxJsonDecoderReadNode(decoder, "obj");
+    ASSERT_NE(obj, 0U);
+    EXPECT_EQ(dynxxJsonDecoderReadChildrenCount(decoder, obj), 2U);
+    dynxxJsonDecoderRelease(decoder);
+}
+
 TEST(Json, DynxxJsonDecoderReadChildren) {
     const auto decoder = dynxxJsonDecoderInit(R"({"arr":[1,2]})");
     ASSERT_NE(decoder, 0U);
@@ -127,6 +136,39 @@ TEST(Json, DynxxJsonDecoderReadNext) {
     const auto child = dynxxJsonDecoderReadChild(decoder, arr);
     ASSERT_NE(child, 0U);
     EXPECT_NE(dynxxJsonDecoderReadNext(decoder, child), 0U);
+    dynxxJsonDecoderRelease(decoder);
+}
+
+TEST(Json, DynxxJsonDecoderReadNumber_FromStringField) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"i":"42","f":"3.1415"})");
+    ASSERT_NE(decoder, 0U);
+    const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
+    const auto fNode = dynxxJsonDecoderReadNode(decoder, "f");
+    ASSERT_NE(iNode, 0U);
+    ASSERT_NE(fNode, 0U);
+
+    EXPECT_EQ(dynxxJsonNodeReadType(iNode), DynXXJsonNodeTypeX::String);
+    EXPECT_EQ(dynxxJsonNodeReadType(fNode), DynXXJsonNodeTypeX::String);
+    EXPECT_EQ(dynxxJsonDecoderReadInteger(decoder, iNode).value_or(0), 42);
+    EXPECT_NEAR(dynxxJsonDecoderReadFloat(decoder, fNode).value_or(0.0), 3.1415, 1e-9);
+
+    dynxxJsonDecoderRelease(decoder);
+}
+
+TEST(Json, DynxxJsonDecoderReadString_FromNonStringField) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"i":7,"f":2.5,"b":true})");
+    ASSERT_NE(decoder, 0U);
+    const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
+    const auto fNode = dynxxJsonDecoderReadNode(decoder, "f");
+    const auto bNode = dynxxJsonDecoderReadNode(decoder, "b");
+    ASSERT_NE(iNode, 0U);
+    ASSERT_NE(fNode, 0U);
+    ASSERT_NE(bNode, 0U);
+
+    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, iNode).value_or(""), "7");
+    EXPECT_NE(dynxxJsonDecoderReadString(decoder, fNode).value_or("").find("2.5"), std::string::npos);
+    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, bNode).value_or(""), "true");
+
     dynxxJsonDecoderRelease(decoder);
 }
 

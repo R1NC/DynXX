@@ -171,6 +171,15 @@ const char *dynxx_coding_str_trim(const char *str) {
     return dupStr(s);
 }
 
+DYNXX_EXPORT_AUTO
+const char *dynxx_coding_str_escape_quotes(const char *str) {
+    if (str == nullptr) {
+        return "";
+    }
+    const auto s = dynxxCodingStrEscapeQuotes(str);
+    return dupStr(s);
+}
+
 // Crypto
 
 DYNXX_EXPORT_AUTO

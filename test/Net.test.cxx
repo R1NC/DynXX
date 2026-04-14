@@ -4,6 +4,7 @@
 
 namespace {
     constexpr const char *cNetTestUrl = "https://rinc.xyz/index.html";
+    constexpr const char *cNetPostEchoUrl = "https://httpbin.org/post";
 }
 
 TEST(Net, DynXXHttpResponseToJson) {
@@ -33,6 +34,33 @@ TEST(Net, DynxxNetHttpRequestWithDictParams) {
         GTEST_SKIP();
     }
     EXPECT_FALSE(rsp.data.empty());
+}
+
+TEST(Net, DynxxNetHttpRequestPostWithHeadersAndMime) {
+    const std::vector<std::string> headers{
+        "X-DynXX-Test: post",
+        "Accept: application/json"
+    };
+    const std::vector<std::string> formNames{"desc"};
+    const std::vector<std::string> formMimes{"text/plain"};
+    const std::vector<std::string> formData{"hello-mime"};
+
+    const auto rsp = dynxxNetHttpRequest(
+        cNetPostEchoUrl,
+        DynXXHttpMethodX::Post,
+        "",
+        {},
+        headers,
+        formNames,
+        formMimes,
+        formData
+    );
+    if (rsp.code != 200) {
+        GTEST_SKIP();
+    }
+    EXPECT_EQ(rsp.contentType.find("application/json"), 0U);
+    EXPECT_NE(rsp.data.find("hello-mime"), std::string::npos);
+    EXPECT_NE(rsp.data.find("post"), std::string::npos);
 }
 
 TEST(Net, DynxxNetHttpDownload) {

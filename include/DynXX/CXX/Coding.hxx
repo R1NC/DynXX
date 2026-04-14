@@ -15,3 +15,5 @@ Bytes dynxxCodingStr2bytes(std::string_view str);
 std::string dynxxCodingBytes2str(BytesView bytes);
 
 std::string dynxxCodingStrTrim(std::string_view str);
+
+std::string dynxxCodingStrEscapeQuotes(std::string_view str);
