@@ -89,9 +89,9 @@ function(dynxx_find_dependencies TARGET_NAME LINK_LIBS_VAR)
             mmkv
             https://github.com/R1NC/MMKV
             dev
-            "Core"
-            "POSIX/src"
-            ON
+            INC_DIR "Core"
+            SRC_DIR "POSIX/src"
+            MANUAL_ADD_SUBDIRECTORY ON
         )
         list(APPEND link_libs mmkv)
     endif()
