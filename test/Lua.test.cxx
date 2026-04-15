@@ -9,7 +9,7 @@
 namespace {
     using LuaRuntimePaths = std::array<std::filesystem::path, 3>;
 
-    const LuaRuntimePaths kLuaRuntimePaths = []() -> LuaRuntimePaths {
+    const LuaRuntimePaths kLuaRuntimePaths = []() {
         const auto luaDir = DynXX::TestUtil::resolveRepoRootPath() / "scripts" / "Lua";
         return {luaDir / "json.lua", luaDir / "DynXX.lua", luaDir / "biz.lua"};
     }();
