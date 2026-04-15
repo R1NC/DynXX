@@ -10,7 +10,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 <table>
    <thead>
       <tr>
-         <th colspan="2" rowspan="2">CI</th>
+         <th colspan="2" rowspan="2">CI Status</th>
          <th colspan="4">Host</th>
       </tr>
       <tr>
