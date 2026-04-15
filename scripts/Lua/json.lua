@@ -191,4 +191,5 @@ function json.parse(str, pos, end_delim)
   end
 end
 
+JSON = json
 return json
