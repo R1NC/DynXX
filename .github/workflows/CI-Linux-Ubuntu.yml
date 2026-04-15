@@ -18,15 +18,25 @@ on:
       - 'tools/setup-vcpkg.ts'
       - 'tools/build/build-utils.ts'
       - 'tools/build/build-Linux.ts'
+      - 'tools/gen-doc.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'
+      - 'scripts/JS/DynXX.d.ts'
+      - 'scripts/Lua/DynXX.lua'
+      - '.github/pages/index.html'
       - '.github/workflows/Base-Setup.yml'
       - '.github/workflows/CI-Linux-Ubuntu.yml'
   workflow_dispatch:
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 permissions:
   contents: read
   actions: write
+  pages: write
+  id-token: write
 
 jobs:
   baseSetup:
@@ -88,3 +98,63 @@ jobs:
         path: |
           build.Linux/Release/output/
         if-no-files-found: error
+
+    - name: Install Doxygen and LDoc
+      if: github.ref == 'refs/heads/main'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y doxygen luarocks
+        sudo luarocks install ldoc
+
+    - name: Generate API Docs
+      if: github.ref == 'refs/heads/main'
+      working-directory: ./tools
+      env:
+        DOXYGEN_BIN: /usr/bin/doxygen
+      run: |
+        npm run gen:doc
+
+    - name: Setup Pages
+      if: github.ref == 'refs/heads/main'
+      uses: actions/configure-pages@v5
+
+    - name: Prepare Pages Site
+      if: github.ref == 'refs/heads/main'
+      run: |
+        set -euo pipefail
+        SITE_DIR="${RUNNER_TEMP}/pages-site"
+        EXISTING_DIR="${RUNNER_TEMP}/existing-site"
+        rm -rf "${SITE_DIR}" "${EXISTING_DIR}"
+        mkdir -p "${SITE_DIR}"
+
+        if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+          git fetch --depth=1 origin gh-pages
+          git worktree add "${EXISTING_DIR}" FETCH_HEAD
+          cp -a "${EXISTING_DIR}/." "${SITE_DIR}/"
+          git worktree remove "${EXISTING_DIR}" --force
+        fi
+
+        rm -rf "${SITE_DIR}/coverage"
+        mkdir -p "${SITE_DIR}/coverage"
+        cp -a ./build.Linux/Release/output/test/coverage/html/. "${SITE_DIR}/coverage/"
+
+        rm -rf "${SITE_DIR}/gtest"
+        mkdir -p "${SITE_DIR}/gtest"
+        cp -a ./build.Linux/Release/output/test/gtest/gtest-report.html "${SITE_DIR}/gtest/index.html"
+
+        rm -rf "${SITE_DIR}/docs"
+        mkdir -p "${SITE_DIR}/docs"
+        cp -a ./build.Docs/site/. "${SITE_DIR}/docs/"
+
+        cp ./.github/pages/index.html "${SITE_DIR}/index.html"
+
+    - name: Upload Site Pages Artifact
+      if: github.ref == 'refs/heads/main'
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ${{ runner.temp }}/pages-site
+
+    - name: Deploy Site to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      id: deployment
+      uses: actions/deploy-pages@v4

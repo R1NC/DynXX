@@ -165,53 +165,6 @@ function generateLuaDocs(root: string, siteDir: string): void {
   );
 }
 
-function writeLandingPage(siteDir: string): void {
-  const html = [
-    '<!doctype html>',
-    '<html lang="en">',
-    '<head>',
-    '  <meta charset="utf-8">',
-    '  <meta name="viewport" content="width=device-width, initial-scale=1">',
-    '  <title>DynXX API Docs</title>',
-    '  <style>',
-    '    body{font-family:Arial,sans-serif;max-width:900px;margin:48px auto;padding:0 20px;color:#111;}',
-    '    h1{margin-bottom:8px;}',
-    '    p{color:#444;}',
-    '    .cards{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:16px;margin-top:24px;}',
-    '    .card{display:block;padding:18px;border:1px solid #dcdcdc;border-radius:12px;text-decoration:none;color:inherit;}',
-    '    .card:hover{border-color:#999;}',
-    '    .title{font-size:20px;font-weight:600;margin-bottom:6px;}',
-    '  </style>',
-    '</head>',
-    '<body>',
-    '  <h1>DynXX API Docs</h1>',
-    '  <p>Select the API set you want to browse.</p>',
-    '  <div class="cards">',
-    '    <a class="card" href="./DynXX-C/html/files.html">',
-    '      <div class="title">DynXX-C</div>',
-    '      <div>DynXX API for C</div>',
-    '    </a>',
-    '    <a class="card" href="./DynXX-Cxx/html/files.html">',
-    '      <div class="title">DynXX-Cxx</div>',
-    '      <div>DynXX API for C++</div>',
-    '    </a>',
-    '    <a class="card" href="./DynXX-TS/index.html">',
-    '      <div class="title">DynXX-TS</div>',
-    '      <div>DynXX API for TypeScript</div>',
-    '    </a>',
-    '    <a class="card" href="./DynXX-Lua/index.html">',
-    '      <div class="title">DynXX-Lua</div>',
-    '      <div>DynXX API for Lua</div>',
-    '    </a>',
-    '  </div>',
-    '</body>',
-    '</html>',
-    '',
-  ].join('\n');
-
-  writeFileSync(join(siteDir, 'index.html'), html, 'utf8');
-}
-
 function printDocError(scope: string, error: unknown): void {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`[${scope}] ${message}`);
@@ -270,9 +223,7 @@ function main() {
     printDocError('DynXX-Lua', error);
   }
 
-  writeLandingPage(siteDir);
   console.log(`Done. Site root: ${siteDir}`);
-  console.log(`Open: ${join(siteDir, 'index.html')}`);
 }
 
 main();
