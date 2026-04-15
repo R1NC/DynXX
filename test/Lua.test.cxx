@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
@@ -6,19 +7,17 @@
 #include "TestUtil.hxx"
 
 namespace {
-    using LuaRuntimePaths = std::pair<std::filesystem::path, std::filesystem::path>;
+    using LuaRuntimePaths = std::array<std::filesystem::path, 3>;
 
-    std::filesystem::path luaRuntimePath(std::string_view fileName) {
-        return DynXX::TestUtil::resolveRepoRootPath() / "scripts" / "Lua" / fileName;
-    }
-
-    LuaRuntimePaths luaRuntimePaths() {
-        return {luaRuntimePath("DynXX.lua"), luaRuntimePath("biz.lua")};
-    }
+    const LuaRuntimePaths kLuaRuntimePaths = []() -> LuaRuntimePaths {
+        const auto luaDir = DynXX::TestUtil::resolveRepoRootPath() / "scripts" / "Lua";
+        return {luaDir / "json.lua", luaDir / "DynXX.lua", luaDir / "biz.lua"};
+    }();
 
     void assertLuaRuntimeFilesExist(const LuaRuntimePaths &paths) {
-        ASSERT_TRUE(std::filesystem::exists(paths.first));
-        ASSERT_TRUE(std::filesystem::exists(paths.second));
+        for (const auto &path : paths) {
+            ASSERT_TRUE(std::filesystem::exists(path));
+        }
     }
 
     std::string readAll(const std::filesystem::path &file) {
@@ -30,28 +29,26 @@ namespace {
 }
 
 TEST(Lua, DynxxLuaLoadF) {
-    const auto paths = luaRuntimePaths();
-    assertLuaRuntimeFilesExist(paths);
-    ASSERT_TRUE(dynxxLuaLoadF(paths.first.string()));
-    EXPECT_TRUE(dynxxLuaLoadF(paths.second.string()));
+    assertLuaRuntimeFilesExist(kLuaRuntimePaths);
+    for (const auto &path : kLuaRuntimePaths) {
+        EXPECT_TRUE(dynxxLuaLoadF(path.string()));
+    }
 }
 
 TEST(Lua, DynxxLuaLoadS) {
-    const auto paths = luaRuntimePaths();
-    assertLuaRuntimeFilesExist(paths);
-    const auto dynxxLuaScript = readAll(paths.first);
-    const auto bizLuaScript = readAll(paths.second);
-    ASSERT_FALSE(dynxxLuaScript.empty());
-    ASSERT_FALSE(bizLuaScript.empty());
-    ASSERT_TRUE(dynxxLuaLoadS(dynxxLuaScript));
-    EXPECT_TRUE(dynxxLuaLoadS(bizLuaScript));
+    assertLuaRuntimeFilesExist(kLuaRuntimePaths);
+    for (const auto &path : kLuaRuntimePaths) {
+        const auto luaScript = readAll(path);
+        ASSERT_FALSE(luaScript.empty());
+        EXPECT_TRUE(dynxxLuaLoadS(luaScript));
+    }
 }
 
 TEST(Lua, DynxxLuaCall) {
-    const auto paths = luaRuntimePaths();
-    assertLuaRuntimeFilesExist(paths);
-    ASSERT_TRUE(dynxxLuaLoadF(paths.first.string()));
-    ASSERT_TRUE(dynxxLuaLoadF(paths.second.string()));
+    assertLuaRuntimeFilesExist(kLuaRuntimePaths);
+    for (const auto &path : kLuaRuntimePaths) {
+        ASSERT_TRUE(dynxxLuaLoadF(path.string()));
+    }
     const auto callResult = dynxxLuaCall("TestCoding", "{}");
     EXPECT_TRUE(callResult.has_value());
 }

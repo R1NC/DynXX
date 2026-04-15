@@ -32,6 +32,7 @@ main.m linguist-vendored
 .github/**/* linguist-vendored
 res/**/* linguist-vendored
 tools/**/* linguist-vendored
+**/json.lua linguist-vendored
 **/demo/**/* linguist-vendored
 **/AppScope/**/* linguist-vendored
 **/pages/**/* linguist-vendored
