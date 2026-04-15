@@ -171,7 +171,7 @@ std::string strEscapeQuotes(std::string_view str)
 {
     std::string result;
     result.reserve(str.size() * 2);
-    static const std::string_view escapeChars = R"("\\")";
+    static constexpr std::string_view escapeChars = "\\\"";
     
 #if defined(__cpp_lib_ranges)
     std::ranges::for_each(str, [&result](char c) 
