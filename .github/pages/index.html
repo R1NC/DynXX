@@ -4,21 +4,97 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DynXX</title>
+  <style>
+    body {
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      max-width: 980px;
+      margin: 48px auto;
+      padding: 0 20px 36px;
+      line-height: 1.5;
+      background: #ffffff;
+      color: #1f2328;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+    }
+    .subtitle {
+      margin: 0 0 28px;
+      color: #57606a;
+    }
+    h2 {
+      margin: 26px 0 14px;
+      font-size: 22px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      display: block;
+      padding: 14px 16px;
+      border: 1px solid #d7d7d7;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #1f2328;
+      background: #ffffff;
+      transition: border-color .15s ease, transform .15s ease;
+    }
+    .card:hover {
+      border-color: #4f80ff;
+      box-shadow: 0 4px 14px rgba(9, 105, 218, 0.12);
+      transform: translateY(-1px);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: #57606a;
+    }
+  </style>
 </head>
 <body>
   <h1>DynXX</h1>
+  <p class="subtitle">Project documentation and test report portal.</p>
+
   <h2>API Docs</h2>
-  <ul>
-    <li><a href="./docs/DynXX-C/html/files.html" target="_blank" >C API</a></li>
-    <li><a href="./docs/DynXX-Cxx/html/files.html" target="_blank" >C++ API</a></li>
-    <li><a href="./docs/DynXX-TS/index.html" target="_blank" >TypeScript API</a></li>
-    <li><a href="./docs/DynXX-Lua/index.html" target="_blank" >Lua API</a></li>
-  </ul>
+  <div class="grid">
+    <a class="card" href="./docs/DynXX-C/html/files.html" target="_blank">
+      <div class="card-title">C API</div>
+      <div class="card-desc">Reference for C interfaces</div>
+    </a>
+    <a class="card" href="./docs/DynXX-Cxx/html/files.html" target="_blank">
+      <div class="card-title">C++ API</div>
+      <div class="card-desc">Reference for C++ interfaces</div>
+    </a>
+    <a class="card" href="./docs/DynXX-TS/index.html" target="_blank">
+      <div class="card-title">TypeScript API</div>
+      <div class="card-desc">Reference for TypeScript interfaces</div>
+    </a>
+    <a class="card" href="./docs/DynXX-Lua/index.html" target="_blank">
+      <div class="card-title">Lua API</div>
+      <div class="card-desc">Reference for Lua interfaces</div>
+    </a>
+  </div>
+
   <h2>Test Reports</h2>
-  <ul>
-    <li><a href="./gtest/">GTest Report</a></li>
-    <li><a href="./coverage/">Coverage Report</a></li>
-    <li><a href="https://app.codecov.io/gh/R1NC/DynXX" target="_blank" rel="noopener noreferrer">Codecov</a></li>
-  </ul>
+  <div class="grid">
+    <a class="card" href="./gtest/" target="_blank">
+      <div class="card-title">GTest Report</div>
+      <div class="card-desc">Unit test HTML report</div>
+    </a>
+    <a class="card" href="./coverage/" target="_blank">
+      <div class="card-title">Coverage Report</div>
+      <div class="card-desc">Local coverage HTML report</div>
+    </a>
+    <a class="card" href="https://app.codecov.io/gh/R1NC/DynXX" target="_blank" rel="noopener noreferrer">
+      <div class="card-title">Codecov</div>
+      <div class="card-desc">Hosted coverage dashboard</div>
+    </a>
+  </div>
 </body>
 </html>
