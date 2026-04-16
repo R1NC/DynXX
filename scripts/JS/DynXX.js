@@ -49,14 +49,14 @@ function DynXXCallPlatform(msg = '') {
     return dynxx_call_platform(msg);
 }
 
-/*const DynXXLogLevel = Object.freeze({
+const DynXXLogLevel = Object.freeze({
     Debug: 3,
     Info: 4,
     Warn: 5,
     Error: 6,
     Fatal: 7,
     None: 8
-});*/
+});
 
 function DynXXLogPrint(level, content = '') {
     let inJson = JSON.stringify({

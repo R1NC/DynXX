@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
+#include <regex>
 #include <sstream>
+#include <vector>
 #include <DynXX/CXX/JS.hxx>
 #include "TestUtil.hxx"
 
@@ -27,6 +30,19 @@ namespace {
         ss << in.rdbuf();
         return ss.str();
     }
+
+    std::vector<std::string> extractJsCallableFunctions(const std::string &script) {
+        static const std::regex kPattern(R"((?:^|\n)\s*(?:async\s+)?function\s+(Test[A-Za-z0-9_]*)\s*\()");
+        std::vector<std::string> funcs;
+        for (auto it = std::sregex_iterator(script.begin(), script.end(), kPattern);
+             it != std::sregex_iterator();
+             ++it) {
+            const auto func = (*it)[1].str();
+            funcs.push_back(func);
+        }
+        return funcs;
+    }
+
 }
 
 TEST(JS, DynxxJsLoadF) {
@@ -59,9 +75,19 @@ TEST(JS, DynxxJsCall) {
     assertJsRuntimeFilesExist(paths);
     ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
     ASSERT_TRUE(dynxxJsLoadF(paths.second.string(), false));
+
+    const auto bizJsScript = readAll(paths.second);
+    const auto funcs = extractJsCallableFunctions(bizJsScript);
+    ASSERT_FALSE(funcs.empty());
+    for (const auto &func : funcs) {
+        std::cout << "[ JS CALL ] " << func << std::endl;
+        const auto callResult = dynxxJsCall(func, "{}", false);
+        EXPECT_TRUE(callResult.has_value()) << func;
+    }
+
+    // Expected: calling a missing JS function logs an error and returns nullopt.
+    EXPECT_FALSE(dynxxJsCall("TestMethodNotExists_ForError", "{}", false).has_value());
     EXPECT_FALSE(dynxxJsCall("", "{}", false).has_value());
-    const auto callResult = dynxxJsCall("testPromise", "{}", false);
-    EXPECT_TRUE(callResult.has_value());
 }
 
 TEST(JS, DynxxJsSetMsgCallback) {

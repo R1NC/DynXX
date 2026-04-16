@@ -50,6 +50,24 @@ namespace
         return cj->valuedouble;
     }
 
+    bool isValidSimpleJsonEscape(unsigned char c)
+    {
+        switch (c)
+        {
+            case '"':
+            case '\\':
+            case '/':
+            case 'b':
+            case 'f':
+            case 'n':
+            case 'r':
+            case 't':
+                return true;
+            default:
+                return false;
+        }
+    }
+
     bool hasInvalidEscapeOrControlInJsonString(std::string_view json)
     {
         bool inString = false;
@@ -80,33 +98,32 @@ namespace
             if (escaped)
             {
                 escaped = false;
-                if (c == '"' || c == '\\' || c == '/' || c == 'b' || c == 'f' || c == 'n' || c == 'r' || c == 't')
-                {
-                    continue;
-                }
                 if (c == 'u')
                 {
                     unicodeHexRemain = 4;
                     continue;
                 }
-                return true;
-            }
-
-            if (c == '\\')
-            {
-                escaped = true;
+                if (!isValidSimpleJsonEscape(c))
+                {
+                    return true;
+                }
                 continue;
             }
 
-            if (c == '"')
+            switch (c)
             {
-                inString = false;
-                continue;
-            }
-
-            if (c < 0x20)
-            {
-                return true;
+                case '\\':
+                    escaped = true;
+                    break;
+                case '"':
+                    inString = false;
+                    break;
+                default:
+                    if (c < 0x20)
+                    {
+                        return true;
+                    }
+                    break;
             }
         }
         return inString || escaped || unicodeHexRemain > 0;

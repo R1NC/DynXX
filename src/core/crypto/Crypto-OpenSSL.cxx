@@ -896,7 +896,7 @@ Bytes Base64::decode(BytesView inBytes, bool noNewLines)
     // Validate Base64 characters
     for (size_t i = 0; i < inLen; i++)
     {
-        const auto c = static_cast<unsigned char>(in[i]);
+        const auto c = in[i];
         if (std::isalnum(c) != 0 || c == '+' || c == '/' || c == '=')
         {
             continue;

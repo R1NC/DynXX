@@ -2,6 +2,8 @@
 #include <filesystem>
 #include <DynXX/CXX/Net.hxx>
 
+#include "TestUtil.hxx"
+
 namespace {
     constexpr const char *cNetTestUrl = "https://rinc.xyz/index.html";
     constexpr const char *cNetPostEchoUrl = "https://httpbin.org/post";
@@ -75,7 +77,7 @@ TEST(Net, DynxxNetHttpRequestPostWithHeadersAndMime) {
 }
 
 TEST(Net, DynxxNetHttpDownload) {
-    const auto outPath = std::filesystem::temp_directory_path() / "dynxx_net_test_index.html";
+    const auto outPath = DynXX::TestUtil::resolveTempPath() / "dynxx_net_test_index.html";
     if (!dynxxNetHttpDownload(cNetTestUrl, outPath.string())) {
         GTEST_SKIP();
     }
@@ -172,7 +174,7 @@ class NetDownloadInvalidQueryFormatTest : public ::testing::TestWithParam<NetDow
 TEST_P(NetDownloadInvalidQueryFormatTest, ShouldBeHandledGracefully) {
     // Keep this as tolerant behavior check because lower layers may normalize/recover malformed query escapes.
     const auto &param = GetParam();
-    const auto outPath = std::filesystem::temp_directory_path() / param.filePath;
+    const auto outPath = DynXX::TestUtil::resolveTempPath() / param.filePath;
     const auto ok = dynxxNetHttpDownload(param.url, outPath.string());
     if (ok) {
         EXPECT_TRUE(std::filesystem::exists(outPath));

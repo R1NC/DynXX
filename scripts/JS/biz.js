@@ -1,4 +1,4 @@
-function jTestDeviceInfo() {
+function TestDeviceInfo() {
     let platform = DynXXDevicePlatform()
     DynXXLogPrint(DynXXLogLevel.Debug, `Platform: ${platform}`)
     let name = DynXXDeviceName()
@@ -11,15 +11,15 @@ function jTestDeviceInfo() {
     DynXXLogPrint(DynXXLogLevel.Debug, `CPU Arch: ${cpuArch}`)
 }
 
-function testMicrotask() {
+function TestMicrotask() {
     queueMicrotask(() => {
-        jTestNetHttpReqPro('https://rinc.xyz').then((rsp)=>{
+        TestNetHttpReqPro('https://rinc.xyz').then((rsp)=>{
             DynXXLogPrint(DynXXLogLevel.Debug, `rsp: ${rsp}`)
         })
     })
 }
 
-function jTestNetHttpReqPro(url) {
+function TestNetHttpReqPro(url) {
     return new Promise((resolve, reject) => {
         if (url === undefined || url.trim() === "") {
             reject(new Error('invalid url'))
@@ -41,16 +41,16 @@ function jTestNetHttpReqPro(url) {
     })
 }
 
-function testPromise() {
-    jTestNetHttpReqPro('https://rinc.xyz')
+function TestPromise() {
+    TestNetHttpReqPro('https://rinc.xyz')
         .then(res => {
             DynXXLogPrint(DynXXLogLevel.Debug, `Response: ${res}`)
-            return jTestNetHttpReqPro('https://abc.xyz')
+            return TestNetHttpReqPro('https://abc.xyz')
         }, err => {
             DynXXLogPrint(DynXXLogLevel.Error, `${err}`)
         }).then(res => {
             DynXXLogPrint(DynXXLogLevel.Debug, `Response: ${res}`)
-            return jTestNetHttpReqPro('https://cn.bing.com')
+            return TestNetHttpReqPro('https://cn.bing.com')
         }, err => {
             DynXXLogPrint(DynXXLogLevel.Error, `${err}`)
         }).then(res => {
@@ -60,25 +60,25 @@ function testPromise() {
         })
 }
 
-function testPromiseAll() {
-    const pro0 = jTestNetHttpReqPro('https://rinc.xyz')
-    const pro1 = jTestNetHttpReqPro('https://abc.xyz')
-    const pro2 = jTestNetHttpReqPro('https://cn.bing.com')
+function TestPromiseAll() {
+    const pro0 = TestNetHttpReqPro('https://rinc.xyz')
+    const pro1 = TestNetHttpReqPro('https://abc.xyz')
+    const pro2 = TestNetHttpReqPro('https://cn.bing.com')
     Promise.all([pro0, pro1, pro2]).then((values) => {
         console.log(values);
     })
 }
 
-async function testAwait() {
+async function TestAwait() {
     try {
-        const res = await jTestNetHttpReqPro('https://rinc.xyz')
+        const res = await TestNetHttpReqPro('https://rinc.xyz')
         DynXXLogPrint(DynXXLogLevel.Debug, `Response: ${res}`)
     } catch (err) {
         DynXXLogPrint(DynXXLogLevel.Error, `${err}`)
     }
 }
 
-function jTestKV() {
+function TestKV() {
     let kvId = 'test_kv'
     let conn = DynXXKVOpen(kvId)
     if (conn) {
@@ -127,7 +127,7 @@ INSERT OR IGNORE INTO TestTable (s, i, f) VALUES
 
 var sqlQuery = `SELECT * FROM TestTable;`
 
-function jTestSQLite() {
+function TestSQLite() {
     let dbId = 'test_db'
     let conn = DynXXSQLiteOpen(dbId)
     if (conn) {
@@ -157,7 +157,7 @@ function jTestSQLite() {
     }
 }
 
-function jTestCryptoBase64(s) {
+function TestCryptoBase64(s) {
     let noNewLines = true
     let inBytes = DynXXStr2Bytes(s)
     let enBytes = DynXXCryptoBase64Encode(inBytes, noNewLines)
@@ -169,7 +169,7 @@ function jTestCryptoBase64(s) {
     DynXXLogPrint(DynXXLogLevel.Debug, `Base64 decoded: ${deS}`)
 }
 
-function jTestCryptoHash(s) {
+function TestCryptoHash(s) {
     let inBytes = DynXXStr2Bytes(s)
 
     let md5Bytes = DynXXCryptoHashMD5(inBytes)
@@ -183,7 +183,7 @@ function jTestCryptoHash(s) {
 
 var AES_KEY = "QWERTYUIOPASDFGH"
 
-function jTestCryptoAes(s) {
+function TestCryptoAes(s) {
     let inBytes = DynXXStr2Bytes(s)
     let keyBytes = DynXXStr2Bytes(AES_KEY)
 
@@ -196,7 +196,7 @@ function jTestCryptoAes(s) {
     DynXXLogPrint(DynXXLogLevel.Debug, `AES decoded: ${deS}`)
 }
 
-function jTestCryptoAesGcm(s) {
+function TestCryptoAesGcm(s) {
     let inBytes = DynXXStr2Bytes(s)
     let keyBytes = DynXXStr2Bytes(AES_KEY)
     let ivBytes = DynXXCryptoRand(12)
@@ -211,22 +211,21 @@ function jTestCryptoAesGcm(s) {
     DynXXLogPrint(DynXXLogLevel.Debug, `AES-GCM decoded: ${deS}`)
 }
 
-function jTestZip() {
-    let root = DynXXRootPath()
-    let inFile = `${root}/test.js`
-    let zipFile = `${root}/test.gzip`
-    let zipRes = DynXXZZipFile(inFile, zipFile)
-    if (zipRes) {
-        DynXXLogPrint(DynXXLogLevel.Debug, 'ZIP succeed!')
-        let outFile = `${root}/test.txt`
-        let unzipRes = DynXXZUnZipFile(zipFile, outFile)
-        DynXXLogPrint(DynXXLogLevel.Debug, `UNZIP result: ${unzipRes}`)
-    } else {
-        DynXXLogPrint(DynXXLogLevel.Debug, 'ZIP failed')
-    }
+async function TestZip() {
+    let inS = 'DynXX ZIP bytes test'
+    let inBytes = DynXXStr2Bytes(inS)
+    let zipOut = await DynXXZZipBytes(inBytes, -1, 16 * 1024, 1)
+    let zipBytes = Array.isArray(zipOut) ? zipOut : _json2Array(zipOut)
+    DynXXLogPrint(DynXXLogLevel.Debug, `ZIP bytes len: ${zipBytes.length}`)
+
+    let unzipOut = await DynXXZUnZipBytes(zipBytes, 16 * 1024, 1)
+    let unzipBytes = Array.isArray(unzipOut) ? unzipOut : _json2Array(unzipOut)
+    let outS = DynXXBytes2Str(unzipBytes)
+    DynXXLogPrint(DynXXLogLevel.Debug, `UNZIP bytes decoded: ${outS}`)
+    DynXXLogPrint(DynXXLogLevel.Debug, `ZIP bytes roundtrip ok: ${outS === inS}`)
 }
 
-function jTestCallPlatform() {
+function TestCallPlatform() {
     let res = DynXXCallPlatform("tsCallPlatformParam")
     DynXXLogPrint(DynXXLogLevel.Debug, `Return value from Platform: ${res}`)
 }

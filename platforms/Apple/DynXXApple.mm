@@ -68,7 +68,7 @@ static const auto cParamsJson = "{\"url\":\"https://rinc.xyz\", \"params\":\"p0=
         NSString *jsPath0 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"DynXX.js"];
         NSString *jsPath1 = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"biz.js"];
         if (dynxx_js_loadF(NSString2CharP(jsPath0), false) && dynxx_js_loadF(NSString2CharP(jsPath1), false)) {
-            auto res = dynxx_js_call("jTestStoreSQLite", "https://rinc.xyz", false);
+            auto res = dynxx_js_call("TestSQLite", "https://rinc.xyz", false);
             NSLog(@"%s", res);
         }
     });

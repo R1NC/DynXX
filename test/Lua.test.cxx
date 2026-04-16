@@ -2,7 +2,11 @@
 #include <array>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
+#include <regex>
 #include <sstream>
+#include <unordered_set>
+#include <vector>
 #include <DynXX/CXX/Lua.hxx>
 #include "TestUtil.hxx"
 
@@ -30,6 +34,25 @@ namespace {
         ss << in.rdbuf();
         return ss.str();
     }
+
+    std::vector<std::string> extractLuaTestFunctions(const std::string &script) {
+        static const std::regex kPattern(R"((?:^|\n)\s*function\s+(Test[A-Za-z0-9_]*)\s*\()");
+        static const std::unordered_set<std::string> kExcluded{
+            "TestTimer"
+        };
+        std::vector<std::string> funcs;
+        for (auto it = std::sregex_iterator(script.begin(), script.end(), kPattern);
+             it != std::sregex_iterator();
+             ++it) {
+            const auto func = (*it)[1].str();
+            if (kExcluded.contains(func)) {
+                continue;
+            }
+            funcs.push_back(func);
+        }
+        return funcs;
+    }
+
 }
 
 TEST(Lua, DynxxLuaLoadF) {
@@ -55,7 +78,14 @@ TEST(Lua, DynxxLuaCall) {
     for (const auto &path : kLuaRuntimePaths) {
         ASSERT_TRUE(dynxxLuaLoadF(path.string()));
     }
+    const auto bizLuaScript = readAll(kLuaRuntimePaths[2]);
+    const auto funcs = extractLuaTestFunctions(bizLuaScript);
+    ASSERT_FALSE(funcs.empty());
+    for (const auto &func : funcs) {
+        std::cout << "[ LUA CALL ] " << func << std::endl;
+        const auto callResult = dynxxLuaCall(func, "https://rinc.xyz");
+        EXPECT_TRUE(callResult.has_value()) << func;
+    }
+    EXPECT_FALSE(dynxxLuaCall("TestMethodNotExists_ForError", "https://rinc.xyz").has_value());
     EXPECT_FALSE(dynxxLuaCall("", "{}").has_value());
-    const auto callResult = dynxxLuaCall("TestCoding", "{}");
-    EXPECT_TRUE(callResult.has_value());
 }
