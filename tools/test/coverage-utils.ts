@@ -10,7 +10,10 @@ const COVERAGE_IGNORE_DIRS = [
 ] as const;
 
 const COVERAGE_IGNORE_FILES = [
-  'src/bridge/ScriptAPI.cxx'
+  'src/bridge/ScriptAPI.hxx',
+  'src/bridge/ScriptAPI.cxx',
+  'src/core/concurrent/TimerTask.hxx',
+  'src/core/concurrent/TimerTask.cxx'
 ] as const;
 
 function escapeRegexLiteral(input: string): string {

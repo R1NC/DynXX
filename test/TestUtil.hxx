@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <filesystem>
+#include <string_view>
 
 #if defined(__has_include)
 #if __has_include(<source_location>)
@@ -48,5 +49,17 @@ namespace DynXX::TestUtil {
             return {runnerTmp};
         }
         return std::filesystem::temp_directory_path();
+    }
+
+    inline std::filesystem::path resolveScriptsRootPath() {
+        return resolveRepoRootPath() / "scripts";
+    }
+
+    inline std::filesystem::path resolveJsRuntimePath(std::string_view fileName) {
+        return resolveScriptsRootPath() / "JS" / fileName;
+    }
+
+    inline std::filesystem::path resolveLuaRuntimePath(std::string_view fileName) {
+        return resolveScriptsRootPath() / "Lua" / fileName;
     }
 }

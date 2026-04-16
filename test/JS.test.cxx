@@ -12,12 +12,11 @@
 namespace {
     using JsRuntimePaths = std::pair<std::filesystem::path, std::filesystem::path>;
 
-    std::filesystem::path jsRuntimePath(std::string_view fileName) {
-        return DynXX::TestUtil::resolveRepoRootPath() / "scripts" / "JS" / fileName;
-    }
-
     JsRuntimePaths jsRuntimePaths() {
-        return {jsRuntimePath("DynXX.js"), jsRuntimePath("biz.js")};
+        return {
+            DynXX::TestUtil::resolveJsRuntimePath("DynXX.js"),
+            DynXX::TestUtil::resolveJsRuntimePath("biz.js")
+        };
     }
 
     void assertJsRuntimeFilesExist(const JsRuntimePaths &paths) {
@@ -34,8 +33,9 @@ namespace {
 
     std::vector<std::string> extractJsCallableFunctions(std::string_view script) {
         static const std::regex kPattern(R"((?:^|\n)\s*(?:async\s+)?function\s+(Test[A-Za-z0-9_]*)\s*\()");
+        const std::string scriptText{script};
         std::vector<std::string> funcs;
-        for (auto it = std::sregex_iterator(script.cbegin(), script.cend(), kPattern);
+        for (auto it = std::sregex_iterator(scriptText.begin(), scriptText.end(), kPattern);
              it != std::sregex_iterator();
              ++it) {
             const auto func = (*it)[1].str();
@@ -48,23 +48,31 @@ namespace {
 
 TEST(JS, DynxxJsLoadF) {
     const auto paths = jsRuntimePaths();
+    const auto invalidLuaPath = DynXX::TestUtil::resolveLuaRuntimePath("biz.lua");
     assertJsRuntimeFilesExist(paths);
+    ASSERT_TRUE(std::filesystem::exists(invalidLuaPath));
     EXPECT_FALSE(dynxxJsLoadF("", false));
     ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
     EXPECT_TRUE(dynxxJsLoadF(paths.second.string(), false));
+    EXPECT_FALSE(dynxxJsLoadF(invalidLuaPath.string(), false));
 }
 
 TEST(JS, DynxxJsLoadS) {
     const auto paths = jsRuntimePaths();
+    const auto invalidLuaPath = DynXX::TestUtil::resolveLuaRuntimePath("biz.lua");
     assertJsRuntimeFilesExist(paths);
+    ASSERT_TRUE(std::filesystem::exists(invalidLuaPath));
     const auto dynxxJsScript = readAll(paths.first);
     const auto bizJsScript = readAll(paths.second);
+    const auto luaScript = readAll(invalidLuaPath);
     ASSERT_FALSE(dynxxJsScript.empty());
     ASSERT_FALSE(bizJsScript.empty());
+    ASSERT_FALSE(luaScript.empty());
     EXPECT_FALSE(dynxxJsLoadS("", "empty.js", false));
     EXPECT_FALSE(dynxxJsLoadS("globalThis.a = 1;", "", false));
     ASSERT_TRUE(dynxxJsLoadS(dynxxJsScript, paths.first.string(), false));
     EXPECT_TRUE(dynxxJsLoadS(bizJsScript, paths.second.string(), false));
+    EXPECT_FALSE(dynxxJsLoadS(luaScript, invalidLuaPath.string(), false));
 }
 
 TEST(JS, DynxxJsLoadB) {

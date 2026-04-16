@@ -21,11 +21,10 @@ namespace {
 #endif
 
     const LuaRuntimePaths kLuaRuntimePaths = []() {
-        const auto luaDir = DynXX::TestUtil::resolveRepoRootPath() / "scripts" / "Lua";
         return LuaRuntimePaths{
-            luaDir / "json.lua", 
-            luaDir / "DynXX.lua", 
-            luaDir / "biz.lua"
+            DynXX::TestUtil::resolveLuaRuntimePath("json.lua"),
+            DynXX::TestUtil::resolveLuaRuntimePath("DynXX.lua"),
+            DynXX::TestUtil::resolveLuaRuntimePath("biz.lua")
         };
     }();
 
@@ -47,8 +46,9 @@ namespace {
         static const LuaExcludedSet kExcluded{
             "TestTimer"
         };
+        const std::string scriptText{script};
         std::vector<std::string> funcs;
-        for (auto it = std::sregex_iterator(script.cbegin(), script.cend(), kPattern);
+        for (auto it = std::sregex_iterator(scriptText.begin(), scriptText.end(), kPattern);
              it != std::sregex_iterator();
              ++it) {
             const auto func = (*it)[1].str();
@@ -63,21 +63,29 @@ namespace {
 }
 
 TEST(Lua, DynxxLuaLoadF) {
+    const auto invalidJsPath = DynXX::TestUtil::resolveJsRuntimePath("biz.js");
     assertLuaRuntimeFilesExist(kLuaRuntimePaths);
+    ASSERT_TRUE(std::filesystem::exists(invalidJsPath));
     EXPECT_FALSE(dynxxLuaLoadF(""));
     for (const auto &path : kLuaRuntimePaths) {
         EXPECT_TRUE(dynxxLuaLoadF(path.string()));
     }
+    EXPECT_FALSE(dynxxLuaLoadF(invalidJsPath.string()));
 }
 
 TEST(Lua, DynxxLuaLoadS) {
+    const auto invalidJsPath = DynXX::TestUtil::resolveJsRuntimePath("biz.js");
     assertLuaRuntimeFilesExist(kLuaRuntimePaths);
+    ASSERT_TRUE(std::filesystem::exists(invalidJsPath));
+    const auto jsScript = readAll(invalidJsPath);
+    ASSERT_FALSE(jsScript.empty());
     EXPECT_FALSE(dynxxLuaLoadS(""));
     for (const auto &path : kLuaRuntimePaths) {
         const auto luaScript = readAll(path);
         ASSERT_FALSE(luaScript.empty());
         EXPECT_TRUE(dynxxLuaLoadS(luaScript));
     }
+    EXPECT_FALSE(dynxxLuaLoadS(jsScript));
 }
 
 TEST(Lua, DynxxLuaCall) {
