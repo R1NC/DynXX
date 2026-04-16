@@ -21,7 +21,7 @@ namespace {
     std::function<const char *(const char *msg)> msgCbk = nullptr;
 
 #define DEF_API(f, T) DEF_JS_FUNC_##T(f##J, f##S)
-#define DEF_API_ASYNC(f, T) DEF_JS_FUNC_##T##_ASYNC(vm, f##J, f##S)
+#define DEF_API_ASYNC(f, T) DEF_JS_FUNC_##T##_ASYNC(getVmSnapshot(), f##J, f##S)
 
 #define BIND_API(f) vm->bindFunc(#f, f##J)
 
@@ -33,6 +33,11 @@ namespace {
             vm = std::make_shared<JSVM>();
             registerFuncs();
         }
+        return vm;
+    }
+
+    std::shared_ptr<JSVM> getVmSnapshot() {
+        const auto lock = std::scoped_lock(vmMutex);
         return vm;
     }
 

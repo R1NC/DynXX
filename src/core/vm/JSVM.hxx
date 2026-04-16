@@ -69,49 +69,55 @@
     }                                                                          \
   }
 
-#define DEF_JS_FUNC_VOID_ASYNC(vm, fJ, fS)                                 \
+#define DEF_JS_FUNC_VOID_ASYNC(getBridgeExpr, fJ, fS)                                 \
   static JSValue fJ(JS_FUNC_PARAMS) {                                          \
-    DEF_JS_FUNC_CHECK_VM(vm);                                          \
+    const auto bridge = (getBridgeExpr);                                        \
+    DEF_JS_FUNC_CHECK_VM(bridge);                                                \
     std::string json = JS_FUNC_READ_JSON;                                      \
     return bridge->newPromiseVoid(                                             \
         [arg = json]() { return fS(arg.c_str()); });                           \
   }
 
-#define DEF_JS_FUNC_BOOL_ASYNC(bridge, fJ, fS)                                 \
+#define DEF_JS_FUNC_BOOL_ASYNC(getBridgeExpr, fJ, fS)                                 \
   static JSValue fJ(JS_FUNC_PARAMS) {                                          \
-    DEF_JS_FUNC_CHECK_VM(vm);                                          \
+    const auto bridge = (getBridgeExpr);                                        \
+    DEF_JS_FUNC_CHECK_VM(bridge);                                                \
     std::string json = JS_FUNC_READ_JSON;                                      \
     return bridge->newPromiseBool(                                             \
         [arg = json]() { return fS(arg.c_str()); });                           \
   }
 
-#define DEF_JS_FUNC_INT32_ASYNC(bridge, fJ, fS)                                \
+#define DEF_JS_FUNC_INT32_ASYNC(getBridgeExpr, fJ, fS)                                \
   static JSValue fJ(JS_FUNC_PARAMS) {                                          \
-    DEF_JS_FUNC_CHECK_VM(vm);                                          \
+    const auto bridge = (getBridgeExpr);                                        \
+    DEF_JS_FUNC_CHECK_VM(bridge);                                                \
     std::string json = JS_FUNC_READ_JSON;                                      \
     return bridge->newPromiseInt32(                                            \
         [arg = json]() { return fS(arg.c_str()); });                           \
   }
 
-#define DEF_JS_FUNC_INT64_ASYNC(bridge, fJ, fS)                                \
+#define DEF_JS_FUNC_INT64_ASYNC(getBridgeExpr, fJ, fS)                                \
   static JSValue fJ(JS_FUNC_PARAMS) {                                          \
-    DEF_JS_FUNC_CHECK_VM(vm);                                          \
+    const auto bridge = (getBridgeExpr);                                        \
+    DEF_JS_FUNC_CHECK_VM(bridge);                                                \
     std::string json = JS_FUNC_READ_JSON;                                      \
     return bridge->newPromiseInt64(                                            \
         [arg = json]() { return fS(arg.c_str()); });                           \
   }
 
-#define DEF_JS_FUNC_FLOAT_ASYNC(bridge, fJ, fS)                                \
+#define DEF_JS_FUNC_FLOAT_ASYNC(getBridgeExpr, fJ, fS)                                \
   static JSValue fJ(JS_FUNC_PARAMS) {                                          \
-    DEF_JS_FUNC_CHECK_VM(vm);                                          \
+    const auto bridge = (getBridgeExpr);                                        \
+    DEF_JS_FUNC_CHECK_VM(bridge);                                                \
     std::string json = JS_FUNC_READ_JSON;                                      \
     return bridge->newPromiseFloat(                                            \
         [arg = json]() { return fS(arg.c_str()); });                           \
   }
 
-#define DEF_JS_FUNC_STRING_ASYNC(bridge, fJ, fS)                               \
+#define DEF_JS_FUNC_STRING_ASYNC(getBridgeExpr, fJ, fS)                               \
   static JSValue fJ(JS_FUNC_PARAMS) {                                          \
-    DEF_JS_FUNC_CHECK_VM(vm);                                          \
+    const auto bridge = (getBridgeExpr);                                        \
+    DEF_JS_FUNC_CHECK_VM(bridge);                                                \
     std::string json = JS_FUNC_READ_JSON;                                      \
     return bridge->newPromiseString(                                           \
         [arg = json]() { return fS(arg.c_str()); });                           \
