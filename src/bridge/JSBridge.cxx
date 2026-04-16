@@ -227,6 +227,7 @@ DEF_API_ASYNC(dynxx_z_bytes_unzip, STRING)
 
 // JS API - Binding
 
+namespace {
 void registerFuncs() {
     if (vm == nullptr) {
         [[unlikely]] return;
@@ -310,6 +311,7 @@ void registerFuncs() {
     BIND_API(dynxx_z_unzip_release);
     BIND_API(dynxx_z_bytes_zip);
     BIND_API(dynxx_z_bytes_unzip);
+}
 }
 
 // Inner API
