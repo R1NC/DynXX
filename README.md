@@ -5,7 +5,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 [<img src="https://img.shields.io/sonar/quality_gate/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&logo=sonar&label=Sonar%20-%20Quality%20Gate"/>][2]
 [<img src="https://img.shields.io/sonar/violations/R1NC_DynXX/main?server=https%3A%2F%2Fsonarcloud.io&format=long&logo=sonar&label=Sonar%20-%20Violations"/>][5] 
 [<img src="https://img.shields.io/codecov/c/github/R1NC/DynXX/main?logo=codecov&label=Codecov"/>][6] 
-[![Docs](https://img.shields.io/badge/API_Docs-Test_Reports-blue?logo=github)](https://R1NC.github.io/DynXX/)
+[![Docs](https://img.shields.io/badge/API_Docs_%26_Test_Reports-gray?logo=github)](https://R1NC.github.io/DynXX/)
 
 <table>
    <thead>
