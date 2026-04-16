@@ -5,13 +5,20 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 #include <DynXX/CXX/Lua.hxx>
+#include <DynXX/CXX/Types.hxx>
 #include "TestUtil.hxx"
 
 namespace {
     using LuaRuntimePaths = std::array<std::filesystem::path, 3>;
+#if defined(__cpp_lib_generic_unordered_lookup)
+    using LuaExcludedSet = std::unordered_set<std::string, TransparentStringHash, std::equal_to<>>;
+#else
+    using LuaExcludedSet = std::unordered_set<std::string>;
+#endif
 
     const LuaRuntimePaths kLuaRuntimePaths = []() {
         const auto luaDir = DynXX::TestUtil::resolveRepoRootPath() / "scripts" / "Lua";
@@ -35,13 +42,13 @@ namespace {
         return ss.str();
     }
 
-    std::vector<std::string> extractLuaTestFunctions(const std::string &script) {
+    std::vector<std::string> extractLuaTestFunctions(std::string_view script) {
         static const std::regex kPattern(R"((?:^|\n)\s*function\s+(Test[A-Za-z0-9_]*)\s*\()");
-        static const std::unordered_set<std::string> kExcluded{
+        static const LuaExcludedSet kExcluded{
             "TestTimer"
         };
         std::vector<std::string> funcs;
-        for (auto it = std::sregex_iterator(script.begin(), script.end(), kPattern);
+        for (auto it = std::sregex_iterator(script.cbegin(), script.cend(), kPattern);
              it != std::sregex_iterator();
              ++it) {
             const auto func = (*it)[1].str();

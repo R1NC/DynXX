@@ -4,6 +4,7 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include <string_view>
 #include <vector>
 #include <DynXX/CXX/JS.hxx>
 #include "TestUtil.hxx"
@@ -31,10 +32,10 @@ namespace {
         return ss.str();
     }
 
-    std::vector<std::string> extractJsCallableFunctions(const std::string &script) {
+    std::vector<std::string> extractJsCallableFunctions(std::string_view script) {
         static const std::regex kPattern(R"((?:^|\n)\s*(?:async\s+)?function\s+(Test[A-Za-z0-9_]*)\s*\()");
         std::vector<std::string> funcs;
-        for (auto it = std::sregex_iterator(script.begin(), script.end(), kPattern);
+        for (auto it = std::sregex_iterator(script.cbegin(), script.cend(), kPattern);
              it != std::sregex_iterator();
              ++it) {
             const auto func = (*it)[1].str();
