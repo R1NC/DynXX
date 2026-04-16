@@ -1,6 +1,8 @@
 #if defined(USE_LUA)
 #include "LuaBridge.hxx"
 
+#include <mutex>
+
 #include <DynXX/CXX/Macro.hxx>
 #include <DynXX/CXX/Memory.hxx>
 
@@ -10,40 +12,46 @@
 namespace {
     using namespace DynXX::Core::VM;
 
-    std::unique_ptr<LuaVM> vm = nullptr;
+    std::mutex vmMutex;
+    std::shared_ptr<LuaVM> vm = nullptr;
 
 #define DEF_API(f, T) DEF_LUA_FUNC_##T(f##L, f##S)
 
 #define BIND_API(f) vm->bindFunc(#f, f##L)
 
-    bool loadF(std::string_view f) {
+    void registerFuncs();
+
+    std::shared_ptr<LuaVM> ensureVm() {
+        const auto lock = std::scoped_lock(vmMutex);
         if (vm == nullptr) {
-            dynxx_lua_init();
+            vm = std::make_shared<LuaVM>();
+            registerFuncs();
         }
-        if (vm == nullptr || f.empty()) [[unlikely]] {
+        return vm;
+    }
+
+    bool loadF(std::string_view f) {
+        const auto localVm = ensureVm();
+        if (localVm == nullptr || f.empty()) [[unlikely]] {
             return false;
         }
-        return vm->loadFile(f);
+        return localVm->loadFile(f);
     }
 
     bool loadS(std::string_view s) {
-        if (vm == nullptr) {
-            dynxx_lua_init();
-        }
-        if (vm == nullptr || s.empty()) [[unlikely]] {
+        const auto localVm = ensureVm();
+        if (localVm == nullptr || s.empty()) [[unlikely]] {
             return false;
         }
-        return vm->loadScript(s);
+        return localVm->loadScript(s);
     }
 
     std::optional<std::string> call(std::string_view f, std::string_view ps) {
-        if (vm == nullptr) {
-            dynxx_lua_init();
-        }
-        if (vm == nullptr || f.empty()) [[unlikely]] {
+        const auto localVm = ensureVm();
+        if (localVm == nullptr || f.empty()) [[unlikely]] {
             return std::nullopt;
         }
-        return vm->callFunc(f, ps);
+        return localVm->callFunc(f, ps);
     }
 }
 
@@ -162,7 +170,7 @@ DEF_API(dynxx_z_bytes_unzip, STRING)
 
 // Lua API - Binding
 
-static void registerFuncs() {
+void registerFuncs() {
     if (vm == nullptr) {
         [[unlikely]] return;
     }
@@ -248,17 +256,11 @@ static void registerFuncs() {
 // Inner API
 
 void dynxx_lua_init() {
-    if (vm != nullptr) [[unlikely]] {
-        return;
-    }
-    vm = std::make_unique<LuaVM>();
-    registerFuncs();
+    (void)ensureVm();
 }
 
 void dynxx_lua_release() {
-    if (vm == nullptr) [[unlikely]] {
-        return;
-    }
+    const auto lock = std::scoped_lock(vmMutex);
     vm.reset();
 }
 #endif

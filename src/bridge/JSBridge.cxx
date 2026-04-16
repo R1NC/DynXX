@@ -5,6 +5,7 @@
 #include <cstdlib>
 
 #include <functional>
+#include <mutex>
 
 #include <DynXX/CXX/Macro.hxx>
 #include <DynXX/CXX/Memory.hxx>
@@ -15,6 +16,7 @@
 namespace {
     using namespace DynXX::Core::VM;
 
+    std::mutex vmMutex;
     std::shared_ptr<JSVM> vm = nullptr;
     std::function<const char *(const char *msg)> msgCbk = nullptr;
 
@@ -23,55 +25,64 @@ namespace {
 
 #define BIND_API(f) vm->bindFunc(#f, f##J)
 
-    bool loadF(std::string_view file, bool isModule) {
+    void registerFuncs();
+
+    std::shared_ptr<JSVM> ensureVm() {
+        const auto lock = std::scoped_lock(vmMutex);
         if (vm == nullptr) {
-            dynxx_js_init();
+            vm = std::make_shared<JSVM>();
+            registerFuncs();
         }
-        if (vm == nullptr || file.empty()) [[unlikely]] {
+        return vm;
+    }
+
+    bool loadF(std::string_view file, bool isModule) {
+        const auto localVm = ensureVm();
+        if (localVm == nullptr || file.empty()) [[unlikely]] {
             return false;
         }
-        return vm->loadFile(file, isModule);
+        return localVm->loadFile(file, isModule);
     }
 
     bool loadS(std::string_view script, std::string_view name, bool isModule) {
-        if (vm == nullptr) {
-            dynxx_js_init();
-        }
-        if (vm == nullptr || script.empty() || name.empty()) [[unlikely]] {
+        const auto localVm = ensureVm();
+        if (localVm == nullptr || script.empty() || name.empty()) [[unlikely]] {
             return false;
         }
-        return vm->loadScript(script, name, isModule);
+        return localVm->loadScript(script, name, isModule);
     }
 
     bool loadB(BytesView bytes, bool isModule) {
-        if (vm == nullptr) {
-            dynxx_js_init();
-        }
-        if (vm == nullptr || bytes.empty()) [[unlikely]] {
+        const auto localVm = ensureVm();
+        if (localVm == nullptr || bytes.empty()) [[unlikely]] {
             return false;
         }
-        return vm->loadBinary(bytes, isModule);
+        return localVm->loadBinary(bytes, isModule);
     }
 
     std::optional<std::string> call(std::string_view func, std::string_view params, bool await) {
-        if (vm == nullptr) {
-            dynxx_js_init();
-        }
-        if (vm == nullptr || func.empty()) [[unlikely]] {
+        const auto localVm = ensureVm();
+        if (localVm == nullptr || func.empty()) [[unlikely]] {
             return std::nullopt;
         }
-        return vm->callFunc(func, params, await);
+        return localVm->callFunc(func, params, await);
     }
 
     void setMsgCallback(const std::function<const char *(const char *msg)> &callback) {
+        const auto lock = std::scoped_lock(vmMutex);
         msgCbk = callback;
     }
 
     std::string dynxx_call_platformS(const char *msg) {
-        if (msg == nullptr || msgCbk == nullptr) {
+        std::function<const char *(const char *)> callback;
+        {
+            const auto lock = std::scoped_lock(vmMutex);
+            callback = msgCbk;
+        }
+        if (msg == nullptr || callback == nullptr) {
             return {};
         }
-        auto res = msgCbk(msg);
+        auto res = callback(msg);
         if (res == nullptr) [[unlikely]] {
             return {};
         }
@@ -216,7 +227,7 @@ DEF_API_ASYNC(dynxx_z_bytes_unzip, STRING)
 
 // JS API - Binding
 
-static void registerFuncs() {
+void registerFuncs() {
     if (vm == nullptr) {
         [[unlikely]] return;
     }
@@ -304,17 +315,11 @@ static void registerFuncs() {
 // Inner API
 
 void dynxx_js_init() {
-    if (vm != nullptr) [[unlikely]] {
-        return;
-    }
-    vm = std::make_shared<JSVM>();
-    registerFuncs();
+    (void)ensureVm();
 }
 
 void dynxx_js_release() {
-    if (vm == nullptr) [[unlikely]] {
-        return;
-    }
+    const auto lock = std::scoped_lock(vmMutex);
     vm.reset();
     msgCbk = nullptr;
 }
