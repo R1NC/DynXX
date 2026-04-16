@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <array>
-#include <chrono>
+#include <cstdint>
 #include <filesystem>
 #include <iostream>
 #include <stdexcept>
@@ -8,6 +8,7 @@
 #include <DynXX/CXX/DynXX.hxx>
 #include <DynXXTest.hxx>
 
+#include "../src/core/util/TimeUtil.hxx"
 #include "TestUtil.hxx"
 
 namespace {
@@ -30,17 +31,15 @@ namespace {
         }
 
         void OnTestStart(const ::testing::TestInfo &testInfo) override {
-            start_ = std::chrono::steady_clock::now();
+            startNs_ = DynXX::Core::Util::Time::nowInNanoSecs();
             std::cout << "[ RUN      ] " << testInfo.test_suite_name() << "." << testInfo.name() << std::endl;
         }
 
         void OnTestEnd(const ::testing::TestInfo &testInfo) override {
-            const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::steady_clock::now() - start_
-            ).count();
+            const auto elapsed = DynXX::Core::Util::Time::nowInNanoSecs() - startNs_;
             const char *status = testInfo.result()->Passed() ? "       OK " : "  FAILED  ";
             std::cout << "[" << status << "] " << testInfo.test_suite_name() << "." << testInfo.name()
-                      << " (" << elapsed << " ms)" << std::endl;
+                      << " (" << elapsed << " ns)" << std::endl;
         }
 
         void OnTestProgramEnd(const ::testing::UnitTest &unitTest) override {
@@ -51,7 +50,7 @@ namespace {
         }
 
     private:
-        std::chrono::steady_clock::time_point start_{};
+        uint64_t startNs_{0};
     };
 
     class DynXXGlobalEnvironment final : public ::testing::Environment {

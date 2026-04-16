@@ -73,6 +73,7 @@ namespace
         case KeyLen16:
             return EVP_aes_128_gcm();
         case KeyLen24:
+            return EVP_aes_192_gcm();
         case KeyLen32:
             return EVP_aes_256_gcm();
         default:
@@ -895,11 +896,16 @@ Bytes Base64::decode(BytesView inBytes, bool noNewLines)
     // Validate Base64 characters
     for (size_t i = 0; i < inLen; i++)
     {
-        if (std::isalnum(in[i]) != 0 || in[i] == '+' || in[i] == '/' || in[i] == '=')
+        const auto c = static_cast<unsigned char>(in[i]);
+        if (std::isalnum(c) != 0 || c == '+' || c == '/' || c == '=')
         {
             continue;
         }
-        dynxxLogPrintF(Error, "Invalid Base64 char: {}", in[i]);
+        if (!noNewLines && (c == '\r' || c == '\n'))
+        {
+            continue;
+        }
+        dynxxLogPrintF(Error, "Invalid Base64 char: {}", static_cast<int>(c));
         return {};
     }
 

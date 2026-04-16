@@ -8,7 +8,7 @@ type AttrMap = Record<string, string>;
 type CaseResult = {
   suite: string;
   name: string;
-  timeMs: number;
+  timeUs: number;
   status: 'passed' | 'failed' | 'skipped';
   message: string;
 };
@@ -59,12 +59,22 @@ function decodeXml(s: string): string {
     .replaceAll('&amp;', '&');
 }
 
-function toMs(timeSec: string | undefined): number {
+function toUs(timeSec: string | undefined): number {
   const v = Number(timeSec ?? '0');
   if (!Number.isFinite(v)) {
     return 0;
   }
-  return Math.round(v * 1000);
+  return Math.round(v * 1_000_000);
+}
+
+function formatDuration(timeUs: number): string {
+  if (timeUs < 1000) {
+    return `${timeUs} us`;
+  }
+  if (timeUs < 1_000_000) {
+    return `${(timeUs / 1000).toFixed(3)} ms`;
+  }
+  return `${(timeUs / 1_000_000).toFixed(3)} s`;
 }
 
 function parseGtestXmlReport(xml: string): { total: number; failed: number; passed: number; skipped: number; cases: CaseResult[] } {
@@ -107,7 +117,7 @@ function parseGtestXmlReport(xml: string): { total: number; failed: number; pass
       cases.push({
         suite: suiteName,
         name: caseAttrs.name ?? 'UnknownCase',
-        timeMs: toMs(caseAttrs.time),
+        timeUs: toUs(caseAttrs.time),
         status,
         message
       });
@@ -142,7 +152,7 @@ function buildHtml(title: string, data: { total: number; failed: number; passed:
 ${suiteCell}
 <td>${escapeHtml(c.name)}</td>
 <td class="${statusClass}">${c.status}</td>
-<td>${c.timeMs}</td>
+<td>${formatDuration(c.timeUs)}</td>
 <td>${message}</td>
 </tr>`;
   }).join('\n');
@@ -177,7 +187,7 @@ pre{white-space:pre-wrap;margin:0;font-family:Consolas,monospace;font-size:12px}
 </div>
 <table>
 <thead>
-<tr><th>Suite</th><th>Case</th><th>Status</th><th>Time(ms)</th><th>Message</th></tr>
+<tr><th>Suite</th><th>Case</th><th>Status</th><th>Time</th><th>Message</th></tr>
 </thead>
 <tbody>
 ${rows}

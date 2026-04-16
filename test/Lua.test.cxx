@@ -34,6 +34,7 @@ namespace {
 
 TEST(Lua, DynxxLuaLoadF) {
     assertLuaRuntimeFilesExist(kLuaRuntimePaths);
+    EXPECT_FALSE(dynxxLuaLoadF(""));
     for (const auto &path : kLuaRuntimePaths) {
         EXPECT_TRUE(dynxxLuaLoadF(path.string()));
     }
@@ -41,6 +42,7 @@ TEST(Lua, DynxxLuaLoadF) {
 
 TEST(Lua, DynxxLuaLoadS) {
     assertLuaRuntimeFilesExist(kLuaRuntimePaths);
+    EXPECT_FALSE(dynxxLuaLoadS(""));
     for (const auto &path : kLuaRuntimePaths) {
         const auto luaScript = readAll(path);
         ASSERT_FALSE(luaScript.empty());
@@ -53,6 +55,7 @@ TEST(Lua, DynxxLuaCall) {
     for (const auto &path : kLuaRuntimePaths) {
         ASSERT_TRUE(dynxxLuaLoadF(path.string()));
     }
+    EXPECT_FALSE(dynxxLuaCall("", "{}").has_value());
     const auto callResult = dynxxLuaCall("TestCoding", "{}");
     EXPECT_TRUE(callResult.has_value());
 }

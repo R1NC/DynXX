@@ -16,12 +16,21 @@ namespace {
         std::ifstream in(filePath, std::ios::binary);
         return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
     }
+
+    struct ZipModeFormatCase {
+        DynXXZipCompressModeX mode;
+        DynXXZFormatX format;
+    };
 }
 
 TEST(Zip, DynxxZZipInit) {
     const auto zip = dynxxZZipInit();
     ASSERT_NE(zip, 0U);
     dynxxZZipRelease(zip);
+}
+
+TEST(Zip, DynxxZZipInit_InvalidBufferSize) {
+    EXPECT_EQ(dynxxZZipInit(DynXXZipCompressModeX::Default, 0, DynXXZFormatX::ZLib), 0U);
 }
 
 TEST(Zip, DynxxZZipInput) {
@@ -62,6 +71,10 @@ TEST(Zip, DynxxZUnzipInit) {
     const auto unzip = dynxxZUnzipInit();
     ASSERT_NE(unzip, 0U);
     dynxxZUnzipRelease(unzip);
+}
+
+TEST(Zip, DynxxZUnzipInit_InvalidBufferSize) {
+    EXPECT_EQ(dynxxZUnzipInit(0, DynXXZFormatX::ZLib), 0U);
 }
 
 TEST(Zip, DynxxZUnzipInput) {
@@ -119,6 +132,11 @@ TEST(Zip, DynxxZCFileZip) {
     EXPECT_GT(std::filesystem::file_size(zipPath), 0U);
 }
 
+TEST(Zip, DynxxZCFileZip_InvalidParams) {
+    EXPECT_FALSE(dynxxZCFileZip(nullptr, nullptr));
+    EXPECT_FALSE(dynxxZCFileZip(nullptr, nullptr, DynXXZipCompressModeX::Default, 0, DynXXZFormatX::ZLib));
+}
+
 TEST(Zip, DynxxZCFileUnzip) {
     const auto scriptPath = scriptFilePath();
     ASSERT_TRUE(std::filesystem::exists(scriptPath));
@@ -141,6 +159,11 @@ TEST(Zip, DynxxZCFileUnzip) {
     EXPECT_EQ(readFileAll(scriptPath), readFileAll(unzipPath));
 }
 
+TEST(Zip, DynxxZCFileUnzip_InvalidParams) {
+    EXPECT_FALSE(dynxxZCFileUnzip(nullptr, nullptr));
+    EXPECT_FALSE(dynxxZCFileUnzip(nullptr, nullptr, 0, DynXXZFormatX::ZLib));
+}
+
 TEST(Zip, DynxxZCxxStreamZip) {
     const auto scriptPath = scriptFilePath();
     ASSERT_TRUE(std::filesystem::exists(scriptPath));
@@ -149,6 +172,11 @@ TEST(Zip, DynxxZCxxStreamZip) {
     std::stringstream zipped;
     EXPECT_TRUE(dynxxZCxxStreamZip(&in, &zipped, DynXXZipCompressModeX::Default, DynXXZDefaultBufferSize, DynXXZFormatX::GZip));
     EXPECT_FALSE(zipped.str().empty());
+}
+
+TEST(Zip, DynxxZCxxStreamZip_InvalidParams) {
+    EXPECT_FALSE(dynxxZCxxStreamZip(nullptr, nullptr));
+    EXPECT_FALSE(dynxxZCxxStreamZip(nullptr, nullptr, DynXXZipCompressModeX::Default, 0, DynXXZFormatX::ZLib));
 }
 
 TEST(Zip, DynxxZCxxStreamUnzip) {
@@ -162,6 +190,11 @@ TEST(Zip, DynxxZCxxStreamUnzip) {
     std::stringstream out;
     EXPECT_TRUE(dynxxZCxxStreamUnzip(&zippedIn, &out, DynXXZDefaultBufferSize, DynXXZFormatX::GZip));
     EXPECT_EQ(out.str(), readFileAll(scriptPath));
+}
+
+TEST(Zip, DynxxZCxxStreamUnzip_InvalidParams) {
+    EXPECT_FALSE(dynxxZCxxStreamUnzip(nullptr, nullptr));
+    EXPECT_FALSE(dynxxZCxxStreamUnzip(nullptr, nullptr, 0, DynXXZFormatX::ZLib));
 }
 
 TEST(Zip, DynxxZCxxStreamZipUnzipRoundTrip) {
@@ -182,11 +215,21 @@ TEST(Zip, DynxxZBytesZip) {
     EXPECT_EQ(dynxxZBytesUnzip(zipped), in);
 }
 
+TEST(Zip, DynxxZBytesZip_InvalidParams) {
+    EXPECT_TRUE(dynxxZBytesZip({}).empty());
+    EXPECT_TRUE(dynxxZBytesZip(dynxxCodingStr2bytes("abc"), DynXXZipCompressModeX::Default, 0, DynXXZFormatX::ZLib).empty());
+}
+
 TEST(Zip, DynxxZBytesUnzip) {
     const auto in = dynxxCodingStr2bytes("zip-bytes-roundtrip");
     const auto zipped = dynxxZBytesZip(in);
     ASSERT_FALSE(zipped.empty());
     EXPECT_EQ(dynxxZBytesUnzip(zipped), in);
+}
+
+TEST(Zip, DynxxZBytesUnzip_InvalidParams) {
+    EXPECT_TRUE(dynxxZBytesUnzip({}).empty());
+    EXPECT_TRUE(dynxxZBytesUnzip(dynxxCodingStr2bytes("abc"), 0, DynXXZFormatX::ZLib).empty());
 }
 
 TEST(Zip, DynxxZFileRoundTripWithScriptFile) {
@@ -214,3 +257,41 @@ TEST(Zip, DynxxZFileRoundTripWithScriptFile) {
 
     EXPECT_EQ(readFileAll(scriptPath), readFileAll(unzipPath));
 }
+
+class ZipModeFormatMatrixTest : public ::testing::TestWithParam<ZipModeFormatCase> {};
+
+TEST_P(ZipModeFormatMatrixTest, BytesZipUnzipRoundTrip) {
+    const auto param = GetParam();
+    const auto in = dynxxCodingStr2bytes("zip-matrix-roundtrip-data-1234567890");
+    const auto zipped = dynxxZBytesZip(in, param.mode, DynXXZDefaultBufferSize, param.format);
+    ASSERT_FALSE(zipped.empty());
+    EXPECT_EQ(dynxxZBytesUnzip(zipped, DynXXZDefaultBufferSize, param.format), in);
+}
+
+TEST_P(ZipModeFormatMatrixTest, StreamZipUnzipRoundTrip) {
+    const auto param = GetParam();
+    std::istringstream in("zip-stream-matrix-roundtrip");
+    std::stringstream compressed;
+    ASSERT_TRUE(dynxxZCxxStreamZip(&in, &compressed, param.mode, DynXXZDefaultBufferSize, param.format));
+
+    std::istringstream compressedIn(compressed.str());
+    std::stringstream out;
+    ASSERT_TRUE(dynxxZCxxStreamUnzip(&compressedIn, &out, DynXXZDefaultBufferSize, param.format));
+    EXPECT_EQ(out.str(), "zip-stream-matrix-roundtrip");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllModeAndFormat,
+    ZipModeFormatMatrixTest,
+    ::testing::Values(
+        ZipModeFormatCase{DynXXZipCompressModeX::Default, DynXXZFormatX::ZLib},
+        ZipModeFormatCase{DynXXZipCompressModeX::Default, DynXXZFormatX::GZip},
+        ZipModeFormatCase{DynXXZipCompressModeX::Default, DynXXZFormatX::Raw},
+        ZipModeFormatCase{DynXXZipCompressModeX::PreferSpeed, DynXXZFormatX::ZLib},
+        ZipModeFormatCase{DynXXZipCompressModeX::PreferSpeed, DynXXZFormatX::GZip},
+        ZipModeFormatCase{DynXXZipCompressModeX::PreferSpeed, DynXXZFormatX::Raw},
+        ZipModeFormatCase{DynXXZipCompressModeX::PreferSize, DynXXZFormatX::ZLib},
+        ZipModeFormatCase{DynXXZipCompressModeX::PreferSize, DynXXZFormatX::GZip},
+        ZipModeFormatCase{DynXXZipCompressModeX::PreferSize, DynXXZFormatX::Raw}
+    )
+);

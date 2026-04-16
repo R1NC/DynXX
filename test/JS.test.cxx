@@ -32,6 +32,7 @@ namespace {
 TEST(JS, DynxxJsLoadF) {
     const auto paths = jsRuntimePaths();
     assertJsRuntimeFilesExist(paths);
+    EXPECT_FALSE(dynxxJsLoadF("", false));
     ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
     EXPECT_TRUE(dynxxJsLoadF(paths.second.string(), false));
 }
@@ -43,6 +44,8 @@ TEST(JS, DynxxJsLoadS) {
     const auto bizJsScript = readAll(paths.second);
     ASSERT_FALSE(dynxxJsScript.empty());
     ASSERT_FALSE(bizJsScript.empty());
+    EXPECT_FALSE(dynxxJsLoadS("", "empty.js", false));
+    EXPECT_FALSE(dynxxJsLoadS("globalThis.a = 1;", "", false));
     ASSERT_TRUE(dynxxJsLoadS(dynxxJsScript, paths.first.string(), false));
     EXPECT_TRUE(dynxxJsLoadS(bizJsScript, paths.second.string(), false));
 }
@@ -56,6 +59,7 @@ TEST(JS, DynxxJsCall) {
     assertJsRuntimeFilesExist(paths);
     ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
     ASSERT_TRUE(dynxxJsLoadF(paths.second.string(), false));
+    EXPECT_FALSE(dynxxJsCall("", "{}", false).has_value());
     const auto callResult = dynxxJsCall("testPromise", "{}", false);
     EXPECT_TRUE(callResult.has_value());
 }

@@ -6,6 +6,10 @@ find_package(GTest CONFIG REQUIRED)
 
 set(DYNXX_TEST_SOURCES
     Coding.test.cxx
+    Crypto.Aes.test.cxx
+    Crypto.Base64.test.cxx
+    Crypto.Hash.test.cxx
+    Crypto.Rsa.test.cxx
     Crypto.test.cxx
     DynXX.test.cxx
     Json.test.cxx

@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <climits>
+#include <cctype>
 
 #include <DynXX/CXX/Log.hxx>
 #include <DynXX/CXX/Coding.hxx>
@@ -47,6 +48,68 @@ namespace
     double readFloat(const cJSON *const cj)
     {
         return cj->valuedouble;
+    }
+
+    bool hasInvalidEscapeOrControlInJsonString(std::string_view json)
+    {
+        bool inString = false;
+        bool escaped = false;
+        size_t unicodeHexRemain = 0;
+        for (const auto cRaw : json)
+        {
+            const auto c = static_cast<unsigned char>(cRaw);
+            if (!inString)
+            {
+                if (c == '"')
+                {
+                    inString = true;
+                }
+                continue;
+            }
+
+            if (unicodeHexRemain > 0)
+            {
+                if (std::isxdigit(c) == 0)
+                {
+                    return true;
+                }
+                unicodeHexRemain--;
+                continue;
+            }
+
+            if (escaped)
+            {
+                escaped = false;
+                if (c == '"' || c == '\\' || c == '/' || c == 'b' || c == 'f' || c == 'n' || c == 'r' || c == 't')
+                {
+                    continue;
+                }
+                if (c == 'u')
+                {
+                    unicodeHexRemain = 4;
+                    continue;
+                }
+                return true;
+            }
+
+            if (c == '\\')
+            {
+                escaped = true;
+                continue;
+            }
+
+            if (c == '"')
+            {
+                inString = false;
+                continue;
+            }
+
+            if (c < 0x20)
+            {
+                return true;
+            }
+        }
+        return inString || escaped || unicodeHexRemain > 0;
     }
 }
 
@@ -158,6 +221,11 @@ std::optional<DictAny> jsonToDictAny(const std::string &json)
 {
     if (json.empty()) [[unlikely]]
     {
+        return std::nullopt;
+    }
+    if (hasInvalidEscapeOrControlInJsonString(json)) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "FAILED TO PARSE JSON: invalid escape/control characters in string");
         return std::nullopt;
     }
     const auto cjson = cJSON_Parse(json.c_str());
