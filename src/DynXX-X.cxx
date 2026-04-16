@@ -231,6 +231,9 @@ bool dynxxInit(std::string_view root) {
 }
 
 void dynxxRelease() {
+    dynxxLogSetLevel(DynXXLogLevelX::None);
+    dynxxLogSetCallback(nullptr);
+
     jsonDecoderCache.reset();
     zipCache.reset();
     unzipCache.reset();
@@ -260,8 +263,6 @@ void dynxxRelease() {
         _kv.reset();
     }
 #endif
-
-    dynxxLogSetCallback(nullptr);
 
 #if defined(USE_LUA)
     dynxx_lua_release();

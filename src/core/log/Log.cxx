@@ -40,15 +40,23 @@ namespace
 {
     using enum DynXXLogLevelX;
 
-    DynXXLogLevelX _level = None;
-    std::function<void(int level, const char *content)> _callback = nullptr;
-    std::mutex _mutex;
+    struct LogState final {
+        DynXXLogLevelX level = None;
+        std::function<void(int level, const char *content)> callback = nullptr;
+        std::mutex mutex;
+    };
+
+    // Keep logging state alive until process exit to avoid static-destruction races.
+    LogState &logState() {
+        static auto *state = new LogState();
+        return *state;
+    }
 
     constexpr auto TAG = "DYNXX";
     constexpr auto MAX_LEN = 1023UZ;
 
     bool isDebug() {
-        return _level == Debug;
+        return logState().level == Debug;
     }
 
     void prepareStdIO() {
@@ -127,7 +135,7 @@ namespace
             }
         });
 
-        spdLogSetLevel(_level);
+        spdLogSetLevel(logState().level);
     }
 
     void spdLogPrint(DynXXLogLevelX level, std::string_view content)
@@ -154,9 +162,9 @@ namespace
 
     void logPrint(DynXXLogLevelX level, std::string_view content)
     {
-        if (_callback)
+        if (logState().callback)
         {
-            _callback(underlying(level), content.data());
+            logState().callback(underlying(level), content.data());
         }
         else
         {
@@ -217,14 +225,14 @@ void setLevel(DynXXLogLevelX level)
     spdLogPrepare();
 #endif
 
-    const auto lock = std::scoped_lock(_mutex);
-    _level = level;
+    const auto lock = std::scoped_lock(logState().mutex);
+    logState().level = level;
 }
 
 void setCallback(const std::function<void(int level, const char *content)> &callback)
 {
-    const auto lock = std::scoped_lock(_mutex);
-    _callback = callback;
+    const auto lock = std::scoped_lock(logState().mutex);
+    logState().callback = callback;
 }
 
 void print(DynXXLogLevelX level, std::string_view content)
@@ -234,9 +242,9 @@ void print(DynXXLogLevelX level, std::string_view content)
         prepareStdIO();
     });
 
-    const auto lock = std::scoped_lock(_mutex);
+    const auto lock = std::scoped_lock(logState().mutex);
 
-    if (level < _level || level < Debug || level >= None) [[unlikely]]
+    if (level < logState().level || level < Debug || level >= None) [[unlikely]]
     {
         return;
     }
