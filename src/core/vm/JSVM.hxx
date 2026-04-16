@@ -225,7 +225,7 @@ namespace DynXX::Core::VM {
         std::unordered_set<std::string> loadedScriptNames;
 #endif
 
-        JSValue newPromise(std::function<JSValue()> &&jf);
+        JSValue newPromise(std::function<JSValue(JSContext *)> &&jf);
 
         JSValue jAwait(JSValue obj);
 

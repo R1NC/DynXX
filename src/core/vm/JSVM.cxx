@@ -171,7 +171,10 @@ namespace
         }
     };
 
-    std::unique_ptr<Mem::PtrCache<JSPromise>> promiseCache{nullptr};
+    Mem::PtrCache<JSPromise> &ensurePromiseCache() {
+        static auto *cache = new Mem::PtrCache<JSPromise>();
+        return *cache;
+    }
 }
 
 namespace DynXX::Core::VM {
@@ -280,7 +283,6 @@ JSVM::JSVM() : context{std::shared_ptr<JSContext>(_newContext(this->runtime.get(
         return;
     }
 
-    promiseCache = std::make_unique<Mem::PtrCache<JSPromise>>();
 }
 
 bool JSVM::bindFunc(std::string_view funcJ, JSCFunction *funcC)
@@ -465,30 +467,55 @@ std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_vie
     return success? std::make_optional(s): std::nullopt;
 }
 
-JSValue JSVM::newPromise(std::function<JSValue()> &&jf)
+JSValue JSVM::newPromise(std::function<JSValue(JSContext *)> &&jf)
 {
     if (!this->lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
     {
         dynxxLogPrint(Error, "JSVM::newPromise create failed to lock");
         return JS_UNDEFINED;
     }
+    auto *promiseCache = &ensurePromiseCache();
     const auto handle = promiseCache->add(std::make_unique<JSPromise>(this->context));
-    const auto result = promiseCache->get(handle)->jsObj();
+    const auto promise = promiseCache->get(handle);
+    if (promise == nullptr) [[unlikely]]
+    {
+        this->unlock();
+        return JS_UNDEFINED;
+    }
+    const auto result = promise->jsObj();
     this->unlock();
 
-    this->submitTask([handle, cbk = std::move(jf), this] {
-        auto ret = cbk();
-
-        if (!this->lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
+    this->submitTask([weakSelf = std::weak_ptr<BaseVM>(this->shared_from_this()), promiseCache, handle, cbk = std::move(jf)] {
+        const auto self = std::dynamic_pointer_cast<JSVM>(weakSelf.lock());
+        if (self == nullptr) [[unlikely]]
+        {
+            promiseCache->remove(handle);
+            return;
+        }
+        if (!self->lockAutoRetry(JSCallRetryCount, JSCallSleepMicroSecs)) [[unlikely]]
         {
             dynxxLogPrint(Error, "JSVM::newPromise callback failed to lock");
             promiseCache->remove(handle);
             return;
         }
-        promiseCache->get(handle)->callbackJS(ret);
+        const auto ctx = self->context.get();
+        if (ctx == nullptr) [[unlikely]]
+        {
+            promiseCache->remove(handle);
+            self->unlock();
+            return;
+        }
+        auto ret = cbk(ctx);
+        auto *promiseInCbk = promiseCache->get(handle);
+        if (promiseInCbk == nullptr) [[unlikely]]
+        {
+            self->unlock();
+            return;
+        }
+        promiseInCbk->callbackJS(ret);
         promiseCache->remove(handle);
 
-        this->unlock();
+        self->unlock();
     });
 
     return result;
@@ -496,7 +523,7 @@ JSValue JSVM::newPromise(std::function<JSValue()> &&jf)
 
 JSValue JSVM::newPromiseVoid(std::function<void()> &&vf)
 {
-    return this->newPromise([cbk = std::move(vf)]() {
+    return this->newPromise([cbk = std::move(vf)]([[maybe_unused]] JSContext *ctx) {
         cbk();
         return JS_UNDEFINED;
     });
@@ -504,47 +531,46 @@ JSValue JSVM::newPromiseVoid(std::function<void()> &&vf)
 
 JSValue JSVM::newPromiseBool(std::function<bool()> &&bf)
 {
-    return this->newPromise([&ctx = this->context, cbk = std::move(bf)]{
+    return this->newPromise([cbk = std::move(bf)](JSContext *ctx) {
         const auto ret = cbk();
-        return JS_NewBool(ctx.get(), ret);
+        return JS_NewBool(ctx, ret);
     });
 }
 
 JSValue JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
 {
-    return this->newPromise([&ctx = this->context, cbk = std::move(i32f)]{
+    return this->newPromise([cbk = std::move(i32f)](JSContext *ctx) {
         const auto ret = cbk();
-        return JS_NewInt32(ctx.get(), ret);
+        return JS_NewInt32(ctx, ret);
     });
 }
 
 JSValue JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
 {
-    return this->newPromise([&ctx = this->context, cbk = std::move(i64f)]{
+    return this->newPromise([cbk = std::move(i64f)](JSContext *ctx) {
         const auto ret = cbk();
-        return JS_NewInt64(ctx.get(), ret);
+        return JS_NewInt64(ctx, ret);
     });
 }
 
 JSValue JSVM::newPromiseFloat(std::function<double()> &&ff)
 {
-    return this->newPromise([&ctx = this->context, cbk = std::move(ff)]{
+    return this->newPromise([cbk = std::move(ff)](JSContext *ctx) {
         const auto ret = cbk();
-        return JS_NewFloat64(ctx.get(), ret);
+        return JS_NewFloat64(ctx, ret);
     });
 }
 
 JSValue JSVM::newPromiseString(std::function<const std::string()> &&sf)
 {
-    return this->newPromise([&ctx = this->context, cbk = std::move(sf)]{
+    return this->newPromise([cbk = std::move(sf)](JSContext *ctx) {
         const auto ret = cbk();
-        return JS_NewString(ctx.get(), ret.c_str() != nullptr ? ret.c_str() : "");
+        return JS_NewString(ctx, ret.c_str());
     });
 }
 
 JSVM::~JSVM()
 {
-    promiseCache.reset();
     this->timerLooperTask.reset();
     this->promiseLooperTask.reset();
     js_std_set_worker_new_context_func(nullptr);
