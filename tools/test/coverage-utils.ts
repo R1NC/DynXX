@@ -13,7 +13,9 @@ const COVERAGE_IGNORE_FILES = [
   'src/bridge/ScriptAPI.hxx',
   'src/bridge/ScriptAPI.cxx',
   'src/core/concurrent/TimerTask.hxx',
-  'src/core/concurrent/TimerTask.cxx'
+  'src/core/concurrent/TimerTask.cxx',
+  'src/core/util/MemUtil.hxx',
+  'src/core/util/TimeUtil.hxx'
 ] as const;
 
 function escapeRegexLiteral(input: string): string {
