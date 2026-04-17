@@ -30,7 +30,22 @@ Worker::Worker() :
     if (func) [[likely]] 
     {
         dynxxLogPrintF(Debug, "Worker@{} run task on thread:{}", std::bit_cast<uintptr_t>(this), currentThreadId());
-        func();
+        try
+        {
+            func();
+        }
+        catch (const std::bad_function_call &e)
+        {
+            dynxxLogPrintF(Error, "Worker bad_function_call: {}", e.what());
+        }
+        catch (const std::exception &e)
+        {
+            dynxxLogPrintF(Error, "Worker task exception: {}", e.what());
+        }
+        catch (...)
+        {
+            dynxxLogPrint(Error, "Worker task exception: unknown");
+        }
     }
 }, [this]() {
     const auto lock = std::scoped_lock(this->mutex);
@@ -73,6 +88,11 @@ Executor::Executor(size_t workerPoolCapacity) : workerPoolCapacity{workerPoolCap
 Executor& Executor::operator>>(TaskT&& task)
 {
     const auto lock = std::scoped_lock(this->mutex);
+    if (!task) [[unlikely]]
+    {
+        dynxxLogPrint(Error, "Executor ignored empty task");
+        return *this;
+    }
 
     if (this->workerPool.size() < this->workerPoolCapacity)
     {
