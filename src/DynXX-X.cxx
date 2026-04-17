@@ -227,6 +227,14 @@ bool dynxxInit(std::string_view root) {
     _root = std::make_unique<const std::string>(root);
 #endif
 
+#if defined(USE_LUA)
+    dynxx_lua_init();
+#endif
+
+#if defined(USE_QJS)
+    dynxx_js_init();
+#endif
+
     return true;
 }
 
