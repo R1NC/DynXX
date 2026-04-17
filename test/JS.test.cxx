@@ -90,7 +90,7 @@ TEST(JS, DynxxJsCall) {
     ASSERT_FALSE(funcs.empty());
     for (const auto &func : funcs) {
         std::cout << "[ JS CALL ] " << func << std::endl;
-        const auto callResult = dynxxJsCall(func, "{}", false);
+        const auto callResult = dynxxJsCall(func, "{}", true);
         EXPECT_TRUE(callResult.has_value()) << func;
     }
 
