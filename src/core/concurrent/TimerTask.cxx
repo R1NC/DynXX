@@ -28,4 +28,9 @@ TimerTask::TimerTask(TaskT&& task, size_t timeoutMicroSecs) :
     this->lastExecuteTime = nowInMicroSecs();
 }
 
+TimerTask::~TimerTask()
+{
+    this->stopAndJoin();
+}
+
 } // namespace DynXX::Core::Concurrent

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <thread>
+#include <atomic>
 #include <mutex>
 #include <condition_variable>
 #include <functional>
 
 #if !defined(__cpp_lib_jthread)
-#include <atomic>
 #include "ConcurrentUtil.hxx"
 #endif
 
@@ -30,6 +30,7 @@ namespace DynXX::Core::Concurrent {
         Daemon {
     protected:
         explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; }, size_t timeoutMicroSecs = 100UZ);
+        void stopAndJoin();
 
         template<RunnableT T>
         void update(T &&f) {
@@ -49,6 +50,7 @@ namespace DynXX::Core::Concurrent {
         virtual ~Daemon();
 
     private:
+        std::atomic<bool> stopped{false};
         mutable std::mutex mutex;
         std::condition_variable loopCondition;
 

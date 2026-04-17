@@ -573,14 +573,22 @@ JSVM::~JSVM()
 {
     this->timerLooperTask.reset();
     this->promiseLooperTask.reset();
-    js_std_set_worker_new_context_func(nullptr);
-    this->jValueCache.clear();
-    this->loadedScriptNames.clear();
-    this->jGlobal = JS_UNDEFINED;
-    this->context.reset();
-    if (this->runtime != nullptr) [[likely]]
     {
-        js_std_free_handlers(this->runtime.get());
+        const auto lock = std::scoped_lock(this->vmMutex);
+        if (this->context != nullptr && JS_IsUndefined(this->jGlobal) == 0) [[likely]]
+        {
+            JS_FreeValue(this->context.get(), this->jGlobal);
+        }
+        this->jGlobal = JS_UNDEFINED;
+        this->jValueCache.clear();
+        this->loadedScriptNames.clear();
+        this->context.reset();
+
+        js_std_set_worker_new_context_func(nullptr);
+        if (this->runtime != nullptr) [[likely]]
+        {
+            js_std_free_handlers(this->runtime.get());
+        }
     }
     this->runtime.reset();
 }

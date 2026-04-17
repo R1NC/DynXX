@@ -39,6 +39,11 @@ Worker::Worker() :
 {
 }
 
+Worker::~Worker()
+{
+    this->stopAndJoin();
+}
+
 Worker& Worker::operator>>(TaskT&& task)
 {
     this->update([&mtx = this->mutex, tsk = std::move(task), &queue = this->taskQueue, addr = std::bit_cast<uintptr_t>(this)]() mutable {

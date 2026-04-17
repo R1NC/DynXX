@@ -81,6 +81,16 @@ function(dynxx_find_dependencies TARGET_NAME LINK_LIBS_VAR)
             https://github.com/R1NC/quickjs-ng
             dev
         )
+        if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "AppleClang")
+            foreach(qjs_target IN ITEMS qjs qjsc quickjs)
+                if(TARGET ${qjs_target})
+                    target_compile_options(${qjs_target} PRIVATE
+                        -Wno-shorten-64-to-32
+                        -Wno-error=shorten-64-to-32
+                    )
+                endif()
+            endforeach()
+        endif()
         list(APPEND link_libs qjs)
     endif()
 

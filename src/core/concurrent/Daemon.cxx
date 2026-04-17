@@ -74,14 +74,28 @@ Daemon::Daemon(TaskT &&runLoop, RunChecker &&runChecker, size_t timeoutMicroSecs
 
 Daemon::~Daemon()
 {
+    this->stopAndJoin();
+}
+
+void Daemon::stopAndJoin()
+{
+    if (this->stopped.exchange(true)) [[unlikely]]
+    {
+        return;
+    }
 #if defined(__cpp_lib_jthread)
-    // jthread automatically handles stop request and join
+    this->thread.request_stop();
+    this->loopCondition.notify_all();
+    if (this->thread.joinable()) [[likely]]
+    {
+        this->thread.join();
+    }
 #else
     this->update([&stopFlag = this->shouldStop]() {
         stopFlag.store(true);
     });
-    
-    if (this->thread.joinable()) [[likely]] 
+    this->loopCondition.notify_all();
+    if (this->thread.joinable()) [[likely]]
     {
         this->thread.join();
     }

@@ -13,7 +13,7 @@ namespace DynXX::Core::Concurrent {
         TimerTask &operator=(const TimerTask &) = delete;
         TimerTask(TimerTask &&) = delete;
         TimerTask &operator=(TimerTask &&) = delete;
-        ~TimerTask() override = default;
+        ~TimerTask() override;
         
     private:
         TaskT userTask;
