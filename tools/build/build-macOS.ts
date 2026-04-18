@@ -37,9 +37,16 @@ function main() {
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();
   const outputExePath = getOutputExePath();
-  const buildTests = shouldBuildTests();
-  const coverageEnabled = shouldEnableCoverage();
+  const requestedBuildTests = shouldBuildTests();
+  const requestedCoverage = shouldEnableCoverage();
   const configureOnly = shouldConfigureOnly();
+  const useXcodeGenerator = buildType === "Debug";
+  const skipHostTests = useXcodeGenerator;
+  if (skipHostTests && (requestedBuildTests || requestedCoverage)) {
+    console.warn("[Test] macOS Debug preset uses Xcode generator; skip gtest/coverage flow.");
+  }
+  const buildTests = requestedBuildTests && !skipHostTests;
+  const coverageEnabled = requestedCoverage && !skipHostTests;
 
   if (coverageEnabled) {
     setupCoverageEnv(buildFolder);

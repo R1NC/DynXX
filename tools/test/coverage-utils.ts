@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
-import { getEnv, spawn } from '../utils.js';
+import { checkLLVMReady, getEnv, spawn } from '../utils.js';
 
 const COVERAGE_IGNORE_DIRS = [
   'test',
@@ -192,6 +192,10 @@ function runLlvmCov(llvmCov: string, args: string[], failureMessage: string): st
 export function generateCoverageReport(buildFolder: string, testExecutable: string): void {
   const llvmProfdata = resolveLlvmToolPath('llvm-profdata');
   const llvmCov = resolveLlvmToolPath('llvm-cov');
+  if (!checkLLVMReady([llvmProfdata, llvmCov])) {
+    console.warn('[WARN] skip coverage report generation because LLVM tools are unavailable');
+    return;
+  }
   const { reportDir, rawDir, summaryPath, htmlDir, lcovPath } = getCoverageReportPaths(buildFolder);
   const coverageDir = rawDir;
   if (!existsSync(coverageDir)) {

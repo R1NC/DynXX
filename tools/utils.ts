@@ -151,6 +151,39 @@ export function getOhosLlvmHome(ndkHome: string): string {
   throw new Error(`Cannot determine HarmonyOS llvm root (bin) under ${resolve(ndkHome, 'llvm')}`);
 }
 
+function canExecuteCommand(command: string): boolean {
+  if (!command) {
+    return false;
+  }
+  const resolver = IS_WINDOWS ? 'where' : 'which';
+  const result = spawnSync(resolver, [command], {
+    stdio: ['ignore', 'pipe', 'ignore'],
+    shell: false,
+    windowsHide: true
+  });
+  return !result.error && result.status === 0;
+}
+
+function isExecutableAvailable(commandOrPath: string): boolean {
+  if (!commandOrPath) {
+    return false;
+  }
+  const hasPathSeparator = commandOrPath.includes('/') || commandOrPath.includes('\\');
+  if (hasPathSeparator) {
+    return existsSync(commandOrPath);
+  }
+  return canExecuteCommand(commandOrPath);
+}
+
+export function checkLLVMReady(tools: string[] = ['llvm-profdata', 'llvm-cov']): boolean {
+  const missing = tools.filter((tool) => !isExecutableAvailable(tool));
+  if (missing.length > 0) {
+    console.warn(`[WARN] LLVM tools unavailable: ${missing.join(', ')}`);
+    return false;
+  }
+  return true;
+}
+
 // --- Run Tools ---
 
 /**
