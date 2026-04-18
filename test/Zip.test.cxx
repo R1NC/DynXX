@@ -150,7 +150,7 @@ TEST(Zip, DynxxZUnzipHandleInvalid) {
 TEST(Zip, DynxxZCFileZip) {
     const auto scriptPath = scriptFilePath();
     ASSERT_TRUE(std::filesystem::exists(scriptPath));
-    const auto zipPath = std::filesystem::temp_directory_path() / "dynxx_cfile_zip.gz";
+    const auto zipPath = DynXX::TestUtil::resolveTempPath() / "dynxx_cfile_zip.gz";
     std::FILE *in = std::fopen(scriptPath.string().c_str(), "rb");
     std::FILE *out = std::fopen(zipPath.string().c_str(), "wb");
     ASSERT_NE(in, nullptr);
@@ -166,7 +166,7 @@ TEST(Zip, DynxxZCFileZip_InvalidParams) {
     EXPECT_FALSE(dynxxZCFileZip(nullptr, nullptr));
     EXPECT_FALSE(dynxxZCFileZip(nullptr, nullptr, DynXXZipCompressModeX::Default, 0, DynXXZFormatX::ZLib));
 
-    const auto outPath = std::filesystem::temp_directory_path() / "dynxx_cfile_zip_null_in.gz";
+    const auto outPath = DynXX::TestUtil::resolveTempPath() / "dynxx_cfile_zip_null_in.gz";
     std::FILE *out = std::fopen(outPath.string().c_str(), "wb");
     ASSERT_NE(out, nullptr);
     EXPECT_FALSE(dynxxZCFileZip(nullptr, out));
@@ -180,12 +180,12 @@ TEST(Zip, DynxxZCFileZip_InvalidParams) {
 }
 
 TEST(Zip, DynxxZCFileZip_FileNotExists) {
-    const auto notExistsPath = std::filesystem::temp_directory_path() / "dynxx_not_exists_zip_in.js";
+    const auto notExistsPath = DynXX::TestUtil::resolveTempPath() / "dynxx_not_exists_zip_in.js";
     std::filesystem::remove(notExistsPath);
     std::FILE *in = std::fopen(notExistsPath.string().c_str(), "rb");
     ASSERT_EQ(in, nullptr);
 
-    const auto outPath = std::filesystem::temp_directory_path() / "dynxx_cfile_zip_not_exists.gz";
+    const auto outPath = DynXX::TestUtil::resolveTempPath() / "dynxx_cfile_zip_not_exists.gz";
     std::FILE *out = std::fopen(outPath.string().c_str(), "wb");
     ASSERT_NE(out, nullptr);
     EXPECT_FALSE(dynxxZCFileZip(in, out));
@@ -195,8 +195,8 @@ TEST(Zip, DynxxZCFileZip_FileNotExists) {
 TEST(Zip, DynxxZCFileUnzip) {
     const auto scriptPath = scriptFilePath();
     ASSERT_TRUE(std::filesystem::exists(scriptPath));
-    const auto zipPath = std::filesystem::temp_directory_path() / "dynxx_cfile_unzip.gz";
-    const auto unzipPath = std::filesystem::temp_directory_path() / "dynxx_cfile_unzip.js";
+    const auto zipPath = DynXX::TestUtil::resolveTempPath() / "dynxx_cfile_unzip.gz";
+    const auto unzipPath = DynXX::TestUtil::resolveTempPath() / "dynxx_cfile_unzip.js";
     std::FILE *zipIn = std::fopen(scriptPath.string().c_str(), "rb");
     std::FILE *zipOut = std::fopen(zipPath.string().c_str(), "wb");
     ASSERT_NE(zipIn, nullptr);
@@ -218,7 +218,7 @@ TEST(Zip, DynxxZCFileUnzip_InvalidParams) {
     EXPECT_FALSE(dynxxZCFileUnzip(nullptr, nullptr));
     EXPECT_FALSE(dynxxZCFileUnzip(nullptr, nullptr, 0, DynXXZFormatX::ZLib));
 
-    const auto outPath = std::filesystem::temp_directory_path() / "dynxx_cfile_unzip_null_in.js";
+    const auto outPath = DynXX::TestUtil::resolveTempPath() / "dynxx_cfile_unzip_null_in.js";
     std::FILE *out = std::fopen(outPath.string().c_str(), "wb");
     ASSERT_NE(out, nullptr);
     EXPECT_FALSE(dynxxZCFileUnzip(nullptr, out));
@@ -232,12 +232,12 @@ TEST(Zip, DynxxZCFileUnzip_InvalidParams) {
 }
 
 TEST(Zip, DynxxZCFileUnzip_FileNotExists) {
-    const auto notExistsPath = std::filesystem::temp_directory_path() / "dynxx_not_exists_unzip_in.gz";
+    const auto notExistsPath = DynXX::TestUtil::resolveTempPath() / "dynxx_not_exists_unzip_in.gz";
     std::filesystem::remove(notExistsPath);
     std::FILE *in = std::fopen(notExistsPath.string().c_str(), "rb");
     ASSERT_EQ(in, nullptr);
 
-    const auto outPath = std::filesystem::temp_directory_path() / "dynxx_cfile_unzip_not_exists.js";
+    const auto outPath = DynXX::TestUtil::resolveTempPath() / "dynxx_cfile_unzip_not_exists.js";
     std::FILE *out = std::fopen(outPath.string().c_str(), "wb");
     ASSERT_NE(out, nullptr);
     EXPECT_FALSE(dynxxZCFileUnzip(in, out));
@@ -266,7 +266,7 @@ TEST(Zip, DynxxZCxxStreamZip_InvalidParams) {
 }
 
 TEST(Zip, DynxxZCxxStreamZip_FileNotExists) {
-    const auto notExistsPath = std::filesystem::temp_directory_path() / "dynxx_not_exists_stream_zip_in.js";
+    const auto notExistsPath = DynXX::TestUtil::resolveTempPath() / "dynxx_not_exists_stream_zip_in.js";
     std::filesystem::remove(notExistsPath);
     std::ifstream in(notExistsPath, std::ios::binary);
     ASSERT_FALSE(in.is_open());
@@ -299,7 +299,7 @@ TEST(Zip, DynxxZCxxStreamUnzip_InvalidParams) {
 }
 
 TEST(Zip, DynxxZCxxStreamUnzip_FileNotExists) {
-    const auto notExistsPath = std::filesystem::temp_directory_path() / "dynxx_not_exists_stream_unzip_in.gz";
+    const auto notExistsPath = DynXX::TestUtil::resolveTempPath() / "dynxx_not_exists_stream_unzip_in.gz";
     std::filesystem::remove(notExistsPath);
     std::ifstream in(notExistsPath, std::ios::binary);
     ASSERT_FALSE(in.is_open());
@@ -346,8 +346,8 @@ TEST(Zip, DynxxZFileRoundTripWithScriptFile) {
     const auto scriptPath = scriptFilePath();
     ASSERT_TRUE(std::filesystem::exists(scriptPath));
 
-    const auto zipPath = std::filesystem::temp_directory_path() / "dynxx_zip_script.gz";
-    const auto unzipPath = std::filesystem::temp_directory_path() / "dynxx_unzip_script.js";
+    const auto zipPath = DynXX::TestUtil::resolveTempPath() / "dynxx_zip_script.gz";
+    const auto unzipPath = DynXX::TestUtil::resolveTempPath() / "dynxx_unzip_script.js";
 
     std::ifstream in(scriptPath, std::ios::binary);
     std::ofstream zipped(zipPath, std::ios::binary | std::ios::trunc);
