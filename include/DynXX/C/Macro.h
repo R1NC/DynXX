@@ -3,7 +3,12 @@
 #if defined(__cplusplus)
 #define DYNXX_EXTERN_C_BEGIN extern "C" {
 #define DYNXX_EXTERN_C_END }
-#define DYNXX_EXPORT extern "C"
+#if defined(__clang__) || defined(__GNUC__)
+    #define DYNXX_NO_COVERAGE __attribute__((no_profile_instrument_function))
+#else
+    #define DYNXX_NO_COVERAGE
+#endif
+#define DYNXX_EXPORT extern "C" DYNXX_NO_COVERAGE
 #if defined(__EMSCRIPTEN__)
     #define DYNXX_EXPORT_AUTO DYNXX_EXPORT EMSCRIPTEN_KEEPALIVE
 #else
