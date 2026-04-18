@@ -609,7 +609,10 @@ std::optional<std::string> dynxxSQLiteQueryReadColumnText(DynXXSQLiteQueryResult
     if (!v.has_value()) [[unlikely]] {
         return std::nullopt;
     }
-    return {*std::get_if<std::string>(&v.value())};
+    if (const auto pv = std::get_if<std::string>(&v.value())) [[likely]] {
+        return *pv;
+    }
+    return std::nullopt;
 }
 
 std::optional<int64_t> dynxxSQLiteQueryReadColumnInteger(DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
@@ -621,7 +624,10 @@ std::optional<int64_t> dynxxSQLiteQueryReadColumnInteger(DynXXSQLiteQueryResultH
     if (!v.has_value()) [[unlikely]] {
         return std::nullopt;
     }
-    return {*std::get_if<int64_t>(&v.value())};
+    if (const auto pv = std::get_if<int64_t>(&v.value())) [[likely]] {
+        return *pv;
+    }
+    return std::nullopt;
 }
 
 std::optional<double> dynxxSQLiteQueryReadColumnFloat(DynXXSQLiteQueryResultHandle query_result, std::string_view column) {
@@ -633,11 +639,14 @@ std::optional<double> dynxxSQLiteQueryReadColumnFloat(DynXXSQLiteQueryResultHand
     if (!v.has_value()) [[unlikely]] {
         return std::nullopt;
     }
-    return {*std::get_if<double>(&v.value())};
+    if (const auto pv = std::get_if<double>(&v.value())) [[likely]] {
+        return *pv;
+    }
+    return std::nullopt;
 }
 
 void dynxxSQLiteQueryDrop(DynXXSQLiteQueryResultHandle query_result) {
-    if (query_result == 0) {
+    if (query_result == 0 || sqlQRCache == nullptr) {
         return;
     }
     sqlQRCache->remove(query_result);
@@ -665,7 +674,11 @@ DynXXKVConnHandle dynxxKVOpen(std::string_view _id) {
         if (_root == nullptr) [[unlikely]] {
             return 0;
         }
-        _kv = std::make_unique<KV::KVStore>(dynxxRootPath().value());
+        const auto rootPath = dynxxRootPath();
+        if (!rootPath.has_value()) [[unlikely]] {
+            return 0;
+        }
+        _kv = std::make_unique<KV::KVStore>(rootPath.value());
     }
     if (const auto ptr = _kv->open(_id).lock()) [[likely]] {
         return Mem::ptr2addr(ptr.get());
@@ -786,6 +799,9 @@ std::optional<DictAny> dynxxJsonToDictAny(const std::string &json) {
 }
 
 DynXXJsonDecoderHandle dynxxJsonDecoderInit(std::string_view json) {
+    if (jsonDecoderCache == nullptr) [[unlikely]] {
+        return 0;
+    }
     return jsonDecoderCache->add(std::make_unique<Json::Decoder>(json));
 }
 
@@ -878,7 +894,7 @@ DynXXJsonNodeHandle dynxxJsonDecoderReadNext(DynXXJsonDecoderHandle decoder, Dyn
 }
 
 void dynxxJsonDecoderRelease(DynXXJsonDecoderHandle decoder) {
-    if (decoder == 0) {
+    if (decoder == 0 || jsonDecoderCache == nullptr) {
         return;
     }
     jsonDecoderCache->remove(decoder);
@@ -887,6 +903,9 @@ void dynxxJsonDecoderRelease(DynXXJsonDecoderHandle decoder) {
 // Zip
 
 DynXXZipHandle dynxxZZipInit(DynXXZipCompressModeX mode, size_t bufferSize, DynXXZFormatX format) {
+    if (zipCache == nullptr) [[unlikely]] {
+        return 0;
+    }
     try {
         const auto zip = zipCache->add(std::make_unique<Zip>(mode, bufferSize, format));
         return zip;
@@ -932,13 +951,16 @@ bool dynxxZZipProcessFinished(DynXXZipHandle zip) {
 }
 
 void dynxxZZipRelease(DynXXZipHandle zip) {
-    if (zip == 0) {
+    if (zip == 0 || zipCache == nullptr) {
         return;
     }
     zipCache->remove(zip);
 }
 
 DynXXUnZipHandle dynxxZUnzipInit(size_t bufferSize, DynXXZFormatX format) {
+    if (unzipCache == nullptr) [[unlikely]] {
+        return 0;
+    }
     try {
         const auto unzip = unzipCache->add(std::make_unique<UnZip>(bufferSize, format));
         return unzip;
@@ -984,7 +1006,7 @@ bool dynxxZUnzipProcessFinished(DynXXUnZipHandle unzip) {
 }
 
 void dynxxZUnzipRelease(DynXXUnZipHandle unzip) {
-    if (unzip == 0) {
+    if (unzip == 0 || unzipCache == nullptr) {
         return;
     }
     unzipCache->remove(unzip);
