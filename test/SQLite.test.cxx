@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <DynXX/CXX/SQLite.hxx>
 
+#include "../src/core/store/SQLite.hxx"
+
 namespace {
     constexpr auto kCreateTextTableSql = "CREATE TABLE IF NOT EXISTS t (v TEXT);";
     constexpr auto kCreateIntegerTableSql = "CREATE TABLE IF NOT EXISTS t (v INTEGER);";
@@ -22,6 +24,12 @@ TEST(SQLite, DynxxSQLiteOpen) {
 
 TEST(SQLite, DynxxSQLiteOpen_EmptyId) {
     EXPECT_EQ(dynxxSQLiteOpen(""), 0U);
+}
+
+TEST(SQLite, SQLiteStoreOpen_EmptyFile) {
+    DynXX::Core::Store::SQLite::SQLiteStore store;
+    const auto conn = store.open("");
+    EXPECT_TRUE(conn.expired());
 }
 
 TEST(SQLite, DynxxSQLiteExecute) {
@@ -79,6 +87,40 @@ TEST(SQLite, DynxxSQLiteQueryReadColumnText) {
     EXPECT_FALSE(dynxxSQLiteQueryReadColumnText(qr, "").has_value());
     EXPECT_FALSE(dynxxSQLiteQueryReadColumnText(0, "v").has_value());
     dynxxSQLiteQueryDrop(qr);
+    dynxxSQLiteClose(conn);
+}
+
+TEST(SQLite, DynxxSQLiteQueryReadColumnWithoutReadRow) {
+    const auto conn = dynxxSQLiteOpen("sqlite_read_without_row");
+    ASSERT_NE(conn, 0U);
+
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kDropTableSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kCreateTextTableSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kDeleteAllRowsSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kInsertTextRowSql));
+    const auto textQr = dynxxSQLiteQueryDo(conn, kSelectSingleRowSql);
+    ASSERT_NE(textQr, 0U);
+    EXPECT_FALSE(dynxxSQLiteQueryReadColumnText(textQr, "v").has_value());
+    dynxxSQLiteQueryDrop(textQr);
+
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kDropTableSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kCreateIntegerTableSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kDeleteAllRowsSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kInsertIntegerRowSql));
+    const auto intQr = dynxxSQLiteQueryDo(conn, kSelectSingleRowSql);
+    ASSERT_NE(intQr, 0U);
+    EXPECT_FALSE(dynxxSQLiteQueryReadColumnInteger(intQr, "v").has_value());
+    dynxxSQLiteQueryDrop(intQr);
+
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kDropTableSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kCreateRealTableSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kDeleteAllRowsSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kInsertRealRowSql));
+    const auto realQr = dynxxSQLiteQueryDo(conn, kSelectSingleRowSql);
+    ASSERT_NE(realQr, 0U);
+    EXPECT_FALSE(dynxxSQLiteQueryReadColumnFloat(realQr, "v").has_value());
+    dynxxSQLiteQueryDrop(realQr);
+
     dynxxSQLiteClose(conn);
 }
 

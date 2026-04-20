@@ -88,7 +88,7 @@ namespace
         }
 
         [[nodiscard]] curl_mimepart *addMimePart() {
-            if (this->mime == nullptr) [[unlikely]] {
+            if (this->curl == nullptr) [[unlikely]] {
                 return nullptr;
             }
             if (this->mime == nullptr) {
