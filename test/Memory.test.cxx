@@ -12,6 +12,10 @@ TEST(Memory, DupCStr) {
     EXPECT_EQ(toFree, nullptr);
 }
 
+TEST(Memory, DupCStrNullptr) {
+    EXPECT_EQ(dupCStr(nullptr, 0), nullptr);
+}
+
 TEST(Memory, DupStr) {
     const auto *copied = dupStr("dynxx");
     ASSERT_NE(copied, nullptr);
@@ -27,8 +31,30 @@ TEST(Memory, MemcpyX) {
     EXPECT_EQ(dst, src);
 }
 
+TEST(Memory, MemcpyXZeroCount) {
+    std::array<int, 3> src{1, 2, 3};
+    std::array<int, 3> dst{9, 9, 9};
+    memcpyX(src.data(), dst.data(), 0);
+    EXPECT_EQ(dst, (std::array<int, 3>{9, 9, 9}));
+}
+
+TEST(Memory, MemcpyXNullptr) {
+    std::array<int, 3> src{1, 2, 3};
+    std::array<int, 3> dst{9, 9, 9};
+    memcpyX(static_cast<const int *>(nullptr), dst.data(), src.size());
+    memcpyX(src.data(), static_cast<int *>(nullptr), src.size());
+    EXPECT_EQ(dst, (std::array<int, 3>{9, 9, 9}));
+}
+
 TEST(Memory, MallocXCharacter) {
     auto *ptr = mallocX<char>(8);
+    ASSERT_NE(ptr, nullptr);
+    freeX(ptr);
+    EXPECT_EQ(ptr, nullptr);
+}
+
+TEST(Memory, MallocXCharacterZeroCount) {
+    auto *ptr = mallocX<char>(0);
     ASSERT_NE(ptr, nullptr);
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
@@ -41,9 +67,23 @@ TEST(Memory, MallocXNonCharacter) {
     EXPECT_EQ(ptr, nullptr);
 }
 
+TEST(Memory, MallocXNonCharacterZeroCount) {
+    auto *ptr = mallocX<int>(0);
+    if (ptr != nullptr) {
+        freeX(ptr);
+    }
+    EXPECT_EQ(ptr, nullptr);
+}
+
 TEST(Memory, FreeXNonConstNonVoid) {
     auto *ptr = mallocX<int>(1);
     ASSERT_NE(ptr, nullptr);
+    freeX(ptr);
+    EXPECT_EQ(ptr, nullptr);
+}
+
+TEST(Memory, FreeXNonConstNonVoidNullptr) {
+    int *ptr = nullptr;
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
@@ -56,10 +96,22 @@ TEST(Memory, FreeXNonConstVoid) {
     EXPECT_EQ(ptr, nullptr);
 }
 
+TEST(Memory, FreeXNonConstVoidNullptr) {
+    void *ptr = nullptr;
+    freeX(ptr);
+    EXPECT_EQ(ptr, nullptr);
+}
+
 TEST(Memory, FreeXConstNonVoid) {
     auto *raw = mallocX<int>(1);
     ASSERT_NE(raw, nullptr);
     const int *ptr = raw;
+    freeX(ptr);
+    EXPECT_EQ(ptr, nullptr);
+}
+
+TEST(Memory, FreeXConstNonVoidNullptr) {
+    const int *ptr = nullptr;
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
@@ -72,6 +124,12 @@ TEST(Memory, FreeXConstVoid) {
     EXPECT_EQ(ptr, nullptr);
 }
 
+TEST(Memory, FreeXConstVoidNullptr) {
+    const void *ptr = nullptr;
+    freeX(ptr);
+    EXPECT_EQ(ptr, nullptr);
+}
+
 TEST(Memory, CopyRange) {
     std::vector<int> src{1, 2, 3, 4};
     std::vector<int> dst;
@@ -79,9 +137,21 @@ TEST(Memory, CopyRange) {
     EXPECT_EQ(dst, (std::vector<int>{1, 2, 3}));
 }
 
+TEST(Memory, CopyRangeZeroLen) {
+    std::vector<int> src{1, 2, 3, 4};
+    std::vector<int> dst{7, 8};
+    copyRange(src, dst, 0);
+    EXPECT_EQ(dst, (std::vector<int>{7, 8}));
+}
+
 TEST(Memory, FreeDeleter) {
     void *raw = std::malloc(8);
     ASSERT_NE(raw, nullptr);
+    EXPECT_NO_FATAL_FAILURE(FreeDeleter{}(raw));
+}
+
+TEST(Memory, FreeDeleterNullptr) {
+    void *raw = nullptr;
     EXPECT_NO_FATAL_FAILURE(FreeDeleter{}(raw));
 }
 

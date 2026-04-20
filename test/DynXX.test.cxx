@@ -76,13 +76,13 @@ namespace DynXX::Test {
         std::array<char *, 2> argv{arg0.data(), nullptr};
         ::testing::InitGoogleTest(&argc, argv.data());
 
-        if (const auto *envFilter = std::getenv("DYNXX_GTEST_FILTER"); envFilter != nullptr && *envFilter != '\0') {
+        if (const auto envFilter = DynXX::TestUtil::envValue("DYNXX_GTEST_FILTER"); !envFilter.empty()) {
             ::testing::GTEST_FLAG(filter) = envFilter;
         } else if (::testing::GTEST_FLAG(filter).empty()) {
             ::testing::GTEST_FLAG(filter) = "*";
         }
 
-        if (const auto *envOutput = std::getenv("DYNXX_GTEST_OUTPUT"); envOutput != nullptr && *envOutput != '\0') {
+        if (const auto envOutput = DynXX::TestUtil::envValue("DYNXX_GTEST_OUTPUT"); !envOutput.empty()) {
             ::testing::GTEST_FLAG(output) = envOutput;
         } else if (::testing::GTEST_FLAG(output).empty()) {
             ::testing::GTEST_FLAG(output) = "xml:dynxx-gtest-report.xml";

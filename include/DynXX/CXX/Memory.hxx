@@ -40,6 +40,9 @@ inline const char *dupStr(std::string_view sv) {
 
 template<MemcpyableT T>
 void memcpyX(const T *src, T *dst, size_t count) {
+    if (src == nullptr || dst == nullptr || count == 0) [[unlikely]] {
+        return;
+    }
     std::memcpy(dst, src, count * sizeof(T));
 }
 

@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cstdio>
 #include <cstdlib>
 #include <filesystem>
+#include <string>
 #include <string_view>
 
 #if defined(__has_include)
@@ -11,13 +13,30 @@
 #endif
 
 namespace DynXX::TestUtil {
+    inline std::string envValue(const char *name) {
+#if defined(_WIN32)
+        char *buffer = nullptr;
+        size_t len = 0;
+        if (_dupenv_s(&buffer, &len, name) != 0 || buffer == nullptr || len == 0) {
+            return {};
+        }
+        std::string value(buffer);
+        std::free(buffer);
+        return value;
+#else
+        if (const auto *v = std::getenv(name); v != nullptr) {
+            return v;
+        }
+        return {};
+#endif
+    }
+
     inline  bool envEnabled(const char *name, bool defaultValue) {
-        const auto *v = std::getenv(name);
-        if (v == nullptr || *v == '\0') {
+        const auto v = envValue(name);
+        if (v.empty()) {
             return defaultValue;
         }
-        const std::string s(v);
-        return s == "1" || s == "true" || s == "TRUE" || s == "on" || s == "ON";
+        return v == "1" || v == "true" || v == "TRUE" || v == "on" || v == "ON";
     }
 
     inline bool isRepoRootPath(const std::filesystem::path &path) {
@@ -45,10 +64,22 @@ namespace DynXX::TestUtil {
     }
 
     inline std::filesystem::path resolveTempPath() {
-        if (const auto runnerTmp = std::getenv("RUNNER_TEMP"); runnerTmp != nullptr) {
+        if (const auto runnerTmp = envValue("RUNNER_TEMP"); !runnerTmp.empty()) {
             return {runnerTmp};
         }
         return std::filesystem::temp_directory_path();
+    }
+
+    inline std::FILE *openFile(const std::filesystem::path &path, const char *mode) {
+#if defined(_WIN32)
+        std::FILE *fp = nullptr;
+        if (fopen_s(&fp, path.string().c_str(), mode) != 0) {
+            return nullptr;
+        }
+        return fp;
+#else
+        return std::fopen(path.string().c_str(), mode);
+#endif
     }
 
     inline std::filesystem::path resolveScriptsRootPath() {

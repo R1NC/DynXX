@@ -77,6 +77,8 @@ TEST(JS, DynxxJsLoadS) {
 
 TEST(JS, DynxxJsLoadB) {
     EXPECT_FALSE(dynxxJsLoadB({}, false));
+    const Bytes nonEmptyBytes{0xFF, 0x00, 0x80};
+    EXPECT_FALSE(dynxxJsLoadB(nonEmptyBytes, false));
 }
 
 TEST(JS, DynxxJsCall) {
