@@ -142,3 +142,24 @@ function(install_headers SOURCE_DIR DESTINATION_DIR)
         PATTERN "*.hxx"
     )
 endfunction()
+
+function(link_whole_archive CONSUMER_TARGET STATIC_LIB_TARGET)
+    if(NOT TARGET ${CONSUMER_TARGET})
+        message(FATAL_ERROR "`link_whole_archive()`: target `${CONSUMER_TARGET}` not found")
+    endif()
+    if(NOT TARGET ${STATIC_LIB_TARGET})
+        message(FATAL_ERROR "`link_whole_archive()`: target `${STATIC_LIB_TARGET}` not found")
+    endif()
+
+    if(MSVC)
+        target_link_options(${CONSUMER_TARGET} PRIVATE "/WHOLEARCHIVE:$<TARGET_FILE:${STATIC_LIB_TARGET}>")
+    elseif(APPLE)
+        target_link_options(${CONSUMER_TARGET} PRIVATE "-Wl,-force_load,$<TARGET_FILE:${STATIC_LIB_TARGET}>")
+    else()
+        target_link_options(${CONSUMER_TARGET} PRIVATE
+            "-Wl,--whole-archive"
+            "$<TARGET_FILE:${STATIC_LIB_TARGET}>"
+            "-Wl,--no-whole-archive"
+        )
+    endif()
+endfunction()

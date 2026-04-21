@@ -70,6 +70,8 @@ target_link_libraries(DynXXCxxTests
         DynXXTest
 )
 
+link_whole_archive(DynXXCxxTests DynXXTest)
+
 target_include_directories(DynXXCxxTests
     PRIVATE
         ${CMAKE_SOURCE_DIR}/include
