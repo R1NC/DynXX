@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <DynXX/CXX/DynXX.hxx>
 #include <DynXXTest.hxx>
 
@@ -12,6 +13,33 @@
 #include "TestUtil.hxx"
 
 namespace {
+    void initGoogleTestOnce() {
+        static bool initialized = false;
+        if (initialized) {
+            return;
+        }
+        int argc = 1;
+        std::string arg0 = "DynXXCxxTests";
+        std::array<char *, 2> argv{arg0.data(), nullptr};
+        ::testing::InitGoogleTest(&argc, argv.data());
+        initialized = true;
+    }
+
+    void setupRunOptionsAndEnvironment();
+
+    std::string resolveFilter(std::string_view explicitFilter) {
+        if (!explicitFilter.empty()) {
+            return std::string(explicitFilter);
+        }
+        if (const auto envFilter = DynXX::TestUtil::envValue("DYNXX_GTEST_FILTER"); !envFilter.empty()) {
+            return envFilter;
+        }
+        if (!::testing::GTEST_FLAG(filter).empty()) {
+            return ::testing::GTEST_FLAG(filter);
+        }
+        return "*";
+    }
+
     std::filesystem::path dynxxTestRoot() {
         return DynXX::TestUtil::resolveTempPath() / "dynxx_ut_gtest_root";
     }
@@ -67,21 +95,8 @@ namespace {
             releaseEngine();
         }
     };
-}
 
-namespace DynXX::Test {
-    int RunAll() {
-        int argc = 1;
-        std::string arg0 = "DynXXCxxTests";
-        std::array<char *, 2> argv{arg0.data(), nullptr};
-        ::testing::InitGoogleTest(&argc, argv.data());
-
-        if (const auto envFilter = DynXX::TestUtil::envValue("DYNXX_GTEST_FILTER"); !envFilter.empty()) {
-            ::testing::GTEST_FLAG(filter) = envFilter;
-        } else if (::testing::GTEST_FLAG(filter).empty()) {
-            ::testing::GTEST_FLAG(filter) = "*";
-        }
-
+    void setupRunOptionsAndEnvironment() {
         if (const auto envOutput = DynXX::TestUtil::envValue("DYNXX_GTEST_OUTPUT"); !envOutput.empty()) {
             ::testing::GTEST_FLAG(output) = envOutput;
         } else if (::testing::GTEST_FLAG(output).empty()) {
@@ -90,10 +105,49 @@ namespace DynXX::Test {
 
         ::testing::GTEST_FLAG(print_time) = true;
         ::testing::GTEST_FLAG(throw_on_failure) = false;
-        ::testing::UnitTest::GetInstance()->listeners().Append(new DynXXCoutListener());
 
-        ::testing::AddGlobalTestEnvironment(new DynXXGlobalEnvironment());
+        static bool listenerInstalled = false;
+        if (!listenerInstalled) {
+            ::testing::UnitTest::GetInstance()->listeners().Append(new DynXXCoutListener());
+            listenerInstalled = true;
+        }
+
+        static bool globalEnvAdded = false;
+        if (!globalEnvAdded) {
+            ::testing::AddGlobalTestEnvironment(new DynXXGlobalEnvironment());
+            globalEnvAdded = true;
+        }
+    }
+}
+
+namespace DynXX::Test {
+    std::vector<std::string> list() {
+        initGoogleTestOnce();
+        static const std::vector<std::string> cachedTests = [] {
+            std::vector<std::string> tests;
+            const auto *unitTest = ::testing::UnitTest::GetInstance();
+            tests.reserve(static_cast<std::size_t>(unitTest->total_test_count()));
+            for (int suiteIndex = 0; suiteIndex < unitTest->total_test_suite_count(); ++suiteIndex) {
+                const auto *testSuite = unitTest->GetTestSuite(suiteIndex);
+                for (int caseIndex = 0; caseIndex < testSuite->total_test_count(); ++caseIndex) {
+                    const auto *testInfo = testSuite->GetTestInfo(caseIndex);
+                    tests.emplace_back(std::string(testSuite->name()) + "." + testInfo->name());
+                }
+            }
+            return tests;
+        }();
+        return cachedTests;
+    }
+
+    int run(std::string_view test) {
+        initGoogleTestOnce();
+        setupRunOptionsAndEnvironment();
+        ::testing::GTEST_FLAG(filter) = resolveFilter(test);
         return RUN_ALL_TESTS();
+    }
+
+    int runAll() {
+        return run("");
     }
 }
 
