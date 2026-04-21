@@ -323,7 +323,7 @@
         "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDebug"
       },
       "toolset": "ClangCL",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "condition": {
         "type": "allOf",
         "conditions": [
