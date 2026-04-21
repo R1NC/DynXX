@@ -43,12 +43,16 @@ function clearCMakeCache(buildFolder: string) {
   const buildDir = resolve(process.cwd(), buildFolder);
   const cacheFile = join(buildDir, "CMakeCache.txt");
   const cacheDir = join(buildDir, "CMakeFiles");
+  const depsDir = join(buildDir, "_deps");
 
   if (existsSync(cacheFile)) {
     rmSync(cacheFile, { force: true });
   }
   if (existsSync(cacheDir)) {
     rmSync(cacheDir, { recursive: true, force: true });
+  }
+  if (existsSync(depsDir)) {
+    rmSync(depsDir, { recursive: true, force: true });
   }
 }
 
