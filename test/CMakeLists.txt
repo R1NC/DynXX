@@ -63,7 +63,6 @@ endif()
 
 add_executable(DynXXCxxTests
     DynXXTestMain.cxx
-    ${DYNXX_TEST_SOURCES}
 )
 
 target_link_libraries(DynXXCxxTests

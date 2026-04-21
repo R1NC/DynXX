@@ -42,6 +42,7 @@ function main() {
   const configureOnly = shouldConfigureOnly();
   const useXcodeGenerator = buildType === "Debug";
   const skipHostTests = useXcodeGenerator;
+  const skipLibMerge = skipHostTests;
   if (skipHostTests && (requestedBuildTests || requestedCoverage)) {
     console.warn("[Test] macOS Debug preset uses Xcode generator; skip gtest/coverage flow.");
   }
@@ -61,23 +62,31 @@ function main() {
     return;
   }
 
-  const buildArtifacts = [
-    join(outputLibPath, "libDynXX.a"),
-    join(outputExePath, "qjsc.app", "Contents", "MacOS", "qjsc"),
-  ];
-  if (buildTests) {
-    buildArtifacts.push(
-      join(outputLibPath, "libDynXXTest.a"),
-      join(root, outputFolder, "include", "DynXXTest.hxx"),
-    );
+  if (skipHostTests) {
+    console.warn("[Artifact] macOS Debug preset skips qjsc executable artifact check.");
+  } else {
+    checkArtifacts([join(outputExePath, "qjsc.app", "Contents", "MacOS", "qjsc")]);
   }
-  checkArtifacts(buildArtifacts);
+  if (skipHostTests) {
+    console.warn("[Artifact] macOS Debug preset skips static library artifact checks.");
+  } else {
+    const buildArtifacts = [join(outputLibPath, "libDynXX.a")];
+    if (buildTests) {
+      buildArtifacts.push(
+        join(outputLibPath, "libDynXXTest.a"),
+        join(root, outputFolder, "include", "DynXXTest.hxx"),
+      );
+    }
+    checkArtifacts(buildArtifacts);
+  }
 
-  copyStaticLibs(vcpkgLibPath, outputLibPath);
-
-  mergeLibs(outputLibPath, "libDynXX-All.a");
-  
-  checkArtifacts([join(outputLibPath, "libDynXX-All.a")]);
+  if (skipLibMerge) {
+    console.warn("[Merge] macOS Debug preset skips static library merge.");
+  } else {
+    copyStaticLibs(vcpkgLibPath, outputLibPath);
+    mergeLibs(outputLibPath, "libDynXX-All.a");
+    checkArtifacts([join(outputLibPath, "libDynXX-All.a")]);
+  }
 
   if (buildTests) {
     const { xmlReport, htmlReport } = getGtestReportPaths();

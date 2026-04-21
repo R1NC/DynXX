@@ -33,9 +33,16 @@ function main() {
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();
-  const buildTests = shouldBuildTests();
-  const coverageEnabled = shouldEnableCoverage();
+  const requestedBuildTests = shouldBuildTests();
+  const requestedCoverage = shouldEnableCoverage();
   const configureOnly = shouldConfigureOnly();
+  const skipHostTests = buildType === "Debug";
+  if (skipHostTests && (requestedBuildTests || requestedCoverage)) {
+    console.warn("[Test] Windows Debug preset generates VS projects; skip gtest/coverage flow.");
+  }
+  const buildTests = requestedBuildTests && !skipHostTests;
+  const coverageEnabled = requestedCoverage && !skipHostTests;
+  const skipLibMerge = skipHostTests;
 
   const configureArgs = [`-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`];
   if (coverageEnabled) {
@@ -48,24 +55,33 @@ function main() {
     return;
   }
 
-  const buildArtifacts = [join(outputLibPath, "DynXX.lib")];
-  if (buildTests) {
-    buildArtifacts.push(
-      join(outputLibPath, "DynXXTest.lib"),
-      join(root, outputFolder, "include", "DynXXTest.hxx"),
-    );
+  if (skipHostTests) {
+    console.warn("[Artifact] Windows Debug preset skips static library artifact checks.");
+  } else {
+    const buildArtifacts = [join(outputLibPath, "DynXX.lib")];
+    if (buildTests) {
+      buildArtifacts.push(
+        join(outputLibPath, "DynXXTest.lib"),
+        join(root, outputFolder, "include", "DynXXTest.hxx"),
+      );
+    }
+    checkArtifacts(buildArtifacts);
   }
-  checkArtifacts(buildArtifacts);
-  
-  copyStaticLibs(vcpkgLibPath, outputLibPath);
 
-  const libExePath = join(getMsvcToolsHome(), "lib.exe");
-  mergeLibs(outputLibPath, "DynXX-All.lib", libExePath);
+  if (skipLibMerge) {
+    console.warn("[Merge] Windows Debug preset skips static library merge.");
+  } else {
+    copyStaticLibs(vcpkgLibPath, outputLibPath);
+    const libExePath = join(getMsvcToolsHome(), "lib.exe");
+    mergeLibs(outputLibPath, "DynXX-All.lib", libExePath);
+    checkArtifacts([join(outputLibPath, "DynXX-All.lib")]);
+  }
 
-  checkArtifacts([
-    join(outputLibPath, "DynXX-All.lib"),
-    join(getOutputExePath(), "qjsc.exe")
-  ]);
+  if (skipHostTests) {
+    console.warn("[Artifact] Windows Debug preset skips qjsc executable artifact check.");
+  } else {
+    checkArtifacts([join(getOutputExePath(), "qjsc.exe")]);
+  }
 
   if (buildTests) {
     const { xmlReport, htmlReport } = getGtestReportPaths();
