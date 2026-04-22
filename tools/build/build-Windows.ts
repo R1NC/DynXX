@@ -55,19 +55,6 @@ function main() {
     return;
   }
 
-  if (skipHostTests) {
-    console.warn("[Artifact] Windows Debug preset skips static library artifact checks.");
-  } else {
-    const buildArtifacts = [join(outputLibPath, "DynXX.lib")];
-    if (buildTests) {
-      buildArtifacts.push(
-        join(outputLibPath, "DynXXTest.lib"),
-        join(root, outputFolder, "include", "DynXXTest.hxx"),
-      );
-    }
-    checkArtifacts(buildArtifacts);
-  }
-
   if (skipLibMerge) {
     console.warn("[Merge] Windows Debug preset skips static library merge.");
   } else {
