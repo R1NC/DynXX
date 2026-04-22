@@ -39,7 +39,7 @@ if(USE_DB)
     list(APPEND DYNXX_TEST_SOURCES SQLite.test.cxx)
 endif()
 
-if(CMAKE_CROSSCOMPILING)
+if(ANDROID OR IOS OR EMSCRIPTEN OR OHOS)
     add_library(DynXXTest STATIC ${DYNXX_TEST_SOURCES})
     
     target_link_libraries(DynXXTest
