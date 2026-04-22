@@ -39,47 +39,46 @@ if(USE_DB)
     list(APPEND DYNXX_TEST_SOURCES SQLite.test.cxx)
 endif()
 
-add_library(DynXXTest STATIC ${DYNXX_TEST_SOURCES})
-
-target_link_libraries(DynXXTest
-    PUBLIC
-        DynXX
-        GTest::gtest
-)
-
-target_include_directories(DynXXTest
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
-)
-
-install_headers(${CMAKE_CURRENT_SOURCE_DIR}/include/ include)
-
-if(ANDROID OR IOS OR EMSCRIPTEN OR CMAKE_SYSTEM_NAME STREQUAL "OHOS")
-    message(STATUS "Skip DynXX test executable on this target platform")
-    return()
+if(CMAKE_CROSSCOMPILING)
+    add_library(DynXXTest STATIC ${DYNXX_TEST_SOURCES})
+    
+    target_link_libraries(DynXXTest
+        PUBLIC
+            DynXX
+            GTest::gtest
+    )
+    
+    target_include_directories(DynXXTest
+        PUBLIC
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+    )
+    
+    install_headers(${CMAKE_CURRENT_SOURCE_DIR}/include/ include)
+    
+else()
+    add_executable(DynXXCxxTests 
+        DynXXTestMain.cxx
+        ${DYNXX_TEST_SOURCES}
+    )
+    
+    target_link_libraries(DynXXCxxTests
+        PRIVATE
+            DynXX
+            GTest::gtest
+    )
+    
+    target_include_directories(DynXXCxxTests
+        PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+    )
+    
+    add_test(NAME DynXXCxxTests COMMAND DynXXCxxTests)
+    
+    set_tests_properties(DynXXCxxTests
+        PROPERTIES
+            TIMEOUT 300
+    )
 endif()
-
-add_executable(DynXXCxxTests
-    DynXXTestMain.cxx
-)
-
-target_link_libraries(DynXXCxxTests
-    PRIVATE
-        DynXXTest
-)
-
-link_whole_archive(DynXXCxxTests DynXXTest)
-
-target_include_directories(DynXXCxxTests
-    PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
-)
-
-add_test(NAME DynXXCxxTests COMMAND DynXXCxxTests)
-
-set_tests_properties(DynXXCxxTests
-    PROPERTIES
-        TIMEOUT 300
-)
