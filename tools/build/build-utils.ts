@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readlinkSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, readlinkSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
 
 import { exec, getEnv, getHomeDir, goInTmpDir, isMacOS, isWindows, readCIEnv, setEnv, spawn } from '../utils.js';
@@ -150,6 +150,25 @@ export function setupVcpkgEnv(triplet: string) {
 export function getVcpkgLibPath(root: string, buildFolder: string): string {
   const triplet = getEnv("VCPKG_TARGET_TRIPLET");
   return join(root, buildFolder, "vcpkg_installed", triplet, "lib");
+}
+
+export function isQjsEnabled(buildFolder: string): boolean {
+  const cachePath = join(buildFolder, "CMakeCache.txt");
+  if (!existsSync(cachePath)) {
+    return true;
+  }
+  const content = readFileSync(cachePath, "utf8");
+  const useQjsEnabled = /^USE_QJS:BOOL=ON$/m.test(content);
+  if (!useQjsEnabled) {
+    return false;
+  }
+
+  // quickjs-ng may disable qjsc on some platforms (e.g. Linux) via BUILD_QJSC.
+  const buildQjscMatched = content.match(/^BUILD_QJSC:BOOL=(ON|OFF)$/m);
+  if (buildQjscMatched) {
+    return buildQjscMatched[1] === "ON";
+  }
+  return true;
 }
 
 export function checkArtifacts(paths: string[]) {

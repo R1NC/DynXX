@@ -76,6 +76,13 @@ function(dynxx_find_dependencies TARGET_NAME LINK_LIBS_VAR)
     endif()
 
     if(USE_QJS)
+        # quickjs-ng defaults BUILD_QJSC=OFF on Linux. Enable it for desktop, but
+        # keep mobile/wasm platforms excluded.
+        if(ANDROID OR OHOS OR EMSCRIPTEN OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR (DEFINED IOS AND IOS))
+            set(BUILD_QJSC OFF CACHE BOOL "Build qjsc executable" FORCE)
+        else()
+            set(BUILD_QJSC ON CACHE BOOL "Build qjsc executable" FORCE)
+        endif()
         add_git_lib(${TARGET_NAME}
             quickjs
             https://github.com/R1NC/quickjs-ng
