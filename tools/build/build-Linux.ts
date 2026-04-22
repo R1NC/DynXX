@@ -5,7 +5,7 @@ import {
 } from '../utils.js';
 import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputExePath, getOutputLibPath, getVcpkgLibPath,
-  isQjsEnabled, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
+  isQjscEnabled, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
 import { getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
 import { generateCoverageReport, getCoverageCMakeConfigureArgs, getCoverageReportPaths, setupCoverageEnv, shouldEnableCoverage } from '../test/coverage-utils.js';
@@ -48,7 +48,7 @@ function main() {
     return;
   }
 
-  if (isQjsEnabled(buildFolder)) {
+  if (isQjscEnabled(buildFolder)) {
     checkArtifacts([join(outputExePath, "qjsc")]);
   } else {
     console.warn("[Artifact] Linux build has USE_QJS=OFF; skip qjsc executable artifact check.");

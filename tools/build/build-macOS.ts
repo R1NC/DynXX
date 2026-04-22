@@ -5,7 +5,7 @@ import {
 } from '../utils.js';
 import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputExePath, getOutputLibPath,
-  getVcpkgLibPath, isQjsEnabled, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
+  getVcpkgLibPath, isQjscEnabled, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
 import { getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
 import { generateCoverageReport, getCoverageCMakeConfigureArgs, getCoverageReportPaths, setupCoverageEnv, shouldEnableCoverage } from '../test/coverage-utils.js';
@@ -62,7 +62,7 @@ function main() {
     console.warn("[Artifact] macOS Debug preset skips static library artifact checks.");
     console.warn("[Merge] macOS Debug preset skips static library merge.");
   } else {
-    if (isQjsEnabled(buildFolder)) {
+    if (isQjscEnabled(buildFolder)) {
       checkArtifacts([join(outputExePath, "qjsc.app", "Contents", "MacOS", "qjsc")]);
     } else {
       console.warn("[Artifact] macOS build has USE_QJS=OFF; skip qjsc executable artifact check.");

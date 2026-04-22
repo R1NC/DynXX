@@ -152,7 +152,7 @@ export function getVcpkgLibPath(root: string, buildFolder: string): string {
   return join(root, buildFolder, "vcpkg_installed", triplet, "lib");
 }
 
-export function isQjsEnabled(buildFolder: string): boolean {
+export function isQjscEnabled(buildFolder: string): boolean {
   const cachePath = join(buildFolder, "CMakeCache.txt");
   if (!existsSync(cachePath)) {
     return true;

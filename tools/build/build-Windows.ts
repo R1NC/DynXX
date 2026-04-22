@@ -6,7 +6,7 @@ import {
 } from '../utils.js';
 import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputExePath, getOutputLibPath,
-  getVcpkgLibPath, isQjsEnabled, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
+  getVcpkgLibPath, isQjscEnabled, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
 import { getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
 import { generateCoverageReport, getCoverageCMakeConfigureArgs, getCoverageReportPaths, setupCoverageEnv, shouldEnableCoverage } from '../test/coverage-utils.js';
@@ -60,7 +60,7 @@ function main() {
     console.warn("[Artifact] Windows Debug preset skips static library artifact checks.");
     console.warn("[Merge] Windows Debug preset skips static library merge.");
   } else {
-    if (isQjsEnabled(buildFolder)) {
+    if (isQjscEnabled(buildFolder)) {
       checkArtifacts([join(outputExePath, "qjsc.exe")]);
     } else {
       console.warn("[Artifact] Windows build has USE_QJS=OFF; skip qjsc executable artifact check.");
