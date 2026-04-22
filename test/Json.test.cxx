@@ -352,7 +352,7 @@ TEST_P(JsonToDictAnyInvalidInputTest, ShouldReturnNullopt) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidInputs,
+    Json,
     JsonToDictAnyInvalidInputTest,
     ::testing::Values(
         "",

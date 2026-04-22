@@ -131,7 +131,7 @@ TEST_P(KvInvalidParamTest, ReadWriteShouldFailFast) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidParams,
+    KV,
     KvInvalidParamTest,
     ::testing::Values(
         KvInvalidParamCase{0, "k"},

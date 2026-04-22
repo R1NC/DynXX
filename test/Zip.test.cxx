@@ -391,7 +391,7 @@ TEST_P(ZipModeFormatMatrixTest, StreamZipUnzipRoundTrip) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    AllModeAndFormat,
+    Zip,
     ZipModeFormatMatrixTest,
     ::testing::Values(
         ZipModeFormatCase{DynXXZipCompressModeX::Default, DynXXZFormatX::ZLib},

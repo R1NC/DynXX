@@ -106,7 +106,7 @@ TEST_P(NetRequestInvalidParamTest, DictParamsOverloadShouldFastFail) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidParams,
+    Net,
     NetRequestInvalidParamTest,
     ::testing::Values(
         NetRequestInvalidParamCase{"", DynXXHttpMethodX::Get, "a=1"},
@@ -141,7 +141,7 @@ TEST_P(NetRequestInvalidQueryFormatTest, DictParamsOverloadShouldBeHandledGracef
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidQueryFormat,
+    Net,
     NetRequestInvalidQueryFormatTest,
     ::testing::Values(
         NetRequestInvalidParamCase{"https://example.com/?a=%", DynXXHttpMethodX::Get, ""},
@@ -158,7 +158,7 @@ TEST_P(NetDownloadInvalidParamTest, ShouldReturnFalse) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidParams,
+    Net,
     NetDownloadInvalidParamTest,
     ::testing::Values(
         NetDownloadInvalidParamCase{"", "x.tmp"},
@@ -186,7 +186,7 @@ TEST_P(NetDownloadInvalidQueryFormatTest, ShouldBeHandledGracefully) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidQueryFormat,
+    Net,
     NetDownloadInvalidQueryFormatTest,
     ::testing::Values(
         NetDownloadInvalidParamCase{"https://example.com/?a=%", "dynxx_invalid_query_1.tmp"},

@@ -106,7 +106,7 @@ TEST_P(CryptoAesInvalidParamTest, EncryptDecryptShouldReturnEmpty) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidParams,
+    Crypto,
     CryptoAesInvalidParamTest,
     ::testing::Values(
         AesInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("12345678")},
@@ -124,7 +124,7 @@ TEST_P(CryptoAesGcmInvalidParamTest, EncryptDecryptShouldReturnEmpty) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidParams,
+    Crypto,
     CryptoAesGcmInvalidParamTest,
     ::testing::Values(
         AesGcmInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("12345678"), dynxxCryptoRand(12), {}, 128},
@@ -151,7 +151,7 @@ TEST_P(CryptoAesGcmValidParamTest, EncryptDecryptRoundTrip) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    ValidKeyAndLengthMatrix,
+    Crypto,
     CryptoAesGcmValidParamTest,
     ::testing::Values(
         AesGcmValidCase{16, 1, 0},

@@ -85,7 +85,7 @@ TEST_P(CodingHexInvalidInputTest, Str2BytesShouldReturnEmpty) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidHexInput,
+    Coding,
     CodingHexInvalidInputTest,
     ::testing::Values("", " ", "g", "z!")
 );

@@ -100,7 +100,7 @@ TEST(Crypto, Base64Decode_UrlSafeCharacters_ShouldFail) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    LengthMatrix,
+    Crypto,
     CryptoBase64LengthTest,
     ::testing::Values(
         Base64LengthCase{1, true},
