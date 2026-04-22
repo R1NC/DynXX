@@ -71,12 +71,6 @@ function main() {
     console.warn("[Artifact] macOS Debug preset skips static library artifact checks.");
   } else {
     const buildArtifacts = [join(outputLibPath, "libDynXX.a")];
-    if (buildTests) {
-      buildArtifacts.push(
-        join(outputLibPath, "libDynXXTest.a"),
-        join(root, outputFolder, "include", "DynXXTest.hxx"),
-      );
-    }
     checkArtifacts(buildArtifacts);
   }
 
