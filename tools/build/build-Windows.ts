@@ -33,16 +33,16 @@ function main() {
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();
+  const outputExePath = getOutputExePath();
   const requestedBuildTests = shouldBuildTests();
   const requestedCoverage = shouldEnableCoverage();
   const configureOnly = shouldConfigureOnly();
-  const skipHostTests = buildType === "Debug";
-  if (skipHostTests && (requestedBuildTests || requestedCoverage)) {
+  const generatedProject = buildType === "Debug";
+  if (generatedProject && (requestedBuildTests || requestedCoverage)) {
     console.warn("[Test] Windows Debug preset generates VS projects; skip gtest/coverage flow.");
   }
-  const buildTests = requestedBuildTests && !skipHostTests;
-  const coverageEnabled = requestedCoverage && !skipHostTests;
-  const skipLibMerge = skipHostTests;
+  const buildTests = requestedBuildTests && !generatedProject;
+  const coverageEnabled = requestedCoverage && !generatedProject;
 
   const configureArgs = [`-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`];
   if (coverageEnabled) {
@@ -55,19 +55,17 @@ function main() {
     return;
   }
 
-  if (skipLibMerge) {
+  if (generatedProject) {
+    console.warn("[Artifact] Windows Debug preset skips qjsc executable artifact check.");
+    console.warn("[Artifact] Windows Debug preset skips static library artifact checks.");
     console.warn("[Merge] Windows Debug preset skips static library merge.");
   } else {
+    checkArtifacts([join(outputExePath, "qjsc.exe")]);
+    checkArtifacts([join(outputLibPath, "DynXX.lib")]);
     copyStaticLibs(vcpkgLibPath, outputLibPath);
     const libExePath = join(getMsvcToolsHome(), "lib.exe");
     mergeLibs(outputLibPath, "DynXX-All.lib", libExePath);
     checkArtifacts([join(outputLibPath, "DynXX-All.lib")]);
-  }
-
-  if (skipHostTests) {
-    console.warn("[Artifact] Windows Debug preset skips qjsc executable artifact check.");
-  } else {
-    checkArtifacts([join(getOutputExePath(), "qjsc.exe")]);
   }
 
   if (buildTests) {

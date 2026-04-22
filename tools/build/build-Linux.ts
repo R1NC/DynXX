@@ -4,7 +4,7 @@ import {
   gotoParentPath,
 } from '../utils.js';
 import {
-  checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputLibPath, getVcpkgLibPath,
+  checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputExePath, getOutputLibPath, getVcpkgLibPath,
   mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
 import { getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
@@ -29,9 +29,12 @@ function main() {
 
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();
-  const buildTests = shouldBuildTests();
-  const coverageEnabled = shouldEnableCoverage();
+  const outputExePath = getOutputExePath();
+  const requestedBuildTests = shouldBuildTests();
+  const requestedCoverage = shouldEnableCoverage();
   const configureOnly = shouldConfigureOnly();
+  const buildTests = requestedBuildTests;
+  const coverageEnabled = requestedCoverage;
 
   const configureArgs = [`-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`];
   if (coverageEnabled) {
@@ -45,13 +48,11 @@ function main() {
     return;
   }
 
-  const buildArtifacts = [join(outputLibPath, "libDynXX.a")];
-  checkArtifacts(buildArtifacts);
+  checkArtifacts([join(outputExePath, "qjsc")]);
+  checkArtifacts([join(outputLibPath, "libDynXX.a")]);
 
   copyStaticLibs(vcpkgLibPath, outputLibPath);
-
   mergeLibs(outputLibPath, "libDynXX-All.a");
-  
   checkArtifacts([join(outputLibPath, "libDynXX-All.a")]);
 
   if (buildTests) {

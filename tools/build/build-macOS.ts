@@ -40,18 +40,13 @@ function main() {
   const requestedBuildTests = shouldBuildTests();
   const requestedCoverage = shouldEnableCoverage();
   const configureOnly = shouldConfigureOnly();
-  const useXcodeGenerator = buildType === "Debug";
-  const skipHostTests = useXcodeGenerator;
-  const skipLibMerge = skipHostTests;
-  if (skipHostTests && (requestedBuildTests || requestedCoverage)) {
+  const generatedProject = buildType === "Debug";
+  if (generatedProject && (requestedBuildTests || requestedCoverage)) {
     console.warn("[Test] macOS Debug preset uses Xcode generator; skip gtest/coverage flow.");
   }
-  const buildTests = requestedBuildTests && !skipHostTests;
-  const coverageEnabled = requestedCoverage && !skipHostTests;
+  const buildTests = requestedBuildTests && !generatedProject;
+  const coverageEnabled = requestedCoverage && !generatedProject;
 
-  if (coverageEnabled) {
-    setupCoverageEnv(buildFolder);
-  }
   runCMake(preset, buildFolder, outputFolder, true, [
     `-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`,
     ...(coverageEnabled ? getCoverageCMakeConfigureArgs() : [])
@@ -62,21 +57,13 @@ function main() {
     return;
   }
 
-  if (skipHostTests) {
+  if (generatedProject) {
     console.warn("[Artifact] macOS Debug preset skips qjsc executable artifact check.");
-  } else {
-    checkArtifacts([join(outputExePath, "qjsc.app", "Contents", "MacOS", "qjsc")]);
-  }
-  if (skipHostTests) {
     console.warn("[Artifact] macOS Debug preset skips static library artifact checks.");
-  } else {
-    const buildArtifacts = [join(outputLibPath, "libDynXX.a")];
-    checkArtifacts(buildArtifacts);
-  }
-
-  if (skipLibMerge) {
     console.warn("[Merge] macOS Debug preset skips static library merge.");
   } else {
+    checkArtifacts([join(outputExePath, "qjsc.app", "Contents", "MacOS", "qjsc")]);
+    checkArtifacts([join(outputLibPath, "libDynXX.a")]);
     copyStaticLibs(vcpkgLibPath, outputLibPath);
     mergeLibs(outputLibPath, "libDynXX-All.a");
     checkArtifacts([join(outputLibPath, "libDynXX-All.a")]);
@@ -85,6 +72,9 @@ function main() {
   if (buildTests) {
     const { xmlReport, htmlReport } = getGtestReportPaths();
     setupGtestEnv();
+    if (coverageEnabled) {
+      setupCoverageEnv(buildFolder);
+    }
     runCtest(buildFolder);
     renderGtestXmlToHtml(xmlReport, htmlReport);
     if (coverageEnabled) {
