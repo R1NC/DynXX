@@ -46,12 +46,6 @@ function main() {
   }
 
   const buildArtifacts = [join(outputLibPath, "libDynXX.a")];
-  if (buildTests) {
-    buildArtifacts.push(
-      join(outputLibPath, "libDynXXTest.a"),
-      join(root, outputFolder, "include", "DynXXTest.hxx"),
-    );
-  }
   checkArtifacts(buildArtifacts);
 
   copyStaticLibs(vcpkgLibPath, outputLibPath);
