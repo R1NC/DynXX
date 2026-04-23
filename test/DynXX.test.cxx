@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <DynXX/CXX/DynXX.hxx>
 #include <DynXXTest.hxx>
 
@@ -28,6 +29,14 @@ namespace {
     }
 
     void setupRunOptionsAndEnvironment();
+    std::string resolveFilter(std::string_view explicitFilter);
+
+    int runByFilter(std::string_view filter) {
+        initGoogleTestOnce();
+        setupRunOptionsAndEnvironment();
+        ::testing::GTEST_FLAG(filter) = resolveFilter(filter);
+        return RUN_ALL_TESTS();
+    }
 
     std::string resolveFilter(std::string_view explicitFilter) {
         if (!explicitFilter.empty()) {
@@ -123,33 +132,68 @@ namespace {
 }
 
 namespace DynXX::Test {
-    std::vector<std::string> list() {
-        initGoogleTestOnce();
-        static const std::vector<std::string> cachedTests = [] {
-            std::vector<std::string> tests;
-            const auto *unitTest = ::testing::UnitTest::GetInstance();
-            tests.reserve(static_cast<std::size_t>(unitTest->total_test_count()));
-            for (int suiteIndex = 0; suiteIndex < unitTest->total_test_suite_count(); ++suiteIndex) {
-                const auto *testSuite = unitTest->GetTestSuite(suiteIndex);
-                for (int caseIndex = 0; caseIndex < testSuite->total_test_count(); ++caseIndex) {
-                    const auto *testInfo = testSuite->GetTestInfo(caseIndex);
-                    tests.emplace_back(std::string(testSuite->name()) + "." + testInfo->name());
+    namespace {
+        struct TestCatalog {
+            std::vector<std::string> suits;
+            std::unordered_map<std::string, std::vector<std::string>> testsBySuit;
+        };
+
+        const TestCatalog &getCachedCatalog() {
+            initGoogleTestOnce();
+            static const TestCatalog cachedCatalog = [] {
+                TestCatalog catalog;
+                const auto *unitTest = ::testing::UnitTest::GetInstance();
+                catalog.suits.reserve(static_cast<std::size_t>(unitTest->total_test_suite_count()));
+                catalog.testsBySuit.reserve(static_cast<std::size_t>(unitTest->total_test_suite_count()));
+                for (int suiteIndex = 0; suiteIndex < unitTest->total_test_suite_count(); ++suiteIndex) {
+                    const auto *testSuite = unitTest->GetTestSuite(suiteIndex);
+                    std::string suiteName = testSuite->name();
+                    catalog.suits.push_back(suiteName);
+                    auto &tests = catalog.testsBySuit[suiteName];
+                    tests.reserve(static_cast<std::size_t>(testSuite->total_test_count()));
+                    for (int caseIndex = 0; caseIndex < testSuite->total_test_count(); ++caseIndex) {
+                        const auto *testInfo = testSuite->GetTestInfo(caseIndex);
+                        tests.emplace_back(testInfo->name());
+                    }
                 }
-            }
-            return tests;
-        }();
-        return cachedTests;
+                return catalog;
+            }();
+            return cachedCatalog;
+        }
     }
 
-    int run(std::string_view test) {
-        initGoogleTestOnce();
-        setupRunOptionsAndEnvironment();
-        ::testing::GTEST_FLAG(filter) = resolveFilter(test);
-        return RUN_ALL_TESTS();
+    std::vector<std::string> listSuits() {
+        return getCachedCatalog().suits;
+    }
+
+    std::vector<std::string> listTests(std::string_view suit) {
+        if (suit.empty()) {
+            return {};
+        }
+        const auto &catalog = getCachedCatalog();
+        const auto it = catalog.testsBySuit.find(std::string(suit));
+        if (it == catalog.testsBySuit.end()) {
+            return {};
+        }
+        return it->second;
+    }
+
+    int runSuit(std::string_view suit) {
+        if (suit.empty()) {
+            return runAll();
+        }
+        return runByFilter(std::string(suit) + ".*");
+    }
+
+    int runTest(std::string_view suit, std::string_view test) {
+        if (suit.empty() || test.empty()) {
+            return runAll();
+        }
+        return runByFilter(std::string(suit) + "." + std::string(test));
     }
 
     int runAll() {
-        return run("");
+        return runByFilter("");
     }
 }
 
@@ -164,6 +208,4 @@ TEST_F(DynXXTestSuite, RootPath) {
     EXPECT_TRUE(path.has_value());
     EXPECT_FALSE(path.value_or("").empty());
 }
-
-
 
