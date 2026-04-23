@@ -163,3 +163,43 @@ function(link_whole_archive CONSUMER_TARGET STATIC_LIB_TARGET)
         )
     endif()
 endfunction()
+
+function(apply_coverage_flags TARGET_NAME)
+    if(NOT TARGET ${TARGET_NAME})
+        message(FATAL_ERROR "`apply_coverage_flags()`: target `${TARGET_NAME}` not found")
+    endif()
+
+    if(NOT DYNXX_ENABLE_COVERAGE)
+        return()
+    endif()
+
+    if(MSVC)
+        set(DYNXX_COVERAGE_COMPILE_OPTIONS
+            "/clang:-fprofile-instr-generate"
+            "/clang:-fcoverage-mapping"
+        )
+        set(DYNXX_COVERAGE_CXX_COMPILE_OPTIONS
+            "/EHsc"
+        )
+    else()
+        set(DYNXX_COVERAGE_COMPILE_OPTIONS
+            "-fprofile-instr-generate"
+            "-fcoverage-mapping"
+        )
+        set(DYNXX_COVERAGE_CXX_COMPILE_OPTIONS "")
+    endif()
+
+    target_compile_options(${TARGET_NAME}
+        PRIVATE
+            ${DYNXX_COVERAGE_COMPILE_OPTIONS}
+            $<$<COMPILE_LANGUAGE:CXX>:${DYNXX_COVERAGE_CXX_COMPILE_OPTIONS}>
+    )
+
+    get_target_property(_target_type ${TARGET_NAME} TYPE)
+    if(NOT _target_type STREQUAL "STATIC_LIBRARY")
+        target_link_options(${TARGET_NAME}
+            PRIVATE
+                ${DYNXX_COVERAGE_COMPILE_OPTIONS}
+        )
+    endif()
+endfunction()

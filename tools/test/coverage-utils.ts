@@ -39,11 +39,6 @@ function buildCoverageIgnoreRegex(): string {
 
 const COVERAGE_IGNORE_REGEX = buildCoverageIgnoreRegex();
 
-type CoverageCMakeFlags = {
-  cFlags: string;
-  cxxFlags: string;
-};
-
 function resolveLlvmToolPath(toolName: string): string {
   const llvmToolsHome = getEnv('LLVM_HOME');
   const toolBinary = process.platform === 'win32' ? `${toolName}.exe` : toolName;
@@ -79,25 +74,8 @@ export function shouldEnableCoverage(): boolean {
   return false;
 }
 
-function getCoverageCMakeFlags(): CoverageCMakeFlags {
-  if (process.platform === 'win32') {
-    return {
-      cFlags: '/clang:-fprofile-instr-generate /clang:-fcoverage-mapping',
-      cxxFlags: '/EHsc /clang:-fprofile-instr-generate /clang:-fcoverage-mapping'
-    };
-  }
-  return {
-    cFlags: '-fprofile-instr-generate -fcoverage-mapping',
-    cxxFlags: '-fprofile-instr-generate -fcoverage-mapping'
-  };
-}
-
-export function getCoverageCMakeConfigureArgs(): string[] {
-  const flags = getCoverageCMakeFlags();
-  return [
-    `-DCMAKE_C_FLAGS="${flags.cFlags}"`,
-    `-DCMAKE_CXX_FLAGS="${flags.cxxFlags}"`
-  ];
+export function getCoverageCMakeConfigureArgs(enable: boolean): string[] {
+  return [`-DDYNXX_ENABLE_COVERAGE=${enable ? 'ON' : 'OFF'}`];
 }
 
 export function setupCoverageEnv(buildFolder: string): void {

@@ -7,7 +7,8 @@ import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputLibPath, getVcpkgLibPath,
   mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
-import { shouldBuildTests } from '../test/gtest-utils.js';
+import { getGtestCMakeConfigureArgs, shouldBuildTests } from '../test/gtest-utils.js';
+import { getCoverageCMakeConfigureArgs, shouldEnableCoverage } from '../test/coverage-utils.js';
 
 function main() {
   const root = gotoParentPath();
@@ -36,9 +37,13 @@ function main() {
   const vcpkgLibPath = getVcpkgLibPath(root, buildFolder);
   const outputLibPath = getOutputLibPath();
   const buildTests = shouldBuildTests();
+  const coverageEnabled = shouldEnableCoverage();
   const configureOnly = shouldConfigureOnly();
 
-  runCMake(preset, buildFolder, outputFolder, true, [`-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`]);
+  runCMake(preset, buildFolder, outputFolder, true, [
+    ...getGtestCMakeConfigureArgs(buildTests),
+    ...getCoverageCMakeConfigureArgs(coverageEnabled)
+  ]);
 
   exportCompileCommands(buildFolder, root);
   if (configureOnly) {

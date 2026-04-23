@@ -24,6 +24,7 @@ dynxx_configure_cxx_feature_options()
 dynxx_declare_feature_options()
 dynxx_declare_dependency_options()
 option(DYNXX_BUILD_TESTS "Build DynXX unit tests" OFF)
+option(DYNXX_ENABLE_COVERAGE "Enable LLVM coverage instrumentation for test builds" OFF)
 
 set(SRC_FILES "")
 

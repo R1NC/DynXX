@@ -39,6 +39,9 @@ if(USE_DB)
     list(APPEND DYNXX_TEST_SOURCES SQLite.test.cxx)
 endif()
 
+# DynXX sources are compiled in parent scope, so attach options directly on the target.
+apply_coverage_flags(DynXX)
+
 if(ANDROID OR IOS OR EMSCRIPTEN OR OHOS)
     add_library(DynXXTest STATIC ${DYNXX_TEST_SOURCES})
     
@@ -54,6 +57,8 @@ if(ANDROID OR IOS OR EMSCRIPTEN OR OHOS)
         PRIVATE
             ${CMAKE_SOURCE_DIR}/include
     )
+
+    apply_coverage_flags(DynXXTest)
     
     install_headers(${CMAKE_CURRENT_SOURCE_DIR}/include/ include)
     
@@ -74,6 +79,8 @@ else()
             ${CMAKE_SOURCE_DIR}/include
             ${CMAKE_CURRENT_SOURCE_DIR}/include
     )
+
+    apply_coverage_flags(DynXXCxxTests)
     
     add_test(NAME DynXXCxxTests COMMAND DynXXCxxTests)
     

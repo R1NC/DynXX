@@ -7,6 +7,8 @@ import {
   checkArtifacts, exportCompileCommands, getOutputExePath,
   resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
+import { getGtestCMakeConfigureArgs } from '../test/gtest-utils.js';
+import { getCoverageCMakeConfigureArgs, shouldEnableCoverage } from '../test/coverage-utils.js';
 
 function main() {
   const root = gotoParentPath();
@@ -26,10 +28,14 @@ function main() {
   const outputPath = join(root, outputFolder, abi);
 
   setBuildOutputEnv(buildFolder, outputPath);
+  const coverageEnabled = shouldEnableCoverage();
   const configureOnly = shouldConfigureOnly();
 
   setupVcpkgEnv("wasm32-emscripten");
-  runCMake(preset, buildFolder, outputFolder, true, ["-DDYNXX_BUILD_TESTS=OFF"]);
+  runCMake(preset, buildFolder, outputFolder, true, [
+    ...getGtestCMakeConfigureArgs(false),
+    ...getCoverageCMakeConfigureArgs(coverageEnabled)
+  ]);
 
   exportCompileCommands(buildFolder, root);
   if (configureOnly) {

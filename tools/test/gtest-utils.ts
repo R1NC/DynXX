@@ -205,6 +205,10 @@ export function shouldBuildTests(): boolean {
   return false;
 }
 
+export function getGtestCMakeConfigureArgs(enable: boolean): string[] {
+  return [`-DDYNXX_BUILD_TESTS=${enable ? 'ON' : 'OFF'}`];
+}
+
 export function getGtestReportPaths(): {
   reportDir: string;
   xmlReport: string;

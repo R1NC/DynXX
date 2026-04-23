@@ -7,7 +7,7 @@ import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputExePath, getOutputLibPath,
   getVcpkgLibPath, isQjscEnabled, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly
 } from './build-utils.js';
-import { getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
+import { getGtestCMakeConfigureArgs, getGtestReportPaths, renderGtestXmlToHtml, runCtest, setupGtestEnv, shouldBuildTests } from '../test/gtest-utils.js';
 import { generateCoverageReport, getCoverageCMakeConfigureArgs, getCoverageReportPaths, setupCoverageEnv, shouldEnableCoverage } from '../test/coverage-utils.js';
 
 function main() {
@@ -48,8 +48,8 @@ function main() {
   const coverageEnabled = requestedCoverage && !generatedProject;
 
   runCMake(preset, buildFolder, outputFolder, true, [
-    `-DDYNXX_BUILD_TESTS=${buildTests ? "ON" : "OFF"}`,
-    ...(coverageEnabled ? getCoverageCMakeConfigureArgs() : [])
+    ...getGtestCMakeConfigureArgs(buildTests),
+    ...getCoverageCMakeConfigureArgs(coverageEnabled)
   ]);
 
   exportCompileCommands(buildFolder, root);
