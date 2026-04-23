@@ -196,7 +196,7 @@ function(apply_coverage_flags TARGET_NAME)
     )
 
     get_target_property(_target_type ${TARGET_NAME} TYPE)
-    if(NOT _target_type STREQUAL "STATIC_LIBRARY")
+    if(NOT MSVC AND NOT _target_type STREQUAL "STATIC_LIBRARY")
         target_link_options(${TARGET_NAME}
             PRIVATE
                 ${DYNXX_COVERAGE_COMPILE_OPTIONS}
