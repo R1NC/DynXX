@@ -9,6 +9,8 @@
 #include <DynXX/CXX/JS.hxx>
 #include "TestUtil.hxx"
 
+class DynXXJSTestSuite : public ::testing::Test {};
+
 namespace {
     using JsRuntimePaths = std::pair<std::filesystem::path, std::filesystem::path>;
 
@@ -46,7 +48,7 @@ namespace {
 
 }
 
-TEST(JS, DynxxJsLoadF) {
+TEST_F(DynXXJSTestSuite, LoadF) {
     const auto paths = jsRuntimePaths();
     const auto invalidLuaPath = DynXX::TestUtil::resolveLuaRuntimePath("biz.lua");
     assertJsRuntimeFilesExist(paths);
@@ -57,7 +59,7 @@ TEST(JS, DynxxJsLoadF) {
     EXPECT_FALSE(dynxxJsLoadF(invalidLuaPath.string(), false));
 }
 
-TEST(JS, DynxxJsLoadS) {
+TEST_F(DynXXJSTestSuite, LoadS) {
     const auto paths = jsRuntimePaths();
     const auto invalidLuaPath = DynXX::TestUtil::resolveLuaRuntimePath("biz.lua");
     assertJsRuntimeFilesExist(paths);
@@ -75,13 +77,13 @@ TEST(JS, DynxxJsLoadS) {
     EXPECT_FALSE(dynxxJsLoadS(luaScript, invalidLuaPath.string(), false));
 }
 
-TEST(JS, DynxxJsLoadB) {
+TEST_F(DynXXJSTestSuite, LoadB) {
     EXPECT_FALSE(dynxxJsLoadB({}, false));
     const Bytes nonEmptyBytes{0xFF, 0x00, 0x80};
     EXPECT_FALSE(dynxxJsLoadB(nonEmptyBytes, false));
 }
 
-TEST(JS, DynxxJsCall) {
+TEST_F(DynXXJSTestSuite, Call) {
     const auto paths = jsRuntimePaths();
     assertJsRuntimeFilesExist(paths);
     ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
@@ -101,6 +103,9 @@ TEST(JS, DynxxJsCall) {
     EXPECT_FALSE(dynxxJsCall("", "{}", false).has_value());
 }
 
-TEST(JS, DynxxJsSetMsgCallback) {
+TEST_F(DynXXJSTestSuite, SetMsgCallback) {
     EXPECT_NO_THROW(dynxxJsSetMsgCallback([](const char *msg) -> const char * { return msg; }));
 }
+
+
+

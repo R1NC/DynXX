@@ -2,17 +2,19 @@
 #include <algorithm>
 #include <DynXX/CXX/KV.hxx>
 
-TEST(KV, DynxxKVOpen) {
+class DynXXKVTestSuite : public ::testing::Test {};
+
+TEST_F(DynXXKVTestSuite, Open) {
     const auto conn = dynxxKVOpen("kv_open");
     ASSERT_NE(conn, 0U);
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVOpen_EmptyId) {
+TEST_F(DynXXKVTestSuite, Open_EmptyId) {
     EXPECT_EQ(dynxxKVOpen(""), 0U);
 }
 
-TEST(KV, DynxxKVReadString) {
+TEST_F(DynXXKVTestSuite, ReadString) {
     const auto conn = dynxxKVOpen("kv_read_string");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxKVWriteString(conn, "k", "v"));
@@ -21,14 +23,14 @@ TEST(KV, DynxxKVReadString) {
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVWriteString) {
+TEST_F(DynXXKVTestSuite, WriteString) {
     const auto conn = dynxxKVOpen("kv_write_string");
     ASSERT_NE(conn, 0U);
     EXPECT_TRUE(dynxxKVWriteString(conn, "k", "v"));
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVReadInteger) {
+TEST_F(DynXXKVTestSuite, ReadInteger) {
     const auto conn = dynxxKVOpen("kv_read_integer");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxKVWriteInteger(conn, "n", 7));
@@ -37,14 +39,14 @@ TEST(KV, DynxxKVReadInteger) {
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVWriteInteger) {
+TEST_F(DynXXKVTestSuite, WriteInteger) {
     const auto conn = dynxxKVOpen("kv_write_integer");
     ASSERT_NE(conn, 0U);
     EXPECT_TRUE(dynxxKVWriteInteger(conn, "n", 7));
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVReadFloat) {
+TEST_F(DynXXKVTestSuite, ReadFloat) {
     const auto conn = dynxxKVOpen("kv_read_float");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxKVWriteFloat(conn, "f", 3.14));
@@ -53,14 +55,14 @@ TEST(KV, DynxxKVReadFloat) {
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVWriteFloat) {
+TEST_F(DynXXKVTestSuite, WriteFloat) {
     const auto conn = dynxxKVOpen("kv_write_float");
     ASSERT_NE(conn, 0U);
     EXPECT_TRUE(dynxxKVWriteFloat(conn, "f", 3.14));
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVAllKeys) {
+TEST_F(DynXXKVTestSuite, AllKeys) {
     const auto conn = dynxxKVOpen("kv_all_keys");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxKVWriteString(conn, "k1", "v1"));
@@ -69,7 +71,7 @@ TEST(KV, DynxxKVAllKeys) {
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVContains) {
+TEST_F(DynXXKVTestSuite, Contains) {
     const auto conn = dynxxKVOpen("kv_contains");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxKVWriteString(conn, "k", "v"));
@@ -79,7 +81,7 @@ TEST(KV, DynxxKVContains) {
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVRemove) {
+TEST_F(DynXXKVTestSuite, Remove) {
     const auto conn = dynxxKVOpen("kv_remove");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxKVWriteString(conn, "k", "v"));
@@ -96,7 +98,7 @@ TEST(KV, DynxxKVRemove) {
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVClear) {
+TEST_F(DynXXKVTestSuite, Clear) {
     const auto conn = dynxxKVOpen("kv_clear");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxKVWriteString(conn, "k", "v"));
@@ -105,7 +107,7 @@ TEST(KV, DynxxKVClear) {
     dynxxKVClose(conn);
 }
 
-TEST(KV, DynxxKVClose) {
+TEST_F(DynXXKVTestSuite, Close) {
     const auto conn = dynxxKVOpen("kv_close");
     ASSERT_NE(conn, 0U);
     EXPECT_NO_THROW(dynxxKVClose(conn));
@@ -116,26 +118,22 @@ struct KvInvalidParamCase {
     std::string key;
 };
 
-class KvInvalidParamTest : public ::testing::TestWithParam<KvInvalidParamCase> {};
-
-TEST_P(KvInvalidParamTest, ReadWriteShouldFailFast) {
-    const auto &param = GetParam();
-    EXPECT_FALSE(dynxxKVReadString(param.conn, param.key).has_value());
-    EXPECT_FALSE(dynxxKVWriteString(param.conn, param.key, "v"));
-    EXPECT_FALSE(dynxxKVReadInteger(param.conn, param.key).has_value());
-    EXPECT_FALSE(dynxxKVWriteInteger(param.conn, param.key, 1));
-    EXPECT_FALSE(dynxxKVReadFloat(param.conn, param.key).has_value());
-    EXPECT_FALSE(dynxxKVWriteFloat(param.conn, param.key, 1.0));
-    EXPECT_FALSE(dynxxKVContains(param.conn, param.key));
-    EXPECT_FALSE(dynxxKVRemove(param.conn, param.key));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    KV,
-    KvInvalidParamTest,
-    ::testing::Values(
+TEST_F(DynXXKVTestSuite, InvalidParam_ReadWriteShouldFailFast) {
+    for (const auto &param : {
         KvInvalidParamCase{0, "k"},
         KvInvalidParamCase{0, ""},
         KvInvalidParamCase{1, ""}
-    )
-);
+    }) {
+        EXPECT_FALSE(dynxxKVReadString(param.conn, param.key).has_value());
+        EXPECT_FALSE(dynxxKVWriteString(param.conn, param.key, "v"));
+        EXPECT_FALSE(dynxxKVReadInteger(param.conn, param.key).has_value());
+        EXPECT_FALSE(dynxxKVWriteInteger(param.conn, param.key, 1));
+        EXPECT_FALSE(dynxxKVReadFloat(param.conn, param.key).has_value());
+        EXPECT_FALSE(dynxxKVWriteFloat(param.conn, param.key, 1.0));
+        EXPECT_FALSE(dynxxKVContains(param.conn, param.key));
+        EXPECT_FALSE(dynxxKVRemove(param.conn, param.key));
+    }
+}
+
+
+

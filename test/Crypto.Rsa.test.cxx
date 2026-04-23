@@ -2,6 +2,8 @@
 #include <DynXX/CXX/Crypto.hxx>
 #include <DynXX/CXX/Coding.hxx>
 
+class DynXXCryptoRsaTestSuite : public ::testing::Test {};
+
 namespace {
     constexpr auto kRsaPublicKeyPem = R"(-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4F4vWeeGYo78xoZeync3
@@ -45,37 +47,37 @@ S54oP3/JwnofMRC3K4CHj9gT/91C6yHA1XdNlZF/MZoaBq8jgoLU6pZS1zWSIf4e
 )";
 }
 
-TEST(Crypto, DynxxCryptoRsaGenKey) {
+TEST_F(DynXXCryptoRsaTestSuite, GenKey) {
     const auto key = dynxxCryptoRsaGenKey("QUJDRA==", true);
     EXPECT_NE(key.find("BEGIN PUBLIC KEY"), std::string::npos);
 }
 
-TEST(Crypto, DynxxCryptoRsaGenKey_EmptyBase64) {
+TEST_F(DynXXCryptoRsaTestSuite, GenKey_EmptyBase64) {
     EXPECT_TRUE(dynxxCryptoRsaGenKey("", true).empty());
     EXPECT_TRUE(dynxxCryptoRsaGenKey("", false).empty());
 }
 
-TEST(Crypto, DynxxCryptoRsaGenKey_TrimmedEmptyBase64_ShouldFail) {
+TEST_F(DynXXCryptoRsaTestSuite, GenKey_TrimmedEmptyBase64_ShouldFail) {
     EXPECT_TRUE(dynxxCryptoRsaGenKey(" \r\n\t ", true).empty());
     EXPECT_TRUE(dynxxCryptoRsaGenKey(" \r\n\t ", false).empty());
 }
 
-TEST(Crypto, DynxxCryptoRsaGenKey_InvalidBase64Length_ShouldFail) {
+TEST_F(DynXXCryptoRsaTestSuite, GenKey_InvalidBase64Length_ShouldFail) {
     EXPECT_TRUE(dynxxCryptoRsaGenKey("QUJDRA=", true).empty());
     EXPECT_TRUE(dynxxCryptoRsaGenKey("QUJDRA=", false).empty());
 }
 
-TEST(Crypto, DynxxCryptoRsaEncrypt) {
+TEST_F(DynXXCryptoRsaTestSuite, Encrypt) {
     const auto in = dynxxCodingStr2bytes("x");
     EXPECT_TRUE(dynxxCryptoRsaEncrypt(in, {}, DynXXCryptoRSAPaddingX::PKCS1).empty());
 }
 
-TEST(Crypto, DynxxCryptoRsaDecrypt) {
+TEST_F(DynXXCryptoRsaTestSuite, Decrypt) {
     const auto in = dynxxCodingStr2bytes("x");
     EXPECT_TRUE(dynxxCryptoRsaDecrypt(in, {}, DynXXCryptoRSAPaddingX::PKCS1).empty());
 }
 
-TEST(Crypto, RsaRoundTrip) {
+TEST_F(DynXXCryptoRsaTestSuite, RoundTrip) {
     const auto in = dynxxCodingStr2bytes("rsa-roundtrip");
     const auto publicKey = dynxxCodingStr2bytes(kRsaPublicKeyPem);
     const auto privateKey = dynxxCodingStr2bytes(kRsaPrivateKeyPem);
@@ -84,3 +86,6 @@ TEST(Crypto, RsaRoundTrip) {
     const auto decrypted = dynxxCryptoRsaDecrypt(encrypted, privateKey, DynXXCryptoRSAPaddingX::PKCS1);
     EXPECT_EQ(decrypted, in);
 }
+
+
+

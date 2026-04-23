@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 #include <DynXX/CXX/Json.hxx>
 
-TEST(Json, DynxxJsonNodeReadType) {
+class DynXXJsonTestSuite : public ::testing::Test {};
+
+TEST_F(DynXXJsonTestSuite, NodeReadType) {
     const auto decoder = dynxxJsonDecoderInit(R"({"name":"dynxx"})");
     ASSERT_NE(decoder, 0U);
     const auto node = dynxxJsonDecoderReadNode(decoder, "name");
@@ -10,7 +12,7 @@ TEST(Json, DynxxJsonNodeReadType) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonNodeReadName) {
+TEST_F(DynXXJsonTestSuite, NodeReadName) {
     const auto decoder = dynxxJsonDecoderInit(R"({"name":"dynxx"})");
     ASSERT_NE(decoder, 0U);
     const auto node = dynxxJsonDecoderReadNode(decoder, "name");
@@ -19,7 +21,7 @@ TEST(Json, DynxxJsonNodeReadName) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonNodeToStr) {
+TEST_F(DynXXJsonTestSuite, NodeToStr) {
     const auto decoder = dynxxJsonDecoderInit(R"({"name":"dynxx"})");
     ASSERT_NE(decoder, 0U);
     const auto node = dynxxJsonDecoderReadNode(decoder, "name");
@@ -28,7 +30,7 @@ TEST(Json, DynxxJsonNodeToStr) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonFromDictAny) {
+TEST_F(DynXXJsonTestSuite, FromDictAny) {
     const DictAny dict{
         {"name", std::string("dynxx")},
         {"n", int64_t(1)}
@@ -38,19 +40,19 @@ TEST(Json, DynxxJsonFromDictAny) {
     EXPECT_NE(json->find("name"), std::string::npos);
 }
 
-TEST(Json, DynxxJsonToDictAny) {
+TEST_F(DynXXJsonTestSuite, ToDictAny) {
     const auto dict = dynxxJsonToDictAny(R"({"name":"dynxx","n":1})");
     ASSERT_TRUE(dict.has_value());
     EXPECT_EQ(dict->count("name"), 1U);
 }
 
-TEST(Json, DynxxJsonDecoderInit) {
+TEST_F(DynXXJsonTestSuite, DecoderInit) {
     const auto decoder = dynxxJsonDecoderInit(R"({"x":1})");
     EXPECT_NE(decoder, 0U);
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadNode) {
+TEST_F(DynXXJsonTestSuite, DecoderReadNode) {
     const auto decoder = dynxxJsonDecoderInit(R"({"x":1})");
     ASSERT_NE(decoder, 0U);
     EXPECT_NE(dynxxJsonDecoderReadNode(decoder, "x"), 0U);
@@ -58,7 +60,7 @@ TEST(Json, DynxxJsonDecoderReadNode) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadString) {
+TEST_F(DynXXJsonTestSuite, DecoderReadString) {
     const auto decoder = dynxxJsonDecoderInit(R"({"name":"dynxx"})");
     ASSERT_NE(decoder, 0U);
     const auto node = dynxxJsonDecoderReadNode(decoder, "name");
@@ -67,7 +69,7 @@ TEST(Json, DynxxJsonDecoderReadString) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadString_WithNestedJsonString) {
+TEST_F(DynXXJsonTestSuite, DecoderReadString_WithNestedJsonString) {
     const auto decoder = dynxxJsonDecoderInit(R"({"payload":"{\"inner\":{\"k\":\"v\"},\"arr\":[1,2]}","text":"line1\nline2\t\"q\""})");
     ASSERT_NE(decoder, 0U);
     const auto payloadNode = dynxxJsonDecoderReadNode(decoder, "payload");
@@ -85,7 +87,7 @@ TEST(Json, DynxxJsonDecoderReadString_WithNestedJsonString) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadInteger) {
+TEST_F(DynXXJsonTestSuite, DecoderReadInteger) {
     const auto decoder = dynxxJsonDecoderInit(R"({"n":7})");
     ASSERT_NE(decoder, 0U);
     const auto node = dynxxJsonDecoderReadNode(decoder, "n");
@@ -94,7 +96,7 @@ TEST(Json, DynxxJsonDecoderReadInteger) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadFloat) {
+TEST_F(DynXXJsonTestSuite, DecoderReadFloat) {
     const auto decoder = dynxxJsonDecoderInit(R"({"f":3.5})");
     ASSERT_NE(decoder, 0U);
     const auto node = dynxxJsonDecoderReadNode(decoder, "f");
@@ -103,7 +105,7 @@ TEST(Json, DynxxJsonDecoderReadFloat) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadChild) {
+TEST_F(DynXXJsonTestSuite, DecoderReadChild) {
     const auto decoder = dynxxJsonDecoderInit(R"({"arr":[1,2]})");
     ASSERT_NE(decoder, 0U);
     const auto arr = dynxxJsonDecoderReadNode(decoder, "arr");
@@ -112,7 +114,7 @@ TEST(Json, DynxxJsonDecoderReadChild) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadChildrenCount) {
+TEST_F(DynXXJsonTestSuite, DecoderReadChildrenCount) {
     const auto decoder = dynxxJsonDecoderInit(R"({"arr":[1,2]})");
     ASSERT_NE(decoder, 0U);
     const auto arr = dynxxJsonDecoderReadNode(decoder, "arr");
@@ -121,7 +123,7 @@ TEST(Json, DynxxJsonDecoderReadChildrenCount) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadChildrenCount_ObjectField) {
+TEST_F(DynXXJsonTestSuite, DecoderReadChildrenCount_ObjectField) {
     const auto decoder = dynxxJsonDecoderInit(R"({"obj":{"a":1,"b":2}})");
     ASSERT_NE(decoder, 0U);
     const auto obj = dynxxJsonDecoderReadNode(decoder, "obj");
@@ -130,7 +132,7 @@ TEST(Json, DynxxJsonDecoderReadChildrenCount_ObjectField) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadChildren) {
+TEST_F(DynXXJsonTestSuite, DecoderReadChildren) {
     const auto decoder = dynxxJsonDecoderInit(R"({"arr":[1,2]})");
     ASSERT_NE(decoder, 0U);
     const auto arr = dynxxJsonDecoderReadNode(decoder, "arr");
@@ -147,7 +149,7 @@ TEST(Json, DynxxJsonDecoderReadChildren) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadNext) {
+TEST_F(DynXXJsonTestSuite, DecoderReadNext) {
     const auto decoder = dynxxJsonDecoderInit(R"({"arr":[1,2]})");
     ASSERT_NE(decoder, 0U);
     const auto arr = dynxxJsonDecoderReadNode(decoder, "arr");
@@ -158,7 +160,7 @@ TEST(Json, DynxxJsonDecoderReadNext) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadNumber_FromStringField) {
+TEST_F(DynXXJsonTestSuite, DecoderReadNumber_FromStringField) {
     const auto decoder = dynxxJsonDecoderInit(R"({"i":"42","f":"3.1415"})");
     ASSERT_NE(decoder, 0U);
     const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
@@ -174,7 +176,7 @@ TEST(Json, DynxxJsonDecoderReadNumber_FromStringField) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderReadString_FromNonStringField) {
+TEST_F(DynXXJsonTestSuite, DecoderReadString_FromNonStringField) {
     const auto decoder = dynxxJsonDecoderInit(R"({"i":7,"f":2.5,"b":true})");
     ASSERT_NE(decoder, 0U);
     const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
@@ -191,13 +193,13 @@ TEST(Json, DynxxJsonDecoderReadString_FromNonStringField) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderRelease) {
+TEST_F(DynXXJsonTestSuite, DecoderRelease) {
     const auto decoder = dynxxJsonDecoderInit(R"({"x":1})");
     ASSERT_NE(decoder, 0U);
     EXPECT_NO_THROW(dynxxJsonDecoderRelease(decoder));
 }
 
-TEST(Json, DynxxJsonDecoderReadWithInvalidDecoder) {
+TEST_F(DynXXJsonTestSuite, DecoderReadWithInvalidDecoder) {
     EXPECT_EQ(dynxxJsonDecoderReadNode(0, "x"), 0U);
     EXPECT_FALSE(dynxxJsonDecoderReadString(0).has_value());
     EXPECT_FALSE(dynxxJsonDecoderReadInteger(0).has_value());
@@ -207,7 +209,7 @@ TEST(Json, DynxxJsonDecoderReadWithInvalidDecoder) {
     EXPECT_EQ(dynxxJsonDecoderReadNext(0), 0U);
 }
 
-TEST(Json, DictAnyJsonRoundTrip) {
+TEST_F(DynXXJsonTestSuite, DictAnyJsonRoundTrip) {
     const DictAny in{
         {"name", std::string("dynxx")},
         {"enabled", true},
@@ -225,7 +227,7 @@ TEST(Json, DictAnyJsonRoundTrip) {
     EXPECT_NEAR(dictAnyReadFloat(*out, "ratio").value_or(0.0), 3.25, 1e-9);
 }
 
-TEST(Json, DynxxJsonFromToDictAny_MultiTypeRoundTrip) {
+TEST_F(DynXXJsonTestSuite, FromToDictAny_MultiTypeRoundTrip) {
     const DictAny in{
         {"name", std::string("dynxx")},
         {"age", int64_t(18)},
@@ -251,7 +253,7 @@ TEST(Json, DynxxJsonFromToDictAny_MultiTypeRoundTrip) {
     EXPECT_EQ(dictAnyReadString(*out, "none").value_or(""), "null");
 }
 
-TEST(Json, DynxxJsonDecoderReadFieldByType) {
+TEST_F(DynXXJsonTestSuite, DecoderReadFieldByType) {
     const auto decoder = dynxxJsonDecoderInit(R"({"name":"dynxx","age":23,"score":88.5})");
     ASSERT_NE(decoder, 0U);
 
@@ -273,7 +275,7 @@ TEST(Json, DynxxJsonDecoderReadFieldByType) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonDecoderNodeType_ObjectArrayBoolNull) {
+TEST_F(DynXXJsonTestSuite, DecoderNodeType_ObjectArrayBoolNull) {
     const auto decoder = dynxxJsonDecoderInit(R"({"obj":{"k":1},"arr":[1,2],"enabled":true,"none":null})");
     ASSERT_NE(decoder, 0U);
 
@@ -294,7 +296,7 @@ TEST(Json, DynxxJsonDecoderNodeType_ObjectArrayBoolNull) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST(Json, DynxxJsonToDictAny_DegradedString_ReDecodeObjectAndArray) {
+TEST_F(DynXXJsonTestSuite, ToDictAny_DegradedString_ReDecodeObjectAndArray) {
     const auto dict = dynxxJsonToDictAny(R"({"obj":{"k":1,"name":"dynxx"},"arr":[1,2,3]})");
     ASSERT_TRUE(dict.has_value());
 
@@ -327,7 +329,7 @@ TEST(Json, DynxxJsonToDictAny_DegradedString_ReDecodeObjectAndArray) {
     dynxxJsonDecoderRelease(arrDecoder);
 }
 
-TEST(Json, DynxxJsonToDictAny_NestedJsonStringField_ReDecode) {
+TEST_F(DynXXJsonTestSuite, ToDictAny_NestedJsonStringField_ReDecode) {
     const auto dict = dynxxJsonToDictAny(R"({"payload":"{\"inner\":{\"k\":1},\"arr\":[1,2]}","name":"dynxx"})");
     ASSERT_TRUE(dict.has_value());
     const auto payload = dictAnyReadString(*dict, "payload");
@@ -345,21 +347,18 @@ TEST(Json, DynxxJsonToDictAny_NestedJsonStringField_ReDecode) {
     dynxxJsonDecoderRelease(payloadDecoder);
 }
 
-class JsonToDictAnyInvalidInputTest : public ::testing::TestWithParam<std::string> {};
-
-TEST_P(JsonToDictAnyInvalidInputTest, ShouldReturnNullopt) {
-    EXPECT_FALSE(dynxxJsonToDictAny(GetParam()).has_value());
+TEST_F(DynXXJsonTestSuite, ToDictAnyInvalidInput_ShouldReturnNullopt) {
+    for (const auto &input : {
+        std::string(""),
+        std::string("{"),
+        std::string("[]"),
+        std::string("not-json"),
+        std::string(R"({"bad":"\x"})"),
+        std::string("{\"bad\":\"line1\nline2\"}")
+    }) {
+        EXPECT_FALSE(dynxxJsonToDictAny(input).has_value());
+    }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    Json,
-    JsonToDictAnyInvalidInputTest,
-    ::testing::Values(
-        "",
-        "{",
-        "[]",
-        "not-json",
-        R"({"bad":"\x"})",
-        "{\"bad\":\"line1\nline2\"}"
-    )
-);
+
+

@@ -12,6 +12,8 @@
 #include <DynXX/CXX/Types.hxx>
 #include "TestUtil.hxx"
 
+class DynXXLuaTestSuite : public ::testing::Test {};
+
 namespace {
     using LuaRuntimePaths = std::array<std::filesystem::path, 3>;
 #if defined(__cpp_lib_generic_unordered_lookup)
@@ -62,7 +64,7 @@ namespace {
 
 }
 
-TEST(Lua, DynxxLuaLoadF) {
+TEST_F(DynXXLuaTestSuite, LoadF) {
     const auto invalidJsPath = DynXX::TestUtil::resolveJsRuntimePath("biz.js");
     assertLuaRuntimeFilesExist(kLuaRuntimePaths);
     ASSERT_TRUE(std::filesystem::exists(invalidJsPath));
@@ -73,7 +75,7 @@ TEST(Lua, DynxxLuaLoadF) {
     EXPECT_FALSE(dynxxLuaLoadF(invalidJsPath.string()));
 }
 
-TEST(Lua, DynxxLuaLoadS) {
+TEST_F(DynXXLuaTestSuite, LoadS) {
     const auto invalidJsPath = DynXX::TestUtil::resolveJsRuntimePath("biz.js");
     assertLuaRuntimeFilesExist(kLuaRuntimePaths);
     ASSERT_TRUE(std::filesystem::exists(invalidJsPath));
@@ -88,7 +90,7 @@ TEST(Lua, DynxxLuaLoadS) {
     EXPECT_FALSE(dynxxLuaLoadS(jsScript));
 }
 
-TEST(Lua, DynxxLuaCall) {
+TEST_F(DynXXLuaTestSuite, Call) {
     assertLuaRuntimeFilesExist(kLuaRuntimePaths);
     for (const auto &path : kLuaRuntimePaths) {
         ASSERT_TRUE(dynxxLuaLoadF(path.string()));
@@ -104,3 +106,6 @@ TEST(Lua, DynxxLuaCall) {
     EXPECT_FALSE(dynxxLuaCall("TestMethodNotExists_ForError", "https://rinc.xyz").has_value());
     EXPECT_FALSE(dynxxLuaCall("", "{}").has_value());
 }
+
+
+

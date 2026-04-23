@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
 #include <DynXX/CXX/Log.hxx>
 
-TEST(Log, DynxxLogSetLevel) {
+class DynXXLogTestSuite : public ::testing::Test {};
+
+TEST_F(DynXXLogTestSuite, SetLevel) {
     EXPECT_NO_THROW(dynxxLogSetLevel(DynXXLogLevelX::Debug));
 }
 
-TEST(Log, DynxxLogSetCallback) {
+TEST_F(DynXXLogTestSuite, SetCallback) {
     bool called = false;
     dynxxLogSetCallback([&called](int, const char *) {
         called = true;
@@ -15,17 +17,17 @@ TEST(Log, DynxxLogSetCallback) {
     dynxxLogSetCallback(nullptr);
 }
 
-TEST(Log, DynxxLogPrint) {
+TEST_F(DynXXLogTestSuite, Print) {
     EXPECT_NO_THROW(dynxxLogPrint(DynXXLogLevelX::Info, "dynxx-log"));
 }
 
 #if !defined(USE_STD_FORMAT)
-TEST(Log, DynxxLogFormatT) {
+TEST_F(DynXXLogTestSuite, FormatT) {
     EXPECT_EQ(dynxxLogFormatT("{}:{}:{}", "a", 1, 2.5), "a:1:2.5");
 }
 #endif
 
-TEST(Log, DynxxLogPrintF) {
+TEST_F(DynXXLogTestSuite, PrintF) {
     std::string msg;
     dynxxLogSetCallback([&msg](int, const char *content) {
         msg = content == nullptr ? "" : content;
@@ -34,3 +36,6 @@ TEST(Log, DynxxLogPrintF) {
     EXPECT_NE(msg.find("probe"), std::string::npos);
     dynxxLogSetCallback(nullptr);
 }
+
+
+

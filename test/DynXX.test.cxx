@@ -12,6 +12,8 @@
 #include "../src/core/util/TimeUtil.hxx"
 #include "TestUtil.hxx"
 
+class DynXXTestSuite : public ::testing::Test {};
+
 namespace {
     void initGoogleTestOnce() {
         static bool initialized = false;
@@ -151,14 +153,17 @@ namespace DynXX::Test {
     }
 }
 
-TEST(DynXX, DynxxGetVersion) {
+TEST_F(DynXXTestSuite, GetVersion) {
     const auto version = dynxxGetVersion();
     EXPECT_FALSE(version.empty());
     EXPECT_NE(version.find('.'), std::string::npos);
 }
 
-TEST(DynXX, DynxxRootPath) {
+TEST_F(DynXXTestSuite, RootPath) {
     const auto path = dynxxRootPath();
     EXPECT_TRUE(path.has_value());
     EXPECT_FALSE(path.value_or("").empty());
 }
+
+
+

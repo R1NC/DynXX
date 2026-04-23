@@ -4,7 +4,9 @@
 #include <vector>
 #include <DynXX/CXX/Memory.hxx>
 
-TEST(Memory, DupCStr) {
+class DynXXMemoryTestSuite : public ::testing::Test {};
+
+TEST_F(DynXXMemoryTestSuite, DupCStr) {
     const auto *copied = dupCStr("abc", 3);
     ASSERT_NE(copied, nullptr);
     const char *toFree = copied;
@@ -12,11 +14,11 @@ TEST(Memory, DupCStr) {
     EXPECT_EQ(toFree, nullptr);
 }
 
-TEST(Memory, DupCStrNullptr) {
+TEST_F(DynXXMemoryTestSuite, DupCStrNullptr) {
     EXPECT_EQ(dupCStr(nullptr, 0), nullptr);
 }
 
-TEST(Memory, DupStr) {
+TEST_F(DynXXMemoryTestSuite, DupStr) {
     const auto *copied = dupStr("dynxx");
     ASSERT_NE(copied, nullptr);
     const char *toFree = copied;
@@ -24,21 +26,21 @@ TEST(Memory, DupStr) {
     EXPECT_EQ(toFree, nullptr);
 }
 
-TEST(Memory, MemcpyX) {
+TEST_F(DynXXMemoryTestSuite, MemcpyX) {
     std::array<int, 3> src{1, 2, 3};
     std::array<int, 3> dst{0, 0, 0};
     memcpyX(src.data(), dst.data(), src.size());
     EXPECT_EQ(dst, src);
 }
 
-TEST(Memory, MemcpyXZeroCount) {
+TEST_F(DynXXMemoryTestSuite, MemcpyXZeroCount) {
     std::array<int, 3> src{1, 2, 3};
     std::array<int, 3> dst{9, 9, 9};
     memcpyX(src.data(), dst.data(), 0);
     EXPECT_EQ(dst, (std::array<int, 3>{9, 9, 9}));
 }
 
-TEST(Memory, MemcpyXNullptr) {
+TEST_F(DynXXMemoryTestSuite, MemcpyXNullptr) {
     std::array<int, 3> src{1, 2, 3};
     std::array<int, 3> dst{9, 9, 9};
     memcpyX(static_cast<const int *>(nullptr), dst.data(), src.size());
@@ -46,28 +48,28 @@ TEST(Memory, MemcpyXNullptr) {
     EXPECT_EQ(dst, (std::array<int, 3>{9, 9, 9}));
 }
 
-TEST(Memory, MallocXCharacter) {
+TEST_F(DynXXMemoryTestSuite, MallocXCharacter) {
     auto *ptr = mallocX<char>(8);
     ASSERT_NE(ptr, nullptr);
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, MallocXCharacterZeroCount) {
+TEST_F(DynXXMemoryTestSuite, MallocXCharacterZeroCount) {
     auto *ptr = mallocX<char>(0);
     ASSERT_NE(ptr, nullptr);
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, MallocXNonCharacter) {
+TEST_F(DynXXMemoryTestSuite, MallocXNonCharacter) {
     auto *ptr = mallocX<int>(4);
     ASSERT_NE(ptr, nullptr);
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, MallocXNonCharacterZeroCount) {
+TEST_F(DynXXMemoryTestSuite, MallocXNonCharacterZeroCount) {
     auto *ptr = mallocX<int>(0);
     if (ptr != nullptr) {
         freeX(ptr);
@@ -75,20 +77,20 @@ TEST(Memory, MallocXNonCharacterZeroCount) {
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, FreeXNonConstNonVoid) {
+TEST_F(DynXXMemoryTestSuite, FreeXNonConstNonVoid) {
     auto *ptr = mallocX<int>(1);
     ASSERT_NE(ptr, nullptr);
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, FreeXNonConstNonVoidNullptr) {
+TEST_F(DynXXMemoryTestSuite, FreeXNonConstNonVoidNullptr) {
     int *ptr = nullptr;
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, FreeXNonConstVoid) {
+TEST_F(DynXXMemoryTestSuite, FreeXNonConstVoid) {
     auto *raw = std::malloc(8);
     ASSERT_NE(raw, nullptr);
     void *ptr = raw;
@@ -96,13 +98,13 @@ TEST(Memory, FreeXNonConstVoid) {
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, FreeXNonConstVoidNullptr) {
+TEST_F(DynXXMemoryTestSuite, FreeXNonConstVoidNullptr) {
     void *ptr = nullptr;
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, FreeXConstNonVoid) {
+TEST_F(DynXXMemoryTestSuite, FreeXConstNonVoid) {
     auto *raw = mallocX<int>(1);
     ASSERT_NE(raw, nullptr);
     const int *ptr = raw;
@@ -110,13 +112,13 @@ TEST(Memory, FreeXConstNonVoid) {
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, FreeXConstNonVoidNullptr) {
+TEST_F(DynXXMemoryTestSuite, FreeXConstNonVoidNullptr) {
     const int *ptr = nullptr;
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, FreeXConstVoid) {
+TEST_F(DynXXMemoryTestSuite, FreeXConstVoid) {
     auto *raw = std::malloc(8);
     ASSERT_NE(raw, nullptr);
     const void *ptr = raw;
@@ -124,50 +126,53 @@ TEST(Memory, FreeXConstVoid) {
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, FreeXConstVoidNullptr) {
+TEST_F(DynXXMemoryTestSuite, FreeXConstVoidNullptr) {
     const void *ptr = nullptr;
     freeX(ptr);
     EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(Memory, CopyRange) {
+TEST_F(DynXXMemoryTestSuite, CopyRange) {
     std::vector<int> src{1, 2, 3, 4};
     std::vector<int> dst;
     copyRange(src, dst, 3);
     EXPECT_EQ(dst, (std::vector<int>{1, 2, 3}));
 }
 
-TEST(Memory, CopyRangeZeroLen) {
+TEST_F(DynXXMemoryTestSuite, CopyRangeZeroLen) {
     std::vector<int> src{1, 2, 3, 4};
     std::vector<int> dst{7, 8};
     copyRange(src, dst, 0);
     EXPECT_EQ(dst, (std::vector<int>{7, 8}));
 }
 
-TEST(Memory, FreeDeleter) {
+TEST_F(DynXXMemoryTestSuite, FreeDeleter) {
     void *raw = std::malloc(8);
     ASSERT_NE(raw, nullptr);
     EXPECT_NO_FATAL_FAILURE(FreeDeleter{}(raw));
 }
 
-TEST(Memory, FreeDeleterNullptr) {
+TEST_F(DynXXMemoryTestSuite, FreeDeleterNullptr) {
     void *raw = nullptr;
     EXPECT_NO_FATAL_FAILURE(FreeDeleter{}(raw));
 }
 
-TEST(Memory, AutoFreePtr) {
+TEST_F(DynXXMemoryTestSuite, AutoFreePtr) {
     AutoFreePtr ptr(std::malloc(8));
     EXPECT_NE(ptr.get(), nullptr);
 }
 
-TEST(Memory, DynXXStaticOnly) {
+TEST_F(DynXXMemoryTestSuite, StaticOnly) {
     EXPECT_FALSE(std::is_constructible_v<DynXXStaticOnly>);
 }
 
-TEST(Memory, DynXXStackOnly) {
+TEST_F(DynXXMemoryTestSuite, StackOnly) {
     EXPECT_FALSE(std::is_destructible_v<DynXXStackOnly>);
 }
 
-TEST(Memory, DynXXHeapOnly) {
+TEST_F(DynXXMemoryTestSuite, HeapOnly) {
     EXPECT_FALSE(std::is_constructible_v<DynXXHeapOnly>);
 }
+
+
+

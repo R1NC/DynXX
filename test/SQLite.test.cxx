@@ -3,6 +3,8 @@
 
 #include "../src/core/store/SQLite.hxx"
 
+class DynXXSQLiteTestSuite : public ::testing::Test {};
+
 namespace {
     constexpr auto kCreateTextTableSql = "CREATE TABLE IF NOT EXISTS t (v TEXT);";
     constexpr auto kCreateIntegerTableSql = "CREATE TABLE IF NOT EXISTS t (v INTEGER);";
@@ -16,23 +18,23 @@ namespace {
     constexpr auto kSelectAllRowsSql = "SELECT v FROM t;";
 }
 
-TEST(SQLite, DynxxSQLiteOpen) {
+TEST_F(DynXXSQLiteTestSuite, Open) {
     const auto conn = dynxxSQLiteOpen("sqlite_open");
     ASSERT_NE(conn, 0U);
     dynxxSQLiteClose(conn);
 }
 
-TEST(SQLite, DynxxSQLiteOpen_EmptyId) {
+TEST_F(DynXXSQLiteTestSuite, Open_EmptyId) {
     EXPECT_EQ(dynxxSQLiteOpen(""), 0U);
 }
 
-TEST(SQLite, SQLiteStoreOpen_EmptyFile) {
+TEST_F(DynXXSQLiteTestSuite, StoreOpen_EmptyFile) {
     DynXX::Core::Store::SQLite::SQLiteStore store;
     const auto conn = store.open("");
     EXPECT_TRUE(conn.expired());
 }
 
-TEST(SQLite, DynxxSQLiteExecute) {
+TEST_F(DynXXSQLiteTestSuite, Execute) {
     const auto conn = dynxxSQLiteOpen("sqlite_execute");
     ASSERT_NE(conn, 0U);
     EXPECT_TRUE(dynxxSQLiteExecute(conn, kCreateTextTableSql));
@@ -42,7 +44,7 @@ TEST(SQLite, DynxxSQLiteExecute) {
     dynxxSQLiteClose(conn);
 }
 
-TEST(SQLite, DynxxSQLiteQueryDo) {
+TEST_F(DynXXSQLiteTestSuite, QueryDo) {
     const auto conn = dynxxSQLiteOpen("sqlite_query_do");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxSQLiteExecute(conn, kCreateTextTableSql));
@@ -59,7 +61,7 @@ TEST(SQLite, DynxxSQLiteQueryDo) {
     dynxxSQLiteClose(conn);
 }
 
-TEST(SQLite, DynxxSQLiteQueryReadRow) {
+TEST_F(DynXXSQLiteTestSuite, QueryReadRow) {
     const auto conn = dynxxSQLiteOpen("sqlite_read_row");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxSQLiteExecute(conn, kCreateTextTableSql));
@@ -73,7 +75,7 @@ TEST(SQLite, DynxxSQLiteQueryReadRow) {
     dynxxSQLiteClose(conn);
 }
 
-TEST(SQLite, DynxxSQLiteQueryReadColumnText) {
+TEST_F(DynXXSQLiteTestSuite, QueryReadColumnText) {
     const auto conn = dynxxSQLiteOpen("sqlite_col_text");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxSQLiteExecute(conn, kCreateTextTableSql));
@@ -90,7 +92,7 @@ TEST(SQLite, DynxxSQLiteQueryReadColumnText) {
     dynxxSQLiteClose(conn);
 }
 
-TEST(SQLite, DynxxSQLiteQueryReadColumnWithoutReadRow) {
+TEST_F(DynXXSQLiteTestSuite, QueryReadColumnWithoutReadRow) {
     const auto conn = dynxxSQLiteOpen("sqlite_read_without_row");
     ASSERT_NE(conn, 0U);
 
@@ -124,7 +126,7 @@ TEST(SQLite, DynxxSQLiteQueryReadColumnWithoutReadRow) {
     dynxxSQLiteClose(conn);
 }
 
-TEST(SQLite, DynxxSQLiteQueryReadColumnInteger) {
+TEST_F(DynXXSQLiteTestSuite, QueryReadColumnInteger) {
     const auto conn = dynxxSQLiteOpen("sqlite_col_int");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxSQLiteExecute(conn, kCreateIntegerTableSql));
@@ -141,7 +143,7 @@ TEST(SQLite, DynxxSQLiteQueryReadColumnInteger) {
     dynxxSQLiteClose(conn);
 }
 
-TEST(SQLite, DynxxSQLiteQueryReadColumnFloat) {
+TEST_F(DynXXSQLiteTestSuite, QueryReadColumnFloat) {
     const auto conn = dynxxSQLiteOpen("sqlite_col_float");
     ASSERT_NE(conn, 0U);
     ASSERT_TRUE(dynxxSQLiteExecute(conn, kCreateRealTableSql));
@@ -158,7 +160,7 @@ TEST(SQLite, DynxxSQLiteQueryReadColumnFloat) {
     dynxxSQLiteClose(conn);
 }
 
-TEST(SQLite, DynxxSQLiteQueryReadColumnWrongType) {
+TEST_F(DynXXSQLiteTestSuite, QueryReadColumnWrongType) {
     const auto conn = dynxxSQLiteOpen("sqlite_col_wrong_type");
     ASSERT_NE(conn, 0U);
 
@@ -198,10 +200,13 @@ TEST(SQLite, DynxxSQLiteQueryReadColumnWrongType) {
     dynxxSQLiteClose(conn);
 }
 
-TEST(SQLite, DynxxSQLiteQueryDrop) {
+TEST_F(DynXXSQLiteTestSuite, QueryDrop) {
     EXPECT_NO_THROW(dynxxSQLiteQueryDrop(0));
 }
 
-TEST(SQLite, DynxxSQLiteClose) {
+TEST_F(DynXXSQLiteTestSuite, Close) {
     EXPECT_NO_THROW(dynxxSQLiteClose(0));
 }
+
+
+

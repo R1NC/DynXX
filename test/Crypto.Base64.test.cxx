@@ -2,6 +2,8 @@
 #include <DynXX/CXX/Crypto.hxx>
 #include <DynXX/CXX/Coding.hxx>
 
+class DynXXCryptoBase64TestSuite : public ::testing::Test {};
+
 namespace {
     struct Base64LengthCase {
         size_t dataLen;
@@ -17,39 +19,48 @@ namespace {
     }
 }
 
-TEST(Crypto, DynxxCryptoBase64Encode) {
+TEST_F(DynXXCryptoBase64TestSuite, Encode) {
     const auto encoded = dynxxCryptoBase64Encode(dynxxCodingStr2bytes("abc"), true);
     EXPECT_EQ(dynxxCodingBytes2str(encoded), "YWJj");
 }
 
-TEST(Crypto, DynxxCryptoBase64Decode) {
+TEST_F(DynXXCryptoBase64TestSuite, Decode) {
     const auto decoded = dynxxCryptoBase64Decode(dynxxCodingStr2bytes("YWJj"), true);
     EXPECT_EQ(dynxxCodingBytes2str(decoded), "abc");
 }
 
-TEST(Crypto, DynxxCryptoBase64EncodeDecode_EmptyInput) {
+TEST_F(DynXXCryptoBase64TestSuite, EncodeDecode_EmptyInput) {
     EXPECT_TRUE(dynxxCryptoBase64Encode({}, true).empty());
     EXPECT_TRUE(dynxxCryptoBase64Decode({}, true).empty());
     EXPECT_TRUE(dynxxCryptoBase64Encode({}, false).empty());
     EXPECT_TRUE(dynxxCryptoBase64Decode({}, false).empty());
 }
 
-TEST(Crypto, Base64RoundTrip) {
+TEST_F(DynXXCryptoBase64TestSuite, RoundTrip) {
     const auto in = dynxxCodingStr2bytes("base64-roundtrip");
     EXPECT_EQ(dynxxCryptoBase64Decode(dynxxCryptoBase64Encode(in, true), true), in);
 }
 
-class CryptoBase64LengthTest : public ::testing::TestWithParam<Base64LengthCase> {};
-
-TEST_P(CryptoBase64LengthTest, EncodeDecodeRoundTrip) {
-    const auto &param = GetParam();
-    const auto in = makeBytes(param.dataLen);
-    const auto encoded = dynxxCryptoBase64Encode(in, param.noNewLines);
-    ASSERT_FALSE(encoded.empty());
-    EXPECT_EQ(dynxxCryptoBase64Decode(encoded, param.noNewLines), in);
+TEST_F(DynXXCryptoBase64TestSuite, EncodeDecodeRoundTrip_LengthMatrix) {
+    for (const auto &param : {
+        Base64LengthCase{1, true},
+        Base64LengthCase{2, true},
+        Base64LengthCase{3, true},
+        Base64LengthCase{4, true},
+        Base64LengthCase{7, true},
+        Base64LengthCase{15, false},
+        Base64LengthCase{16, false},
+        Base64LengthCase{31, false},
+        Base64LengthCase{32, false}
+    }) {
+        const auto in = makeBytes(param.dataLen);
+        const auto encoded = dynxxCryptoBase64Encode(in, param.noNewLines);
+        ASSERT_FALSE(encoded.empty());
+        EXPECT_EQ(dynxxCryptoBase64Decode(encoded, param.noNewLines), in);
+    }
 }
 
-TEST(Crypto, Base64Decode_NoNewLinesFlagMismatch_ShouldFail) {
+TEST_F(DynXXCryptoBase64TestSuite, Decode_NoNewLinesFlagMismatch_ShouldFail) {
     const auto in = makeBytes(32);
     const auto encodedWithNewLines = dynxxCryptoBase64Encode(in, false);
     ASSERT_FALSE(encodedWithNewLines.empty());
@@ -57,7 +68,7 @@ TEST(Crypto, Base64Decode_NoNewLinesFlagMismatch_ShouldFail) {
     EXPECT_EQ(dynxxCryptoBase64Decode(encodedWithNewLines, false), in);
 }
 
-TEST(Crypto, Base64Decode_InvalidCharacters_ShouldFail) {
+TEST_F(DynXXCryptoBase64TestSuite, Decode_InvalidCharacters_ShouldFail) {
     auto encoded = dynxxCryptoBase64Encode(makeBytes(8), true);
     ASSERT_FALSE(encoded.empty());
     encoded[2] = static_cast<byte>('@');
@@ -65,7 +76,7 @@ TEST(Crypto, Base64Decode_InvalidCharacters_ShouldFail) {
     EXPECT_TRUE(dynxxCryptoBase64Decode(encoded, false).empty());
 }
 
-TEST(Crypto, Base64Decode_InsertedCRLF_NoNewLinesFalse_ShouldPass) {
+TEST_F(DynXXCryptoBase64TestSuite, Decode_InsertedCRLF_NoNewLinesFalse_ShouldPass) {
     const auto in = makeBytes(48);
     auto encoded = dynxxCryptoBase64Encode(in, true);
     ASSERT_FALSE(encoded.empty());
@@ -75,7 +86,7 @@ TEST(Crypto, Base64Decode_InsertedCRLF_NoNewLinesFalse_ShouldPass) {
     EXPECT_TRUE(dynxxCryptoBase64Decode(encoded, true).empty());
 }
 
-TEST(Crypto, Base64Decode_WhitespaceCharacters_ShouldFail) {
+TEST_F(DynXXCryptoBase64TestSuite, Decode_WhitespaceCharacters_ShouldFail) {
     const auto in = makeBytes(12);
     const auto encoded = dynxxCryptoBase64Encode(in, true);
     ASSERT_FALSE(encoded.empty());
@@ -87,7 +98,7 @@ TEST(Crypto, Base64Decode_WhitespaceCharacters_ShouldFail) {
     }
 }
 
-TEST(Crypto, Base64Decode_UrlSafeCharacters_ShouldFail) {
+TEST_F(DynXXCryptoBase64TestSuite, Decode_UrlSafeCharacters_ShouldFail) {
     const auto in = makeBytes(12);
     const auto encoded = dynxxCryptoBase64Encode(in, true);
     ASSERT_FALSE(encoded.empty());
@@ -99,18 +110,5 @@ TEST(Crypto, Base64Decode_UrlSafeCharacters_ShouldFail) {
     }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    Crypto,
-    CryptoBase64LengthTest,
-    ::testing::Values(
-        Base64LengthCase{1, true},
-        Base64LengthCase{2, true},
-        Base64LengthCase{3, true},
-        Base64LengthCase{4, true},
-        Base64LengthCase{7, true},
-        Base64LengthCase{15, false},
-        Base64LengthCase{16, false},
-        Base64LengthCase{31, false},
-        Base64LengthCase{32, false}
-    )
-);
+
+

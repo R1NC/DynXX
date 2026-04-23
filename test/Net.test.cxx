@@ -4,6 +4,8 @@
 
 #include "TestUtil.hxx"
 
+class DynXXNetTestSuite : public ::testing::Test {};
+
 namespace {
     constexpr const char *cNetTestUrl = "https://rinc.xyz/index.html";
     constexpr const char *cNetPostEchoUrl = "https://httpbin.org/post";
@@ -20,7 +22,7 @@ namespace {
     };
 }
 
-TEST(Net, DynXXHttpResponseToJson) {
+TEST_F(DynXXNetTestSuite, HttpResponseToJson) {
     DynXXHttpResponse rsp;
     rsp.code = 200;
     rsp.contentType = "application/json";
@@ -32,7 +34,7 @@ TEST(Net, DynXXHttpResponseToJson) {
     EXPECT_NE(json->find("\"contentType\""), std::string::npos);
 }
 
-TEST(Net, DynxxNetHttpRequestWithStringParams) {
+TEST_F(DynXXNetTestSuite, HttpRequestWithStringParams) {
     const auto rsp = dynxxNetHttpRequest(cNetTestUrl, DynXXHttpMethodX::Get, "a=1");
     if (rsp.code != 200) {
         GTEST_SKIP();
@@ -40,7 +42,7 @@ TEST(Net, DynxxNetHttpRequestWithStringParams) {
     EXPECT_FALSE(rsp.data.empty());
 }
 
-TEST(Net, DynxxNetHttpRequestWithDictParams) {
+TEST_F(DynXXNetTestSuite, HttpRequestWithDictParams) {
     const DictAny params{{"a", int64_t(1)}};
     const auto rsp = dynxxNetHttpRequest(cNetTestUrl, DynXXHttpMethodX::Get, params);
     if (rsp.code != 200) {
@@ -49,7 +51,7 @@ TEST(Net, DynxxNetHttpRequestWithDictParams) {
     EXPECT_FALSE(rsp.data.empty());
 }
 
-TEST(Net, DynxxNetHttpRequestPostWithHeadersAndMime) {
+TEST_F(DynXXNetTestSuite, HttpRequestPostWithHeadersAndMime) {
     const std::vector<std::string> headers{
         "X-DynXX-Test: post",
         "Accept: application/json"
@@ -76,7 +78,7 @@ TEST(Net, DynxxNetHttpRequestPostWithHeadersAndMime) {
     EXPECT_NE(rsp.data.find("post"), std::string::npos);
 }
 
-TEST(Net, DynxxNetHttpDownload) {
+TEST_F(DynXXNetTestSuite, HttpDownload) {
     const auto outPath = DynXX::TestUtil::resolveTempPath() / "dynxx_net_test_index.html";
     if (!dynxxNetHttpDownload(cNetTestUrl, outPath.string())) {
         GTEST_SKIP();
@@ -85,111 +87,96 @@ TEST(Net, DynxxNetHttpDownload) {
     EXPECT_GT(std::filesystem::file_size(outPath), 0);
 }
 
-class NetRequestInvalidParamTest : public ::testing::TestWithParam<NetRequestInvalidParamCase> {};
-
-TEST_P(NetRequestInvalidParamTest, StringParamsOverloadShouldFastFail) {
+TEST_F(DynXXNetTestSuite, RequestInvalidParam_StringParamsOverloadShouldFastFail) {
     // Hard-invalid inputs should be rejected by DynXX net wrapper before hitting transport.
-    const auto &param = GetParam();
-    const auto rsp = dynxxNetHttpRequest(param.url, param.method, param.params);
-    EXPECT_EQ(rsp.code, 0);
-    EXPECT_TRUE(rsp.data.empty());
-    EXPECT_TRUE(rsp.headers.empty());
-}
-
-TEST_P(NetRequestInvalidParamTest, DictParamsOverloadShouldFastFail) {
-    const auto &param = GetParam();
-    const DictAny dictParams{{"a", int64_t(1)}};
-    const auto rsp = dynxxNetHttpRequest(param.url, param.method, dictParams);
-    EXPECT_EQ(rsp.code, 0);
-    EXPECT_TRUE(rsp.data.empty());
-    EXPECT_TRUE(rsp.headers.empty());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    Net,
-    NetRequestInvalidParamTest,
-    ::testing::Values(
+    for (const auto &param : {
         NetRequestInvalidParamCase{"", DynXXHttpMethodX::Get, "a=1"},
         NetRequestInvalidParamCase{"", DynXXHttpMethodX::Post, "a=1"},
         NetRequestInvalidParamCase{"ht!tp://example.com", DynXXHttpMethodX::Get, "a=1"},
         NetRequestInvalidParamCase{"http://", DynXXHttpMethodX::Get, "a=1"}
-    )
-);
+    }) {
+        const auto rsp = dynxxNetHttpRequest(param.url, param.method, param.params);
+        EXPECT_EQ(rsp.code, 0);
+        EXPECT_TRUE(rsp.data.empty());
+        EXPECT_TRUE(rsp.headers.empty());
+    }
+}
 
-class NetRequestInvalidQueryFormatTest : public ::testing::TestWithParam<NetRequestInvalidParamCase> {};
+TEST_F(DynXXNetTestSuite, RequestInvalidParam_DictParamsOverloadShouldFastFail) {
+    for (const auto &param : {
+        NetRequestInvalidParamCase{"", DynXXHttpMethodX::Get, "a=1"},
+        NetRequestInvalidParamCase{"", DynXXHttpMethodX::Post, "a=1"},
+        NetRequestInvalidParamCase{"ht!tp://example.com", DynXXHttpMethodX::Get, "a=1"},
+        NetRequestInvalidParamCase{"http://", DynXXHttpMethodX::Get, "a=1"}
+    }) {
+        const DictAny dictParams{{"a", int64_t(1)}};
+        const auto rsp = dynxxNetHttpRequest(param.url, param.method, dictParams);
+        EXPECT_EQ(rsp.code, 0);
+        EXPECT_TRUE(rsp.data.empty());
+        EXPECT_TRUE(rsp.headers.empty());
+    }
+}
 
-TEST_P(NetRequestInvalidQueryFormatTest, StringParamsOverloadShouldBeHandledGracefully) {
+TEST_F(DynXXNetTestSuite, RequestInvalidQueryFormat_StringParamsOverloadShouldBeHandledGracefully) {
     // Query encoding issues may be tolerated by underlying URL/curl stack; assert graceful handling, not forced fast-fail.
-    const auto &param = GetParam();
-    const auto rsp = dynxxNetHttpRequest(param.url, param.method, param.params);
-    EXPECT_GE(rsp.code, 0);
-    if (rsp.code == 0) {
-        EXPECT_TRUE(rsp.data.empty());
-        EXPECT_TRUE(rsp.headers.empty());
-    }
-}
-
-TEST_P(NetRequestInvalidQueryFormatTest, DictParamsOverloadShouldBeHandledGracefully) {
-    const auto &param = GetParam();
-    const DictAny dictParams{{"a", int64_t(1)}};
-    const auto rsp = dynxxNetHttpRequest(param.url, param.method, dictParams);
-    EXPECT_GE(rsp.code, 0);
-    if (rsp.code == 0) {
-        EXPECT_TRUE(rsp.data.empty());
-        EXPECT_TRUE(rsp.headers.empty());
-    }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    Net,
-    NetRequestInvalidQueryFormatTest,
-    ::testing::Values(
+    for (const auto &param : {
         NetRequestInvalidParamCase{"https://example.com/?a=%", DynXXHttpMethodX::Get, ""},
         NetRequestInvalidParamCase{"https://example.com/?a=%2", DynXXHttpMethodX::Get, ""}
-    )
-);
-
-class NetDownloadInvalidParamTest : public ::testing::TestWithParam<NetDownloadInvalidParamCase> {};
-
-TEST_P(NetDownloadInvalidParamTest, ShouldReturnFalse) {
-    // Hard-invalid inputs should fail fast at API boundary.
-    const auto &param = GetParam();
-    EXPECT_FALSE(dynxxNetHttpDownload(param.url, param.filePath));
+    }) {
+        const auto rsp = dynxxNetHttpRequest(param.url, param.method, param.params);
+        EXPECT_GE(rsp.code, 0);
+        if (rsp.code == 0) {
+            EXPECT_TRUE(rsp.data.empty());
+            EXPECT_TRUE(rsp.headers.empty());
+        }
+    }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    Net,
-    NetDownloadInvalidParamTest,
-    ::testing::Values(
+TEST_F(DynXXNetTestSuite, RequestInvalidQueryFormat_DictParamsOverloadShouldBeHandledGracefully) {
+    for (const auto &param : {
+        NetRequestInvalidParamCase{"https://example.com/?a=%", DynXXHttpMethodX::Get, ""},
+        NetRequestInvalidParamCase{"https://example.com/?a=%2", DynXXHttpMethodX::Get, ""}
+    }) {
+        const DictAny dictParams{{"a", int64_t(1)}};
+        const auto rsp = dynxxNetHttpRequest(param.url, param.method, dictParams);
+        EXPECT_GE(rsp.code, 0);
+        if (rsp.code == 0) {
+            EXPECT_TRUE(rsp.data.empty());
+            EXPECT_TRUE(rsp.headers.empty());
+        }
+    }
+}
+
+TEST_F(DynXXNetTestSuite, DownloadInvalidParam_ShouldReturnFalse) {
+    // Hard-invalid inputs should fail fast at API boundary.
+    for (const auto &param : {
         NetDownloadInvalidParamCase{"", "x.tmp"},
         NetDownloadInvalidParamCase{"https://rinc.xyz/index.html", ""},
         NetDownloadInvalidParamCase{"", ""},
         NetDownloadInvalidParamCase{"ht!tp://example.com", "x.tmp"},
         NetDownloadInvalidParamCase{"http://", "x.tmp"}
-    )
-);
-
-class NetDownloadInvalidQueryFormatTest : public ::testing::TestWithParam<NetDownloadInvalidParamCase> {};
-
-TEST_P(NetDownloadInvalidQueryFormatTest, ShouldBeHandledGracefully) {
-    // Keep this as tolerant behavior check because lower layers may normalize/recover malformed query escapes.
-    const auto &param = GetParam();
-    const auto outPath = DynXX::TestUtil::resolveTempPath() / param.filePath;
-    const auto ok = dynxxNetHttpDownload(param.url, outPath.string());
-    if (ok) {
-        EXPECT_TRUE(std::filesystem::exists(outPath));
-        std::error_code ec;
-        std::filesystem::remove(outPath, ec);
-    } else {
-        SUCCEED();
+    }) {
+        EXPECT_FALSE(dynxxNetHttpDownload(param.url, param.filePath));
     }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    Net,
-    NetDownloadInvalidQueryFormatTest,
-    ::testing::Values(
+TEST_F(DynXXNetTestSuite, DownloadInvalidQueryFormat_ShouldBeHandledGracefully) {
+    // Keep this as tolerant behavior check because lower layers may normalize/recover malformed query escapes.
+    for (const auto &param : {
         NetDownloadInvalidParamCase{"https://example.com/?a=%", "dynxx_invalid_query_1.tmp"},
         NetDownloadInvalidParamCase{"https://example.com/?a=%2", "dynxx_invalid_query_2.tmp"}
-    )
-);
+    }) {
+        const auto outPath = DynXX::TestUtil::resolveTempPath() / param.filePath;
+        const auto ok = dynxxNetHttpDownload(param.url, outPath.string());
+        if (ok) {
+            EXPECT_TRUE(std::filesystem::exists(outPath));
+            std::error_code ec;
+            std::filesystem::remove(outPath, ec);
+        } else {
+            SUCCEED();
+        }
+    }
+}
+
+
+

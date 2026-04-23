@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 #include <DynXX/CXX/Crypto.hxx>
 
-TEST(Crypto, DynxxCryptoRand) {
+class DynXXCryptoTestSuite : public ::testing::Test {};
+
+TEST_F(DynXXCryptoTestSuite, Rand) {
     constexpr auto kRandSize = 32;
     constexpr auto kRounds = 6;
 
@@ -20,3 +22,6 @@ TEST(Crypto, DynxxCryptoRand) {
 
     EXPECT_TRUE(hasDifference);
 }
+
+
+
