@@ -46,72 +46,6 @@ function(check_apple_version_limit iosV macV RESULT_VAR)
     endif()
 endfunction()
 
-# Optional named args after required ones (recommended):
-#   INC_DIR <path>
-#   SRC_DIR <path>
-#   MANUAL_ADD_SUBDIRECTORY <bool> (default: OFF)
-function(add_git_lib TARGET_NAME lib url tag)
-    if(NOT TARGET_NAME OR NOT lib OR NOT url OR NOT tag)
-        message(FATAL_ERROR "`add_git_lib()`: `TARGET_NAME`, `lib`, `url`, `tag` are required!")
-    endif()
-    set(inc_dir "")
-    set(src_dir "")
-    set(manual_add_subdirectory OFF)
-
-    cmake_parse_arguments(AGL
-        ""
-        "INC_DIR;SRC_DIR;MANUAL_ADD_SUBDIRECTORY"
-        ""
-        ${ARGN}
-    )
-    if(AGL_UNPARSED_ARGUMENTS)
-        message(FATAL_ERROR "`add_git_lib()`: unknown args: ${AGL_UNPARSED_ARGUMENTS}")
-    endif()
-    if(DEFINED AGL_INC_DIR)
-        set(inc_dir "${AGL_INC_DIR}")
-    endif()
-    if(DEFINED AGL_SRC_DIR)
-        set(src_dir "${AGL_SRC_DIR}")
-    endif()
-    if(DEFINED AGL_MANUAL_ADD_SUBDIRECTORY)
-        set(manual_add_subdirectory "${AGL_MANUAL_ADD_SUBDIRECTORY}")
-    endif()
-
-    set(fetchcontent_args
-        GIT_REPOSITORY ${url}
-        GIT_TAG ${tag}
-        GIT_SHALLOW ON
-        GIT_PROGRESS ON
-        GIT_REMOTE_UPDATE_STRATEGY REBASE_CHECKOUT
-    )
-
-    FetchContent_Declare(${lib} ${fetchcontent_args})
-    FetchContent_MakeAvailable(${lib})
-
-    set(inc_path ${${lib}_SOURCE_DIR}/${inc_dir})
-    set(src_path ${${lib}_SOURCE_DIR}/${src_dir})
-
-    if(manual_add_subdirectory)
-        if(NOT src_dir)
-            message(FATAL_ERROR "`add_git_lib()`: `src_dir` is required when `manual_add_subdirectory` is ON")
-        endif()
-        if(TARGET ${lib})
-            message(WARNING "${lib} already exists, skip `add_subdirectory()`")
-        else()
-            add_subdirectory(${src_path})
-        endif()
-    endif()
-
-    if(EXISTS ${inc_path})
-        target_include_directories(${TARGET_NAME} PRIVATE ${inc_path})
-    else()
-        message(WARNING "${inc_path} not exists, skip `target_include_directories()`")
-    endif()
-
-    set(${lib}_INC_PATH ${inc_path} PARENT_SCOPE)
-    set(${lib}_SRC_PATH ${src_path} PARENT_SCOPE)
-endfunction()
-
 function(add_definitions_if TARGET_NAME NEED_CHECK)
     foreach(def ${ARGN})
         if(NEED_CHECK)
@@ -122,14 +56,6 @@ function(add_definitions_if TARGET_NAME NEED_CHECK)
             target_compile_definitions(${TARGET_NAME} PRIVATE ${def})
         endif()
     endforeach()
-endfunction()
-
-function(update_git_submodules)
-    execute_process(
-        COMMAND git submodule update --init --recursive
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        RESULT_VARIABLE git_submod_result
-    )
 endfunction()
 
 function(install_headers SOURCE_DIR DESTINATION_DIR)
@@ -160,46 +86,6 @@ function(link_whole_archive CONSUMER_TARGET STATIC_LIB_TARGET)
             "-Wl,--whole-archive"
             "$<TARGET_FILE:${STATIC_LIB_TARGET}>"
             "-Wl,--no-whole-archive"
-        )
-    endif()
-endfunction()
-
-function(apply_coverage_flags TARGET_NAME)
-    if(NOT TARGET ${TARGET_NAME})
-        message(FATAL_ERROR "`apply_coverage_flags()`: target `${TARGET_NAME}` not found")
-    endif()
-
-    if(NOT DYNXX_ENABLE_COVERAGE)
-        return()
-    endif()
-
-    if(MSVC)
-        set(DYNXX_COVERAGE_COMPILE_OPTIONS
-            "/clang:-fprofile-instr-generate"
-            "/clang:-fcoverage-mapping"
-        )
-        set(DYNXX_COVERAGE_CXX_COMPILE_OPTIONS
-            "/EHsc"
-        )
-    else()
-        set(DYNXX_COVERAGE_COMPILE_OPTIONS
-            "-fprofile-instr-generate"
-            "-fcoverage-mapping"
-        )
-        set(DYNXX_COVERAGE_CXX_COMPILE_OPTIONS "")
-    endif()
-
-    target_compile_options(${TARGET_NAME}
-        PRIVATE
-            ${DYNXX_COVERAGE_COMPILE_OPTIONS}
-            $<$<COMPILE_LANGUAGE:CXX>:${DYNXX_COVERAGE_CXX_COMPILE_OPTIONS}>
-    )
-
-    get_target_property(_target_type ${TARGET_NAME} TYPE)
-    if(NOT MSVC AND NOT _target_type STREQUAL "STATIC_LIBRARY")
-        target_link_options(${TARGET_NAME}
-            PRIVATE
-                ${DYNXX_COVERAGE_COMPILE_OPTIONS}
         )
     endif()
 endfunction()

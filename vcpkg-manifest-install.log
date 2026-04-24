@@ -1,0 +1,2 @@
+error: take_exclusive_file_lock("/Users/rinc/dev/vcpkg/.vcpkg-root"): Operation not permitted
+error: Failed to take the filesystem lock

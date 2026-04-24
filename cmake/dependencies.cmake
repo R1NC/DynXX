@@ -1,3 +1,5 @@
+include(${CMAKE_CURRENT_LIST_DIR}/git.cmake)
+
 function(dynxx_declare_dependency_options)
     option(USE_CURL "Use CURL" ON)
     if(EMSCRIPTEN)
