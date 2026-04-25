@@ -10,7 +10,7 @@ TEST_F(DynXXKVTestSuite, Open) {
     dynxxKVClose(conn);
 }
 
-TEST_F(DynXXKVTestSuite, Open_EmptyId) {
+TEST_F(DynXXKVTestSuite, OpenEmptyId) {
     EXPECT_EQ(dynxxKVOpen(""), 0U);
 }
 
@@ -118,11 +118,11 @@ struct KvInvalidParamCase {
     std::string key;
 };
 
-TEST_F(DynXXKVTestSuite, InvalidParam_ReadWriteShouldFailFast) {
+TEST_F(DynXXKVTestSuite, InvalidParamReadWriteShouldFailFast) {
     for (const auto &param : {
-        KvInvalidParamCase{0, "k"},
-        KvInvalidParamCase{0, ""},
-        KvInvalidParamCase{1, ""}
+        KvInvalidParamCase{.conn=0, .key="k"},
+        KvInvalidParamCase{.conn=0, .key=""},
+        KvInvalidParamCase{.conn=1, .key=""}
     }) {
         EXPECT_FALSE(dynxxKVReadString(param.conn, param.key).has_value());
         EXPECT_FALSE(dynxxKVWriteString(param.conn, param.key, "v"));

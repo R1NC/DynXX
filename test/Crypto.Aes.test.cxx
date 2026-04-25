@@ -79,7 +79,7 @@ TEST_F(DynXXCryptoAesTestSuite, GcmRoundTrip) {
     EXPECT_EQ(dynxxCryptoAesGcmDecrypt(dynxxCryptoAesGcmEncrypt(in, key, iv, 128), key, iv, 128), in);
 }
 
-TEST_F(DynXXCryptoAesTestSuite, RoundTrip_VariousInputLengths) {
+TEST_F(DynXXCryptoAesTestSuite, RoundTripVariousInputLengths) {
     const auto key = dynxxCodingStr2bytes("1234567890abcdef");
     for (const auto len : {1U, 15U, 16U, 17U, 31U, 32U, 33U, 64U}) {
         const auto in = makeBytes(len);
@@ -89,7 +89,7 @@ TEST_F(DynXXCryptoAesTestSuite, RoundTrip_VariousInputLengths) {
     }
 }
 
-TEST_F(DynXXCryptoAesTestSuite, RoundTrip_ValidKeyLengthMatrix) {
+TEST_F(DynXXCryptoAesTestSuite, RoundTripValidKeyLengthMatrix) {
     const auto in = makeBytes(33);
     for (const auto keyLen : {16U, 24U, 32U}) {
         const auto key = makeBytes(keyLen);
@@ -99,40 +99,40 @@ TEST_F(DynXXCryptoAesTestSuite, RoundTrip_ValidKeyLengthMatrix) {
     }
 }
 
-TEST_F(DynXXCryptoAesTestSuite, InvalidParams_EncryptDecryptShouldReturnEmpty) {
+TEST_F(DynXXCryptoAesTestSuite, InvalidParamsEncryptDecryptShouldReturnEmpty) {
     for (const auto &param : {
-        AesInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("12345678")},
-        AesInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("1234567890abcdef1234567890abcdef1234")},
-        AesInvalidParamCase{{}, dynxxCodingStr2bytes("1234567890abcdef")}
+        AesInvalidParamCase{.in=dynxxCodingStr2bytes("hello"), .key=dynxxCodingStr2bytes("12345678")},
+        AesInvalidParamCase{.in=dynxxCodingStr2bytes("hello"), .key=dynxxCodingStr2bytes("1234567890abcdef1234567890abcdef1234")},
+        AesInvalidParamCase{.in={}, .key=dynxxCodingStr2bytes("1234567890abcdef")}
     }) {
         EXPECT_TRUE(dynxxCryptoAesEncrypt(param.in, param.key).empty());
         EXPECT_TRUE(dynxxCryptoAesDecrypt(param.in, param.key).empty());
     }
 }
 
-TEST_F(DynXXCryptoAesTestSuite, GcmInvalidParams_EncryptDecryptShouldReturnEmpty) {
+TEST_F(DynXXCryptoAesTestSuite, GcmInvalidParamsEncryptDecryptShouldReturnEmpty) {
     for (const auto &param : {
-        AesGcmInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("12345678"), dynxxCryptoRand(12), {}, 128},
-        AesGcmInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("1234567890123456789012345678901234567890"), dynxxCryptoRand(12), {}, 128},
-        AesGcmInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("1234567890abcdef"), {}, {}, 128},
-        AesGcmInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("1234567890abcdef"), dynxxCryptoRand(12), dynxxCodingStr2bytes("1234567890abcdefg"), 128},
-        AesGcmInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("1234567890abcdef"), dynxxCryptoRand(12), {}, 88},
-        AesGcmInvalidParamCase{dynxxCodingStr2bytes("hello"), dynxxCodingStr2bytes("1234567890abcdef"), dynxxCryptoRand(12), {}, 136},
-        AesGcmInvalidParamCase{{}, dynxxCodingStr2bytes("1234567890abcdef"), dynxxCryptoRand(12), {}, 128}
+        AesGcmInvalidParamCase{.in=dynxxCodingStr2bytes("hello"), .key=dynxxCodingStr2bytes("12345678"), .iv=dynxxCryptoRand(12), .aad={}, .tagBits=128},
+        AesGcmInvalidParamCase{.in=dynxxCodingStr2bytes("hello"), .key=dynxxCodingStr2bytes("1234567890123456789012345678901234567890"), .iv=dynxxCryptoRand(12), .aad={}, .tagBits=128},
+        AesGcmInvalidParamCase{.in=dynxxCodingStr2bytes("hello"), .key=dynxxCodingStr2bytes("1234567890abcdef"), .iv={}, .aad={}, .tagBits=128},
+        AesGcmInvalidParamCase{.in=dynxxCodingStr2bytes("hello"), .key=dynxxCodingStr2bytes("1234567890abcdef"), .iv=dynxxCryptoRand(12), .aad=dynxxCodingStr2bytes("1234567890abcdefg"), .tagBits=128},
+        AesGcmInvalidParamCase{.in=dynxxCodingStr2bytes("hello"), .key=dynxxCodingStr2bytes("1234567890abcdef"), .iv=dynxxCryptoRand(12), .aad={}, .tagBits=88},
+        AesGcmInvalidParamCase{.in=dynxxCodingStr2bytes("hello"), .key=dynxxCodingStr2bytes("1234567890abcdef"), .iv=dynxxCryptoRand(12), .aad={}, .tagBits=136},
+        AesGcmInvalidParamCase{.in={}, .key=dynxxCodingStr2bytes("1234567890abcdef"), .iv=dynxxCryptoRand(12), .aad={}, .tagBits=128}
     }) {
         EXPECT_TRUE(dynxxCryptoAesGcmEncrypt(param.in, param.key, param.iv, param.tagBits, param.aad).empty());
         EXPECT_TRUE(dynxxCryptoAesGcmDecrypt(param.in, param.key, param.iv, param.tagBits, param.aad).empty());
     }
 }
 
-TEST_F(DynXXCryptoAesTestSuite, GcmValidParams_EncryptDecryptRoundTrip) {
+TEST_F(DynXXCryptoAesTestSuite, GcmValidParamsEncryptDecryptRoundTrip) {
     for (const auto &param : {
-        AesGcmValidCase{16, 1, 0},
-        AesGcmValidCase{16, 16, 16},
-        AesGcmValidCase{24, 17, 8},
-        AesGcmValidCase{24, 33, 16},
-        AesGcmValidCase{32, 31, 4},
-        AesGcmValidCase{32, 64, 16}
+        AesGcmValidCase{.keyLen=16, .dataLen=1, .aadLen=0},
+        AesGcmValidCase{.keyLen=16, .dataLen=16, .aadLen=16},
+        AesGcmValidCase{.keyLen=24, .dataLen=17, .aadLen=8},
+        AesGcmValidCase{.keyLen=24, .dataLen=33, .aadLen=16},
+        AesGcmValidCase{.keyLen=32, .dataLen=31, .aadLen=4},
+        AesGcmValidCase{.keyLen=32, .dataLen=64, .aadLen=16}
     }) {
         const auto in = makeBytes(param.dataLen);
         const auto key = makeBytes(param.keyLen);

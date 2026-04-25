@@ -99,7 +99,7 @@ TEST_F(DynXXLuaTestSuite, Call) {
     const auto funcs = extractLuaTestFunctions(bizLuaScript);
     ASSERT_FALSE(funcs.empty());
     for (const auto &func : funcs) {
-        std::cout << "[ LUA CALL ] " << func << std::endl;
+        std::cout << "[ LUA CALL ] " << func << '\n';
         const auto callResult = dynxxLuaCall(func, "https://rinc.xyz");
         EXPECT_TRUE(callResult.has_value()) << func;
     }

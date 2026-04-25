@@ -29,7 +29,7 @@ TEST_F(DynXXCryptoBase64TestSuite, Decode) {
     EXPECT_EQ(dynxxCodingBytes2str(decoded), "abc");
 }
 
-TEST_F(DynXXCryptoBase64TestSuite, EncodeDecode_EmptyInput) {
+TEST_F(DynXXCryptoBase64TestSuite, EncodeDecodeEmptyInput) {
     EXPECT_TRUE(dynxxCryptoBase64Encode({}, true).empty());
     EXPECT_TRUE(dynxxCryptoBase64Decode({}, true).empty());
     EXPECT_TRUE(dynxxCryptoBase64Encode({}, false).empty());
@@ -41,17 +41,17 @@ TEST_F(DynXXCryptoBase64TestSuite, RoundTrip) {
     EXPECT_EQ(dynxxCryptoBase64Decode(dynxxCryptoBase64Encode(in, true), true), in);
 }
 
-TEST_F(DynXXCryptoBase64TestSuite, EncodeDecodeRoundTrip_LengthMatrix) {
+TEST_F(DynXXCryptoBase64TestSuite, EncodeDecodeRoundTripLengthMatrix) {
     for (const auto &param : {
-        Base64LengthCase{1, true},
-        Base64LengthCase{2, true},
-        Base64LengthCase{3, true},
-        Base64LengthCase{4, true},
-        Base64LengthCase{7, true},
-        Base64LengthCase{15, false},
-        Base64LengthCase{16, false},
-        Base64LengthCase{31, false},
-        Base64LengthCase{32, false}
+        Base64LengthCase{.dataLen=1, .noNewLines=true},
+        Base64LengthCase{.dataLen=2, .noNewLines=true},
+        Base64LengthCase{.dataLen=3, .noNewLines=true},
+        Base64LengthCase{.dataLen=4, .noNewLines=true},
+        Base64LengthCase{.dataLen=7, .noNewLines=true},
+        Base64LengthCase{.dataLen=15, .noNewLines=false},
+        Base64LengthCase{.dataLen=16, .noNewLines=false},
+        Base64LengthCase{.dataLen=31, .noNewLines=false},
+        Base64LengthCase{.dataLen=32, .noNewLines=false}
     }) {
         const auto in = makeBytes(param.dataLen);
         const auto encoded = dynxxCryptoBase64Encode(in, param.noNewLines);
@@ -60,7 +60,7 @@ TEST_F(DynXXCryptoBase64TestSuite, EncodeDecodeRoundTrip_LengthMatrix) {
     }
 }
 
-TEST_F(DynXXCryptoBase64TestSuite, Decode_NoNewLinesFlagMismatch_ShouldFail) {
+TEST_F(DynXXCryptoBase64TestSuite, DecodeNoNewLinesFlagMismatchShouldFail) {
     const auto in = makeBytes(32);
     const auto encodedWithNewLines = dynxxCryptoBase64Encode(in, false);
     ASSERT_FALSE(encodedWithNewLines.empty());
@@ -68,7 +68,7 @@ TEST_F(DynXXCryptoBase64TestSuite, Decode_NoNewLinesFlagMismatch_ShouldFail) {
     EXPECT_EQ(dynxxCryptoBase64Decode(encodedWithNewLines, false), in);
 }
 
-TEST_F(DynXXCryptoBase64TestSuite, Decode_InvalidCharacters_ShouldFail) {
+TEST_F(DynXXCryptoBase64TestSuite, DecodeInvalidCharactersShouldFail) {
     auto encoded = dynxxCryptoBase64Encode(makeBytes(8), true);
     ASSERT_FALSE(encoded.empty());
     encoded[2] = static_cast<byte>('@');
@@ -76,7 +76,7 @@ TEST_F(DynXXCryptoBase64TestSuite, Decode_InvalidCharacters_ShouldFail) {
     EXPECT_TRUE(dynxxCryptoBase64Decode(encoded, false).empty());
 }
 
-TEST_F(DynXXCryptoBase64TestSuite, Decode_InsertedCRLF_NoNewLinesFalse_ShouldPass) {
+TEST_F(DynXXCryptoBase64TestSuite, DecodeInsertedCRLFNoNewLinesFalseShouldPass) {
     const auto in = makeBytes(48);
     auto encoded = dynxxCryptoBase64Encode(in, true);
     ASSERT_FALSE(encoded.empty());
@@ -86,7 +86,7 @@ TEST_F(DynXXCryptoBase64TestSuite, Decode_InsertedCRLF_NoNewLinesFalse_ShouldPas
     EXPECT_TRUE(dynxxCryptoBase64Decode(encoded, true).empty());
 }
 
-TEST_F(DynXXCryptoBase64TestSuite, Decode_WhitespaceCharacters_ShouldFail) {
+TEST_F(DynXXCryptoBase64TestSuite, DecodeWhitespaceCharactersShouldFail) {
     const auto in = makeBytes(12);
     const auto encoded = dynxxCryptoBase64Encode(in, true);
     ASSERT_FALSE(encoded.empty());
@@ -98,7 +98,7 @@ TEST_F(DynXXCryptoBase64TestSuite, Decode_WhitespaceCharacters_ShouldFail) {
     }
 }
 
-TEST_F(DynXXCryptoBase64TestSuite, Decode_UrlSafeCharacters_ShouldFail) {
+TEST_F(DynXXCryptoBase64TestSuite, DecodeUrlSafeCharactersShouldFail) {
     const auto in = makeBytes(12);
     const auto encoded = dynxxCryptoBase64Encode(in, true);
     ASSERT_FALSE(encoded.empty());

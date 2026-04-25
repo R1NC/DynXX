@@ -24,11 +24,11 @@ TEST_F(DynXXSQLiteTestSuite, Open) {
     dynxxSQLiteClose(conn);
 }
 
-TEST_F(DynXXSQLiteTestSuite, Open_EmptyId) {
+TEST_F(DynXXSQLiteTestSuite, OpenEmptyId) {
     EXPECT_EQ(dynxxSQLiteOpen(""), 0U);
 }
 
-TEST_F(DynXXSQLiteTestSuite, StoreOpen_EmptyFile) {
+TEST_F(DynXXSQLiteTestSuite, StoreOpenEmptyFile) {
     DynXX::Core::Store::SQLite::SQLiteStore store;
     const auto conn = store.open("");
     EXPECT_TRUE(conn.expired());

@@ -52,17 +52,17 @@ TEST_F(DynXXCryptoRsaTestSuite, GenKey) {
     EXPECT_NE(key.find("BEGIN PUBLIC KEY"), std::string::npos);
 }
 
-TEST_F(DynXXCryptoRsaTestSuite, GenKey_EmptyBase64) {
+TEST_F(DynXXCryptoRsaTestSuite, GenKeyEmptyBase64) {
     EXPECT_TRUE(dynxxCryptoRsaGenKey("", true).empty());
     EXPECT_TRUE(dynxxCryptoRsaGenKey("", false).empty());
 }
 
-TEST_F(DynXXCryptoRsaTestSuite, GenKey_TrimmedEmptyBase64_ShouldFail) {
+TEST_F(DynXXCryptoRsaTestSuite, GenKeyTrimmedEmptyBase64ShouldFail) {
     EXPECT_TRUE(dynxxCryptoRsaGenKey(" \r\n\t ", true).empty());
     EXPECT_TRUE(dynxxCryptoRsaGenKey(" \r\n\t ", false).empty());
 }
 
-TEST_F(DynXXCryptoRsaTestSuite, GenKey_InvalidBase64Length_ShouldFail) {
+TEST_F(DynXXCryptoRsaTestSuite, GenKeyInvalidBase64LengthShouldFail) {
     EXPECT_TRUE(dynxxCryptoRsaGenKey("QUJDRA=", true).empty());
     EXPECT_TRUE(dynxxCryptoRsaGenKey("QUJDRA=", false).empty());
 }

@@ -33,7 +33,7 @@ TEST_F(DynXXJsonTestSuite, NodeToStr) {
 TEST_F(DynXXJsonTestSuite, FromDictAny) {
     const DictAny dict{
         {"name", std::string("dynxx")},
-        {"n", int64_t(1)}
+        {"n", 1Z}
     };
     const auto json = dynxxJsonFromDictAny(dict);
     ASSERT_TRUE(json.has_value());
@@ -69,7 +69,7 @@ TEST_F(DynXXJsonTestSuite, DecoderReadString) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST_F(DynXXJsonTestSuite, DecoderReadString_WithNestedJsonString) {
+TEST_F(DynXXJsonTestSuite, DecoderReadStringWithNestedJsonString) {
     const auto decoder = dynxxJsonDecoderInit(R"({"payload":"{\"inner\":{\"k\":\"v\"},\"arr\":[1,2]}","text":"line1\nline2\t\"q\""})");
     ASSERT_NE(decoder, 0U);
     const auto payloadNode = dynxxJsonDecoderReadNode(decoder, "payload");
@@ -123,7 +123,7 @@ TEST_F(DynXXJsonTestSuite, DecoderReadChildrenCount) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST_F(DynXXJsonTestSuite, DecoderReadChildrenCount_ObjectField) {
+TEST_F(DynXXJsonTestSuite, DecoderReadChildrenCountObjectField) {
     const auto decoder = dynxxJsonDecoderInit(R"({"obj":{"a":1,"b":2}})");
     ASSERT_NE(decoder, 0U);
     const auto obj = dynxxJsonDecoderReadNode(decoder, "obj");
@@ -160,7 +160,7 @@ TEST_F(DynXXJsonTestSuite, DecoderReadNext) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST_F(DynXXJsonTestSuite, DecoderReadNumber_FromStringField) {
+TEST_F(DynXXJsonTestSuite, DecoderReadNumberFromStringField) {
     const auto decoder = dynxxJsonDecoderInit(R"({"i":"42","f":"3.1415"})");
     ASSERT_NE(decoder, 0U);
     const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
@@ -176,7 +176,7 @@ TEST_F(DynXXJsonTestSuite, DecoderReadNumber_FromStringField) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST_F(DynXXJsonTestSuite, DecoderReadString_FromNonStringField) {
+TEST_F(DynXXJsonTestSuite, DecoderReadStringFromNonStringField) {
     const auto decoder = dynxxJsonDecoderInit(R"({"i":7,"f":2.5,"b":true})");
     ASSERT_NE(decoder, 0U);
     const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
@@ -213,7 +213,7 @@ TEST_F(DynXXJsonTestSuite, DictAnyJsonRoundTrip) {
     const DictAny in{
         {"name", std::string("dynxx")},
         {"enabled", true},
-        {"count", int64_t(9)},
+        {"count", 9Z},
         {"ratio", 3.25}
     };
     const auto json = dynxxJsonFromDictAny(in);
@@ -227,10 +227,10 @@ TEST_F(DynXXJsonTestSuite, DictAnyJsonRoundTrip) {
     EXPECT_NEAR(dictAnyReadFloat(*out, "ratio").value_or(0.0), 3.25, 1e-9);
 }
 
-TEST_F(DynXXJsonTestSuite, FromToDictAny_MultiTypeRoundTrip) {
+TEST_F(DynXXJsonTestSuite, FromToDictAnyMultiTypeRoundTrip) {
     const DictAny in{
         {"name", std::string("dynxx")},
-        {"age", int64_t(18)},
+        {"age", 18Z},
         {"score", 99.75},
         {"obj", std::string(R"({"k":1})")},
         {"arr", std::string(R"([1,2,3])")},
@@ -275,7 +275,7 @@ TEST_F(DynXXJsonTestSuite, DecoderReadFieldByType) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST_F(DynXXJsonTestSuite, DecoderNodeType_ObjectArrayBoolNull) {
+TEST_F(DynXXJsonTestSuite, DecoderNodeTypeObjectArrayBoolNull) {
     const auto decoder = dynxxJsonDecoderInit(R"({"obj":{"k":1},"arr":[1,2],"enabled":true,"none":null})");
     ASSERT_NE(decoder, 0U);
 
@@ -296,7 +296,7 @@ TEST_F(DynXXJsonTestSuite, DecoderNodeType_ObjectArrayBoolNull) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST_F(DynXXJsonTestSuite, ToDictAny_DegradedString_ReDecodeObjectAndArray) {
+TEST_F(DynXXJsonTestSuite, ToDictAnyDegradedStringReDecodeObjectAndArray) {
     const auto dict = dynxxJsonToDictAny(R"({"obj":{"k":1,"name":"dynxx"},"arr":[1,2,3]})");
     ASSERT_TRUE(dict.has_value());
 
@@ -329,7 +329,7 @@ TEST_F(DynXXJsonTestSuite, ToDictAny_DegradedString_ReDecodeObjectAndArray) {
     dynxxJsonDecoderRelease(arrDecoder);
 }
 
-TEST_F(DynXXJsonTestSuite, ToDictAny_NestedJsonStringField_ReDecode) {
+TEST_F(DynXXJsonTestSuite, ToDictAnyNestedJsonStringFieldReDecode) {
     const auto dict = dynxxJsonToDictAny(R"({"payload":"{\"inner\":{\"k\":1},\"arr\":[1,2]}","name":"dynxx"})");
     ASSERT_TRUE(dict.has_value());
     const auto payload = dictAnyReadString(*dict, "payload");
@@ -347,7 +347,7 @@ TEST_F(DynXXJsonTestSuite, ToDictAny_NestedJsonStringField_ReDecode) {
     dynxxJsonDecoderRelease(payloadDecoder);
 }
 
-TEST_F(DynXXJsonTestSuite, ToDictAnyInvalidInput_ShouldReturnNullopt) {
+TEST_F(DynXXJsonTestSuite, ToDictAnyInvalidInputShouldReturnNullopt) {
     for (const auto &input : {
         std::string(""),
         std::string("{"),

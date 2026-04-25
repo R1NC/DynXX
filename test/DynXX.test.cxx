@@ -66,26 +66,26 @@ namespace {
     class DynXXCoutListener final : public ::testing::EmptyTestEventListener {
     public:
         void OnTestProgramStart(const ::testing::UnitTest &unitTest) override {
-            std::cout << "[==========] Running " << unitTest.test_to_run_count() << " tests" << std::endl;
+            std::cout << "[==========] Running " << unitTest.test_to_run_count() << " tests" << '\n';
         }
 
         void OnTestStart(const ::testing::TestInfo &testInfo) override {
             startNs_ = DynXX::Core::Util::Time::nowInNanoSecs();
-            std::cout << "[ RUN      ] " << testInfo.test_suite_name() << "." << testInfo.name() << std::endl;
+            std::cout << "[ RUN      ] " << testInfo.test_suite_name() << "." << testInfo.name() << '\n';
         }
 
         void OnTestEnd(const ::testing::TestInfo &testInfo) override {
             const auto elapsed = DynXX::Core::Util::Time::nowInNanoSecs() - startNs_;
             const char *status = testInfo.result()->Passed() ? "       OK " : "  FAILED  ";
             std::cout << "[" << status << "] " << testInfo.test_suite_name() << "." << testInfo.name()
-                      << " (" << elapsed << " ns)" << std::endl;
+                      << " (" << elapsed << " ns)" << '\n';
         }
 
         void OnTestProgramEnd(const ::testing::UnitTest &unitTest) override {
             std::cout << "[==========] "
                       << unitTest.successful_test_count() << " passed, "
                       << unitTest.failed_test_count() << " failed"
-                      << std::endl;
+                      << '\n';
         }
 
     private:
@@ -97,7 +97,7 @@ namespace {
         void SetUp() override {
             std::filesystem::create_directories(dynxxTestRoot());
             if (!initEngine()) {
-                std::cout << "@_@ init failed" << std::endl;
+                std::cout << "TestEnv init failed" << '\n';
                 throw std::runtime_error("dynxxInit failed in global SetUp");
             }
         }

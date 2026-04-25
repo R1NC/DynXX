@@ -22,7 +22,7 @@ TEST_F(DynXXCodingTestSuite, HexStr2Bytes) {
     EXPECT_EQ(dynxxCodingBytes2str(bytes), "Ab");
 }
 
-TEST_F(DynXXCodingTestSuite, HexStr2Bytes_OddLength) {
+TEST_F(DynXXCodingTestSuite, HexStr2BytesOddLength) {
     const auto bytes = dynxxCodingHexStr2bytes("abc");
     ASSERT_EQ(bytes.size(), 2U);
     EXPECT_EQ(bytes[0], static_cast<byte>(0x0A));
@@ -40,7 +40,7 @@ TEST_F(DynXXCodingTestSuite, Bytes2Str) {
     EXPECT_EQ(dynxxCodingBytes2str(bytes), "coding-bytes2str");
 }
 
-TEST_F(DynXXCodingTestSuite, StrBytesRoundTrip_WithControlChars) {
+TEST_F(DynXXCodingTestSuite, StrBytesRoundTripWithControlChars) {
     const std::string in("a\0b\tc\n\"\\", 8);
     const auto bytes = dynxxCodingStr2bytes(in);
     ASSERT_EQ(bytes.size(), in.size());
@@ -72,7 +72,7 @@ TEST_F(DynXXCodingTestSuite, StrEscapeQuotes) {
     EXPECT_EQ(dynxxCodingStrEscapeQuotes("no-quotes"), "no-quotes");
 }
 
-TEST_F(DynXXCodingTestSuite, StrEscapeQuotes_WithNestedJsonString) {
+TEST_F(DynXXCodingTestSuite, StrEscapeQuotesWithNestedJsonString) {
     const auto nestedJson = R"({"outer":{"k":"v"},"arr":[1,2],"text":"a\"b"})";
     const auto escaped = dynxxCodingStrEscapeQuotes(nestedJson);
     EXPECT_NE(escaped.find(R"(\"outer\")"), std::string::npos);
@@ -80,7 +80,7 @@ TEST_F(DynXXCodingTestSuite, StrEscapeQuotes_WithNestedJsonString) {
     EXPECT_NE(escaped.find(R"(\"text\")"), std::string::npos);
 }
 
-TEST_F(DynXXCodingTestSuite, HexInvalidInput_Str2BytesShouldReturnEmpty) {
+TEST_F(DynXXCodingTestSuite, HexInvalidInputStr2BytesShouldReturnEmpty) {
     for (const auto &input : {std::string(""), std::string(" "), std::string("g"), std::string("z!")}) {
         EXPECT_TRUE(dynxxCodingHexStr2bytes(input).empty());
     }

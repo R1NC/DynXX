@@ -93,7 +93,7 @@ TEST_F(DynXXJSTestSuite, Call) {
     const auto funcs = extractJsCallableFunctions(bizJsScript);
     ASSERT_FALSE(funcs.empty());
     for (const auto &func : funcs) {
-        std::cout << "[ JS CALL ] " << func << std::endl;
+        std::cout << "[ JS CALL ] " << func << '\n';
         const auto callResult = dynxxJsCall(func, "{}", true);
         EXPECT_TRUE(callResult.has_value()) << func;
     }

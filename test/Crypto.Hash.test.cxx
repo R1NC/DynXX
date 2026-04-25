@@ -16,15 +16,15 @@ TEST_F(DynXXCryptoHashTestSuite, Sha256) {
     EXPECT_EQ(dynxxCryptoHashSha256(dynxxCodingStr2bytes("abc")).size(), 32U);
 }
 
-TEST_F(DynXXCryptoHashTestSuite, Md5_EmptyInput) {
+TEST_F(DynXXCryptoHashTestSuite, Md5EmptyInput) {
     EXPECT_TRUE(dynxxCryptoHashMd5({}).empty());
 }
 
-TEST_F(DynXXCryptoHashTestSuite, Sha1_EmptyInput) {
+TEST_F(DynXXCryptoHashTestSuite, Sha1EmptyInput) {
     EXPECT_TRUE(dynxxCryptoHashSha1({}).empty());
 }
 
-TEST_F(DynXXCryptoHashTestSuite, Sha256_EmptyInput) {
+TEST_F(DynXXCryptoHashTestSuite, Sha256EmptyInput) {
     EXPECT_TRUE(dynxxCryptoHashSha256({}).empty());
 }
 
