@@ -2,9 +2,13 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <chrono>
+#include <condition_variable>
 #include <filesystem>
+#include <mutex>
 #include <string>
 #include <string_view>
+#include "../src/core/concurrent/TimerTask.hxx"
 
 #if defined(__has_include)
 #if __has_include(<source_location>)
@@ -92,5 +96,23 @@ namespace DynXX::TestUtil {
 
     inline std::filesystem::path resolveLuaRuntimePath(std::string_view fileName) {
         return resolveScriptsRootPath() / "Lua" / fileName;
+    }
+
+    inline bool waitByTimerTask(std::chrono::microseconds delay, std::chrono::milliseconds waitTimeout) {
+        std::mutex mutex;
+        std::condition_variable cv;
+        bool fired = false;
+
+        DynXX::Core::Concurrent::TimerTask timerTask(
+            [&]() {
+                const auto lock = std::scoped_lock(mutex);
+                fired = true;
+                cv.notify_one();
+            },
+            static_cast<size_t>(delay.count())
+        );
+
+        auto lock = std::unique_lock(mutex);
+        return cv.wait_for(lock, waitTimeout, [&]() { return fired; });
     }
 }

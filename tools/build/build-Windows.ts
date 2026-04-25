@@ -41,7 +41,8 @@ function main() {
   if (generatedProject && (requestedBuildTests || requestedCoverage)) {
     console.warn("[Test] Windows Debug preset generates VS projects; skip gtest/coverage flow.");
   }
-  const buildTests = requestedBuildTests && !generatedProject;
+  const buildTests = requestedBuildTests;
+  const runGtestFlow = requestedBuildTests && !generatedProject;
   const coverageEnabled = requestedCoverage && !generatedProject;
 
   const configureArgs = [
@@ -72,7 +73,7 @@ function main() {
     checkArtifacts([join(outputLibPath, "DynXX-All.lib")]);
   }
 
-  if (buildTests) {
+  if (runGtestFlow) {
     const { xmlReport, htmlReport } = getGtestReportPaths();
     setupGtestEnv();
     if (coverageEnabled) {

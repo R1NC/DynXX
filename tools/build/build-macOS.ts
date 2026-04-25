@@ -44,7 +44,8 @@ function main() {
   if (generatedProject && (requestedBuildTests || requestedCoverage)) {
     console.warn("[Test] macOS Debug preset uses Xcode generator; skip gtest/coverage flow.");
   }
-  const buildTests = requestedBuildTests && !generatedProject;
+  const buildTests = requestedBuildTests;
+  const runGtestFlow = requestedBuildTests && !generatedProject;
   const coverageEnabled = requestedCoverage && !generatedProject;
 
   runCMake(preset, buildFolder, outputFolder, true, [
@@ -73,7 +74,7 @@ function main() {
     checkArtifacts([join(outputLibPath, "libDynXX-All.a")]);
   }
 
-  if (buildTests) {
+  if (runGtestFlow) {
     const { xmlReport, htmlReport } = getGtestReportPaths();
     setupGtestEnv();
     if (coverageEnabled) {

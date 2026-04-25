@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
+#include <array>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <regex>
 #include <sstream>
 #include <string_view>
-#include <vector>
 #include <DynXX/CXX/JS.hxx>
 #include "TestUtil.hxx"
 
@@ -13,6 +13,7 @@ class DynXXJSTestSuite : public ::testing::Test {};
 
 namespace {
     using JsRuntimePaths = std::pair<std::filesystem::path, std::filesystem::path>;
+    using JsCallEntry = std::pair<std::string_view, std::string_view>;
 
     JsRuntimePaths jsRuntimePaths() {
         return {
@@ -33,18 +34,22 @@ namespace {
         return ss.str();
     }
 
-    std::vector<std::string> extractJsCallableFunctions(std::string_view script) {
-        static const std::regex kPattern(R"((?:^|\n)\s*(?:async\s+)?function\s+(Test[A-Za-z0-9_]*)\s*\()");
-        const std::string scriptText{script};
-        std::vector<std::string> funcs;
-        for (auto it = std::sregex_iterator(scriptText.begin(), scriptText.end(), kPattern);
-             it != std::sregex_iterator();
-             ++it) {
-            const auto func = (*it)[1].str();
-            funcs.push_back(func);
-        }
-        return funcs;
-    }
+    constexpr std::array<JsCallEntry, 14> kJsCallEntries{{
+        {"TestDeviceInfo", "{}"},
+        {"TestMicrotask", "{}"},
+        {"TestNetHttpReqPro", "https://rinc.xyz"},
+        {"TestPromise", "{}"},
+        {"TestPromiseAll", "{}"},
+        {"TestAwait", "{}"},
+        {"TestKV", "{}"},
+        {"TestSQLite", "{}"},
+        {"TestCryptoBase64", "DynXX"},
+        {"TestCryptoHash", "DynXX"},
+        {"TestCryptoAes", "DynXX"},
+        {"TestCryptoAesGcm", "DynXX"},
+        {"TestZip", "{}"},
+        {"TestCallPlatform", "{}"}
+    }};
 
 }
 
@@ -89,14 +94,15 @@ TEST_F(DynXXJSTestSuite, Call) {
     ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
     ASSERT_TRUE(dynxxJsLoadF(paths.second.string(), false));
 
-    const auto bizJsScript = readAll(paths.second);
-    const auto funcs = extractJsCallableFunctions(bizJsScript);
-    ASSERT_FALSE(funcs.empty());
-    for (const auto &func : funcs) {
+    for (const auto &[func, params] : kJsCallEntries) {
         std::cout << "[ JS CALL ] " << func << '\n';
-        const auto callResult = dynxxJsCall(func, "{}", true);
+        const auto callResult = dynxxJsCall(func, params, true);
         EXPECT_TRUE(callResult.has_value()) << func;
     }
+    EXPECT_TRUE(DynXX::TestUtil::waitByTimerTask(
+        std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::minutes(1)),
+        std::chrono::seconds(70)
+    ));
 
     // Expected: calling a missing JS function logs an error and returns nullopt.
     EXPECT_FALSE(dynxxJsCall("TestMethodNotExists_ForError", "{}", false).has_value());
@@ -106,6 +112,5 @@ TEST_F(DynXXJSTestSuite, Call) {
 TEST_F(DynXXJSTestSuite, SetMsgCallback) {
     EXPECT_NO_THROW(dynxxJsSetMsgCallback([](const char *msg) -> const char * { return msg; }));
 }
-
 
 

@@ -2,6 +2,8 @@
 #include "LuaVM.hxx"
 
 #include <memory>
+#include <mutex>
+#include <unordered_set>
 
 #if defined(USE_LIBUV)
 #include <uv.h>
@@ -45,6 +47,8 @@ namespace {
     };
 
     std::unique_ptr<Executor> timerExecutor = nullptr;
+    std::unordered_set<uv_timer_t *> timers;
+    std::mutex timersMutex;
 
     void _loop_init()
     {
@@ -89,12 +93,20 @@ namespace {
             uv_timer_start(timerP, _timer_cb, lTimer->timeout, lTimer->repeat ? lTimer->timeout : 0);
             _loop_prepare();
         };
+        {
+            const auto lock = std::scoped_lock(timersMutex);
+            timers.insert(timerP);
+        }
 
         return timerP;
     }
 
     void _timer_stop(uv_timer_t *uvTimer, bool release)
     {
+        if (uvTimer == nullptr) [[unlikely]]
+        {
+            return;
+        }
         const auto lTimer = static_cast<LuaTimer *>(uvTimer->data);
         if (!lTimer->finished)
         {
@@ -104,8 +116,29 @@ namespace {
         }
         if (release)
         {
+            {
+                const auto lock = std::scoped_lock(timersMutex);
+                timers.erase(uvTimer);
+            }
             delete lTimer;
             freeX(uvTimer);
+        }
+    }
+
+    void _timer_clear()
+    {
+        std::vector<uv_timer_t *> timerList;
+        {
+            const auto lock = std::scoped_lock(timersMutex);
+            timerList.reserve(timers.size());
+            for (const auto timer : timers)
+            {
+                timerList.push_back(timer);
+            }
+        }
+        for (const auto timer : timerList)
+        {
+            _timer_stop(timer, true);
         }
     }
 
@@ -128,10 +161,17 @@ namespace {
         return LUA_OK;
     }
 
+    int _util_timer_clear(lua_State * /*L*/)
+    {
+        _timer_clear();
+        return LUA_OK;
+    }
+
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays)
     constexpr luaL_Reg lib_timer_funcs[] = {
         {"add", _util_timer_add},
         {"remove", _util_timer_remove},
+        {"clear", _util_timer_clear},
         {nullptr, nullptr} /* sentinel */
     };
 #endif
@@ -164,8 +204,9 @@ LuaVM::LuaVM()
 LuaVM::~LuaVM()
 {
 #if defined(USE_LIBUV)
-    timerExecutor.reset();
+    _timer_clear();
     _loop_stop();
+    timerExecutor.reset();
 #endif
 }
 
