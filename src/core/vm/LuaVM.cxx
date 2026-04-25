@@ -60,7 +60,7 @@ namespace {
         uv_run(uv_default_loop(), UV_RUN_DEFAULT);
     }
 
-    void _loop_stop()
+    void _loop_stop() noexcept
     {
         if (uv_loop_alive(uv_default_loop()) == 0) [[unlikely]]
         {
@@ -101,7 +101,7 @@ namespace {
         return timerP;
     }
 
-    void _timer_stop(uv_timer_t *uvTimer, bool release)
+    void _timer_stop(uv_timer_t *uvTimer, bool release) noexcept
     {
         if (uvTimer == nullptr) [[unlikely]]
         {
@@ -125,16 +125,12 @@ namespace {
         }
     }
 
-    void _timer_clear()
+    void _timer_clear() noexcept
     {
-        std::vector<uv_timer_t *> timerList;
+        std::unordered_set<uv_timer_t *> timerList;
         {
             const auto lock = std::scoped_lock(timersMutex);
-            timerList.reserve(timers.size());
-            for (const auto timer : timers)
-            {
-                timerList.push_back(timer);
-            }
+            timerList.swap(timers);
         }
         for (const auto timer : timerList)
         {
