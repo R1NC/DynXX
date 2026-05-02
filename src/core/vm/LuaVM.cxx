@@ -165,10 +165,10 @@ namespace {
 
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays)
     constexpr luaL_Reg lib_timer_funcs[] = {
-        {"add", _util_timer_add},
-        {"remove", _util_timer_remove},
-        {"clear", _util_timer_clear},
-        {nullptr, nullptr} /* sentinel */
+        {.name="add", .func=_util_timer_add},
+        {.name="remove", .func=_util_timer_remove},
+        {.name="clear", .func=_util_timer_clear},
+        {.name=nullptr, .func=nullptr} /* sentinel */
     };
 #endif
 

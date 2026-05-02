@@ -279,7 +279,7 @@ namespace
 
     [[nodiscard]] bool checkUrlHasSearch(std::string_view url)
     {
-        return url.find('?', 0) != std::string::npos;
+        return url.contains('?');
     }
 
     [[nodiscard]] bool handleSSL(Req &req, std::string_view url)
