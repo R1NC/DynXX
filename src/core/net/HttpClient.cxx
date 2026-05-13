@@ -41,6 +41,8 @@ namespace
             CURL *curl{nullptr};
             curl_slist *headers{nullptr};
             curl_mime *mime{nullptr};
+            std::string postFields;
+            Bytes postBody;
 
     public:
         Req() {
@@ -176,6 +178,8 @@ namespace
             this->curl = std::exchange(other.curl, nullptr);
             this->headers = std::exchange(other.headers, nullptr);
             this->mime = std::exchange(other.mime, nullptr);
+            this->postFields = std::move(other.postFields);
+            this->postBody = std::move(other.postBody);
         }
 
         void cleanup() {
@@ -345,6 +349,10 @@ namespace
             {
                 fixedUrl += "?";
             }
+            else if (!fixedUrl.empty() && !fixedUrl.ends_with('?') && !fixedUrl.ends_with('&'))
+            {
+                fixedUrl += "&";
+            }
             fixedUrl += params;
         }
     
@@ -430,16 +438,17 @@ DynXXHttpResponse HttpClient::request(std::string_view url, DynXXHttpMethodX met
         req.setOpt(CURLOPT_POST, 1L);
         if (rawBody.empty())
         {
-            const auto paramsS = std::string{params.data(), params.size()};
-            req.setOpt(CURLOPT_POSTFIELDS, paramsS.c_str());
-            req.setOpt(CURLOPT_POSTFIELDSIZE, paramsS.size());
+            req.postFields = std::string{params.data(), params.size()};
+            req.setOpt(CURLOPT_POSTFIELDS, req.postFields.c_str());
+            req.setOpt(CURLOPT_POSTFIELDSIZE, req.postFields.size());
         }
         else
         {
+            req.postBody.assign(rawBody.begin(), rawBody.end());
             req.setOpt(CURLOPT_READFUNCTION, on_post_read);
-            req.setOpt(CURLOPT_READDATA, &rawBody);
+            req.setOpt(CURLOPT_READDATA, &req.postBody);
             req.setOpt(CURLOPT_POSTFIELDS, nullptr);
-            req.setOpt(CURLOPT_POSTFIELDSIZE, rawBody.size());
+            req.setOpt(CURLOPT_POSTFIELDSIZE, req.postBody.size());
         }
     }
 
