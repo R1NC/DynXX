@@ -36,8 +36,8 @@ tools/**/* linguist-vendored
 **/biz.lua linguist-vendored
 **/json.lua linguist-vendored
 **/demo/**/* linguist-vendored
-**/module/**/* linguist-vendored
-**/worker/**/* linguist-vendored
+**/module/* linguist-vendored
+**/worker/* linguist-vendored
 **/AppScope/**/* linguist-vendored
 **/pages/**/* linguist-vendored
 
