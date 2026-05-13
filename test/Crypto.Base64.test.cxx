@@ -110,5 +110,10 @@ TEST_F(DynXXCryptoBase64TestSuite, DecodeUrlSafeCharactersShouldFail) {
     }
 }
 
+TEST_F(DynXXCryptoBase64TestSuite, DecodePlusSlashAndPaddingCharactersShouldPass) {
+    EXPECT_EQ(dynxxCryptoBase64Decode(dynxxCodingStr2bytes("+w=="), true), Bytes{static_cast<byte>(0xfb)});
+    EXPECT_EQ(dynxxCryptoBase64Decode(dynxxCodingStr2bytes("++//"), true),
+              (Bytes{static_cast<byte>(0xfb), static_cast<byte>(0xef), static_cast<byte>(0xff)}));
+}
 
 

@@ -179,4 +179,81 @@ TEST_F(DynXXNetTestSuite, DownloadInvalidQueryFormatShouldBeHandledGracefully) {
     }
 }
 
+TEST_F(DynXXNetTestSuite, HttpRequestGetWithExistingQueryShouldAppendParams) {
+    const auto rsp = dynxxNetHttpRequest("https://httpbin.org/get?x=1", DynXXHttpMethodX::Get, "a=2");
+    if (rsp.code != HTTP_OK) {
+        GTEST_SKIP();
+    }
+    EXPECT_EQ(rsp.contentType.find("application/json"), 0U);
+    EXPECT_NE(rsp.data.find(R"("x": "1")"), std::string::npos);
+    EXPECT_NE(rsp.data.find(R"("a": "2")"), std::string::npos);
+}
+
+TEST_F(DynXXNetTestSuite, HttpRequestPostWithUrlEncodedParams) {
+    const auto rsp = dynxxNetHttpRequest(cNetPostEchoUrl, DynXXHttpMethodX::Post, "a=1&b=2");
+    if (rsp.code != HTTP_OK) {
+        GTEST_SKIP();
+    }
+    EXPECT_EQ(rsp.contentType.find("application/json"), 0U);
+    EXPECT_NE(rsp.data.find(R"("a": "1")"), std::string::npos);
+    EXPECT_NE(rsp.data.find(R"("b": "2")"), std::string::npos);
+}
+
+TEST_F(DynXXNetTestSuite, HttpRequestPostWithRawBody) {
+    const Bytes rawBody{'r', 'a', 'w', '-', 'b', 'o', 'd', 'y'};
+    const std::vector<std::string> headers{
+        "Content-Type: text/plain"
+    };
+    const auto rsp = dynxxNetHttpRequest(
+        cNetPostEchoUrl,
+        DynXXHttpMethodX::Post,
+        "",
+        rawBody,
+        headers
+    );
+    if (rsp.code != HTTP_OK) {
+        GTEST_SKIP();
+    }
+    EXPECT_EQ(rsp.contentType.find("application/json"), 0U);
+    EXPECT_NE(rsp.data.find("raw-body"), std::string::npos);
+}
+
+TEST_F(DynXXNetTestSuite, HttpRequestUploadFileShouldSucceed) {
+    const auto uploadPath = DynXX::TestUtil::resolveTempPath() / "dynxx_net_upload.txt";
+    std::ofstream out(uploadPath, std::ios::binary);
+    ASSERT_TRUE(out.is_open());
+    out << "upload-body";
+    out.close();
+
+    auto *file = std::fopen(uploadPath.string().c_str(), "rb");
+    ASSERT_NE(file, nullptr);
+
+    const auto rsp = dynxxNetHttpRequest(
+        "https://httpbin.org/put",
+        DynXXHttpMethodX::Put,
+        "",
+        {},
+        {},
+        {},
+        {},
+        {},
+        file,
+        std::filesystem::file_size(uploadPath)
+    );
+    std::fclose(file);
+
+    if (rsp.code != HTTP_OK) {
+        GTEST_SKIP();
+    }
+    EXPECT_EQ(rsp.contentType.find("application/json"), 0U);
+    EXPECT_NE(rsp.data.find("upload-body"), std::string::npos);
+}
+
+TEST_F(DynXXNetTestSuite, DownloadInvalidOpenPathShouldReturnFalse) {
+    const auto invalidDir = DynXX::TestUtil::resolveTempPath() / "dynxx_net_missing_parent";
+    std::error_code ec;
+    std::filesystem::remove_all(invalidDir, ec);
+    const auto invalidFile = invalidDir / "index.html";
+    EXPECT_FALSE(dynxxNetHttpDownload(cNetTestUrl, invalidFile.string()));
+}
 

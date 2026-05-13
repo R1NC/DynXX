@@ -67,6 +67,11 @@ TEST_F(DynXXCryptoRsaTestSuite, GenKeyInvalidBase64LengthShouldFail) {
     EXPECT_TRUE(dynxxCryptoRsaGenKey("QUJDRA=", false).empty());
 }
 
+TEST_F(DynXXCryptoRsaTestSuite, GenKeyInvalidBase64CharactersShouldFail) {
+    EXPECT_TRUE(dynxxCryptoRsaGenKey("QUJD@A==", true).empty());
+    EXPECT_TRUE(dynxxCryptoRsaGenKey("QUJD@A==", false).empty());
+}
+
 TEST_F(DynXXCryptoRsaTestSuite, Encrypt) {
     const auto in = dynxxCodingStr2bytes("x");
     EXPECT_TRUE(dynxxCryptoRsaEncrypt(in, {}, DynXXCryptoRSAPaddingX::PKCS1).empty());
@@ -87,5 +92,21 @@ TEST_F(DynXXCryptoRsaTestSuite, RoundTrip) {
     EXPECT_EQ(decrypted, in);
 }
 
+TEST_F(DynXXCryptoRsaTestSuite, EncryptDecryptInvalidPemShouldFail) {
+    const auto in = dynxxCodingStr2bytes("rsa-invalid-pem");
+    const auto invalidPublicKey = dynxxCodingStr2bytes("-----BEGIN PUBLIC KEY-----\n@@@\n-----END PUBLIC KEY-----\n");
+    const auto invalidPrivateKey = dynxxCodingStr2bytes("-----BEGIN PRIVATE KEY-----\n@@@\n-----END PRIVATE KEY-----\n");
+    EXPECT_TRUE(dynxxCryptoRsaEncrypt(in, invalidPublicKey, DynXXCryptoRSAPaddingX::PKCS1).empty());
+    EXPECT_TRUE(dynxxCryptoRsaDecrypt(in, invalidPrivateKey, DynXXCryptoRSAPaddingX::PKCS1).empty());
+}
+
+TEST_F(DynXXCryptoRsaTestSuite, DecryptWithWrongPaddingShouldFail) {
+    const auto in = dynxxCodingStr2bytes("rsa-padding-mismatch");
+    const auto publicKey = dynxxCodingStr2bytes(kRsaPublicKeyPem);
+    const auto privateKey = dynxxCodingStr2bytes(kRsaPrivateKeyPem);
+    const auto encrypted = dynxxCryptoRsaEncrypt(in, publicKey, DynXXCryptoRSAPaddingX::PKCS1);
+    ASSERT_FALSE(encrypted.empty());
+    EXPECT_TRUE(dynxxCryptoRsaDecrypt(encrypted, privateKey, DynXXCryptoRSAPaddingX::PKCS1_OAEP).empty());
+}
 
 

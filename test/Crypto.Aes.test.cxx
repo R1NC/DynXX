@@ -144,4 +144,11 @@ TEST_F(DynXXCryptoAesTestSuite, GcmValidParamsEncryptDecryptRoundTrip) {
     }
 }
 
+TEST_F(DynXXCryptoAesTestSuite, GcmTagBitsNotByteAlignedShouldReturnEmpty) {
+    const auto in = dynxxCodingStr2bytes("hello");
+    const auto key = dynxxCodingStr2bytes("1234567890abcdef");
+    const auto iv = dynxxCryptoRand(12);
+    EXPECT_TRUE(dynxxCryptoAesGcmEncrypt(in, key, iv, 97).empty());
+    EXPECT_TRUE(dynxxCryptoAesGcmDecrypt(in, key, iv, 97).empty());
+}
 

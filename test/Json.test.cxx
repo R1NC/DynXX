@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 #include <DynXX/CXX/Json.hxx>
+#include "../src/core/json/JsonCodec.hxx"
 
 class DynXXJsonTestSuite : public ::testing::Test {};
+
+using DynXX::Core::Json::Decoder;
 
 TEST_F(DynXXJsonTestSuite, NodeReadType) {
     const auto decoder = dynxxJsonDecoderInit(R"({"name":"dynxx"})");
@@ -30,20 +33,13 @@ TEST_F(DynXXJsonTestSuite, NodeToStr) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST_F(DynXXJsonTestSuite, FromDictAny) {
-    const DictAny dict{
-        {"name", std::string("dynxx")},
-        {"n", 1Z}
-    };
-    const auto json = dynxxJsonFromDictAny(dict);
-    ASSERT_TRUE(json.has_value());
-    EXPECT_NE(json->find("name"), std::string::npos);
+TEST_F(DynXXJsonTestSuite, NodeReadTypeInvalidHandle) {
+    EXPECT_EQ(dynxxJsonNodeReadType(0U), DynXXJsonNodeTypeX::Unknown);
 }
 
-TEST_F(DynXXJsonTestSuite, ToDictAny) {
-    const auto dict = dynxxJsonToDictAny(R"({"name":"dynxx","n":1})");
-    ASSERT_TRUE(dict.has_value());
-    EXPECT_EQ(dict->count("name"), 1U);
+TEST_F(DynXXJsonTestSuite, NodeReadNameAndToStrInvalidHandle) {
+    EXPECT_FALSE(dynxxJsonNodeReadName(0U).has_value());
+    EXPECT_FALSE(dynxxJsonNodeToStr(0U).has_value());
 }
 
 TEST_F(DynXXJsonTestSuite, DecoderInit) {
@@ -52,11 +48,70 @@ TEST_F(DynXXJsonTestSuite, DecoderInit) {
     dynxxJsonDecoderRelease(decoder);
 }
 
+TEST_F(DynXXJsonTestSuite, DecoderRelease) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"x":1})");
+    ASSERT_NE(decoder, 0U);
+    EXPECT_NO_THROW(dynxxJsonDecoderRelease(decoder));
+}
+
 TEST_F(DynXXJsonTestSuite, DecoderReadNode) {
     const auto decoder = dynxxJsonDecoderInit(R"({"x":1})");
     ASSERT_NE(decoder, 0U);
     EXPECT_NE(dynxxJsonDecoderReadNode(decoder, "x"), 0U);
     EXPECT_EQ(dynxxJsonDecoderReadNode(decoder, ""), 0U);
+    dynxxJsonDecoderRelease(decoder);
+}
+
+TEST_F(DynXXJsonTestSuite, DecoderReadWithInvalidDecoder) {
+    EXPECT_EQ(dynxxJsonDecoderReadNode(0, "x"), 0U);
+    EXPECT_FALSE(dynxxJsonDecoderReadString(0).has_value());
+    EXPECT_FALSE(dynxxJsonDecoderReadInteger(0).has_value());
+    EXPECT_FALSE(dynxxJsonDecoderReadFloat(0).has_value());
+    EXPECT_EQ(dynxxJsonDecoderReadChild(0), 0U);
+    EXPECT_EQ(dynxxJsonDecoderReadChildrenCount(0), 0U);
+    EXPECT_EQ(dynxxJsonDecoderReadNext(0), 0U);
+}
+
+TEST_F(DynXXJsonTestSuite, DecoderNodeTypeObjectArrayBoolNull) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"obj":{"k":1},"arr":[1,2],"enabled":true,"none":null})");
+    ASSERT_NE(decoder, 0U);
+
+    const auto obj = dynxxJsonDecoderReadNode(decoder, "obj");
+    const auto arr = dynxxJsonDecoderReadNode(decoder, "arr");
+    const auto enabled = dynxxJsonDecoderReadNode(decoder, "enabled");
+    const auto none = dynxxJsonDecoderReadNode(decoder, "none");
+    ASSERT_NE(obj, 0U);
+    ASSERT_NE(arr, 0U);
+    ASSERT_NE(enabled, 0U);
+    ASSERT_NE(none, 0U);
+
+    EXPECT_EQ(dynxxJsonNodeReadType(obj), DynXXJsonNodeTypeX::Object);
+    EXPECT_EQ(dynxxJsonNodeReadType(arr), DynXXJsonNodeTypeX::Array);
+    EXPECT_EQ(dynxxJsonNodeReadType(enabled), DynXXJsonNodeTypeX::Boolean);
+    EXPECT_EQ(dynxxJsonNodeReadType(none), DynXXJsonNodeTypeX::Null);
+
+    dynxxJsonDecoderRelease(decoder);
+}
+
+TEST_F(DynXXJsonTestSuite, DecoderReadFieldByType) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"name":"dynxx","age":23,"score":88.5})");
+    ASSERT_NE(decoder, 0U);
+
+    const auto nameNode = dynxxJsonDecoderReadNode(decoder, "name");
+    const auto ageNode = dynxxJsonDecoderReadNode(decoder, "age");
+    const auto scoreNode = dynxxJsonDecoderReadNode(decoder, "score");
+    ASSERT_NE(nameNode, 0U);
+    ASSERT_NE(ageNode, 0U);
+    ASSERT_NE(scoreNode, 0U);
+
+    EXPECT_EQ(dynxxJsonNodeReadType(nameNode), DynXXJsonNodeTypeX::String);
+    EXPECT_EQ(dynxxJsonNodeReadType(ageNode), DynXXJsonNodeTypeX::Int32);
+    EXPECT_EQ(dynxxJsonNodeReadType(scoreNode), DynXXJsonNodeTypeX::Float);
+
+    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, nameNode).value_or(""), "dynxx");
+    EXPECT_EQ(dynxxJsonDecoderReadInteger(decoder, ageNode).value_or(0), 23);
+    EXPECT_NEAR(dynxxJsonDecoderReadFloat(decoder, scoreNode).value_or(0.0), 88.5, 1e-9);
+
     dynxxJsonDecoderRelease(decoder);
 }
 
@@ -87,12 +142,59 @@ TEST_F(DynXXJsonTestSuite, DecoderReadStringWithNestedJsonString) {
     dynxxJsonDecoderRelease(decoder);
 }
 
+TEST_F(DynXXJsonTestSuite, DecoderReadStringFromNonStringField) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"i":7,"f":2.5,"b":true})");
+    ASSERT_NE(decoder, 0U);
+    const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
+    const auto fNode = dynxxJsonDecoderReadNode(decoder, "f");
+    const auto bNode = dynxxJsonDecoderReadNode(decoder, "b");
+    ASSERT_NE(iNode, 0U);
+    ASSERT_NE(fNode, 0U);
+    ASSERT_NE(bNode, 0U);
+
+    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, iNode).value_or(""), "7");
+    EXPECT_NE(dynxxJsonDecoderReadString(decoder, fNode).value_or("").find("2.5"), std::string::npos);
+    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, bNode).value_or(""), "true");
+
+    dynxxJsonDecoderRelease(decoder);
+}
+
+TEST_F(DynXXJsonTestSuite, DecoderReadStringFromObjectArrayAndNull) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"obj":{"k":1},"arr":[1,2],"none":null})");
+    ASSERT_NE(decoder, 0U);
+
+    const auto objNode = dynxxJsonDecoderReadNode(decoder, "obj");
+    const auto arrNode = dynxxJsonDecoderReadNode(decoder, "arr");
+    const auto nullNode = dynxxJsonDecoderReadNode(decoder, "none");
+    ASSERT_NE(objNode, 0U);
+    ASSERT_NE(arrNode, 0U);
+    ASSERT_NE(nullNode, 0U);
+
+    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, objNode).value_or(""), R"({"k":1})");
+    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, arrNode).value_or(""), "[1,2]");
+    EXPECT_FALSE(dynxxJsonDecoderReadString(decoder, nullNode).has_value());
+
+    dynxxJsonDecoderRelease(decoder);
+}
+
 TEST_F(DynXXJsonTestSuite, DecoderReadInteger) {
     const auto decoder = dynxxJsonDecoderInit(R"({"n":7})");
     ASSERT_NE(decoder, 0U);
     const auto node = dynxxJsonDecoderReadNode(decoder, "n");
     ASSERT_NE(node, 0U);
     EXPECT_EQ(dynxxJsonDecoderReadInteger(decoder, node).value_or(0), 7);
+    dynxxJsonDecoderRelease(decoder);
+}
+
+TEST_F(DynXXJsonTestSuite, DecoderReadIntegerFromBigInt) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"n":1234567890123})");
+    ASSERT_NE(decoder, 0U);
+
+    const auto node = dynxxJsonDecoderReadNode(decoder, "n");
+    ASSERT_NE(node, 0U);
+    EXPECT_EQ(dynxxJsonNodeReadType(node), DynXXJsonNodeTypeX::Int64);
+    EXPECT_EQ(dynxxJsonDecoderReadInteger(decoder, node).value_or(0), 1234567890123Z);
+
     dynxxJsonDecoderRelease(decoder);
 }
 
@@ -105,12 +207,33 @@ TEST_F(DynXXJsonTestSuite, DecoderReadFloat) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST_F(DynXXJsonTestSuite, DecoderReadChild) {
-    const auto decoder = dynxxJsonDecoderInit(R"({"arr":[1,2]})");
+TEST_F(DynXXJsonTestSuite, DecoderReadNumberFromStringField) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"i":"42","f":"3.1415"})");
     ASSERT_NE(decoder, 0U);
-    const auto arr = dynxxJsonDecoderReadNode(decoder, "arr");
-    ASSERT_NE(arr, 0U);
-    EXPECT_NE(dynxxJsonDecoderReadChild(decoder, arr), 0U);
+    const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
+    const auto fNode = dynxxJsonDecoderReadNode(decoder, "f");
+    ASSERT_NE(iNode, 0U);
+    ASSERT_NE(fNode, 0U);
+
+    EXPECT_EQ(dynxxJsonNodeReadType(iNode), DynXXJsonNodeTypeX::String);
+    EXPECT_EQ(dynxxJsonNodeReadType(fNode), DynXXJsonNodeTypeX::String);
+    EXPECT_EQ(dynxxJsonDecoderReadInteger(decoder, iNode).value_or(0), 42);
+    EXPECT_NEAR(dynxxJsonDecoderReadFloat(decoder, fNode).value_or(0.0), 3.1415, 1e-9);
+
+    dynxxJsonDecoderRelease(decoder);
+}
+
+TEST_F(DynXXJsonTestSuite, DecoderReadNumberFromInvalidTypesShouldReturnNullopt) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"obj":{"k":1},"arr":[1,2],"enabled":true,"none":null})");
+    ASSERT_NE(decoder, 0U);
+
+    for (const auto *name : {"obj", "arr", "enabled", "none"}) {
+        const auto node = dynxxJsonDecoderReadNode(decoder, name);
+        ASSERT_NE(node, 0U);
+        EXPECT_FALSE(dynxxJsonDecoderReadInteger(decoder, node).has_value()) << name;
+        EXPECT_FALSE(dynxxJsonDecoderReadFloat(decoder, node).has_value()) << name;
+    }
+
     dynxxJsonDecoderRelease(decoder);
 }
 
@@ -149,64 +272,41 @@ TEST_F(DynXXJsonTestSuite, DecoderReadChildren) {
     dynxxJsonDecoderRelease(decoder);
 }
 
-TEST_F(DynXXJsonTestSuite, DecoderReadNext) {
+TEST_F(DynXXJsonTestSuite, DecoderReadChildAndChildrenOnNonContainer) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"name":"dynxx"})");
+    ASSERT_NE(decoder, 0U);
+
+    const auto node = dynxxJsonDecoderReadNode(decoder, "name");
+    ASSERT_NE(node, 0U);
+    EXPECT_EQ(dynxxJsonDecoderReadChild(decoder, node), 0U);
+    EXPECT_EQ(dynxxJsonDecoderReadChildrenCount(decoder, node), 0U);
+
+    size_t count = 0;
+    dynxxJsonDecoderReadChildren(
+        decoder,
+        [&count](size_t, DynXXJsonNodeHandle, DynXXJsonNodeTypeX, std::string_view) {
+            count++;
+        },
+        node
+    );
+    EXPECT_EQ(count, 0U);
+
+    dynxxJsonDecoderRelease(decoder);
+}
+
+TEST_F(DynXXJsonTestSuite, DecoderReadNextOnLastChildShouldReturnZero) {
     const auto decoder = dynxxJsonDecoderInit(R"({"arr":[1,2]})");
     ASSERT_NE(decoder, 0U);
-    const auto arr = dynxxJsonDecoderReadNode(decoder, "arr");
-    ASSERT_NE(arr, 0U);
-    const auto child = dynxxJsonDecoderReadChild(decoder, arr);
-    ASSERT_NE(child, 0U);
-    EXPECT_NE(dynxxJsonDecoderReadNext(decoder, child), 0U);
-    dynxxJsonDecoderRelease(decoder);
-}
 
-TEST_F(DynXXJsonTestSuite, DecoderReadNumberFromStringField) {
-    const auto decoder = dynxxJsonDecoderInit(R"({"i":"42","f":"3.1415"})");
-    ASSERT_NE(decoder, 0U);
-    const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
-    const auto fNode = dynxxJsonDecoderReadNode(decoder, "f");
-    ASSERT_NE(iNode, 0U);
-    ASSERT_NE(fNode, 0U);
-
-    EXPECT_EQ(dynxxJsonNodeReadType(iNode), DynXXJsonNodeTypeX::String);
-    EXPECT_EQ(dynxxJsonNodeReadType(fNode), DynXXJsonNodeTypeX::String);
-    EXPECT_EQ(dynxxJsonDecoderReadInteger(decoder, iNode).value_or(0), 42);
-    EXPECT_NEAR(dynxxJsonDecoderReadFloat(decoder, fNode).value_or(0.0), 3.1415, 1e-9);
+    const auto arrNode = dynxxJsonDecoderReadNode(decoder, "arr");
+    ASSERT_NE(arrNode, 0U);
+    const auto firstChild = dynxxJsonDecoderReadChild(decoder, arrNode);
+    ASSERT_NE(firstChild, 0U);
+    const auto secondChild = dynxxJsonDecoderReadNext(decoder, firstChild);
+    ASSERT_NE(secondChild, 0U);
+    EXPECT_EQ(dynxxJsonDecoderReadNext(decoder, secondChild), 0U);
 
     dynxxJsonDecoderRelease(decoder);
-}
-
-TEST_F(DynXXJsonTestSuite, DecoderReadStringFromNonStringField) {
-    const auto decoder = dynxxJsonDecoderInit(R"({"i":7,"f":2.5,"b":true})");
-    ASSERT_NE(decoder, 0U);
-    const auto iNode = dynxxJsonDecoderReadNode(decoder, "i");
-    const auto fNode = dynxxJsonDecoderReadNode(decoder, "f");
-    const auto bNode = dynxxJsonDecoderReadNode(decoder, "b");
-    ASSERT_NE(iNode, 0U);
-    ASSERT_NE(fNode, 0U);
-    ASSERT_NE(bNode, 0U);
-
-    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, iNode).value_or(""), "7");
-    EXPECT_NE(dynxxJsonDecoderReadString(decoder, fNode).value_or("").find("2.5"), std::string::npos);
-    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, bNode).value_or(""), "true");
-
-    dynxxJsonDecoderRelease(decoder);
-}
-
-TEST_F(DynXXJsonTestSuite, DecoderRelease) {
-    const auto decoder = dynxxJsonDecoderInit(R"({"x":1})");
-    ASSERT_NE(decoder, 0U);
-    EXPECT_NO_THROW(dynxxJsonDecoderRelease(decoder));
-}
-
-TEST_F(DynXXJsonTestSuite, DecoderReadWithInvalidDecoder) {
-    EXPECT_EQ(dynxxJsonDecoderReadNode(0, "x"), 0U);
-    EXPECT_FALSE(dynxxJsonDecoderReadString(0).has_value());
-    EXPECT_FALSE(dynxxJsonDecoderReadInteger(0).has_value());
-    EXPECT_FALSE(dynxxJsonDecoderReadFloat(0).has_value());
-    EXPECT_EQ(dynxxJsonDecoderReadChild(0), 0U);
-    EXPECT_EQ(dynxxJsonDecoderReadChildrenCount(0), 0U);
-    EXPECT_EQ(dynxxJsonDecoderReadNext(0), 0U);
 }
 
 TEST_F(DynXXJsonTestSuite, DictAnyJsonRoundTrip) {
@@ -253,49 +353,6 @@ TEST_F(DynXXJsonTestSuite, FromToDictAnyMultiTypeRoundTrip) {
     EXPECT_EQ(dictAnyReadString(*out, "none").value_or(""), "null");
 }
 
-TEST_F(DynXXJsonTestSuite, DecoderReadFieldByType) {
-    const auto decoder = dynxxJsonDecoderInit(R"({"name":"dynxx","age":23,"score":88.5})");
-    ASSERT_NE(decoder, 0U);
-
-    const auto nameNode = dynxxJsonDecoderReadNode(decoder, "name");
-    const auto ageNode = dynxxJsonDecoderReadNode(decoder, "age");
-    const auto scoreNode = dynxxJsonDecoderReadNode(decoder, "score");
-    ASSERT_NE(nameNode, 0U);
-    ASSERT_NE(ageNode, 0U);
-    ASSERT_NE(scoreNode, 0U);
-
-    EXPECT_EQ(dynxxJsonNodeReadType(nameNode), DynXXJsonNodeTypeX::String);
-    EXPECT_EQ(dynxxJsonNodeReadType(ageNode), DynXXJsonNodeTypeX::Int32);
-    EXPECT_EQ(dynxxJsonNodeReadType(scoreNode), DynXXJsonNodeTypeX::Float);
-
-    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, nameNode).value_or(""), "dynxx");
-    EXPECT_EQ(dynxxJsonDecoderReadInteger(decoder, ageNode).value_or(0), 23);
-    EXPECT_NEAR(dynxxJsonDecoderReadFloat(decoder, scoreNode).value_or(0.0), 88.5, 1e-9);
-
-    dynxxJsonDecoderRelease(decoder);
-}
-
-TEST_F(DynXXJsonTestSuite, DecoderNodeTypeObjectArrayBoolNull) {
-    const auto decoder = dynxxJsonDecoderInit(R"({"obj":{"k":1},"arr":[1,2],"enabled":true,"none":null})");
-    ASSERT_NE(decoder, 0U);
-
-    const auto obj = dynxxJsonDecoderReadNode(decoder, "obj");
-    const auto arr = dynxxJsonDecoderReadNode(decoder, "arr");
-    const auto enabled = dynxxJsonDecoderReadNode(decoder, "enabled");
-    const auto none = dynxxJsonDecoderReadNode(decoder, "none");
-    ASSERT_NE(obj, 0U);
-    ASSERT_NE(arr, 0U);
-    ASSERT_NE(enabled, 0U);
-    ASSERT_NE(none, 0U);
-
-    EXPECT_EQ(dynxxJsonNodeReadType(obj), DynXXJsonNodeTypeX::Object);
-    EXPECT_EQ(dynxxJsonNodeReadType(arr), DynXXJsonNodeTypeX::Array);
-    EXPECT_EQ(dynxxJsonNodeReadType(enabled), DynXXJsonNodeTypeX::Boolean);
-    EXPECT_EQ(dynxxJsonNodeReadType(none), DynXXJsonNodeTypeX::Null);
-
-    dynxxJsonDecoderRelease(decoder);
-}
-
 TEST_F(DynXXJsonTestSuite, ToDictAnyDegradedStringReDecodeObjectAndArray) {
     const auto dict = dynxxJsonToDictAny(R"({"obj":{"k":1,"name":"dynxx"},"arr":[1,2,3]})");
     ASSERT_TRUE(dict.has_value());
@@ -305,8 +362,6 @@ TEST_F(DynXXJsonTestSuite, ToDictAnyDegradedStringReDecodeObjectAndArray) {
     ASSERT_TRUE(objStr.has_value());
     ASSERT_TRUE(arrStr.has_value());
 
-    // After json->dict conversion, object/array fields degrade to JSON strings.
-    // Re-decode those strings to continue structured reads.
     const auto objDecoder = dynxxJsonDecoderInit(*objStr);
     ASSERT_NE(objDecoder, 0U);
     const auto objKNode = dynxxJsonDecoderReadNode(objDecoder, "k");
@@ -347,6 +402,29 @@ TEST_F(DynXXJsonTestSuite, ToDictAnyNestedJsonStringFieldReDecode) {
     dynxxJsonDecoderRelease(payloadDecoder);
 }
 
+TEST_F(DynXXJsonTestSuite, FromDictAnyEmptyShouldReturnNullopt) {
+    const DictAny empty{};
+    EXPECT_FALSE(dynxxJsonFromDictAny(empty).has_value());
+}
+
+TEST_F(DynXXJsonTestSuite, FromDictAnyInvalidEmbeddedJsonShouldReturnNullopt) {
+    const DictAny in{
+        {"name", std::string("dynxx")},
+        {"payload", std::string("{bad json}")}
+    };
+    EXPECT_FALSE(dynxxJsonFromDictAny(in).has_value());
+}
+
+TEST_F(DynXXJsonTestSuite, ToDictAnyTopLevelNonObjectShouldReturnNullopt) {
+    for (const auto &input : {
+        std::string(R"("dynxx")"),
+        std::string("123"),
+        std::string("null")
+    }) {
+        EXPECT_FALSE(dynxxJsonToDictAny(input).has_value());
+    }
+}
+
 TEST_F(DynXXJsonTestSuite, ToDictAnyInvalidInputShouldReturnNullopt) {
     for (const auto &input : {
         std::string(""),
@@ -360,5 +438,29 @@ TEST_F(DynXXJsonTestSuite, ToDictAnyInvalidInputShouldReturnNullopt) {
     }
 }
 
+TEST_F(DynXXJsonTestSuite, ToDictAnyUnicodeEscapeString) {
+    const auto dict = dynxxJsonToDictAny(R"({"name":"\u0041\u0042\u0043"})");
+    ASSERT_TRUE(dict.has_value());
+    EXPECT_EQ(dictAnyReadString(*dict, "name").value_or(""), "ABC");
+}
 
+TEST_F(DynXXJsonTestSuite, ToDictAnyInvalidUnicodeEscapeShouldReturnNullopt) {
+    EXPECT_FALSE(dynxxJsonToDictAny(R"({"name":"\u12G4"})").has_value());
+}
+
+TEST_F(DynXXJsonTestSuite, InternalDecoderReadNumIntNullopt) {
+    Decoder decoder(R"({"none":null})");
+    ASSERT_TRUE(decoder.valid());
+    const auto noneNode = decoder["none"];
+    ASSERT_NE(noneNode, 0U);
+    EXPECT_FALSE(decoder.readNumInt<int64_t>(noneNode).has_value());
+}
+
+TEST_F(DynXXJsonTestSuite, InternalDecoderReadNumFloatNullopt) {
+    Decoder decoder(R"({"obj":{"k":1}})");
+    ASSERT_TRUE(decoder.valid());
+    const auto objNode = decoder["obj"];
+    ASSERT_NE(objNode, 0U);
+    EXPECT_FALSE(decoder.readNumFloat<double>(objNode).has_value());
+}
 

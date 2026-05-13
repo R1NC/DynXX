@@ -113,4 +113,28 @@ TEST_F(DynXXJSTestSuite, SetMsgCallback) {
     EXPECT_NO_THROW(dynxxJsSetMsgCallback([](const char *msg) -> const char * { return msg; }));
 }
 
+TEST_F(DynXXJSTestSuite, PromiseBranches) {
+    const auto paths = jsRuntimePaths();
+    assertJsRuntimeFilesExist(paths);
+    ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
+    ASSERT_TRUE(dynxxJsLoadF(paths.second.string(), false));
+
+    const auto pureResolve = dynxxJsCall("TestPurePromiseResolve", "{}", true);
+    ASSERT_TRUE(pureResolve.has_value());
+    EXPECT_EQ(*pureResolve, "\"DynXX\"");
+
+    const auto pureChain = dynxxJsCall("TestPurePromiseChain", "{}", true);
+    ASSERT_TRUE(pureChain.has_value());
+    EXPECT_EQ(*pureChain, "\"3\"");
+
+    const auto pureAll = dynxxJsCall("TestPurePromiseAll", "{}", true);
+    ASSERT_TRUE(pureAll.has_value());
+    EXPECT_EQ(*pureAll, "\"A,B,C\"");
+
+    const auto pureCatch = dynxxJsCall("TestPurePromiseCatch", "{}", true);
+    ASSERT_TRUE(pureCatch.has_value());
+    EXPECT_EQ(*pureCatch, "\"DynXX\"");
+
+    EXPECT_FALSE(dynxxJsCall("TestPurePromiseReject", "{}", true).has_value());
+}
 

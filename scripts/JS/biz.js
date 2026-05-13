@@ -229,3 +229,30 @@ function TestCallPlatform() {
     let res = DynXXCallPlatform("tsCallPlatformParam")
     DynXXLogPrint(DynXXLogLevel.Debug, `Return value from Platform: ${res}`)
 }
+
+function TestPurePromiseResolve() {
+    return Promise.resolve('DynXX')
+}
+
+function TestPurePromiseChain() {
+    return Promise.resolve(1)
+        .then(v => v + 2)
+        .then(v => `${v}`)
+}
+
+function TestPurePromiseAll() {
+    return Promise.all([
+        Promise.resolve('A'),
+        Promise.resolve('B'),
+        Promise.resolve('C')
+    ]).then(values => values.join(','))
+}
+
+function TestPurePromiseCatch() {
+    return Promise.reject(new Error('DynXX'))
+        .catch(err => err.message)
+}
+
+function TestPurePromiseReject() {
+    return Promise.reject(new Error('DynXXReject'))
+}

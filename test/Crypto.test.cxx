@@ -23,5 +23,8 @@ TEST_F(DynXXCryptoTestSuite, Rand) {
     EXPECT_TRUE(hasDifference);
 }
 
+TEST_F(DynXXCryptoTestSuite, RandZeroShouldReturnEmpty) {
+    EXPECT_TRUE(dynxxCryptoRand(0).empty());
+}
 
 
