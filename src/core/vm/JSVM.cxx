@@ -426,6 +426,7 @@ std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_vie
     }
     std::string s;
     auto success = false;
+    auto locked = true;
 
     const auto ctx = this->context.get();
     const auto funcS = std::string{func.data(), func.size()};
@@ -447,6 +448,8 @@ std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_vie
             success = true;
             if (await)
             {/// WARNING: Do not use built-in `js_std_await()`, since it will triger the Promise Event Loop once again.
+                this->unlock();
+                locked = false;
                 this->beforeLoad();
                 jRes = this->jAwait(jRes); // Handle promise if needed
             }
@@ -462,7 +465,9 @@ std::optional<std::string> JSVM::callFunc(std::string_view func, std::string_vie
         dynxxLogPrintF(Error, "Can not find JS func:{}", func);
     }
 
-    this->unlock();
+    if (locked) {
+        this->unlock();
+    }
 
     return success? std::make_optional(s): std::nullopt;
 }

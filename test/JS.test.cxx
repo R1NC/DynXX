@@ -82,6 +82,10 @@ TEST_F(DynXXJSTestSuite, LoadS) {
     EXPECT_FALSE(dynxxJsLoadS(luaScript, invalidLuaPath.string(), false));
 }
 
+TEST_F(DynXXJSTestSuite, LoadSNonModuleAsModuleShouldFail) {
+    EXPECT_FALSE(dynxxJsLoadS("globalThis.a = 1;", "not_module.js", true));
+}
+
 TEST_F(DynXXJSTestSuite, LoadB) {
     EXPECT_FALSE(dynxxJsLoadB({}, false));
     const Bytes nonEmptyBytes{0xFF, 0x00, 0x80};
@@ -137,4 +141,3 @@ TEST_F(DynXXJSTestSuite, PromiseBranches) {
 
     EXPECT_FALSE(dynxxJsCall("TestPurePromiseReject", "{}", true).has_value());
 }
-
