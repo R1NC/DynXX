@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <filesystem>
+#include <fstream>
 #include <DynXX/CXX/Net.hxx>
 
 #include "TestUtil.hxx"
@@ -256,4 +257,3 @@ TEST_F(DynXXNetTestSuite, DownloadInvalidOpenPathShouldReturnFalse) {
     const auto invalidFile = invalidDir / "index.html";
     EXPECT_FALSE(dynxxNetHttpDownload(cNetTestUrl, invalidFile.string()));
 }
-
