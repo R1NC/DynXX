@@ -74,6 +74,30 @@ namespace
         [[nodiscard]] bool valid() const {
             return this->curl != nullptr;
         }
+
+        void setPostFields(std::string_view data) {
+            this->postFields.assign(data.data(), data.size());
+        }
+
+        [[nodiscard]] const char *getPostFieldsData() const {
+            return this->postFields.c_str();
+        }
+
+        [[nodiscard]] size_t getPostFieldsSize() const {
+            return this->postFields.size();
+        }
+
+        void setPostBody(BytesView data) {
+            this->postBody.assign(data.begin(), data.end());
+        }
+
+        [[nodiscard]] Bytes *getPostBody() {
+            return &this->postBody;
+        }
+
+        [[nodiscard]] size_t getPostBodySize() const {
+            return this->postBody.size();
+        }
         
         [[nodiscard]] bool appendHeader(const char *string) {
             if (string == nullptr) [[unlikely]] {
@@ -438,17 +462,17 @@ DynXXHttpResponse HttpClient::request(std::string_view url, DynXXHttpMethodX met
         req.setOpt(CURLOPT_POST, 1L);
         if (rawBody.empty())
         {
-            req.postFields = std::string{params.data(), params.size()};
-            req.setOpt(CURLOPT_POSTFIELDS, req.postFields.c_str());
-            req.setOpt(CURLOPT_POSTFIELDSIZE, req.postFields.size());
+            req.setPostFields(params);
+            req.setOpt(CURLOPT_POSTFIELDS, req.getPostFieldsData());
+            req.setOpt(CURLOPT_POSTFIELDSIZE, req.getPostFieldsSize());
         }
         else
         {
-            req.postBody.assign(rawBody.begin(), rawBody.end());
+            req.setPostBody(rawBody);
             req.setOpt(CURLOPT_READFUNCTION, on_post_read);
-            req.setOpt(CURLOPT_READDATA, &req.postBody);
+            req.setOpt(CURLOPT_READDATA, req.getPostBody());
             req.setOpt(CURLOPT_POSTFIELDS, nullptr);
-            req.setOpt(CURLOPT_POSTFIELDSIZE, req.postBody.size());
+            req.setOpt(CURLOPT_POSTFIELDSIZE, req.getPostBodySize());
         }
     }
 
