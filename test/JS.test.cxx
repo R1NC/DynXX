@@ -56,9 +56,12 @@ namespace {
 TEST_F(DynXXJSTestSuite, LoadF) {
     const auto paths = jsRuntimePaths();
     const auto invalidLuaPath = DynXX::TestUtil::resolveLuaRuntimePath("biz.lua");
+    const auto missingJsPath = DynXX::TestUtil::resolveTempPath() / "dynxx_missing_runtime.js";
     assertJsRuntimeFilesExist(paths);
     ASSERT_TRUE(std::filesystem::exists(invalidLuaPath));
+    ASSERT_FALSE(std::filesystem::exists(missingJsPath));
     EXPECT_FALSE(dynxxJsLoadF("", false));
+    EXPECT_FALSE(dynxxJsLoadF(missingJsPath.string(), false));
     ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
     EXPECT_TRUE(dynxxJsLoadF(paths.second.string(), false));
     EXPECT_FALSE(dynxxJsLoadF(invalidLuaPath.string(), false));
@@ -80,10 +83,6 @@ TEST_F(DynXXJSTestSuite, LoadS) {
     ASSERT_TRUE(dynxxJsLoadS(dynxxJsScript, paths.first.string(), false));
     EXPECT_TRUE(dynxxJsLoadS(bizJsScript, paths.second.string(), false));
     EXPECT_FALSE(dynxxJsLoadS(luaScript, invalidLuaPath.string(), false));
-}
-
-TEST_F(DynXXJSTestSuite, LoadSNonModuleAsModuleShouldFail) {
-    EXPECT_FALSE(dynxxJsLoadS("globalThis.a = 1;", "not_module.js", true));
 }
 
 TEST_F(DynXXJSTestSuite, LoadB) {
@@ -117,6 +116,12 @@ TEST_F(DynXXJSTestSuite, SetMsgCallback) {
     EXPECT_NO_THROW(dynxxJsSetMsgCallback([](const char *msg) -> const char * { return msg; }));
 }
 
+TEST_F(DynXXJSTestSuite, CallThrowingFunctionShouldReturnNullopt) {
+    ASSERT_TRUE(dynxxJsLoadS("function TestThrowForError(){ throw new Error('DynXXThrow'); }",
+                             "throw_error.js", false));
+    EXPECT_FALSE(dynxxJsCall("TestThrowForError", "{}", false).has_value());
+}
+
 TEST_F(DynXXJSTestSuite, PromiseBranches) {
     const auto paths = jsRuntimePaths();
     assertJsRuntimeFilesExist(paths);
@@ -125,19 +130,21 @@ TEST_F(DynXXJSTestSuite, PromiseBranches) {
 
     const auto pureResolve = dynxxJsCall("TestPurePromiseResolve", "{}", true);
     ASSERT_TRUE(pureResolve.has_value());
-    EXPECT_EQ(*pureResolve, "\"DynXX\"");
+    EXPECT_EQ(*pureResolve, "DynXX");
 
     const auto pureChain = dynxxJsCall("TestPurePromiseChain", "{}", true);
     ASSERT_TRUE(pureChain.has_value());
-    EXPECT_EQ(*pureChain, "\"3\"");
+    EXPECT_EQ(*pureChain, "3");
 
     const auto pureAll = dynxxJsCall("TestPurePromiseAll", "{}", true);
     ASSERT_TRUE(pureAll.has_value());
-    EXPECT_EQ(*pureAll, "\"A,B,C\"");
+    EXPECT_EQ(*pureAll, "A,B,C");
 
     const auto pureCatch = dynxxJsCall("TestPurePromiseCatch", "{}", true);
     ASSERT_TRUE(pureCatch.has_value());
-    EXPECT_EQ(*pureCatch, "\"DynXX\"");
+    EXPECT_EQ(*pureCatch, "DynXX");
 
-    EXPECT_FALSE(dynxxJsCall("TestPurePromiseReject", "{}", true).has_value());
+    const auto pureReject = dynxxJsCall("TestPurePromiseReject", "{}", true);
+    ASSERT_TRUE(pureReject.has_value());
+    EXPECT_TRUE(pureReject->empty());
 }

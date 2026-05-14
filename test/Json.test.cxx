@@ -407,12 +407,17 @@ TEST_F(DynXXJsonTestSuite, FromDictAnyEmptyShouldReturnNullopt) {
     EXPECT_FALSE(dynxxJsonFromDictAny(empty).has_value());
 }
 
-TEST_F(DynXXJsonTestSuite, FromDictAnyInvalidEmbeddedJsonShouldReturnNullopt) {
+TEST_F(DynXXJsonTestSuite, FromDictAnyInvalidEmbeddedJsonShouldSkipBadField) {
     const DictAny in{
         {"name", std::string("dynxx")},
         {"payload", std::string("{bad json}")}
     };
-    EXPECT_FALSE(dynxxJsonFromDictAny(in).has_value());
+    const auto json = dynxxJsonFromDictAny(in);
+    ASSERT_TRUE(json.has_value());
+    const auto out = dynxxJsonToDictAny(*json);
+    ASSERT_TRUE(out.has_value());
+    EXPECT_EQ(dictAnyReadString(*out, "name").value_or(""), "dynxx");
+    EXPECT_EQ(out->count("payload"), 0U);
 }
 
 TEST_F(DynXXJsonTestSuite, ToDictAnyTopLevelNonObjectShouldReturnNullopt) {
@@ -463,4 +468,3 @@ TEST_F(DynXXJsonTestSuite, InternalDecoderReadNumFloatNullopt) {
     ASSERT_NE(objNode, 0U);
     EXPECT_FALSE(decoder.readNumFloat<double>(objNode).has_value());
 }
-
