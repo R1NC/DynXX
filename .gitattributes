@@ -10,36 +10,13 @@ LICENSE linguist-documentation
 *.svg linguist-vendored
 *.webp linguist-vendored
 
-*.xcworkspacedata linguist-vendored
-*.xcscheme linguist-vendored
 *.entitlements linguist-vendored
-*.pbxproj linguist-vendored
-*.storyboard linguist-vendored
-*.plist linguist-vendored
-AppDelegate.* linguist-vendored
-SceneDelegate.* linguist-vendored
-ViewController.* linguist-vendored
-main.m linguist-vendored
-
 *.jar linguist-vendored
-**/gradle/**/* linguist-vendored
 **/gradlew linguist-vendored
 **/gradlew.bat linguist-vendored
-**/*.kts linguist-language=kotlin
-
-**/*.json5 linguist-language=json
 
 .github/**/* linguist-vendored
 res/**/* linguist-vendored
-tools/**/* linguist-vendored
-**/biz.js linguist-vendored
-**/biz.lua linguist-vendored
-**/json.lua linguist-vendored
-**/demo/**/* linguist-vendored
-**/module/* linguist-vendored
-**/worker/* linguist-vendored
-**/AppScope/**/* linguist-vendored
-**/pages/**/* linguist-vendored
 
 CMakeLists.txt -linguist-documentation
 CMakeLists.txt linguist-language=CMake
