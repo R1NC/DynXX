@@ -147,9 +147,13 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
       <td>OHOS;</td>
     </tr>
     <tr>
-      <td rowspan="5">C++23</td>
+      <td rowspan="6">C++23</td>
       <td><a href="https://en.cppreference.com/w/cpp/utility/functional/move_only_function.html">std::move_only_function</a></td>
       <td>Clang, Apple &amp; OHOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/cpp/language/function#Explicit_object_parameter">Deducing this</a> (explicit object parameter)</td>
+      <td>OHOS;</td>
     </tr>
     <tr>
       <td><a href="https://en.cppreference.com/w/cpp/ranges/to.html">std::ranges::to</a></td>

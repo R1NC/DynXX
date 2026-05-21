@@ -30,7 +30,7 @@ namespace {
     };
 
     template <typename T, ReadBytesFuncT RFT, WriteBytesFuncT WFT, FlushFuncT FFT = std::function<void()>>
-    bool process(ZBase<T> &zb, size_t bufferSize, 
+    bool process(T &zb, size_t bufferSize, 
               RFT &&readF, WFT &&writeF, FFT &&flushF = [](){})
     {
         auto inputFinished = false;
@@ -64,7 +64,7 @@ namespace {
 #if !defined(__EMSCRIPTEN__)
 
     template <typename T>
-    bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, ZBase<T> &zb)
+    bool processCxxStream(size_t bufferSize, std::istream *inStream, std::ostream *outStream, T &zb)
     {
         return process(zb, bufferSize,
             [bufferSize, inStream]
@@ -87,7 +87,7 @@ namespace {
     }
 
     template <typename T>
-    bool processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, ZBase<T> &zb)
+    bool processCFILE(size_t bufferSize, std::FILE *inFile, std::FILE *outFile, T &zb)
     {
         return process(zb, bufferSize,
             [bufferSize, inFile]
@@ -114,7 +114,7 @@ namespace {
 #endif
 
     template <typename T>
-    Bytes processBytes(size_t bufferSize, BytesView inBytesView, ZBase<T> &zb)
+    Bytes processBytes(size_t bufferSize, BytesView inBytesView, T &zb)
     {
         if (inBytesView.empty()) [[unlikely]]
         {
@@ -193,8 +193,28 @@ size_t ZBase<T>::input(BytesView bytes, bool finish)
 }
 
 template <typename T>
+#if DYNXX_HAS_EXPLICIT_THIS_PARAMETER
+Bytes ZBase<T>::processDo(this T &self)
+#else
 Bytes ZBase<T>::processDo()
+#endif
 {
+#if DYNXX_HAS_EXPLICIT_THIS_PARAMETER
+    self.outBuffer.resize(self.bufferSize, 0);
+    self.zs.avail_out = static_cast<unsigned int>(self.bufferSize);
+    self.zs.next_out = self.outBuffer.data();
+
+    self.processImp();
+
+    if (self.ret != Z_OK && self.ret != Z_STREAM_END) [[unlikely]]
+    {
+        dynxxLogPrintF(Error, "z process error:{}", self.ret);
+        return {};
+    }
+
+    const auto outLen = self.bufferSize - (self.zs).avail_out;
+    return makeBytes(self.outBuffer.data(), outLen);
+#else
     this->outBuffer.resize(this->bufferSize, 0);
     this->zs.avail_out = static_cast<unsigned int>(this->bufferSize);
     this->zs.next_out = this->outBuffer.data();
@@ -209,6 +229,7 @@ Bytes ZBase<T>::processDo()
 
     const auto outLen = this->bufferSize - (this->zs).avail_out;
     return makeBytes(this->outBuffer.data(), outLen);
+#endif
 }
 
 template <typename T>
