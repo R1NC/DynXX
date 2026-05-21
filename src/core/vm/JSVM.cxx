@@ -1,4 +1,4 @@
-#if defined(USE_QJS)
+#if defined(DYNXX_USE_QJS)
 #include "JSVM.hxx"
 
 #include <fstream>

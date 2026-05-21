@@ -1,4 +1,4 @@
-#if defined(USE_QJS) || defined(USE_LUA)
+#if defined(DYNXX_USE_QJS) || defined(DYNXX_USE_LUA)
 
 #include "BaseVM.hxx"
 

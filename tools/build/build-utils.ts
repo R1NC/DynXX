@@ -158,7 +158,7 @@ export function isQjscEnabled(buildFolder: string): boolean {
     return true;
   }
   const content = readFileSync(cachePath, "utf8");
-  const useQjsEnabled = /^USE_QJS:BOOL=ON$/m.test(content);
+  const useQjsEnabled = /^DYNXX_USE_QJS:BOOL=ON$/m.test(content);
   if (!useQjsEnabled) {
     return false;
   }

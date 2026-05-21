@@ -1,4 +1,4 @@
-#if defined(USE_DB)
+#if defined(DYNXX_USE_DB)
 
 #include "SQLite.hxx"
 

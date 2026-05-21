@@ -1,4 +1,4 @@
-#if defined(USE_QJS)
+#if defined(DYNXX_USE_QJS)
 #include "JSBridge.hxx"
 
 #include <cstring>
@@ -156,7 +156,7 @@ DEF_API(dynxx_call_platform, STRING)
 DEF_API(dynxx_get_version, STRING)
 DEF_API(dynxx_root_path, STRING)
 
-#if defined(USE_DEVICE)
+#if defined(DYNXX_USE_DEVICE)
 DEF_API(dynxx_device_type, INT32)
 DEF_API(dynxx_device_name, STRING)
 DEF_API(dynxx_device_manufacturer, STRING)
@@ -169,7 +169,7 @@ DEF_API(dynxx_log_print, VOID)
 DEF_API_ASYNC(dynxx_net_http_request, STRING)
 DEF_API_ASYNC(dynxx_net_http_download, BOOL)
 
-#if defined(USE_DB)
+#if defined(DYNXX_USE_DB)
 DEF_API(dynxx_sqlite_open, STRING)
 DEF_API_ASYNC(dynxx_sqlite_execute, BOOL)
 DEF_API_ASYNC(dynxx_sqlite_query_do, STRING)
@@ -181,7 +181,7 @@ DEF_API(dynxx_sqlite_query_drop, VOID)
 DEF_API(dynxx_sqlite_close, VOID)
 #endif
 
-#if defined(USE_KV)
+#if defined(DYNXX_USE_KV)
 DEF_API(dynxx_kv_open, STRING)
 DEF_API(dynxx_kv_read_string, STRING)
 DEF_API(dynxx_kv_write_string, BOOL)
@@ -245,7 +245,7 @@ void registerFuncs() {
 
     BIND_API(dynxx_log_print);
 
-#if defined(USE_DEVICE)
+#if defined(DYNXX_USE_DEVICE)
     BIND_API(dynxx_device_type);
     BIND_API(dynxx_device_name);
     BIND_API(dynxx_device_manufacturer);
@@ -256,7 +256,7 @@ void registerFuncs() {
     BIND_API(dynxx_net_http_request);
     BIND_API(dynxx_net_http_download);
 
-#if defined(USE_DB)
+#if defined(DYNXX_USE_DB)
     BIND_API(dynxx_sqlite_open);
     BIND_API(dynxx_sqlite_execute);
     BIND_API(dynxx_sqlite_query_do);
@@ -268,7 +268,7 @@ void registerFuncs() {
     BIND_API(dynxx_sqlite_close);
 #endif
 
-#if defined(USE_KV)
+#if defined(DYNXX_USE_KV)
     BIND_API(dynxx_kv_open);
     BIND_API(dynxx_kv_read_string);
     BIND_API(dynxx_kv_write_string);

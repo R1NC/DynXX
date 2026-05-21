@@ -51,7 +51,7 @@ function main() {
   if (isQjscEnabled(buildFolder)) {
     checkArtifacts([join(outputExePath, "qjsc")]);
   } else {
-    console.warn("[Artifact] Linux build has USE_QJS=OFF; skip qjsc executable artifact check.");
+    console.warn("[Artifact] Linux build has DYNXX_USE_QJS=OFF; skip qjsc executable artifact check.");
   }
   checkArtifacts([join(outputLibPath, "libDynXX.a")]);
 

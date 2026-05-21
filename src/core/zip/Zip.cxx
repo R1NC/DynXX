@@ -193,13 +193,13 @@ size_t ZBase<T>::input(BytesView bytes, bool finish)
 }
 
 template <typename T>
-#if DYNXX_HAS_EXPLICIT_THIS_PARAMETER
+#if DYNXX_USE_DEDUCING_THIS
 Bytes ZBase<T>::processDo(this T &self)
 #else
 Bytes ZBase<T>::processDo()
 #endif
 {
-#if DYNXX_HAS_EXPLICIT_THIS_PARAMETER
+#if DYNXX_USE_DEDUCING_THIS
     self.outBuffer.resize(self.bufferSize, 0);
     self.zs.avail_out = static_cast<unsigned int>(self.bufferSize);
     self.zs.next_out = self.outBuffer.data();

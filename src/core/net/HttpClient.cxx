@@ -1,11 +1,11 @@
-#if defined(USE_CURL)
+#if defined(DYNXX_USE_CURL)
 
 #include "HttpClient.hxx"
 
 #include <algorithm>
 #include <fstream>
 
-#if defined(USE_ADA)
+#if defined(DYNXX_USE_ADA)
 #include <ada.h>
 #endif
 
@@ -295,7 +295,7 @@ namespace
         {
             return false;
         }
-#if defined(USE_ADA)
+#if defined(DYNXX_USE_ADA)
         if (!ada::parse(url)) [[unlikely]]
         {
             dynxxLogPrintF(Error, "HttpClient INVALID URL: {}", url);
@@ -312,7 +312,7 @@ namespace
 
     [[nodiscard]] bool handleSSL(Req &req, std::string_view url)
     {
-#if defined(USE_ADA)
+#if defined(DYNXX_USE_ADA)
         const auto aUrl = ada::parse(url);
         if (!aUrl) [[unlikely]]
         {

@@ -42,7 +42,7 @@ function(dynxx_append_platform_link_libraries LINK_LIBS_VAR)
             apple_nghttp2
             "-framework Foundation"
         )
-        if(USE_DB)
+        if(DYNXX_USE_DB)
             list(APPEND link_libs sqlite3)
         endif()
     elseif(WIN32)

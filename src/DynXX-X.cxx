@@ -13,33 +13,33 @@
 
 #include <DynXX/CXX/Macro.hxx>
 
-#if defined(USE_CURL)
+#if defined(DYNXX_USE_CURL)
 #include "core/net/HttpClient.hxx"
 #else
 #include "core/net/HttpClient-wasm.hxx"
 #endif
 
-#if defined(USE_LUA)
+#if defined(DYNXX_USE_LUA)
 #include "bridge/LuaBridge.hxx"
 #endif
 
-#if defined(USE_QJS)
+#if defined(DYNXX_USE_QJS)
 #include "bridge/JSBridge.hxx"
 #endif
 
-#if defined(USE_DB)
+#if defined(DYNXX_USE_DB)
 #include "core/store/SQLite.hxx"
 #endif
 
-#if defined(USE_KV)
+#if defined(DYNXX_USE_KV)
 #include "core/store/KV.hxx"
 #endif
 
-#if defined(USE_DEVICE)
+#if defined(DYNXX_USE_DEVICE)
 #include "core/device/Device.hxx"
 #endif
 
-#if defined(USE_STD_CHAR_CONV_INT)
+#if defined(DYNXX_USE_STD_CHAR_CONV_INT)
 #include <charconv>
 #endif
 
@@ -57,25 +57,25 @@ namespace {
     std::unique_ptr<Mem::PtrCache<Zip>> zipCache{nullptr};
     std::unique_ptr<Mem::PtrCache<UnZip>> unzipCache{nullptr};
 
-#if defined(USE_CURL)
+#if defined(DYNXX_USE_CURL)
     std::unique_ptr<HttpClient> _http_client{nullptr};
 #endif
 
-#if defined(USE_KV) || defined(USE_DB)
+#if defined(DYNXX_USE_KV) || defined(DYNXX_USE_DB)
     using namespace DynXX::Core::Store;
     std::unique_ptr<const std::string> _root{nullptr};
 #endif
 
-#if defined(USE_DB)
+#if defined(DYNXX_USE_DB)
     std::unique_ptr<SQLite::SQLiteStore> _sqlite{nullptr};
     std::unique_ptr<Mem::PtrCache<SQLite::Connection::QueryResult>> sqlQRCache{nullptr};
 #endif
 
-#if defined(USE_KV)
+#if defined(DYNXX_USE_KV)
     std::unique_ptr<KV::KVStore> _kv{nullptr};
 #endif
 
-#if defined(USE_STD_CHAR_CONV_INT)
+#if defined(DYNXX_USE_STD_CHAR_CONV_INT)
     template <NumberT T>
     T fromChars(const std::string &str, const T defaultV)
     {
@@ -154,7 +154,7 @@ namespace {
 }
 
 int32_t str2int32(const std::string &str, int32_t defaultI) {
-#if defined(USE_STD_CHAR_CONV_INT)
+#if defined(DYNXX_USE_STD_CHAR_CONV_INT)
     return fromChars<int32_t>(str, defaultI);
 #else
     return s2n<int>(str, defaultI, stox<int>());
@@ -162,7 +162,7 @@ int32_t str2int32(const std::string &str, int32_t defaultI) {
 }
 
 int64_t str2int64(const std::string &str, int64_t defaultI) {
-#if defined(USE_STD_CHAR_CONV_INT)
+#if defined(DYNXX_USE_STD_CHAR_CONV_INT)
     return fromChars<int64_t>(str, defaultI);
 #else
     // NOLINTNEXTLINE(google-runtime-int)
@@ -171,7 +171,7 @@ int64_t str2int64(const std::string &str, int64_t defaultI) {
 }
 
 float str2float32(const std::string &str, float defaultF) {
-#if defined(USE_STD_CHAR_CONV_FLOAT)
+#if defined(DYNXX_USE_STD_CHAR_CONV_FLOAT)
     return fromChars<float>(str, defaultF);
 #else
     return s2n<float>(str, defaultF, stox<float>());
@@ -179,7 +179,7 @@ float str2float32(const std::string &str, float defaultF) {
 }
 
 double str2float64(const std::string &str, double defaultF) {
-#if defined(USE_STD_CHAR_CONV_FLOAT)
+#if defined(DYNXX_USE_STD_CHAR_CONV_FLOAT)
     return fromChars<double>(str, defaultF);
 #else
     return s2n<double>(str, defaultF, stox<double>());
@@ -187,7 +187,7 @@ double str2float64(const std::string &str, double defaultF) {
 }
 
 long double str2float128(const std::string &str, long double defaultF) {
-#if defined(USE_STD_CHAR_CONV_FLOAT)
+#if defined(DYNXX_USE_STD_CHAR_CONV_FLOAT)
     return fromChars<long double>(str, defaultF);
 #else
     return s2n<long double>(str, defaultF, stox<long double>());
@@ -198,7 +198,7 @@ std::string dynxxGetVersion() {
     return VERSION;
 }
 
-#if defined(USE_KV) || defined(USE_DB)
+#if defined(DYNXX_USE_KV) || defined(DYNXX_USE_DB)
 std::optional<std::string> dynxxRootPath() {
     if (_root == nullptr) {
         return std::nullopt;
@@ -212,7 +212,7 @@ bool dynxxInit(std::string_view root) {
     zipCache = std::make_unique<Mem::PtrCache<Zip>>();
     unzipCache = std::make_unique<Mem::PtrCache<UnZip>>();
 
-#if defined(USE_KV) || defined(USE_DB)
+#if defined(DYNXX_USE_KV) || defined(DYNXX_USE_DB)
     if (_root != nullptr) {
         return true;
     }
@@ -227,11 +227,11 @@ bool dynxxInit(std::string_view root) {
     _root = std::make_unique<const std::string>(root);
 #endif
 
-#if defined(USE_LUA)
+#if defined(DYNXX_USE_LUA)
     dynxx_lua_init();
 #endif
 
-#if defined(USE_QJS)
+#if defined(DYNXX_USE_QJS)
     dynxx_js_init();
 #endif
 
@@ -246,18 +246,18 @@ void dynxxRelease() {
     zipCache.reset();
     unzipCache.reset();
 
-#if defined(USE_KV) || defined(USE_DB)
+#if defined(DYNXX_USE_KV) || defined(DYNXX_USE_DB)
     if (_root == nullptr) [[unlikely]] {
         return;
     }
     _root.reset();
 #endif
 
-#if defined(USE_CURL)
+#if defined(DYNXX_USE_CURL)
     _http_client.reset();
 #endif
 
-#if defined(USE_DB)
+#if defined(DYNXX_USE_DB)
     sqlQRCache.reset();
     if (_sqlite != nullptr) {
         _sqlite->closeAll();
@@ -265,25 +265,25 @@ void dynxxRelease() {
     }
 #endif
 
-#if defined(USE_KV)
+#if defined(DYNXX_USE_KV)
     if (_kv != nullptr) {
         _kv->closeAll();
         _kv.reset();
     }
 #endif
 
-#if defined(USE_LUA)
+#if defined(DYNXX_USE_LUA)
     dynxx_lua_release();
 #endif
 
-#if defined(USE_QJS)
+#if defined(DYNXX_USE_QJS)
     dynxx_js_release();
 #endif
 }
 
 // Device.Device
 
-#if defined(USE_DEVICE)
+#if defined(DYNXX_USE_DEVICE)
 
 DynXXDeviceTypeX dynxxDeviceType() {
     return Device::deviceType();
@@ -428,7 +428,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         std::FILE *cFILE, size_t fileSize,
                                         size_t timeout) {
     DynXXHttpResponse rsp;
-#if defined(USE_CURL)
+#if defined(DYNXX_USE_CURL)
     if (_http_client == nullptr) [[unlikely]] {
         _http_client = std::make_unique<HttpClient>();
     }
@@ -437,7 +437,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
         return rsp;
     }
 
-#if defined(USE_CURL)
+#if defined(DYNXX_USE_CURL)
     std::vector<HttpFormField> vFormFields;
     auto fieldNameCount = formFieldNameV.size();
     if (fieldNameCount > 0) {
@@ -539,7 +539,7 @@ DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                 cFILE, fileSize, timeout);
 }
 
-#if defined(USE_CURL)
+#if defined(DYNXX_USE_CURL)
 bool dynxxNetHttpDownload(std::string_view url, std::string_view filePath, size_t timeout) {
     if (url.empty() || filePath.empty()) [[unlikely]] {
         return false;
@@ -553,7 +553,7 @@ bool dynxxNetHttpDownload(std::string_view url, std::string_view filePath, size_
 
 // SQLite
 
-#if defined(USE_DB)
+#if defined(DYNXX_USE_DB)
 
 DynXXSQLiteConnHandle dynxxSQLiteOpen(std::string_view _id) {
     if (_root == nullptr || _id.empty()) [[unlikely]] {
@@ -664,7 +664,7 @@ void dynxxSQLiteClose(DynXXSQLiteConnHandle conn) {
 
 // KV
 
-#if defined(USE_KV)
+#if defined(DYNXX_USE_KV)
 
 DynXXKVConnHandle dynxxKVOpen(std::string_view _id) {
     if (_id.empty()) [[unlikely]] {

@@ -1,4 +1,4 @@
-#if defined(USE_KV)
+#if defined(DYNXX_USE_KV)
 
 #include "KV.hxx"
 

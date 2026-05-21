@@ -7,12 +7,7 @@
 
 #include <DynXX/CXX/Types.hxx>
 #include <DynXX/CXX/Zip.hxx>
-
-#if defined(__cpp_explicit_this_parameter) && (__cpp_explicit_this_parameter >= 202110L) && !defined(__OHOS__)
-#define DYNXX_HAS_EXPLICIT_THIS_PARAMETER 1
-#else
-#define DYNXX_HAS_EXPLICIT_THIS_PARAMETER 0
-#endif
+#include <DynXX/CXX/Macro.hxx>
 
 namespace DynXX::Core::Z {
     
@@ -38,7 +33,7 @@ namespace DynXX::Core::Z {
 
         size_t input(BytesView bytes, bool finish);
 
-#if DYNXX_HAS_EXPLICIT_THIS_PARAMETER
+#if DYNXX_USE_DEDUCING_THIS
         Bytes processDo(this T &self);
 #else
         Bytes processDo();

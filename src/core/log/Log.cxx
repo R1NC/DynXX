@@ -13,7 +13,7 @@
 #include <emscripten/emscripten.h>
 #endif
 
-#if defined(USE_SPDLOG)
+#if defined(DYNXX_USE_SPDLOG)
 #define SPDLOG_HEADER_ONLY
 #if defined(__ANDROID__)
 #if defined(SPDLOG_FWRITE_UNLOCKED)
@@ -87,7 +87,7 @@ namespace
 #endif
     }
 
-#if defined(USE_SPDLOG)
+#if defined(DYNXX_USE_SPDLOG)
     void spdLogSetLevel(DynXXLogLevelX level)
     {
         switch(level) {
@@ -171,7 +171,7 @@ namespace
             stdLogPrint(level, content);
         }
     
-#if defined(USE_SPDLOG)
+#if defined(DYNXX_USE_SPDLOG)
         spdLogPrint(level, content);
 #endif
     }
@@ -221,7 +221,7 @@ void setLevel(DynXXLogLevelX level)
         return;
     }
 
-#if defined(USE_SPDLOG)
+#if defined(DYNXX_USE_SPDLOG)
     spdLogPrepare();
 #endif
 

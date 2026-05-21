@@ -13,7 +13,7 @@
 #include <DynXX/CXX/Macro.hxx>
 #include <DynXX/C/Device.h>
 
-#if defined(USE_STD_FORMAT)
+#if defined(DYNXX_USE_STD_FORMAT)
 #include <format>
 #endif
 
@@ -110,7 +110,7 @@ namespace {
             }
         }
 
-#if defined(USE_STD_FORMAT)
+#if defined(DYNXX_USE_STD_FORMAT)
         return std::format("Windows {}.{}", major, minor);
 #else
         return "Windows " + std::to_string(major) + "." + std::to_string(minor);
@@ -292,13 +292,13 @@ std::string osVersion()
     static const auto ver = []() {
         const auto wv = getWindowsVersion();
         if (wv.name.empty()) [[unlikely]] {
-#if defined(USE_STD_FORMAT)
+#if defined(DYNXX_USE_STD_FORMAT)
             return std::format("Windows {}.{}", wv.major, wv.minor);
 #else
             return "Windows " + std::to_string(wv.major) + "." + std::to_string(wv.minor);
 #endif
         }
-#if defined(USE_STD_FORMAT)
+#if defined(DYNXX_USE_STD_FORMAT)
         return std::format("{} ({})", wv.name, wv.build);
 #else
         return wv.name + "(" + std::to_string(wv.build) + ")";

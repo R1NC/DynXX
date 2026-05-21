@@ -5,7 +5,7 @@
 #include "Macro.hxx"
 #include "Types.hxx"
 
-#if defined(USE_STD_FORMAT)
+#if defined(DYNXX_USE_STD_FORMAT)
 #include <format>
 #else
 #include <tuple>
@@ -27,7 +27,7 @@ void dynxxLogSetCallback(const std::function<void(int level, const char *content
 
 void dynxxLogPrint(DynXXLogLevelX level, std::string_view content);
 
-#if !defined(USE_STD_FORMAT)
+#if !defined(DYNXX_USE_STD_FORMAT)
 template <typename... Args>
 std::string dynxxLogFormatT(std::string_view format, Args&&... args)
 {    
@@ -48,7 +48,7 @@ std::string dynxxLogFormatT(std::string_view format, Args&&... args)
 template<typename... Args>
 void dynxxLogPrintF(DynXXLogLevelX level, std::string_view format, Args&&... args) {
     auto fContent =
-#if !defined(USE_STD_FORMAT)
+#if !defined(DYNXX_USE_STD_FORMAT)
     dynxxLogFormatT(format, std::forward<Args>(args)...)
 #else
     std::vformat(std::string{format}, std::make_format_args(args...))

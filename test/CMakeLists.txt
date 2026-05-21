@@ -20,23 +20,23 @@ set(DYNXX_TEST_SOURCES
     Zip.test.cxx
 )
 
-if(USE_DEVICE)
+if(DYNXX_USE_DEVICE)
     list(APPEND DYNXX_TEST_SOURCES Device.test.cxx)
 endif()
 
-if(USE_QJS)
+if(DYNXX_USE_QJS)
     list(APPEND DYNXX_TEST_SOURCES JS.test.cxx)
 endif()
 
-if(USE_KV)
+if(DYNXX_USE_KV)
     list(APPEND DYNXX_TEST_SOURCES KV.test.cxx)
 endif()
 
-if(USE_LUA)
+if(DYNXX_USE_LUA)
     list(APPEND DYNXX_TEST_SOURCES Lua.test.cxx)
 endif()
 
-if(USE_DB)
+if(DYNXX_USE_DB)
     list(APPEND DYNXX_TEST_SOURCES SQLite.test.cxx)
 endif()
 

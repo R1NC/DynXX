@@ -34,7 +34,7 @@ function(dynxx_add_wasm_target TARGET_NAME)
     cmake_parse_arguments(DYNXX_WASM "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(export_funcs "'_dynxx_init','_dynxx_release'")
-    if(USE_LUA)
+    if(DYNXX_USE_LUA)
         set(export_funcs "${export_funcs},'_dynxx_lua_loadS','_dynxx_lua_call'")
     endif()
 

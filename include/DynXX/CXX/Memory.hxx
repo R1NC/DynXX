@@ -216,5 +216,5 @@ protected:
     };
     explicit DynXXSmartHeapOnly(Token token) : DynXXHeapOnly(), token(token) {}
 private:
-    NO_UNIQUE_ADDRESS Token token;
+    DYNXX_NO_UNIQUE_ADDRESS Token token;
 };

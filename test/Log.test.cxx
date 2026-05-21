@@ -21,7 +21,7 @@ TEST_F(DynXXLogTestSuite, Print) {
     EXPECT_NO_THROW(dynxxLogPrint(DynXXLogLevelX::Info, "dynxx-log"));
 }
 
-#if !defined(USE_STD_FORMAT)
+#if !defined(DYNXX_USE_STD_FORMAT)
 TEST_F(DynXXLogTestSuite, FormatT) {
     EXPECT_EQ(dynxxLogFormatT("{}:{}:{}", "a", 1, 2.5), "a:1:2.5");
 }
@@ -36,6 +36,5 @@ TEST_F(DynXXLogTestSuite, PrintF) {
     EXPECT_NE(msg.find("probe"), std::string::npos);
     dynxxLogSetCallback(nullptr);
 }
-
 
 

@@ -34,7 +34,7 @@ const char *dynxx_get_version() {
     return dupStr(s);
 }
 
-#if defined(USE_DB) || defined(USE_KV)
+#if defined(DYNXX_USE_DB) || defined(DYNXX_USE_KV)
 DYNXX_EXPORT_AUTO
 const char *dynxx_root_path() {
     const auto s = dynxxRootPath().value_or("");
@@ -54,7 +54,7 @@ void dynxx_release() {
 
 // Device.DeviceInfo
 
-#if defined(USE_DEVICE)
+#if defined(DYNXX_USE_DEVICE)
 
 DYNXX_EXPORT_AUTO
 DynXXDeviceType dynxx_device_type() {
@@ -311,7 +311,7 @@ const char *dynxx_net_http_request(const char *url, const char *params, DynXXHtt
     return dupStr(s.value_or(""));
 }
 
-#if defined(USE_CURL)
+#if defined(DYNXX_USE_CURL)
 
 DYNXX_EXPORT_AUTO
 bool dynxx_net_http_download(const char *url, const char *file_path, size_t timeout) {
@@ -325,7 +325,7 @@ bool dynxx_net_http_download(const char *url, const char *file_path, size_t time
 
 // SQLite
 
-#if defined(USE_DB)
+#if defined(DYNXX_USE_DB)
 
 DYNXX_EXPORT_AUTO
 DynXXSQLiteConnHandle dynxx_sqlite_open(const char *_id) {
@@ -394,7 +394,7 @@ void dynxx_sqlite_close(DynXXSQLiteConnHandle conn) {
 
 // KV
 
-#if defined(USE_KV)
+#if defined(DYNXX_USE_KV)
 
 DYNXX_EXPORT_AUTO
 DynXXKVConnHandle dynxx_kv_open(const char *_id) {

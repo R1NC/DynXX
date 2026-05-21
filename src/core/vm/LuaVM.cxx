@@ -1,11 +1,11 @@
-#if defined(USE_LUA)
+#if defined(DYNXX_USE_LUA)
 #include "LuaVM.hxx"
 
 #include <memory>
 #include <mutex>
 #include <unordered_set>
 
-#if defined(USE_LIBUV)
+#if defined(DYNXX_USE_LIBUV)
 #include <uv.h>
 #endif
 
@@ -19,7 +19,7 @@ namespace {
     constexpr auto LuaCallRetryCount = 10UZ;
     constexpr auto LuaCallSleepMicroSecs = 100 * 1000UZ;
     
-#if defined(USE_LIBUV)
+#if defined(DYNXX_USE_LIBUV)
     struct LuaTimer
     {
         lua_State *L{nullptr};
@@ -190,7 +190,7 @@ LuaVM::LuaVM()
 {
     const auto L = this->lstate.get();
     luaL_openlibs(L);
-#if defined(USE_LIBUV)
+#if defined(DYNXX_USE_LIBUV)
     lua_register_lib(L, "Timer", lib_timer_funcs);
     _loop_init();
     timerExecutor = std::make_unique<Executor>(1);
@@ -199,7 +199,7 @@ LuaVM::LuaVM()
 
 LuaVM::~LuaVM()
 {
-#if defined(USE_LIBUV)
+#if defined(DYNXX_USE_LIBUV)
     _timer_clear();
     _loop_stop();
     timerExecutor.reset();

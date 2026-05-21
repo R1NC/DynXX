@@ -64,7 +64,7 @@ function main() {
     if (isQjscEnabled(buildFolder)) {
       checkArtifacts([join(outputExePath, "qjsc.exe")]);
     } else {
-      console.warn("[Artifact] Windows build has USE_QJS=OFF; skip qjsc executable artifact check.");
+      console.warn("[Artifact] Windows build has DYNXX_USE_QJS=OFF; skip qjsc executable artifact check.");
     }
     checkArtifacts([join(outputLibPath, "DynXX.lib")]);
     copyStaticLibs(vcpkgLibPath, outputLibPath);

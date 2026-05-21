@@ -1,11 +1,11 @@
 function(dynxx_declare_sanitizer_options)
-    set(USE_SANITIZERS OFF PARENT_SCOPE)
+    set(DYNXX_USE_SANITIZERS OFF PARENT_SCOPE)
 endfunction()
 
 function(dynxx_configure_sanitizers TARGET_NAME SANITIZERS_VAR)
     set(sanitizers)
 
-    if(USE_SANITIZERS AND ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    if(DYNXX_USE_SANITIZERS AND ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
         list(APPEND sanitizers "address")
 
         if(NOT WIN32)

@@ -1,4 +1,4 @@
-#if defined(USE_WOLF_SSL)
+#if defined(DYNXX_USE_WOLF_SSL)
 #include "Crypto.hxx"
 
 #include <cstring>
