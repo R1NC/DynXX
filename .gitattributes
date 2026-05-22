@@ -1,31 +1,83 @@
+.github/**/* linguist-vendored
+
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
 *.md linguist-documentation
 *.txt linguist-documentation
+*.xml linguist-documentation
 LICENSE linguist-documentation
 
 *.ttf linguist-vendored
 *.otf linguist-vendored
-
 *.png linguist-vendored
 *.jpg linguist-vendored
 *.svg linguist-vendored
 *.webp linguist-vendored
 
-*.entitlements linguist-vendored
-*.jar linguist-vendored
-**/gradlew linguist-vendored
-**/gradlew.bat linguist-vendored
-
-.github/**/* linguist-vendored
-res/**/* linguist-vendored
-
 CMakeLists.txt -linguist-documentation
 CMakeLists.txt linguist-language=CMake
-*.cmake linguist-language=CMake
+CMakePresets.json linguist-vendored
+vcpkg.json linguist-vendored
+.clangd linguist-generated
+.clang-format linguist-generated
+.clang-tidy linguist-generated
 **/pch linguist-language=cpp
 **/*.pch linguist-language=cpp
 
+*.entitlements linguist-generated
+*.pbxproj linguist-generated
+*.xcscheme linguist-generated
+*.xcworkspacedata linguist-generated
+IDEWorkspaceChecks.plist linguist-generated
+
+gradle-wrapper.jar linguist-generated
+gradle-wrapper.properties linguist-generated
+libs.versions.toml linguist-generated
+gradle.properties linguist-generated
+gradlew linguist-generated
+gradlew.bat linguist-generated
+proguard-rules.pro linguist-generated
+build.gradle.kts linguist-generated
+
+hvigorfile.ts linguist-generated
+build-profile.json5 linguist-generated
+code-linter.json5 linguist-generated
+oh-package.json5 linguist-generated
+oh-package-lock.json5 linguist-generated
+hvigor-config.json5 linguist-generated
+obfuscation-rules.txt linguist-generated
+app.json5 linguist-generated
+module.json5 linguist-generated
+string.json linguist-generated
+color.json linguist-generated
+layered_image.json linguist-generated
+backup_config.json linguist-generated
+main_pages.json linguist-generated
+
+*.sln linguist-generated
+*.vcxproj linguist-generated
+*.vcxproj.filters linguist-generated
+
 package-lock.json linguist-generated
 
-* text=auto eol=lf
-*.bat text eol=crlf
-*.ps1 text eol=crlf
+**/app/**/* linguist-vendored
+**/Apple/**/* linguist-vendored
+**/Linux/**/* linguist-vendored
+**/AppScope/**/* linguist-vendored
+**/resources/**/* linguist-vendored
+**/POSIX/**/* linguist-vendored
+**/WASM/**/* linguist-vendored
+**/Windows/**/* linguist-vendored
+**/iOS/**/* linguist-vendored
+**/macOS/**/* linguist-vendored
+
+*.js linguist-vendored
+DynXX.js -linguist-vendored
+wasm-util.js -linguist-vendored
+*.lua linguist-vendored
+DynXX.lua -linguist-vendored
+
+res/**/* linguist-vendored
+tools/**/* linguist-vendored
