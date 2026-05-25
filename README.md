@@ -83,9 +83,9 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | Key-Value Store | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :o: |
 | JSON Codec | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | Crypto | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| Zip | :heavy_check_mark: | :heavy_check_mark: | :grey_exclamation: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| Device Info | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :grey_exclamation: | :heavy_check_mark: | :grey_exclamation: | :x: |
-| Log | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :grey_exclamation: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Zip | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Device Info | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: |
+| Log | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 * :grey_question: : Unknown;
 * :x: : Not supported;
