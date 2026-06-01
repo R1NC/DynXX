@@ -87,7 +87,7 @@ function(dynxx_find_dependencies TARGET_NAME LINK_LIBS_VAR)
         endif()
         add_git_lib(${TARGET_NAME}
             quickjs
-            https://github.com/R1NC/quickjs-ng
+            https://github.com/rinc-xyz/quickjs-ng
             dev
         )
         if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "AppleClang")
@@ -106,7 +106,7 @@ function(dynxx_find_dependencies TARGET_NAME LINK_LIBS_VAR)
     if(DYNXX_USE_KV)
         add_git_lib(${TARGET_NAME}
             mmkv
-            https://github.com/R1NC/MMKV
+            https://github.com/rinc-xyz/MMKV
             dev
             INC_DIR "Core"
             SRC_DIR "POSIX/src"
