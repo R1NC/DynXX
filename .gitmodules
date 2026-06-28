@@ -1,5 +1,5 @@
 [submodule "cmake/toolchains/Apple"]
 	path = cmake/toolchains/Apple
-	url = git@github.com:R1NC/apple.cmake.git
+	url = git@github.com:rinc-xyz/apple.cmake.git
 	branch = dev
 	shallow = true

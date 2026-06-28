@@ -4,7 +4,7 @@ import { platform } from 'node:os';
 import { exec, getEnv } from './utils.js';
 
 const IS_WINDOWS = platform() === 'win32';
-const VCPKG_REPO = "https://github.com/R1NC/vcpkg.git";
+const VCPKG_REPO = "https://github.com/rinc-xyz/vcpkg.git";
 const VCPKG_REF = "dev";
 
 const RUNNER_TEMP = getEnv("RUNNER_TEMP");
