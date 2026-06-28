@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "xyz.rinc.dynxx.demo"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "xyz.rinc.dynxx.demo"
