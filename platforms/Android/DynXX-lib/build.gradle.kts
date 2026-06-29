@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "xyz.rinc.dynxx"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 24
