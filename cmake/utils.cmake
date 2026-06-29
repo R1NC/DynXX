@@ -1,4 +1,11 @@
 function(init_before_project)
+    if(POLICY CMP0168)
+        # Avoid FetchContent sub-builds on newer CMake. This sidesteps a
+        # Windows/Ninja failure in dependency population and keeps fetching in the
+        # main configure step.
+        cmake_policy(SET CMP0168 NEW)
+    endif()
+
     if(POLICY CMP0091)
         # CMP0091 controls MSVC runtime library selection behavior
         # (CMAKE_MSVC_RUNTIME_LIBRARY).

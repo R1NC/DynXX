@@ -21,7 +21,7 @@ function main() {
   const platformName = "OHOS";
   const preset = `${platformName}-${buildType}`;
 
-  const ndkHome = readCIEnv("CI_OHOS_NDK_HOME", "OHOS_NDK_HOME");
+  const sdkRoot = readCIEnv("CI_OHOS_SDK_ROOT", "OHOS_SDK_ROOT");
 
   const buildFolder = join(`build.${platformName}`, buildType);
   const outputFolder = join(buildFolder, "output");
@@ -58,7 +58,7 @@ function main() {
 
   copyStaticLibs(vcpkgLibPath, outputLibPath);
 
-  const arTool = join(getOhosLlvmHome(ndkHome), "llvm-ar");
+  const arTool = join(getOhosLlvmHome(sdkRoot), "llvm-ar");
   mergeLibs(outputLibPath, "libDynXX-All.a", arTool);
   
   checkArtifacts([join(outputLibPath, "libDynXX-All.a")]);

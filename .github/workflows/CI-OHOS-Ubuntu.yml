@@ -62,7 +62,7 @@ jobs:
 
     - name: Set HarmonyOS Environment
       run: |
-        echo "CI_OHOS_NDK_HOME=${{ github.workspace }}/ohos-sdk/linux/native" >> $GITHUB_ENV
+        echo "CI_OHOS_SDK_ROOT=${{ github.workspace }}/ohos-sdk/linux" >> $GITHUB_ENV
 
     - name: Setup custom vcpkg
       working-directory: ./tools

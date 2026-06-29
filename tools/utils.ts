@@ -143,12 +143,12 @@ export function getAndroidLlvmHome(ndkHome: string): string {
   throw new Error(`Cannot determine NDK llvm root (bin) under ${prebuiltDir}`);
 }
 
-export function getOhosLlvmHome(ndkHome: string): string {
-  const llvmDir = resolve(ndkHome, 'llvm', 'bin');
+export function getOhosLlvmHome(sdkRoot: string): string {
+  const llvmDir = resolve(sdkRoot, 'native', 'llvm', 'bin');
   if (isExistingDirectory(llvmDir)) {
     return llvmDir;
   }
-  throw new Error(`Cannot determine HarmonyOS llvm root (bin) under ${resolve(ndkHome, 'llvm')}`);
+  throw new Error(`Cannot determine HarmonyOS llvm root (bin) under ${resolve(sdkRoot, 'native', 'llvm')}`);
 }
 
 function canExecuteCommand(command: string): boolean {

@@ -287,7 +287,7 @@
       "displayName": "OHOS Default Config",
       "description": "Default build for OHOS",
       "cacheVariables": {
-        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{OHOS_NDK_HOME}/build/cmake/ohos.toolchain.cmake",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{OHOS_SDK_ROOT}/native/build/cmake/ohos.toolchain.cmake",
         "OHOS_PLATFORM": "OHOS",
         "OHOS_ARCH": "$env{OHOS_ABI}"
       }

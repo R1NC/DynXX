@@ -64,8 +64,8 @@ jobs:
     - name: Set HarmonyOS Environment
       shell: pwsh
       run: |
-        $ohosNdkHome = "${{ github.workspace }}/ohos-sdk/windows/native"
-        Add-Content -Path $env:GITHUB_ENV -Value "CI_OHOS_NDK_HOME=$ohosNdkHome"
+        $ohosSdkRoot = "${{ github.workspace }}/ohos-sdk/windows"
+        Add-Content -Path $env:GITHUB_ENV -Value "CI_OHOS_SDK_ROOT=$ohosSdkRoot"
 
     - name: Setup custom vcpkg
       shell: pwsh

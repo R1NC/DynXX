@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, readlinkSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
 
 import { exec, getEnv, getHomeDir, goInTmpDir, isMacOS, isWindows, readCIEnv, setEnv, spawn } from '../utils.js';
@@ -69,14 +69,16 @@ export function exportCompileCommands(buildFolder: string, root: string) {
   const src = resolve(root, buildFolder, f);
   const dst = resolve(root, f);
 
-  if (existsSync(dst)) {
-    try {
-      if (statSync(dst).isSymbolicLink()) {
-        const target = readlinkSync(dst);
-        if (resolve(target) === src) return;
+  try {
+    if (lstatSync(dst).isSymbolicLink()) {
+      const target = resolve(dirname(dst), readlinkSync(dst));
+      if (target === src && existsSync(src)) {
+        return;
       }
-      unlinkSync(dst);
-    } catch (error) {
+    }
+    unlinkSync(dst);
+  } catch (error: any) {
+    if (error?.code !== 'ENOENT') {
       console.error(`Failed to process existing file: ${dst}`, error);
       try {
         unlinkSync(dst);
@@ -86,15 +88,18 @@ export function exportCompileCommands(buildFolder: string, root: string) {
     }
   }
 
-  if (existsSync(src)) {
-    try {
-      const relativeSrc = relative(dirname(dst), src);
-      symlinkSync(relativeSrc, dst, 'file');
-      console.log(`Created symlink: ${dst} -> ${relativeSrc}`);
-    } catch (error: any) {
-      console.warn(`Failed to create symlink, falling back to copy: ${error.message}`);
-      copyFileSync(src, dst);
-    }
+  if (!existsSync(src)) {
+    console.warn(`compile_commands.json not found at ${src}, skip export.`);
+    return;
+  }
+
+  try {
+    const relativeSrc = relative(dirname(dst), src);
+    symlinkSync(relativeSrc, dst, 'file');
+    console.log(`Created symlink: ${dst} -> ${relativeSrc}`);
+  } catch (error: any) {
+    console.warn(`Failed to create symlink, falling back to copy: ${error.message}`);
+    copyFileSync(src, dst);
   }
 }
 
