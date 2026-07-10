@@ -36,12 +36,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
 
     - name: Setup Emscripten
-      uses: mymindstorm/setup-emsdk@v12
+      uses: emscripten-core/setup-emsdk@v16
       with:
         version: 3.1.65
 
@@ -53,7 +53,7 @@ jobs:
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.HOME }}/vcpkg-binary-cache
         key: vcpkg-binary-cache-wasm-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
@@ -66,7 +66,7 @@ jobs:
         npm run build:wasm
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: WASM-Ubuntu-build
         path: |

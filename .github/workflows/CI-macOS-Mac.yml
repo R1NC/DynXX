@@ -40,9 +40,15 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
+
+    - name: Normalize Homebrew taps
+      run: |
+        if brew tap | grep -qx 'aws/tap'; then
+          brew untap aws/tap
+        fi
 
     - name: Setup LLVM
       run: |
@@ -61,7 +67,7 @@ jobs:
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.HOME }}/vcpkg-binary-cache
         key: vcpkg-binary-cache-osx-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
@@ -72,7 +78,7 @@ jobs:
         npm run build:macos -- --test --coverage
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: macOS-Mac-build
         path: |

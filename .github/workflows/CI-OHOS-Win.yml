@@ -38,13 +38,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
 
     - name: Cache HarmonyOS SDK
       id: cache-ohos-sdk
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ohos-sdk/windows/native
@@ -76,7 +76,7 @@ jobs:
 
     - name: Cache vcpkg binary
       id: cache-vcpkg
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.USERPROFILE }}\vcpkg-binary-cache
         key: vcpkg-binary-cache-ohos-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
@@ -88,7 +88,7 @@ jobs:
         npm run build:harmonyos -- --test
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: OHOS-Win-build
         path: |

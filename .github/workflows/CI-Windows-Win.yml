@@ -39,12 +39,12 @@ jobs:
     needs: baseSetup
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
       - name: Setup msvc-cmd
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: ilammy/msvc-dev-cmd@v1.13.0
         with:
           arch: x64
       
@@ -58,7 +58,7 @@ jobs:
 
       - name: Cache vcpkg binary
         id: cache-vcpkg
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.USERPROFILE }}\vcpkg-binary-cache
           key: vcpkg-binary-cache-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
@@ -69,7 +69,7 @@ jobs:
           npm run build:windows -- --test --coverage
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Windows-Win-build
           path: |
