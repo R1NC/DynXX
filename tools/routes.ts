@@ -1,7 +1,3 @@
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { exec } from "./utils.js";
-
 const buildTargetMap: Record<string, string> = {
     android: "android",
     harmonyos: "ohos",
@@ -90,23 +86,33 @@ function resolveCommand(args: string[]): ResolvedCommand | null {
     return target ? { command: `build:${target}`, scriptArgs: args.slice(1) } : null;
 }
 
-const resolved = resolveCommand(process.argv.slice(2));
-if (!resolved) {
+function getResolvedCommand(): ResolvedCommand {
+    const resolved = resolveCommand(process.argv.slice(2));
+    if (resolved != null) {
+        return resolved;
+    }
     printUsage();
     process.exit(1);
+    throw new Error("Unreachable");
 }
 
-const { command, scriptArgs } = resolved;
-const scriptFile = commandMap[command];
-if (!scriptFile) {
-    printUsage();
-    process.exit(1);
+async function main(): Promise<void> {
+    const { command, scriptArgs } = getResolvedCommand();
+    const scriptFile = commandMap[command];
+    if (!scriptFile) {
+        printUsage();
+        process.exit(1);
+        throw new Error("Unreachable");
+    }
+
+    const previousArgv = process.argv;
+    process.argv = [previousArgv[0] ?? "node", scriptFile, ...scriptArgs];
+
+    try {
+        await import(new URL(scriptFile, import.meta.url).href);
+    } finally {
+        process.argv = previousArgv;
+    }
 }
 
-const toolsDir = dirname(fileURLToPath(import.meta.url));
-const tsxCli = join(toolsDir, "node_modules", "tsx", "dist", "cli.mjs");
-const quotedArgs = scriptArgs
-    .map((arg) => `"${arg.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`)
-    .join(" ");
-const argsSegment = quotedArgs ? ` ${quotedArgs}` : "";
-exec(`node "${tsxCli}" ${scriptFile}${argsSegment}`, toolsDir);
+void main();
