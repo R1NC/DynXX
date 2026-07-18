@@ -12,6 +12,7 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'tools/utils.ts'
+      - 'tools/platforms/windows.ts'
       - 'tools/test/gtest-utils.ts'
       - 'tools/test/coverage-utils.ts'
       - 'tools/find-llvm.ts'

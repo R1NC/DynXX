@@ -12,6 +12,7 @@ on:
       - 'CMakePresets.json'
       - 'vcpkg.json'
       - 'tools/utils.ts'
+      - 'tools/platforms/ohos.ts'
       - 'tools/setup-vcpkg.ts'
       - 'tools/test/gtest-utils.ts'
       - 'tools/build/build-utils.ts'
