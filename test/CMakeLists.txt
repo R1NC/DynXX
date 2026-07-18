@@ -45,6 +45,7 @@ apply_coverage_flags(DynXX)
 
 if(ANDROID OR IOS OR EMSCRIPTEN OR OHOS)
     add_library(DynXXTest STATIC ${DYNXX_TEST_SOURCES})
+    dynxx_apply_optimization_options(DynXXTest)
     
     target_link_libraries(DynXXTest
         PUBLIC
@@ -68,12 +69,14 @@ else()
         DynXXTestMain.cxx
         ${DYNXX_TEST_SOURCES}
     )
+    dynxx_apply_optimization_options(DynXXCxxTests)
     
     target_link_libraries(DynXXCxxTests
         PRIVATE
             DynXX
             GTest::gtest
     )
+    dynxx_apply_final_target_optimization(DynXXCxxTests)
     
     target_include_directories(DynXXCxxTests
         PRIVATE

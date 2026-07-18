@@ -5,6 +5,7 @@ function(add_wasm_exe TARGET_NAME)
     cmake_parse_arguments(WASM "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     add_executable(${TARGET_NAME} ${SRC_FILES})
+    dynxx_apply_optimization_options(${TARGET_NAME})
 
     set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX ".html")
 
@@ -25,6 +26,7 @@ function(add_wasm_exe TARGET_NAME)
 
     set_target_properties(${TARGET_NAME} PROPERTIES
         LINK_FLAGS "${FINAL_LINK_FLAGS} -s EXPORTED_RUNTIME_METHODS=[${FINAL_RUNTIME_METHODS}] -s EXPORTED_FUNCTIONS=[${FINAL_FUNCS}]")
+    dynxx_apply_final_target_optimization(${TARGET_NAME})
 endfunction()
 
 function(dynxx_add_wasm_target TARGET_NAME)
