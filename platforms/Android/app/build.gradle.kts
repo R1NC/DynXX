@@ -6,11 +6,12 @@ plugins {
 android {
     namespace = "xyz.rinc.dynxx.demo"
     compileSdk = 37
+    buildToolsVersion = "37.0.0"
 
     defaultConfig {
         applicationId = "xyz.rinc.dynxx.demo"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
