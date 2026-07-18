@@ -1,9 +1,10 @@
 import { join } from 'node:path';
 
 import {
-  getMsvcToolsHome, gotoParentPath,
+  gotoParentPath,
   isWindows,
 } from '../utils.js';
+import { getMsvcToolsHome } from '../platforms/windows.js';
 import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputExePath, getOutputLibPath,
   getVcpkgLibPath, isQjscEnabled, mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly

@@ -1,8 +1,9 @@
 import { join } from 'node:path';
 
 import {
-  getOhosLlvmHome, gotoParentPath, readCIEnv, setEnv,
+  gotoParentPath, readCIEnv, setEnv,
 } from '../utils.js';
+import { getOhosLlvmHome } from '../platforms/ohos.js';
 import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputLibPath, getVcpkgLibPath,
   mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly

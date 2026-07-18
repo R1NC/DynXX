@@ -1,9 +1,10 @@
 import { join, dirname } from 'node:path';
 
 import {
-  getAndroidLlvmHome, gotoParentPath, readCIEnv, setEnv, copyFile, makeExecutable, exec,
+  gotoParentPath, readCIEnv, setEnv, copyFile, makeExecutable, exec,
   isWindows,
 } from '../utils.js';
+import { getAndroidLlvmHome } from '../platforms/android.js';
 import {
   checkArtifacts, copyStaticLibs, exportCompileCommands, getOutputLibPath, getVcpkgLibPath,
   mergeLibs, resolveBuildType, runCMake, setBuildOutputEnv, setupVcpkgEnv, shouldConfigureOnly

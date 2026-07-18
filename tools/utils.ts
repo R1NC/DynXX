@@ -1,6 +1,6 @@
 import { spawnSync, execSync } from 'node:child_process';
 import { 
-  existsSync, copyFileSync, rmSync, readdirSync, statSync, mkdtempSync, chmodSync
+  existsSync, copyFileSync, rmSync, statSync, mkdtempSync, chmodSync
 } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { homedir, tmpdir, platform } from 'node:os';
@@ -93,62 +93,6 @@ export function readCIEnv(ciEnvName: string, localEnvName: string): string {
     setEnv(localEnvName, ciValue);
   }
   return getEnv(localEnvName);
-}
-
-// --- Platform-specified tools ---
-
-export function getMsvcToolsHome(): string {
-  const result = spawn("where.exe", ["lib.exe"], { allowFailure: true });
-  if (result) {
-    const libPath = result.toString().trim().split(/\r?\n/, 1)[0];
-    if (libPath && existsSync(libPath)) {
-      const toolsHome = dirname(libPath);
-      setEnv("MSVC_TOOLS_HOME", toolsHome);
-      return toolsHome;
-    }
-  }
-  throw new Error("Cannot determine MSVC_TOOLS_HOME from lib.exe in PATH");
-}
-
-export function getAndroidLlvmHome(ndkHome: string): string {
-  const platformPaths: Record<string, string[]> = {
-    'darwin': ['darwin-arm64', 'darwin-x86_64'],
-    'linux': ['linux-x86_64'],
-    'win32': ['windows-x86_64']
-  };
-
-  const candidates = platformPaths[process.platform];
-  if (!candidates) {
-    throw new Error(`Unsupported platform for NDK lookup: ${process.platform}`);
-  }
-
-  const prebuiltDir = resolve(ndkHome, 'toolchains', 'llvm', 'prebuilt');
-
-  for (const tag of candidates) {
-    const candidateDir = resolve(prebuiltDir, tag, 'bin');
-    if (isExistingDirectory(candidateDir)) {
-      return candidateDir;
-    }
-  }
-
-  if (isExistingDirectory(prebuiltDir)) {
-    for (const entry of readdirSync(prebuiltDir)) {
-      const candidateDir = resolve(prebuiltDir, entry, 'bin');
-      if (isExistingDirectory(candidateDir)) {
-        return candidateDir;
-      }
-    }
-  }
-
-  throw new Error(`Cannot determine NDK llvm root (bin) under ${prebuiltDir}`);
-}
-
-export function getOhosLlvmHome(sdkRoot: string): string {
-  const llvmDir = resolve(sdkRoot, 'native', 'llvm', 'bin');
-  if (isExistingDirectory(llvmDir)) {
-    return llvmDir;
-  }
-  throw new Error(`Cannot determine HarmonyOS llvm root (bin) under ${resolve(sdkRoot, 'native', 'llvm')}`);
 }
 
 function canExecuteCommand(command: string): boolean {
