@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
-import { checkLLVMReady, getEnv, spawn } from '../utils.js';
+import { getEnv, isExecutableAvailable, spawn } from '../utils.js';
 
 const COVERAGE_IGNORE_DIRS = [
   'test',
@@ -36,6 +36,15 @@ function buildCoverageIgnoreRegex(): string {
 }
 
 const COVERAGE_IGNORE_REGEX = buildCoverageIgnoreRegex();
+
+function checkLLVMReady(tools: string[] = ['llvm-profdata', 'llvm-cov']): boolean {
+  const missing = tools.filter((tool) => !isExecutableAvailable(tool));
+  if (missing.length > 0) {
+    console.warn(`[WARN] LLVM tools unavailable: ${missing.join(', ')}`);
+    return false;
+  }
+  return true;
+}
 
 function resolveLlvmToolPath(toolName: string): string {
   const llvmToolsHome = getEnv('LLVM_HOME');

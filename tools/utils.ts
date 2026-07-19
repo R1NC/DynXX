@@ -108,7 +108,7 @@ function canExecuteCommand(command: string): boolean {
   return !result.error && result.status === 0;
 }
 
-function isExecutableAvailable(commandOrPath: string): boolean {
+export function isExecutableAvailable(commandOrPath: string): boolean {
   if (!commandOrPath) {
     return false;
   }
@@ -117,15 +117,6 @@ function isExecutableAvailable(commandOrPath: string): boolean {
     return existsSync(commandOrPath);
   }
   return canExecuteCommand(commandOrPath);
-}
-
-export function checkLLVMReady(tools: string[] = ['llvm-profdata', 'llvm-cov']): boolean {
-  const missing = tools.filter((tool) => !isExecutableAvailable(tool));
-  if (missing.length > 0) {
-    console.warn(`[WARN] LLVM tools unavailable: ${missing.join(', ')}`);
-    return false;
-  }
-  return true;
 }
 
 // --- Run Tools ---
