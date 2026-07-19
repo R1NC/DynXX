@@ -117,36 +117,6 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
   </thead>
   <tbody>
     <tr>
-      <td rowspan="2">C++17</td>
-      <td><a href="https://en.cppreference.com/w/cpp/utility/from_chars">std::from_chars</a> for integer</td>
-      <td>iOS 16.5-, macOS 13.4-;</td>
-    </tr>
-    <tr>
-      <td><a href="https://en.cppreference.com/w/cpp/utility/from_chars">std::from_chars</a> for float</td>
-      <td>All;</td>
-    </tr>
-    <tr>
-      <td rowspan="5">C++20</td>
-      <td><a href="https://en.cppreference.com/w/cpp/utility/format/format">std::format</a></td>
-      <td>iOS 16.3-, macOS 13.3-, OHOS;</td>
-    </tr>
-    <tr>
-      <td><a href="https://en.cppreference.com/w/cpp/thread/jthread.html">std::jthread</a></td>
-      <td>Apple;</td>
-    </tr>
-    <tr>
-      <td><a href="https://en.cppreference.com/w/cpp/ranges">std::ranges</a></td>
-      <td>iOS 16.3-, macOS 13.3-, OHOS;</td>
-    </tr>
-    <tr>
-      <td><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0919r3.html">Heterogeneous lookup for hash map/set</a></td>
-      <td>OHOS;</td>
-    </tr>
-    <tr>
-      <td><a href="https://en.cppreference.com/w/cpp/utility/source_location">std::source_location</a></td>
-      <td>OHOS;</td>
-    </tr>
-    <tr>
       <td rowspan="6">C++23</td>
       <td><a href="https://en.cppreference.com/w/cpp/utility/functional/move_only_function.html">std::move_only_function</a></td>
       <td>Clang, Apple &amp; OHOS;</td>
@@ -170,6 +140,36 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
     <tr>
       <td><a href="https://en.cppreference.com/w/cpp/memory/out_ptr_t/out_ptr">std::out_ptr</a></td>
       <td>OHOS;</td>
+    </tr>
+    <tr>
+      <td rowspan="5">C++20</td>
+      <td><a href="https://en.cppreference.com/w/cpp/utility/format/format">std::format</a></td>
+      <td>iOS 16.3-, macOS 13.3-, OHOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/thread/jthread.html">std::jthread</a></td>
+      <td>Apple;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/ranges">std::ranges</a></td>
+      <td>iOS 16.3-, macOS 13.3-, OHOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0919r3.html">Heterogeneous lookup for hash map/set</a></td>
+      <td>OHOS;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/utility/source_location">std::source_location</a></td>
+      <td>OHOS;</td>
+    </tr>
+    <tr>
+      <td rowspan="2">C++17</td>
+      <td><a href="https://en.cppreference.com/w/cpp/utility/from_chars">std::from_chars</a> for integer</td>
+      <td>iOS 16.5-, macOS 13.4-;</td>
+    </tr>
+    <tr>
+      <td><a href="https://en.cppreference.com/w/cpp/utility/from_chars">std::from_chars</a> for float</td>
+      <td>All;</td>
     </tr>
   </tbody>
 </table>
