@@ -2,8 +2,10 @@
 
 #include <new>
 #include <thread>
+#include <mutex>
 #include <string>
 #include <chrono>
+#include <concepts>
 #include <functional>
 
 #include <DynXX/CXX/Types.hxx>
@@ -41,6 +43,24 @@ namespace DynXX::Core::Concurrent {
     {
         { mtx.try_lock_until(std::declval<std::chrono::time_point<std::chrono::steady_clock> >()) } -> std::convertible_to<bool>;
     };
+
+    template<typename Mtx>
+    concept BasicLockableT = requires(Mtx mtx)
+    {
+        mtx.lock();
+        mtx.unlock();
+    };
+
+    // Copy a shared value under the lock and return the snapshot; 
+    // The caller works on the copy outside the critical section without holding the mutex. 
+    // The copy happens inside the critical section (hence `std::copy_constructible`); 
+    // Guaranteed copy elision (C++17 prvalue) lands it directly in the caller's variable, 
+    // so the snapshot costs no extra copy compared with manual lock_guard usage.
+    template<BasicLockableT Mtx, std::copy_constructible T>
+    [[nodiscard]] T snapshotLocked(Mtx &mtx, const T &value) {
+        const auto lock = std::scoped_lock(mtx);
+        return value;
+    }
 
     template<TimedLockableT T>
     [[nodiscard]] bool tryLockUntil(T &mtx, size_t timeoutMicroSecs) {

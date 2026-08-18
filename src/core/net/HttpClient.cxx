@@ -14,10 +14,13 @@
 #include <DynXX/C/Net.h>
 #include <DynXX/CXX/Coding.hxx>
 
+#include "../concurrent/ConcurrentUtil.hxx"
+
 namespace
 {
     using enum DynXXLogLevelX;
     using enum DynXXHttpMethodX;
+    using DynXX::Core::Concurrent::snapshotLocked;
 
     constexpr auto HTTP_STATUS_OK = 200;
     // reserve slack for the two ':' separators and the port digits in a resolve entry
@@ -76,10 +79,7 @@ namespace
     // transfer runs, so the list is built per request here and freed by Req::cleanup
     // once the transfer completes; the global keeps only the C++ config vector.
     curl_slist *buildResolveList() {
-        const auto configs = [&] {
-            const auto lock = std::scoped_lock(gConfigMutex);
-            return gDnsConfigs;
-        }();
+        const auto configs = snapshotLocked(gConfigMutex, gDnsConfigs);
         curl_slist *list = nullptr;
         for (const auto &cfg : configs) {
             std::string entry;
@@ -402,10 +402,7 @@ namespace
             req.setOpt(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_MAX_TLSv1_3);
             req.setOpt(CURLOPT_SSL_SESSIONID_CACHE, 1L);
             req.setOpt(CURLOPT_SSL_ENABLE_ALPN, 1L);
-            const auto certPath = [&] {
-                const auto lock = std::scoped_lock(gConfigMutex);
-                return gCertPath;
-            }();
+            const auto certPath = snapshotLocked(gConfigMutex, gCertPath);
             if (certPath.empty()) {
                 req.setOpt(CURLOPT_SSL_VERIFYPEER, 0L);
                 req.setOpt(CURLOPT_SSL_VERIFYHOST, 0L);
@@ -464,10 +461,7 @@ namespace
         dynxxLogPrintF(Debug, "HttpClient.req url: {}", fixedUrl);
         req.setOpt(CURLOPT_URL, fixedUrl.c_str());
 
-        const auto proxy = [&] {
-            const auto lock = std::scoped_lock(gConfigMutex);
-            return gProxy;
-        }();
+        const auto proxy = snapshotLocked(gConfigMutex, gProxy);
         if (!proxy.host.empty()) {
             std::string proxyUrl;
             proxyUrl.reserve(proxy.host.size() + PROXY_URL_RESERVE);
