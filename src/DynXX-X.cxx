@@ -63,6 +63,9 @@ namespace {
 
 #if defined(DYNXX_USE_KV) || defined(DYNXX_USE_DB)
     using namespace DynXX::Core::Store;
+#endif
+
+#if defined(DYNXX_USE_KV) || defined(DYNXX_USE_DB) || defined(DYNXX_USE_CURL)
     std::unique_ptr<const std::string> _root{nullptr};
 #endif
 
@@ -198,7 +201,7 @@ std::string dynxxGetVersion() {
     return VERSION;
 }
 
-#if defined(DYNXX_USE_KV) || defined(DYNXX_USE_DB)
+#if defined(DYNXX_USE_KV) || defined(DYNXX_USE_DB) || defined(DYNXX_USE_CURL)
 std::optional<std::string> dynxxRootPath() {
     if (_root == nullptr) {
         return std::nullopt;
@@ -416,6 +419,31 @@ Bytes dynxxCryptoBase64Decode(BytesView in, bool noNewLines) {
 }
 
 // Net.Http
+
+#if defined(DYNXX_USE_CURL)
+
+// cert path is relative to the engine root, resolve it here before passing to HttpClient
+void dynxxNetHttpSetCertPath(std::string_view path) {
+    if (path.empty() || std::filesystem::path(path).is_absolute()) {
+        HttpClient::setCertPath(path);
+        return;
+    }
+    if (const auto rootPath = dynxxRootPath(); rootPath.has_value()) {
+        HttpClient::setCertPath(rootPath.value() + "/" + std::string(path));
+        return;
+    }
+    HttpClient::setCertPath(path);
+}
+
+void dynxxNetHttpSetProxy(const DynXXHttpProxyConfigX &proxy) {
+    HttpClient::setProxy(proxy);
+}
+
+void dynxxNetHttpSetDnsConfigs(const std::vector<DynXXHttpDnsConfigX> &configs) {
+    HttpClient::setDnsConfigs(configs);
+}
+
+#endif
 
 DynXXHttpResponse dynxxNetHttpRequest(std::string_view url,
                                         DynXXHttpMethodX method,

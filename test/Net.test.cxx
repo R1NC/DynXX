@@ -1,11 +1,19 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 #include <fstream>
+#include <DynXX/C/Net.h>
 #include <DynXX/CXX/Net.hxx>
 
 #include "TestUtil.hxx"
 
-class DynXXNetTestSuite : public ::testing::Test {};
+class DynXXNetTestSuite : public ::testing::Test {
+protected:
+    void SetUp() override {
+        dynxxNetHttpSetCertPath("");
+        dynxxNetHttpSetProxy({});
+        dynxxNetHttpSetDnsConfigs({});
+    }
+};
 
 namespace {
     constexpr const char *cNetTestUrl = "https://rinc.xyz/index.html";
@@ -22,6 +30,10 @@ namespace {
         std::string url;
         std::string filePath;
     };
+
+    DynXXHttpResponse netRequestWithTimeout(std::string_view url, size_t timeout) {
+        return dynxxNetHttpRequest(url, DynXXHttpMethodX::Get, "a=1", {}, {}, {}, {}, {}, nullptr, 0, timeout);
+    }
 }
 
 TEST_F(DynXXNetTestSuite, HttpResponseToJson) {
@@ -256,4 +268,83 @@ TEST_F(DynXXNetTestSuite, DownloadInvalidOpenPathShouldReturnFalse) {
     std::filesystem::remove_all(invalidDir, ec);
     const auto invalidFile = invalidDir / "index.html";
     EXPECT_FALSE(dynxxNetHttpDownload(cNetTestUrl, invalidFile.string()));
+}
+
+TEST_F(DynXXNetTestSuite, HttpSetCertPathInvalidFileShouldFailHttpsRequest) {
+    dynxxNetHttpSetCertPath((DynXX::TestUtil::resolveTempPath() / "dynxx_no_such_ca.pem").string());
+    const auto rsp = netRequestWithTimeout(cNetTestUrl, 1000);
+    EXPECT_EQ(rsp.code, 0);
+    EXPECT_TRUE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpSetCertPathEmptyShouldRestoreRequest) {
+    dynxxNetHttpSetCertPath("");
+    const auto rsp = netRequestWithTimeout(cNetTestUrl, 5000);
+    if (rsp.code != HTTP_OK) {
+        GTEST_SKIP();
+    }
+    EXPECT_FALSE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpSetProxyUnreachableShouldFailRequest) {
+    dynxxNetHttpSetProxy({.host = "127.0.0.1", .port = 1});
+    const auto rsp = netRequestWithTimeout(cNetTestUrl, 1000);
+    dynxxNetHttpSetProxy({});
+    EXPECT_EQ(rsp.code, 0);
+    EXPECT_TRUE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpSetDnsConfigsOverrideShouldFailRequest) {
+    dynxxNetHttpSetDnsConfigs({{.host = "rinc.xyz", .port = 443, .address = "127.0.0.1"}});
+    const auto rsp = netRequestWithTimeout(cNetTestUrl, 1000);
+    dynxxNetHttpSetDnsConfigs({});
+    EXPECT_EQ(rsp.code, 0);
+    EXPECT_TRUE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpSetDnsConfigsReplaceShouldRebuildAndFailRequest) {
+    dynxxNetHttpSetDnsConfigs({{.host = "rinc.xyz", .port = 443, .address = "192.0.2.1"}});
+    dynxxNetHttpSetDnsConfigs({{.host = "rinc.xyz", .port = 443, .address = "127.0.0.1"}});
+    const auto rsp = netRequestWithTimeout(cNetTestUrl, 1000);
+    dynxxNetHttpSetDnsConfigs({});
+    EXPECT_EQ(rsp.code, 0);
+    EXPECT_TRUE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpCSetNullConfigsShouldBeSafe) {
+    dynxx_net_http_set_cert_path(nullptr);
+    dynxx_net_http_set_proxy(nullptr);
+    dynxx_net_http_set_dns_configs(nullptr, 0);
+    const auto rsp = dynxxNetHttpRequest(cNetTestUrl, DynXXHttpMethodX::Get, "a=1");
+    if (rsp.code != HTTP_OK) {
+        GTEST_SKIP();
+    }
+    EXPECT_FALSE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpCSetProxyUnreachableShouldFailRequest) {
+    const DynXXHttpProxyConfig proxy{"127.0.0.1", 1, nullptr, nullptr};
+    dynxx_net_http_set_proxy(&proxy);
+    const auto rsp = netRequestWithTimeout(cNetTestUrl, 1000);
+    dynxx_net_http_set_proxy(nullptr);
+    EXPECT_EQ(rsp.code, 0);
+    EXPECT_TRUE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpCSetDnsConfigsOverrideShouldFailRequest) {
+    const DynXXHttpDnsConfig configs[]{{"rinc.xyz", 443, "127.0.0.1"}};
+    dynxx_net_http_set_dns_configs(configs, 1);
+    const auto rsp = netRequestWithTimeout(cNetTestUrl, 1000);
+    dynxx_net_http_set_dns_configs(nullptr, 0);
+    EXPECT_EQ(rsp.code, 0);
+    EXPECT_TRUE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpCSetCertPathInvalidShouldFailHttpsRequest) {
+    const auto certPath = (DynXX::TestUtil::resolveTempPath() / "dynxx_no_such_ca.pem").string();
+    dynxx_net_http_set_cert_path(certPath.c_str());
+    const auto rsp = netRequestWithTimeout(cNetTestUrl, 1000);
+    dynxx_net_http_set_cert_path(nullptr);
+    EXPECT_EQ(rsp.code, 0);
+    EXPECT_TRUE(rsp.data.empty());
 }

@@ -34,7 +34,7 @@ namespace {
         return ss.str();
     }
 
-    constexpr std::array<JsCallEntry, 14> kJsCallEntries{{
+    constexpr std::array<JsCallEntry, 15> kJsCallEntries{{
         {"TestDeviceInfo", "{}"},
         {"TestMicrotask", "{}"},
         {"TestNetHttpReqPro", "https://rinc.xyz"},
@@ -48,7 +48,8 @@ namespace {
         {"TestCryptoAes", "DynXX"},
         {"TestCryptoAesGcm", "DynXX"},
         {"TestZip", "{}"},
-        {"TestCallPlatform", "{}"}
+        {"TestCallPlatform", "{}"},
+        {"TestNetHttpSetConfigs", "{}"}
     }};
 
 }

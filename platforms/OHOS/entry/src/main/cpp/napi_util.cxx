@@ -84,6 +84,21 @@ std::tuple<const char **, size_t> napiValueToCharsArray(napi_env env, napi_value
     return {charsArray, len};
 }
 
+std::tuple<const long *, size_t> napiValueToLongArray(napi_env env, napi_value nv) {
+    auto len = napiValueArrayLen(env, nv);
+    if (len == 0) {
+        return {};
+    }
+    const auto longArray = mallocX<long>(len);
+    for (decltype(len) i = 0; i < len; i++) {
+        napi_value vLong;
+        auto status = napi_get_element(env, nv, i, &vLong);
+        CHECK_NAPI_STATUS_RETURN_TUPLE(env, status, "napi_get_element() failed");
+        longArray[i] = napiValueToLong(env, vLong);
+    }
+    return {longArray, len};
+}
+
 napi_value napiValueFromChars(napi_env env, const char *c) {
     if (c == nullptr) {
         return napiValueFromInt(env, napi_invalid_arg);
@@ -197,6 +212,10 @@ std::tuple<const char **, size_t> NapiCallContext::argCharsArrayAt(size_t i) {
     return this->napiValueToCharsArray(this->argAt(i));
 }
 
+std::tuple<const long *, size_t> NapiCallContext::argLongArrayAt(size_t i) {
+    return this->napiValueToLongArray(this->argAt(i));
+}
+
 size_t NapiCallContext::argCount() const {
     return this->argc;
 }
@@ -234,6 +253,12 @@ std::tuple<const char **, size_t> NapiCallContext::napiValueToCharsArray(napi_va
     for (decltype(len) i = 0; i < len; i++) {
         this->autoFree(ptrV[i]);
     }
+    this->autoFree(ptrV);
+    return {ptrV, len};
+}
+
+std::tuple<const long *, size_t> NapiCallContext::napiValueToLongArray(napi_value nv) {
+    auto [ptrV, len] = ::napiValueToLongArray(this->env, nv);
     this->autoFree(ptrV);
     return {ptrV, len};
 }

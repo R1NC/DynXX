@@ -321,6 +321,47 @@ bool dynxx_net_http_download(const char *url, const char *file_path, size_t time
     return dynxxNetHttpDownload(url, file_path, timeout);
 }
 
+DYNXX_EXPORT_AUTO
+void dynxx_net_http_set_cert_path(const char *path) {
+    dynxxNetHttpSetCertPath(path != nullptr ? path : "");
+}
+
+DYNXX_EXPORT_AUTO
+void dynxx_net_http_set_proxy(const DynXXHttpProxyConfig *proxy) {
+    if (proxy == nullptr) {
+        dynxxNetHttpSetProxy({});
+        return;
+    }
+    dynxxNetHttpSetProxy({
+        proxy->host != nullptr ? proxy->host : "",
+        static_cast<uint16_t>(proxy->port),
+        proxy->username != nullptr ? proxy->username : "",
+        proxy->password != nullptr ? proxy->password : "",
+    });
+}
+
+DYNXX_EXPORT_AUTO
+void dynxx_net_http_set_dns_configs(const DynXXHttpDnsConfig *configs, size_t config_count) {
+    if (configs == nullptr || config_count == 0) {
+        dynxxNetHttpSetDnsConfigs({});
+        return;
+    }
+    std::vector<DynXXHttpDnsConfigX> v;
+    v.reserve(config_count);
+    for (size_t i = 0; i < config_count; i++) {
+        const auto &config = configs[i];
+        if (config.host == nullptr || config.address == nullptr) {
+            continue;
+        }
+        v.emplace_back(DynXXHttpDnsConfigX{
+            config.host,
+            static_cast<uint16_t>(config.port),
+            config.address,
+        });
+    }
+    dynxxNetHttpSetDnsConfigs(v);
+}
+
 #endif
 
 // SQLite

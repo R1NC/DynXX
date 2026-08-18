@@ -24,6 +24,10 @@ class DynXX {
                                     fileLength: Long,
                                     timeout: Long): String?
 
+        external fun netHttpSetCertPath(path: String?)
+        external fun netHttpSetProxy(host: String?, port: Long, username: String?, password: String?)
+        external fun netHttpSetDnsConfigs(hostV: Array<String>?, portV: LongArray?, addressV: Array<String>?)
+
         external fun lLoadF(file: String): Boolean
         external fun lLoadS(script: String): Boolean
         external fun lCall(func: String, params: String?): String?

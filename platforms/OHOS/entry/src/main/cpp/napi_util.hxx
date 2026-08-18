@@ -60,6 +60,7 @@ long napiValueToLong(napi_env env, napi_value nv);
 double napiValueToDouble(napi_env env, napi_value nv);
 std::tuple<const byte *, size_t> napiValueToByteArray(napi_env env, napi_value nv);
 std::tuple<const char **, size_t> napiValueToCharsArray(napi_env env, napi_value nv);
+std::tuple<const long *, size_t> napiValueToLongArray(napi_env env, napi_value nv);
 
 napi_value napiValueFromChars(napi_env env, const char *c);
 napi_value napiValueFromLong(napi_env env, long l);
@@ -89,6 +90,7 @@ public:
     double argDoubleAt(size_t i);
     std::tuple<const byte *, size_t> argByteArrayAt(size_t i);
     std::tuple<const char **, size_t> argCharsArrayAt(size_t i);
+    std::tuple<const long *, size_t> argLongArrayAt(size_t i);
 
     const char *napiValueToChars(napi_value nv);
     bool napiValueToBool(napi_value nv);
@@ -97,6 +99,7 @@ public:
     double napiValueToDouble(napi_value nv);
     std::tuple<const byte *, size_t> napiValueToByteArray(napi_value nv);
     std::tuple<const char **, size_t> napiValueToCharsArray(napi_value nv);
+    std::tuple<const long *, size_t> napiValueToLongArray(napi_value nv);
 
     napi_value napiValueFromChars(const char *c);
     napi_value napiValueFromLong(long l);

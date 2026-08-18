@@ -26,6 +26,45 @@ enum DynXXHttpMethod {
 };
 
 /**
+ * @brief global HTTP proxy config
+ */
+typedef struct DynXXHttpProxyConfig {
+    const char *host;      ///< proxy host, NULL or empty means no proxy
+    size_t port;           ///< proxy port, 0 means not appended to host
+    const char *username;  ///< proxy auth username, optional
+    const char *password;  ///< proxy auth password, optional
+} DynXXHttpProxyConfig;
+
+/**
+ * @brief global DNS config, map a host to a fixed address like `/etc/hosts`
+ */
+typedef struct DynXXHttpDnsConfig {
+    const char *host;     ///< host name to override
+    size_t port;          ///< port, 0 means any port
+    const char *address;  ///< fixed IP address
+} DynXXHttpDnsConfig;
+
+/**
+ * @brief set global CA cert file path
+ * @param path cert file path relative to the engine root, an absolute path is
+ *             used as-is, NULL or empty disables SSL peer verification
+ */
+void dynxx_net_http_set_cert_path(const char *path);
+
+/**
+ * @brief set global HTTP proxy
+ * @param proxy proxy config, NULL or empty host clears the proxy
+ */
+void dynxx_net_http_set_proxy(const DynXXHttpProxyConfig *proxy);
+
+/**
+ * @brief set global DNS config list
+ * @param configs DNS config list, NULL or zero count clears the configs
+ * @param config_count DNS config count
+ */
+void dynxx_net_http_set_dns_configs(const DynXXHttpDnsConfig *configs, size_t config_count);
+
+/**
  * @brief http request
  * @param url URL
  * @param params params(transfer multiple params like `v1=a&v2=b`)

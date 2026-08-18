@@ -145,17 +145,46 @@ namespace
         return v;
     }
 
+    std::vector<DynXXHttpDnsConfigX> parseDnsConfigs(const Decoder &decoder, std::string_view configsK)
+    {
+        std::vector<DynXXHttpDnsConfigX> v;
+        if (const auto configsNode = decoder[configsK])
+        {
+            const auto len = decoder.readChildrenCount(configsNode);
+            v.reserve(len);
+            decoder.readChildren(configsNode,
+                             [&v, &decoder](size_t, DynXXJsonNodeHandle childNode, DynXXJsonNodeTypeX, std::string_view)
+                             {
+                                 DynXXHttpDnsConfigX cfg;
+                                 if (const auto host = decoder.readString(decoder.readNode(childNode, "host")); host.has_value())
+                                 {
+                                     cfg.host = host.value();
+                                 }
+                                 if (const auto port = decoder.readNumInt<size_t>(decoder.readNode(childNode, "port")); port.has_value())
+                                 {
+                                     cfg.port = static_cast<uint16_t>(port.value());
+                                 }
+                                 if (const auto address = decoder.readString(decoder.readNode(childNode, "address")); address.has_value())
+                                 {
+                                     cfg.address = address.value();
+                                 }
+                                 v.emplace_back(std::move(cfg));
+                             });
+        }
+        return v;
+    }
+
     class JsonParser
     {
     public:
         JsonParser() = delete;
         explicit JsonParser(std::string_view json) : decoder(json) {}
 
-        bool valid() const { 
+        [[nodiscard]] bool valid() const { 
             return this->decoder.valid(); 
         }
 
-        std::optional<std::string> str(std::string_view k) const
+        [[nodiscard]] std::optional<std::string> str(std::string_view k) const
         {
             if (!this->valid()) [[unlikely]]
             {
@@ -165,7 +194,7 @@ namespace
         }
 
         template <NumberT T>
-        std::optional<T> num(std::string_view k) const
+        [[nodiscard]] std::optional<T> num(std::string_view k) const
         {
             if (!this->valid()) [[unlikely]]
             {
@@ -174,7 +203,7 @@ namespace
             return parseNum<T>(this->decoder, k);
         }
 
-        address addr(std::string_view k) const
+        [[nodiscard]] address addr(std::string_view k) const
         {
             if (!this->valid()) [[unlikely]]
             {
@@ -183,7 +212,7 @@ namespace
             return this->num<address>(k).value_or(0);
         }
 
-        Bytes byteArray(std::string_view k) const
+        [[nodiscard]] Bytes byteArray(std::string_view k) const
         {
             if (!this->valid()) [[unlikely]]
             {
@@ -192,7 +221,7 @@ namespace
             return parseByteArray(this->decoder, k);
         }
 
-        std::vector<std::string> strArray(std::string_view k) const
+        [[nodiscard]] std::vector<std::string> strArray(std::string_view k) const
         {
             if (!this->valid()) [[unlikely]]
             {
@@ -202,7 +231,7 @@ namespace
         }
 
         template <typename T = void>
-        T* ptr(std::string_view k) const
+        [[nodiscard]] T* ptr(std::string_view k) const
         {
             if (!this->valid()) [[unlikely]]
             {
@@ -354,6 +383,43 @@ bool dynxx_net_http_downloadS(std::string_view json)
     }
 
     return dynxxNetHttpDownload(url.value(), file.value(), timeout.value_or(0));
+}
+
+void dynxx_net_http_set_cert_pathS(std::string_view json)
+{
+    const JsonParser parser(json);
+    if (!parser.valid())
+    {
+        return;
+    }
+    dynxxNetHttpSetCertPath(parser.str("path").value_or(""));
+}
+
+void dynxx_net_http_set_proxyS(std::string_view json)
+{
+    const JsonParser parser(json);
+    if (!parser.valid())
+    {
+        return;
+    }
+    const auto [host, username, password] = parser.strX("host", "username", "password");
+    const auto port = parser.num<size_t>("port");
+    dynxxNetHttpSetProxy({
+        host.value_or(""),
+        static_cast<uint16_t>(port.value_or(0)),
+        username.value_or(""),
+        password.value_or(""),
+    });
+}
+
+void dynxx_net_http_set_dns_configsS(std::string_view json)
+{
+    const Decoder decoder(json);
+    if (!decoder.valid())
+    {
+        return;
+    }
+    dynxxNetHttpSetDnsConfigs(parseDnsConfigs(decoder, "configs"));
 }
 
 // SQLite

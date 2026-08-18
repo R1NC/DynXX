@@ -19,10 +19,18 @@ namespace
     using enum DynXXHttpMethodX;
 
     constexpr auto HTTP_STATUS_OK = 200;
+    // reserve slack for the two ':' separators and the port digits in a resolve entry
+    constexpr auto RESOLVE_ENTRY_RESERVE = 8;
+    // reserve slack for the ':' separator and the port digits in a proxy URL
+    constexpr auto PROXY_URL_RESERVE = 8;
 
     const char *errMsg(CURLcode code) {
         return curl_easy_strerror(code);
     }
+
+    std::string gCertPath{};
+    DynXXHttpProxyConfigX gProxy{};
+    std::vector<DynXXHttpDnsConfigX> gDnsConfigs{};
 
     bool globalInit() {
         if (const auto ret = curl_global_init(CURL_GLOBAL_DEFAULT); ret != CURLE_OK) {
@@ -36,10 +44,51 @@ namespace
         curl_global_cleanup();
     }
 
+    void httpSetCertPath(std::string_view path) {
+        gCertPath.assign(path.data(), path.size());
+    }
+
+    void httpSetProxy(const DynXXHttpProxyConfigX &cfg) {
+        gProxy = cfg;
+    }
+
+    void httpSetDnsConfigs(const std::vector<DynXXHttpDnsConfigX> &configs) {
+        gDnsConfigs.clear();
+        gDnsConfigs.reserve(configs.size());
+        for (const auto &cfg : configs) {
+            if (cfg.host.empty() || cfg.address.empty()) [[unlikely]] {
+                dynxxLogPrint(Warn, "HttpClient httpSetDnsConfigs skip invalid config");
+                continue;
+            }
+            gDnsConfigs.emplace_back(cfg);
+        }
+    }
+
+    // libcurl does not copy the CURLOPT_RESOLVE list, the pointer is read while the
+    // transfer runs, so the list is built per request here and freed by Req::cleanup
+    // once the transfer completes; the global keeps only the C++ config vector.
+    curl_slist *buildResolveList() {
+        curl_slist *list = nullptr;
+        for (const auto &cfg : gDnsConfigs) {
+            std::string entry;
+            entry.reserve(cfg.host.size() + cfg.address.size() + RESOLVE_ENTRY_RESERVE);
+            entry.append(cfg.host).append(":").append(std::to_string(cfg.port)).append(":").append(cfg.address);
+            if (auto newList = curl_slist_append(list, entry.c_str()); newList != nullptr) [[likely]] {
+                list = newList;
+            } else [[unlikely]] {
+                dynxxLogPrintF(Error, "HttpClient buildResolveList append failed: {}", entry);
+                curl_slist_free_all(list);
+                return nullptr;
+            }
+        }
+        return list;
+    }
+
     class Req {
     private:
             CURL *curl{nullptr};
             curl_slist *headers{nullptr};
+            curl_slist *resolveList{nullptr}; // per-request CURLOPT_RESOLVE list, freed in cleanup()
             curl_mime *mime{nullptr};
             std::string postFields;
             Bytes postBody;
@@ -97,6 +146,16 @@ namespace
 
         [[nodiscard]] size_t getPostBodySize() const {
             return this->postBody.size();
+        }
+
+        void applyResolveList() {
+            if (this->curl == nullptr || gDnsConfigs.empty()) [[unlikely]] {
+                return;
+            }
+            this->resolveList = buildResolveList();
+            if (this->resolveList != nullptr) [[likely]] {
+                this->setOpt(CURLOPT_RESOLVE, this->resolveList);
+            }
         }
         
         [[nodiscard]] bool appendHeader(const char *string) {
@@ -201,6 +260,7 @@ namespace
         void moveImp(Req&& other) noexcept {
             this->curl = std::exchange(other.curl, nullptr);
             this->headers = std::exchange(other.headers, nullptr);
+            this->resolveList = std::exchange(other.resolveList, nullptr);
             this->mime = std::exchange(other.mime, nullptr);
             this->postFields = std::move(other.postFields);
             this->postBody = std::move(other.postBody);
@@ -210,6 +270,10 @@ namespace
             if (this->headers != nullptr) {
                 curl_slist_free_all(this->headers);
                 this->headers = nullptr;
+            }
+            if (this->resolveList != nullptr) {
+                curl_slist_free_all(this->resolveList);
+                this->resolveList = nullptr;
             }
             if (this->mime != nullptr) {
                 curl_mime_free(this->mime);
@@ -322,17 +386,19 @@ namespace
 #else
         if (static const auto prefixHttps = "https://"; url.starts_with(prefixHttps))
 #endif
-        { 
+        {
             req.setOpt(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_MAX_TLSv1_3);
             req.setOpt(CURLOPT_SSL_SESSIONID_CACHE, 1L);
             req.setOpt(CURLOPT_SSL_ENABLE_ALPN, 1L);
-#if defined(ENABLE_SSL_CERT)
-            req.setOpt(CURLOPT_SSL_VERIFYPEER, 1L);
-            req.setOpt(CURLOPT_SSL_VERIFYHOST, 2L);
-#else
-            req.setOpt(CURLOPT_SSL_VERIFYPEER, 0L);
-            req.setOpt(CURLOPT_SSL_VERIFYHOST, 0L);
-#endif
+            const auto &certPath = gCertPath;
+            if (certPath.empty()) {
+                req.setOpt(CURLOPT_SSL_VERIFYPEER, 0L);
+                req.setOpt(CURLOPT_SSL_VERIFYHOST, 0L);
+            } else {
+                req.setOpt(CURLOPT_SSL_VERIFYPEER, 1L);
+                req.setOpt(CURLOPT_SSL_VERIFYHOST, 2L);
+                req.setOpt(CURLOPT_CAINFO, certPath.c_str());
+            }
         }
         return true;
     }
@@ -383,6 +449,25 @@ namespace
         dynxxLogPrintF(Debug, "HttpClient.req url: {}", fixedUrl);
         req.setOpt(CURLOPT_URL, fixedUrl.c_str());
 
+        if (const auto &proxy = gProxy; !proxy.host.empty()) {
+            std::string proxyUrl;
+            proxyUrl.reserve(proxy.host.size() + PROXY_URL_RESERVE);
+            proxyUrl = proxy.host;
+            if (proxy.port != 0) {
+                proxyUrl.append(":").append(std::to_string(proxy.port));
+            }
+            req.setOpt(CURLOPT_PROXY, proxyUrl.c_str());
+            if (!proxy.username.empty()) {
+                std::string proxyUserPwd;
+                proxyUserPwd.reserve(proxy.username.size() + proxy.password.size() + 1);
+                proxyUserPwd = proxy.username;
+                proxyUserPwd.append(":").append(proxy.password);
+                req.setOpt(CURLOPT_PROXYUSERPWD, proxyUserPwd.c_str());
+            }
+        }
+
+        req.applyResolveList();
+
         return req;
     }
 
@@ -424,6 +509,18 @@ HttpClient::HttpClient()
 HttpClient::~HttpClient()
 {
     globalRelease();
+}
+
+void HttpClient::setCertPath(std::string_view path) {
+    httpSetCertPath(path);
+}
+
+void HttpClient::setProxy(const DynXXHttpProxyConfigX &proxy) {
+    httpSetProxy(proxy);
+}
+
+void HttpClient::setDnsConfigs(const std::vector<DynXXHttpDnsConfigX> &configs) {
+    httpSetDnsConfigs(configs);
 }
 
 DynXXHttpResponse HttpClient::request(std::string_view url, DynXXHttpMethodX method,

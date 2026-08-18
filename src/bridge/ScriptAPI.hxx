@@ -23,6 +23,12 @@ std::string dynxx_net_http_requestS(std::string_view json);
 
 bool dynxx_net_http_downloadS(std::string_view json);
 
+void dynxx_net_http_set_cert_pathS(std::string_view json);
+
+void dynxx_net_http_set_proxyS(std::string_view json);
+
+void dynxx_net_http_set_dns_configsS(std::string_view json);
+
 std::string dynxx_sqlite_openS(std::string_view json);
 
 bool dynxx_sqlite_executeS(std::string_view json);

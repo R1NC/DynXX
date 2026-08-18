@@ -95,6 +95,31 @@ private:
     jbyteArray jbArr;
 };
 
+std::tuple<jlong*, size_t> readJLongArray(JNIEnv *env, jlongArray jlArr);
+
+void releaseJLongArray(JNIEnv *env, jlongArray jlArr, jlong *cLongs);
+
+struct JLongArrayArg final : public JArg {
+public:
+    jlong *data{nullptr};
+    size_t size{0};
+
+    JLongArrayArg() = delete;
+    explicit JLongArrayArg(JNIEnv *env, jlongArray jlArr) : JArg(env), jlArr(jlArr) {
+        std::tie(data, size) = readJLongArray(env, jlArr);
+    }
+    JLongArrayArg(const JLongArrayArg&) = delete;
+    JLongArrayArg& operator=(const JLongArrayArg&) = delete;
+    JLongArrayArg(JLongArrayArg&&) = delete;
+    JLongArrayArg& operator=(JLongArrayArg&&) = delete;
+    ~JLongArrayArg() override {
+        releaseJLongArray(this->env, this->jlArr, this->data);
+    }
+
+private:
+    jlongArray jlArr;
+};
+
 std::tuple<const jobject*, const char**, size_t> readJStringArray(JNIEnv *env, jobjectArray joArr);
 
 void releaseJStringArray(JNIEnv *env, jobjectArray joArr, const jobject *jStrArr, const char **cStrArr);

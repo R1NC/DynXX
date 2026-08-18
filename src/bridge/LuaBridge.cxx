@@ -106,6 +106,9 @@ DEF_API(dynxx_log_print, VOID)
 
 DEF_API(dynxx_net_http_request, STRING)
 DEF_API(dynxx_net_http_download, BOOL)
+DEF_API(dynxx_net_http_set_cert_path, VOID)
+DEF_API(dynxx_net_http_set_proxy, VOID)
+DEF_API(dynxx_net_http_set_dns_configs, VOID)
 
 #if defined(DYNXX_USE_DB)
 DEF_API(dynxx_sqlite_open, STRING)
@@ -191,6 +194,9 @@ void registerFuncs() {
 
     BIND_API(dynxx_net_http_request);
     BIND_API(dynxx_net_http_download);
+    BIND_API(dynxx_net_http_set_cert_path);
+    BIND_API(dynxx_net_http_set_proxy);
+    BIND_API(dynxx_net_http_set_dns_configs);
 
 #if defined(DYNXX_USE_DB)
     BIND_API(dynxx_sqlite_open);

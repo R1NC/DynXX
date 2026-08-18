@@ -89,6 +89,22 @@ void releaseJByteArray(JNIEnv *env, jbyteArray jbArr, byte *cBytes) {
     env->ReleaseByteArrayElements(jbArr, reinterpret_cast<jbyte*>(cBytes), JNI_ABORT);
 }
 
+std::tuple<jlong*, size_t> readJLongArray(JNIEnv *env, jlongArray jlArr) {
+    if (env == nullptr || jlArr == nullptr) {
+        return {};
+    }
+    const auto len = env->GetArrayLength(jlArr);
+    const auto jo = env->GetLongArrayElements(jlArr, nullptr);
+    return std::make_tuple(jo, len);
+}
+
+void releaseJLongArray(JNIEnv *env, jlongArray jlArr, jlong *cLongs) {
+    if (env == nullptr || jlArr == nullptr || cLongs == nullptr) {
+        return;
+    }
+    env->ReleaseLongArrayElements(jlArr, cLongs, JNI_ABORT);
+}
+
 std::tuple<const jobject*, const char**, size_t> readJStringArray(JNIEnv *env, jobjectArray joArr) {
     if (env == nullptr || joArr == nullptr) {
         return {};

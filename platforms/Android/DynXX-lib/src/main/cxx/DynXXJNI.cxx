@@ -1,4 +1,5 @@
 #include <cstring>
+#include <vector>
 
 #include "JNIUtil.hxx"
 #include <DynXX/C/DynXX.h>
@@ -135,6 +136,46 @@ namespace {
         }
 
         return jStr;
+    }
+
+    void netHttpSetCertPath([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
+                            jstring path) {
+        const auto cPath = JStringArg(env, path);
+        dynxx_net_http_set_cert_path(cPath.data);
+    }
+
+    void netHttpSetProxy([[maybe_unused]] JNIEnv *env, [[maybe_unused]] jobject thiz,
+                         jstring host, jlong port, jstring username, jstring password) {
+        const auto cHost = JStringArg(env, host);
+        const auto cUsername = JStringArg(env, username);
+        const auto cPassword = JStringArg(env, password);
+        DynXXHttpProxyConfig cfg{};
+        cfg.host = cHost.data;
+        cfg.port = static_cast<size_t>(port);
+        cfg.username = cUsername.data;
+        cfg.password = cPassword.data;
+        dynxx_net_http_set_proxy(&cfg);
+    }
+
+    void netHttpSetDnsConfigs(JNIEnv *env, [[maybe_unused]] jobject thiz,
+                              jobjectArray hostV, jlongArray portV, jobjectArray addressV) {
+        const auto cHostV = JStringArrayArg(env, hostV);
+        const auto cPortV = JLongArrayArg(env, portV);
+        const auto cAddressV = JStringArrayArg(env, addressV);
+        auto count = cHostV.size;
+        if (cPortV.size < count) {
+            count = cPortV.size;
+        }
+        if (cAddressV.size < count) {
+            count = cAddressV.size;
+        }
+        std::vector<DynXXHttpDnsConfig> configs(count);
+        for (size_t i = 0; i < count; i++) {
+            configs[i].host = cHostV.data[i] != nullptr ? cHostV.data[i] : "";
+            configs[i].port = static_cast<size_t>(cPortV.data[i]);
+            configs[i].address = cAddressV.data[i] != nullptr ? cAddressV.data[i] : "";
+        }
+        dynxx_net_http_set_dns_configs(configs.data(), count);
     }
 
 // Lua
@@ -647,6 +688,9 @@ namespace {
 
             DECLARE_JNI_FUNC(netHttpRequest,
                              "(" LJLS_ LJLS_ "I[" LJLS_ "[" LJLS_ "[" LJLS_ "[" LJLS_ LJLS_ "JJ)" LJLS_),
+            DECLARE_JNI_FUNC(netHttpSetCertPath, "(" LJLS_ ")V"),
+            DECLARE_JNI_FUNC(netHttpSetProxy, "(" LJLS_ "J" LJLS_ LJLS_ ")V"),
+            DECLARE_JNI_FUNC(netHttpSetDnsConfigs, "([" LJLS_ "[J[" LJLS_ ")V"),
 
             DECLARE_JNI_FUNC(lLoadF, "(" LJLS_ ")Z"),
             DECLARE_JNI_FUNC(lLoadS, "(" LJLS_ ")Z"),

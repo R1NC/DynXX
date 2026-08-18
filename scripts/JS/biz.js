@@ -41,6 +41,17 @@ function TestNetHttpReqPro(url) {
     })
 }
 
+function TestNetHttpSetConfigs() {
+    DynXXNetHttpSetCertPath('certs/ca.pem');
+    DynXXNetHttpSetProxy({host: '127.0.0.1', port: 8080, username: 'u', password: 'p'});
+    DynXXNetHttpSetDnsConfigs([{host: 'example.com', port: 443, address: '1.2.3.4'}]);
+    // clear the global configs so they do not leak into other tests
+    DynXXNetHttpSetCertPath();
+    DynXXNetHttpSetProxy();
+    DynXXNetHttpSetDnsConfigs();
+    return true;
+}
+
 function TestPromise() {
     TestNetHttpReqPro('https://rinc.xyz')
         .then(res => {

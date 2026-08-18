@@ -13,6 +13,17 @@ function TestNetHttpRequest(url)
     return DynXX.Net.Http.request(url, method, paramMap, headerMap, rawNodyBytes, timeout)
 end
 
+function TestNetHttpSetConfigs()
+    DynXX.Net.Http.setCertPath('certs/ca.pem')
+    DynXX.Net.Http.setProxy({host = '127.0.0.1', port = 8080, username = 'u', password = 'p'})
+    DynXX.Net.Http.setDnsConfigs({{host = 'example.com', port = 443, address = '1.2.3.4'}})
+    -- clear the global configs so they do not leak into other tests
+    DynXX.Net.Http.setCertPath()
+    DynXX.Net.Http.setProxy()
+    DynXX.Net.Http.setDnsConfigs()
+    return true
+end
+
 function TestDeviceInfo()
     local deviceInfo = {
         platform = DynXX.Device.platform(),

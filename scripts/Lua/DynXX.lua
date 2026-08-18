@@ -170,6 +170,38 @@ function DynXX.Net.Http.download(url, file, timeout)
     return dynxx_net_http_download(inJson)
 end
 
+--- Set global SSL cert file path, empty clears it (disables peer verification).
+-- @tparam[opt] string path relative to the engine root
+function DynXX.Net.Http.setCertPath(path)
+    local inJson = JSON.stringify({
+        ["path"] = path
+    })
+    dynxx_net_http_set_cert_path(inJson)
+end
+
+--- Set global HTTP proxy, empty host clears it.
+-- @tparam[opt] table proxy e.g. {host="127.0.0.1", port=8080, username="u", password="p"}
+function DynXX.Net.Http.setProxy(proxy)
+    proxy = proxy or {}
+    local inJson = JSON.stringify({
+        ["host"] = proxy.host or "",
+        ["port"] = proxy.port or 0,
+        ["username"] = proxy.username or "",
+        ["password"] = proxy.password or ""
+    })
+    dynxx_net_http_set_proxy(inJson)
+end
+
+--- Set global DNS config list, each maps a host to a fixed address.
+-- @tparam[opt] table configs e.g. {{host="example.com", port=443, address="1.2.3.4"}}
+function DynXX.Net.Http.setDnsConfigs(configs)
+    configs = configs or {}
+    local inJson = JSON.stringify({
+        ["configs"] = configs
+    })
+    dynxx_net_http_set_dns_configs(inJson)
+end
+
 -- @submodule DynXX.Coding
 DynXX.Coding = {}
 

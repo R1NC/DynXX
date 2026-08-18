@@ -87,6 +87,25 @@ declare function DynXXNetHttpDownload(
     timeout?: number
 ): Promise<boolean>
 
+type DynXXHttpProxyConfig = {
+    host?: string;
+    port?: number;
+    username?: string;
+    password?: string;
+};
+
+type DynXXHttpDnsConfig = {
+    host: string;
+    port?: number;
+    address: string;
+};
+
+declare function DynXXNetHttpSetCertPath(path?: string): void
+
+declare function DynXXNetHttpSetProxy(proxy?: DynXXHttpProxyConfig): void
+
+declare function DynXXNetHttpSetDnsConfigs(configs?: DynXXHttpDnsConfig[]): void
+
 /// SQLite
 
 declare function DynXXSQLiteOpen(_id: string): string

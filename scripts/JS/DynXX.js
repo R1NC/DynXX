@@ -115,6 +115,30 @@ function DynXXNetHttpDownload(url, file, timeout = 15000) {
     return dynxx_net_http_download(inJson);
 }
 
+function DynXXNetHttpSetCertPath(path) {
+    let inJson = JSON.stringify({
+        "path": path
+    });
+    dynxx_net_http_set_cert_path(inJson);
+}
+
+function DynXXNetHttpSetProxy(proxy = {}) {
+    let inJson = JSON.stringify({
+        "host": proxy.host || "",
+        "port": proxy.port || 0,
+        "username": proxy.username || "",
+        "password": proxy.password || ""
+    });
+    dynxx_net_http_set_proxy(inJson);
+}
+
+function DynXXNetHttpSetDnsConfigs(configs = []) {
+    let inJson = JSON.stringify({
+        "configs": configs
+    });
+    dynxx_net_http_set_dns_configs(inJson);
+}
+
 function DynXXSQLiteOpen(_id) {
     let inJson = JSON.stringify({
         "_id": _id

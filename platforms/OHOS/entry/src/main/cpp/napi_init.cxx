@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstring>
+#include <vector>
 
 #include <napi_util.hxx>
 
@@ -198,6 +199,60 @@ napi_value netHttpRequest(napi_env env, napi_callback_info info) {
         std::fclose(cFILE);
     }
     return nv;
+}
+
+napi_value netHttpSetCertPath(napi_env env, napi_callback_info info) {
+    NapiCallContext ctx(env, info);
+
+    auto cPath = ctx.argCharsAt(0);
+
+    dynxx_net_http_set_cert_path(cPath);
+
+    return ctx.napiValueFromInt(napi_ok);
+}
+
+napi_value netHttpSetProxy(napi_env env, napi_callback_info info) {
+    NapiCallContext ctx(env, info);
+
+    auto cHost = ctx.argCharsAt(0);
+    auto lPort = ctx.argCount() > 1 ? ctx.argLongAt(1) : 0;
+    auto cUsername = ctx.argCount() > 2 ? ctx.argCharsAt(2) : nullptr;
+    auto cPassword = ctx.argCount() > 3 ? ctx.argCharsAt(3) : nullptr;
+
+    DynXXHttpProxyConfig cfg{};
+    cfg.host = cHost;
+    cfg.port = static_cast<size_t>(lPort);
+    cfg.username = cUsername;
+    cfg.password = cPassword;
+
+    dynxx_net_http_set_proxy(&cfg);
+
+    return ctx.napiValueFromInt(napi_ok);
+}
+
+napi_value netHttpSetDnsConfigs(napi_env env, napi_callback_info info) {
+    NapiCallContext ctx(env, info);
+
+    auto [hostV, hostC] = ctx.argCharsArrayAt(0);
+    auto [portV, portC] = ctx.argLongArrayAt(1);
+    auto [addressV, addressC] = ctx.argCharsArrayAt(2);
+
+    auto count = hostC;
+    if (portC < count) {
+        count = portC;
+    }
+    if (addressC < count) {
+        count = addressC;
+    }
+    std::vector<DynXXHttpDnsConfig> configs(count);
+    for (size_t i = 0; i < count; i++) {
+        configs[i].host = hostV[i] != nullptr ? hostV[i] : "";
+        configs[i].port = static_cast<size_t>(portV[i]);
+        configs[i].address = addressV[i] != nullptr ? addressV[i] : "";
+    }
+    dynxx_net_http_set_dns_configs(configs.data(), count);
+
+    return ctx.napiValueFromInt(napi_ok);
 }
 
 // SQLite
@@ -929,6 +984,9 @@ napi_value NAPI_DynXX_RegisterFuncs(napi_env env, napi_value exports) {
         NAPI(logPrint),
 
         NAPI(netHttpRequest),
+        NAPI(netHttpSetCertPath),
+        NAPI(netHttpSetProxy),
+        NAPI(netHttpSetDnsConfigs),
 
         NAPI(lLoadF),
         NAPI(lLoadS),

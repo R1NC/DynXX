@@ -69,6 +69,32 @@ class DynXXHelper {
             )
         }
 
+        data class HttpProxyConfig(
+            val host: String = "",
+            val port: Long = 0,
+            val username: String = "",
+            val password: String = ""
+        )
+        fun netHttpSetCertPath(path: String? = null) {
+            DynXX.netHttpSetCertPath(path)
+        }
+        fun netHttpSetProxy(proxy: HttpProxyConfig = HttpProxyConfig()) {
+            DynXX.netHttpSetProxy(proxy.host, proxy.port, proxy.username, proxy.password)
+        }
+
+        data class HttpDnsConfig(
+            val host: String,
+            val port: Long = 0,
+            val address: String
+        )
+        fun netHttpSetDnsConfigs(configs: Array<HttpDnsConfig> = emptyArray()) {
+            DynXX.netHttpSetDnsConfigs(
+                configs.map { it.host }.toTypedArray(),
+                configs.map { it.port }.toLongArray(),
+                configs.map { it.address }.toTypedArray()
+            )
+        }
+
         enum class ZipMode(val value: Int) {
             Default(-1),
             PreferSpeed(1),

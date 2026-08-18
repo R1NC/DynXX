@@ -31,6 +31,10 @@ export const netHttpRequest: (
   filePath?: string, fileLength?: number,
   timeout?: number) => string;
 
+export const netHttpSetCertPath: (path: string) => void;
+export const netHttpSetProxy: (host: string, port?: number, username?: string, password?: string) => void;
+export const netHttpSetDnsConfigs: (hostV: string[], portV: number[], addressV: string[]) => void;
+
 export const lLoadF: (file: string) => boolean;
 export const lLoadS: (script: string) => boolean;
 export const lCall: (func: string, params: string) => string;
