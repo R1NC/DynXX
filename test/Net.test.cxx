@@ -17,7 +17,10 @@ protected:
 
 namespace {
     constexpr const char *cNetTestUrl = "https://rinc.xyz/index.html";
-    constexpr const char *cNetPostEchoUrl = "https://httpbin.org/post";
+    // httpbin.org is chronically unstable (frequent 503s); postman-echo.com is the stable echo backend
+    constexpr const char *cNetPostEchoUrl = "https://postman-echo.com/post";
+    constexpr const char *cNetGetEchoUrl = "https://postman-echo.com/get?x=1";
+    constexpr const char *cNetPutEchoUrl = "https://postman-echo.com/put";
     constexpr auto HTTP_OK = 200;
 
     struct NetRequestInvalidParamCase {
@@ -33,6 +36,13 @@ namespace {
 
     DynXXHttpResponse netRequestWithTimeout(std::string_view url, size_t timeout) {
         return dynxxNetHttpRequest(url, DynXXHttpMethodX::Get, "a=1", {}, {}, {}, {}, {}, nullptr, 0, timeout);
+    }
+
+    // echo backends differ in JSON spacing (httpbin: `"a": "1"`, postman-echo: `"a":"1"`); accept both
+    bool hasJsonField(std::string_view data, std::string_view name, std::string_view value) {
+        const std::string spaced = std::string("\"") + std::string(name) + "\": \"" + std::string(value) + "\"";
+        const std::string compact = std::string("\"") + std::string(name) + "\":\"" + std::string(value) + "\"";
+        return data.find(spaced) != std::string::npos || data.find(compact) != std::string::npos;
     }
 }
 
@@ -193,13 +203,13 @@ TEST_F(DynXXNetTestSuite, DownloadInvalidQueryFormatShouldBeHandledGracefully) {
 }
 
 TEST_F(DynXXNetTestSuite, HttpRequestGetWithExistingQueryShouldAppendParams) {
-    const auto rsp = dynxxNetHttpRequest("https://httpbin.org/get?x=1", DynXXHttpMethodX::Get, "a=2");
+    const auto rsp = dynxxNetHttpRequest(cNetGetEchoUrl, DynXXHttpMethodX::Get, "a=2");
     if (rsp.code != HTTP_OK) {
         GTEST_SKIP();
     }
     EXPECT_EQ(rsp.contentType.find("application/json"), 0U);
-    EXPECT_NE(rsp.data.find(R"("x": "1")"), std::string::npos);
-    EXPECT_NE(rsp.data.find(R"("a": "2")"), std::string::npos);
+    EXPECT_TRUE(hasJsonField(rsp.data, "x", "1"));
+    EXPECT_TRUE(hasJsonField(rsp.data, "a", "2"));
 }
 
 TEST_F(DynXXNetTestSuite, HttpRequestPostWithUrlEncodedParams) {
@@ -208,8 +218,8 @@ TEST_F(DynXXNetTestSuite, HttpRequestPostWithUrlEncodedParams) {
         GTEST_SKIP();
     }
     EXPECT_EQ(rsp.contentType.find("application/json"), 0U);
-    EXPECT_NE(rsp.data.find(R"("a": "1")"), std::string::npos);
-    EXPECT_NE(rsp.data.find(R"("b": "2")"), std::string::npos);
+    EXPECT_TRUE(hasJsonField(rsp.data, "a", "1"));
+    EXPECT_TRUE(hasJsonField(rsp.data, "b", "2"));
 }
 
 TEST_F(DynXXNetTestSuite, HttpRequestPostWithRawBody) {
@@ -242,7 +252,7 @@ TEST_F(DynXXNetTestSuite, HttpRequestUploadFileShouldSucceed) {
     ASSERT_NE(file, nullptr);
 
     const auto rsp = dynxxNetHttpRequest(
-        "https://httpbin.org/put",
+        cNetPutEchoUrl,
         DynXXHttpMethodX::Put,
         "",
         {},

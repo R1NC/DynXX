@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <mutex>
 
 #if defined(DYNXX_USE_ADA)
 #include <ada.h>
@@ -28,6 +29,10 @@ namespace
         return curl_easy_strerror(code);
     }
 
+    // Global configs are written by any script thread (sync set APIs) and read by the
+    // async-API worker pool (resolve list / cert path / proxy apply), so they are guarded
+    // by a mutex; readers snapshot the state under the lock and work on the copy.
+    std::mutex gConfigMutex;
     std::string gCertPath{};
     DynXXHttpProxyConfigX gProxy{};
     std::vector<DynXXHttpDnsConfigX> gDnsConfigs{};
@@ -45,14 +50,17 @@ namespace
     }
 
     void httpSetCertPath(std::string_view path) {
+        const auto lock = std::scoped_lock(gConfigMutex);
         gCertPath.assign(path.data(), path.size());
     }
 
     void httpSetProxy(const DynXXHttpProxyConfigX &cfg) {
+        const auto lock = std::scoped_lock(gConfigMutex);
         gProxy = cfg;
     }
 
     void httpSetDnsConfigs(const std::vector<DynXXHttpDnsConfigX> &configs) {
+        const auto lock = std::scoped_lock(gConfigMutex);
         gDnsConfigs.clear();
         gDnsConfigs.reserve(configs.size());
         for (const auto &cfg : configs) {
@@ -68,8 +76,12 @@ namespace
     // transfer runs, so the list is built per request here and freed by Req::cleanup
     // once the transfer completes; the global keeps only the C++ config vector.
     curl_slist *buildResolveList() {
+        const auto configs = [&] {
+            const auto lock = std::scoped_lock(gConfigMutex);
+            return gDnsConfigs;
+        }();
         curl_slist *list = nullptr;
-        for (const auto &cfg : gDnsConfigs) {
+        for (const auto &cfg : configs) {
             std::string entry;
             entry.reserve(cfg.host.size() + cfg.address.size() + RESOLVE_ENTRY_RESERVE);
             entry.append(cfg.host).append(":").append(std::to_string(cfg.port)).append(":").append(cfg.address);
@@ -149,7 +161,7 @@ namespace
         }
 
         void applyResolveList() {
-            if (this->curl == nullptr || gDnsConfigs.empty()) [[unlikely]] {
+            if (this->curl == nullptr) [[unlikely]] {
                 return;
             }
             this->resolveList = buildResolveList();
@@ -390,7 +402,10 @@ namespace
             req.setOpt(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_MAX_TLSv1_3);
             req.setOpt(CURLOPT_SSL_SESSIONID_CACHE, 1L);
             req.setOpt(CURLOPT_SSL_ENABLE_ALPN, 1L);
-            const auto &certPath = gCertPath;
+            const auto certPath = [&] {
+                const auto lock = std::scoped_lock(gConfigMutex);
+                return gCertPath;
+            }();
             if (certPath.empty()) {
                 req.setOpt(CURLOPT_SSL_VERIFYPEER, 0L);
                 req.setOpt(CURLOPT_SSL_VERIFYHOST, 0L);
@@ -449,7 +464,11 @@ namespace
         dynxxLogPrintF(Debug, "HttpClient.req url: {}", fixedUrl);
         req.setOpt(CURLOPT_URL, fixedUrl.c_str());
 
-        if (const auto &proxy = gProxy; !proxy.host.empty()) {
+        const auto proxy = [&] {
+            const auto lock = std::scoped_lock(gConfigMutex);
+            return gProxy;
+        }();
+        if (!proxy.host.empty()) {
             std::string proxyUrl;
             proxyUrl.reserve(proxy.host.size() + PROXY_URL_RESERVE);
             proxyUrl = proxy.host;
