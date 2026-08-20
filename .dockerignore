@@ -1,0 +1,23 @@
+# VCS
+.git
+
+# Build outputs
+build.*/
+Testing/
+
+# Tool caches
+.cache/
+tools/node_modules/
+tools/temp_vcpkg/
+
+# Platform generated dirs
+platforms/Android/build/
+platforms/Android/.gradle/
+platforms/Android/.idea/
+platforms/OHOS/.hvigor/
+platforms/OHOS/oh_modules/
+platforms/OHOS/.idea/
+platforms/iOS/DerivedData/
+
+# Logs
+*.log

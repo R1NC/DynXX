@@ -260,6 +260,10 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
   </tbody>
 </table>
 
+## :whale: Docker Build Environment
+
+A reproducible Linux build environment (clang + ninja + vcpkg, mirroring the CI runner toolchain) via the root [Dockerfile](Dockerfile). See [DOCKER.md](DOCKER.md) for build, verification, Apple Silicon, and cache notes.
+
 [1]: https://github.com/emscripten-core/emscripten/issues/16567
 [2]: https://app.codecov.io/gh/R1NC/DynXX
 [3]: https://developer.apple.com/xcode/cpp/
