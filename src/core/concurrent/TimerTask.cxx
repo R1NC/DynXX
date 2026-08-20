@@ -26,6 +26,7 @@ TimerTask::TimerTask(TaskT&& task, size_t timeoutMicroSecs) :
     userTask(std::move(task))
 {
     this->lastExecuteTime = nowInMicroSecs();
+    this->start();
 }
 
 TimerTask::~TimerTask()

@@ -30,6 +30,11 @@ namespace DynXX::Core::Concurrent {
         Daemon {
     protected:
         explicit Daemon(TaskT &&runLoop, RunChecker &&runChecker = []() { return true; }, size_t timeoutMicroSecs = 100UZ);
+        // Starts the run-loop thread. The base constructor must not start it:
+        // the runLoop/runChecker lambdas may touch derived-class members 
+        // that do not exist until the derived constructor body runs. 
+        // Call this as the last statement of the derived constructor body.
+        void start();
         void stopAndJoin();
 
         template<RunnableT T>
@@ -53,6 +58,9 @@ namespace DynXX::Core::Concurrent {
         std::atomic<bool> stopped{false};
         mutable std::mutex mutex;
         std::condition_variable loopCondition;
+        TaskT runLoop;
+        RunChecker runChecker;
+        size_t timeoutMicroSecs{100UZ};
 
 #if defined(__cpp_lib_jthread)
         std::jthread thread;

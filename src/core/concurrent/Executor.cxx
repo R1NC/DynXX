@@ -52,6 +52,7 @@ Worker::Worker() :
     return !this->taskQueue.empty();
 })
 {
+    this->start();
 }
 
 Worker::~Worker()
