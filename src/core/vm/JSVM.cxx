@@ -266,6 +266,11 @@ JSVM::JSVM() : context{std::shared_ptr<JSContext>(_newContext(this->runtime.get(
         return;
     }
     js_std_init_handlers(this->runtime.get());
+    // Promise jobs and OS timers run on dedicated looper threads, 
+    // whose stacks live at different addresses than the creating thread.
+    // The default stack limit is calibrated against the creating thread, 
+    // so job execution would false-positive "Maximum call stack size exceeded" and reject promises.
+    JS_SetMaxStackSize(this->runtime.get(), 0);
     JS_SetModuleLoaderFunc(this->runtime.get(), nullptr, js_module_loader, nullptr);
     js_std_set_worker_new_context_func(_newContext);
 
