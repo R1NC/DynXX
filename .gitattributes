@@ -74,6 +74,7 @@ package-lock.json linguist-generated
 **/macOS/**/* linguist-vendored
 
 Dockerfile linguist-vendored
+.dockerignore linguist-vendored
 
 *.js linguist-vendored
 DynXX.js -linguist-vendored
