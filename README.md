@@ -6,7 +6,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 [<img src="https://img.shields.io/codecov/c/github/R1NC/DynXX/main?logo=codecov&label=Codecov"/>][2] 
 [<img src="https://img.shields.io/badge/API_Docs_%26_Test_Reports-gray?logo=github"/>][5]
-[<img src="https://img.shields.io/badge/Docker-Enabled-blue?logo=docker"/>][6]
+[<img src="https://img.shields.io/badge/Docker-Supported-0db7ed?logo=docker"/>][6]
 
 <table>
    <thead>
