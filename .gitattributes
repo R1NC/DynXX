@@ -73,6 +73,8 @@ package-lock.json linguist-generated
 **/iOS/**/* linguist-vendored
 **/macOS/**/* linguist-vendored
 
+Dockerfile linguist-vendored
+
 *.js linguist-vendored
 DynXX.js -linguist-vendored
 wasm-util.js -linguist-vendored
