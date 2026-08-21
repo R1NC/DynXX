@@ -6,6 +6,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 [<img src="https://img.shields.io/codecov/c/github/R1NC/DynXX/main?logo=codecov&label=Codecov"/>][2] 
 [<img src="https://img.shields.io/badge/API_Docs_%26_Test_Reports-gray?logo=github"/>][5]
+[<img src="https://img.shields.io/badge/Docker-Enabled-blue?logo=docker"/>][6]
 
 <table>
    <thead>
@@ -262,10 +263,11 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 ## :whale: Docker Build Environment
 
-A reproducible Linux build environment (clang + ninja + vcpkg, mirroring the CI runner toolchain) via the root [Dockerfile](Dockerfile). See [DOCKER.md](DOCKER.md) for build, verification, Apple Silicon, and cache notes.
+A reproducible Linux build environment via the root [Dockerfile](Dockerfile). See [doc][6] for details.
 
 [1]: https://github.com/emscripten-core/emscripten/issues/16567
 [2]: https://app.codecov.io/gh/R1NC/DynXX
 [3]: https://developer.apple.com/xcode/cpp/
 [4]: https://en.cppreference.com/w/cpp/compiler_support
 [5]: https://R1NC.github.io/DynXX/
+[6]: /DOCKER.md
