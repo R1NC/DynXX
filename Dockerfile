@@ -1,18 +1,24 @@
 #
-# DynXX Docker build environments (mirror the GitHub Actions runner toolchains)
+# DynXX Docker build environments for Linux-hosted targets (mirror the GitHub
+# Actions ubuntu-latest runner toolchains):
 #
 # Targets:
-#   dynxx-linux   - Ubuntu 24.04 (same as ubuntu-latest runner): clang + ninja + vcpkg toolchain
-#   dynxx-android - dynxx-linux + JDK 17 + Android SDK cmdline-tools/platform-tools
-#                   + NDK r30 (same as CI-Android-Ubuntu.yml); AGP auto-downloads the
-#                   remaining SDK components (platforms/build-tools/cmake) on first build
+#   dynxx-linux   - Linux x86_64: clang + ninja + vcpkg (CI-Linux-Ubuntu.yml)
+#   dynxx-android - Android arm64-v8a: + JDK 17 + Android SDK/NDK r30 (CI-Android-Ubuntu.yml)
+#   dynxx-ohos    - HarmonyOS arm64: + HarmonyOS SDK 6.0.0.48 (CI-OHOS-Ubuntu.yml)
+#   dynxx-wasm    - WASM32: + Emscripten 3.1.65 (CI-WASM-Ubuntu.yml)
 #
 # Build an environment image:
 #   docker build --target dynxx-linux -t dynxx-linux .
 #   docker build --target dynxx-android -t dynxx-android .
+#   docker build --target dynxx-ohos -t dynxx-ohos .
+#   docker build --target dynxx-wasm -t dynxx-wasm .
 #
 # In regions where Docker Hub is unreachable, prefix base images with a registry
 # mirror, e.g. for China: --build-arg REGISTRY=docker.m.daocloud.io
+# In regions where GitHub releases are unreachable, route build-time downloads
+# through a local proxy: --build-arg HTTPS_PROXY=http://host.docker.internal:7890
+# (the proxy env is baked into the image, so container runs inherit it too).
 #
 # Build the project with the source mounted from the host (artifacts land in build.*/):
 #   Linux:
@@ -23,6 +29,14 @@
 #     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-android bash -lc "
 #       cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
 #       && npm run build:android -- --test"
+#   OHOS:
+#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-ohos bash -lc "
+#       cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
+#       && npm run build:harmonyos -- --test"
+#   WASM:
+#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-wasm bash -lc "
+#       cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
+#       && npm run build:wasm"
 #
 # Notes:
 #   - The anonymous volume -v <mount>/tools/node_modules keeps the container's
@@ -39,10 +53,24 @@
 # e.g. --build-arg REGISTRY=docker.m.daocloud.io
 ARG REGISTRY=docker.io
 
+# Optional proxy for build-time downloads (GitHub releases etc.); pass
+# --build-arg HTTPS_PROXY=http://host.docker.internal:7890 behind a firewall.
+# Baked into the image so container runs inherit it as well.
+ARG HTTP_PROXY=
+ARG HTTPS_PROXY=
+ARG NO_PROXY=localhost,127.0.0.1
+
 ############################## Linux ##############################
 FROM ${REGISTRY}/library/ubuntu:24.04 AS dynxx-linux
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    http_proxy=$HTTP_PROXY \
+    https_proxy=$HTTPS_PROXY \
+    no_proxy=$NO_PROXY
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
 
 # Match CI (CI-Linux-Ubuntu.yml sets CC/CXX to clang): some deps (quickjs qjsc)
 # only compile warning-free with clang, and vcpkg's ABI hashes must match CI.
@@ -89,6 +117,38 @@ ENV CI_VCPKG_HOME=/workspace/tools/temp_vcpkg
 WORKDIR /workspace
 
 CMD ["bash"]
+
+############################## OHOS ##############################
+# Mirror of CI-OHOS-Ubuntu.yml: HarmonyOS SDK 6.0.0.48 (native linux-x64) from
+# the huaweicloud mirror. build-OHOS.ts reads CI_OHOS_SDK_ROOT first, then
+# OHOS_SDK_ROOT (readCIEnv).
+FROM dynxx-linux AS dynxx-ohos
+
+RUN mkdir -p /opt/ohos-sdk \
+    && curl -fL -o /tmp/ohos-sdk.tar.gz \
+        https://mirrors.huaweicloud.com/harmonyos/os/6.0.0.1-Release/ohos-sdk-windows_linux-public.tar.gz \
+    && tar -xzf /tmp/ohos-sdk.tar.gz -C /opt/ohos-sdk \
+    && rm /tmp/ohos-sdk.tar.gz \
+    && unzip -q /opt/ohos-sdk/ohos-sdk/linux/native-linux-x64-6.0.0.48-Release.zip -d /opt/ohos-sdk/ohos-sdk/linux \
+    && rm /opt/ohos-sdk/ohos-sdk/linux/native-linux-x64-6.0.0.48-Release.zip
+
+ENV CI_OHOS_SDK_ROOT=/opt/ohos-sdk/ohos-sdk/linux \
+    OHOS_SDK_ROOT=/opt/ohos-sdk/ohos-sdk/linux
+
+############################## WASM ##############################
+# Mirror of CI-WASM-Ubuntu.yml: Emscripten 3.1.65 via emsdk. The emsdk
+# bootstrap downloads its toolchains from GitHub releases - pass
+# --build-arg HTTPS_PROXY=... when GitHub is unreachable.
+FROM dynxx-linux AS dynxx-wasm
+
+RUN git clone --depth 1 --branch 3.1.65 https://github.com/emscripten-core/emsdk.git /opt/emsdk \
+    && /opt/emsdk/emsdk install 3.1.65 \
+    && /opt/emsdk/emsdk activate 3.1.65
+
+ENV CI_WASM_SDK_HOME=/opt/emsdk \
+    WASM_SDK_HOME=/opt/emsdk \
+    EMSDK=/opt/emsdk \
+    PATH=/opt/emsdk/upstream/emscripten:/opt/emsdk:$PATH
 
 ############################## Android ##############################
 # Mirror of CI-Android-Ubuntu.yml on top of the Linux stage:

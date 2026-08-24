@@ -1,11 +1,13 @@
 # Docker Build Environment
 
-The root [Dockerfile](Dockerfile) provides reproducible build environments for DynXX's Linux and Android targets. Each mirrors the toolchain of its GitHub Actions `ubuntu-latest` runner — same compilers, same vcpkg ABI hashes — so builds inside the containers are toolchain-identical with CI builds.
+The root [Dockerfile](Dockerfile) provides reproducible build environments for Linux-hosted builds of DynXX's Linux, Android, OHOS and WASM targets. Each mirrors the toolchain of its GitHub Actions `ubuntu-latest` runner — same compilers, same vcpkg ABI hashes — so builds inside the containers are toolchain-identical with CI builds.
 
 | Target | Base Image | Toolchain | Status |
 | :-- | :-- | :-- | :-- |
 | `dynxx-linux` | Ubuntu 24.04 | clang + ninja + vcpkg (x64) | :heavy_check_mark: Verified (full flow, 227/229 tests) |
 | `dynxx-android` | Ubuntu 24.04 + JDK 17 + Android SDK/NDK r30 | clang + ninja + vcpkg (arm64-v8a) + Gradle | :hammer: Image built, full flow pending |
+| `dynxx-ohos` | Ubuntu 24.04 + HarmonyOS SDK 6.0.0.48 | clang + ninja + vcpkg (arm64-ohos) | :hammer: Image build pending |
+| `dynxx-wasm` | Ubuntu 24.04 + Emscripten 3.1.65 | clang + ninja + vcpkg (wasm32) | :hammer: Image build pending |
 
 > A Windows container target existed briefly but was removed: Windows hosts build natively, the CI `windows-latest` runner already provides a clean Windows environment, and Linux/macOS hosts cannot run Windows containers at all — leaving no audience for it.
 
@@ -48,9 +50,39 @@ docker run --platform linux/amd64 --rm -it -v "${PWD}:/workspace" -v /workspace/
   && npm run build:linux -- --test"
 ```
 
-Both `build` and `run` need the `--platform linux/amd64` flag (applies to both `dynxx-linux` and `dynxx-android`).
+Both `build` and `run` need the `--platform linux/amd64` flag (applies to all four images).
 
 > This path follows Docker's standard amd64-emulation behavior, but has not been verified on real Apple Silicon hardware — treat the first run as a smoke test.
+
+## OHOS build (`dynxx-ohos`)
+
+```bash
+docker build --target dynxx-ohos -t dynxx-ohos .
+```
+
+```bash
+docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-ohos bash -lc "
+  cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
+  && npm run build:harmonyos -- --test"
+```
+
+* The HarmonyOS SDK 6.0.0.48 (native linux-x64) is baked into the image at `/opt/ohos-sdk` — `build:harmonyos` reads `CI_OHOS_SDK_ROOT`;
+* The SDK tarball (~1.5 GB) is downloaded from the huaweicloud mirror during the image build.
+
+## WASM build (`dynxx-wasm`)
+
+```bash
+docker build --build-arg HTTPS_PROXY=http://host.docker.internal:7890 --target dynxx-wasm -t dynxx-wasm .
+```
+
+```bash
+docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-wasm bash -lc "
+  cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
+  && npm run build:wasm"
+```
+
+* Emscripten 3.1.65 is installed via emsdk; its toolchain binaries come from GitHub releases, so the image build needs the `HTTPS_PROXY` build arg in regions where GitHub is unreachable. The proxy is baked into the image and inherited by `docker run`, which also unblocks the vcpkg clone at build time;
+* `build:wasm` runs without `--test` (matches the CI workflow).
 
 ## Android build (`dynxx-android`)
 
