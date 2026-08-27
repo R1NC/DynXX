@@ -1,112 +1,75 @@
 # Docker Build Environment
 
-The root [Dockerfile](Dockerfile) provides reproducible build environments for Linux-hosted builds of DynXX's Linux, Android, OHOS and WASM targets. Each mirrors the toolchain of its GitHub Actions `ubuntu-latest` runner — same compilers, same vcpkg ABI hashes — so builds inside the containers are toolchain-identical with CI builds.
+Windows/macOS hosts lack cross-compile toolchains for Linux/Android/OHOS/WASM. The [Dockerfile](Dockerfile) provides four environment images — mount your source and verify compilation on any of these targets in two steps: `docker build` creates the image (once; toolchains are baked in), `docker run` mounts the source and builds.
 
-| Target | Base Image | Toolchain | Status |
-| :-- | :-- | :-- | :-- |
-| `dynxx-linux` | Ubuntu 24.04 | clang + ninja + vcpkg (x64) | :heavy_check_mark: Verified (full flow, 227/229 tests) |
-| `dynxx-android` | Ubuntu 24.04 + JDK 17 + Android SDK/NDK r30 | clang + ninja + vcpkg (arm64-v8a) + Gradle | :heavy_check_mark: Verified (full flow, AAR packaged) |
-| `dynxx-ohos` | Ubuntu 24.04 + HarmonyOS SDK 6.0.0.48 | clang + ninja + vcpkg (arm64-ohos) | :heavy_check_mark: Verified (full flow, `--test`) |
-| `dynxx-wasm` | Ubuntu 24.04 + Emscripten 3.1.65 | clang + ninja + vcpkg (wasm32) | :heavy_check_mark: Verified (full flow) |
+## Linux
 
-> A Windows container target existed briefly but was removed: Windows hosts build natively, the CI `windows-latest` runner already provides a clean Windows environment, and Linux/macOS hosts cannot run Windows containers at all — leaving no audience for it.
-
-## Requirements
-
-* Docker Desktop (or any Docker engine);
-* Network access to Docker Hub and GitHub (vcpkg clone + toolchain download);
-* ~4 GB free disk space for the image and build artifacts.
-
-## Build the image
+Create the image (once):
 
 ```bash
 docker build --target dynxx-linux -t dynxx-linux .
 ```
 
-> In regions where Docker Hub is unreachable, prefix base images with a registry
-> mirror, e.g. for China: `--build-arg REGISTRY=docker.m.daocloud.io`
-
-> Node.js v24.20.0 is installed from the huaweicloud binary mirror (pinned by the
-> `NODE_VERSION` ARG): the official nodesource APT repo gets TLS-reset from behind
-> the GFW even through a proxy, so it cannot be used for image builds in China.
-
-## Run the full verification flow
+Build and run tests (artifacts land in `build.Linux/`):
 
 ```bash
-docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-linux bash -lc "
+docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-linux bash -lc "
   cd tools && npm ci && npm run build:linux -- --test"
 ```
 
-What it does: `npm ci` (deps) → `build:linux -- --test` (CMake configure + vcpkg manifest install + build + ctest). Build artifacts land in `build.Linux/`.
+## Android
 
-> All toolchains are baked into the image (clang/LLVM, Node, and vcpkg at `/opt/vcpkg`), so the CI-only `setup:llvm`/`setup:vcpkg` steps are not needed in containers.
-
-## Running on Apple Silicon (arm64 Mac)
-
-Docker Desktop runs Linux containers through its built-in VM, so the image itself works on any Mac. However, the build scripts hardcode the `x64` vcpkg triplet ([build-Linux.ts](tools/build/build-Linux.ts)) to match the x64 CI runner — an arm64 container would install x64 packages that cannot execute. Force the amd64 platform instead (enable **Rosetta** in Docker Desktop for near-native speed; QEMU emulation works too, just slower):
-
-```bash
-docker build --platform linux/amd64 --target dynxx-linux -t dynxx-linux .
-```
-
-```bash
-docker run --platform linux/amd64 --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-linux bash -lc "
-  cd tools && npm ci && npm run build:linux -- --test"
-```
-
-Both `build` and `run` need the `--platform linux/amd64` flag (applies to all four images).
-
-> This path follows Docker's standard amd64-emulation behavior, but has not been verified on real Apple Silicon hardware — treat the first run as a smoke test.
-
-## Android build (`dynxx-android`)
-
-Same flow as Linux, plus the Gradle AAR packaging:
+Create the image (once):
 
 ```bash
 docker build --target dynxx-android -t dynxx-android .
 ```
 
+Build the arm64-v8a library and package the AAR:
+
 ```bash
-docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-android bash -lc "
+docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-android bash -lc "
   cd tools && npm ci && npm run build:android -- --test"
 ```
 
-* The C++ library is built by CMake + vcpkg (`arm64-v8a`, NDK's own clang), then `gradlew :DynXX-lib:assembleRelease` packages the AAR into `build.Android/`;
-* All SDK components (`platform-tools`, `platforms;android-37.0`, `build-tools;37.0.0`, `cmake;4.1.2`, both NDKs) are baked into the image via `sdkmanager` at build time — AGP's auto-downloader silently fails behind the GFW (its Java HTTP stack ignores the env proxy), while `sdkmanager` honors it. Note the API 37+ platform id format: `android-37.0`, the legacy `android-37` id no longer exists in the SDK repository;
-* The mounted workspace must not contain a host-specific `platforms/Android/local.properties` with an `sdk.dir` (it is gitignored, so CI checkouts never have one) — AGP prefers `sdk.dir` over `ANDROID_HOME`; temporarily rename it on the host before the run;
-* Gradle's distribution and dependency downloads live in `/root/.gradle` — persist with `-v dynxx-gradle-cache:/root/.gradle` to speed up repeat builds.
+Before the run, temporarily move your host `platforms/Android/local.properties` aside (AGP prefers `sdk.dir` over the SDK baked into the image).
 
-## OHOS build (`dynxx-ohos`)
+## OHOS
+
+Create the image (once):
 
 ```bash
 docker build --target dynxx-ohos -t dynxx-ohos .
 ```
 
+Build the arm64 static library (artifacts land in `build.OHOS/`):
+
 ```bash
-docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-ohos bash -lc "
+docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-ohos bash -lc "
   cd tools && npm ci && npm run build:harmonyos -- --test"
 ```
 
-* The HarmonyOS SDK 6.0.0.48 (native linux-x64) is baked into the image at `/opt/ohos-sdk` — `build:harmonyos` reads `CI_OHOS_SDK_ROOT`;
-* The SDK tarball (~1.5 GB) is downloaded from the huaweicloud mirror during the image build.
+## WASM
 
-## WASM build (`dynxx-wasm`)
+Create the image (once) — emsdk downloads from GitHub, so add the proxy in China:
 
 ```bash
 docker build --build-arg HTTPS_PROXY=http://host.docker.internal:7890 --target dynxx-wasm -t dynxx-wasm .
 ```
 
+Produce `DynXX.wasm`/`DynXX.js`/`DynXX.html` (artifacts land in `build.WASM/`):
+
 ```bash
-docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-wasm bash -lc "
+docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-wasm bash -lc "
   cd tools && npm ci && npm run build:wasm"
 ```
 
-* Emscripten 3.1.65 is installed via emsdk; its toolchain binaries come from GitHub releases, so the image build needs the `HTTPS_PROXY` build arg in regions where GitHub is unreachable. The proxy is baked into the image and inherited by `docker run`, which also unblocks the vcpkg clone at build time;
-* `CC`/`CXX` are baked as `emcc`/`em++` — vcpkg's emscripten triplet only overrides the CMake compiler variables, but make-based ports (openssl) read the `CC` env var directly. Without this, the wasm configure step picks the host clang (or `cc`) and fails on glibc headers;
-* `build:wasm` runs without `--test` (matches the CI workflow).
-
 ## Notes
 
-* The anonymous volume `-v <mount>/tools/node_modules` keeps the container's platform-specific `npm install` (esbuild) from overwriting the host's `node_modules`;
-* vcpkg is baked into the image at `/opt/vcpkg` (git clone + bootstrap at image build time; `dev` is a rolling branch — rebuild the image to update it). Persist the binary cache with `-v dynxx-vcpkg-cache:/root/vcpkg-binary-cache` to speed up repeat builds;
-* Build outputs are owned by root inside the container; adjust ownership with `chown`/`chmod` on the host if needed.
+* **Toolchain versions are frozen in the image**: vcpkg (`dev` branch, `/opt/vcpkg`), Node 24, emsdk 3.1.65, OHOS SDK 6.0.0.48, Android SDK/NDK. Versions are controlled by the Dockerfile ARGs — to upgrade, change the ARG and rebuild the image (vcpkg is a rolling branch; rebuilding picks up the latest).
+* **China network**: add `--build-arg REGISTRY=docker.m.daocloud.io` if Docker Hub is unreachable; `--build-arg HTTPS_PROXY=http://host.docker.internal:7890` if GitHub is (the proxy is baked into the image and inherited by `docker run`).
+* **`-v /workspace/tools/node_modules`**: anonymous volume that keeps the container's platform-specific `npm install` from overwriting your host `node_modules`.
+* **Faster repeat builds**: add `-v dynxx-vcpkg-cache:/root/vcpkg-binary-cache` (dependency binary cache); Android additionally `-v dynxx-gradle-cache:/root/.gradle`.
+* **Apple Silicon**: add `--platform linux/amd64` to both build and run.
+* **Windows / macOS**: build natively (`npm run build:windows` / `npm run build:macos`) — no Docker needed.
+* **Artifact ownership**: builds run as root inside the container; `chown`/`chmod` on the host if needed.

@@ -24,16 +24,16 @@
 # The toolchains are all baked into the image (clang/LLVM, Node, vcpkg at /opt/vcpkg,
 # plus the per-target SDKs), so runs only need `npm ci && npm run build:<target>`:
 #   Linux:
-#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-linux bash -lc "
+#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-linux bash -lc "
 #       cd tools && npm ci && npm run build:linux -- --test"
 #   Android (see DOCKER.md for the local.properties caveat):
-#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-android bash -lc "
+#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-android bash -lc "
 #       cd tools && npm ci && npm run build:android -- --test"
 #   OHOS:
-#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-ohos bash -lc "
+#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-ohos bash -lc "
 #       cd tools && npm ci && npm run build:harmonyos -- --test"
 #   WASM:
-#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-wasm bash -lc "
+#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-wasm bash -lc "
 #       cd tools && npm ci && npm run build:wasm"
 #
 # Notes:
