@@ -18,7 +18,9 @@
 # mirror, e.g. for China: --build-arg REGISTRY=docker.m.daocloud.io
 # In regions where GitHub releases are unreachable, route build-time downloads
 # through a local proxy: --build-arg HTTPS_PROXY=http://host.docker.internal:7890
-# (the proxy env is baked into the image, so container runs inherit it too).
+# (the proxy env is baked for the build-time RUN steps only and cleared before
+# the stage finishes, so container runs stay proxy-free - a baked proxy would
+# make libcurl route every request through it and bypass CURLOPT_RESOLVE).
 #
 # Build the project with the source mounted from the host (artifacts land in build.*/).
 # The toolchains are all baked into the image (clang/LLVM, Node, vcpkg at /opt/vcpkg,
@@ -55,7 +57,8 @@ ARG REGISTRY=docker.io
 
 # Optional proxy for build-time downloads (GitHub releases etc.); pass
 # --build-arg HTTPS_PROXY=http://host.docker.internal:7890 behind a firewall.
-# Baked into the image so container runs inherit it as well.
+# Active only during build-time RUN steps (see the ENV clears below); container
+# runs are proxy-free so libcurl does not bypass DNS overrides.
 ARG HTTP_PROXY=
 ARG HTTPS_PROXY=
 ARG NO_PROXY=localhost,127.0.0.1
@@ -132,9 +135,15 @@ RUN git clone --branch dev https://github.com/rinc-xyz/vcpkg.git /opt/vcpkg \
 # CI_VCPKG_HOME/VCPKG_HOME point CMakePresets.json at the baked vcpkg toolchain
 # ($env{VCPKG_HOME}); LLVM_HOME makes the --coverage flow find llvm-cov/llvm-profdata
 # (setup:llvm's GITHUB_ENV export is CI-only and would not reach the build process).
+# The build-time proxy envs are cleared here so the runtime image is proxy-free:
+# libcurl reads http_proxy/https_proxy and would route every request through the
+# proxy, where CURLOPT_RESOLVE (DNS overrides) does not apply. Pass
+# --env https_proxy=... to docker run when dependency downloads need a proxy.
 ENV CI_VCPKG_HOME=/opt/vcpkg \
     VCPKG_HOME=/opt/vcpkg \
-    LLVM_HOME=/usr/bin
+    LLVM_HOME=/usr/bin \
+    http_proxy= \
+    https_proxy=
 
 WORKDIR /workspace
 
@@ -165,6 +174,11 @@ ARG ANDROID_PLATFORM=android-37.0
 ARG ANDROID_BUILD_TOOLS=37.0.0
 ARG ANDROID_CMAKE=4.1.2
 
+# sdkmanager downloads dl.google.com components - re-enable the build-time
+# proxy (the base stage cleared it), then clear it again for the runtime image.
+ENV http_proxy=$HTTP_PROXY \
+    https_proxy=$HTTPS_PROXY
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends openjdk-17-jdk-headless \
     && rm -rf /var/lib/apt/lists/*
@@ -173,7 +187,9 @@ RUN apt-get update \
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
     ANDROID_HOME=/opt/android-sdk \
     CI_ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION} \
-    ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION}
+    ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION} \
+    http_proxy= \
+    https_proxy=
 
 RUN mkdir -p /opt/android-sdk/cmdline-tools \
     && curl -fsSL -o /tmp/cmdline-tools.zip \
@@ -224,8 +240,12 @@ FROM dynxx-linux AS dynxx-wasm
 # CC/CXX env vars. make-based ports (openssl) read $ENV{CC} directly, so they
 # must see emcc here - with the inherited clang, or unset (defaults to 'cc'),
 # the wasm configure step picks the host compiler and fails on glibc headers.
+# emsdk install downloads its toolchains from GitHub releases - re-enable the
+# build-time proxy here (the base stage cleared it), then clear it again below.
 ENV CC=emcc \
-    CXX=em++
+    CXX=em++ \
+    http_proxy=$HTTP_PROXY \
+    https_proxy=$HTTPS_PROXY
 
 # Same version as CI-WASM-*.yml's setup-emsdk step; bump in one place
 # (overridable with --build-arg EMSDK_VERSION=...).
@@ -238,4 +258,6 @@ RUN git clone --depth 1 --branch ${EMSDK_VERSION} https://github.com/emscripten-
 ENV CI_WASM_SDK_HOME=/opt/emsdk \
     WASM_SDK_HOME=/opt/emsdk \
     EMSDK=/opt/emsdk \
-    PATH=/opt/emsdk/upstream/emscripten:/opt/emsdk:$PATH
+    PATH=/opt/emsdk/upstream/emscripten:/opt/emsdk:$PATH \
+    http_proxy= \
+    https_proxy=

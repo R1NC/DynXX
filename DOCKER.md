@@ -67,7 +67,7 @@ docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynx
 ## Notes
 
 * **Toolchain versions are frozen in the image**: vcpkg (`dev` branch, `/opt/vcpkg`), Node 24, emsdk 3.1.65, OHOS SDK 6.0.0.48, Android SDK/NDK. Versions are controlled by the Dockerfile ARGs — to upgrade, change the ARG and rebuild the image (vcpkg is a rolling branch; rebuilding picks up the latest).
-* **China network**: add `--build-arg REGISTRY=docker.m.daocloud.io` if Docker Hub is unreachable; `--build-arg HTTPS_PROXY=http://host.docker.internal:7890` if GitHub is (the proxy is baked into the image and inherited by `docker run`).
+* **China network**: add `--build-arg REGISTRY=docker.m.daocloud.io` if Docker Hub is unreachable; `--build-arg HTTPS_PROXY=http://host.docker.internal:7890` if GitHub is. The proxy is active only during the image build (apt/SDK downloads) and cleared from the final image, so container runs stay proxy-free — a baked proxy would make libcurl route every request through it and bypass DNS overrides. If dependency downloads during `docker run` need a proxy, add `--env https_proxy=http://host.docker.internal:7890`.
 * **`-v /workspace/tools/node_modules`**: anonymous volume that keeps the container's platform-specific `npm install` from overwriting your host `node_modules`.
 * **Faster repeat builds**: add `-v dynxx-vcpkg-cache:/root/vcpkg-binary-cache` (dependency binary cache); Android additionally `-v dynxx-gradle-cache:/root/.gradle`.
 * **Apple Silicon**: add `--platform linux/amd64` to both build and run.
