@@ -63,14 +63,16 @@ ARG NO_PROXY=localhost,127.0.0.1
 ############################## Linux ##############################
 FROM ${REGISTRY}/library/ubuntu:24.04 AS dynxx-linux
 
+# ARGs must precede the ENV that references them (they are only usable inside
+# the stage that declares them).
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+
 ENV DEBIAN_FRONTEND=noninteractive \
     http_proxy=$HTTP_PROXY \
     https_proxy=$HTTPS_PROXY \
     no_proxy=$NO_PROXY
-
-ARG HTTP_PROXY
-ARG HTTPS_PROXY
-ARG NO_PROXY
 
 # Match CI (CI-Linux-Ubuntu.yml sets CC/CXX to clang): some deps (quickjs qjsc)
 # only compile warning-free with clang, and vcpkg's ABI hashes must match CI.
@@ -103,9 +105,16 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Node 24, same major as actions/setup-node@v6 (node-version: '24') in the CI.
-RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
-    && apt-get install -y --no-install-recommends nodejs \
-    && rm -rf /var/lib/apt/lists/*
+# deb.nodesource.com is unreliable from behind the GFW (both direct and
+# proxied connections stall or get TLS-reset), so install the official
+# nodejs.org tarball from the huaweicloud mirror instead.
+# (overridable with --build-arg NODE_VERSION=...).
+ARG NODE_VERSION=24.20.0
+RUN curl -fsSL -o /tmp/node.tar.xz \
+        https://mirrors.huaweicloud.com/nodejs/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
+    && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
+    && rm /tmp/node.tar.xz \
+    && node --version
 
 # setup-vcpkg.ts clones vcpkg into tools/temp_vcpkg inside the mounted workspace
 # (its RUNNER_TEMP/GITHUB_ENV machinery is CI-only); bake the var into the image
@@ -117,6 +126,56 @@ ENV CI_VCPKG_HOME=/workspace/tools/temp_vcpkg
 WORKDIR /workspace
 
 CMD ["bash"]
+
+############################## Android ##############################
+# Mirror of CI-Android-Ubuntu.yml on top of the Linux stage:
+#   JDK 17 (openjdk here, temurin in CI - same language level),
+#   Android SDK cmdline-tools + platform-tools, NDK r30 (version pinned by the
+#   ANDROID_NDK_VERSION ARG below, same name as CI's ANDROID_NDK_VERSION env).
+# platforms;android-37.0 / build-tools;37.0.0 / cmake;4.1.2 and the Gradle NDK
+# (ANDROID_NDK_GRADLE_VERSION) are preinstalled via sdkmanager because AGP's
+# auto-downloader cannot reach dl.google.com from behind the GFW (its Java
+# HTTP stack ignores the baked proxy env and the SDK repo fetch fails
+# silently); sdkmanager honors the env proxy, so the components bake in.
+# Versions mirror platforms/Android/DynXX-lib/build.gradle.kts.
+FROM dynxx-linux AS dynxx-android
+
+# Same variable name as CI-Android-*.yml's ANDROID_NDK_VERSION env; bump the
+# NDK version here (overridable with --build-arg ANDROID_NDK_VERSION=...).
+ARG ANDROID_NDK_VERSION=30.0.16138531
+# NDK used by Gradle's externalNativeBuild (build.gradle.kts ndkVersion),
+# plus the SDK components AGP would otherwise auto-download on first build.
+ARG ANDROID_NDK_GRADLE_VERSION=30.0.15729638
+# API 37+ platforms are versioned "android-37.0" in the SDK repository (the
+# legacy "android-37" id no longer exists).
+ARG ANDROID_PLATFORM=android-37.0
+ARG ANDROID_BUILD_TOOLS=37.0.0
+ARG ANDROID_CMAKE=4.1.2
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openjdk-17-jdk-headless \
+    && rm -rf /var/lib/apt/lists/*
+
+# build-Android.ts reads CI_ANDROID_NDK_HOME first, then ANDROID_NDK_HOME.
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
+    ANDROID_HOME=/opt/android-sdk \
+    CI_ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION} \
+    ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION}
+
+RUN mkdir -p /opt/android-sdk/cmdline-tools \
+    && curl -fsSL -o /tmp/cmdline-tools.zip \
+        https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
+    && unzip -q /tmp/cmdline-tools.zip -d /opt/android-sdk/cmdline-tools \
+    && mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest \
+    && rm /tmp/cmdline-tools.zip \
+    && yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null \
+    && /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install \
+        "platform-tools" \
+        "ndk;${ANDROID_NDK_VERSION}" \
+        "ndk;${ANDROID_NDK_GRADLE_VERSION}" \
+        "platforms;${ANDROID_PLATFORM}" \
+        "build-tools;${ANDROID_BUILD_TOOLS}" \
+        "cmake;${ANDROID_CMAKE}"
 
 ############################## OHOS ##############################
 # Mirror of CI-OHOS-Ubuntu.yml: HarmonyOS SDK 6.0.0.48 (native linux-x64) from
@@ -147,6 +206,14 @@ ENV CI_OHOS_SDK_ROOT=/opt/ohos-sdk/ohos-sdk/linux \
 # unreachable.
 FROM dynxx-linux AS dynxx-wasm
 
+# The base stage bakes CC=clang/CXX=clang++ for CI-Linux parity, but vcpkg's
+# emscripten triplet only overrides the CMake compiler variables, not the
+# CC/CXX env vars. make-based ports (openssl) read $ENV{CC} directly, so they
+# must see emcc here - with the inherited clang, or unset (defaults to 'cc'),
+# the wasm configure step picks the host compiler and fails on glibc headers.
+ENV CC=emcc \
+    CXX=em++
+
 # Same version as CI-WASM-*.yml's setup-emsdk step; bump in one place
 # (overridable with --build-arg EMSDK_VERSION=...).
 ARG EMSDK_VERSION=3.1.65
@@ -159,36 +226,3 @@ ENV CI_WASM_SDK_HOME=/opt/emsdk \
     WASM_SDK_HOME=/opt/emsdk \
     EMSDK=/opt/emsdk \
     PATH=/opt/emsdk/upstream/emscripten:/opt/emsdk:$PATH
-
-############################## Android ##############################
-# Mirror of CI-Android-Ubuntu.yml on top of the Linux stage:
-#   JDK 17 (openjdk here, temurin in CI - same language level),
-#   Android SDK cmdline-tools + platform-tools, NDK r30 (version pinned by the
-#   ANDROID_NDK_VERSION ARG below, same name as CI's ANDROID_NDK_VERSION env).
-# platforms;android-37 / build-tools;37.0.0 / cmake;4.1.2 are NOT
-# preinstalled on purpose: AGP auto-downloads them on first build
-# (licenses accepted below), exactly as it does on the CI runner.
-FROM dynxx-linux AS dynxx-android
-
-# Same variable name as CI-Android-*.yml's ANDROID_NDK_VERSION env; bump the
-# NDK version here (overridable with --build-arg ANDROID_NDK_VERSION=...).
-ARG ANDROID_NDK_VERSION=30.0.16138531
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends openjdk-17-jdk-headless \
-    && rm -rf /var/lib/apt/lists/*
-
-# build-Android.ts reads CI_ANDROID_NDK_HOME first, then ANDROID_NDK_HOME.
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
-    ANDROID_HOME=/opt/android-sdk \
-    CI_ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION} \
-    ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION}
-
-RUN mkdir -p /opt/android-sdk/cmdline-tools \
-    && curl -fsSL -o /tmp/cmdline-tools.zip \
-        https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
-    && unzip -q /tmp/cmdline-tools.zip -d /opt/android-sdk/cmdline-tools \
-    && mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest \
-    && rm /tmp/cmdline-tools.zip \
-    && yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null \
-    && /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "ndk;${ANDROID_NDK_VERSION}"
