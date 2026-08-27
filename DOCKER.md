@@ -34,11 +34,12 @@ docker build --target dynxx-linux -t dynxx-linux .
 
 ```bash
 docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-linux bash -lc "
-  cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
-  && npm run build:linux -- --test"
+  cd tools && npm ci && npm run build:linux -- --test"
 ```
 
-What it does: `npm ci` (deps) → `setup:llvm` (toolchain detection) → `setup:vcpkg` (clones vcpkg into `tools/temp_vcpkg` inside the mounted workspace) → `build:linux -- --test` (CMake configure + vcpkg manifest install + build + ctest). Build artifacts land in `build.Linux/`.
+What it does: `npm ci` (deps) → `build:linux -- --test` (CMake configure + vcpkg manifest install + build + ctest). Build artifacts land in `build.Linux/`.
+
+> All toolchains are baked into the image (clang/LLVM, Node, and vcpkg at `/opt/vcpkg`), so the CI-only `setup:llvm`/`setup:vcpkg` steps are not needed in containers.
 
 ## Running on Apple Silicon (arm64 Mac)
 
@@ -50,8 +51,7 @@ docker build --platform linux/amd64 --target dynxx-linux -t dynxx-linux .
 
 ```bash
 docker run --platform linux/amd64 --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-linux bash -lc "
-  cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
-  && npm run build:linux -- --test"
+  cd tools && npm ci && npm run build:linux -- --test"
 ```
 
 Both `build` and `run` need the `--platform linux/amd64` flag (applies to all four images).
@@ -68,8 +68,7 @@ docker build --target dynxx-android -t dynxx-android .
 
 ```bash
 docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-android bash -lc "
-  cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
-  && npm run build:android -- --test"
+  cd tools && npm ci && npm run build:android -- --test"
 ```
 
 * The C++ library is built by CMake + vcpkg (`arm64-v8a`, NDK's own clang), then `gradlew :DynXX-lib:assembleRelease` packages the AAR into `build.Android/`;
@@ -85,8 +84,7 @@ docker build --target dynxx-ohos -t dynxx-ohos .
 
 ```bash
 docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-ohos bash -lc "
-  cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
-  && npm run build:harmonyos -- --test"
+  cd tools && npm ci && npm run build:harmonyos -- --test"
 ```
 
 * The HarmonyOS SDK 6.0.0.48 (native linux-x64) is baked into the image at `/opt/ohos-sdk` — `build:harmonyos` reads `CI_OHOS_SDK_ROOT`;
@@ -100,8 +98,7 @@ docker build --build-arg HTTPS_PROXY=http://host.docker.internal:7890 --target d
 
 ```bash
 docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-wasm bash -lc "
-  cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
-  && npm run build:wasm"
+  cd tools && npm ci && npm run build:wasm"
 ```
 
 * Emscripten 3.1.65 is installed via emsdk; its toolchain binaries come from GitHub releases, so the image build needs the `HTTPS_PROXY` build arg in regions where GitHub is unreachable. The proxy is baked into the image and inherited by `docker run`, which also unblocks the vcpkg clone at build time;
@@ -111,5 +108,5 @@ docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /
 ## Notes
 
 * The anonymous volume `-v <mount>/tools/node_modules` keeps the container's platform-specific `npm install` (esbuild) from overwriting the host's `node_modules`;
-* vcpkg is re-cloned on every run; persist the binary cache with `-v dynxx-vcpkg-cache:/root/vcpkg-binary-cache` to speed up repeat builds;
+* vcpkg is baked into the image at `/opt/vcpkg` (git clone + bootstrap at image build time; `dev` is a rolling branch — rebuild the image to update it). Persist the binary cache with `-v dynxx-vcpkg-cache:/root/vcpkg-binary-cache` to speed up repeat builds;
 * Build outputs are owned by root inside the container; adjust ownership with `chown`/`chmod` on the host if needed.

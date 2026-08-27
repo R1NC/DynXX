@@ -20,30 +20,30 @@
 # through a local proxy: --build-arg HTTPS_PROXY=http://host.docker.internal:7890
 # (the proxy env is baked into the image, so container runs inherit it too).
 #
-# Build the project with the source mounted from the host (artifacts land in build.*/):
+# Build the project with the source mounted from the host (artifacts land in build.*/).
+# The toolchains are all baked into the image (clang/LLVM, Node, vcpkg at /opt/vcpkg,
+# plus the per-target SDKs), so runs only need `npm ci && npm run build:<target>`:
 #   Linux:
 #     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-linux bash -lc "
-#       cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
-#       && npm run build:linux -- --test"
+#       cd tools && npm ci && npm run build:linux -- --test"
 #   Android (see DOCKER.md for the local.properties caveat):
 #     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-android bash -lc "
-#       cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
-#       && npm run build:android -- --test"
+#       cd tools && npm ci && npm run build:android -- --test"
 #   OHOS:
 #     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-ohos bash -lc "
-#       cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
-#       && npm run build:harmonyos -- --test"
+#       cd tools && npm ci && npm run build:harmonyos -- --test"
 #   WASM:
 #     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules -w /workspace dynxx-wasm bash -lc "
-#       cd tools && npm ci && npm run setup:llvm && npm run setup:vcpkg \
-#       && npm run build:wasm"
+#       cd tools && npm ci && npm run build:wasm"
 #
 # Notes:
 #   - The anonymous volume -v <mount>/tools/node_modules keeps the container's
 #     npm installs from overwriting the host platform's node_modules (esbuild is
 #     platform-specific and would break the other side).
-#   - vcpkg is re-cloned on every run (tools/setup-vcpkg.ts removes it first), so the
-#     first build after `npm ci` downloads the toolchain; later builds reuse the
+#   - vcpkg is baked into the image at /opt/vcpkg (git clone + bootstrap during the
+#     image build; `dev` is a rolling branch, rebuild the image to update it).
+#     setup:llvm/setup:vcpkg are CI-only steps (they export GITHUB_ENV) and are not
+#     needed in containers. Dependency builds can be reused across runs via the
 #     vcpkg binary cache under the home dir (~/vcpkg-binary-cache) when persisted
 #     with `-v dynxx-vcpkg-cache:/root/vcpkg-binary-cache`.
 #   - Build outputs are owned by root inside the container; adjust with chown/chmod
@@ -85,7 +85,9 @@ ENV CC=clang CXX=clang++
 # (Checksum.h includes zlib.h) - preinstalled on the GitHub runner.
 # clang-tools-18 provides clang-scan-deps, which CMake's Ninja generator requires
 # for the Clang C++ module (P1689) probe; the unversioned name is symlinked so
-# CMake 3.28 finds it next to clang in PATH.
+# CMake 3.28 finds it next to clang in PATH. The same unversioned symlinks are
+# made for llvm-cov/llvm-profdata - the --coverage flow resolves them via LLVM_HOME
+# and the apt packages only ship the versioned (-18) names.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
@@ -102,6 +104,8 @@ RUN apt-get update \
         pkg-config \
         zlib1g-dev \
     && ln -sf clang-scan-deps-18 /usr/bin/clang-scan-deps \
+    && ln -sf llvm-cov-18 /usr/bin/llvm-cov \
+    && ln -sf llvm-profdata-18 /usr/bin/llvm-profdata \
     && rm -rf /var/lib/apt/lists/*
 
 # Node 24, same major as actions/setup-node@v6 (node-version: '24') in the CI.
@@ -116,12 +120,21 @@ RUN curl -fsSL -o /tmp/node.tar.xz \
     && rm /tmp/node.tar.xz \
     && node --version
 
-# setup-vcpkg.ts clones vcpkg into tools/temp_vcpkg inside the mounted workspace
-# (its RUNNER_TEMP/GITHUB_ENV machinery is CI-only); bake the var into the image
-# so container commands need no manual export (CMakePresets.json resolves the
-# vcpkg toolchain via $env{VCPKG_HOME}). Placed last to keep the layer cache
-# warm (the var is consumed at runtime, not during the build).
-ENV CI_VCPKG_HOME=/workspace/tools/temp_vcpkg
+# vcpkg is baked into the image instead of re-cloned per run: setup-vcpkg.ts
+# follows CI's "fresh runner every time" semantics (deletes + full git clone into
+# the mounted workspace - slow over the volume mount and repeats the download on
+# every run). Pinning the clone in the image freezes the toolchain for
+# reproducibility (dev is a rolling branch; rebuild the image to update).
+# Needs GitHub reachable at build time (see the proxy args above).
+RUN git clone --branch dev https://github.com/rinc-xyz/vcpkg.git /opt/vcpkg \
+    && /opt/vcpkg/bootstrap-vcpkg.sh
+
+# CI_VCPKG_HOME/VCPKG_HOME point CMakePresets.json at the baked vcpkg toolchain
+# ($env{VCPKG_HOME}); LLVM_HOME makes the --coverage flow find llvm-cov/llvm-profdata
+# (setup:llvm's GITHUB_ENV export is CI-only and would not reach the build process).
+ENV CI_VCPKG_HOME=/opt/vcpkg \
+    VCPKG_HOME=/opt/vcpkg \
+    LLVM_HOME=/usr/bin
 
 WORKDIR /workspace
 
