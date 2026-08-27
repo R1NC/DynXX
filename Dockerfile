@@ -120,30 +120,40 @@ CMD ["bash"]
 
 ############################## OHOS ##############################
 # Mirror of CI-OHOS-Ubuntu.yml: HarmonyOS SDK 6.0.0.48 (native linux-x64) from
-# the huaweicloud mirror. build-OHOS.ts reads CI_OHOS_SDK_ROOT first, then
-# OHOS_SDK_ROOT (readCIEnv).
+# the huaweicloud mirror (versions pinned by the OHOS_SDK_* ARGs below).
+# build-OHOS.ts reads CI_OHOS_SDK_ROOT first, then OHOS_SDK_ROOT (readCIEnv).
 FROM dynxx-linux AS dynxx-ohos
+
+# Same versions as CI-OHOS-*.yml's cache key and mirror URL; bump in one place
+# (overridable with --build-arg OHOS_SDK_VERSION=... / OHOS_SDK_RELEASE=...).
+ARG OHOS_SDK_VERSION=6.0.0.48
+ARG OHOS_SDK_RELEASE=6.0.0.1-Release
 
 RUN mkdir -p /opt/ohos-sdk \
     && curl -fL -o /tmp/ohos-sdk.tar.gz \
-        https://mirrors.huaweicloud.com/harmonyos/os/6.0.0.1-Release/ohos-sdk-windows_linux-public.tar.gz \
+        https://mirrors.huaweicloud.com/harmonyos/os/${OHOS_SDK_RELEASE}/ohos-sdk-windows_linux-public.tar.gz \
     && tar -xzf /tmp/ohos-sdk.tar.gz -C /opt/ohos-sdk \
     && rm /tmp/ohos-sdk.tar.gz \
-    && unzip -q /opt/ohos-sdk/ohos-sdk/linux/native-linux-x64-6.0.0.48-Release.zip -d /opt/ohos-sdk/ohos-sdk/linux \
-    && rm /opt/ohos-sdk/ohos-sdk/linux/native-linux-x64-6.0.0.48-Release.zip
+    && unzip -q /opt/ohos-sdk/ohos-sdk/linux/native-linux-x64-${OHOS_SDK_VERSION}-Release.zip -d /opt/ohos-sdk/ohos-sdk/linux \
+    && rm /opt/ohos-sdk/ohos-sdk/linux/native-linux-x64-${OHOS_SDK_VERSION}-Release.zip
 
 ENV CI_OHOS_SDK_ROOT=/opt/ohos-sdk/ohos-sdk/linux \
     OHOS_SDK_ROOT=/opt/ohos-sdk/ohos-sdk/linux
 
 ############################## WASM ##############################
-# Mirror of CI-WASM-Ubuntu.yml: Emscripten 3.1.65 via emsdk. The emsdk
-# bootstrap downloads its toolchains from GitHub releases - pass
-# --build-arg HTTPS_PROXY=... when GitHub is unreachable.
+# Mirror of CI-WASM-Ubuntu.yml: Emscripten 3.1.65 via emsdk (version pinned by
+# the EMSDK_VERSION ARG below). The emsdk bootstrap downloads its toolchains
+# from GitHub releases - pass --build-arg HTTPS_PROXY=... when GitHub is
+# unreachable.
 FROM dynxx-linux AS dynxx-wasm
 
-RUN git clone --depth 1 --branch 3.1.65 https://github.com/emscripten-core/emsdk.git /opt/emsdk \
-    && /opt/emsdk/emsdk install 3.1.65 \
-    && /opt/emsdk/emsdk activate 3.1.65
+# Same version as CI-WASM-*.yml's setup-emsdk step; bump in one place
+# (overridable with --build-arg EMSDK_VERSION=...).
+ARG EMSDK_VERSION=3.1.65
+
+RUN git clone --depth 1 --branch ${EMSDK_VERSION} https://github.com/emscripten-core/emsdk.git /opt/emsdk \
+    && /opt/emsdk/emsdk install ${EMSDK_VERSION} \
+    && /opt/emsdk/emsdk activate ${EMSDK_VERSION}
 
 ENV CI_WASM_SDK_HOME=/opt/emsdk \
     WASM_SDK_HOME=/opt/emsdk \
@@ -153,11 +163,16 @@ ENV CI_WASM_SDK_HOME=/opt/emsdk \
 ############################## Android ##############################
 # Mirror of CI-Android-Ubuntu.yml on top of the Linux stage:
 #   JDK 17 (openjdk here, temurin in CI - same language level),
-#   Android SDK cmdline-tools + platform-tools, NDK r30 (30.0.15729638).
+#   Android SDK cmdline-tools + platform-tools, NDK r30 (version pinned by the
+#   ANDROID_NDK_VERSION ARG below, same name as CI's ANDROID_NDK_VERSION env).
 # platforms;android-37 / build-tools;37.0.0 / cmake;4.1.2 are NOT
 # preinstalled on purpose: AGP auto-downloads them on first build
 # (licenses accepted below), exactly as it does on the CI runner.
 FROM dynxx-linux AS dynxx-android
+
+# Same variable name as CI-Android-*.yml's ANDROID_NDK_VERSION env; bump the
+# NDK version here (overridable with --build-arg ANDROID_NDK_VERSION=...).
+ARG ANDROID_NDK_VERSION=30.0.16138531
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends openjdk-17-jdk-headless \
@@ -166,8 +181,8 @@ RUN apt-get update \
 # build-Android.ts reads CI_ANDROID_NDK_HOME first, then ANDROID_NDK_HOME.
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
     ANDROID_HOME=/opt/android-sdk \
-    CI_ANDROID_NDK_HOME=/opt/android-sdk/ndk/30.0.15729638 \
-    ANDROID_NDK_HOME=/opt/android-sdk/ndk/30.0.15729638
+    CI_ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION} \
+    ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION}
 
 RUN mkdir -p /opt/android-sdk/cmdline-tools \
     && curl -fsSL -o /tmp/cmdline-tools.zip \
@@ -176,4 +191,4 @@ RUN mkdir -p /opt/android-sdk/cmdline-tools \
     && mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest \
     && rm /tmp/cmdline-tools.zip \
     && yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null \
-    && /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "ndk;30.0.15729638"
+    && /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "ndk;${ANDROID_NDK_VERSION}"
