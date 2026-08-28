@@ -8,34 +8,42 @@
 #   dynxx-ohos    - HarmonyOS arm64: + HarmonyOS SDK 6.0.0.48 (CI-OHOS-Ubuntu.yml)
 #   dynxx-wasm    - WASM32: + Emscripten 3.1.65 (CI-WASM-Ubuntu.yml)
 #
-# Build an environment image:
-#   docker build --target dynxx-linux -t dynxx-linux .
-#   docker build --target dynxx-android -t dynxx-android .
-#   docker build --target dynxx-ohos -t dynxx-ohos .
-#   docker build --target dynxx-wasm -t dynxx-wasm .
+# Build an environment image (Podman-compatible; podman build/run replace the
+# docker equivalents with the same flags):
+#   podman build --target dynxx-linux -t dynxx-linux .
+#   podman build --target dynxx-android -t dynxx-android .
+#   podman build --target dynxx-ohos -t dynxx-ohos .
+#   podman build --target dynxx-wasm -t dynxx-wasm .
+# (Behind a firewall add --build-arg HTTPS_PROXY=... to the build - every
+# target needs it on a fresh cache; once the base layers are cached only OHOS
+# skips it. See DOCKER.md.)
 #
-# In regions where Docker Hub is unreachable, prefix base images with a registry
-# mirror, e.g. for China: --build-arg REGISTRY=docker.m.daocloud.io
+# Base images default to the DaoCloud registry mirror (docker.m.daocloud.io)
+# for China network stability; outside China, pass --build-arg REGISTRY=docker.io
 # In regions where GitHub releases are unreachable, route build-time downloads
 # through a local proxy: --build-arg HTTPS_PROXY=http://host.docker.internal:7890
 # (the proxy env is baked for the build-time RUN steps only and cleared before
 # the stage finishes, so container runs stay proxy-free - a baked proxy would
 # make libcurl route every request through it and bypass CURLOPT_RESOLVE).
+# All targets share the dynxx-linux base stage, which clones vcpkg from GitHub:
+# on a fresh cache (first build) every target needs the proxy. Once the base
+# layers are cached, only OHOS is proxy-free (huaweicloud mirror); Android
+# (sdkmanager downloads from dl.google.com) and WASM (emsdk install) still do.
 #
 # Build the project with the source mounted from the host (artifacts land in build.*/).
 # The toolchains are all baked into the image (clang/LLVM, Node, vcpkg at /opt/vcpkg,
 # plus the per-target SDKs), so runs only need `npm ci && npm run build:<target>`:
 #   Linux:
-#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-linux bash -lc "
+#     podman run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-linux bash -lc "
 #       cd tools && npm ci && npm run build:linux -- --test"
 #   Android (see DOCKER.md for the local.properties caveat):
-#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-android bash -lc "
+#     podman run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-android bash -lc "
 #       cd tools && npm ci && npm run build:android -- --test"
 #   OHOS:
-#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-ohos bash -lc "
+#     podman run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-ohos bash -lc "
 #       cd tools && npm ci && npm run build:harmonyos -- --test"
 #   WASM:
-#     docker run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-wasm bash -lc "
+#     podman run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynxx-wasm bash -lc "
 #       cd tools && npm ci && npm run build:wasm"
 #
 # Notes:
@@ -51,9 +59,10 @@
 #   - Build outputs are owned by root inside the container; adjust with chown/chmod
 #     on the host if needed.
 
-# Base image registry; override for regions where Docker Hub is unreachable,
-# e.g. --build-arg REGISTRY=docker.m.daocloud.io
-ARG REGISTRY=docker.io
+# Base image registry. Defaults to the DaoCloud mirror for China (Docker Hub is
+# flaky there); outside China pass --build-arg REGISTRY=docker.io for the official
+# registry.
+ARG REGISTRY=docker.m.daocloud.io
 
 # Optional proxy for build-time downloads (GitHub releases etc.); pass
 # --build-arg HTTPS_PROXY=http://host.docker.internal:7890 behind a firewall.
@@ -128,7 +137,9 @@ RUN curl -fsSL -o /tmp/node.tar.xz \
 # the mounted workspace - slow over the volume mount and repeats the download on
 # every run). Pinning the clone in the image freezes the toolchain for
 # reproducibility (dev is a rolling branch; rebuild the image to update).
-# Needs GitHub reachable at build time (see the proxy args above).
+# Needs GitHub reachable at build time (see the proxy args above). This is the
+# one GitHub download shared by all four targets - on a fresh cache, run any
+# target's build with the proxy first so the base layers get cached.
 RUN git clone --branch dev https://github.com/rinc-xyz/vcpkg.git /opt/vcpkg \
     && /opt/vcpkg/bootstrap-vcpkg.sh
 
@@ -138,12 +149,18 @@ RUN git clone --branch dev https://github.com/rinc-xyz/vcpkg.git /opt/vcpkg \
 # The build-time proxy envs are cleared here so the runtime image is proxy-free:
 # libcurl reads http_proxy/https_proxy and would route every request through the
 # proxy, where CURLOPT_RESOLVE (DNS overrides) does not apply. Pass
-# --env https_proxy=... to docker run when dependency downloads need a proxy.
+# --env https_proxy=... to podman run when dependency downloads need a proxy.
 ENV CI_VCPKG_HOME=/opt/vcpkg \
     VCPKG_HOME=/opt/vcpkg \
     LLVM_HOME=/usr/bin \
     http_proxy= \
     https_proxy=
+
+# Podman (rootless) maps the container user to the host user, so keep /workspace
+# world-writable: outputs written by the container stay manageable from the host
+# without chown. A bind mount shadows this directory at run time anyway - this
+# only covers the case where /workspace is not mounted.
+RUN mkdir -p /workspace && chmod 777 /workspace
 
 WORKDIR /workspace
 
@@ -161,6 +178,12 @@ CMD ["bash"]
 # silently); sdkmanager honors the env proxy, so the components bake in.
 # Versions mirror platforms/Android/DynXX-lib/build.gradle.kts.
 FROM dynxx-linux AS dynxx-android
+
+# ARGs are scoped to the stage that declares them - re-declare the proxy ARGs
+# here or $HTTP_PROXY expands empty in the ENV below (the base stage's ARGs do
+# not carry over) and sdkmanager silently gets no proxy.
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
 
 # Same variable name as CI-Android-*.yml's ANDROID_NDK_VERSION env; bump the
 # NDK version here (overridable with --build-arg ANDROID_NDK_VERSION=...).
@@ -187,13 +210,16 @@ RUN apt-get update \
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
     ANDROID_HOME=/opt/android-sdk \
     CI_ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION} \
-    ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION} \
-    http_proxy= \
-    https_proxy=
+    ANDROID_NDK_HOME=/opt/android-sdk/ndk/${ANDROID_NDK_VERSION}
 
+# cmdline-tools zip: dl.google.com is behind the GFW, and of the Chinese
+# mirrors only Tencent Cloud still syncs Google's android/repository (TUNA /
+# Aliyun / Huawei all return 404), so pull it from there - reachable without
+# the build-time proxy. sdkmanager below still fetches its components from
+# dl.google.com and relies on the re-enabled proxy above.
 RUN mkdir -p /opt/android-sdk/cmdline-tools \
     && curl -fsSL -o /tmp/cmdline-tools.zip \
-        https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
+        https://mirrors.cloud.tencent.com/AndroidSDK/commandlinetools-linux-11076708_latest.zip \
     && unzip -q /tmp/cmdline-tools.zip -d /opt/android-sdk/cmdline-tools \
     && mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest \
     && rm /tmp/cmdline-tools.zip \
@@ -205,6 +231,11 @@ RUN mkdir -p /opt/android-sdk/cmdline-tools \
         "platforms;${ANDROID_PLATFORM}" \
         "build-tools;${ANDROID_BUILD_TOOLS}" \
         "cmake;${ANDROID_CMAKE}"
+
+# All SDK components are baked - clear the proxy for the runtime image (the
+# stage's ENV carried it through the sdkmanager RUN above).
+ENV http_proxy= \
+    https_proxy=
 
 ############################## OHOS ##############################
 # Mirror of CI-OHOS-Ubuntu.yml: HarmonyOS SDK 6.0.0.48 (native linux-x64) from
@@ -232,8 +263,14 @@ ENV CI_OHOS_SDK_ROOT=/opt/ohos-sdk/ohos-sdk/linux \
 # Mirror of CI-WASM-Ubuntu.yml: Emscripten 3.1.65 via emsdk (version pinned by
 # the EMSDK_VERSION ARG below). The emsdk bootstrap downloads its toolchains
 # from GitHub releases - pass --build-arg HTTPS_PROXY=... when GitHub is
-# unreachable.
+# unreachable. Like Android's sdkmanager (dl.google.com), this stage still needs
+# the proxy after the base layers are cached; only OHOS (huaweicloud mirror) is
+# proxy-free.
 FROM dynxx-linux AS dynxx-wasm
+
+# Re-declare the proxy ARGs (stage-scoped, see the Android stage comment).
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
 
 # The base stage bakes CC=clang/CXX=clang++ for CI-Linux parity, but vcpkg's
 # emscripten triplet only overrides the CMake compiler variables, not the
