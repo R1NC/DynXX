@@ -1,4 +1,4 @@
-# Podman Build Environment
+# Docker / Podman Build Environment
 
 Windows/macOS hosts lack cross-compile toolchains for Linux/Android/OHOS/WASM. The [Dockerfile](Dockerfile) provides four environment images — mount your source and verify compilation on any of these targets in two steps: `podman build` creates the image (once; toolchains are baked in), `podman run` mounts the source and builds.
 
