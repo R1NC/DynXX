@@ -4,13 +4,23 @@ Windows/macOS hosts lack cross-compile toolchains for Linux/Android/OHOS/WASM. T
 
 Podman is fully Dockerfile-compatible, so the Dockerfile needs no changes — `docker build`/`docker run` map 1:1 to `podman build`/`podman run` with the same flags. First-time setup: install Podman Desktop (bundles the CLI), which creates and starts its VM on first launch (or from the CLI: `podman machine init && podman machine start`).
 
+> **`<WSL-GATEWAY>`** in the commands below is your machine's gateway IP into the Podman VM (the WSL virtual switch `vEthernet (WSL ...)`), assigned per machine — substitute your own value (e.g. `http://<WSL-GATEWAY>:7890`). Find it with:
+>
+> ```powershell
+> (Get-NetIPAddress -InterfaceAlias 'vEthernet (WSL)*' -AddressFamily IPv4).IPAddress
+> ```
+>
+> It stays stable across Podman VM restarts, but changes if the WSL network is recreated (see Notes).
+
 ## Linux
 
 Create the image (once) — the base stage clones vcpkg from GitHub, so pass the proxy when GitHub is unreachable. All four targets share these base layers, so this build (or any target's first build) caches them for the rest (see Notes):
 
 ```bash
-podman build --build-arg HTTPS_PROXY=http://host.docker.internal:7890 --target dynxx-linux -t dynxx-linux .
+podman build --build-arg HTTPS_PROXY=http://<WSL-GATEWAY>:7890 --target dynxx-linux -t dynxx-linux .
 ```
+
+The proxy address is the Podman VM's gateway into the host. Unlike Docker Desktop, Podman's `host.docker.internal`/`host.containers.internal` do not forward host ports (connections are refused), so use the gateway IP instead (see Notes).
 
 Build and run tests (artifacts land in `build.Linux/`):
 
@@ -24,7 +34,7 @@ podman run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynx
 Create the image (once) — sdkmanager pulls its components from dl.google.com, so build with the proxy (it also covers the base vcpkg clone on a fresh cache):
 
 ```bash
-podman build --build-arg HTTPS_PROXY=http://host.docker.internal:7890 --target dynxx-android -t dynxx-android .
+podman build --build-arg HTTPS_PROXY=http://<WSL-GATEWAY>:7890 --target dynxx-android -t dynxx-android .
 ```
 
 Build the arm64-v8a library and package the AAR:
@@ -38,10 +48,10 @@ Before the run, temporarily move your host `platforms/Android/local.properties` 
 
 ## OHOS
 
-Create the image (once) — the SDK comes from the huaweicloud mirror (reachable directly), so no proxy is needed once the `dynxx-linux` base layers are cached; on a fresh cache (first build) add `--build-arg HTTPS_PROXY=http://host.docker.internal:7890` for the base vcpkg clone:
+Create the image (once) — the SDK comes from the huaweicloud mirror (reachable directly), but the build command must still pass the same proxy args as the other targets: cache keys include the build environment, so omitting them misses the base layer cache and re-runs the vcpkg clone without a proxy:
 
 ```bash
-podman build --target dynxx-ohos -t dynxx-ohos .
+podman build --build-arg HTTPS_PROXY=http://<WSL-GATEWAY>:7890 --target dynxx-ohos -t dynxx-ohos .
 ```
 
 Build the arm64 static library (artifacts land in `build.OHOS/`):
@@ -53,10 +63,10 @@ podman run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynx
 
 ## WASM
 
-Create the image (once) — emsdk downloads from GitHub, so add the proxy in China (the same proxy also covers the base vcpkg clone when the cache is fresh):
+Create the image (once) — the emsdk repo clone pulls from GitHub, so add the proxy in China (the toolchain binaries come from storage.googleapis.com, reachable directly; the same proxy also covers the base vcpkg clone when the cache is fresh):
 
 ```bash
-podman build --build-arg HTTPS_PROXY=http://host.docker.internal:7890 --target dynxx-wasm -t dynxx-wasm .
+podman build --build-arg HTTPS_PROXY=http://<WSL-GATEWAY>:7890 --target dynxx-wasm -t dynxx-wasm .
 ```
 
 Produce `DynXX.wasm`/`DynXX.js`/`DynXX.html` (artifacts land in `build.WASM/`):
@@ -66,12 +76,26 @@ podman run --rm -it -v "${PWD}:/workspace" -v /workspace/tools/node_modules dynx
   cd tools && npm ci && npm run build:wasm"
 ```
 
+## Proxies and networking
+
+Dependency downloads (vcpkg clone, sdkmanager, emsdk) happen during the image build — the proxy is active only for build-time RUN steps and cleared before the stage finishes, so container runs stay proxy-free (a baked proxy would make libcurl route every request through it and bypass DNS overrides).
+
+* **Build args must be identical across targets**: layer cache keys include the build environment, so a target built without the proxy args misses the base cache and re-runs the vcpkg clone (which fails without a proxy on the GFW). Always pass the same `--build-arg HTTPS_PROXY`/`HTTP_PROXY` values, even for OHOS.
+* **Why the gateway IP?** `host.docker.internal`/`host.containers.internal` resolve inside the VM but do not forward host loopback ports (Podman's gvproxy, unlike Docker Desktop's, refuses those connections). The proxy must listen on the WSL gateway (`<WSL-GATEWAY>`) — enable Allow LAN on FlClash, or forward a loopback-only proxy: `netsh interface portproxy add v4tov4 listenaddress=<WSL-GATEWAY> listenport=7890 connectaddress=127.0.0.1 connectport=7890`. If the gateway IP changes (WSL network recreated), re-run the lookup at the top and update the addresses.
+* **Build-time downloads per target**: base images default to the DaoCloud mirror (`docker.m.daocloud.io`; outside China pass `--build-arg REGISTRY=docker.io`). The shared `dynxx-linux` base stage clones vcpkg from GitHub, so on a fresh cache every target needs the proxy; once cached, only Android (sdkmanager from dl.google.com) and WASM (emsdk repo clone) still do — OHOS's SDK comes from the huaweicloud mirror.
+* **Run-time downloads**: vcpkg downloads on a fresh container need `--env https_proxy=http://<WSL-GATEWAY>:7890 --env http_proxy=http://<WSL-GATEWAY>:7890`; the Gradle JVM ignores `http_proxy`, so Android additionally needs `--env "GRADLE_OPTS=-Dhttp.proxyHost=<WSL-GATEWAY> -Dhttp.proxyPort=7890 -Dhttps.proxyHost=<WSL-GATEWAY> -Dhttps.proxyPort=7890"`. Test runs must NOT have the proxy (DNS-override tests) — use a two-step pattern: step 1 builds with the proxy envs, step 2 runs `-- --test` without them plus `--env DYNXX_GTEST_FILTER=-DynXXDeviceTestSuite.*` (containers have no DMI data, so the device manufacturer/model tests fail).
+
+## Troubleshooting
+
+* **Gradle fails silently** — `GRADLE_OPTS` (-D flags) differ from `gradle.properties` `org.gradle.jvmargs`, so Gradle forks a single-use daemon whose output is not echoed to the console. Read the daemon log: `podman run --rm -v dynxx-gradle-home:/root/.gradle dynxx-android bash -lc "tail -100 /root/.gradle/daemon/*/*.log"`.
+* **Gradle daemon dies on a small VM** — the Android daemon needs its `-Xmx2048m` heap; a 2 GiB VM (the `podman machine init --memory 2048` default, which writes `[wsl2] memory=2147483648` into `%UserProfile%\.wslconfig`) kills it silently. Raise it in `.wslconfig` (`memory=8589934592`), then `wsl --shutdown` + `podman machine start` — `podman machine set --memory` does not work for WSL machines.
+* **`Permission denied` on mounted dirs** — directories created under Docker (or via a Windows git checkout) carry NTFS EA Unix metadata (uid 1000, mode 0755) that the 9p mount maps to `nobody:nogroup r-x`, so the container cannot write or delete them (vcpkg lock files, Gradle `fileHashes.lock`, AGP `Unable to delete directory .../intermediates/...`). `chmod` inside the container or WSL fails too; delete the directory on the Windows side (`Remove-Item -Recurse -Force`) and let the container recreate it. Affects `build.*/`, `platforms/Android/.gradle`, `platforms/Android/DynXX-lib/build`, `DynXX-lib/.cxx`.
+
 ## Notes
 
-* **Toolchain versions are frozen in the image**: vcpkg (`dev` branch, `/opt/vcpkg`), Node 24, emsdk 3.1.65, OHOS SDK 6.0.0.48, Android SDK/NDK. Versions are controlled by the Dockerfile ARGs — to upgrade, change the ARG and rebuild the image (vcpkg is a rolling branch; rebuilding picks up the latest).
-* **China network**: base images already default to the DaoCloud mirror (`docker.m.daocloud.io`) — outside China pass `--build-arg REGISTRY=docker.io`; add `--build-arg HTTPS_PROXY=http://host.docker.internal:7890` if GitHub is unreachable. **All four targets share the `dynxx-linux` base stage, which clones vcpkg from GitHub — on a fresh cache (first build) every target therefore needs the proxy.** Once the base layers are cached, only OHOS is proxy-free (SDK from the huaweicloud mirror); Android still needs it (sdkmanager pulls components from dl.google.com) and so does WASM (emsdk install pulls toolchains from GitHub releases). The proxy is active only during the image build (apt/SDK downloads) and cleared from the final image, so container runs stay proxy-free — a baked proxy would make libcurl route every request through it and bypass DNS overrides. If dependency downloads during `podman run` need a proxy, add `--env https_proxy=http://host.docker.internal:7890`. Podman's VM provides the `host.docker.internal` alias like Docker Desktop; fall back to `host.containers.internal` if the connection fails.
+* **Toolchain versions are frozen in the image**: vcpkg (`dev` branch, `/opt/vcpkg`), Node 24, emsdk 3.1.65, OHOS SDK 6.0.0.48, Android SDK/NDK — controlled by Dockerfile ARGs; rebuild the image to upgrade (vcpkg is a rolling branch).
 * **`-v /workspace/tools/node_modules`**: anonymous volume that keeps the container's platform-specific `npm install` from overwriting your host `node_modules`.
-* **Faster repeat builds**: add `-v dynxx-vcpkg-cache:/root/vcpkg-binary-cache` (dependency binary cache); Android additionally `-v dynxx-gradle-cache:/root/.gradle`.
+* **Faster repeat builds**: named volumes keep caches across `--rm` runs — `-v dynxx-vcpkg-cache:/root/.cache/vcpkg` (binary cache), `-v dynxx-vcpkg-downloads:/opt/vcpkg/downloads` (toolchain tarballs), and for Android `-v dynxx-gradle-home:/root/.gradle` (wrapper dist, dependency cache, daemon logs).
 * **Apple Silicon**: add `--platform linux/amd64` to both build and run.
 * **Windows / macOS**: build natively (`npm run build:windows` / `npm run build:macos`) — no containers needed.
 * **Artifact ownership**: builds run as root inside the container; `chown`/`chmod` on the host if needed.

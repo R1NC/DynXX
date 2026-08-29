@@ -12,23 +12,28 @@
 # docker equivalents with the same flags):
 #   podman build --target dynxx-linux -t dynxx-linux .
 #   podman build --target dynxx-android -t dynxx-android .
-#   podman build --target dynxx-ohos -t dynxx-ohos .
+#   podman build --target dynxx-ohos --build-arg HTTPS_PROXY=http://<WSL-GATEWAY>:7890 -t dynxx-ohos .
 #   podman build --target dynxx-wasm -t dynxx-wasm .
 # (Behind a firewall add --build-arg HTTPS_PROXY=... to the build - every
-# target needs it on a fresh cache; once the base layers are cached only OHOS
-# skips it. See DOCKER.md.)
+# target needs it on every build, because cache keys include the build
+# environment and omitting the args misses the base cache (see DOCKER.md).
 #
 # Base images default to the DaoCloud registry mirror (docker.m.daocloud.io)
 # for China network stability; outside China, pass --build-arg REGISTRY=docker.io
 # In regions where GitHub releases are unreachable, route build-time downloads
-# through a local proxy: --build-arg HTTPS_PROXY=http://host.docker.internal:7890
+# through a local proxy: --build-arg HTTPS_PROXY=http://<WSL-GATEWAY>:7890
 # (the proxy env is baked for the build-time RUN steps only and cleared before
 # the stage finishes, so container runs stay proxy-free - a baked proxy would
 # make libcurl route every request through it and bypass CURLOPT_RESOLVE).
+# <WSL-GATEWAY> is your machine's gateway IP into the Podman VM (per-machine,
+# not a constant; unlike Docker Desktop, Podman's host.docker.internal does not
+# forward host ports); see DOCKER.md for how to find it and expose the proxy
+# on the gateway.
 # All targets share the dynxx-linux base stage, which clones vcpkg from GitHub:
 # on a fresh cache (first build) every target needs the proxy. Once the base
-# layers are cached, only OHOS is proxy-free (huaweicloud mirror); Android
-# (sdkmanager downloads from dl.google.com) and WASM (emsdk install) still do.
+# layers are cached, only OHOS's own steps are proxy-free (huaweicloud mirror);
+# Android (sdkmanager downloads from dl.google.com) and WASM (emsdk repo clone
+# from GitHub) still do.
 #
 # Build the project with the source mounted from the host (artifacts land in build.*/).
 # The toolchains are all baked into the image (clang/LLVM, Node, vcpkg at /opt/vcpkg,
@@ -261,8 +266,9 @@ ENV CI_OHOS_SDK_ROOT=/opt/ohos-sdk/ohos-sdk/linux \
 
 ############################## WASM ##############################
 # Mirror of CI-WASM-Ubuntu.yml: Emscripten 3.1.65 via emsdk (version pinned by
-# the EMSDK_VERSION ARG below). The emsdk bootstrap downloads its toolchains
-# from GitHub releases - pass --build-arg HTTPS_PROXY=... when GitHub is
+# the EMSDK_VERSION ARG below). The emsdk repo clone pulls from GitHub; the
+# toolchain binaries themselves come from storage.googleapis.com (reachable
+# directly in China) - pass --build-arg HTTPS_PROXY=... when GitHub is
 # unreachable. Like Android's sdkmanager (dl.google.com), this stage still needs
 # the proxy after the base layers are cached; only OHOS (huaweicloud mirror) is
 # proxy-free.
@@ -277,8 +283,8 @@ ARG HTTPS_PROXY
 # CC/CXX env vars. make-based ports (openssl) read $ENV{CC} directly, so they
 # must see emcc here - with the inherited clang, or unset (defaults to 'cc'),
 # the wasm configure step picks the host compiler and fails on glibc headers.
-# emsdk install downloads its toolchains from GitHub releases - re-enable the
-# build-time proxy here (the base stage cleared it), then clear it again below.
+# The emsdk repo clone pulls from GitHub - re-enable the build-time proxy here
+# (the base stage cleared it), then clear it again below.
 ENV CC=emcc \
     CXX=em++ \
     http_proxy=$HTTP_PROXY \

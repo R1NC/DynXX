@@ -6,7 +6,7 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 
 [<img src="https://img.shields.io/codecov/c/github/R1NC/DynXX/main?logo=codecov&label=Codecov"/>][2] 
 [<img src="https://img.shields.io/badge/API_Docs_%26_Test_Reports-gray?logo=github"/>][5]
-[<img src="https://img.shields.io/badge/Docker-Enabled-blue?logo=docker"/>][6]
+[<img src="https://img.shields.io/badge/Docker%2FPodman%20Enabled-blue?logo=docker"/>][6]
 
 <table>
    <thead>
@@ -261,9 +261,9 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
   </tbody>
 </table>
 
-## :whale: Docker Build Environment
+## :whale: Docker / Podman Build Environment
 
-A reproducible Linux build environment via the root [Dockerfile](Dockerfile). See [doc][6] for details.
+A reproducible Linux build environment via the root [Dockerfile](Dockerfile). The Dockerfile is Docker-compatible; the commands are verified with [Podman](https://podman.io/) — a drop-in, daemonless Docker alternative whose CLI maps 1:1 (`podman build` ↔ `docker build`). See [doc][6] for details.
 
 [1]: https://github.com/emscripten-core/emscripten/issues/16567
 [2]: https://app.codecov.io/gh/R1NC/DynXX
