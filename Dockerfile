@@ -176,8 +176,8 @@ CMD ["bash"]
 #   JDK 17 (openjdk here, temurin in CI - same language level),
 #   Android SDK cmdline-tools + platform-tools, NDK r30 (version pinned by the
 #   ANDROID_NDK_VERSION ARG below, same name as CI's ANDROID_NDK_VERSION env).
-# platforms;android-37.0 / build-tools;37.0.0 / cmake;4.1.2 and the Gradle NDK
-# (ANDROID_NDK_GRADLE_VERSION) are preinstalled via sdkmanager because AGP's
+# platforms;android-37.0 / build-tools;37.0.0 / cmake;4.1.2 are preinstalled
+# via sdkmanager because AGP's
 # auto-downloader cannot reach dl.google.com from behind the GFW (its Java
 # HTTP stack ignores the baked proxy env and the SDK repo fetch fails
 # silently); sdkmanager honors the env proxy, so the components bake in.
@@ -190,12 +190,10 @@ FROM dynxx-linux AS dynxx-android
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
 
-# Same variable name as CI-Android-*.yml's ANDROID_NDK_VERSION env; bump the
-# NDK version here (overridable with --build-arg ANDROID_NDK_VERSION=...).
+# Same variable name as CI-Android-*.yml's ANDROID_NDK_VERSION env; also the
+# version Gradle's externalNativeBuild uses (build.gradle.kts ndkVersion);
+# bump it here (overridable with --build-arg ANDROID_NDK_VERSION=...).
 ARG ANDROID_NDK_VERSION=30.0.16138531
-# NDK used by Gradle's externalNativeBuild (build.gradle.kts ndkVersion),
-# plus the SDK components AGP would otherwise auto-download on first build.
-ARG ANDROID_NDK_GRADLE_VERSION=30.0.15729638
 # API 37+ platforms are versioned "android-37.0" in the SDK repository (the
 # legacy "android-37" id no longer exists).
 ARG ANDROID_PLATFORM=android-37.0
@@ -232,7 +230,6 @@ RUN mkdir -p /opt/android-sdk/cmdline-tools \
     && /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install \
         "platform-tools" \
         "ndk;${ANDROID_NDK_VERSION}" \
-        "ndk;${ANDROID_NDK_GRADLE_VERSION}" \
         "platforms;${ANDROID_PLATFORM}" \
         "build-tools;${ANDROID_BUILD_TOOLS}" \
         "cmake;${ANDROID_CMAKE}"

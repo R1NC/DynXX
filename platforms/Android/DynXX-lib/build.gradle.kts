@@ -41,7 +41,7 @@ android {
             path = file("src/main/cxx/CMakeLists.txt")
         }
     }
-    ndkVersion = "30.0.15729638"
+    ndkVersion = "30.0.16138531"
 }
 
 dependencies {
