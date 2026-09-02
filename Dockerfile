@@ -5,7 +5,7 @@
 # Targets:
 #   dynxx-linux   - Linux x86_64: clang + ninja + vcpkg (CI-Linux-Ubuntu.yml)
 #   dynxx-android - Android arm64-v8a: + JDK 17 + Android SDK/NDK r30 (CI-Android-Ubuntu.yml)
-#   dynxx-ohos    - HarmonyOS arm64: + HarmonyOS SDK 6.0.0.48 (CI-OHOS-Ubuntu.yml)
+#   dynxx-ohos    - HarmonyOS arm64: + HarmonyOS SDK 26.0.0.38 (CI-OHOS-Ubuntu.yml)
 #   dynxx-wasm    - WASM32: + Emscripten 3.1.65 (CI-WASM-Ubuntu.yml)
 #
 # Build an environment image (Podman-compatible; podman build/run replace the
@@ -240,19 +240,22 @@ ENV http_proxy= \
     https_proxy=
 
 ############################## OHOS ##############################
-# Mirror of CI-OHOS-Ubuntu.yml: HarmonyOS SDK 6.0.0.48 (native linux-x64) from
+# Mirror of CI-OHOS-Ubuntu.yml: HarmonyOS SDK 26.0.0.38 (native linux-x64) from
 # the huaweicloud mirror (versions pinned by the OHOS_SDK_* ARGs below).
 # build-OHOS.ts reads CI_OHOS_SDK_ROOT first, then OHOS_SDK_ROOT (readCIEnv).
 FROM dynxx-linux AS dynxx-ohos
 
 # Same versions as CI-OHOS-*.yml's cache key and mirror URL; bump in one place
-# (overridable with --build-arg OHOS_SDK_VERSION=... / OHOS_SDK_RELEASE=...).
-ARG OHOS_SDK_VERSION=6.0.0.48
-ARG OHOS_SDK_RELEASE=6.0.0.1-Release
+# (overridable with --build-arg OHOS_SDK_VERSION=... / OHOS_SDK_RELEASE=... /
+# OHOS_SDK_DATE=...). The dated tarball name is part of the mirror URL (the
+# generic undated name no longer exists under 7.0-Release).
+ARG OHOS_SDK_VERSION=26.0.0.38
+ARG OHOS_SDK_RELEASE=7.0-Release
+ARG OHOS_SDK_DATE=20260829
 
 RUN mkdir -p /opt/ohos-sdk \
     && curl -fL -o /tmp/ohos-sdk.tar.gz \
-        https://mirrors.huaweicloud.com/harmonyos/os/${OHOS_SDK_RELEASE}/ohos-sdk-windows_linux-public.tar.gz \
+        https://mirrors.huaweicloud.com/harmonyos/os/${OHOS_SDK_RELEASE}/ohos-sdk-windows_linux-public_${OHOS_SDK_DATE}.tar.gz \
     && tar -xzf /tmp/ohos-sdk.tar.gz -C /opt/ohos-sdk \
     && rm /tmp/ohos-sdk.tar.gz \
     && unzip -q /opt/ohos-sdk/ohos-sdk/linux/native-linux-x64-${OHOS_SDK_VERSION}-Release.zip -d /opt/ohos-sdk/ohos-sdk/linux \

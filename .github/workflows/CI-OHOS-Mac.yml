@@ -49,17 +49,17 @@ jobs:
       with:
         path: |
           sdk/packages/ohos-sdk/darwin/native
-        key: ohos-sdk-darwin-6.0.0.48-${{ runner.os }}
+        key: ohos-sdk-darwin-26.0.0.38-${{ runner.os }}
         restore-keys: |
-          ohos-sdk-darwin-6.0.0.48-
+          ohos-sdk-darwin-26.0.0.38-
 
     - name: Setup HarmonyOS SDK
       if: steps.cache-ohos-sdk.outputs.cache-hit != 'true'
       run: |
-        curl -L -o ohos-sdk-mac-public.tar.gz "https://mirrors.huaweicloud.com/harmonyos/os/6.0.0.1-Release/ohos-sdk-mac-public.tar.gz"
+        curl -L -o ohos-sdk-mac-public.tar.gz "https://mirrors.huaweicloud.com/harmonyos/os/7.0-Release/ohos-sdk-mac-public_20260829.tar.gz"
         tar -xzf ohos-sdk-mac-public.tar.gz
         cd sdk/packages/ohos-sdk/darwin
-        unzip native-darwin-x64-6.0.0.48-Release.zip
+        unzip native-darwin-x64-26.0.0.38-Release.zip
 
     - name: Set HarmonyOS Environment
       run: |

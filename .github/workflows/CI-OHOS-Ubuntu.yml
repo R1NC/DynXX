@@ -49,17 +49,17 @@ jobs:
       with:
         path: |
           ohos-sdk/linux/native
-        key: ohos-sdk-linux-6.0.0.48-${{ runner.os }}
+        key: ohos-sdk-linux-26.0.0.38-${{ runner.os }}
         restore-keys: |
-          ohos-sdk-linux-6.0.0.48-
+          ohos-sdk-linux-26.0.0.38-
 
     - name: Setup HarmonyOS SDK
       if: steps.cache-ohos-sdk.outputs.cache-hit != 'true'
       run: |
-        curl -L -o ohos-sdk-windows_linux-public.tar.gz "https://mirrors.huaweicloud.com/harmonyos/os/6.0.0.1-Release/ohos-sdk-windows_linux-public.tar.gz"
+        curl -L -o ohos-sdk-windows_linux-public.tar.gz "https://mirrors.huaweicloud.com/harmonyos/os/7.0-Release/ohos-sdk-windows_linux-public_20260829.tar.gz"
         tar -xzf ohos-sdk-windows_linux-public.tar.gz
         cd ohos-sdk/linux
-        unzip native-linux-x64-6.0.0.48-Release.zip
+        unzip native-linux-x64-26.0.0.38-Release.zip
 
     - name: Set HarmonyOS Environment
       run: |

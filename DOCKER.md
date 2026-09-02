@@ -93,7 +93,7 @@ Dependency downloads (vcpkg clone, sdkmanager, emsdk) happen during the image bu
 
 ## Notes
 
-* **Toolchain versions are frozen in the image**: vcpkg (`dev` branch, `/opt/vcpkg`), Node 24, emsdk 3.1.65, OHOS SDK 6.0.0.48, Android SDK/NDK — controlled by Dockerfile ARGs; rebuild the image to upgrade (vcpkg is a rolling branch).
+* **Toolchain versions are frozen in the image**: vcpkg (`dev` branch, `/opt/vcpkg`), Node 24, emsdk 3.1.65, OHOS SDK 26.0.0.38, Android SDK/NDK — controlled by Dockerfile ARGs; rebuild the image to upgrade (vcpkg is a rolling branch).
 * **`-v /workspace/tools/node_modules`**: anonymous volume that keeps the container's platform-specific `npm install` from overwriting your host `node_modules`.
 * **Faster repeat builds**: named volumes keep caches across `--rm` runs — `-v dynxx-vcpkg-cache:/root/.cache/vcpkg` (binary cache), `-v dynxx-vcpkg-downloads:/opt/vcpkg/downloads` (toolchain tarballs), and for Android `-v dynxx-gradle-home:/root/.gradle` (wrapper dist, dependency cache, daemon logs).
 * **Apple Silicon**: add `--platform linux/amd64` to both build and run.

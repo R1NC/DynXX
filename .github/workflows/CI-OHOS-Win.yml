@@ -49,18 +49,18 @@ jobs:
       with:
         path: |
           ohos-sdk/windows/native
-        key: ohos-sdk-windows-6.0.0.48-${{ runner.os }}
+        key: ohos-sdk-windows-26.0.0.38-${{ runner.os }}
         restore-keys: |
-          ohos-sdk-windows-6.0.0.48-
+          ohos-sdk-windows-26.0.0.38-
 
     - name: Setup HarmonyOS SDK
       if: steps.cache-ohos-sdk.outputs.cache-hit != 'true'
       shell: pwsh
       run: |
-        curl.exe -L -# -o "ohos-sdk-windows_linux-public.tar.gz" "https://mirrors.huaweicloud.com/harmonyos/os/6.0.0.1-Release/ohos-sdk-windows_linux-public.tar.gz"
+        curl.exe -L -# -o "ohos-sdk-windows_linux-public.tar.gz" "https://mirrors.huaweicloud.com/harmonyos/os/7.0-Release/ohos-sdk-windows_linux-public_20260829.tar.gz"
         tar -xzf ohos-sdk-windows_linux-public.tar.gz
         Set-Location ohos-sdk/windows
-        Expand-Archive -Path "native-windows-x64-6.0.0.48-Release.zip" -DestinationPath "."
+        Expand-Archive -Path "native-windows-x64-26.0.0.38-Release.zip" -DestinationPath "."
 
     - name: Set HarmonyOS Environment
       shell: pwsh
