@@ -29,7 +29,7 @@ permissions:
   actions: write
 
 env:
-  ANDROID_NDK_VERSION: 30.0.16138531
+  ANDROID_NDK_VERSION: 30.0.16248370
 
 jobs:
   baseSetup:

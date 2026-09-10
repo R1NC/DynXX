@@ -193,7 +193,7 @@ ARG HTTPS_PROXY
 # Same variable name as CI-Android-*.yml's ANDROID_NDK_VERSION env; also the
 # version Gradle's externalNativeBuild uses (build.gradle.kts ndkVersion);
 # bump it here (overridable with --build-arg ANDROID_NDK_VERSION=...).
-ARG ANDROID_NDK_VERSION=30.0.16138531
+ARG ANDROID_NDK_VERSION=30.0.16248370
 # API 37+ platforms are versioned "android-37.0" in the SDK repository (the
 # legacy "android-37" id no longer exists).
 ARG ANDROID_PLATFORM=android-37.0
