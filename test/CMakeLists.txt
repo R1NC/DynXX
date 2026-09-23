@@ -7,6 +7,7 @@ find_package(GTest CONFIG REQUIRED)
 
 set(DYNXX_TEST_SOURCES
     Coding.test.cxx
+    Concurrent.test.cxx
     Crypto.Aes.test.cxx
     Crypto.Base64.test.cxx
     Crypto.Hash.test.cxx

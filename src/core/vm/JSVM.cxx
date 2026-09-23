@@ -8,6 +8,7 @@
 
 #include "quickjs.h"
 
+#include <DynXX/C/Macro.h>
 #include <DynXX/CXX/Log.hxx>
 #include "../util/MemUtil.hxx"
 #include "../util/TimeUtil.hxx"
@@ -230,11 +231,16 @@ JSValue JSVM::jAwait(JSValue obj)
 
 // JSValueHash and JSValueEqual
 
+// `jValueCache` is never populated -- the only insert lives commented out in
+// `_loadScript` -- so neither functor can ever be invoked. They are kept for the
+// day the cache is re-enabled, but excluded from coverage instrumentation.
+DYNXX_NO_COVERAGE
 std::size_t JSVM::JSValueHash::operator()(const JSValue &jv) const noexcept
 {
     return std::hash<void *>()(JS_VALUE_GET_PTR(jv));
 }
 
+DYNXX_NO_COVERAGE
 bool JSVM::JSValueEqual::operator()(const JSValue &left, const JSValue &right) const noexcept
 {
     if (JS_VALUE_GET_TAG(left) != JS_VALUE_GET_TAG(right)) 
@@ -531,6 +537,9 @@ JSValue JSVM::newPromise(std::function<JSValue(JSContext *)> &&jf)
     return result;
 }
 
+// Only the STRING and BOOL async variants are bound by `JSBridge.cxx`; the VOID/INT32/
+// INT64/FLOAT ones have no caller yet, so they are excluded from coverage instrumentation.
+DYNXX_NO_COVERAGE
 JSValue JSVM::newPromiseVoid(std::function<void()> &&vf)
 {
     return this->newPromise([cbk = std::move(vf)]([[maybe_unused]] JSContext *ctx) {
@@ -547,6 +556,7 @@ JSValue JSVM::newPromiseBool(std::function<bool()> &&bf)
     });
 }
 
+DYNXX_NO_COVERAGE
 JSValue JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
 {
     return this->newPromise([cbk = std::move(i32f)](JSContext *ctx) {
@@ -555,6 +565,7 @@ JSValue JSVM::newPromiseInt32(std::function<int32_t()> &&i32f)
     });
 }
 
+DYNXX_NO_COVERAGE
 JSValue JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
 {
     return this->newPromise([cbk = std::move(i64f)](JSContext *ctx) {
@@ -563,6 +574,7 @@ JSValue JSVM::newPromiseInt64(std::function<int64_t()> &&i64f)
     });
 }
 
+DYNXX_NO_COVERAGE
 JSValue JSVM::newPromiseFloat(std::function<double()> &&ff)
 {
     return this->newPromise([cbk = std::move(ff)](JSContext *ctx) {

@@ -149,3 +149,21 @@ TEST_F(DynXXJSTestSuite, PromiseBranches) {
     ASSERT_TRUE(pureReject.has_value());
     EXPECT_TRUE(pureReject->empty());
 }
+
+TEST_F(DynXXJSTestSuite, AwaitNeverSettlingPromiseShouldTimeOutInsteadOfBlocking) {
+    const auto paths = jsRuntimePaths();
+    assertJsRuntimeFilesExist(paths);
+    ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
+    ASSERT_TRUE(dynxxJsLoadF(paths.second.string(), false));
+
+    const auto beginTime = std::chrono::steady_clock::now();
+    const auto result = dynxxJsCall("TestNeverSettle", "{}", true);
+    const auto elapsedSecs = std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::steady_clock::now() - beginTime).count();
+
+    // Awaiting a promise that never settles must give up at the internal deadline
+    // and still hand a result back, instead of blocking the caller forever.
+    ASSERT_TRUE(result.has_value());
+    EXPECT_GE(elapsedSecs, 14);
+    EXPECT_LT(elapsedSecs, 60);
+}

@@ -468,3 +468,72 @@ TEST_F(DynXXJsonTestSuite, InternalDecoderReadNumFloatNullopt) {
     ASSERT_NE(objNode, 0U);
     EXPECT_FALSE(decoder.readNumFloat<double>(objNode).has_value());
 }
+
+TEST_F(DynXXJsonTestSuite, DecoderInitMalformedJsonShouldDegradeInsteadOfCrash) {
+    // A failed parse is still handed out as a handle, so every accessor has to
+    // answer with an empty result instead of dereferencing a null document.
+    const auto decoder = dynxxJsonDecoderInit(R"({"unterminated":)");
+    ASSERT_NE(decoder, 0U);
+
+    EXPECT_EQ(dynxxJsonDecoderReadNode(decoder, "unterminated"), 0U);
+    EXPECT_FALSE(dynxxJsonDecoderReadString(decoder).has_value());
+    EXPECT_FALSE(dynxxJsonDecoderReadInteger(decoder).has_value());
+    EXPECT_FALSE(dynxxJsonDecoderReadFloat(decoder).has_value());
+    EXPECT_EQ(dynxxJsonDecoderReadChild(decoder), 0U);
+    EXPECT_EQ(dynxxJsonDecoderReadChildrenCount(decoder), 0U);
+    EXPECT_EQ(dynxxJsonDecoderReadNext(decoder), 0U);
+
+    size_t visited = 0;
+    dynxxJsonDecoderReadChildren(
+        decoder,
+        [&visited](size_t, DynXXJsonNodeHandle, DynXXJsonNodeTypeX, std::string_view) {
+            visited++;
+        }
+    );
+    EXPECT_EQ(visited, 0U);
+
+    dynxxJsonDecoderRelease(decoder);
+}
+
+TEST_F(DynXXJsonTestSuite, InternalDecoderMoveConstructAndMoveAssign) {
+    auto source = Decoder(R"({"name":"dynxx"})");
+    ASSERT_TRUE(source.valid());
+
+    auto moved = std::move(source);
+    EXPECT_TRUE(moved.valid());
+    const auto nameNode = moved.readNode(0, "name");
+    ASSERT_NE(nameNode, 0U);
+    EXPECT_EQ(moved.readString(nameNode).value_or(""), "dynxx");
+
+    auto target = Decoder(R"({"other":1})");
+    ASSERT_TRUE(target.valid());
+    target = std::move(moved);
+    EXPECT_TRUE(target.valid());
+    EXPECT_EQ(target.readString(target.readNode(0, "name")).value_or(""), "dynxx");
+}
+
+TEST_F(DynXXJsonTestSuite, ToDictAnyBigIntegerMember) {
+    // Values outside the int32 range are reported as `Int64` and must survive the
+    // dictionary conversion on both ends of the range.
+    const auto dict = dynxxJsonToDictAny(R"({"big":2147483648,"small":-2147483649,"plain":7})");
+    ASSERT_TRUE(dict.has_value());
+    EXPECT_EQ(dictAnyReadInteger(*dict, "big").value_or(0), 2147483648LL);
+    EXPECT_EQ(dictAnyReadInteger(*dict, "small").value_or(0), -2147483649LL);
+    EXPECT_EQ(dictAnyReadInteger(*dict, "plain").value_or(0), 7LL);
+}
+
+TEST_F(DynXXJsonTestSuite, DecoderReadStringFromBigIntegerNode) {
+    const auto decoder = dynxxJsonDecoderInit(R"({"big":2147483648,"small":-2147483649})");
+    ASSERT_NE(decoder, 0U);
+
+    const auto bigNode = dynxxJsonDecoderReadNode(decoder, "big");
+    const auto smallNode = dynxxJsonDecoderReadNode(decoder, "small");
+    ASSERT_NE(bigNode, 0U);
+    ASSERT_NE(smallNode, 0U);
+
+    EXPECT_EQ(dynxxJsonNodeReadType(bigNode), DynXXJsonNodeTypeX::Int64);
+    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, bigNode).value_or(""), "2147483648");
+    EXPECT_EQ(dynxxJsonDecoderReadString(decoder, smallNode).value_or(""), "-2147483649");
+
+    dynxxJsonDecoderRelease(decoder);
+}

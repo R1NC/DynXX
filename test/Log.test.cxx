@@ -37,4 +37,40 @@ TEST_F(DynXXLogTestSuite, PrintF) {
     dynxxLogSetCallback(nullptr);
 }
 
+TEST_F(DynXXLogTestSuite, SetLevelAllLevels) {
+    // Every valid level must be accepted, including the ones that only the
+    // file logger knows how to translate.
+    for (const auto level : {
+        DynXXLogLevelX::Debug,
+        DynXXLogLevelX::Info,
+        DynXXLogLevelX::Warn,
+        DynXXLogLevelX::Error,
+        DynXXLogLevelX::Fatal,
+        DynXXLogLevelX::None
+    }) {
+        EXPECT_NO_THROW(dynxxLogSetLevel(level));
+    }
+    dynxxLogSetLevel(DynXXLogLevelX::Debug);
+}
+
+TEST_F(DynXXLogTestSuite, SetLevelOutOfRangeShouldBeIgnored) {
+    dynxxLogSetLevel(DynXXLogLevelX::Debug);
+    EXPECT_NO_THROW(dynxxLogSetLevel(static_cast<DynXXLogLevelX>(0)));
+    EXPECT_NO_THROW(dynxxLogSetLevel(static_cast<DynXXLogLevelX>(255)));
+    dynxxLogSetLevel(DynXXLogLevelX::Debug);
+}
+
+TEST_F(DynXXLogTestSuite, PrintAllLevels) {
+    for (const auto level : {
+        DynXXLogLevelX::Debug,
+        DynXXLogLevelX::Info,
+        DynXXLogLevelX::Warn,
+        DynXXLogLevelX::Error,
+        DynXXLogLevelX::Fatal,
+        DynXXLogLevelX::None
+    }) {
+        EXPECT_NO_THROW(dynxxLogPrint(level, "dynxx-log-level"));
+    }
+}
+
 

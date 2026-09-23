@@ -358,3 +358,21 @@ TEST_F(DynXXNetTestSuite, HttpCSetCertPathInvalidShouldFailHttpsRequest) {
     EXPECT_EQ(rsp.code, 0);
     EXPECT_TRUE(rsp.data.empty());
 }
+
+TEST_F(DynXXNetTestSuite, HttpSetProxyWithCredentialsShouldFailUnreachableRequest) {
+    // Credentials are only folded into the request while it is being built, which happens
+    // before the transfer starts, so an unreachable proxy keeps this network independent.
+    dynxxNetHttpSetProxy({.host = "127.0.0.1", .port = 1, .username = "dynxx", .password = "secret"});
+    const auto rsp = netRequestWithTimeout(cNetTestUrl, 1000);
+    dynxxNetHttpSetProxy({});
+    EXPECT_EQ(rsp.code, 0);
+    EXPECT_TRUE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpRequestZeroTimeoutShouldFallBackToDefault) {
+    const auto rsp = dynxxNetHttpRequest(cNetTestUrl, DynXXHttpMethodX::Get, "a=1", {}, {}, {}, {}, {}, nullptr, 0, 0);
+    if (rsp.code != HTTP_OK) {
+        GTEST_SKIP();
+    }
+    EXPECT_FALSE(rsp.data.empty());
+}

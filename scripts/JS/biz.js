@@ -267,3 +267,8 @@ function TestPurePromiseCatch() {
 function TestPurePromiseReject() {
     return Promise.reject(new Error('DynXXReject'))
 }
+
+// Never settles, so awaiting it must hit the internal deadline instead of blocking forever.
+function TestNeverSettle() {
+    return new Promise(() => {})
+}
