@@ -267,6 +267,14 @@ TEST_F(DynXXCAPITestSuite, KVAllKeys) {
     EXPECT_TRUE(foundSecond);
     freeCOut(keys);
 
+    // A `nullptr` length out-parameter is accepted and simply discarded.
+    const auto **keysNoLen = dynxx_kv_all_keys(conn, nullptr);
+    ASSERT_NE(keysNoLen, nullptr);
+    for (size_t i = 0; i < keyCount; ++i) {
+        freeCOut(keysNoLen[i]);
+    }
+    freeCOut(keysNoLen);
+
     // Invalid handles and keys are rejected instead of being dereferenced.
     EXPECT_EQ(dynxx_kv_read_string(0, "k1"), nullptr);
     EXPECT_EQ(dynxx_kv_read_string(conn, nullptr), nullptr);
@@ -322,4 +330,12 @@ TEST_F(DynXXCAPITestSuite, NetHttpRequestConvertsCharVectorArgs) {
     ASSERT_NE(rspNoArgs, nullptr);
     EXPECT_NE(std::strstr(rspNoArgs, "\"code\""), nullptr);
     freeCOut(rspNoArgs);
+
+    // A non-null vector with a zero count is also read as "no arguments".
+    const auto *rspZeroCount = dynxx_net_http_request("http://127.0.0.1:1/", "", DynXXHttpMethodGet,
+                                                      headers, 0, formNames, formMimes, formData, 0,
+                                                      nullptr, 0, 1000);
+    ASSERT_NE(rspZeroCount, nullptr);
+    EXPECT_NE(std::strstr(rspZeroCount, "\"code\""), nullptr);
+    freeCOut(rspZeroCount);
 }

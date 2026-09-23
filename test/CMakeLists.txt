@@ -19,6 +19,8 @@ set(DYNXX_TEST_SOURCES
     Log.test.cxx
     Memory.test.cxx
     Net.test.cxx
+    TypeUtil.test.cxx
+    Types.test.cxx
     Zip.test.cxx
 )
 
