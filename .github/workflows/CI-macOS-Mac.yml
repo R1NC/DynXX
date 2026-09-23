@@ -52,11 +52,20 @@ jobs:
 
     - name: Setup LLVM
       run: |
-        if ! command -v llvm-cov >/dev/null 2>&1 || ! command -v llvm-profdata >/dev/null 2>&1; then
-          brew install llvm
+        # The Apple toolchain builds with Xcode's clang, and its raw profiles are only
+        # readable by the LLVM tools shipped in the same toolchain. Homebrew's llvm is a
+        # different (newer) release and rejects them with
+        #   "raw profile version mismatch: ... version = 10; expected version = 11"
+        # which fails the coverage report step, so keep both ends on one toolchain.
+        XCODE_TOOLCHAIN_BIN="$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+        if [ ! -x "${XCODE_TOOLCHAIN_BIN}/llvm-profdata" ] || [ ! -x "${XCODE_TOOLCHAIN_BIN}/llvm-cov" ]; then
+          echo "Xcode toolchain LLVM tools not found in ${XCODE_TOOLCHAIN_BIN}" >&2
+          echo "Make sure llvm-profdata/llvm-cov come from the same LLVM release as the compiler." >&2
+          exit 1
         fi
-        LLVM_PREFIX="$(brew --prefix llvm)"
-        echo "LLVM_HOME=${LLVM_PREFIX}/bin" >> "$GITHUB_ENV"
+        echo "LLVM_HOME=${XCODE_TOOLCHAIN_BIN}" >> "$GITHUB_ENV"
+        "${XCODE_TOOLCHAIN_BIN}/llvm-cov" --version
+        "${XCODE_TOOLCHAIN_BIN}/llvm-profdata" --version
 
     - name: Setup custom vcpkg
       working-directory: ./tools
