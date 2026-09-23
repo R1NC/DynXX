@@ -100,6 +100,24 @@ TEST_F(DynXXNetTestSuite, HttpRequestWithMultiDictParamsAndHeadersShouldSerializ
     EXPECT_NE(rsp.code, HTTP_OK);
 }
 
+TEST_F(DynXXNetTestSuite, HttpRequestWithUnpairedFormVectorsShouldSkipTheTail) {
+    // The form-field vectors are zipped by the shortest one, so a shorter mime or data vector
+    // truncates the form instead of reading out of bounds.
+    const std::vector<std::string> names{"a", "b"};
+
+    const std::vector<std::string> singleMime{"text/plain"};
+    const std::vector<std::string> twoData{"1", "2"};
+    const auto shorterMime = dynxxNetHttpRequest("http://127.0.0.1:1/", DynXXHttpMethodX::Post, "", {},
+                                                 {}, names, singleMime, twoData, nullptr, 0, 1000);
+    EXPECT_NE(shorterMime.code, HTTP_OK);
+
+    const std::vector<std::string> twoMimes{"text/plain", "text/plain"};
+    const std::vector<std::string> singleData{"1"};
+    const auto shorterData = dynxxNetHttpRequest("http://127.0.0.1:1/", DynXXHttpMethodX::Post, "", {},
+                                                 {}, names, twoMimes, singleData, nullptr, 0, 1000);
+    EXPECT_NE(shorterData.code, HTTP_OK);
+}
+
 TEST_F(DynXXNetTestSuite, HttpRequestPostWithHeadersAndMime) {
     const std::vector<std::string> headers{
         "X-DynXX-Test: post",

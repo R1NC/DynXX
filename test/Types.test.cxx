@@ -25,6 +25,11 @@ TEST_F(DynXXTypesTestSuite, Str2Int32) {
     EXPECT_EQ(str2int32("dynxx"), MinInt32);
     EXPECT_EQ(str2int32("999999999999"), MinInt32);  // beyond int32
     EXPECT_EQ(str2int32("dynxx", 7), 7);             // explicit fallback
+
+    // A trailing suffix is either rejected whole (`from_chars`) or silently ignored
+    // (`sto*`), so both documented outcomes are accepted here.
+    const auto trailingSuffix = str2int32("42abc", 7);
+    EXPECT_TRUE(trailingSuffix == 42 || trailingSuffix == 7);
 }
 
 TEST_F(DynXXTypesTestSuite, Str2Int64) {
