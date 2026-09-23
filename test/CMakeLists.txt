@@ -15,6 +15,7 @@ set(DYNXX_TEST_SOURCES
     Crypto.Rsa.test.cxx
     Crypto.test.cxx
     DynXX.test.cxx
+    Engine.test.cxx
     Json.test.cxx
     Log.test.cxx
     Memory.test.cxx
