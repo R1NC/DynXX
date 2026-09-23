@@ -70,6 +70,15 @@ TEST_F(DynXXJsonTestSuite, DecoderReadWithInvalidDecoder) {
     EXPECT_EQ(dynxxJsonDecoderReadChild(0), 0U);
     EXPECT_EQ(dynxxJsonDecoderReadChildrenCount(0), 0U);
     EXPECT_EQ(dynxxJsonDecoderReadNext(0), 0U);
+    dynxxJsonDecoderReadChildren(0, [](size_t, DynXXJsonNodeHandle, DynXXJsonNodeTypeX, std::string_view) {});
+}
+
+TEST_F(DynXXJsonTestSuite, DecoderReadChildrenWithUnknownHandle) {
+    // `ReadChildren` takes a callback and has no C API entry point, so its invalid-handle
+    // paths can only be driven from here.
+    constexpr DynXXJsonDecoderHandle unknown = 1U;
+    dynxxJsonDecoderReadChildren(unknown, [](size_t, DynXXJsonNodeHandle, DynXXJsonNodeTypeX, std::string_view) {});
+    dynxxJsonDecoderRelease(unknown);
 }
 
 TEST_F(DynXXJsonTestSuite, DecoderNodeTypeObjectArrayBoolNull) {

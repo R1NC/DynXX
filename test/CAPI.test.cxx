@@ -242,6 +242,28 @@ TEST_F(DynXXCAPITestSuite, JsonDecoder) {
     dynxx_json_decoder_release(decoder);
 }
 
+TEST_F(DynXXCAPITestSuite, JsonDecoderRejectsUnknownHandles) {
+    // A zero handle is rejected by every reader itself, before the cache is consulted.
+    EXPECT_EQ(dynxx_json_decoder_read_string(0, 0), nullptr);
+    EXPECT_EQ(dynxx_json_decoder_read_integer(0, 0), 0);
+    EXPECT_EQ(dynxx_json_decoder_read_float(0, 0), 0.0);
+    EXPECT_EQ(dynxx_json_decoder_read_child(0, 0), 0U);
+    EXPECT_EQ(dynxx_json_decoder_read_children_count(0, 0), 0U);
+    EXPECT_EQ(dynxx_json_decoder_read_next(0, 0), 0U);
+    dynxx_json_decoder_release(0);
+
+    // A handle that was never handed out by the cache resolves to no decoder at all.
+    constexpr DynXXJsonDecoderHandle unknown = 1U;
+    EXPECT_EQ(dynxx_json_decoder_read_node(unknown, 0, "s"), 0U);
+    EXPECT_EQ(dynxx_json_decoder_read_string(unknown, 0), nullptr);
+    EXPECT_EQ(dynxx_json_decoder_read_integer(unknown, 0), 0);
+    EXPECT_EQ(dynxx_json_decoder_read_float(unknown, 0), 0.0);
+    EXPECT_EQ(dynxx_json_decoder_read_child(unknown, 0), 0U);
+    EXPECT_EQ(dynxx_json_decoder_read_children_count(unknown, 0), 0U);
+    EXPECT_EQ(dynxx_json_decoder_read_next(unknown, 0), 0U);
+    dynxx_json_decoder_release(unknown);
+}
+
 TEST_F(DynXXCAPITestSuite, KVAllKeys) {
     const auto conn = dynxx_kv_open("capi_kv_all_keys");
     ASSERT_NE(conn, 0U);
@@ -278,6 +300,17 @@ TEST_F(DynXXCAPITestSuite, KVAllKeys) {
     // Invalid handles and keys are rejected instead of being dereferenced.
     EXPECT_EQ(dynxx_kv_read_string(0, "k1"), nullptr);
     EXPECT_EQ(dynxx_kv_read_string(conn, nullptr), nullptr);
+
+    // A zero connection is answered with an owned empty array, not a dereference.
+    size_t noKeyCount = 1U;
+    const auto **noKeys = dynxx_kv_all_keys(0, &noKeyCount);
+    ASSERT_NE(noKeys, nullptr);
+    EXPECT_EQ(noKeyCount, 0U);
+    EXPECT_EQ(noKeys[0], nullptr);
+    freeCOut(noKeys);
+
+    dynxx_kv_clear(0);
+    dynxx_kv_close(0);
 
     dynxx_kv_close(conn);
 }

@@ -58,6 +58,21 @@ TEST_F(DynXXNetTestSuite, HttpResponseToJson) {
     EXPECT_NE(json->find("\"contentType\""), std::string::npos);
 }
 
+TEST_F(DynXXNetTestSuite, HttpResponseToJsonSkipsHeaderWithoutNameOrValue) {
+    DynXXHttpResponse rsp;
+    rsp.code = HTTP_OK;
+    rsp.contentType = "application/json";
+    rsp.data = "{}";
+    rsp.headers["k"] = "v";
+    rsp.headers[""] = "no-name";
+    rsp.headers["no-value"] = "";
+    const auto json = rsp.toJson();
+    ASSERT_TRUE(json.has_value());
+    EXPECT_NE(json->find("\"k\""), std::string::npos);
+    EXPECT_EQ(json->find("no-name"), std::string::npos);
+    EXPECT_EQ(json->find("no-value"), std::string::npos);
+}
+
 TEST_F(DynXXNetTestSuite, HttpRequestWithStringParams) {
     const auto rsp = dynxxNetHttpRequest(cNetTestUrl, DynXXHttpMethodX::Get, "a=1");
     if (rsp.code != HTTP_OK) {
@@ -73,6 +88,16 @@ TEST_F(DynXXNetTestSuite, HttpRequestWithDictParams) {
         GTEST_SKIP();
     }
     EXPECT_FALSE(rsp.data.empty());
+}
+
+TEST_F(DynXXNetTestSuite, HttpRequestWithMultiDictParamsAndHeadersShouldSerializeArgs) {
+    // The dict overload serializes params and headers itself before dispatching to the vector
+    // overload; an unreachable endpoint exercises the serialization without needing the network.
+    const DictAny params{{"a", 1Z}, {"b", std::string("2")}, {"c", 3.25}};
+    const Dict headers{{"X-DynXX-A", "1"}, {"X-DynXX-B", "2"}};
+    const auto rsp = dynxxNetHttpRequest("http://127.0.0.1:1/", DynXXHttpMethodX::Get, params, {},
+                                         headers, {}, {}, {}, nullptr, 0, 1000);
+    EXPECT_NE(rsp.code, HTTP_OK);
 }
 
 TEST_F(DynXXNetTestSuite, HttpRequestPostWithHeadersAndMime) {
