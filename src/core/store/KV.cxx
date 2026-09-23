@@ -48,7 +48,10 @@ std::weak_ptr<Connection> KVStore::open(std::string_view _id)
 
 KVStore::~KVStore()
 {
-    MMKV::onExit();
+    // `MMKV::onExit()` is a process-exit-only API: it destroys the global instance table that
+    // `MMKV::mmkvWithID` walks, so calling it from here made every later `dynxxInit` +
+    // `dynxxKVOpen` round trip dereference freed memory. The connections already hand their own
+    // instance back through the `allocKV` deleter, which is all a release needs to do.
 }
 
 Connection::Connection(CidT cid, std::string_view _id) : _cid(cid), kv(allocKV(_id), {})
