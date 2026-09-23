@@ -6,6 +6,7 @@ include(../cmake/test.cmake)
 find_package(GTest CONFIG REQUIRED)
 
 set(DYNXX_TEST_SOURCES
+    CAPI.test.cxx
     Coding.test.cxx
     Concurrent.test.cxx
     Crypto.Aes.test.cxx

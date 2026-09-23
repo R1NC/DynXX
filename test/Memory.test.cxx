@@ -24,6 +24,9 @@ TEST_F(DynXXMemoryTestSuite, DupStr) {
     const char *toFree = copied;
     freeX(toFree);
     EXPECT_EQ(toFree, nullptr);
+
+    // Nothing to duplicate for an empty input.
+    EXPECT_EQ(dupStr(""), nullptr);
 }
 
 TEST_F(DynXXMemoryTestSuite, MemcpyX) {
