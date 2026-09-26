@@ -35,6 +35,16 @@ TEST_F(DynXXZipTestSuite, ZipInitInvalidBufferSize) {
     EXPECT_EQ(dynxxZZipInit(DynXXZipCompressModeX::Default, 0, DynXXZFormatX::ZLib), 0U);
 }
 
+TEST_F(DynXXZipTestSuite, ZipInitInvalidFormatShouldFail) {
+    constexpr auto invalidFormat = static_cast<DynXXZFormatX>(0x7F);
+    EXPECT_EQ(dynxxZZipInit(DynXXZipCompressModeX::Default, DynXXZDefaultBufferSize, invalidFormat), 0U);
+    EXPECT_EQ(dynxxZUnzipInit(DynXXZDefaultBufferSize, invalidFormat), 0U);
+}
+
+TEST_F(DynXXZipTestSuite, ZipInitInvalidModeShouldFail) {
+    EXPECT_EQ(dynxxZZipInit(static_cast<DynXXZipCompressModeX>(0x7F), DynXXZDefaultBufferSize, DynXXZFormatX::GZip), 0U);
+}
+
 TEST_F(DynXXZipTestSuite, ZipInput) {
     const auto zip = dynxxZZipInit();
     ASSERT_NE(zip, 0U);

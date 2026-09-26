@@ -28,6 +28,58 @@ TEST_F(DynXXSQLiteTestSuite, OpenEmptyId) {
     EXPECT_EQ(dynxxSQLiteOpen(""), 0U);
 }
 
+TEST_F(DynXXSQLiteTestSuite, OpenUnopenablePathShouldDegradeInsteadOfCrashing) {
+    // The parent directory does not exist, so the file can not be created: sqlite3 still hands
+    // back a handle, but every statement prepared on it fails.
+    const auto conn = dynxxSQLiteOpen("dynxx_ut_missing_dir/nested");
+    ASSERT_NE(conn, 0U);
+    EXPECT_FALSE(dynxxSQLiteExecute(conn, kCreateTextTableSql));
+    const auto qr = dynxxSQLiteQueryDo(conn, kSelectSingleRowSql);
+    ASSERT_NE(qr, 0U);
+    EXPECT_FALSE(dynxxSQLiteQueryReadRow(qr));
+    dynxxSQLiteQueryDrop(qr);
+    dynxxSQLiteClose(conn);
+}
+
+TEST_F(DynXXSQLiteTestSuite, ReadRowShouldFailWhenStatementIsInvalidated) {
+    const auto conn = dynxxSQLiteOpen("sqlite_read_row_invalidated");
+    ASSERT_NE(conn, 0U);
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kDropTableSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kCreateTextTableSql));
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kInsertTextRowSql));
+    const auto qr = dynxxSQLiteQueryDo(conn, kSelectSingleRowSql);
+    ASSERT_NE(qr, 0U);
+    // The table the statement was prepared against disappears: stepping reports an error
+    // instead of a stale row.
+    ASSERT_TRUE(dynxxSQLiteExecute(conn, kDropTableSql));
+    EXPECT_FALSE(dynxxSQLiteQueryReadRow(qr));
+    dynxxSQLiteQueryDrop(qr);
+    dynxxSQLiteClose(conn);
+}
+
+TEST_F(DynXXSQLiteTestSuite, StoreRejectsEmptyStatementAndUnknownColumn) {
+    // Driven through the store directly: the facade rejects an empty statement and an empty
+    // column name before they reach here.
+    DynXX::Core::Store::SQLite::SQLiteStore store;
+    const auto conn = store.open("dynxx_ut_store_names").lock();
+    ASSERT_NE(conn, nullptr);
+
+    EXPECT_FALSE(conn->execute(std::string_view{}));
+
+    // A statement that could not be prepared carries no statement, so every read is "no value".
+    const auto noStmt = conn->query(std::string_view{});
+    ASSERT_NE(noStmt, nullptr);
+    EXPECT_FALSE(noStmt->readRow());
+    EXPECT_FALSE(noStmt->readColumn("v").has_value());
+
+    ASSERT_TRUE(conn->execute("CREATE TABLE IF NOT EXISTS store_ut (v TEXT);"));
+    const auto qr = conn->query("SELECT v FROM store_ut;");
+    ASSERT_NE(qr, nullptr);
+    // An empty name is rejected, an unknown name simply does not match any column.
+    EXPECT_FALSE(qr->readColumn(std::string_view{}).has_value());
+    EXPECT_FALSE(qr->readColumn("no_such_column").has_value());
+}
+
 TEST_F(DynXXSQLiteTestSuite, StoreOpenEmptyFile) {
     DynXX::Core::Store::SQLite::SQLiteStore store;
     const auto conn = store.open("");

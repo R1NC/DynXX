@@ -10,6 +10,7 @@
 #include <ada.h>
 #endif
 
+#include <DynXX/C/Macro.h>
 #include <DynXX/CXX/Log.hxx>
 #include <DynXX/C/Net.h>
 #include <DynXX/CXX/Coding.hxx>
@@ -120,10 +121,15 @@ namespace
         Req(const Req&) = delete;
         Req& operator=(const Req&) = delete;
         
+        // A `Req` lives on the stack and is returned by value, so the move operations are never
+        // called; they are kept for completeness of the resource-owning type and excluded from
+        // coverage instrumentation.
+        DYNXX_NO_COVERAGE
         Req(Req&& other) noexcept {
             this->moveImp(std::move(other));
         }
         
+        DYNXX_NO_COVERAGE
         Req& operator=(Req&& other) noexcept {
             if (this != &other) [[likely]] {
                 cleanup();
@@ -268,6 +274,8 @@ namespace
         }
         
     private:
+        // Only reachable through the move operations above, which are not instrumented either.
+        DYNXX_NO_COVERAGE
         // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
         void moveImp(Req&& other) noexcept {
             this->curl = std::exchange(other.curl, nullptr);

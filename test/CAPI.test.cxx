@@ -335,6 +335,22 @@ TEST_F(DynXXCAPITestSuite, ZipBytesRoundTrip) {
     freeCOut(unzipped);
 }
 
+TEST_F(DynXXCAPITestSuite, ZipBytesRejectsEmptyAndInvalidInput) {
+    // Empty input is answered with an empty result, not with an allocation.
+    size_t emptyLen = 1U;
+    EXPECT_EQ(dynxx_z_bytes_zip(DynXXZipCompressModeDefault, ZIP_BUFFER_SIZE, DynXXZFormatGZip,
+                                nullptr, 0, &emptyLen), nullptr);
+    EXPECT_EQ(emptyLen, 0U);
+
+    // Data that was never compressed is reported as a failure: zlib answers with Z_DATA_ERROR
+    // and the pipeline turns that into an empty result instead of handing back garbage.
+    const byte notCompressed[]{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+    size_t failedLen = 1U;
+    EXPECT_EQ(dynxx_z_bytes_unzip(ZIP_BUFFER_SIZE, DynXXZFormatGZip,
+                                  notCompressed, sizeof(notCompressed), &failedLen), nullptr);
+    EXPECT_EQ(failedLen, 0U);
+}
+
 TEST_F(DynXXCAPITestSuite, NetHttpRequestConvertsCharVectorArgs) {
     // The `const char **` argument vectors are converted before the transfer starts,
     // so an unreachable endpoint covers the conversion without needing the network.

@@ -118,6 +118,30 @@ TEST_F(DynXXNetTestSuite, HttpRequestWithUnpairedFormVectorsShouldSkipTheTail) {
     EXPECT_NE(shorterData.code, HTTP_OK);
 }
 
+TEST_F(DynXXNetTestSuite, HttpSetDnsConfigsShouldSkipInvalidEntries) {
+    // An entry without a host or without an address can not become a resolve entry, so it is
+    // dropped while the remaining entries still apply.
+    const std::vector<DynXXHttpDnsConfigX> configs{
+        DynXXHttpDnsConfigX{.host = "", .port = 443, .address = "1.2.3.4"},
+        DynXXHttpDnsConfigX{.host = "example.com", .port = 443, .address = ""},
+        DynXXHttpDnsConfigX{.host = "example.com", .port = 443, .address = "1.2.3.4"}
+    };
+    EXPECT_NO_THROW(dynxxNetHttpSetDnsConfigs(configs));
+    EXPECT_NO_THROW(dynxxNetHttpSetDnsConfigs({}));
+}
+
+TEST_F(DynXXNetTestSuite, HttpRequestWithEmptyFormValueShouldBeRejected) {
+    // A form value that is empty carries no data, so the mime part is rejected before the
+    // transfer starts instead of sending an empty part.
+    const std::vector<std::string> names{"f"};
+    const std::vector<std::string> mimes{"text/plain"};
+    const std::vector<std::string> emptyData{""};
+    const auto rsp = dynxxNetHttpRequest("http://127.0.0.1:1/", DynXXHttpMethodX::Post, "", {},
+                                         {}, names, mimes, emptyData, nullptr, 0, 1000);
+    EXPECT_EQ(rsp.code, 0);
+    EXPECT_TRUE(rsp.data.empty());
+}
+
 TEST_F(DynXXNetTestSuite, HttpRequestPostWithHeadersAndMime) {
     const std::vector<std::string> headers{
         "X-DynXX-Test: post",

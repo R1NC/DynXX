@@ -7,13 +7,13 @@ local InJsonVoid = ''
 --- Get DynXX runtime version string.
 -- @treturn string
 function DynXX.version()
-    return dynxx_get_version()
+    return dynxx_get_version(InJsonVoid)
 end
 
 --- Get DynXX root path.
 -- @treturn string
 function DynXX.root()
-    return dynxx_root_path()
+    return dynxx_root_path(InJsonVoid)
 end
 
 -- @submodule DynXX.Log
@@ -751,7 +751,7 @@ function DynXX.Z.zipBytes(inBytes, format, mode)
         ["format"] = format,
         ["inBytes"] = inBytes
     })
-    local outJson = dynxx_z_bytes_unzip(inJson)
+    local outJson = dynxx_z_bytes_zip(inJson)
     return JSON.parse(outJson)
 end
 
@@ -778,8 +778,9 @@ end
 -- @tparam number format
 -- @treturn boolean
 function DynXX.Z.zipFile(inFilePath, outFilePath, mode, bufferSize, format)
-    local inF = io.open(inFilePath, 'r')
-    local outF = io.open(outFilePath, 'w')
+    -- the compressed stream is binary, a text-mode handle would corrupt it on Windows
+    local inF = io.open(inFilePath, 'rb')
+    local outF = io.open(outFilePath, 'wb')
     if (inF == nil or outF == nil) then
         return false
     end
@@ -811,8 +812,9 @@ end
 -- @tparam number format
 -- @treturn boolean
 function DynXX.Z.unZipFile(inFilePath, outFilePath, bufferSize, format)
-    local inF = io.open(inFilePath, 'r')
-    local outF = io.open(outFilePath, 'w')
+    -- the compressed stream is binary, a text-mode handle would corrupt it on Windows
+    local inF = io.open(inFilePath, 'rb')
+    local outF = io.open(outFilePath, 'wb')
     if (inF == nil or outF == nil) then
         return false
     end

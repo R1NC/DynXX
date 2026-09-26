@@ -37,7 +37,7 @@ namespace {
         return ss.str();
     }
 
-    constexpr std::array<LuaCallEntry, 8> kLuaCallEntries{{
+    constexpr std::array<LuaCallEntry, 11> kLuaCallEntries{{
         {"TestNetHttpRequest", "https://rinc.xyz"},
         {"TestDeviceInfo", "{}"},
         {"TestCoding", "{}"},
@@ -45,7 +45,10 @@ namespace {
         {"TestKV", "{}"},
         {"TestSQLite", "{}"},
         {"TestCoroutine", "https://rinc.xyz"},
-        {"TestNetHttpSetConfigs", "{}"}
+        {"TestNetHttpSetConfigs", "{}"},
+        {"TestVersion", "{}"},
+        {"TestNetHttpDownload", "http://127.0.0.1:1/"},
+        {"TestZ", "{}"}
     }};
 
 }

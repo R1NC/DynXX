@@ -241,6 +241,11 @@ function TestCallPlatform() {
     DynXXLogPrint(DynXXLogLevel.Debug, `Return value from Platform: ${res}`)
 }
 
+// Returns the platform answer so the host can assert on the round trip.
+function TestCallPlatformResult() {
+    return DynXXCallPlatform("tsCallPlatformParam")
+}
+
 function TestPurePromiseResolve() {
     return Promise.resolve('DynXX')
 }

@@ -45,6 +45,11 @@ function TestCoding()
     local str = DynXX.Coding.bytes2Str(bytes)
     DynXX.Log.print(DynXX.Log.Level.Debug, 'str2Bytes: ' .. JSON.stringify(bytes))
     DynXX.Log.print(DynXX.Log.Level.Debug, 'bytes2Str: ' .. str)
+
+    local hexStr = DynXX.Coding.Hex.bytes2Str(bytes)
+    local hexRoundTrip = DynXX.Coding.bytes2Str(DynXX.Coding.Hex.str2Bytes(hexStr))
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Hex.str2Bytes: ' .. hexStr)
+    assert(hexRoundTrip == s, 'hex roundtrip mismatch')
 end
 
 function TestCrypto(s)
@@ -56,6 +61,10 @@ function TestCrypto(s)
     local sha256Bytes = DynXX.Crypto.Hash.sha256(bytes)
     local sha256HexStr = DynXX.Coding.Hex.bytes2Str(sha256Bytes)
     DynXX.Log.print(DynXX.Log.Level.Debug, 'Hash.sha256: ' .. sha256HexStr)
+
+    local sha1Bytes = DynXX.Crypto.Hash.sha1(bytes)
+    local sha1HexStr = DynXX.Coding.Hex.bytes2Str(sha1Bytes)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Hash.sha1: ' .. sha1HexStr)
 
     local noNewLines = true
     local base64EncodedBytes = DynXX.Crypto.Base64.encode(bytes, noNewLines)
@@ -100,6 +109,14 @@ function TestKV()
             DynXX.Log.print(DynXX.Log.Level.Debug, k .. ': ' .. DynXX.KV.readFloat(conn, k))
         end
     end
+    -- Assigned to locals first: `DynXX.KV.contains` returns no value, so feeding the call
+    -- straight into `tostring()` would raise "value expected".
+    local containsBefore = DynXX.KV.contains(conn, 's')
+    local removed = DynXX.KV.remove(conn, 's')
+    local containsAfter = DynXX.KV.contains(conn, 's')
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'KV contains: ' .. tostring(containsBefore)
+        .. ', remove: ' .. tostring(removed) .. ', contains after: ' .. tostring(containsAfter))
+    DynXX.KV.clear(conn)
     DynXX.KV.close(conn)
 end
 
@@ -149,4 +166,47 @@ function TestTimer()
         end
     end
     timer = Timer.add(1234, true, timerF)
+end
+
+function TestVersion()
+    local version = DynXX.version()
+    local rootPath = DynXX.root()
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'version: ' .. version .. ', root: ' .. rootPath)
+    assert(version ~= '', 'version empty')
+    assert(rootPath ~= '', 'root path empty')
+end
+
+function TestNetHttpDownload(url)
+    -- The endpoint is unreachable on purpose: the binding is what is under test here,
+    -- the transfer itself is covered by Net.test.cxx.
+    local downloaded = DynXX.Net.Http.download(url, 'dynxx_lua_download.tmp', 1000)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'download: ' .. tostring(downloaded))
+end
+
+function TestZ()
+    local inS = 'DynXX Lua zip test'
+    local inBytes = DynXX.Coding.str2Bytes(inS)
+
+    local zipped = DynXX.Z.zipBytes(inBytes, DynXX.Z.Format.GZip)
+    local bytesOutS = DynXX.Coding.bytes2Str(DynXX.Z.unZipBytes(zipped, DynXX.Z.Format.GZip))
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Z bytes roundtrip: ' .. bytesOutS)
+    assert(bytesOutS == inS, 'zip bytes roundtrip mismatch')
+
+    -- Drive the streaming bindings directly: the file wrapper above them (DynXX.Z.zipFile)
+    -- is broken because DynXX.Z._.Stream does not exist.
+    local zip = DynXX.Z._.zipInit(DynXX.Z.ZipMode.Default, DynXX.Z.DefaultBufferSize, DynXX.Z.Format.GZip)
+    DynXX.Z._.zipInput(zip, inBytes, true)
+    local streamZipped = DynXX.Z._.zipProcessDo(zip)
+    local zipFinished = DynXX.Z._.zipProcessFinished(zip)
+    DynXX.Z._.zipRelease(zip)
+
+    local unzip = DynXX.Z._.unZipInit(DynXX.Z.DefaultBufferSize, DynXX.Z.Format.GZip)
+    DynXX.Z._.unZipInput(unzip, streamZipped, true)
+    local streamOutS = DynXX.Coding.bytes2Str(DynXX.Z._.unZipProcessDo(unzip))
+    local unzipFinished = DynXX.Z._.unZipProcessFinished(unzip)
+    DynXX.Z._.unZipRelease(unzip)
+    DynXX.Log.print(DynXX.Log.Level.Debug, 'Z stream finished: ' .. tostring(zipFinished) .. ' / ' .. tostring(unzipFinished))
+    assert(streamOutS == inS, 'zip stream roundtrip mismatch')
+
+    return bytesOutS
 end

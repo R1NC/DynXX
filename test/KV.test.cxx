@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include <algorithm>
+#include <string_view>
 #include <DynXX/CXX/KV.hxx>
+
+#include "../src/core/store/KV.hxx"
 
 class DynXXKVTestSuite : public ::testing::Test {};
 
@@ -38,6 +41,16 @@ TEST_F(DynXXKVTestSuite, ReadInteger) {
     EXPECT_FALSE(dynxxKVReadInteger(conn, "not-exist").has_value());
     dynxxKVClose(conn);
 }
+
+#if defined(DYNXX_USE_KV)
+TEST_F(DynXXKVTestSuite, StoreRejectsEmptyRootAndEmptyId) {
+    // Driven through the store directly: the facade rejects an empty root and an empty id
+    // before they reach here.
+    const auto empty = std::string_view{};
+    DynXX::Core::Store::KV::KVStore store{empty};
+    EXPECT_TRUE(store.open(empty).expired());
+}
+#endif
 
 TEST_F(DynXXKVTestSuite, WriteInteger) {
     const auto conn = dynxxKVOpen("kv_write_integer");

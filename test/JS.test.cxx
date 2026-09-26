@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <array>
 #include <chrono>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -115,6 +116,30 @@ TEST_F(DynXXJSTestSuite, Call) {
 
 TEST_F(DynXXJSTestSuite, SetMsgCallback) {
     EXPECT_NO_THROW(dynxxJsSetMsgCallback([](const char *msg) -> const char * { return msg; }));
+}
+
+TEST_F(DynXXJSTestSuite, CallPlatformShouldRoundTripThroughTheMsgCallback) {
+    const auto paths = jsRuntimePaths();
+    assertJsRuntimeFilesExist(paths);
+    ASSERT_TRUE(dynxxJsLoadF(paths.first.string(), false));
+    ASSERT_TRUE(dynxxJsLoadF(paths.second.string(), false));
+
+    // The script hands its argument to the platform callback and returns the answer, so this
+    // covers the whole JS -> facade -> host -> JS round trip. Registering the callback in a
+    // separate test is not enough: the script call above runs before that test starts.
+    dynxxJsSetMsgCallback([](const char *msg) -> const char * {
+        return msg != nullptr && std::strcmp(msg, "tsCallPlatformParam") == 0 ? "dynxx-platform" : nullptr;
+    });
+    const auto answered = dynxxJsCall("TestCallPlatformResult", "{}", true);
+    ASSERT_TRUE(answered.has_value());
+    EXPECT_EQ(*answered, "dynxx-platform");
+
+    // A host that declines the message must still answer the runtime instead of crashing.
+    dynxxJsSetMsgCallback([]([[maybe_unused]] const char *msg) -> const char * { return nullptr; });
+    EXPECT_NO_THROW(dynxxJsCall("TestCallPlatformResult", "{}", true));
+
+    // Do not leak the callback into the remaining suites.
+    dynxxJsSetMsgCallback(nullptr);
 }
 
 TEST_F(DynXXJSTestSuite, CallThrowingFunctionShouldReturnNullopt) {
