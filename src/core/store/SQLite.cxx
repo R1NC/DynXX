@@ -91,10 +91,11 @@ std::weak_ptr<Connection> SQLiteStore::open(std::string_view file)
     });
 }
 
-SQLiteStore::~SQLiteStore()
-{
-    sqlite3_shutdown();
-}
+// `sqlite3_shutdown()` is an application-exit-only API: it tears down SQLite's global state
+// while connections (possibly a caller's) may still be alive, which made the next SQLite call
+// crash. `~ConnPool()` already closes this store's handles, which is all a release needs to do;
+// SQLite shuts itself down at process exit.
+SQLiteStore::~SQLiteStore() = default;
 
 Connection::Connection(CidT cid, std::string_view file) : _cid(cid), db(createDB(file))
 {

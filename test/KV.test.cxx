@@ -17,6 +17,14 @@ TEST_F(DynXXKVTestSuite, OpenEmptyId) {
     EXPECT_EQ(dynxxKVOpen(""), 0U);
 }
 
+TEST_F(DynXXKVTestSuite, OpenSameIdShouldReuseConnection) {
+    const auto first = dynxxKVOpen("kv_reuse");
+    ASSERT_NE(first, 0U);
+    const auto second = dynxxKVOpen("kv_reuse");
+    EXPECT_EQ(second, first);
+    dynxxKVClose(first);
+}
+
 TEST_F(DynXXKVTestSuite, ReadString) {
     const auto conn = dynxxKVOpen("kv_read_string");
     ASSERT_NE(conn, 0U);
@@ -42,7 +50,6 @@ TEST_F(DynXXKVTestSuite, ReadInteger) {
     dynxxKVClose(conn);
 }
 
-#if defined(DYNXX_USE_KV)
 TEST_F(DynXXKVTestSuite, StoreRejectsEmptyRootAndEmptyId) {
     // Driven through the store directly: the facade rejects an empty root and an empty id
     // before they reach here.
@@ -50,7 +57,6 @@ TEST_F(DynXXKVTestSuite, StoreRejectsEmptyRootAndEmptyId) {
     DynXX::Core::Store::KV::KVStore store{empty};
     EXPECT_TRUE(store.open(empty).expired());
 }
-#endif
 
 TEST_F(DynXXKVTestSuite, WriteInteger) {
     const auto conn = dynxxKVOpen("kv_write_integer");

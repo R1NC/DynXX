@@ -41,6 +41,14 @@ TEST_F(DynXXSQLiteTestSuite, OpenUnopenablePathShouldDegradeInsteadOfCrashing) {
     dynxxSQLiteClose(conn);
 }
 
+TEST_F(DynXXSQLiteTestSuite, OpenSameIdShouldReuseConnection) {
+    const auto first = dynxxSQLiteOpen("sqlite_reuse");
+    ASSERT_NE(first, 0U);
+    const auto second = dynxxSQLiteOpen("sqlite_reuse");
+    EXPECT_EQ(second, first);
+    dynxxSQLiteClose(first);
+}
+
 TEST_F(DynXXSQLiteTestSuite, ReadRowShouldFailWhenStatementIsInvalidated) {
     const auto conn = dynxxSQLiteOpen("sqlite_read_row_invalidated");
     ASSERT_NE(conn, 0U);
@@ -60,6 +68,8 @@ TEST_F(DynXXSQLiteTestSuite, ReadRowShouldFailWhenStatementIsInvalidated) {
 TEST_F(DynXXSQLiteTestSuite, StoreRejectsEmptyStatementAndUnknownColumn) {
     // Driven through the store directly: the facade rejects an empty statement and an empty
     // column name before they reach here.
+    // Destroying the store while its connection is still alive must not tear down SQLite's
+    // global state either (see the destructor note in SQLite.cxx).
     DynXX::Core::Store::SQLite::SQLiteStore store;
     const auto conn = store.open("dynxx_ut_store_names").lock();
     ASSERT_NE(conn, nullptr);
@@ -73,11 +83,17 @@ TEST_F(DynXXSQLiteTestSuite, StoreRejectsEmptyStatementAndUnknownColumn) {
     EXPECT_FALSE(noStmt->readColumn("v").has_value());
 
     ASSERT_TRUE(conn->execute("CREATE TABLE IF NOT EXISTS store_ut (v TEXT);"));
+    ASSERT_TRUE(conn->execute("INSERT INTO store_ut (v) VALUES ('x');"));
     const auto qr = conn->query("SELECT v FROM store_ut;");
     ASSERT_NE(qr, nullptr);
+    ASSERT_TRUE(qr->readRow());
+    EXPECT_TRUE(qr->readColumn("v").has_value());
     // An empty name is rejected, an unknown name simply does not match any column.
     EXPECT_FALSE(qr->readColumn(std::string_view{}).has_value());
     EXPECT_FALSE(qr->readColumn("no_such_column").has_value());
+
+    // Closing an id that was never opened is a no-op.
+    store.close(DynXX::Core::Store::genCid("dynxx_ut_never_opened"));
 }
 
 TEST_F(DynXXSQLiteTestSuite, StoreOpenEmptyFile) {
