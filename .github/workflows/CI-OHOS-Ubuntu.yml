@@ -19,7 +19,7 @@ on:
       - 'tools/build/build-OHOS.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'
-      - '.github/workflows/Base-Setup.yml'
+      - '.github/actions/base-setup/action.yml'
       - '.github/workflows/CI-OHOS-Ubuntu.yml'
   workflow_dispatch:
 
@@ -28,14 +28,7 @@ permissions:
   actions: write
 
 jobs:
-  baseSetup:
-    uses: ./.github/workflows/Base-Setup.yml
-    with:
-      host: Linux
-      target: harmonyos
-
   build:
-    needs: baseSetup
     runs-on: ubuntu-latest
 
     steps:
@@ -64,6 +57,11 @@ jobs:
     - name: Set HarmonyOS Environment
       run: |
         echo "CI_OHOS_SDK_ROOT=${{ github.workspace }}/ohos-sdk/linux" >> $GITHUB_ENV
+
+    - name: Base setup
+      uses: ./.github/actions/base-setup
+      with:
+        target: harmonyos
 
     - name: Setup custom vcpkg
       working-directory: ./tools

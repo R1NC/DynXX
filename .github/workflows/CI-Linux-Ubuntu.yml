@@ -24,7 +24,7 @@ on:
       - 'scripts/JS/DynXX.d.ts'
       - 'scripts/Lua/DynXX.lua'
       - '.github/pages/index.html'
-      - '.github/workflows/Base-Setup.yml'
+      - '.github/actions/base-setup/action.yml'
       - '.github/workflows/CI-Linux-Ubuntu.yml'
   workflow_dispatch:
 
@@ -39,14 +39,7 @@ permissions:
   id-token: write
 
 jobs:
-  baseSetup:
-    uses: ./.github/workflows/Base-Setup.yml
-    with:
-      host: Linux
-      target: linux
-
   build:
-    needs: baseSetup
     runs-on: ubuntu-latest
 
     steps:
@@ -62,6 +55,11 @@ jobs:
         fi
         echo "CC=$(command -v clang)" >> "$GITHUB_ENV"
         echo "CXX=$(command -v clang++)" >> "$GITHUB_ENV"
+
+    - name: Base setup
+      uses: ./.github/actions/base-setup
+      with:
+        target: linux
 
     - name: Setup custom vcpkg
       working-directory: ./tools

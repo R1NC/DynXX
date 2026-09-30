@@ -21,7 +21,7 @@ on:
       - 'tools/build/build-Windows.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'
-      - '.github/workflows/Base-Setup.yml'
+      - '.github/actions/base-setup/action.yml'
       - '.github/workflows/CI-Windows-Win.yml'
   workflow_dispatch:
 
@@ -30,14 +30,7 @@ permissions:
   actions: write
 
 jobs:
-  baseSetup:
-    uses: ./.github/workflows/Base-Setup.yml
-    with:
-      host: Windows
-      target: windows
-
   build:
-    needs: baseSetup
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
@@ -49,6 +42,12 @@ jobs:
         with:
           arch: x64
       
+
+      - name: Base setup
+        uses: ./.github/actions/base-setup
+        with:
+          target: windows
+
       - name: Setup custom vcpkg
         shell: pwsh
         working-directory: ./tools

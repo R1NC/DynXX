@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 
 import {
-  gotoParentPath, readCIEnv, setEnv,
+  gotoParentPath, setEnv,
 } from '../utils.js';
 import {
   checkArtifacts, exportCompileCommands, getOutputExePath,
@@ -18,8 +18,6 @@ function main() {
 
   const platformName = "WASM";
   const preset = `${platformName}-${buildType}`;
-
-  readCIEnv("CI_WASM_SDK_HOME", "WASM_SDK_HOME");
 
   setEnv("WASM_ABI", abi);
 

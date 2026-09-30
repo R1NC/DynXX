@@ -19,7 +19,7 @@ on:
       - 'tools/build/build-OHOS.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'
-      - '.github/workflows/Base-Setup.yml'
+      - '.github/actions/base-setup/action.yml'
       - '.github/workflows/CI-OHOS-Win.yml'
   workflow_dispatch:
 
@@ -28,14 +28,7 @@ permissions:
   actions: write
 
 jobs:
-  baseSetup:
-    uses: ./.github/workflows/Base-Setup.yml
-    with:
-      host: Windows
-      target: harmonyos
-
   build:
-    needs: baseSetup
     runs-on: windows-latest
 
     steps:
@@ -67,6 +60,11 @@ jobs:
       run: |
         $ohosSdkRoot = "${{ github.workspace }}/ohos-sdk/windows"
         Add-Content -Path $env:GITHUB_ENV -Value "CI_OHOS_SDK_ROOT=$ohosSdkRoot"
+
+    - name: Base setup
+      uses: ./.github/actions/base-setup
+      with:
+        target: harmonyos
 
     - name: Setup custom vcpkg
       shell: pwsh

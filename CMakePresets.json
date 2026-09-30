@@ -116,11 +116,9 @@
       "displayName": "WASM Default Config",
       "description": "Default build for WASM",
       "cacheVariables": {
-        "EMSDK": "$penv{WASM_SDK_HOME}",
-        "EMSCRIPTEN": "$penv{WASM_SDK_HOME}/upstream/emscripten",
-        "EMSCRIPTEN_ROOT_PATH": "$penv{WASM_SDK_HOME}/upstream/emscripten",
+        "EMSCRIPTEN": "ON",
         "EMSCRIPTEN_SYSTEM_PROCESSOR": "$penv{WASM_ABI}",
-        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$penv{WASM_SDK_HOME}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{VCPKG_HOME}/scripts/toolchains/emscripten.cmake"
       }
     },
     {
@@ -325,7 +323,7 @@
     {
       "name": "Windows-Debug",
       "displayName": "Windows Debug Config",
-      "description": "Debug build for Windows",
+      "description": "Debug build for Windows (Visual Studio 18 2026 generator, needs CMake >= 4.2)",
       "inherits": ["Debug-Default", "Vcpkg-Default"],
       "cacheVariables": {
         "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDebug"

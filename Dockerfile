@@ -102,7 +102,7 @@ ENV CC=clang CXX=clang++
 # (Checksum.h includes zlib.h) - preinstalled on the GitHub runner.
 # clang-tools-18 provides clang-scan-deps, which CMake's Ninja generator requires
 # for the Clang C++ module (P1689) probe; the unversioned name is symlinked so
-# CMake 3.28 finds it next to clang in PATH. The same unversioned symlinks are
+# CMake finds it next to clang in PATH. The same unversioned symlinks are
 # made for llvm-cov/llvm-profdata - the --coverage flow resolves them via LLVM_HOME
 # and the apt packages only ship the versioned (-18) names.
 RUN apt-get update \
@@ -298,9 +298,7 @@ RUN git clone --depth 1 --branch ${EMSDK_VERSION} https://github.com/emscripten-
     && /opt/emsdk/emsdk install ${EMSDK_VERSION} \
     && /opt/emsdk/emsdk activate ${EMSDK_VERSION}
 
-ENV CI_WASM_SDK_HOME=/opt/emsdk \
-    WASM_SDK_HOME=/opt/emsdk \
-    EMSDK=/opt/emsdk \
+ENV EMSDK=/opt/emsdk \
     PATH=/opt/emsdk/upstream/emscripten:/opt/emsdk:$PATH \
     http_proxy= \
     https_proxy=

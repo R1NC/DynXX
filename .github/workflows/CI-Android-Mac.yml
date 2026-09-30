@@ -20,7 +20,7 @@ on:
       - 'tools/build/build-Android.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'
-      - '.github/workflows/Base-Setup.yml'
+      - '.github/actions/base-setup/action.yml'
       - '.github/workflows/CI-Android-Mac.yml'
   workflow_dispatch:
 
@@ -32,12 +32,6 @@ env:
   ANDROID_NDK_VERSION: 30.0.16248370
 
 jobs:
-  baseSetup:
-    uses: ./.github/workflows/Base-Setup.yml
-    with:
-      host: macOS
-      target: android
-
   setupAndroidEnv:
     runs-on: macos-latest
     steps:
@@ -51,7 +45,7 @@ jobs:
         uses: android-actions/setup-android@v4
 
   build:
-    needs: [baseSetup, setupAndroidEnv]
+    needs: setupAndroidEnv
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v6
@@ -70,6 +64,11 @@ jobs:
         uses: android-actions/setup-android@v4
         with:
           packages: 'ndk;${{ env.ANDROID_NDK_VERSION }}'
+
+      - name: Base setup
+        uses: ./.github/actions/base-setup
+        with:
+          target: android
 
       - name: Setup custom vcpkg
         working-directory: ./tools

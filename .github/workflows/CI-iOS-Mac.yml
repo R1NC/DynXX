@@ -18,7 +18,7 @@ on:
       - 'tools/build/build-iOS.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'
-      - '.github/workflows/Base-Setup.yml'
+      - '.github/actions/base-setup/action.yml'
       - '.github/workflows/CI-iOS-Mac.yml'
   workflow_dispatch:
 
@@ -27,19 +27,17 @@ permissions:
   actions: write
 
 jobs:
-  baseSetup:
-    uses: ./.github/workflows/Base-Setup.yml
-    with:
-      host: macOS
-      target: ios
-
   build:
-    needs: baseSetup
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
+
+    - name: Base setup
+      uses: ./.github/actions/base-setup
+      with:
+        target: ios
 
     - name: Setup custom vcpkg
       working-directory: ./tools

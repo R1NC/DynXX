@@ -16,7 +16,7 @@ on:
       - 'tools/build/build-WASM.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'
-      - '.github/workflows/Base-Setup.yml'
+      - '.github/actions/base-setup/action.yml'
       - '.github/workflows/CI-WASM-Win.yml'
   workflow_dispatch:
 
@@ -25,14 +25,7 @@ permissions:
   actions: write
 
 jobs:
-  baseSetup:
-    uses: ./.github/workflows/Base-Setup.yml
-    with:
-      host: Windows
-      target: wasm
-
   build:
-    needs: baseSetup
     runs-on: windows-latest
 
     steps:
@@ -44,6 +37,11 @@ jobs:
       uses: emscripten-core/setup-emsdk@v16
       with:
         version: 3.1.65
+
+    - name: Base setup
+      uses: ./.github/actions/base-setup
+      with:
+        target: wasm
 
     - name: Setup custom vcpkg
       shell: pwsh
@@ -62,8 +60,6 @@ jobs:
     - name: Build
       shell: pwsh
       working-directory: ./tools
-      env:
-        CI_WASM_SDK_HOME: "${{ env.EMSDK }}"
       run: |
         npm run build:wasm
 

@@ -20,7 +20,7 @@ on:
       - 'tools/build/build-macOS.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'
-      - '.github/workflows/Base-Setup.yml'
+      - '.github/actions/base-setup/action.yml'
       - '.github/workflows/CI-macOS-Mac.yml'
   workflow_dispatch:
 
@@ -29,14 +29,7 @@ permissions:
   actions: write
 
 jobs:
-  baseSetup:
-    uses: ./.github/workflows/Base-Setup.yml
-    with:
-      host: macOS
-      target: macos
-
   build:
-    needs: baseSetup
     runs-on: macos-latest
 
     steps:
@@ -66,6 +59,11 @@ jobs:
         echo "LLVM_HOME=${XCODE_TOOLCHAIN_BIN}" >> "$GITHUB_ENV"
         "${XCODE_TOOLCHAIN_BIN}/llvm-cov" --version
         "${XCODE_TOOLCHAIN_BIN}/llvm-profdata" --version
+
+    - name: Base setup
+      uses: ./.github/actions/base-setup
+      with:
+        target: macos
 
     - name: Setup custom vcpkg
       working-directory: ./tools

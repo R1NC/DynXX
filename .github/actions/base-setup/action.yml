@@ -1,0 +1,49 @@
+name: Base Setup
+description: >-
+  Runner toolchain shared by every build job: the platform build tools, Node, tsx
+  and ccache.
+
+# This is a composite action rather than a reusable workflow on purpose: a
+# reusable workflow called with `jobs.<id>.uses` runs in its own job on its own
+# runner, so nothing it installs reaches the build jobs. Steps of a composite
+# action run in the calling job, which is what makes this the single place the
+# runner toolchain is set up.
+
+inputs:
+  target:
+    description: Build target, used as part of the ccache cache key.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # CMake and Ninja are intentionally left to each runner's own toolchain
+    # (ubuntu-latest ships cmake 3.28.3, the same version the Docker images have)
+    # rather than pinned; pin them here if a job ever needs a specific version.
+    - name: Setup build tools for Linux
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential clang
+
+    - name: Setup msbuild for Windows
+      if: runner.os == 'Windows'
+      uses: microsoft/setup-msbuild@v3
+
+    - name: Setup Node
+      uses: actions/setup-node@v6
+      with:
+        node-version: '24'
+
+    - name: Setup tsx
+      shell: bash
+      run: npm install -g tsx
+
+    # Runs in the build job now, so the compiler launcher set up by
+    # cmake/utils.cmake actually hits a cache that is saved after the build.
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2.23
+      with:
+        key: ${{ inputs.target }}-ccache-${{ runner.os }}
+        max-size: 999M
