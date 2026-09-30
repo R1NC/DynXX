@@ -87,13 +87,8 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
 | Device Info | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x: |
 | Log | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
-* :grey_question: : Unknown;
 * :x: : Not supported;
 * :o: : Limited supported;
-* :hammer: : Under developing;
-* :interrobang: : Failed to compile;
-* :grey_exclamation: : Succeed to compile, not tested;
-* :heavy_exclamation_mark: : With running error;
 * :heavy_check_mark: : Tested.
 
 <details>
