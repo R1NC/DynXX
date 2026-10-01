@@ -22,7 +22,7 @@ endfunction()
 function(dynxx_apply_objcxx_arc)
     if(APPLE AND ARGN)
         set_source_files_properties(${ARGN} PROPERTIES
-            COMPILE_FLAGS "-fobjc-arc"
+            COMPILE_OPTIONS "-fobjc-arc"
         )
     endif()
 endfunction()

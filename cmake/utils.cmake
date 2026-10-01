@@ -1,8 +1,10 @@
 function(init_before_project)
     if(POLICY CMP0168)
-        # Avoid FetchContent sub-builds on newer CMake. This sidesteps a
-        # Windows/Ninja failure in dependency population and keeps fetching in the
-        # main configure step.
+        # CMP0168 only exists from CMake 3.30, so on older CMake - including the
+        # 3.28.3 that CI and the Docker images use - this block is a no-op and
+        # FetchContent still goes through a sub-build. Where it does apply it
+        # avoids those sub-builds, which sidesteps a Windows/Ninja failure in
+        # dependency population and keeps fetching in the main configure step.
         cmake_policy(SET CMP0168 NEW)
     endif()
 

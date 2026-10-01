@@ -26,14 +26,9 @@ function(dynxx_initialize_optimization_defaults)
 endfunction()
 
 function(dynxx_append_link_options TARGET_NAME)
-    if(COMMAND target_link_options)
-        target_link_options(${TARGET_NAME} PRIVATE ${ARGN})
-        return()
-    endif()
-
-    foreach(link_opt ${ARGN})
-        set_property(TARGET ${TARGET_NAME} APPEND_STRING PROPERTY LINK_FLAGS " ${link_opt}")
-    endforeach()
+    # target_link_options() exists since CMake 3.13, well below this project's 3.20
+    # minimum, so there is no pre-3.13 fallback to maintain here any more.
+    target_link_options(${TARGET_NAME} PRIVATE ${ARGN})
 endfunction()
 
 function(dynxx_apply_optimization_options TARGET_NAME)

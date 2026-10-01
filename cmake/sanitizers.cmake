@@ -23,10 +23,12 @@ function(dynxx_configure_sanitizers TARGET_NAME SANITIZERS_VAR)
             else()
                 set(sanitizer_flags "-fsanitize=${sanitizers_str}")
             endif()
-            set_target_properties(${TARGET_NAME} PROPERTIES
-                COMPILE_FLAGS "${sanitizer_flags} -fno-omit-frame-pointer -g"
-                LINK_FLAGS "${sanitizer_flags}"
+            target_compile_options(${TARGET_NAME} PRIVATE
+                ${sanitizer_flags}
+                -fno-omit-frame-pointer
+                -g
             )
+            target_link_options(${TARGET_NAME} PRIVATE ${sanitizer_flags})
         endif()
     endif()
 
