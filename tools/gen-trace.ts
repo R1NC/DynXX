@@ -1,11 +1,10 @@
-import { publishObservabilitySite, renderConfigureProfilingReport, renderInstrumentationReport } from './trace/trace-utils.js';
+import { publishTimingReports, renderConfigureProfilingReport, renderInstrumentationReport } from './trace/trace-utils.js';
 
-// Entry point for the observability reports (`npm run gen:trace`), shaped like the other
-// entry scripts (gen-doc.ts, build-*.ts): parse argv, call the utils module, report what
-// happened.
+// Entry point for the timing reports (`npm run gen:trace`), shaped like the other entry
+// scripts (gen-doc.ts, build-*.ts): parse argv, call the utils module, report what happened.
 //
 //   npm run gen:trace -- <build-dir>              render next to the artifacts
-//   npm run gen:trace -- <build-dir> <site-dir>   also assemble a publishable page
+//   npm run gen:trace -- <build-dir> <site-dir>   also write <site-dir>/{configure,instruments}/
 //
 // Positional on purpose: npm parses `--flag value` pairs that follow `--` as its own cli
 // config and silently drops the ones it does not know (`--site` was eaten this way), so the
@@ -18,7 +17,7 @@ function main(): void {
   }
 
   if (siteDir) {
-    for (const path of publishObservabilitySite(buildFolder, siteDir)) {
+    for (const path of publishTimingReports(buildFolder, siteDir)) {
       console.log(`[Trace] Published ${path}`);
     }
     return;

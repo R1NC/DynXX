@@ -1,5 +1,5 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
-import { basename, dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 // Renders the two observability artifacts into self-contained HTML reports:
 //
@@ -364,43 +364,126 @@ export function renderInstrumentationReport(buildFolder: string): string | undef
   return htmlPath;
 }
 
-// Assembles the page a build publishes: renders whichever reports that build produced,
-// copies them next to a generated index and links only those - so a runner whose CMake
-// cannot instrument the build (needs >= 4.3 with Makefiles/Ninja/FASTBuild) publishes a
-// shorter page instead of a link that 404s. Returns the files written.
-export function publishObservabilitySite(buildFolder: string, siteDir: string): string[] {
+// Why a report is missing, read out of the build tree instead of guessed: CMakeCache.txt
+// records the CMake that wrote it (CMAKE_CACHE_*_VERSION), the generator and the option, so
+// the placeholder can name the actual blocker ("CMake 3.28.3 configured this tree, the API
+// was added in 4.3") rather than only restating the requirement.
+type BuildFacts = {
+  configured: boolean;
+  cmakeVersion: string;
+  generator: string;
+  instrumentationOption: string;
+};
+
+function cacheValue(cache: string, key: string): string {
+  return new RegExp(`^${key}:[^=\\r\\n]*=([^\\r\\n]*)`, 'm').exec(cache)?.[1]?.trim() ?? '';
+}
+
+function readBuildFacts(buildFolder: string): BuildFacts {
+  const cachePath = join(buildFolder, 'CMakeCache.txt');
+  if (!existsSync(resolve(cachePath))) {
+    return { configured: false, cmakeVersion: '', generator: '', instrumentationOption: '' };
+  }
+  const cache = readFileSync(resolve(cachePath), 'utf8');
+  const major = cacheValue(cache, 'CMAKE_CACHE_MAJOR_VERSION');
+  const minor = cacheValue(cache, 'CMAKE_CACHE_MINOR_VERSION');
+  const patch = cacheValue(cache, 'CMAKE_CACHE_PATCH_VERSION');
+  return {
+    configured: true,
+    cmakeVersion: major && minor ? `${major}.${minor}.${patch || '0'}` : '',
+    generator: cacheValue(cache, 'CMAKE_GENERATOR'),
+    instrumentationOption: cacheValue(cache, 'DYNXX_ENABLE_BUILD_INSTRUMENTATION')
+  };
+}
+
+function versionAtLeast(version: string, major: number, minor: number): boolean {
+  const parts = version.split('.').map((part) => Number.parseInt(part, 10));
+  if (parts.length < 2 || parts.some(Number.isNaN)) {
+    return false;
+  }
+  return parts[0] > major || (parts[0] === major && parts[1] >= minor);
+}
+
+function explainMissingConfigure(facts: BuildFacts): string[] {
+  if (!facts.configured) {
+    return ['This directory has no CMakeCache.txt, so nothing was configured here.'];
+  }
+  return [
+    'No profiling-configure.json was written. runCMake() passes --profiling-format=google-trace unless DYNXX_ENABLE_CONFIGURE_PROFILING=0, so this tree was either configured outside the build scripts or that variable was set.',
+    `Configure profiling is available since CMake 3.18${facts.cmakeVersion ? `; this tree was configured with ${facts.cmakeVersion}` : ''}.`
+  ];
+}
+
+function explainMissingInstrumentation(facts: BuildFacts): string[] {
+  if (!facts.configured) {
+    return ['This directory has no CMakeCache.txt, so nothing was configured here.'];
+  }
+  const reasons: string[] = [];
+  if (facts.cmakeVersion && !versionAtLeast(facts.cmakeVersion, 4, 3)) {
+    reasons.push(`CMake ${facts.cmakeVersion} configured this build tree, and the CMake Instrumentation API was added in 4.3.`);
+  }
+  if (facts.instrumentationOption.toUpperCase() === 'OFF') {
+    reasons.push('DYNXX_ENABLE_BUILD_INSTRUMENTATION is OFF in this build tree.');
+  }
+  if (facts.generator && !/(Ninja|Makefiles|FASTBuild)/.test(facts.generator)) {
+    reasons.push(`The generator is "${facts.generator}", and only Makefiles/Ninja/FASTBuild builds can be instrumented.`);
+  }
+  if (reasons.length === 0) {
+    reasons.push(`CMake ${facts.cmakeVersion || '(unknown)'} with generator "${facts.generator || '(unknown)'}" supports instrumentation, but this build produced no data.`);
+  }
+  return reasons;
+}
+
+// Writes the timing reports a build produced into <siteDir>/<name>/index.html. A report the
+// runner could not produce (its CMake cannot instrument the build) is replaced by a page
+// that says why, so the portal can link both entries unconditionally.
+export function publishTimingReports(buildFolder: string, siteDir: string): string[] {
   const reports = [
     {
-      title: 'Configure timing',
-      description: 'per-command duration of the CMake configure step (--profiling-format=google-trace)',
-      render: renderConfigureProfilingReport
+      name: 'configure',
+      title: 'DynXX Configure Timings',
+      render: renderConfigureProfilingReport,
+      about: 'Produced by runCMake() with --profiling-format=google-trace (CMake >= 3.18).',
+      explain: explainMissingConfigure
     },
     {
-      title: 'Build timing',
-      description: 'per-command duration of the compile/link/custom/install commands (CMake Instrumentation API)',
-      render: renderInstrumentationReport
+      name: 'instruments',
+      title: 'DynXX Build Timings',
+      render: renderInstrumentationReport,
+      about: 'Produced by the CMake Instrumentation API (CMake >= 4.3 with a Makefiles/Ninja/FASTBuild generator and DYNXX_ENABLE_BUILD_INSTRUMENTATION=ON).',
+      explain: explainMissingInstrumentation
     }
   ];
 
-  mkdirSync(resolve(siteDir), { recursive: true });
-  const published: string[] = [];
-  const items: string[] = [];
+  const written: string[] = [];
   for (const report of reports) {
+    const reportDir = join(siteDir, report.name);
+    mkdirSync(resolve(reportDir), { recursive: true });
+    const indexPath = join(reportDir, 'index.html');
     const reportPath = report.render(buildFolder);
-    if (!reportPath) {
-      continue;
+    if (reportPath) {
+      copyFileSync(resolve(reportPath), resolve(indexPath));
+    } else {
+      const facts = readBuildFacts(buildFolder);
+      const reasons = report.explain(facts)
+        .map((reason) => `<li>${escapeHtml(reason)}</li>`)
+        .join('\n');
+      writeFileSync(
+        resolve(indexPath),
+        page(
+          report.title,
+          [
+            ['Status', 'not produced'],
+            ['CMake', facts.cmakeVersion || '(unknown)'],
+            ['Generator', facts.generator || '(unknown)'],
+            ['Build tree', buildFolder]
+          ],
+          [`<p class="muted">${escapeHtml(report.about)}</p>`, `<ul>\n${reasons}\n</ul>`]
+        ),
+        'utf8'
+      );
     }
-    const name = basename(reportPath);
-    copyFileSync(resolve(reportPath), resolve(siteDir, name));
-    published.push(join(siteDir, name));
-    items.push(`<li><a href="./${name}">${escapeHtml(report.title)}</a> - ${escapeHtml(report.description)}</li>`);
+    written.push(indexPath);
   }
-
-  const body = items.length > 0
-    ? `<ul>\n${items.join('\n')}\n</ul>`
-    : '<p class="muted">This build produced no timing report.</p>';
-  const indexPath = join(siteDir, 'index.html');
-  writeFileSync(resolve(indexPath), page('DynXX Timing Reports', [['Reports', String(items.length)]], [body]), 'utf8');
-  published.push(indexPath);
-  return published;
+  return written;
 }

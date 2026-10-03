@@ -146,10 +146,11 @@ jobs:
         mkdir -p "${SITE_DIR}/docs"
         cp -a ./build.Docs/site/. "${SITE_DIR}/docs/"
 
-        # Build timing reports. tools/trace/trace-utils.ts renders whichever reports this
-        # runner could produce (configure timing needs CMake >= 3.18 plus the flag runCMake()
-        # adds; build timing needs >= 4.3 with a Makefiles/Ninja generator) and writes the
-        # index that links only those.
+        # Build timing reports: tools/trace/trace-utils.ts writes
+        # ${SITE_DIR}/timings/{configure,instruments}/index.html, substituting a placeholder
+        # for a report this runner cannot produce (configure timing needs CMake >= 3.18 plus
+        # the flag runCMake() adds; build timing needs >= 4.3 with a Makefiles/Ninja
+        # generator), so the portal links both unconditionally.
         rm -rf "${SITE_DIR}/timings"
         (cd tools && npm run gen:trace -- "${GITHUB_WORKSPACE}/build.Linux/Release" "${SITE_DIR}/timings")
 
