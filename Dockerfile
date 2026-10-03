@@ -105,12 +105,17 @@ ENV CC=clang CXX=clang++
 # CMake finds it next to clang in PATH. The same unversioned symlinks are
 # made for llvm-cov/llvm-profdata - the --coverage flow resolves them via LLVM_HOME
 # and the apt packages only ship the versioned (-18) names.
+# ccache is the compiler launcher cmake/utils.cmake picks up with find_program().
+# Without it every container build reports CCACHE: FALSE and recompiles quickjs.c
+# (~18s, the critical path of a Linux/WASM build) from scratch. Keep it across
+# --rm runs with a named volume: -v dynxx-ccache:/root/.cache/ccache (see DOCKER.md).
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
         clang \
         clang-tools-18 \
+        ccache \
         llvm \
         ninja-build \
         git \

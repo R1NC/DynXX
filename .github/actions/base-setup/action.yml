@@ -41,7 +41,11 @@ runs:
       run: npm install -g tsx
 
     # Runs in the build job now, so the compiler launcher set up by
-    # cmake/utils.cmake actually hits a cache that is saved after the build.
+    # cmake/utils.cmake actually hits a cache that is saved after the build. The
+    # action keeps its cache in <workspace>/.ccache, installs ccache when the
+    # runner lacks it (install: detect) and reports hit statistics in its post step.
+    # Windows caveat: the action's README recommends sccache on Windows - if that
+    # job ever reports 0 hits, switch this step to `variant: sccache`.
     - name: Setup ccache
       uses: hendrikmuhs/ccache-action@v1.2.23
       with:

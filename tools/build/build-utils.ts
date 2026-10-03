@@ -110,6 +110,7 @@ export function runCMake(
   needInstall: boolean,
   configureArgs: string[] = [],
 ) {
+  setupCcacheEnv();
   const configureOnly = shouldConfigureOnly();
   const extraArgs = configureArgs.join(' ').trim();
   const extraArgsSegment = extraArgs.length > 0 ? ` ${extraArgs}` : '';
@@ -149,6 +150,20 @@ export function setupVcpkgEnv(triplet: string) {
   setEnv("VCPKG_BINARY_SOURCES", `files,${cacheDir},readwrite`);
   if (!getEnv("VCPKG_TARGET_TRIPLET")) {
     setEnv("VCPKG_TARGET_TRIPLET", triplet);
+  }
+}
+
+export function setupCcacheEnv() {
+  // cmake/utils.cmake uses ccache as the compiler launcher, but ccache refuses to
+  // cache a translation unit that uses CMake's clang precompiled header: the PCH is
+  // passed as `-Xclang -include-pch`, so ccache reports
+  // "could_not_use_precompiled_header" and runs the real compiler instead. That
+  // silently excluded all 28 of this project's own sources while the dependencies
+  // stayed cached (measured: 41/70 cacheable calls -> 70/70, every call hitting on
+  // the next rebuild). `pch_defines,time_macros` is ccache's documented setting for
+  // PCH builds; an explicit CCACHE_SLOPPINESS from the environment still wins.
+  if (!getEnv("CCACHE_SLOPPINESS")) {
+    setEnv("CCACHE_SLOPPINESS", "pch_defines,time_macros");
   }
 }
 
