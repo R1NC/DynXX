@@ -1,5 +1,6 @@
 function(print_base_build_info)
     message(" └─ CCACHE: ${CCACHE_FOUND}")
+    message(" └─ INSTRUMENTATION: ${DYNXX_ENABLE_BUILD_INSTRUMENTATION}")
     message(" └─ CMAKE:")
     message("     └─ VERSION: ${CMAKE_VERSION}")
     message("     └─ HOST: ${CMAKE_HOST_SYSTEM_NAME} ${CMAKE_HOST_SYSTEM_VERSION} ${CMAKE_HOST_SYSTEM_PROCESSOR}")

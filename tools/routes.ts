@@ -23,6 +23,7 @@ const commandMap: Record<string, string> = {
     "build:ios": "build/build-iOS.ts",
     "build:macos": "build/build-macOS.ts",
     "gen:doc": "gen-doc.ts",
+    "gen:trace": "gen-trace.ts",
 };
 
 function printUsage(): void {
@@ -31,6 +32,7 @@ function printUsage(): void {
     console.error("  npm run setup:vcpkg");
     console.error("  npm run build:<android|ohos|linux|wasm|windows|ios|macos> -- [--debug] [--test] [--coverage]");
     console.error("  npm run gen:doc");
+    console.error("  npm run gen:trace -- <build-dir> [<site-dir>]");
 }
 
 type ResolvedCommand = {
@@ -76,6 +78,10 @@ function resolveCommand(args: string[]): ResolvedCommand | null {
 
     if (action === "doc" || action === "gendoc" || action === "gen-doc") {
         return { command: "gen:doc", scriptArgs: args.slice(1) };
+    }
+
+    if (action === "gen" && value === "trace") {
+        return { command: "gen:trace", scriptArgs: args.slice(2) };
     }
 
     if (commandMap[action]) {

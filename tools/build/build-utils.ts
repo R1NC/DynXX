@@ -1,7 +1,8 @@
 import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
 
-import { exec, getEnv, getHomeDir, goInTmpDir, isMacOS, isWindows, readCIEnv, setEnv, spawn } from '../utils.js';
+import { envEnabled, exec, getEnv, getHomeDir, goInTmpDir, isMacOS, isWindows, readCIEnv, setEnv, spawn } from '../utils.js';
+import { renderConfigureProfilingReport, renderInstrumentationReport } from '../trace/trace-utils.js';
 
 export function resolveBuildType(defaultValue: "Release" | "Debug" = "Release"): "Release" | "Debug" {
   const args = process.argv.slice(2);
@@ -103,6 +104,21 @@ export function exportCompileCommands(buildFolder: string, root: string) {
   }
 }
 
+// `--profiling-format=google-trace` records every CMake script command of the
+// configure step (try_compile, execute_process, find_package ...) with its file:line
+// and arguments, and writes a Google Trace File that Perfetto or chrome://tracing can
+// open. It is a configure-time command-line option: configure presets have no field
+// for extra arguments and there is no environment variable form, so it can only be
+// added here. Every preset gets it (measured: 29.0s vs 28.9/30.5s for a fresh
+// configure, i.e. within noise); DYNXX_ENABLE_CONFIGURE_PROFILING=0 turns it back off.
+export function getConfigureProfilingArgs(buildFolder: string): string {
+  if (!envEnabled('DYNXX_ENABLE_CONFIGURE_PROFILING', true)) {
+    return '';
+  }
+  mkdirSync(buildFolder, { recursive: true });
+  return ` --profiling-format=google-trace --profiling-output=${join(buildFolder, 'profiling-configure.json')}`;
+}
+
 export function runCMake(
   preset: string,
   buildFolder: string,
@@ -114,16 +130,27 @@ export function runCMake(
   const configureOnly = shouldConfigureOnly();
   const extraArgs = configureArgs.join(' ').trim();
   const extraArgsSegment = extraArgs.length > 0 ? ` ${extraArgs}` : '';
+  const profilingSegment = getConfigureProfilingArgs(buildFolder);
   if (configureOnly) {
     clearCMakeCache(buildFolder);
   }
-  exec(`cmake --preset ${preset}${extraArgsSegment}`);
+  exec(`cmake --preset ${preset}${extraArgsSegment}${profilingSegment}`);
+  // Turn whatever observability artifact this build produced into an HTML report next to
+  // it (both calls are no-ops unless the Debug presets enabled the feature).
+  const profilingHtml = renderConfigureProfilingReport(buildFolder);
+  if (profilingHtml) {
+    console.log(`[Trace] Configure profile: ${profilingHtml}`);
+  }
   if (configureOnly) {
     console.log(`[CMake] Reconfigured preset ${preset} after clearing cache.`);
     return;
   }
   clearOutputDir(outputFolder);
   exec(`cmake --build --preset ${preset}`);
+  const instrumentationHtml = renderInstrumentationReport(buildFolder);
+  if (instrumentationHtml) {
+    console.log(`[Trace] Build instrumentation: ${instrumentationHtml}`);
+  }
   if (needInstall) {
     exec(`cmake --install ${buildFolder} --prefix ${outputFolder} --component headers`);
   }

@@ -18,6 +18,7 @@ on:
       - 'tools/find-llvm.ts'
       - 'tools/setup-vcpkg.ts'
       - 'tools/build/build-utils.ts'
+      - 'tools/trace/trace-utils.ts'
       - 'tools/build/build-Windows.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'

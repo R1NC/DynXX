@@ -7,6 +7,7 @@ include(cmake/dependencies.cmake)
 include(cmake/platforms.cmake)
 include(cmake/git.cmake)
 include(cmake/sanitizers.cmake)
+include(cmake/observability.cmake)
 include(cmake/optimize.cmake)
 include(cmake/print.cmake)
 if(EMSCRIPTEN)
@@ -22,6 +23,7 @@ init_after_project()
 update_git_submodules()
 
 dynxx_declare_sanitizer_options()
+dynxx_declare_observability_options()
 dynxx_declare_optimization_options()
 dynxx_configure_cxx_feature_options()
 dynxx_declare_feature_options()
@@ -70,6 +72,7 @@ endif()
 
 set(SANITIZERS "")
 dynxx_configure_sanitizers(${PROJECT_NAME} SANITIZERS)
+dynxx_configure_observability()
 
 install_headers(include/DynXX include)
 

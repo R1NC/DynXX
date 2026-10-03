@@ -15,6 +15,7 @@ on:
       - 'tools/setup-vcpkg.ts'
       - 'tools/test/gtest-utils.ts'
       - 'tools/build/build-utils.ts'
+      - 'tools/trace/trace-utils.ts'
       - 'tools/build/build-iOS.ts'
       - 'tools/routes.ts'
       - 'tools/package.json'

@@ -15,7 +15,8 @@
     "build:windows": "tsx routes.ts build windows",
     "build:ios": "tsx routes.ts build ios",
     "build:macos": "tsx routes.ts build macos",
-    "gen:doc": "tsx routes.ts gen:doc"
+    "gen:doc": "tsx routes.ts gen:doc",
+    "gen:trace": "tsx routes.ts gen:trace"
   },
   "devDependencies": {
     "@types/node": "^25.5.2",
