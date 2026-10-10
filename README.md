@@ -16,9 +16,9 @@ A cross-platform framework based on modern C++, supporting biz dev via Lua & JS.
          <th colspan="4">Host</th>
       </tr>
       <tr>
-         <th align="center"><img src="https://www.svgrepo.com/download/501427/windows.svg" width="20px"/></th>
-         <th align="center"><img src="https://www.svgrepo.com/download/508761/apple.svg" width="20px"/></th>
-         <th align="center"><img src="https://www.svgrepo.com/download/341997/linux.svg" width="20px"/></th>
+         <th align="center">Windows</th>
+         <th align="center">macOS</th>
+         <th align="center">Linux</th>
       </tr>
    </thead>
    <tbody>
